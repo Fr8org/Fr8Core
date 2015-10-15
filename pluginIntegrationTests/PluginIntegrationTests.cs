@@ -34,7 +34,7 @@ namespace pluginIntegrationTests
         private IDisposable _dockyardCoreServer;
         private IDisposable _azureSqlServerServer;
 
-        private DockyardAccountDO _testUserAccount;
+        private Fr8AccountDO _testUserAccount;
         private RouteDO _processTemplateDO;
         private SubrouteDO _subrouteDO;
         //private ActionListDO _actionList;
@@ -61,7 +61,7 @@ namespace pluginIntegrationTests
             _testUserAccount = FixtureData.TestUser1();
 
             _processTemplateDO = FixtureData.Route_PluginIntegration();
-            _processTemplateDO.DockyardAccount = _testUserAccount;
+            _processTemplateDO.Fr8Account = _testUserAccount;
 
             _subrouteDO = FixtureData.Subroute_PluginIntegration();
             _subrouteDO.ParentActivity = _processTemplateDO;

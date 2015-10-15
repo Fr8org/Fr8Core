@@ -220,7 +220,7 @@ namespace Core.Services
         }
         }
 
-        public IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IDockyardAccountDO curAccount)
+        public IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount)
         {
             List<ActivityTemplateDO> curActivityTemplates;
 
@@ -239,7 +239,7 @@ namespace Core.Services
             return curActivityTemplates;
         }
 
-	    public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IDockyardAccountDO curAccount)
+	    public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IFr8AccountDO curAccount)
 	    {
             //TODO make this function use curAccount !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             List<ActivityTemplateCategoryDTO> curActivityTemplates;

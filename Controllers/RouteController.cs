@@ -136,7 +136,7 @@ namespace Web.Controllers
 
                 var curRouteDO = Mapper.Map<RouteOnlyDTO, RouteDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
                 var curUserId = User.Identity.GetUserId();
-                curRouteDO.DockyardAccount = uow.UserRepository
+                curRouteDO.Fr8Account = uow.UserRepository
                     .GetQuery()
                     .Single(x => x.Id == curUserId);
 

@@ -19,8 +19,8 @@ namespace DockyardTest.Entities
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.EmailAddressRepository.Add(new EmailAddressDO() {Id = 1});
-                uow.UserRepository.Add(new DockyardAccountDO() { EmailAddressID = 1, State = UserState.Active });
-                uow.UserRepository.Add(new DockyardAccountDO() { EmailAddressID = 1, State = UserState.Active });
+                uow.UserRepository.Add(new Fr8AccountDO() { EmailAddressID = 1, State = UserState.Active });
+                uow.UserRepository.Add(new Fr8AccountDO() { EmailAddressID = 1, State = UserState.Active });
                 uow.SaveChanges();
             }
         }
@@ -33,15 +33,15 @@ namespace DockyardTest.Entities
             {
                 
                 uow.AspNetRolesRepository.Add(FixtureData.TestRole());
-                var u = new DockyardAccountDO();
+                var u = new Fr8AccountDO();
                 var user = new DockyardAccount();
 
                 //SETUP                 
 
-                DockyardAccountDO currDockyardAccountDO = new DockyardAccountDO();
+                Fr8AccountDO currDockyardAccountDO = new Fr8AccountDO();
                 uow.UserRepository.Add(currDockyardAccountDO);
                
-                DockyardAccountDO currRetrivedDockyardAccountDO = uow.UserRepository.GetQuery().FirstOrDefault(uu => currDockyardAccountDO.EmailAddressID == uu.EmailAddressID);
+                Fr8AccountDO currRetrivedDockyardAccountDO = uow.UserRepository.GetQuery().FirstOrDefault(uu => currDockyardAccountDO.EmailAddressID == uu.EmailAddressID);
             }
         }
     }

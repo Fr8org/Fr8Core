@@ -247,7 +247,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserAgentInfoDO>().ToTable("UserAgentInfos");
-            modelBuilder.Entity<DockyardAccountDO>().ToTable("Users");
+            modelBuilder.Entity<Fr8AccountDO>().ToTable("Users");
             modelBuilder.Entity<HistoryItemDO>().ToTable("History");
             modelBuilder.Entity<ConceptDO>().ToTable("Concepts");
             modelBuilder.Entity<SubscriptionDO>().ToTable("Subscriptions");
@@ -286,7 +286,7 @@ namespace Data.Infrastructure
                 .HasForeignKey(pn => pn.ParentContainerId)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<DockyardAccountDO>()
+            modelBuilder.Entity<Fr8AccountDO>()
                 .Property(u => u.EmailAddressID)
                 .IsRequired()
                 .HasColumnAnnotation(

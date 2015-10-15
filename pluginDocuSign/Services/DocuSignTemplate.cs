@@ -27,7 +27,7 @@ namespace pluginDocuSign.Services
 			return submissionData;
 		}
 
-		public IEnumerable<DocuSignTemplateDTO> GetTemplates(DockyardAccountDO curDockyardAccount)
+		public IEnumerable<DocuSignTemplateDTO> GetTemplates(Fr8AccountDO curDockyardAccount)
 		{
             var docuSignPackager = new DocuSignPackager();
             Login = docuSignPackager.Login();

@@ -21,7 +21,7 @@ namespace DockyardTest.Services
     public class DockyardAccountTest : BaseTest
     {
         private DockyardAccount _dockyardAccount;
-        DockyardAccountDO _dockyardAccountDO;
+        Fr8AccountDO _dockyardAccountDO;
         private readonly string userName = "alexlucre";
         private readonly string password = "alex@123";
         LoginStatus curLogingStatus = LoginStatus.InvalidCredential;
@@ -161,9 +161,9 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                DockyardAccountDO curDockyardAccountLocal = FixtureData.TestDockyardAccount4();
+                Fr8AccountDO curDockyardAccountLocal = FixtureData.TestDockyardAccount4();
                 _dockyardAccount.Create(uow, curDockyardAccountLocal);
-                DockyardAccountDO curDockyardAccountLocalNew = uow.UserRepository.GetQuery().Where(u => u.UserName == curDockyardAccountLocal.UserName).FirstOrDefault();
+                Fr8AccountDO curDockyardAccountLocalNew = uow.UserRepository.GetQuery().Where(u => u.UserName == curDockyardAccountLocal.UserName).FirstOrDefault();
                 Assert.AreEqual(curDockyardAccountLocalNew.UserName, curDockyardAccountLocal.UserName);
             }
         }
@@ -232,7 +232,7 @@ namespace DockyardTest.Services
                 var curDockyardAccountLocal = FixtureData.TestDockyardAccount4();
                 _dockyardAccount.Create(uow, curDockyardAccountLocal);
                 _dockyardAccount.Update(uow, curDockyardAccountLocal, _dockyardAccountDO);
-                DockyardAccountDO curDockyardAccountLocalNew = uow.UserRepository.GetQuery().Where(u => u.UserName == curDockyardAccountLocal.UserName).FirstOrDefault();
+                Fr8AccountDO curDockyardAccountLocalNew = uow.UserRepository.GetQuery().Where(u => u.UserName == curDockyardAccountLocal.UserName).FirstOrDefault();
                 Assert.AreEqual(curDockyardAccountLocal, curDockyardAccountLocalNew);
             }
         }

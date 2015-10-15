@@ -83,7 +83,7 @@ namespace UtilitiesTesting.Fixtures
             RouteDO processTemplateDO;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                DockyardAccountDO testUser = TestDockyardAccount1();
+                Fr8AccountDO testUser = TestDockyardAccount1();
                 uow.UserRepository.Add(testUser);
 
                 processTemplateDO = new RouteDO()
@@ -92,7 +92,7 @@ namespace UtilitiesTesting.Fixtures
                     Description = "HealthDemo Integration Test",
                     Name = "StandardEventTesting",
                     RouteState = RouteState.Active,
-                    DockyardAccount = testUser
+                    Fr8Account = testUser
                 };
                 uow.RouteRepository.Add(processTemplateDO);
 

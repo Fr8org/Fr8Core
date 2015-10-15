@@ -18,7 +18,7 @@ namespace Core.Services
     public class DockyardAccount
     {
 
-        public void UpdatePassword(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO, string password)
+        public void UpdatePassword(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO, string password)
         {
             if (dockyardAccountDO != null)
             {
@@ -31,7 +31,7 @@ namespace Core.Services
         /// </summary>
         /// <param name="dockyardAccountDO">DockYardAccount</param>
         /// <returns>Direct if the user has a booking request or a password. Otherwise, Delegate.</returns>
-        public CommunicationMode GetMode(DockyardAccountDO dockyardAccountDO)
+        public CommunicationMode GetMode(Fr8AccountDO dockyardAccountDO)
         {
             //if (userDO.UserBookingRequests != null && userDO.UserBookingRequests.Any())
             //    return CommunicationMode.Direct;
@@ -85,7 +85,7 @@ namespace Core.Services
         //else if we have a first name only, use that
         //else if we have just an email address, use the portion preceding the @ unless there's a name
         //else throw
-        public static string GetDisplayName(DockyardAccountDO curDockyardAccount)
+        public static string GetDisplayName(Fr8AccountDO curDockyardAccount)
         {
             string firstName = curDockyardAccount.FirstName;
             string lastName = curDockyardAccount.LastName;
@@ -105,7 +105,7 @@ namespace Core.Services
             return curEmailAddress.Address.Split(new[] {'@'})[0];
         }
 
-        public void Create(IUnitOfWork uow, DockyardAccountDO submittedDockyardAccountData)
+        public void Create(IUnitOfWork uow, Fr8AccountDO submittedDockyardAccountData)
         {
             submittedDockyardAccountData.State = UserState.Active;
             submittedDockyardAccountData.Id = Guid.NewGuid().ToString();
@@ -136,15 +136,15 @@ namespace Core.Services
             EventManager.ExplicitCustomerCreated(submittedDockyardAccountData.Id);
         }
 
-        public DockyardAccountDO GetExisting(IUnitOfWork uow, string emailAddress)
+        public Fr8AccountDO GetExisting(IUnitOfWork uow, string emailAddress)
         {
-            DockyardAccountDO existingDockyardAccount =
+            Fr8AccountDO existingDockyardAccount =
                 uow.UserRepository.GetQuery().Where(e => e.EmailAddress.Address == emailAddress).FirstOrDefault();
             return existingDockyardAccount;
         }
 
-        public void Update(IUnitOfWork uow, DockyardAccountDO submittedDockyardAccountData,
-            DockyardAccountDO existingDockyardAccount)
+        public void Update(IUnitOfWork uow, Fr8AccountDO submittedDockyardAccountData,
+            Fr8AccountDO existingDockyardAccount)
         {
             existingDockyardAccount.FirstName = submittedDockyardAccountData.FirstName;
             existingDockyardAccount.LastName = submittedDockyardAccountData.LastName;
@@ -203,7 +203,7 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 RegistrationStatus curRegStatus;
-                DockyardAccountDO newDockyardAccountDO = null;
+                Fr8AccountDO newDockyardAccountDO = null;
                 //check if we know this email address
 
                 EmailAddressDO existingEmailAddressDO =
@@ -256,7 +256,7 @@ namespace Core.Services
             {
                 LoginStatus curLoginStatus;
 
-                DockyardAccountDO dockyardAccountDO = uow.UserRepository.FindOne(x => x.UserName == username);
+                Fr8AccountDO dockyardAccountDO = uow.UserRepository.FindOne(x => x.UserName == username);
                 if (dockyardAccountDO != null)
                 {
                     if (string.IsNullOrEmpty(dockyardAccountDO.PasswordHash))
@@ -277,7 +277,7 @@ namespace Core.Services
             }
         }
 
-        public DockyardAccountDO Register(IUnitOfWork uow, string userName, string firstName, string lastName,
+        public Fr8AccountDO Register(IUnitOfWork uow, string userName, string firstName, string lastName,
             string password, string roleID)
         {
             var userDO = uow.UserRepository.GetOrCreateUser(userName);
@@ -286,7 +286,7 @@ namespace Core.Services
             return userDO;
         }
 
-        public LoginStatus Login(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO, string password,
+        public LoginStatus Login(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO, string password,
             bool isPersistent)
         {
             var curLogingStatus = LoginStatus.Successful;
@@ -380,11 +380,11 @@ namespace Core.Services
             IEnumerable<RouteDO> activeRoutes;
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplateQuery = unitOfWork.RouteRepository.GetQuery().Include(i => i.DockyardAccount);
+                var processTemplateQuery = unitOfWork.RouteRepository.GetQuery().Include(i => i.Fr8Account);
 
                 processTemplateQuery
                     .Where(pt => pt.RouteState == RouteState.Active)//1.
-                    .Where(id => id.DockyardAccount.Id == userId);//2
+                    .Where(id => id.Fr8Account.Id == userId);//2
 
                 activeRoutes = processTemplateQuery.ToList();
             }
