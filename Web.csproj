@@ -750,6 +750,7 @@
     <Content Include="Views\AngularTemplate\FieldList.cshtml" />
     <Content Include="_PowerShellScripts\RunFrontEndTests-VSO.ps1" />
     <Content Include="Views\DockyardAccount\_HeaderPartial.cshtml" />
+    <Content Include="Views\AngularTemplate\DesignerHeader.cshtml" />
     <None Include="Views\Home\DocuSign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
@@ -772,6 +773,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\DesignerHeader\DesignerHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ActionNameFormatter.ts" />

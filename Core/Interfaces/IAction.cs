@@ -19,7 +19,7 @@ namespace Core.Interfaces
         void Delete(int id);
         ActionDO MapFromDTO(ActionDTO curActionDTO);
         Task PrepareToExecute(ActionDO curAction, ContainerDO curProcessDO, IUnitOfWork uow);
-        Task<PayloadDTO> Execute(ActionDO curActionDO, ContainerDO curProcessDO);
+        Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curProcessDO);
         string Authenticate(ActionDO curActionDO);
         void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
         List<CrateDTO> GetCrates(ActionDO curActionDO);

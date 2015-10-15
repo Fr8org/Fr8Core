@@ -183,7 +183,7 @@ namespace pluginTests.PluginExcelTests
                 },
             };
 
-            var result = await new Extract_Data_v1().Execute(curActionDTO);
+            var result = await new Extract_Data_v1().Run(curActionDTO);
             var payloadCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, result.CrateStorage);
             var payloadDataMS = JsonConvert.DeserializeObject<StandardPayloadDataCM>(payloadCrates.First().Contents);
 
