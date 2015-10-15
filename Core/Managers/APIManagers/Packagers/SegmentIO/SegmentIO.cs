@@ -43,9 +43,9 @@ namespace Core.Managers.APIManagers.Packagers.SegmentIO
             }
         }
 
-        private Dictionary<String, object> GetProperties(DockyardAccountDO dockyardAccountDO)
+        private Dictionary<String, object> GetProperties(Fr8AccountDO dockyardAccountDO)
         {
-            var user = new DockyardAccount();
+            var user = new Fr8Account();
 
             return new Dictionary<string, object>
             {
@@ -57,7 +57,7 @@ namespace Core.Managers.APIManagers.Packagers.SegmentIO
             };
         }
 
-        public void Identify(DockyardAccountDO dockyardAccountDO)
+        public void Identify(Fr8AccountDO dockyardAccountDO)
         {
             var props = new Traits();
             foreach (var prop in GetProperties(dockyardAccountDO))
@@ -66,7 +66,7 @@ namespace Core.Managers.APIManagers.Packagers.SegmentIO
             Analytics.Client.Identify(dockyardAccountDO.Id, props);
         }
 
-        public void Track(DockyardAccountDO dockyardAccountDO, String eventName, String action, Dictionary<String, object> properties = null)
+        public void Track(Fr8AccountDO dockyardAccountDO, String eventName, String action, Dictionary<String, object> properties = null)
         {
             if (properties == null)
                 properties = new Dictionary<string, object>();
@@ -75,7 +75,7 @@ namespace Core.Managers.APIManagers.Packagers.SegmentIO
             Track(dockyardAccountDO, eventName, properties);
         }
 
-        public void Track(DockyardAccountDO dockyardAccountDO, String eventName, Dictionary<String, object> properties = null)
+        public void Track(Fr8AccountDO dockyardAccountDO, String eventName, Dictionary<String, object> properties = null)
         {
             var props = new Segment.Model.Properties();
             foreach (var prop in GetProperties(dockyardAccountDO))

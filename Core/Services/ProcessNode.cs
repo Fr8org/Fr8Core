@@ -34,17 +34,18 @@ namespace Core.Services
         /// Creates ProcessNode Object
         /// </summary>
         /// <returns>New ProcessNodeDO instance</returns>
-        public ProcessNodeDO Create(IUnitOfWork uow, int parentProcessId, int processNodeTemplateId, string name="ProcessNode")
+        public ProcessNodeDO Create(IUnitOfWork uow, int parentContainerId,
+            int subrouteId, string name = "ProcessNode")
         {
             var processNode = new ProcessNodeDO
             {
                 ProcessNodeState = ProcessNodeState.Unstarted,
                 Name = name,
-                ParentProcessId = parentProcessId
+                ParentContainerId = parentContainerId
             };
 
-            processNode.ProcessNodeTemplateId = processNodeTemplateId;
-            processNode.ProcessNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(processNodeTemplateId);
+            processNode.SubrouteId = subrouteId;
+            processNode.Subroute = uow.SubrouteRepository.GetByKey(subrouteId);
 
             uow.ProcessNodeRepository.Add(processNode);
             EventManager.ProcessNodeCreated(processNode);
@@ -61,7 +62,7 @@ namespace Core.Services
         public void CreateTruthTransition(ProcessNodeDO sourcePNode, ProcessNodeDO targetPNode)
         {
             var keys =
-                JsonConvert.DeserializeObject<List<ProcessNodeTransition>>(sourcePNode.ProcessNodeTemplate.NodeTransitions);
+                JsonConvert.DeserializeObject<List<ProcessNodeTransition>>(sourcePNode.Subroute.NodeTransitions);
 
             if (!this.IsCorrectKeysCountValid(keys))
                 throw new ArgumentException("There should only be one key with false.");
@@ -69,7 +70,7 @@ namespace Core.Services
             var key = keys.First(k => k.TransitionKey.Equals("false", StringComparison.OrdinalIgnoreCase));
             key.ProcessNodeId = targetPNode.Id.ToString();
 
-            sourcePNode.ProcessNodeTemplate.NodeTransitions = JsonConvert.SerializeObject(keys, Formatting.None);
+            sourcePNode.Subroute.NodeTransitions = JsonConvert.SerializeObject(keys, Formatting.None);
         }
 
         
@@ -81,17 +82,17 @@ namespace Core.Services
             var result = _criteria.Evaluate(curEventData, curProcessNode);
             if (result)
             {
-                var activityService = ObjectFactory.GetInstance<IActivity>();
+                var activityService = ObjectFactory.GetInstance<IRouteNode>();
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var curProcessNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(curProcessNode.ProcessNodeTemplateId);
-                    ActivityDO currentAction = curProcessNodeTemplate;
+                    var curSubroute = uow.SubrouteRepository.GetByKey(curProcessNode.SubrouteId);
+                    RouteNodeDO currentAction = curSubroute;
 
                     do
                     {
-                        activityService.Process(currentAction.Id, curProcessNode.ParentProcess);
-                        currentAction = activityService.GetNextActivity(currentAction, curProcessNodeTemplate);
+                        activityService.Process(currentAction.Id, curProcessNode.ParentContainer);
+                        currentAction = activityService.GetNextActivity(currentAction, curSubroute);
                     } while (currentAction != null);
                 }
 

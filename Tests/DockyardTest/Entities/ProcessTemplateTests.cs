@@ -12,39 +12,39 @@ using Web.Controllers;
 namespace DockyardTest.Entities
 {
     [TestFixture]
-    [Category("ProcessTemplate")]
-    public class ProcessTemplateTests : BaseTest
+    [Category("Route")]
+    public class RouteTests : BaseTest
     {
         [Test]
-        public void ProcessTemplate_ShouldBeAssignedStartingProcessNodeTemplate()
+        public void Route_ShouldBeAssignedStartingSubroute()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplate = FixtureData.TestProcessTemplate2();
-                uow.ProcessTemplateRepository.Add(processTemplate);
+                var route = FixtureData.TestRoute2();
+                uow.RouteRepository.Add(route);
 
-                var processNodeTemplate = FixtureData.TestProcessNodeTemplateDO2();
-                uow.ProcessNodeTemplateRepository.Add(processNodeTemplate);
-                processTemplate.StartingProcessNodeTemplate = processNodeTemplate;
+                var subroute = FixtureData.TestSubrouteDO2();
+                uow.SubrouteRepository.Add(subroute);
+                route.StartingSubroute = subroute;
 
                 uow.SaveChanges();
 
-                var result = uow.ProcessTemplateRepository.GetQuery()
-                    .SingleOrDefault(pt => pt.StartingProcessNodeTemplateId == processNodeTemplate.Id);
+                var result = uow.RouteRepository.GetQuery()
+                    .SingleOrDefault(pt => pt.StartingSubrouteId == subroute.Id);
 
-                Assert.AreEqual(processNodeTemplate.Id, result.StartingProcessNodeTemplate.Id);
-                Assert.AreEqual(processNodeTemplate.Name, result.StartingProcessNodeTemplate.Name);
+                Assert.AreEqual(subroute.Id, result.StartingSubroute.Id);
+                Assert.AreEqual(subroute.Name, result.StartingSubroute.Name);
             }
         }
 
         [Test]
-        public void GetStandardEventSubscribers_ReturnsProcessTemplates()
+        public void GetStandardEventSubscribers_ReturnsRoutes()
         {
-            FixtureData.TestProcessTemplateWithSubscribeEvent();
-            IProcessTemplate curProcessTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
+            FixtureData.TestRouteWithSubscribeEvent();
+            IRoute curRoute = ObjectFactory.GetInstance<IRoute>();
             EventReportCM curEventReport = FixtureData.StandardEventReportFormat();
 
-            var result = curProcessTemplate.GetMatchingProcessTemplates("testuser1", curEventReport);
+            var result = curRoute.GetMatchingRoutes("testuser1", curEventReport);
 
             Assert.IsNotNull(result);
             Assert.Greater(result.Count, 0);
@@ -55,18 +55,18 @@ namespace DockyardTest.Entities
         [ExpectedException(ExpectedException = typeof(System.ArgumentNullException))]
         public void GetStandardEventSubscribers_UserIDEmpty_ThrowsException()
         {
-            IProcessTemplate curProcessTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
+            IRoute curRoute = ObjectFactory.GetInstance<IRoute>();
 
-            curProcessTemplate.GetMatchingProcessTemplates("", new EventReportCM());
+            curRoute.GetMatchingRoutes("", new EventReportCM());
         }
 
         [Test]
         [ExpectedException(ExpectedException = typeof(System.ArgumentNullException))]
         public void GetStandardEventSubscribers_EventReportMSNULL_ThrowsException()
         {
-            IProcessTemplate curProcessTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
+            IRoute curRoute = ObjectFactory.GetInstance<IRoute>();
 
-            curProcessTemplate.GetMatchingProcessTemplates("UserTest", null);
+            curRoute.GetMatchingRoutes("UserTest", null);
         }
 
 

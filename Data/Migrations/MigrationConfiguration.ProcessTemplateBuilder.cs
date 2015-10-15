@@ -11,7 +11,7 @@ namespace Data.Migrations
 {
     partial class MigrationConfiguration
     {
-        private class ProcessTemplateBuilder
+        private class RouteBuilder
         {
             private readonly string _name;
             
@@ -23,14 +23,14 @@ namespace Data.Migrations
             
             
 
-            public ProcessTemplateBuilder(string name)
+            public RouteBuilder(string name)
             {
                 _name = name;
             }
 
             
 
-            public ProcessTemplateBuilder AddCrate(CrateDTO crateDto)
+            public RouteBuilder AddCrate(CrateDTO crateDto)
             {
                 _crates.Add(crateDto);
                 return this;
@@ -42,20 +42,20 @@ namespace Data.Migrations
             {
                 StoreTemplate(uow);
 
-                var process = uow.ProcessRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
+                var process = uow.ContainerRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
 
                 var add = process == null;
                 
                 if (add)
                 {
-                    process = new ProcessDO();
+                    process = new ContainerDO();
                 }
 
                 ConfigureProcess(process);
 
                 if (add)
                 {
-                    uow.ProcessRepository.Add(process);
+                    uow.ContainerRepository.Add(process);
                 }
             }
 
@@ -63,23 +63,23 @@ namespace Data.Migrations
 
             private void StoreTemplate(IUnitOfWork uow)
             {
-                var pt = uow.ProcessTemplateRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
+                var pt = uow.RouteRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
                 bool add = pt == null;
 
                 if (add)
                 {
-                    pt = new ProcessTemplateDO();
+                    pt = new RouteDO();
                 }
 
                 pt.Name = _name;
                 pt.Description = "Template for testing";
                 pt.CreateDate = DateTime.Now;
                 pt.LastUpdated = DateTime.Now;
-                pt.ProcessTemplateState = ProcessTemplateState.Inactive; // we don't want this process template can be executed ouside of tests
+                pt.RouteState = RouteState.Inactive; // we don't want this process template can be executed ouside of tests
 
                 if (add)
                 {
-                    uow.ProcessTemplateRepository.Add(pt);
+                    uow.RouteRepository.Add(pt);
                     uow.SaveChanges();
                 }
 
@@ -88,11 +88,11 @@ namespace Data.Migrations
 
             
 
-            private void ConfigureProcess(ProcessDO process)
+            private void ConfigureProcess(ContainerDO process)
             {
                 process.Name = _name;
-                process.ProcessTemplateId = _ptId;
-                process.ProcessState = ProcessState.Executing;
+                process.RouteId = _ptId;
+                process.ContainerState = ContainerState.Executing;
 
                 process.CrateStorage = JsonConvert.SerializeObject(new
                 {

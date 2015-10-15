@@ -233,9 +233,10 @@
     <Compile Include="Controllers\CriteriaControllerTest.cs" />
     <Compile Include="Controllers\EventControllerTest.cs" />
     <Compile Include="Controllers\NotificationControllerTests.cs" />
-    <Compile Include="Controllers\ProcessTemplateControllerTests.cs" />
+    <Compile Include="Controllers\RouteControllerTests.cs" />
     <Compile Include="Controllers\UserApiControlle.cs" />
     <Compile Include="Controllers\UserControllerTests.cs" />
+    <Compile Include="CsvReaderTests.cs" />
     <Compile Include="Daemons\DaemonTests.cs" />
     <Compile Include="Daemons\OutboundEmailTests.cs" />
     <Compile Include="Entities\ActionRegistrationTests.cs" />
@@ -244,6 +245,7 @@
     <Compile Include="Entities\EmailAddressTests.cs" />
     <Compile Include="Entities\EnvelopeTests.cs" />
     <Compile Include="Entities\UserTests.cs" />
+    <Compile Include="ExcelUtilsTests.cs" />
     <Compile Include="Infrastructure\DatabaseTests.cs" />
     <Compile Include="Infrastructure\MultiTenantTests.cs" />
     <Compile Include="Integration\RunTimeTests.cs" />
@@ -265,14 +267,15 @@
     <Compile Include="Services\FileTests.cs" />
     <Compile Include="Services\ProcessNodeTests.cs" />
     <Compile Include="Services\ProcessServiceTests.cs" />
-    <Compile Include="Services\ProcessNodeTemplateTests.cs" />
-    <Compile Include="Services\ProcessTemplateTests.cs" />
+    <Compile Include="Services\SubrouteTests.cs" />
+    <Compile Include="Services\RouteTests.cs" />
     <Compile Include="Services\SMSMessageTests.cs" />
     <Compile Include="Services\StartupTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />
     <Compile Include="Services\ProcessExecuteTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
+    <Compile Include="Validations\ValidationsTest.cs" />
     <Compile Include="Wrapper\DcousingAccountTest.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -318,6 +321,10 @@
     <ProjectReference Include="..\..\pluginDockyardCore\pluginDockyardCore.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
       <Name>pluginDockyardCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\pluginExcel\pluginExcel.csproj">
+      <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
+      <Name>pluginExcel</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Web.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>

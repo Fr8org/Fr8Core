@@ -11,14 +11,14 @@ namespace Web.Controllers
     {
         private readonly IDockyardEvent _dockyardEvent;
         private readonly ICrate _crate;
-        private IProcessTemplate _processTemplate;
+        private IRoute _route;
 
 
         public DockyardEventController()
         {
             _dockyardEvent = ObjectFactory.GetInstance<IDockyardEvent>();
             _crate = ObjectFactory.GetInstance<ICrate>();
-            _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
+            _route = ObjectFactory.GetInstance<IRoute>();
 
         }
 
