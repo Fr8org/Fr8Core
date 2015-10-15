@@ -133,7 +133,7 @@ namespace DockyardTest.Controllers
             }
 
             //Act
-            var actionResult = processTemplateController.Get() as OkNegotiatedContentResult<IEnumerable<RouteOnlyDTO>>;
+            var actionResult = processTemplateController.Get() as OkNegotiatedContentResult<RouteOnlyDTO[]>;
 
             //Assert
             Assert.NotNull(actionResult);
