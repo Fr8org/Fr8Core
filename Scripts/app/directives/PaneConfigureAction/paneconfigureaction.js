@@ -90,6 +90,7 @@ var dockyard;
                     };
                     PaneConfigureAction.prototype.controller = function ($scope, $element, $attrs) {
                         $scope.$on("onChange", onControlChange);
+                        $scope.$on("onClick", onClickEvent);
                         // These are exposed for unit testing.
                         $scope.onControlChange = onControlChange;
                         $scope.loadConfiguration = loadConfiguration;
@@ -130,6 +131,30 @@ var dockyard;
                                 crateHelper.mergeControlListCrate($scope.currentAction.configurationControls, $scope.currentAction.crateStorage);
                                 $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
                                 $scope.loadConfiguration();
+                            }
+                        }
+                        function onClickEvent(event, eventArgs) {
+                            var scope = event.currentScope;
+                            // Check if this event is defined for the current field
+                            var fieldName = eventArgs.fieldName;
+                            var fieldList = scope.currentAction.configurationControls.fields;
+                            // Find the configuration field object for which the event has fired
+                            fieldList = $filter('filter')(fieldList, { name: fieldName }, true);
+                            if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0)
+                                return;
+                            var field = fieldList[0];
+                            // Find the onChange event object
+                            var eventHandlerList = $filter('filter')(field.events, { name: 'onClick' }, true);
+                            if (eventHandlerList.length == 0) {
+                                return;
+                            }
+                            else {
+                                var fieldEvent = eventHandlerList[0];
+                                if (fieldEvent.handler != null) {
+                                    crateHelper.mergeControlListCrate(scope.currentAction.configurationControls, scope.currentAction.crateStorage);
+                                    scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
+                                    loadConfiguration();
+                                }
                             }
                         }
                         // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
