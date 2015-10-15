@@ -1,7 +1,6 @@
 using System.Net.Http.Formatting;
 using AutoMapper;
 using Core.ExternalServices;
-using Core.Interfaces;
 using Core.Managers;
 using Core.Managers.APIManagers.Authorizers;
 using Core.Managers.APIManagers.Authorizers.Docusign;
@@ -24,6 +23,7 @@ using StructureMap;
 using StructureMap.Configuration.DSL;
 using System.Threading.Tasks;
 using Utilities;
+using Core.Interfaces;
 
 namespace Core.StructureMap
 {
@@ -95,14 +95,14 @@ namespace Core.StructureMap
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
                 For<IPluginTransmitter>().Use<PluginTransmitter>();
-                For<IProcessTemplate>().Use<ProcessTemplate>();
-                For<IProcess>().Use<Process>();
+                For<IRoute>().Use<Route>();
+                For<IContainerService>().Use<ContainerService>();
                 For<ICriteria>().Use<Criteria>();
                 For<IAction>().Use<Action>();
-				For<IActivity>().Use<Activity>();
+				For<IRouteNode>().Use<RouteNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
-                For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
+                For<ISubroute>().Use<Subroute>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
@@ -143,15 +143,15 @@ namespace Core.StructureMap
                 For<IActivityTemplate>().Use<ActivityTemplate>();
                 
                 For<ITracker>().Use(mockSegment.Object);
-                For<IProcess>().Use<Process>();
+                For<IContainerService>().Use<ContainerService>();
                 For<ICriteria>().Use<Criteria>();
                 For<ISubscription>().Use<Subscription>();
                 For<IAction>().Use<Action>();
-					 For<IActivity>().Use<Activity>();
+					 For<IRouteNode>().Use<RouteNode>();
 
                 For<IProcessNode>().Use<ProcessNode>();
-                For<IProcessTemplate>().Use<ProcessTemplate>();
-                For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
+                For<IRoute>().Use<Route>();
+                For<ISubroute>().Use<Subroute>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);

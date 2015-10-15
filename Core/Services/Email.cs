@@ -60,7 +60,7 @@ namespace Core.Services
             Send(uow, curEmail);
         }
 
-        public void SendUserSettingsNotification(IUnitOfWork uow, DockyardAccountDO submittedDockyardAccountData) 
+        public void SendUserSettingsNotification(IUnitOfWork uow, Fr8AccountDO submittedDockyardAccountData) 
         {
             EmailDO curEmail = new EmailDO();
             curEmail.From = submittedDockyardAccountData.EmailAddress;

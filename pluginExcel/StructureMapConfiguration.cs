@@ -18,7 +18,7 @@ namespace pluginExcel
                 For<IAction>().Use<Core.Services.Action>();
                 For<IPlugin>().Use<Plugin>();
                 For<ICrate>().Use<Crate>();
-                For<IActivity>().Use<Activity>();
+                For<IRouteNode>().Use<RouteNode>();
             }
         }
 

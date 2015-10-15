@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Linq;
+using Core.Enums;
 using NUnit.Framework;
 using pluginTests.Fixtures;
 
@@ -29,15 +30,13 @@ namespace pluginTests.pluginDocuSign.Actions
 
         }
 
-
         [Test]
         public async Task Configure_ConfigurationRequestTypeIsInitial_ShouldCrateStorage()
         {
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //Arrange
-                uow.ActivityRepository.Add(FixtureData.ConfigureTestActionTree());
+                uow.RouteNodeRepository.Add(FixtureData.ConfigureTestActionTree());
                 uow.SaveChanges();
                 ActionDO curAction = FixtureData.ConfigureTestAction57();
                 ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
@@ -53,7 +52,6 @@ namespace pluginTests.pluginDocuSign.Actions
                 Assert.AreEqual(2, result.CrateStorage.CrateDTO.Count);
                 Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
                 Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[1].ManifestType);
-
             }
         }
 
@@ -71,7 +69,6 @@ namespace pluginTests.pluginDocuSign.Actions
             Assert.AreEqual("EnvelopeIdValue", result);
 
         }
-
 
         [Test]
         public void GetFields_ActionDTOAsParameter_ReturnsFieldsInformation()
@@ -112,13 +109,14 @@ namespace pluginTests.pluginDocuSign.Actions
     }
     public class Extract_From_DocuSign_Envelope_v1_Proxy : Extract_From_DocuSign_Envelope_v1
     {
-        private readonly IActivity _activity;
+        private readonly IRouteNode _activity;
+
         public Extract_From_DocuSign_Envelope_v1_Proxy()
         {
-            _activity = ObjectFactory.GetInstance<IActivity>();
+            _activity = ObjectFactory.GetInstance<IRouteNode>();
         }
-        protected async override Task<List<CrateDTO>> GetCratesByDirection(int activityId,
-          string manifestType, GetCrateDirection direction)
+
+        protected async override Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -133,10 +131,8 @@ namespace pluginTests.pluginDocuSign.Actions
 
                 foreach (var curAction in upstreamActions)
                 {
-                    curCrates.AddRange(_action.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
+                    curCrates.AddRange(Action.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
                 }
-
-                //return curCrates;
 
                 return await Task.FromResult(curCrates);
             }

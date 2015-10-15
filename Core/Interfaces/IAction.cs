@@ -18,8 +18,8 @@ namespace Core.Interfaces
         ActionDO GetById(IUnitOfWork uow, int id);
         void Delete(int id);
         ActionDO MapFromDTO(ActionDTO curActionDTO);
-        Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow);
-        Task<PayloadDTO> Execute(ActionDO curActionDO, ProcessDO curProcessDO);
+        Task PrepareToExecute(ActionDO curAction, ContainerDO curProcessDO, IUnitOfWork uow);
+        Task<PayloadDTO> Execute(ActionDO curActionDO, ContainerDO curProcessDO);
         string Authenticate(ActionDO curActionDO);
         void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
         List<CrateDTO> GetCrates(ActionDO curActionDO);
@@ -29,8 +29,8 @@ namespace Core.Interfaces
         IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO);
 		StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO);
         StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction);
-        Task AuthenticateInternal(DockyardAccountDO user, PluginDO plugin, string username, string password);
-        Task<ExternalAuthUrlDTO> GetExternalAuthUrl(DockyardAccountDO user, PluginDO plugin);
+        Task AuthenticateInternal(Fr8AccountDO user, PluginDO plugin, string username, string password);
+        Task<ExternalAuthUrlDTO> GetExternalAuthUrl(Fr8AccountDO user, PluginDO plugin);
         Task AuthenticateExternal(PluginDO plugin, ExternalAuthenticationDTO externalAuthenticateDTO);
         
         void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO);

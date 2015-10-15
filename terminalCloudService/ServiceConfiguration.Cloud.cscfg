@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="terminalCloudService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2015-04.2.6">
+  <Role name="terminalWebRole">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=fr8companysa;AccountKey=PHyyd4POhHfwk0AQKF6QtO0hJaSU/cPaey+abslpwwCu0JahK0uTtTLf1KGk+QZgFrcspdiD1ejrgxAdZrDntA==" />
+    </ConfigurationSettings>
+  </Role>
+</ServiceConfiguration>

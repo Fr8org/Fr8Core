@@ -20,7 +20,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ActionDO, ActionDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
-                .ForMember(a => a.ParentActivityId, opts => opts.ResolveUsing(ad => ad.ParentActivityId))
+                .ForMember(a => a.ParentActivityId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
                 .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(ad.CrateStorage)))
                 .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
                 .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
@@ -30,7 +30,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
-                .ForMember(a => a.ParentActivityId, opts => opts.ResolveUsing(ad => ad.ParentActivityId))
+                .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentActivityId))
                 .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                 .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
@@ -56,24 +56,24 @@ namespace Data.Infrastructure.AutoMapper
 //                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
 //                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
-            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateOnlyDTO>();
+            Mapper.CreateMap<RouteDO, RouteOnlyDTO>();
 
-            Mapper.CreateMap<ProcessNodeTemplateDTO, ProcessNodeTemplateDO>()
-                .ForMember(x => x.ParentActivityId, opts => opts.ResolveUsing(x => x.ProcessTemplateId));
-            Mapper.CreateMap<ProcessNodeTemplateDO, ProcessNodeTemplateDTO>()
-                .ForMember(x => x.ProcessTemplateId, opts => opts.ResolveUsing(x => x.ParentActivityId));
+            Mapper.CreateMap<SubrouteDTO, SubrouteDO>()
+                .ForMember(x => x.ParentRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId));
+            Mapper.CreateMap<SubrouteDO, SubrouteDTO>()
+                .ForMember(x => x.RouteId, opts => opts.ResolveUsing(x => x.ParentRouteNodeId));
 
             Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
                 .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));
             Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
                 .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
 
-            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>()
-                .ConvertUsing<ProcessTemplateDOFullConverter>();
+            Mapper.CreateMap<RouteDO, RouteDTO>()
+                .ConvertUsing<RouteDOFullConverter>();
 
-            Mapper.CreateMap<ProcessTemplateOnlyDTO, ProcessTemplateDTO>();
+            Mapper.CreateMap<RouteOnlyDTO, RouteDTO>();
           //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();
-            Mapper.CreateMap<ProcessNodeTemplateDO, FullProcessNodeTemplateDTO>();
+            Mapper.CreateMap<SubrouteDO, FullSubrouteDTO>();
 
             //Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<FileDO, FileDescriptionDTO>();

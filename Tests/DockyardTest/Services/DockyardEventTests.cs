@@ -28,22 +28,22 @@ namespace DockyardTest.Services
         //[Test]
         //public void ProcessInbound_CorrectStandardEventReportLabel_CallLaunchProcess()
         //{
-        //    var processTemplateDO = FixtureData.TestProcessTemplateWithSubscribeEvent();
-        //    var resultProcessTemplates = new List<ProcessTemplateDO>() { processTemplateDO };
-        //    IProcessTemplate curProcessTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
+        //    var processTemplateDO = FixtureData.TestRouteWithSubscribeEvent();
+        //    var resultRoutes = new List<RouteDO>() { processTemplateDO };
+        //    IRoute curRoute = ObjectFactory.GetInstance<IRoute>();
         //    EventReportMS curEventReport = FixtureData.StandardEventReportFormat();
            
-        //    Mock<IProcessTemplate> processTemplateMock = new Mock<IProcessTemplate>();
-        //    processTemplateMock.Setup(a => a.LaunchProcess(It.IsAny<IUnitOfWork>(), It.IsAny<ProcessTemplateDO>(), null));
-        //    processTemplateMock.Setup(a => a.GetMatchingProcessTemplates(It.IsAny<string>(), It.IsAny<EventReportMS>()))
-        //        .Returns(resultProcessTemplates);
-        //    ObjectFactory.Configure(cfg => cfg.For<IProcessTemplate>().Use(processTemplateMock.Object));
+        //    Mock<IRoute> processTemplateMock = new Mock<IRoute>();
+        //    processTemplateMock.Setup(a => a.LaunchProcess(It.IsAny<IUnitOfWork>(), It.IsAny<RouteDO>(), null));
+        //    processTemplateMock.Setup(a => a.GetMatchingRoutes(It.IsAny<string>(), It.IsAny<EventReportMS>()))
+        //        .Returns(resultRoutes);
+        //    ObjectFactory.Configure(cfg => cfg.For<IRoute>().Use(processTemplateMock.Object));
             
         //    IDockyardEvent curDockyardEvent = ObjectFactory.GetInstance<IDockyardEvent>();
 
         //    curDockyardEvent.ProcessInbound("testuser1", curEventReport);
 
-        //    processTemplateMock.Verify(l => l.LaunchProcess(It.IsAny<IUnitOfWork>(), It.IsAny<ProcessTemplateDO>(), null));
+        //    processTemplateMock.Verify(l => l.LaunchProcess(It.IsAny<IUnitOfWork>(), It.IsAny<RouteDO>(), null));
         //}
     }
 }

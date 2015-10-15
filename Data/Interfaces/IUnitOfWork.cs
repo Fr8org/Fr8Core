@@ -16,7 +16,7 @@ namespace Data.Interfaces
         //CalendarRepository CalendarRepository { get; }
         CommunicationConfigurationRepository CommunicationConfigurationRepository { get; }
         EmailRepository EmailRepository { get; }
-        IProcessRepository ProcessRepository { get; }
+        IContainerRepository ContainerRepository { get; }
         EmailStatusRepository EmailStatusRepository { get; }
         //EnvelopeRepository EnvelopeRepository { get; }
         //EventRepository EventRepository { get; }
@@ -44,14 +44,14 @@ namespace Data.Interfaces
         UserStatusRepository UserStatusRepository { get; }
         //NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
-        IProcessTemplateRepository ProcessTemplateRepository { get; }
+        IRouteRepository RouteRepository { get; }
         SlipRepository SlipRepository { get; }
         ActionRepository ActionRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }
-		  ActivityRepository ActivityRepository { get; }
+		RouteNodeRepository RouteNodeRepository { get; }
         ProcessNodeRepository ProcessNodeRepository { get; }
 
-        IProcessNodeTemplateRepository ProcessNodeTemplateRepository { get; }
+        ISubrouteRepository SubrouteRepository { get; }
         ICriteriaRepository CriteriaRepository { get; }
 
         IFileRepository FileRepository { get; }

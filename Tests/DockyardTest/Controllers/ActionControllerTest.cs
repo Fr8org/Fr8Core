@@ -275,20 +275,20 @@ namespace DockyardTest.Controllers
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
 //                // 
-//                var curProcessTemplate = FixtureData.TestProcessTemplate1();
-//                uow.ProcessTemplateRepository.Add(curProcessTemplate);
+//                var curRoute = FixtureData.TestRoute1();
+//                uow.RouteRepository.Add(curRoute);
 //                uow.SaveChanges();
 //                //Add a processnodetemplate to processtemplate 
-//                var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-//                curProcessNodeTemplate.ParentTemplateId = curProcessTemplate.Id;
+//                var curSubroute = FixtureData.TestSubrouteDO1();
+//                curSubroute.ParentTemplateId = curRoute.Id;
 //
-//                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
+//                uow.SubrouteRepository.Add(curSubroute);
 //                uow.SaveChanges();
 //                
 //                var actionList = FixtureData.TestEmptyActionList();
 //                actionList.Id = 1;
 //                actionList.ActionListType = 1;
-//                actionList.ProcessNodeTemplateID = curProcessNodeTemplate.Id;
+//                actionList.SubrouteID = curSubroute.Id;
 //
 //                uow.ActionListRepository.Add(actionList);
 //                uow.SaveChanges();

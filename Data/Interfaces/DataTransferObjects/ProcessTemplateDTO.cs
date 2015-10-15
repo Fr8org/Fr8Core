@@ -4,9 +4,9 @@ using Data.Entities;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class ProcessTemplateOnlyDTO
+    public class RouteOnlyDTO
     {
-        public ProcessTemplateOnlyDTO()
+        public RouteOnlyDTO()
         {
             //     SubscribedDocuSignTemplates = new List<DocuSignTemplateSubscriptionDO>();
             //     SubscribedExternalEvents = new List<ExternalEventSubscriptionDO>();
@@ -21,17 +21,17 @@ namespace Data.Interfaces.DataTransferObjects
         public string Name { get; set; }
 
         public string Description { get; set; }
-        public int ProcessTemplateState { get; set; }
+        public int RouteState { get; set; }
 
         public IList<string> SubscribedDocuSignTemplates { get; set; }
 
         public IList<int?> SubscribedExternalEvents { get; set; }
-        public int StartingProcessNodeTemplateId { get; set; }
+        public int StartingSubrouteId { get; set; }
 
 
         // Commented out by yakov.gnusin:
-        // Do we really need to provider DockyardAccountDO inside ProcessTemplateDTO?
-        // We do override DockyardAccountDO in ProcessTemplateController.Post action.
+        // Do we really need to provider DockyardAccountDO inside RouteDTO?
+        // We do override DockyardAccountDO in RouteController.Post action.
 
         // public virtual DockyardAccountDO DockyardAccount { get; set; }
         // public virtual IList<DocuSignTemplateSubscriptionDO> SubscribedDocuSignTemplates { get; set; }

@@ -193,11 +193,11 @@ namespace Core.Managers
             }
         }
 
-        private void EventManagerOnEventProcessRequestReceived(ProcessDO process)
+        private void EventManagerOnEventProcessRequestReceived(ContainerDO process)
         {
             var fact = new FactDO
             {
-                CustomerId = process.DockyardAccountId,
+                CustomerId = process.Fr8AccountId,
                 Data = process.Id.ToStr(),
                 ObjectId = process.Id.ToStr(),
                 PrimaryCategory = "Process Access",
@@ -382,19 +382,19 @@ namespace Core.Managers
         /// </summary>
         /// <param name="userId">UserId received from DocuSign.</param>
         /// <param name="processTemplateId">EnvelopeId received from DocuSign.</param>
-        public void ProcessTemplateCreated(string userId, string processTemplateName)
+        public void RouteCreated(string userId, string processTemplateName)
         {
             FactDO fact = new FactDO
             {
-                PrimaryCategory = "ProcessTemplateService",
+                PrimaryCategory = "RouteService",
                 SecondaryCategory = null,
                 Activity = "Created",
                 CustomerId = userId,
                 ObjectId = "0",
-                Data = string.Format("ProcessTemplate Name: {0}.",
+                Data = string.Format("Route Name: {0}.",
                         processTemplateName)
             };
-            LogFactInformation(fact, "ProcessTemplateCreated");
+            LogFactInformation(fact, "RouteCreated");
             SaveFact(fact);
         }
 
@@ -489,7 +489,7 @@ namespace Core.Managers
             LogFactInformation(fact, fact.SecondaryCategory + " " + fact.Activity);
         }
 
-        public void UserRegistered(DockyardAccountDO curUser)
+        public void UserRegistered(Fr8AccountDO curUser)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -631,11 +631,11 @@ namespace Core.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogEventProcessLaunched(ProcessDO launchedProcess)
+        private void LogEventProcessLaunched(ContainerDO launchedProcess)
         {
             var fact = new FactDO
             {
-                CustomerId = launchedProcess.DockyardAccountId,
+                CustomerId = launchedProcess.Fr8AccountId,
                 Data = launchedProcess.Id.ToStr(),
                 ObjectId = launchedProcess.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
@@ -648,15 +648,15 @@ namespace Core.Managers
 
         private void LogEventProcessNodeCreated(ProcessNodeDO processNode)
         {
-            ProcessDO processInExecution;
+            ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                processInExecution = uow.ProcessRepository.GetByKey(processNode.ParentProcessId);
+                processInExecution = uow.ContainerRepository.GetByKey(processNode.ParentContainerId);
             }
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
+                CustomerId = processInExecution != null ? processInExecution.Fr8AccountId : "unknown",
                 Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = processNode.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
@@ -669,15 +669,15 @@ namespace Core.Managers
 
         private void LogEventCriteriaEvaluationStarted(int processId)
         {
-            ProcessDO processInExecution;
+            ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                processInExecution = uow.ProcessRepository.GetByKey(processId);
+                processInExecution = uow.ContainerRepository.GetByKey(processId);
             }
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
+                CustomerId = processInExecution != null ? processInExecution.Fr8AccountId : "unknown",
                 Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = null,
                 PrimaryCategory = "Process Execution",
@@ -690,15 +690,15 @@ namespace Core.Managers
 
         private void LogEventCriteriaEvaluationFinished(int curProcessId)
         {
-            ProcessDO processInExecution;
+            ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                processInExecution = uow.ProcessRepository.GetByKey(curProcessId);
+                processInExecution = uow.ContainerRepository.GetByKey(curProcessId);
             }
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
+                CustomerId = processInExecution != null ? processInExecution.Fr8AccountId : "unknown",
                 Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = null,
                 PrimaryCategory = "Process Execution",
@@ -711,16 +711,16 @@ namespace Core.Managers
 
         private void LogEventActionStarted(ActionDO curAction)
         {
-            ProcessDO processInExecution;
+            ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                processInExecution = uow.ProcessRepository.GetQuery()
-                    .FirstOrDefault(p => p.CurrentActivityId.Value == curAction.Id);
+                processInExecution = uow.ContainerRepository.GetQuery()
+                    .FirstOrDefault(p => p.CurrentRouteNodeId.Value == curAction.Id);
             }
 
             var fact = new FactDO
             {
-                CustomerId = (processInExecution != null) ? processInExecution.DockyardAccountId : "unknown",
+                CustomerId = (processInExecution != null) ? processInExecution.Fr8AccountId : "unknown",
                 Data = (processInExecution != null) ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
@@ -734,15 +734,15 @@ namespace Core.Managers
         // Commented by Vladimir. DO-1214. If one action can have only one Process?
         private void LogEventActionDispatched(ActionDO curAction, int processId)
         {
-            ProcessDO processInExecution;
+            ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                processInExecution = uow.ProcessRepository.GetByKey(processId);
+                processInExecution = uow.ContainerRepository.GetByKey(processId);
             }
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
+                CustomerId = processInExecution != null ? processInExecution.Fr8AccountId : "unknown",
                 Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
