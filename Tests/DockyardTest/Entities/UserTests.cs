@@ -34,7 +34,7 @@ namespace DockyardTest.Entities
                 
                 uow.AspNetRolesRepository.Add(FixtureData.TestRole());
                 var u = new Fr8AccountDO();
-                var user = new DockyardAccount();
+                var user = new Fr8Account();
 
                 //SETUP                 
 

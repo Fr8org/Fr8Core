@@ -53,15 +53,15 @@ namespace Web.Controllers
         {
             var subrouteDTOList = uow.SubrouteRepository
                 .GetQuery()
-                .Include(x => x.Activities)
-                .Where(x => x.ParentActivityId == curRouteDO.Id)
+                .Include(x => x.RouteNodes)
+                .Where(x => x.ParentRouteNodeId == curRouteDO.Id)
                 .OrderBy(x => x.Id)
                 .ToList()
                 .Select((SubrouteDO x) =>
                 {
                     var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
 
-                    pntDTO.Actions = Enumerable.ToList(x.Activities.Select(Mapper.Map<ActionDTO>));
+                    pntDTO.Actions = Enumerable.ToList(x.RouteNodes.Select(Mapper.Map<ActionDTO>));
 
                     return pntDTO;
                 }).ToList();

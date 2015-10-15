@@ -82,12 +82,12 @@ namespace Core.Services
             var result = _criteria.Evaluate(curEventData, curProcessNode);
             if (result)
             {
-                var activityService = ObjectFactory.GetInstance<IActivity>();
+                var activityService = ObjectFactory.GetInstance<IRouteNode>();
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var curSubroute = uow.SubrouteRepository.GetByKey(curProcessNode.SubrouteId);
-                    ActivityDO currentAction = curSubroute;
+                    RouteNodeDO currentAction = curSubroute;
 
                     do
                     {

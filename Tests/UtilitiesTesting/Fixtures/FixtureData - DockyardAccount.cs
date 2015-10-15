@@ -48,7 +48,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static Fr8AccountDO TestDockyardAccount3()
         {
-            DockyardAccount _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
+            Fr8Account _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return _dockyardAccount.Register(uow, "alexlucre", "Alex", "Lucre1", "alex@123", Roles.Admin);

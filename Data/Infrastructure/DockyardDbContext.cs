@@ -309,11 +309,12 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ActionDO>()
                 .Property(p => p.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
+            modelBuilder.Entity<RouteNodeDO>().ToTable("RouteNodes");
 
-            modelBuilder.Entity<ActivityDO>()
-                .HasOptional(x => x.ParentActivity)
-                .WithMany(x => x.Activities)
-                .HasForeignKey(x => x.ParentActivityId)
+            modelBuilder.Entity<RouteNodeDO>()
+                .HasOptional(x => x.ParentRouteNode)
+                .WithMany(x => x.RouteNodes)
+                .HasForeignKey(x => x.ParentRouteNodeId)
                 .WillCascadeOnDelete(false);
             
             modelBuilder.Entity<TrackingStatusDO>()

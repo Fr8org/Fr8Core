@@ -68,8 +68,8 @@ namespace Core.Services
 
             if (existingActionDO != null)
             {
-                existingActionDO.ParentActivity = submittedActionData.ParentActivity;
-                existingActionDO.ParentActivityId = submittedActionData.ParentActivityId;
+                existingActionDO.ParentRouteNode = submittedActionData.ParentRouteNode;
+                existingActionDO.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
                 existingActionDO.ActivityTemplateId = submittedActionData.ActivityTemplateId;
                 existingActionDO.Name = submittedActionData.Name;
                 existingActionDO.CrateStorage = submittedActionData.CrateStorage;
@@ -163,13 +163,13 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAction = uow.ActivityRepository.GetQuery().FirstOrDefault(al => al.Id == id);
+                var curAction = uow.RouteNodeRepository.GetQuery().FirstOrDefault(al => al.Id == id);
                 if (curAction == null) // Why we add something in Delete method?!!! (Vladimir)
                 {
-                    curAction = new ActivityDO { Id = id };
-                    uow.ActivityRepository.Attach(curAction);
+                    curAction = new RouteNodeDO { Id = id };
+                    uow.RouteNodeRepository.Attach(curAction);
                 }
-                uow.ActivityRepository.Remove(curAction);
+                uow.RouteNodeRepository.Remove(curAction);
                 uow.SaveChanges();
             }
         }
@@ -406,7 +406,7 @@ namespace Core.Services
         /// <returns></returns>
         public Fr8AccountDO GetAccount(ActionDO curActionDO)
         {
-            if (curActionDO.ParentActivity != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
+            if (curActionDO.ParentRouteNode != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
             {
                 // Can't follow guideline to init services inside constructor. 
                 // Current implementation of Route and Action services are not good and are depedant on each other.

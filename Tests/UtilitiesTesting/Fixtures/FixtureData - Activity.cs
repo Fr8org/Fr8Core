@@ -13,167 +13,167 @@ namespace UtilitiesTesting.Fixtures
     partial class FixtureData
     {
 
-        public static ActivityDO TestActivity57()
+        public static RouteNodeDO TestActivity57()
         {
-            return new ActivityDO
+            return new RouteNodeDO
             {
                 Id = 57,
                 Ordering = 2,
-                ParentActivityId = 54
+                ParentRouteNodeId = 54
             };
 
         }
 
-        public static ActivityDO TestActivityNotExists()
+        public static RouteNodeDO TestActivityNotExists()
         {
-            return new ActivityDO
+            return new RouteNodeDO
             {
                 Id = 57,
                 Ordering = 2,
-                ParentActivityId = 54
+                ParentRouteNodeId = 54
             };
 
         }
 
-        public static ActivityDO TestActivityTree()
+        public static RouteNodeDO TestActivityTree()
         {
-            var tree = new ActivityDO
+            var tree = new RouteNodeDO
             {
                 Id = 1,
                 Ordering = 1,
-                Activities = new List<ActivityDO>
+                RouteNodes = new List<RouteNodeDO>
                 {
-                    new ActivityDO
+                    new RouteNodeDO
                     {
                         Id = 23,
                         Ordering = 1,
-                        ParentActivityId = 1
+                        ParentRouteNodeId = 1
                     },
-                    new ActivityDO
+                    new RouteNodeDO
                     {
                         Id = 43,
-                        ParentActivityId = 1,
+                        ParentRouteNodeId = 1,
                         Ordering = 2,
-                        Activities = new List<ActivityDO>
+                        RouteNodes = new List<RouteNodeDO>
                         {
-                            new ActivityDO
+                            new RouteNodeDO
                             {
                                 Id = 44,
                                 Ordering = 1,
-                                ParentActivityId = 43
+                                ParentRouteNodeId = 43
                             },
-                            new ActivityDO
+                            new RouteNodeDO
                             {
                                 Id = 46,
                                 Ordering = 2,
-                                ParentActivityId = 43
+                                ParentRouteNodeId = 43
                             },
-                            new ActivityDO
+                            new RouteNodeDO
                             {
                                 Id = 48,
                                 Ordering = 3,
-                                ParentActivityId = 43
+                                ParentRouteNodeId = 43
                             },
 
                         }
                     },
-                    new ActivityDO
+                    new RouteNodeDO
                     {
                         Id = 52,
                         Ordering = 3,
-                        ParentActivityId = 1,
-                        Activities = new List<ActivityDO>
+                        ParentRouteNodeId = 1,
+                        RouteNodes = new List<RouteNodeDO>
                         {
-                            new ActivityDO
+                            new RouteNodeDO
                             {
                                 Id = 53,
                                 Ordering = 1,
-                                ParentActivityId = 52
+                                ParentRouteNodeId = 52
                             },
-                            new ActivityDO
+                            new RouteNodeDO
                             {
                                 Id = 54,
-                                ParentActivityId = 52,
+                                ParentRouteNodeId = 52,
                                 Ordering = 2,
 
-                                Activities = new List<ActivityDO>
+                                RouteNodes = new List<RouteNodeDO>
                                 {
-                                    new ActivityDO
+                                    new RouteNodeDO
                                     {
                                         Id = 56,
-                                        ParentActivityId = 54,
+                                        ParentRouteNodeId = 54,
                                         Ordering = 1
                                     },
-                                    new ActivityDO
+                                    new RouteNodeDO
                                     {
                                         Id = 57,
-                                        ParentActivityId = 54,
+                                        ParentRouteNodeId = 54,
                                         Ordering = 2
                                     },
-                                    new ActivityDO
+                                    new RouteNodeDO
                                     {
                                         Id = 58,
-                                        ParentActivityId = 54,
+                                        ParentRouteNodeId = 54,
                                         Ordering = 3
                                     },
 
                                 }
                             },
-                            new ActivityDO
+                            new RouteNodeDO
                             {
                                 Id = 55,
-                                ParentActivityId = 52,
+                                ParentRouteNodeId = 52,
                                 Ordering = 3
                             },
 
                         }
                     },
-                    new ActivityDO
+                    new RouteNodeDO
                     {
                         Id = 59,
                         Ordering = 4,
-                        ParentActivityId = 1,
-                        Activities = new List<ActivityDO>
+                        ParentRouteNodeId = 1,
+                        RouteNodes = new List<RouteNodeDO>
                         {
-                            new ActivityDO
+                            new RouteNodeDO
                             {
                                 Id = 60,
-                                ParentActivityId = 59,
+                                ParentRouteNodeId = 59,
                                 Ordering = 1
                             },
-                            new ActivityDO
+                            new RouteNodeDO
                             {
                                 Id = 61,
-                                ParentActivityId = 59,
+                                ParentRouteNodeId = 59,
                                 Ordering = 2,
 
-                                Activities = new List<ActivityDO>
+                                RouteNodes = new List<RouteNodeDO>
                                 {
-                                    new ActivityDO
+                                    new RouteNodeDO
                                     {
                                         Id = 63,
-                                        ParentActivityId = 61,
+                                        ParentRouteNodeId = 61,
                                         Ordering = 1
                                     },
-                                    new ActivityDO
+                                    new RouteNodeDO
                                     {
                                         Id = 64,
-                                        ParentActivityId = 61,
+                                        ParentRouteNodeId = 61,
                                         Ordering = 2
                                     },
-                                    new ActivityDO
+                                    new RouteNodeDO
                                     {
                                         Id = 65,
-                                        ParentActivityId = 61,
+                                        ParentRouteNodeId = 61,
                                         Ordering = 3
                                     },
                                 }
                             },
 
-                            new ActivityDO
+                            new RouteNodeDO
                             {
                                 Id = 62,
-                                ParentActivityId = 59,
+                                ParentRouteNodeId = 59,
                                 Ordering = 3
                             },
                         },
@@ -188,30 +188,30 @@ namespace UtilitiesTesting.Fixtures
 
         }
 
-        private static void FixParentActivityReferences(ActivityDO root)
+        private static void FixParentActivityReferences(RouteNodeDO root)
         {
-            var activitiesIndex = new Dictionary<int, ActivityDO>();
+            var activitiesIndex = new Dictionary<int, RouteNodeDO>();
 
             TraverseActivityTree(root, activitiesIndex);
 
             foreach (var activityDo in activitiesIndex.Values)
             {
-                ActivityDO temp = null;
+                RouteNodeDO temp = null;
 
-                if (activityDo.ParentActivityId != null)
+                if (activityDo.ParentRouteNodeId != null)
                 {
-                    activitiesIndex.TryGetValue(activityDo.ParentActivityId.Value, out temp);
+                    activitiesIndex.TryGetValue(activityDo.ParentRouteNodeId.Value, out temp);
                 }
 
-                activityDo.ParentActivity = temp;
+                activityDo.ParentRouteNode = temp;
             }
         }
 
-        private static void TraverseActivityTree(ActivityDO root, Dictionary<int, ActivityDO> allActivities)
+        private static void TraverseActivityTree(RouteNodeDO root, Dictionary<int, RouteNodeDO> allActivities)
         {
             allActivities.Add(root.Id, root);
 
-            foreach (var activityDo in root.Activities)
+            foreach (var activityDo in root.RouteNodes)
             {
                 TraverseActivityTree(activityDo, allActivities);
             }

@@ -65,7 +65,7 @@ namespace DockyardTest.Services
                 Assert.AreNotEqual(result.Id, 0);
                 Assert.NotNull(result.StartingSubroute);
                 Assert.AreEqual(result.Subroutes.Count(), 1);
-                Assert.AreEqual(result.StartingSubroute.Activities.Count, 2);
+                Assert.AreEqual(result.StartingSubroute.RouteNodes.Count, 2);
             }
         }
 

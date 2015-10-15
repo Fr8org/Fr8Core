@@ -38,7 +38,7 @@ namespace UtilitiesTesting.Fixtures
 				Id = 1,
 				Name = "Process 1",
                 RouteId = processTemplateId,
-				DockyardAccountId = "testuser",
+				Fr8AccountId = "testuser",
 				ContainerState = ContainerState.Executing
 			});
 
@@ -47,7 +47,7 @@ namespace UtilitiesTesting.Fixtures
 				Id = 2,
 				Name = "Process 2",
                 RouteId = processTemplateId,
-				DockyardAccountId = "testuser",
+				Fr8AccountId = "testuser",
 				ContainerState = ContainerState.Executing
 			});
 
@@ -56,7 +56,7 @@ namespace UtilitiesTesting.Fixtures
 				Id = 3,
 				Name = "Process 3",
                 RouteId = processTemplateId,
-				DockyardAccountId = "testuser",
+				Fr8AccountId = "testuser",
 				ContainerState = ContainerState.Unstarted
 			});
 
@@ -65,7 +65,7 @@ namespace UtilitiesTesting.Fixtures
 				Id = 4,
 				Name = "Process 4",
                 RouteId = processTemplateId,
-				DockyardAccountId = "anotheruser",
+				Fr8AccountId = "anotheruser",
 				ContainerState = ContainerState.Unstarted
 			});
 
@@ -112,8 +112,8 @@ namespace UtilitiesTesting.Fixtures
             process.RouteId = TestRoute2().Id;
             process.ContainerState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
-            process.CurrentActivity = FixtureData.TestAction7();
-				process.NextActivity = FixtureData.TestAction10();
+            process.CurrentRouteNode = FixtureData.TestAction7();
+				process.NextRouteNode = FixtureData.TestAction10();
             return process;
         }
 
@@ -124,7 +124,7 @@ namespace UtilitiesTesting.Fixtures
             process.RouteId = TestRoute2().Id;
             process.ContainerState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
-            process.CurrentActivity = null;
+            process.CurrentRouteNode = null;
             return process;
         }
 
@@ -135,8 +135,8 @@ namespace UtilitiesTesting.Fixtures
             process.RouteId = TestRoute2().Id;
             process.ContainerState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
-            process.CurrentActivity = FixtureData.TestAction7();
-            process.NextActivity = FixtureData.TestAction7();
+            process.CurrentRouteNode = FixtureData.TestAction7();
+            process.NextRouteNode = FixtureData.TestAction7();
             return process;
         }
 
@@ -147,8 +147,8 @@ namespace UtilitiesTesting.Fixtures
             process.RouteId = TestRoute2().Id;
             process.ContainerState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
-            process.CurrentActivity = FixtureData.TestAction7();
-            process.NextActivity = null;
+            process.CurrentRouteNode = FixtureData.TestAction7();
+            process.NextRouteNode = null;
             return process;
         }
 
@@ -159,8 +159,8 @@ namespace UtilitiesTesting.Fixtures
             process.RouteId = TestRoute2().Id;
             process.ContainerState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
-            process.CurrentActivity = FixtureData.TestAction8(null);
-            process.NextActivity = null;
+            process.CurrentRouteNode = FixtureData.TestAction8(null);
+            process.NextRouteNode = null;
             return process;
         }
 
