@@ -20,7 +20,7 @@ namespace DockyardTest.Services
     [Category("ProcessExecute")]
     public class ProcessExecuteTests: BaseTest
     {
-        private IProcess _process;
+        private IContainerService _process;
 
         [SetUp]
         //constructor method as it is run at the test start
@@ -28,7 +28,7 @@ namespace DockyardTest.Services
         {
             base.SetUp();
 
-            _process = ObjectFactory.GetInstance<IProcess>();
+            _process = ObjectFactory.GetInstance<IContainerService>();
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace DockyardTest.Services
             //The CurrentActivity value is already set to null and pass it immediately to service
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                await _process.Execute(uow, FixtureData.TestProcessCurrentActivityNULL());
+                await _process.Execute(uow, FixtureData.TestContainerCurrentActivityNULL());
             }
         }
 
@@ -145,7 +145,7 @@ namespace DockyardTest.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = FixtureData.TestProcessExecute();
+                var processDO = FixtureData.TestContainerExecute();
                 var currAction = FixtureData.TestAction4();
                 currAction.CrateStorage = crateStorage;
                 var nextAction = FixtureData.TestAction5();
@@ -175,7 +175,7 @@ namespace DockyardTest.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = FixtureData.TestProcessExecute();
+                var processDO = FixtureData.TestContainerExecute();
                 var currActivity = FixtureData.TestActionTreeWithActionTemplates();
                 
                 processDO.CurrentActivity = currActivity;

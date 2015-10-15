@@ -13,7 +13,7 @@ namespace Core.Interfaces
 
         List<ActivityDO> GetDownstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO);
 
-        Task Process(int curActivityId, ProcessDO curProcessDO);
+        Task Process(int curActivityId, ContainerDO curProcessDO);
 
         IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IDockyardAccountDO curAccount);
 

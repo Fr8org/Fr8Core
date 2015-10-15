@@ -48,7 +48,7 @@ namespace Data.Migrations
                 
                 if (add)
                 {
-                    process = new ProcessDO();
+                    process = new ContainerDO();
                 }
 
                 ConfigureProcess(process);
@@ -88,11 +88,11 @@ namespace Data.Migrations
 
             
 
-            private void ConfigureProcess(ProcessDO process)
+            private void ConfigureProcess(ContainerDO process)
             {
                 process.Name = _name;
                 process.RouteId = _ptId;
-                process.ProcessState = ProcessState.Executing;
+                process.ContainerState = ContainerState.Executing;
 
                 process.CrateStorage = JsonConvert.SerializeObject(new
                 {

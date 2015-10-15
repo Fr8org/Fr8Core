@@ -199,8 +199,8 @@ namespace Core.Services
 //
 //            return curAction;
 //        }
-
-        public async Task PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
+            
+        public async Task PrepareToExecute(ActionDO curAction, ContainerDO curProcessDO, IUnitOfWork uow)
         {
                 EventManager.ActionStarted(curAction);
 
@@ -216,7 +216,7 @@ namespace Core.Services
         }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
-        public async Task<PayloadDTO> Execute(ActionDO curActionDO, ProcessDO curProcessDO)
+        public async Task<PayloadDTO> Execute(ActionDO curActionDO, ContainerDO curProcessDO)
         {
             if (curActionDO == null)
             {

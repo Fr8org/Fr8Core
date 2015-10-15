@@ -185,7 +185,7 @@ namespace DockyardTest.Services
 //        {
 //            ActionDO actionDo = FixtureData.TestAction9();
 //            Action _action = ObjectFactory.GetInstance<Action>();
-//            ProcessDO procesDo = FixtureData.TestProcess1();
+//            ProcessDO procesDo = FixtureData.TestContainer1();
 //
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
@@ -257,7 +257,7 @@ namespace DockyardTest.Services
             PluginTransmitterMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>()))
                 .Returns(() => Task.FromResult<string>(JsonConvert.SerializeObject(actionDto)));
 
-            ProcessDO procesDO = FixtureData.TestProcess1();
+            ContainerDO procesDO = FixtureData.TestContainer1();
 
             //Act
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -370,7 +370,7 @@ namespace DockyardTest.Services
             }
 
             Action _action = ObjectFactory.GetInstance<Action>();
-            ProcessDO processDo = FixtureData.TestProcess1();
+            ContainerDO processDo = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
             var executeActionMock = new Mock<IAction>();
             executeActionMock.Setup(s => s.Execute(actionDo, processDo)).Returns<Task<PayloadDTO>>(null);
@@ -400,7 +400,7 @@ namespace DockyardTest.Services
             }
 
             IAction _action = ObjectFactory.GetInstance<IAction>();
-            ProcessDO processDo = FixtureData.TestProcess1();
+            ContainerDO processDo = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -434,7 +434,7 @@ namespace DockyardTest.Services
 
 
             Action _action = ObjectFactory.GetInstance<Action>();
-            ProcessDO procesDo = FixtureData.TestProcess1();
+            ContainerDO procesDo = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

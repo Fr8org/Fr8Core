@@ -17,13 +17,13 @@ namespace Core.Services
     public class DockyardEvent : IDockyardEvent
     {
         private readonly IRoute _route;
-        private readonly IProcess _process;
+        private readonly Core.Interfaces.IContainerService _process;
         private readonly ICrate _crate;
 
         public DockyardEvent()
         {
             _route = ObjectFactory.GetInstance<IRoute>();
-            _process = ObjectFactory.GetInstance<IProcess>();
+            _process = ObjectFactory.GetInstance<Core.Interfaces.IContainerService>();
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 

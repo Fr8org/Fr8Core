@@ -72,7 +72,7 @@ namespace Data.Infrastructure
         //public static event BookingRequestMergedHandler AlertBookingRequestMerged;
 
         //EventProcessRequestReceived 
-        public delegate void EventProcessRequestReceivedHandler(ProcessDO processId);
+        public delegate void EventProcessRequestReceivedHandler(ContainerDO processId);
         public static event EventProcessRequestReceivedHandler EventProcessRequestReceived;
 
         public delegate void OAuthEventHandler(string userId);
@@ -86,7 +86,7 @@ namespace Data.Infrastructure
         public delegate void EventDocuSignNotificationReceivedHandler();
         public static event EventDocuSignNotificationReceivedHandler EventDocuSignNotificationReceived;
 
-        public delegate void EventProcessLaunchedHandler(ProcessDO launchedProcess);
+        public delegate void EventProcessLaunchedHandler(ContainerDO launchedProcess);
         public static event EventProcessLaunchedHandler EventProcessLaunched;
 
         public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
@@ -339,7 +339,7 @@ namespace Data.Infrastructure
             if (handler != null) handler();
         }
 
-        public static void ProcessLaunched(ProcessDO launchedProcess)
+        public static void ProcessLaunched(ContainerDO launchedProcess)
         {
             var handler = EventProcessLaunched;
             if (handler != null) handler(launchedProcess);
@@ -404,7 +404,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(action);
         }
 
-        public static void ProcessRequestReceived(ProcessDO process)
+        public static void ProcessRequestReceived(ContainerDO process)
         {
             var handler = EventProcessRequestReceived;
             if (handler != null) handler(process);

@@ -11,9 +11,9 @@ using System;
 
 namespace Data.Entities
 {
-    public class ProcessDO : BaseDO
+    public class ContainerDO : BaseDO
     {
-        public ProcessDO()
+        public ContainerDO()
         {
             ProcessNodes = new List<ProcessNodeDO>();
         }
@@ -32,10 +32,10 @@ namespace Data.Entities
         public virtual ICollection<ProcessNodeDO> ProcessNodes { get; set; }
             
         [Required]
-        [ForeignKey("ProcessStateTemplate")]
-        public int ProcessState { get; set; }
+        [ForeignKey("ContainerStateTemplate")]
+        public int ContainerState { get; set; }
               
-        public virtual _ProcessStateTemplate ProcessStateTemplate { get; set; }
+        public virtual _ContainerStateTemplate ContainerStateTemplate { get; set; }
 
         [ForeignKey("CurrentActivity")]
         public int? CurrentActivityId { get; set; }

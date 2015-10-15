@@ -98,12 +98,12 @@ namespace UtilitiesTesting.Fixtures
 
                 var actionTemplate = ActionTemplate();
 
-                var processDo = new ProcessDO()
+                var processDo = new ContainerDO()
                 {
                     Id = 1,
                     CrateStorage = EnvelopeIdCrateJson(),
                     RouteId = processTemplateDO.Id,
-                    ProcessState = 1
+                    ContainerState = 1
                 };
                 uow.ProcessRepository.Add(processDo);
 
