@@ -17,15 +17,15 @@ namespace Web.Controllers
     [RoutePrefix("activities")]
 	public class ActivitiesController : ApiController
 	{
-      	private readonly IActivity _activity;
+      	private readonly IRouteNode _activity;
 
 		public ActivitiesController()
 		{
-			_activity = ObjectFactory.GetInstance<IActivity>();
+			_activity = ObjectFactory.GetInstance<IRouteNode>();
 		}
 
 		[Route("upstream")]
-		[ResponseType(typeof(List<ActivityDO>))]
+		[ResponseType(typeof(List<RouteNodeDO>))]
 		public IHttpActionResult GetUpstreamActivities(int id)
 		{
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -37,7 +37,7 @@ namespace Web.Controllers
 		}
 
         [Route("downstream")]
-		[ResponseType(typeof(List<ActivityDO>))]
+		[ResponseType(typeof(List<RouteNodeDO>))]
 		public IHttpActionResult GetDownstreamActivities(int id)
 		{
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

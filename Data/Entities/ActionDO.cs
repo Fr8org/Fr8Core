@@ -10,7 +10,7 @@ using System;
 
 namespace Data.Entities
 {
-    public class ActionDO : ActivityDO
+    public class ActionDO : RouteNodeDO
 	{
         public string Name { get; set; }
 

@@ -15,7 +15,7 @@ using StructureMap;
 
 namespace Core.Services
 {
-	public class Activity : IActivity
+	public class RouteNode : IRouteNode
 	{
         #region Fields
 
@@ -23,15 +23,15 @@ namespace Core.Services
 
         #endregion
 
-        public Activity()
+        public RouteNode()
 		{
             _action = ObjectFactory.GetInstance<IAction>();
 		}
         
         //This builds a list of an activity and all of its descendants, over multiple levels
-	    public List<ActivityDO> GetActivityTree(IUnitOfWork uow, ActivityDO curActivity)
+	    public List<RouteNodeDO> GetActivityTree(IUnitOfWork uow, RouteNodeDO curActivity)
 	    {
-	        var curList = new List<ActivityDO>();
+	        var curList = new List<RouteNodeDO>();
 	        curList.Add(curActivity);
             var childActivities = GetChildren(uow, curActivity);
 	        foreach (var child in childActivities)
@@ -41,22 +41,22 @@ namespace Core.Services
 	        return curList;
 	    }
 
-        public List<ActivityDO> GetUpstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO)
+        public List<RouteNodeDO> GetUpstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO)
 		{
 			if (curActivityDO == null)
 				throw new ArgumentNullException("curActivityDO");
-            if (curActivityDO.ParentActivityId == null)
-                return new List<ActivityDO>();
+            if (curActivityDO.ParentRouteNodeId == null)
+                return new List<RouteNodeDO>();
 
-			List<ActivityDO> upstreamActivities = new List<ActivityDO>();
+			List<RouteNodeDO> upstreamActivities = new List<RouteNodeDO>();
 
                 //start by getting the parent of the current action
-                var parentActivity = uow.ActivityRepository.GetByKey(curActivityDO.ParentActivityId);
+                var parentActivity = uow.RouteNodeRepository.GetByKey(curActivityDO.ParentRouteNodeId);
 
 
 				// find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
 				var upstreamSiblings =
-				    parentActivity.Activities.Where(a => a.Ordering < curActivityDO.Ordering);
+				    parentActivity.RouteNodes.Where(a => a.Ordering < curActivityDO.Ordering);
                         
                 //for each such sibling action, we want to add it to the list
                 //but some of those activities may be actionlists with childactivities of their own
@@ -80,20 +80,20 @@ namespace Core.Services
             return upstreamActivities; //should never actually get here, but the compiler insists
 		}
 
-	    public List<ActivityDO> GetDownstreamActivities(IUnitOfWork uow, ActivityDO curActivity)
+	    public List<RouteNodeDO> GetDownstreamActivities(IUnitOfWork uow, RouteNodeDO curActivity)
 	    {
 	        if (curActivity == null)
 	            throw new ArgumentNullException("curActivity");
-	        if (curActivity.ParentActivityId == null)
-	            return new List<ActivityDO>();
+	        if (curActivity.ParentRouteNodeId == null)
+	            return new List<RouteNodeDO>();
 
-	        List<ActivityDO> downstreamList = new List<ActivityDO>();
+	        List<RouteNodeDO> downstreamList = new List<RouteNodeDO>();
 
 	        //start by getting the parent of the current action
-	        var parentActivity = uow.ActivityRepository.GetByKey(curActivity.ParentActivityId);
+	        var parentActivity = uow.RouteNodeRepository.GetByKey(curActivity.ParentRouteNodeId);
 
 	        // find all sibling actions that have a higher Ordering. These are the ones that are "below" or downstream of this action in the list
-	        var downstreamSiblings = parentActivity.Activities.Where(a => a.Ordering > curActivity.Ordering);
+	        var downstreamSiblings = parentActivity.RouteNodes.Where(a => a.Ordering > curActivity.Ordering);
 
 	        //for each such sibling action, we want to add it to the list
 	        //but some of those activities may be actionlists with childactivities of their own
@@ -115,28 +115,28 @@ namespace Core.Services
 	        return downstreamList;
 	    }
 
-        public ActivityDO GetNextActivity(ActivityDO currentActivity, ActivityDO root)
+        public RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, RouteNodeDO root)
 		{
 	        return GetNextActivity(currentActivity, true, root);
 	    }
 
-        private ActivityDO GetNextActivity(ActivityDO currentActivity, bool depthFirst, ActivityDO root)
+        private RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, bool depthFirst, RouteNodeDO root)
 		    {
             // Move to the first child if current activity has nested ones
-            if (depthFirst && currentActivity.Activities.Count != 0)
+            if (depthFirst && currentActivity.RouteNodes.Count != 0)
             {
-                return currentActivity.Activities.OrderBy(x => x.Ordering).FirstOrDefault();
+                return currentActivity.RouteNodes.OrderBy(x => x.Ordering).FirstOrDefault();
             }
 		   
             // Move to the next activity of the current activity's parent
-            if (currentActivity.ParentActivity == null)
+            if (currentActivity.ParentRouteNode == null)
             {
                 // We are at the root of activity tree. Next activity can be only among children.
                 return null;
 		}
 
             var prev = currentActivity;
-            var nextCandidate = currentActivity.ParentActivity.Activities
+            var nextCandidate = currentActivity.ParentRouteNode.RouteNodes
                 .OrderBy(x => x.Ordering)
                 .FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
             
@@ -155,15 +155,15 @@ namespace Core.Services
             {
                     return null;
                 }
-                nextCandidate = GetNextActivity(prev.ParentActivity, false, root); 
+                nextCandidate = GetNextActivity(prev.ParentRouteNode, false, root); 
             }
 
             return nextCandidate;
         }
 
-        public void Delete (IUnitOfWork uow, ActivityDO activity)
+        public void Delete (IUnitOfWork uow, RouteNodeDO activity)
         {
-            var activities = new List<ActivityDO>();
+            var activities = new List<RouteNodeDO>();
 
             TraverseActivity(activity, activities.Add);
 
@@ -180,22 +180,22 @@ namespace Core.Services
                 }
                 }
 
-                uow.ActivityRepository.Remove(x);
+                uow.RouteNodeRepository.Remove(x);
             });
             }
 
-        private static void TraverseActivity(ActivityDO parent, Action<ActivityDO> visitAction)
+        private static void TraverseActivity(RouteNodeDO parent, Action<RouteNodeDO> visitAction)
         {
             visitAction(parent);
-            foreach (ActivityDO child in parent.Activities)
+            foreach (RouteNodeDO child in parent.RouteNodes)
                 TraverseActivity(child, visitAction);
         }
 
-	    private IEnumerable<ActivityDO> GetChildren(IUnitOfWork uow, ActivityDO currActivity)
+	    private IEnumerable<RouteNodeDO> GetChildren(IUnitOfWork uow, RouteNodeDO currActivity)
         {
                 // Get all activities which parent is currActivity and order their by Ordering. The order is important!
-                var orderedActivities = uow.ActivityRepository.GetAll()
-                .Where(x => x.ParentActivityId == currActivity.Id)
+                var orderedActivities = uow.RouteNodeRepository.GetAll()
+                .Where(x => x.ParentRouteNodeId == currActivity.Id)
                 .OrderBy(z => z.Ordering);
                 return orderedActivities;
             }
@@ -204,8 +204,8 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessDO = uow.ProcessRepository.GetByKey(processDO.Id);
-                var curActivityDO = uow.ActivityRepository.GetByKey(curActivityId);
+                var curProcessDO = uow.ContainerRepository.GetByKey(processDO.Id);
+                var curActivityDO = uow.RouteNodeRepository.GetByKey(curActivityId);
 
                 if (curActivityDO == null)
                 {
@@ -220,7 +220,7 @@ namespace Core.Services
         }
         }
 
-        public IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IDockyardAccountDO curAccount)
+        public IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount)
         {
             List<ActivityTemplateDO> curActivityTemplates;
 
@@ -239,7 +239,7 @@ namespace Core.Services
             return curActivityTemplates;
         }
 
-	    public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IDockyardAccountDO curAccount)
+	    public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IFr8AccountDO curAccount)
 	    {
             //TODO make this function use curAccount !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             List<ActivityTemplateCategoryDTO> curActivityTemplates;

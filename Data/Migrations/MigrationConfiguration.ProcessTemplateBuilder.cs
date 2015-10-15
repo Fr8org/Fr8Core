@@ -42,7 +42,7 @@ namespace Data.Migrations
             {
                 StoreTemplate(uow);
 
-                var process = uow.ProcessRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
+                var process = uow.ContainerRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
 
                 var add = process == null;
                 
@@ -55,7 +55,7 @@ namespace Data.Migrations
 
                 if (add)
                 {
-                    uow.ProcessRepository.Add(process);
+                    uow.ContainerRepository.Add(process);
                 }
             }
 

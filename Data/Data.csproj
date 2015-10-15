@@ -193,7 +193,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\ManifestIdEnum.cs" />
-    <Compile Include="Entities\ActivityDO.cs" />
+    <Compile Include="Entities\RouteNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
     <Compile Include="Entities\MT_Field.cs" />
@@ -298,8 +298,16 @@
     <Compile Include="Migrations\201510150528051_FixUp_Migration.Designer.cs">
       <DependentUpon>201510150528051_FixUp_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510150812534_Rename_DockyardAccount_To_Fr8Account_Migration.cs" />
+    <Compile Include="Migrations\201510150812534_Rename_DockyardAccount_To_Fr8Account_Migration.Designer.cs">
+      <DependentUpon>201510150812534_Rename_DockyardAccount_To_Fr8Account_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510151001212_Rename_Activity_To_RouteNode_Migration.cs" />
+    <Compile Include="Migrations\201510151001212_Rename_Activity_To_RouteNode_Migration.Designer.cs">
+      <DependentUpon>201510151001212_Rename_Activity_To_RouteNode_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
-    <Compile Include="Repositories\ActivityRepository.cs" />
+    <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
     <Compile Include="Repositories\MTFieldRepository.cs" />
@@ -357,7 +365,7 @@
     <Compile Include="Repositories\SubrouteRepository.cs" />
     <Compile Include="Repositories\RouteRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
-    <Compile Include="Repositories\ProcessRepository.cs" />
+    <Compile Include="Repositories\ContainerRepository.cs" />
     <Compile Include="Repositories\MetaflowRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
@@ -466,10 +474,10 @@
     <Compile Include="Entities\EmailDO.cs" />
     <Compile Include="Entities\EmailAddressDO.cs" />
     <Compile Include="Interfaces\IAttachmentDO.cs" />
-    <Compile Include="Interfaces\IDockyardAccountDO.cs" />
+    <Compile Include="Interfaces\IFr8AccountDO.cs" />
     <Compile Include="Entities\InstructionDO.cs" />
     <Compile Include="Entities\StoredFileDO.cs" />
-    <Compile Include="Entities\DockyardAccountDO.cs" />
+    <Compile Include="Entities\Fr8AccountDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\TrackingStatusRepository.cs" />
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
@@ -530,6 +538,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510150528051_FixUp_Migration.resx">
       <DependentUpon>201510150528051_FixUp_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510150812534_Rename_DockyardAccount_To_Fr8Account_Migration.resx">
+      <DependentUpon>201510150812534_Rename_DockyardAccount_To_Fr8Account_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510151001212_Rename_Activity_To_RouteNode_Migration.resx">
+      <DependentUpon>201510151001212_Rename_Activity_To_RouteNode_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

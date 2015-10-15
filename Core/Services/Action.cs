@@ -68,8 +68,8 @@ namespace Core.Services
 
             if (existingActionDO != null)
             {
-                existingActionDO.ParentActivity = submittedActionData.ParentActivity;
-                existingActionDO.ParentActivityId = submittedActionData.ParentActivityId;
+                existingActionDO.ParentRouteNode = submittedActionData.ParentRouteNode;
+                existingActionDO.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
                 existingActionDO.ActivityTemplateId = submittedActionData.ActivityTemplateId;
                 existingActionDO.Name = submittedActionData.Name;
                 existingActionDO.CrateStorage = submittedActionData.CrateStorage;
@@ -163,13 +163,13 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAction = uow.ActivityRepository.GetQuery().FirstOrDefault(al => al.Id == id);
+                var curAction = uow.RouteNodeRepository.GetQuery().FirstOrDefault(al => al.Id == id);
                 if (curAction == null) // Why we add something in Delete method?!!! (Vladimir)
                 {
-                    curAction = new ActivityDO { Id = id };
-                    uow.ActivityRepository.Attach(curAction);
+                    curAction = new RouteNodeDO { Id = id };
+                    uow.RouteNodeRepository.Attach(curAction);
                 }
-                uow.ActivityRepository.Remove(curAction);
+                uow.RouteNodeRepository.Remove(curAction);
                 uow.SaveChanges();
             }
         }
@@ -240,7 +240,7 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                DockyardAccountDO curDockyardAccountDO = GetAccount(curActionDO);
+                Fr8AccountDO curDockyardAccountDO = GetAccount(curActionDO);
                 var curPlugin = curActionDO.ActivityTemplate.Plugin;
                 string curToken = string.Empty;
 
@@ -259,7 +259,7 @@ namespace Core.Services
             }
         }
 
-        public async Task AuthenticateInternal(DockyardAccountDO account, PluginDO plugin,
+        public async Task AuthenticateInternal(Fr8AccountDO account, PluginDO plugin,
             string username, string password)
         {
             if (!plugin.RequiresAuthentication)
@@ -350,7 +350,7 @@ namespace Core.Services
         }
 
         public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl(
-            DockyardAccountDO user, PluginDO plugin)
+            Fr8AccountDO user, PluginDO plugin)
         {
             if (!plugin.RequiresAuthentication)
             {
@@ -404,15 +404,15 @@ namespace Core.Services
         /// </summary>
         /// <param name="curActionDO"></param>
         /// <returns></returns>
-        public DockyardAccountDO GetAccount(ActionDO curActionDO)
+        public Fr8AccountDO GetAccount(ActionDO curActionDO)
         {
-            if (curActionDO.ParentActivity != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
+            if (curActionDO.ParentRouteNode != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
             {
                 // Can't follow guideline to init services inside constructor. 
                 // Current implementation of Route and Action services are not good and are depedant on each other.
                 // Initialization of services in constructor will cause stack overflow
                 var route = ObjectFactory.GetInstance<IRoute>().GetRoute(curActionDO);
-                return route != null ? route.DockyardAccount : null;
+                return route != null ? route.Fr8Account : null;
             }
 
             return null;
@@ -534,7 +534,7 @@ namespace Core.Services
                     // Current implementation of Route and Action services are not good and are depedant on each other.
                     // Initialization of services in constructor will cause stack overflow
                     var route = ObjectFactory.GetInstance<IRoute>().GetRoute(action);
-                    var dockyardAccount =  route != null ? route.DockyardAccount : null;
+                    var dockyardAccount = route != null ? route.Fr8Account : null;
                     
                     if (dockyardAccount == null)
                     {

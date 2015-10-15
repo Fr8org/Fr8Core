@@ -9,7 +9,7 @@ using Data.Validations;
 using FluentValidation;
 namespace Data.Entities
 {
-    public class SubrouteDO : ActivityDO
+    public class SubrouteDO : RouteNodeDO
     {
         public SubrouteDO()
         {
@@ -41,7 +41,7 @@ namespace Data.Entities
         [NotMapped]
         public RouteDO Route
         {
-            get { return (RouteDO) ParentActivity; }
+            get { return (RouteDO) ParentRouteNode; }
         }
 
         public override string ToString()
