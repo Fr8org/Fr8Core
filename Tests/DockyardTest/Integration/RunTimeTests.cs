@@ -32,7 +32,7 @@ namespace DockyardTest.Integration
                 });
 
                 //create a registered account
-                DockyardAccount _account = new DockyardAccount();              
+                Fr8Account _account = new Fr8Account();              
                 var registeredAccount = _account.Register(uow, "devtester", "dev", "tester", "password", "User");
                 uow.UserRepository.Add(registeredAccount);
                 uow.SaveChanges();

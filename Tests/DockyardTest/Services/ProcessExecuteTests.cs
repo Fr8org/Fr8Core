@@ -150,21 +150,21 @@ namespace DockyardTest.Services
                 currAction.CrateStorage = crateStorage;
                 var nextAction = FixtureData.TestAction5();
                 nextAction.CrateStorage = crateStorage;
-                processDO.CurrentActivity = currAction;
-                processDO.NextActivity = nextAction;
+                processDO.CurrentRouteNode = currAction;
+                processDO.NextRouteNode = nextAction;
 
-                uow.ProcessRepository.Add(processDO);
-                uow.ActivityRepository.Add(currAction);
-                uow.ActivityRepository.Add(nextAction);
+                uow.ContainerRepository.Add(processDO);
+                uow.RouteNodeRepository.Add(currAction);
+                uow.RouteNodeRepository.Add(nextAction);
 
                 uow.SaveChanges();
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = uow.ProcessRepository.GetByKey(49);
+                var processDO = uow.ContainerRepository.GetByKey(49);
                 await _process.Execute(uow, processDO);
 
-                Assert.IsNull(processDO.CurrentActivity);
+                Assert.IsNull(processDO.CurrentRouteNode);
                // Assert.IsNull(processDO.NextActivity);
             }
         }
@@ -178,8 +178,8 @@ namespace DockyardTest.Services
                 var processDO = FixtureData.TestContainerExecute();
                 var currActivity = FixtureData.TestActionTreeWithActionTemplates();
                 
-                processDO.CurrentActivity = currActivity;
-                uow.ProcessRepository.Add(processDO);
+                processDO.CurrentRouteNode = currActivity;
+                uow.ContainerRepository.Add(processDO);
                 
                 AddActionToRepository(uow, currActivity);
                 
@@ -187,24 +187,24 @@ namespace DockyardTest.Services
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = uow.ProcessRepository.GetByKey(49);
+                var processDO = uow.ContainerRepository.GetByKey(49);
                 await _process.Execute(uow, processDO);
 
-                Assert.IsNull(processDO.CurrentActivity);
+                Assert.IsNull(processDO.CurrentRouteNode);
                // Assert.IsNull(processDO.NextActivity);
             }
         }
 
-        private static void AddActionToRepository(IUnitOfWork uow, ActivityDO currActivity)
+        private static void AddActionToRepository(IUnitOfWork uow, RouteNodeDO currActivity)
         {
             if (currActivity == null)
                 return;
           
-            uow.ActivityRepository.Add(currActivity);
+            uow.RouteNodeRepository.Add(currActivity);
 
-            if (currActivity.Activities != null)
+            if (currActivity.RouteNodes != null)
             {
-                foreach (var activity in currActivity.Activities)
+                foreach (var activity in currActivity.RouteNodes)
                     AddActionToRepository(uow, activity);
             }
         }

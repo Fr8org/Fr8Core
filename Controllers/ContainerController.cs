@@ -37,7 +37,7 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessDO = uow.ProcessRepository.GetByKey(id);
+                var curProcessDO = uow.ContainerRepository.GetByKey(id);
                 var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, id);
 
                 EventManager.ProcessRequestReceived(curProcessDO);
@@ -52,7 +52,7 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processIds = uow.ProcessRepository.GetQuery().Where(x=>x.Name == name).Select(x=>x.Id).ToArray();
+                var processIds = uow.ContainerRepository.GetQuery().Where(x=>x.Name == name).Select(x=>x.Id).ToArray();
                 
                 return Json(processIds);
             }

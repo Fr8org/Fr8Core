@@ -113,13 +113,13 @@ namespace Data.Infrastructure
             }
         }
 
-        private IContainerRepository _processRepository;
+        private IContainerRepository _containerRepository;
 
-        public IContainerRepository ProcessRepository
+        public IContainerRepository ContainerRepository
         {
             get
             {
-                return _processRepository ?? (_processRepository = new ContainerRepository(this));
+                return _containerRepository ?? (_containerRepository = new ContainerRepository(this));
             }
         }
         private EmailStatusRepository _emailStatusRepository;
@@ -415,12 +415,12 @@ namespace Data.Infrastructure
             }
         }
 
-	  private ActivityRepository _activityRepository;
-	  public ActivityRepository ActivityRepository
+	  private RouteNodeRepository _routeNodeRepository;
+	  public RouteNodeRepository RouteNodeRepository
 	  {
 		  get
 		  {
-			  return _activityRepository ?? (_activityRepository = new ActivityRepository(this));
+			  return _routeNodeRepository ?? (_routeNodeRepository = new RouteNodeRepository(this));
 		  }
 	  }
       private IRouteRepository _routeRepository;

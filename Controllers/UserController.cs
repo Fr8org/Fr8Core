@@ -26,7 +26,7 @@ namespace Web.Controllers
     public class UserController : ApiController
     {
         private readonly JsonPackager _jsonPackager;
-        private readonly DockyardAccount _dockyardAccount;
+        private readonly Fr8Account _dockyardAccount;
         private readonly IMappingEngine _mappingEngine;
         private readonly Email _email;
 
@@ -34,7 +34,7 @@ namespace Web.Controllers
         {
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();
             _jsonPackager = new JsonPackager();
-            _dockyardAccount = new DockyardAccount();
+            _dockyardAccount = new Fr8Account();
             _email = new Email();
         }
 

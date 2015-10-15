@@ -193,7 +193,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\ManifestIdEnum.cs" />
-    <Compile Include="Entities\ActivityDO.cs" />
+    <Compile Include="Entities\RouteNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
     <Compile Include="Entities\MT_Field.cs" />
@@ -302,8 +302,12 @@
     <Compile Include="Migrations\201510150812534_Rename_DockyardAccount_To_Fr8Account_Migration.Designer.cs">
       <DependentUpon>201510150812534_Rename_DockyardAccount_To_Fr8Account_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510151001212_Rename_Activity_To_RouteNode_Migration.cs" />
+    <Compile Include="Migrations\201510151001212_Rename_Activity_To_RouteNode_Migration.Designer.cs">
+      <DependentUpon>201510151001212_Rename_Activity_To_RouteNode_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
-    <Compile Include="Repositories\ActivityRepository.cs" />
+    <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
     <Compile Include="Repositories\MTFieldRepository.cs" />
@@ -537,6 +541,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510150812534_Rename_DockyardAccount_To_Fr8Account_Migration.resx">
       <DependentUpon>201510150812534_Rename_DockyardAccount_To_Fr8Account_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510151001212_Rename_Activity_To_RouteNode_Migration.resx">
+      <DependentUpon>201510151001212_Rename_Activity_To_RouteNode_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

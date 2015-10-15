@@ -15,7 +15,7 @@ using Utilities;
 
 namespace Core.Services
 {
-    public class DockyardAccount
+    public class Fr8Account
     {
 
         public void UpdatePassword(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO, string password)
@@ -186,9 +186,9 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ProcessRepository.GetQuery().Where
+                return uow.ContainerRepository.GetQuery().Where
                     (r => r.ContainerState == ContainerState.Executing
-                          & r.DockyardAccountId == userId).ToList();
+                          & r.Fr8AccountId == userId).ToList();
             }
         }
 
@@ -217,7 +217,7 @@ namespace Core.Services
                         if (existingUserDO.PasswordHash == null)
                         {
                             //this is an existing implicit user, who sent in a request in the past, had a DockyardAccountDO created, and now is registering. Add the password
-                            new DockyardAccount().UpdatePassword(uow, existingUserDO, password);
+                            new Fr8Account().UpdatePassword(uow, existingUserDO, password);
                             curRegStatus = RegistrationStatus.Successful;
                         }
                         else

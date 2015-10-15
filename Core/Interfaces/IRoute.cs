@@ -11,11 +11,11 @@ namespace Core.Interfaces
 		IList<RouteDO> GetForUser(string userId, bool isAdmin = false, int? id = null,int?status=null);
 		void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool withTemplate);
 		void Delete(IUnitOfWork uow, int id);
-	    ActivityDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute);
+	    RouteNodeDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute);
 
         IList<SubrouteDO> GetSubroutes(RouteDO curRouteDO);
         IList<RouteDO> GetMatchingRoutes(string userId, EventReportCM curEventReport);
-        ActivityDO GetFirstActivity(int curRouteId);
+        RouteNodeDO GetFirstActivity(int curRouteId);
         string Activate(RouteDO curRoute);
         string Deactivate(RouteDO curRoute);
         IEnumerable<ActionDO> GetActions(int id);

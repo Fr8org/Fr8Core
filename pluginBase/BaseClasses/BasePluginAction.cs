@@ -27,7 +27,7 @@ namespace PluginUtilities.BaseClasses
 
         protected IAction Action;
         protected ICrate Crate;
-        protected IActivity Activity;
+        protected IRouteNode Activity;
 
         #endregion
 
@@ -35,7 +35,7 @@ namespace PluginUtilities.BaseClasses
         {
             Crate = ObjectFactory.GetInstance<ICrate>();
             Action = ObjectFactory.GetInstance<IAction>();
-            Activity = ObjectFactory.GetInstance<IActivity>();
+            Activity = ObjectFactory.GetInstance<IRouteNode>();
         }
 
         protected bool IsEmptyAuthToken(ActionDTO actionDTO)
