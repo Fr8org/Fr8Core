@@ -75,7 +75,7 @@ namespace Data.Entities
 
         public virtual _RouteStateTemplate RouteStateTemplate { get; set; }
 
-        public virtual DockyardAccountDO DockyardAccount { get; set; }
+        public virtual Fr8AccountDO Fr8Account { get; set; }
 
         [InverseProperty("Route")]
         public virtual ICollection<ContainerDO> ChildContainers { get; set; }

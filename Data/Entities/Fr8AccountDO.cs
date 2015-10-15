@@ -13,16 +13,16 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Data.Entities
 {
-    public class DockyardAccountDO : IdentityUser, IDockyardAccountDO, ICreateHook, ISaveHook, IModifyHook
+    public class Fr8AccountDO : IdentityUser, IFr8AccountDO, ICreateHook, ISaveHook, IModifyHook
     {
-        public DockyardAccountDO()
+        public Fr8AccountDO()
         {
             Profiles = new List<ProfileDO>();
             Subscriptions = new List<SubscriptionDO>();
             SecurityStamp = Guid.NewGuid().ToString();
         }
 
-        public DockyardAccountDO(EmailAddressDO curEmailAddress) : base()
+        public Fr8AccountDO(EmailAddressDO curEmailAddress) : base()
         {
             EmailAddress = curEmailAddress;
            
@@ -116,13 +116,13 @@ namespace Data.Entities
         }
 
         [NotMapped]
-        IEmailAddressDO IDockyardAccountDO.EmailAddress
+        IEmailAddressDO IFr8AccountDO.EmailAddress
         {
             get { return EmailAddress; }
         }
 
         [NotMapped]
-        IList<ISubscriptionDO> IDockyardAccountDO.Subscriptions
+        IList<ISubscriptionDO> IFr8AccountDO.Subscriptions
         {
             get { return Subscriptions.Cast<ISubscriptionDO>().ToList(); }
             set { Subscriptions = value.Cast<SubscriptionDO>().ToList(); }

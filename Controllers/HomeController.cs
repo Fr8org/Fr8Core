@@ -37,7 +37,7 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                DockyardAccountDO dockyardAccountDO;
+                Fr8AccountDO dockyardAccountDO;
                 if (!String.IsNullOrEmpty(emailAddress))
                 {
                     var emailAddressDO = uow.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress);

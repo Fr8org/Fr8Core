@@ -35,7 +35,7 @@ namespace Data.Infrastructure
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
    
-        public delegate void CustomerCreatedHandler(DockyardAccountDO user);
+        public delegate void CustomerCreatedHandler(Fr8AccountDO user);
         public static event CustomerCreatedHandler AlertCustomerCreated;
 
         public delegate void EmailReceivedHandler(int emailId, string customerId);
@@ -50,7 +50,7 @@ namespace Data.Infrastructure
         public delegate void EmailProcessingHandler(string dateReceived, string errorMessage);
         public static event EmailProcessingHandler AlertEmailProcessingFailure;
 
-        public delegate void UserRegistrationHandler(DockyardAccountDO curUser);
+        public delegate void UserRegistrationHandler(Fr8AccountDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
 
         public delegate void UserRegistrationErrorHandler(Exception ex);
@@ -195,7 +195,7 @@ namespace Data.Infrastructure
 
 
 
-        public static void CustomerCreated(DockyardAccountDO user)
+        public static void CustomerCreated(Fr8AccountDO user)
         {
             if (AlertCustomerCreated != null)
                 AlertCustomerCreated(user);
@@ -253,7 +253,7 @@ namespace Data.Infrastructure
         //    if (handler != null) handler(oldbookingrequests);
         //}
 
-        public static void UserRegistration(DockyardAccountDO curUser)
+        public static void UserRegistration(Fr8AccountDO curUser)
         {
             if (AlertUserRegistration != null)
                 AlertUserRegistration(curUser);

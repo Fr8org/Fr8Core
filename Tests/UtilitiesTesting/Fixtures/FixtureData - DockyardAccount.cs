@@ -11,10 +11,10 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public static DockyardAccountDO TestDockyardAccount1()
+        public static Fr8AccountDO TestDockyardAccount1()
         {
             var curEmailAddressDO = TestEmailAddress1();
-            return new DockyardAccountDO()
+            return new Fr8AccountDO()
             {
                 Id = "testuser1",
                 EmailAddress = curEmailAddressDO,
@@ -22,10 +22,10 @@ namespace UtilitiesTesting.Fixtures
                 State = 1
             };
         }
-        public static DockyardAccountDO TestDockyardAccount2()
+        public static Fr8AccountDO TestDockyardAccount2()
         {
             var curEmailAddressDO = TestEmailAddress2();
-            return new DockyardAccountDO()
+            return new Fr8AccountDO()
             {
                 Id = "testUser1",
                 EmailAddress = curEmailAddressDO,
@@ -34,10 +34,10 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static DockyardAccountDO TestDeveloperAccount()
+        public static Fr8AccountDO TestDeveloperAccount()
         {
             var curEmailAddressDO = TestEmailAddress2();
-            return new DockyardAccountDO()
+            return new Fr8AccountDO()
             {
                 Id = "developerfoo",
                 EmailAddress = curEmailAddressDO,
@@ -46,7 +46,7 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static DockyardAccountDO TestDockyardAccount3()
+        public static Fr8AccountDO TestDockyardAccount3()
         {
             DockyardAccount _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -55,10 +55,10 @@ namespace UtilitiesTesting.Fixtures
             }
         }
 
-        public static DockyardAccountDO TestDockyardAccount4()
+        public static Fr8AccountDO TestDockyardAccount4()
         {
             var curEmailAddressDO = TestEmailAddress1();
-            return new DockyardAccountDO()
+            return new Fr8AccountDO()
             {
                 EmailAddress = curEmailAddressDO,
                 FirstName = "Alex",
