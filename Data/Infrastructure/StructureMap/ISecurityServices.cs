@@ -7,7 +7,7 @@ namespace Data.Infrastructure.StructureMap
 {
     public interface ISecurityServices
     {
-        void Login(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO);
+        void Login(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
         String GetCurrentUser();
         String GetUserName();
         String[] GetRoleNames();

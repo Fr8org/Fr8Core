@@ -56,7 +56,7 @@ namespace Web.Controllers
         public async Task<IHttpActionResult> GetExternalAuthUrl(
             [FromUri(Name = "id")] int activityTemplateId)
         {
-            DockyardAccountDO account;
+            Fr8AccountDO account;
             PluginDO plugin;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -88,7 +88,7 @@ namespace Web.Controllers
         [Route("authenticate")]
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
         {
-            DockyardAccountDO account;
+            Fr8AccountDO account;
             PluginDO plugin;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

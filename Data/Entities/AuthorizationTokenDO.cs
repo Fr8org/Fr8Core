@@ -37,7 +37,7 @@ namespace Data.Entities
 
         [ForeignKey("UserDO")]
         public String UserID { get; set; }
-        public virtual DockyardAccountDO UserDO { get; set; }
+        public virtual Fr8AccountDO UserDO { get; set; }
 
         [ForeignKey("Plugin")]
         public int PluginID { get; set; }

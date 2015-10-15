@@ -147,12 +147,29 @@
     vertical-align: top;
 }
 
+.select-action-category th {
+    background-color: #EBE9F1;
+}
+
+.select-action-category td, 
+.select-action-category th {
+    border: 1px solid #ddd;
+    padding: 5px;
+    width: 200px;
+}
+
+.select-action-category td:hover {
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
 .select-action-list {
     border: 2px solid black;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 200px;
 }
+
 
 .select-action-row {
     cursor: default;
@@ -229,3 +246,13 @@ input[type=radio] + div.nested-controls {
 input[type=radio]:checked + div.nested-controls {
     display: block;
 } 
+
+.page-header-top, .page-header-menu {
+    padding-left: 10px;
+    padding-right: 2%;
+}
+
+.page-header .container{
+    width: 100%;
+    margin: 0;
+}

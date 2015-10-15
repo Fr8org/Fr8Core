@@ -99,7 +99,7 @@ namespace Core.StructureMap
                 For<IContainerService>().Use<ContainerService>();
                 For<ICriteria>().Use<Criteria>();
                 For<IAction>().Use<Action>();
-				For<IActivity>().Use<Activity>();
+				For<IRouteNode>().Use<RouteNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
                 For<ISubroute>().Use<Subroute>();
@@ -147,7 +147,7 @@ namespace Core.StructureMap
                 For<ICriteria>().Use<Criteria>();
                 For<ISubscription>().Use<Subscription>();
                 For<IAction>().Use<Action>();
-					 For<IActivity>().Use<Activity>();
+					 For<IRouteNode>().Use<RouteNode>();
 
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IRoute>().Use<Route>();

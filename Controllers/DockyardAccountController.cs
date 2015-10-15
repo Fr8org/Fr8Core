@@ -48,11 +48,11 @@ namespace Web.Controllers
     [DockyardAuthorize]
     public class DockyardAccountController : Controller
     {
-        private readonly DockyardAccount _account;
+        private readonly Fr8Account _account;
 
         public DockyardAccountController()
         {
-            _account = ObjectFactory.GetInstance<DockyardAccount>();
+            _account = ObjectFactory.GetInstance<Fr8Account>();
         }
 
         [AllowAnonymous]
@@ -162,7 +162,7 @@ namespace Web.Controllers
 
                     string username = model.Email.Trim();
                     LoginStatus curLoginStatus =
-                        await new DockyardAccount().ProcessLoginRequest(username, model.Password, model.RememberMe);
+                        await new Fr8Account().ProcessLoginRequest(username, model.Password, model.RememberMe);
                     switch (curLoginStatus)
                     {
                         case LoginStatus.InvalidCredential:
@@ -225,7 +225,7 @@ Please register first.");
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    DockyardAccountDO curDockyardAccountDO = uow.UserRepository.FindOne(u => u.Id == userId);
+                    Fr8AccountDO curDockyardAccountDO = uow.UserRepository.FindOne(u => u.Id == userId);
                     if (curDockyardAccountDO != null)
                     {
                         curDockyardAccountDO.EmailConfirmed = true;

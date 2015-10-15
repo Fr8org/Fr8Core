@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 
 namespace Data.Entities
 {
-    public class RouteDO : ActivityDO
+    public class RouteDO : RouteNodeDO
     {
         public RouteDO()
         {
@@ -37,7 +37,7 @@ namespace Data.Entities
         {
             get
             {
-                var startingSubroute = Activities.OfType<SubrouteDO>().SingleOrDefault(pnt => pnt.StartingSubroute == true);
+                var startingSubroute = RouteNodes.OfType<SubrouteDO>().SingleOrDefault(pnt => pnt.StartingSubroute == true);
                 if (null != startingSubroute)
                     return startingSubroute.Id;
                 else
@@ -64,7 +64,7 @@ namespace Data.Entities
                 {
                     Subroutes.ToList().ForEach(pnt => pnt.StartingSubroute = false);
                     value.StartingSubroute = true;
-                    Activities.Add(value);
+                    RouteNodes.Add(value);
                 }
             }
         }
@@ -75,7 +75,7 @@ namespace Data.Entities
 
         public virtual _RouteStateTemplate RouteStateTemplate { get; set; }
 
-        public virtual DockyardAccountDO DockyardAccount { get; set; }
+        public virtual Fr8AccountDO Fr8Account { get; set; }
 
         [InverseProperty("Route")]
         public virtual ICollection<ContainerDO> ChildContainers { get; set; }
@@ -85,7 +85,7 @@ namespace Data.Entities
         {
             get
             {
-                return Activities.OfType<SubrouteDO>();
+                return RouteNodes.OfType<SubrouteDO>();
             }
         }
         

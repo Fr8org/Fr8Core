@@ -36,7 +36,7 @@ namespace pluginTests.pluginDocuSign.Actions
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //Arrange
-                uow.ActivityRepository.Add(FixtureData.ConfigureTestActionTree());
+                uow.RouteNodeRepository.Add(FixtureData.ConfigureTestActionTree());
                 uow.SaveChanges();
                 ActionDO curAction = FixtureData.ConfigureTestAction57();
                 ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
@@ -109,11 +109,11 @@ namespace pluginTests.pluginDocuSign.Actions
     }
     public class Extract_From_DocuSign_Envelope_v1_Proxy : Receive_DocuSign_Envelope_v1
     {
-        private readonly IActivity _activity;
+        private readonly IRouteNode _activity;
 
         public Extract_From_DocuSign_Envelope_v1_Proxy()
         {
-            _activity = ObjectFactory.GetInstance<IActivity>();
+            _activity = ObjectFactory.GetInstance<IRouteNode>();
         }
 
         protected async override Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)

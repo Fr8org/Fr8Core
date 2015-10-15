@@ -9,25 +9,25 @@ using StructureMap;
 
 namespace Data.Entities
 {
-    public class ActivityDO : BaseDO
+    public class RouteNodeDO : BaseDO
     {
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("ParentActivity")]
-        public int? ParentActivityId { get; set; }
+        [ForeignKey("ParentRouteNode")]
+        public int? ParentRouteNodeId { get; set; }
         
-        public virtual ActivityDO ParentActivity { get; set; }
+        public virtual RouteNodeDO ParentRouteNode { get; set; }
 
-        [InverseProperty("ParentActivity")]
-        public virtual IList<ActivityDO> Activities { get; set; }
+        [InverseProperty("ParentRouteNode")]
+        public virtual IList<RouteNodeDO> RouteNodes { get; set; }
 
         public int Ordering { get; set; }
 
 
-        public ActivityDO()
+        public RouteNodeDO()
         {
-            Activities = new List<ActivityDO>();
+            RouteNodes = new List<RouteNodeDO>();
         }
     }
 }

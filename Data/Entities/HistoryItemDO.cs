@@ -30,7 +30,7 @@ namespace Data.Entities
                 var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
                 string customerAddress;
 
-                DockyardAccountDO acct = uow.UserRepository.GetByKey(CustomerId);
+                Fr8AccountDO acct = uow.UserRepository.GetByKey(CustomerId);
                 if(acct != null && acct.EmailAddress != null)
                 {
                     customerAddress = acct.EmailAddress.Address;

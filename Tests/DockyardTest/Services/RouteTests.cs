@@ -56,7 +56,7 @@ namespace DockyardTest.Services
             {
                 var curRouteDO = FixtureData.TestRoute_CanCreate();
                 var curUserAccount = FixtureData.TestDockyardAccount1();
-                curRouteDO.DockyardAccount = curUserAccount;
+                curRouteDO.Fr8Account = curUserAccount;
                 _processTemplateService.CreateOrUpdate(uow, curRouteDO, false);
                 uow.SaveChanges();
 
@@ -65,7 +65,7 @@ namespace DockyardTest.Services
                 Assert.AreNotEqual(result.Id, 0);
                 Assert.NotNull(result.StartingSubroute);
                 Assert.AreEqual(result.Subroutes.Count(), 1);
-                Assert.AreEqual(result.StartingSubroute.Activities.Count, 2);
+                Assert.AreEqual(result.StartingSubroute.RouteNodes.Count, 2);
             }
         }
 

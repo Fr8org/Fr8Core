@@ -22,9 +22,9 @@ namespace DockyardTest.Controllers
     [Category("UserController")]
     public class UserControllerTests : ApiControllerTestBase
     {
-        private DockyardAccountDO _testAccount1;
-        private DockyardAccountDO _testAccount2;
-        private DockyardAccountDO _testAccount3;
+        private Fr8AccountDO _testAccount1;
+        private Fr8AccountDO _testAccount2;
+        private Fr8AccountDO _testAccount3;
 
         public override void SetUp()
         {

@@ -42,7 +42,7 @@ namespace DockyardTest.Managers
         public void CanOAuthRedirectToCallbackUrl()
         {
             // SETUP
-            DockyardAccountDO dockyardAccount;
+            Fr8AccountDO dockyardAccount;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                

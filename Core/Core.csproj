@@ -194,7 +194,7 @@
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Interfaces\CrateManifests.cs" />
-    <Compile Include="Interfaces\IActivity.cs" />
+    <Compile Include="Interfaces\IRouteNode.cs" />
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
@@ -268,14 +268,14 @@
     <Compile Include="Security\DockyardIdentityManager.cs" />
     <Compile Include="Security\DockyardUserStore.cs" />
     <Compile Include="Security\SecurityServices.cs" />
-    <Compile Include="Services\Activity.cs" />
+    <Compile Include="Services\RouteNode.cs" />
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\ActivityTemplate.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
     <Compile Include="Services\Crate.cs" />
     <Compile Include="Services\Criteria.cs" />
-    <Compile Include="Services\DockyardAccount.cs" />
+    <Compile Include="Services\Fr8Account.cs" />
     <Compile Include="Services\DockyardEvent.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />

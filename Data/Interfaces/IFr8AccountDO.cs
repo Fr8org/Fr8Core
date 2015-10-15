@@ -4,7 +4,7 @@ using Data.Entities;
 
 namespace Data.Interfaces
 {
-    public interface IDockyardAccountDO : IBaseDO
+    public interface IFr8AccountDO : IBaseDO
     {
         string Id { get; set; }
         //IList<BookingRequestDO> UserBookingRequests { get; set; }

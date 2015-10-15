@@ -21,7 +21,7 @@ namespace Core.Services
         
 
         private readonly IProcessNode _processNode;
-        private readonly IActivity _activity;
+        private readonly IRouteNode _activity;
         private readonly IRoute _route;
 
         
@@ -30,7 +30,7 @@ namespace Core.Services
         public ContainerService()
         {
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
-            _activity = ObjectFactory.GetInstance<IActivity>();
+            _activity = ObjectFactory.GetInstance<IRouteNode>();
             _route = ObjectFactory.GetInstance<IRoute>();
         }
 
@@ -61,9 +61,9 @@ namespace Core.Services
                 }
                 curProcessDO.UpdateCrateStorageDTO(crates);
 
-            curProcessDO.CurrentActivity = _route.GetInitialActivity(uow, curRoute);
+            curProcessDO.CurrentRouteNode = _route.GetInitialActivity(uow, curRoute);
 
-                uow.ProcessRepository.Add(curProcessDO);
+                uow.ContainerRepository.Add(curProcessDO);
                 uow.SaveChanges();
 
                 //then create process node
@@ -117,14 +117,14 @@ namespace Core.Services
             if (curProcessDO == null)
                 throw new ArgumentNullException("ProcessDO is null");
 
-            if (curProcessDO.CurrentActivity != null)
+            if (curProcessDO.CurrentRouteNode != null)
             {
 
                 //break if CurrentActivity Is NULL, it means all activities 
                 //are processed that there is no Next Activity to set as Current Activity
                 do
                 {
-                    await _activity.Process(curProcessDO.CurrentActivity.Id, curProcessDO);
+                    await _activity.Process(curProcessDO.CurrentRouteNode.Id, curProcessDO);
                     // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
                 } while (MoveToTheNextActivity(uow, curProcessDO) != null);
             }
@@ -136,17 +136,17 @@ namespace Core.Services
 
         
 
-        private ActivityDO MoveToTheNextActivity(IUnitOfWork uow, ContainerDO curProcessDo)
+        private RouteNodeDO MoveToTheNextActivity(IUnitOfWork uow, ContainerDO curProcessDo)
         {
-            var next =  ObjectFactory.GetInstance<IActivity>().GetNextActivity(curProcessDo.CurrentActivity, null);
+            var next =  ObjectFactory.GetInstance<IRouteNode>().GetNextActivity(curProcessDo.CurrentRouteNode, null);
 
             // very simple check for cycles
-            if (next != null && next == curProcessDo.CurrentActivity)
+            if (next != null && next == curProcessDo.CurrentRouteNode)
                 {
-                throw new Exception(string.Format("Cycle detected. Current activty is {0}", curProcessDo.CurrentActivity.Id));
+                throw new Exception(string.Format("Cycle detected. Current activty is {0}", curProcessDo.CurrentRouteNode.Id));
             }
 
-            curProcessDo.CurrentActivity = next;
+            curProcessDo.CurrentRouteNode = next;
 
             uow.SaveChanges();
 
