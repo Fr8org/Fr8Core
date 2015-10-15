@@ -88,6 +88,23 @@
 
 /* Process Builder */
 
+.process-template-name {
+    display: inline-block;
+    font-size: 24px;
+    font-weight: bold;
+    vertical-align: top;
+    width: 300px;
+}
+
+.switch-btn {
+    background-color: lightgrey;
+    width: 80px;
+}
+
+.switch-btn.active {
+    background-color: #45B6AF;
+}
+
 .process-builder-container {
     overflow-y: auto;
     white-space: nowrap;
