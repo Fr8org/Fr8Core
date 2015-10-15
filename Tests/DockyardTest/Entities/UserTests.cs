@@ -13,7 +13,7 @@ namespace DockyardTest.Entities
     [TestFixture]
     public class UserTests : BaseTest
     {
-        [Test, ExpectedException(ExpectedMessage = "Duplicate values for 'EmailAddressID' on 'DockyardAccountDO' are not allowed. Duplicated value: '1'")]
+        [Test, ExpectedException(ExpectedMessage = "Duplicate values for 'EmailAddressID' on 'Fr8AccountDO' are not allowed. Duplicated value: '1'")]
         public void TestDuplicateUserEmailIDRejected()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
