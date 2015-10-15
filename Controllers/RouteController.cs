@@ -16,7 +16,7 @@ using StructureMap;
 
 namespace Web.Controllers
 {
-    [fr8ApiAuthorize]
+    [Fr8ApiAuthorize]
     [RoutePrefix("api/processTemplate")]
     public class ProcessTemplateController : ApiController
     {
@@ -94,7 +94,7 @@ namespace Web.Controllers
 
             if (curRoutes.Any())
             {               
-                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>));
+                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>).ToArray());
             }
             }
 
@@ -120,7 +120,7 @@ namespace Web.Controllers
                 }
 
                 // Return JSON array of objects, in case no id parameter was provided.
-                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>));
+                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>).ToArray());
             }
             }
 

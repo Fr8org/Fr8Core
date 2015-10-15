@@ -1,13 +1,13 @@
-﻿﻿using System;
+﻿using System;
 using System.IO;
 using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
-﻿using Utilities.Logging;
+using Utilities.Logging;
 
-namespace Web
+namespace Web.ExceptionHandling
 {
     public class MvcHandleErrorAttribute : HandleErrorAttribute
     {

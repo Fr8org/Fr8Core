@@ -55,7 +55,7 @@ namespace Web.Controllers
 
 
         [HttpGet]
-        [fr8ApiAuthorize]
+        [Fr8ApiAuthorize]
         [Route("auth_url")]
         public async Task<IHttpActionResult> GetExternalAuthUrl(
             [FromUri(Name = "id")] int activityTemplateId)
@@ -83,7 +83,7 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        [fr8ApiAuthorize]
+        [Fr8ApiAuthorize]
         [Route("authenticate")]
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
         {

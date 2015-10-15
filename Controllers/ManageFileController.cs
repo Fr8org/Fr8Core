@@ -16,7 +16,7 @@ using Data.States;
 
 namespace Web.Controllers
 {
-    [fr8ApiAuthorize]
+    [Fr8ApiAuthorize]
     [RoutePrefix("api/manageFile")]
     public class ManageFileController : ApiController
     {

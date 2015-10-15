@@ -17,7 +17,7 @@ using Data.Interfaces;
 
 namespace Web.Controllers
 {
-    [fr8ApiAuthorize]
+    [Fr8ApiAuthorize]
     public class FilesController : ApiController
     {
         private readonly IFile _fileService;

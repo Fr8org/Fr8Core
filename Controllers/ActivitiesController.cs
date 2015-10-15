@@ -87,7 +87,7 @@ namespace Web.Controllers
 			}
 		}
 
-        [fr8ApiAuthorize]
+        [Fr8ApiAuthorize]
         [Route("available")]
         [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
         public IHttpActionResult GetAvailableActivities()

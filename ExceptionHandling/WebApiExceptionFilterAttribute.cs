@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -10,13 +7,12 @@ using System.Web.Http.Filters;
 using Core.Exceptions;
 using Core.Managers;
 using Data.Interfaces.DataTransferObjects;
-using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
+using PluginBase;
 using StructureMap;
 using Utilities;
-using PluginBase;
 
-namespace Web
+namespace Web.ExceptionHandling
 {
     /// <summary>
     /// This exception filter handles any non-handled exception. Usually for such 

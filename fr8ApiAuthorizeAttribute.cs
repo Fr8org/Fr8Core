@@ -6,9 +6,9 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Web
 {
-    public class fr8ApiAuthorizeAttribute : AuthorizeAttribute
+    public class Fr8ApiAuthorizeAttribute : AuthorizeAttribute
     {
-        public fr8ApiAuthorizeAttribute(params string[] roles)
+        public Fr8ApiAuthorizeAttribute(params string[] roles)
         {
             Roles = string.Join(",", roles);
         }
