@@ -69,75 +69,91 @@ namespace pluginTests.PluginExcelTests
             Assert.AreEqual(result, PluginBase.Infrastructure.ConfigurationRequestType.Initial);
         }
 
-        //[Test]
-        //[ExpectedException]
-        //public void ConfigEvaluatorFollowupResponseThrowsException_Test()
-        //{
-        //    var curActionDTO = new ActionDTO()
-        //    {
-        //        CrateStorage = new CrateStorageDTO()
-        //        {
-        //            CrateDTO = new System.Collections.Generic.List<CrateDTO>(),
-        //        },
-        //    };
-        //    StandardConfigurationControlsMS confControlsMS = new StandardConfigurationControlsMS()
-        //    {
-        //        Controls = new List<ControlDefinitionDTO>()
-        //        {
-        //            new ControlDefinitionDTO("select_file", true, "1", "select file"),
-        //            new ControlDefinitionDTO("select_file", true, "2", "select file"),
-        //        },
-        //    };
-        //    curActionDTO.CrateStorage.CrateDTO.Add(new CrateDTO()
-        //    {
-        //        Contents = JsonConvert.SerializeObject(confControlsMS),
-        //        ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
-        //    });
-        //    //Mock<ICrate> crateMock = new Mock<ICrate>();
-        //    //crateMock.Setup(a => a.GetElementByKey<int>(It.IsAny<IEnumerable<CrateDTO>>(), It.IsAny<int>(), It.IsAny<string>())).Returns(() => new List<JObject>() { new JObject(), new JObject() });
+        [Test]
+        [ExpectedException]
+        public void ConfigEvaluatorFollowupResponseThrowsException_Test()
+        {
+            var curActionDTO = new ActionDTO()
+            {
+                CrateStorage = new CrateStorageDTO()
+                {
+                    CrateDTO = new System.Collections.Generic.List<CrateDTO>(),
+                },
+            };
+            StandardConfigurationControlsCM confControlsMS = new StandardConfigurationControlsCM()
+            {
+                Controls = new List<ControlDefinitionDTO>()
+                {
+                    new FilePickerControlDefinisionDTO(),
+                    new FilePickerControlDefinisionDTO(),
+                },
+            };
+            curActionDTO.CrateStorage.CrateDTO.Add(new CrateDTO()
+            {
+                Contents = JsonConvert.SerializeObject(confControlsMS),
+                ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+            });
+            //Mock<ICrate> crateMock = new Mock<ICrate>();
+            //crateMock.Setup(a => a.GetElementByKey<int>(It.IsAny<IEnumerable<CrateDTO>>(), It.IsAny<int>(), It.IsAny<string>())).Returns(() => new List<JObject>() { new JObject(), new JObject() });
 
-        //    //ActionDO actionDO = new FixtureData(uow).TestAction3();
-        //    //var controller = new ActionController(crateMock.Object);
-
-
-        //    var result = new ExtractData_v1().ConfigurationEvaluator(curActionDTO);
-
-        //    Assert.AreNotEqual(result, PluginBase.Infrastructure.ConfigurationRequestType.Followup);
-        //}
-
-        //[Test]
-        //public void ConfigEvaluatorFollowupResponse_Test()
-        //{
-        //    var curActionDTO = new ActionDTO()
-        //    {
-        //        CrateStorage = new CrateStorageDTO()
-        //        {
-        //            CrateDTO = new System.Collections.Generic.List<CrateDTO>(),
-        //        },
-        //    };
-        //    StandardConfigurationControlsMS confControlsMS = new StandardConfigurationControlsMS()
-        //    {
-        //        Controls = new List<ControlDefinitionDTO>()
-        //        {
-        //            new ControlDefinitionDTO("select_file", true, "1", "select file"),
-        //        },
-        //    };
-        //    curActionDTO.CrateStorage.CrateDTO.Add(new CrateDTO()
-        //        {
-        //            Contents = JsonConvert.SerializeObject(confControlsMS),
-        //            ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
-        //        });
-        //    //Mock<ICrate> crateMock = new Mock<ICrate>();
-        //    //crateMock.Setup(a => a.GetElementByKey<int>(It.IsAny<IEnumerable<CrateDTO>>(), It.IsAny<int>(), It.IsAny<string>())).Returns(() => new List<JObject>() { new JObject(), new JObject() });
-
-        //    //ActionDO actionDO = new FixtureData(uow).TestAction3();
-        //    //var controller = new ActionController(crateMock.Object);
+            //ActionDO actionDO = new FixtureData(uow).TestAction3();
+            //var controller = new ActionController(crateMock.Object);
 
 
-        //    var result = new ExtractData_v1().ConfigurationEvaluator(curActionDTO);
+            var result = new Extract_Data_v1().ConfigurationEvaluator(curActionDTO);
 
-        //    Assert.AreEqual(result, PluginBase.Infrastructure.ConfigurationRequestType.Followup);
-        //}
+            Assert.AreNotEqual(result, PluginBase.Infrastructure.ConfigurationRequestType.Followup);
+        }
+
+        [Test]
+        public void ConfigEvaluatorFollowupResponse_Test()
+        {
+            var curActionDTO = new ActionDTO()
+            {
+                CrateStorage = new CrateStorageDTO()
+                {
+                    CrateDTO = new System.Collections.Generic.List<CrateDTO>(),
+                },
+            };
+            StandardConfigurationControlsCM confControlsCM = new StandardConfigurationControlsCM()
+            {
+                Controls = new List<ControlDefinitionDTO>()
+                {
+                    new ControlDefinitionDTO(ControlTypes.FilePicker)
+                    {
+                        Label = "Select Excel File",
+                        Name = "select_file",
+                        Required = true,
+                        Events = new List<ControlEvent>()
+                        {
+                            new ControlEvent("onChange", "requestConfig")
+                        },
+                        Source = new FieldSourceDTO
+                        {
+                            Label = "Select Excel File",
+                            ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+                        },
+                        Value = "Some Path",
+                    },
+                },
+            };
+            
+            curActionDTO.CrateStorage.CrateDTO.Add(new CrateDTO()
+                {
+                    Contents = JsonConvert.SerializeObject(confControlsCM),
+                    ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+                });
+            //Mock<ICrate> crateMock = new Mock<ICrate>();
+            //crateMock.Setup(a => a.GetElementByKey<int>(It.IsAny<IEnumerable<CrateDTO>>(), It.IsAny<int>(), It.IsAny<string>())).Returns(() => new List<JObject>() { new JObject(), new JObject() });
+
+            //ActionDO actionDO = new FixtureData(uow).TestAction3();
+            //var controller = new ActionController(crateMock.Object);
+
+
+            var result = new Extract_Data_v1().ConfigurationEvaluator(curActionDTO);
+
+            Assert.AreEqual(result, PluginBase.Infrastructure.ConfigurationRequestType.Followup);
+        }
 
         [Test]
         public async void CallExtractData_Execute()

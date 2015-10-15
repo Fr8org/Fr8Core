@@ -250,7 +250,7 @@ namespace pluginDocuSign.Actions
         {
             var fieldSelectDocusignTemplateDTO = new DropDownListControlDefinitionDTO()
             {
-                Label = "target_docusign_template",
+                Label = "Use DocuSign Template",
                 Name = "target_docusign_template",
                 Required = true,
                 Events = new List<ControlEvent>()
