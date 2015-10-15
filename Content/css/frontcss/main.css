@@ -883,3 +883,11 @@ ul.bordered-list li:first-child {
 #site-header .sign-signup {
     margin-top: 37px;
 }
+
+.navbar .container {
+	max-width: 100%;
+	width: 100%;
+	margin: 0;
+	padding-left: 2%;
+	padding-right: 2%;
+}
