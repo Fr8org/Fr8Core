@@ -1,0 +1,264 @@
+﻿/// <reference path="../../_all.ts" />
+module dockyard.directives.paneConfigureAction {
+    'use strict';
+
+    export enum MessageType {
+        PaneConfigureAction_ActionUpdated,
+        PaneConfigureAction_ActionRemoved,
+        PaneConfigureAction_InternalAuthentication,
+        PaneConfigureAction_ExternalAuthentication
+    }
+
+    export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
+
+    export class InternalAuthenticationArgs {
+        public activityTemplateId: number;
+
+        constructor(activityTemplateId: number) {
+            this.activityTemplateId = activityTemplateId;
+        }
+    }
+
+    export class ExternalAuthenticationArgs {
+        public activityTemplateId: number;
+
+        constructor(activityTemplateId: number) {
+            this.activityTemplateId = activityTemplateId;
+        }
+    }
+
+    export class RenderEventArgs {
+        public action: interfaces.IActionDTO
+
+        constructor(action: interfaces.IActionDTO) {
+            // Clone Action to prevent any issues due to possible mutation of source object
+            this.action = angular.extend({}, action);
+        }
+    }
+
+    export class MapFieldsClickedEventArgs {
+        action: model.ActionDTO;
+
+        constructor(action: model.ActionDTO) {
+            this.action = action;
+        }
+    }
+
+    export class ActionRemovedEventArgs {
+        public id: number;
+        public isTempId: boolean;
+
+        constructor(id: number, isTempId: boolean) {
+            this.id = id;
+            this.isTempId = isTempId;
+        }
+    }
+
+    export interface IPaneConfigureActionScope extends ng.IScope {
+        onConfigurationChanged: (newValue: model.ControlsList, oldValue: model.ControlsList) => void;
+        onControlChange: (event: ng.IAngularEvent, eventArgs: ChangeEventArgs) => void;
+        processConfiguration: () => void;
+        loadConfiguration: () => void;
+        currentAction: interfaces.IActionVM;
+        configurationControls: ng.resource.IResource<model.ControlsList> | model.ControlsList;
+        mapFields: (scope: IPaneConfigureActionScope) => void;
+        processing: boolean;
+        configurationWatchUnregisterer: Function;
+    }
+
+    export class CancelledEventArgs extends CancelledEventArgsBase { }
+    
+    //More detail on creating directives in TypeScript: 
+    //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
+    class PaneConfigureAction implements ng.IDirective {
+        public link: (scope: IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+        public templateUrl = '/AngularTemplate/PaneConfigureAction';
+        public controller: ($scope: IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+        public scope = {
+            currentAction: '='
+        };
+        public restrict = 'E';
+
+        constructor(
+            private ActionService: services.IActionService,
+            private crateHelper: services.CrateHelper,
+            private $filter: ng.IFilterService,
+            private $timeout: ng.ITimeoutService
+            ) {
+
+            PaneConfigureAction.prototype.link = (
+                scope: IPaneConfigureActionScope,
+                element: ng.IAugmentedJQuery,
+                attrs: ng.IAttributes) => {
+
+                //Link function goes here
+            };
+
+            PaneConfigureAction.prototype.controller = function (
+                $scope: IPaneConfigureActionScope,
+                $element: ng.IAugmentedJQuery,
+                $attrs: ng.IAttributes) {
+
+                $scope.$on("onChange", onControlChange);
+                $scope.$on("onClick", onClickEvent);
+
+                // These are exposed for unit testing.
+                $scope.onControlChange = onControlChange;
+                $scope.loadConfiguration = loadConfiguration;
+                $scope.onConfigurationChanged = onConfigurationChanged;
+                $scope.processConfiguration = processConfiguration;
+
+                // Get configuration settings template from the server if the current action does not contain those             
+                if ($scope.currentAction.activityTemplateId > 0) {
+                    if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
+                        $scope.loadConfiguration();
+                    } else {
+                        $scope.processConfiguration();
+                    }
+                }
+                
+                function onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
+                    if (!newValue || !newValue.fields || newValue.fields === oldValue.fields || newValue.fields.length == 0) return;
+                    crateHelper.mergeControlListCrate(
+                        $scope.currentAction.configurationControls,
+                        $scope.currentAction.crateStorage
+                        );
+                    $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                    ActionService.save({ id: $scope.currentAction.id },
+                        $scope.currentAction, null, null);
+                };
+
+                function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
+                    // Check if this event is defined for the current field
+                    var fieldName = eventArgs.fieldName;
+                    var fieldList = $scope.currentAction.configurationControls.fields;
+
+                    // Find the configuration field object for which the event has fired
+                    fieldList = <Array<model.ControlDefinitionDTO>>$filter('filter')(fieldList, { name: fieldName }, true);
+                    if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0) return;
+                    var field = fieldList[0];
+
+                    // Find the onChange event object
+                    var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onChange' }, true);
+                    if (eventHandlerList.length == 0) return;
+                    var fieldEvent = eventHandlerList[0];
+
+                    if (fieldEvent.handler === 'requestConfig') {
+                        crateHelper.mergeControlListCrate(
+                            $scope.currentAction.configurationControls,
+                            $scope.currentAction.crateStorage
+                            );
+                        $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                
+                        $scope.loadConfiguration();
+                    }
+                }
+
+                function onClickEvent(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
+                    var scope = <IPaneConfigureActionScope>event.currentScope;
+                    // Check if this event is defined for the current field
+                    var fieldName = eventArgs.fieldName;
+                    var fieldList = scope.currentAction.configurationControls.fields;
+
+                    // Find the configuration field object for which the event has fired
+                    fieldList = <Array<model.ControlDefinitionDTO>>$filter('filter')(fieldList, { name: fieldName }, true);
+                    if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0) return;
+                    var field = fieldList[0];
+
+                    // Find the onChange event object
+                    var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onClick' }, true);
+                    if (eventHandlerList.length == 0) {
+                        return;
+                    }
+                    else {
+                        var fieldEvent = eventHandlerList[0];
+
+                        if (fieldEvent.handler != null) {
+                            crateHelper.mergeControlListCrate(
+                                scope.currentAction.configurationControls,
+                                scope.currentAction.crateStorage
+                                );
+                            scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                
+                            loadConfiguration();
+                        }
+                    }
+                }
+
+
+                // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
+                // We parse its contents and put it into currentAction.configurationControls structure.
+                function loadConfiguration() {
+                    // Block pane and show pane-level 'loading' spinner
+                    $scope.processing = true;
+                    
+                    if ($scope.configurationWatchUnregisterer) {
+                        $scope.configurationWatchUnregisterer();
+                    }
+
+                    ActionService.configure($scope.currentAction).$promise.then((res: any) => {
+                        // Unblock pane
+                        $scope.processing = false;
+                        
+                        $scope.currentAction.crateStorage = res.crateStorage;
+                        $scope.processConfiguration();
+                    });
+                };
+
+                function processConfiguration() {
+                    // Check if authentication is required.
+                    if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, 'Standard Authentication')) {
+                        var authCrate = crateHelper
+                            .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
+
+                        var authMS = angular.fromJson(authCrate.contents);
+
+                        // Dockyard auth mode.
+                        if (authMS.Mode == 1) {
+                            $scope.$emit(
+                                MessageType[MessageType.PaneConfigureAction_InternalAuthentication],
+                                new InternalAuthenticationArgs($scope.currentAction.activityTemplateId)
+                                );
+                        }
+                        // External auth mode.                           
+                        else {
+                            // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
+                            $scope.$emit(
+                                MessageType[MessageType.PaneConfigureAction_ExternalAuthentication],
+                                new ExternalAuthenticationArgs($scope.currentAction.activityTemplateId)
+                                );
+                        }
+                        return;
+                    }
+
+                    $scope.currentAction.configurationControls =
+                    crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
+
+                    $timeout(() => { // let the control list create, we don't want false change notification during creation process
+                        $scope.configurationWatchUnregisterer = $scope.$watch<model.ControlsList>(
+                            (scope: IPaneConfigureActionScope) => $scope.currentAction.configurationControls,
+                            $scope.onConfigurationChanged,
+                            true);
+                    }, 1000);
+                }
+            };
+        }    
+
+        //The factory function returns Directive object as per Angular requirements
+        public static Factory() {
+            var directive = (
+                ActionService,
+                crateHelper: services.CrateHelper,
+                $filter: ng.IFilterService,
+                $timeout: ng.ITimeoutService
+                ) => {
+
+                return new PaneConfigureAction(ActionService, crateHelper, $filter, $timeout);
+            };
+
+            directive['$inject'] = ['ActionService', 'CrateHelper', '$filter', '$timeout'];
+            return directive;
+        }
+    }
+    app.directive('paneConfigureAction', PaneConfigureAction.Factory());
+}
