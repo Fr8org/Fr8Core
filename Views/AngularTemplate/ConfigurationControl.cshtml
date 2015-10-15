@@ -87,5 +87,12 @@
         <field-list field="field" change="onChange"></field-list>
     </div>
 
+    @*
+        Button template
+    *@
+    <div ng-if='field.type == "@ControlTypes.Button"'>
+        <button ng-click="onClick($event)" data-field-name='{{::field.name}}' id='pca__btn__{{::field.name | validId}}' class="{{::field.class}}" name='pca__btn__{{::field.name | validId}}'>{{::field.label}}</button>
+    </div>
+
     @* Add more configuration field templates below *@
 </div>

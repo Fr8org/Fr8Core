@@ -34,7 +34,7 @@ namespace pluginIntegrationTests
         private IDisposable _dockyardCoreServer;
         private IDisposable _azureSqlServerServer;
 
-        private DockyardAccountDO _testUserAccount;
+        private Fr8AccountDO _testUserAccount;
         private RouteDO _processTemplateDO;
         private SubrouteDO _subrouteDO;
         //private ActionListDO _actionList;
@@ -61,10 +61,10 @@ namespace pluginIntegrationTests
             _testUserAccount = FixtureData.TestUser1();
 
             _processTemplateDO = FixtureData.Route_PluginIntegration();
-            _processTemplateDO.DockyardAccount = _testUserAccount;
+            _processTemplateDO.Fr8Account = _testUserAccount;
 
             _subrouteDO = FixtureData.Subroute_PluginIntegration();
-            _subrouteDO.ParentActivity = _processTemplateDO;
+            _subrouteDO.ParentRouteNode = _processTemplateDO;
 
             
             //_actionList = FixtureData.TestActionList_ImmediateActions();
@@ -100,8 +100,8 @@ namespace pluginIntegrationTests
                 uow.RouteRepository.Add(_processTemplateDO);
                 uow.SubrouteRepository.Add(_subrouteDO);
                 // This fix inability of MockDB to correctly resolve requests to collections of derived entites
-                uow.ActivityRepository.Add(_subrouteDO);
-                uow.ActivityRepository.Add(_processTemplateDO);
+                uow.RouteNodeRepository.Add(_subrouteDO);
+                uow.RouteNodeRepository.Add(_processTemplateDO);
                 uow.SaveChanges();
             }
 
@@ -190,10 +190,10 @@ namespace pluginIntegrationTests
             var curActionController = CreateActionController();
             var curActionDO = FixtureData.TestAction_Blank();
 
-            if (_subrouteDO.Activities == null)
+            if (_subrouteDO.RouteNodes == null)
             {
-                _subrouteDO.Activities = new List<ActivityDO>();
-                _subrouteDO.Activities.Add(curActionDO);
+                _subrouteDO.RouteNodes = new List<RouteNodeDO>();
+                _subrouteDO.RouteNodes.Add(curActionDO);
             }
 
             if (activityTemplate != null)
@@ -202,8 +202,8 @@ namespace pluginIntegrationTests
                 curActionDO.ActivityTemplateId = activityTemplate.Id;
             }
 
-            curActionDO.ParentActivity = _subrouteDO;
-            curActionDO.ParentActivityId = _subrouteDO.Id;
+            curActionDO.ParentRouteNode = _subrouteDO;
+            curActionDO.ParentRouteNodeId = _subrouteDO.Id;
 
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
 
@@ -270,7 +270,7 @@ namespace pluginIntegrationTests
             {
                 var activity = uow.ActionRepository.GetByKey(id);
 
-                activity.ParentActivity = (ActivityDO)uow.SubrouteRepository.GetByKey(activity.ParentActivityId) ?? uow.ActionRepository.GetByKey(activity.ParentActivityId);
+                activity.ParentRouteNode = (RouteNodeDO)uow.SubrouteRepository.GetByKey(activity.ParentRouteNodeId) ?? uow.ActionRepository.GetByKey(activity.ParentRouteNodeId);
                 uow.SaveChanges();
             }
         }

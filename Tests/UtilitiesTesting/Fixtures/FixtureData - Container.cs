@@ -9,64 +9,64 @@ namespace UtilitiesTesting.Fixtures
 	{
 		private  const string _xmlPayLoadLocation = "DockyardTest\\Content\\DocusignXmlPayload.xml";
         
-        public static ProcessDO TestProcess1()
+        public static ContainerDO TestContainer1()
 		{
-			var process = new ProcessDO();
+			var process = new ContainerDO();
 			process.Id = 49;
             process.RouteId = TestRoute2().Id;
-			process.ProcessState = 1;
+			process.ContainerState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
 			return process;
 		}
 
-        public static ProcessDO TestHealthDemoProcess1()
+        public static ContainerDO TestHealthDemoContainer1()
         {
-            var process = new ProcessDO();
+            var process = new ContainerDO();
             process.Id = 49;
             process.RouteId = TestRoute2().Id;
-            process.ProcessState = ProcessState.Executing;
+            process.ContainerState = ContainerState.Executing;
             process.ProcessNodes.Add(TestProcessNode1());
             return process;
         }
 
-        public static IList<ProcessDO> GetProcesses()
+        public static IList<ContainerDO> GetContainers()
 		{
-			IList<ProcessDO> processList = new List<ProcessDO>();
+			IList<ContainerDO> processList = new List<ContainerDO>();
             var processTemplateId = TestRoute2().Id;
-			processList.Add(new ProcessDO()
+			processList.Add(new ContainerDO()
 			{
 				Id = 1,
 				Name = "Process 1",
                 RouteId = processTemplateId,
-				DockyardAccountId = "testuser",
-				ProcessState = ProcessState.Executing
+				Fr8AccountId = "testuser",
+				ContainerState = ContainerState.Executing
 			});
 
-			processList.Add(new ProcessDO()
+			processList.Add(new ContainerDO()
 			{
 				Id = 2,
 				Name = "Process 2",
                 RouteId = processTemplateId,
-				DockyardAccountId = "testuser",
-				ProcessState = ProcessState.Executing
+				Fr8AccountId = "testuser",
+				ContainerState = ContainerState.Executing
 			});
 
-			processList.Add(new ProcessDO()
+			processList.Add(new ContainerDO()
 			{
 				Id = 3,
 				Name = "Process 3",
                 RouteId = processTemplateId,
-				DockyardAccountId = "testuser",
-				ProcessState = ProcessState.Unstarted
+				Fr8AccountId = "testuser",
+				ContainerState = ContainerState.Unstarted
 			});
 
-			processList.Add(new ProcessDO()
+			processList.Add(new ContainerDO()
 			{
 				Id = 4,
 				Name = "Process 4",
                 RouteId = processTemplateId,
-				DockyardAccountId = "anotheruser",
-				ProcessState = ProcessState.Unstarted
+				Fr8AccountId = "anotheruser",
+				ContainerState = ContainerState.Unstarted
 			});
 
 			return processList;
@@ -104,73 +104,73 @@ namespace UtilitiesTesting.Fixtures
 			return result;
 		}
 
-        public static ProcessDO TestProcesswithCurrentActivityAndNextActivity()
+        public static ContainerDO TestContainerWithCurrentActivityAndNextActivity()
         {
-            var process = new ProcessDO();
+            var process = new ContainerDO();
             process.Id = 49;
 				process.Route = TestRoute2();
             process.RouteId = TestRoute2().Id;
-            process.ProcessState = 1;
+            process.ContainerState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
-            process.CurrentActivity = FixtureData.TestAction7();
-				process.NextActivity = FixtureData.TestAction10();
+            process.CurrentRouteNode = FixtureData.TestAction7();
+				process.NextRouteNode = FixtureData.TestAction10();
             return process;
         }
 
-        public static ProcessDO TestProcessCurrentActivityNULL()
+        public static ContainerDO TestContainerCurrentActivityNULL()
         {
-            var process = new ProcessDO();
+            var process = new ContainerDO();
             process.Id = 49;
             process.RouteId = TestRoute2().Id;
-            process.ProcessState = 1;
+            process.ContainerState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
-            process.CurrentActivity = null;
+            process.CurrentRouteNode = null;
             return process;
         }
 
-        public static ProcessDO TestProcesswithCurrentActivityAndNextActivityTheSame()
+        public static ContainerDO TestContainerWithCurrentActivityAndNextActivityTheSame()
         {
-            var process = new ProcessDO();
+            var process = new ContainerDO();
             process.Id = 49;
             process.RouteId = TestRoute2().Id;
-            process.ProcessState = 1;
+            process.ContainerState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
-            process.CurrentActivity = FixtureData.TestAction7();
-            process.NextActivity = FixtureData.TestAction7();
+            process.CurrentRouteNode = FixtureData.TestAction7();
+            process.NextRouteNode = FixtureData.TestAction7();
             return process;
         }
 
-        public static ProcessDO TestProcessSetNextActivity()
+        public static ContainerDO TestContainerSetNextActivity()
         {
-            var process = new ProcessDO();
+            var process = new ContainerDO();
             process.Id = 49;
             process.RouteId = TestRoute2().Id;
-            process.ProcessState = 1;
+            process.ContainerState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
-            process.CurrentActivity = FixtureData.TestAction7();
-            process.NextActivity = null;
+            process.CurrentRouteNode = FixtureData.TestAction7();
+            process.NextRouteNode = null;
             return process;
         }
 
-        public static ProcessDO TestProcessUpdateNextActivity()
+        public static ContainerDO TestContainerUpdateNextActivity()
         {
-            var process = new ProcessDO();
+            var process = new ContainerDO();
             process.Id = 49;
             process.RouteId = TestRoute2().Id;
-            process.ProcessState = 1;
+            process.ContainerState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
-            process.CurrentActivity = FixtureData.TestAction8(null);
-            process.NextActivity = null;
+            process.CurrentRouteNode = FixtureData.TestAction8(null);
+            process.NextRouteNode = null;
             return process;
         }
 
-        public static ProcessDO TestProcessExecute()
+        public static ContainerDO TestContainerExecute()
         {
-            var processDO = new ProcessDO();
+            var processDO = new ContainerDO();
             processDO.Id = 49;
             processDO.Route = FixtureData.TestRoute2();
             processDO.RouteId = processDO.Route.Id;
-            processDO.ProcessState = 1;
+            processDO.ContainerState = 1;
             processDO.ProcessNodes.Add(FixtureData.TestProcessNode1());
             return processDO;
         }

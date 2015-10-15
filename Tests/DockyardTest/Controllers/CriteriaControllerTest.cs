@@ -54,7 +54,7 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();
                 //Add a processnodetemplate to processtemplate 
                 _curSubroute = FixtureData.TestSubrouteDO1();
-                _curSubroute.ParentActivityId = route.Id;
+                _curSubroute.ParentRouteNodeId = route.Id;
                 uow.SubrouteRepository.Add(_curSubroute);
                 uow.SaveChanges();
 

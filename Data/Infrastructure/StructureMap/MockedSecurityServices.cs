@@ -10,15 +10,14 @@ namespace Data.Infrastructure.StructureMap
     public class MockedSecurityServices : ISecurityServices
     {
         private readonly object _locker = new object();
-        private DockyardAccountDO _currentLoggedInDockyardAccount;
-
-        public void Login(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO)
+        private Fr8AccountDO _currentLoggedInDockyardAccount;
+        public void Login(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO)
         {
             lock (_locker)
                 _currentLoggedInDockyardAccount = dockyardAccountDO;
         }
 
-        public DockyardAccountDO GetCurrentAccount(IUnitOfWork uow)
+        public Fr8AccountDO GetCurrentAccount(IUnitOfWork uow)
         {
             lock (_locker)
             {

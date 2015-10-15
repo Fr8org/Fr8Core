@@ -16,7 +16,7 @@ namespace Data.Repositories
 
         }
 
-        public String GetAuthorizationTokenURL(String url, DockyardAccountDO dockyardAccountDO, String segmentEventName = null, Dictionary<String, Object> segmentTrackingProperties = null)
+        public String GetAuthorizationTokenURL(String url, Fr8AccountDO dockyardAccountDO, String segmentEventName = null, Dictionary<String, Object> segmentTrackingProperties = null)
         {
             return GetAuthorizationTokenURL(url, dockyardAccountDO.Id, segmentEventName, segmentTrackingProperties);
         }

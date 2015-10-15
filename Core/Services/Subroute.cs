@@ -90,23 +90,23 @@ namespace Core.Services
             //uow.SubrouteRepository.Remove(subroute);
 
 
-            ObjectFactory.GetInstance<IActivity>().Delete(uow, subroute);
+            ObjectFactory.GetInstance<IRouteNode>().Delete(uow, subroute);
 
             uow.SaveChanges();
         }
 
         public void AddAction(IUnitOfWork uow, ActionDO curActionDO)
         {
-            var subroute = uow.SubrouteRepository.GetByKey(curActionDO.ParentActivityId);
+            var subroute = uow.SubrouteRepository.GetByKey(curActionDO.ParentRouteNodeId);
 
             if (subroute == null)
             {
-                throw new Exception(string.Format("Unable to find Subroute by id = {0}", curActionDO.ParentActivityId));
+                throw new Exception(string.Format("Unable to find Subroute by id = {0}", curActionDO.ParentRouteNodeId));
             }
 
-            curActionDO.Ordering = subroute.Activities.Count > 0 ? subroute.Activities.Max(x => x.Ordering) + 1 : 1;
+            curActionDO.Ordering = subroute.RouteNodes.Count > 0 ? subroute.RouteNodes.Max(x => x.Ordering) + 1 : 1;
 
-            subroute.Activities.Add(curActionDO);
+            subroute.RouteNodes.Add(curActionDO);
 
             uow.SaveChanges();
         }

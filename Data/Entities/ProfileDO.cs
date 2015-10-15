@@ -19,7 +19,7 @@ namespace Data.Entities
 
         [ForeignKey("DockyardAccount")]
         public String DockyardAccountID { get; set; }
-        public virtual DockyardAccountDO DockyardAccount { get; set; }
+        public virtual Fr8AccountDO DockyardAccount { get; set; }
 
         [InverseProperty("Profile")]
         public virtual IList<ProfileNodeDO> ProfileNodes { get; set; }

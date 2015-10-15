@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.States.Templates
 {
-    public class _ProcessStateTemplate : IStateTemplate<ProcessState>
+    public class _ContainerStateTemplate : IStateTemplate<ContainerState>
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }

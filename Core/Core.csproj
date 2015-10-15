@@ -195,7 +195,7 @@
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Interfaces\CrateManifests.cs" />
-    <Compile Include="Interfaces\IActivity.cs" />
+    <Compile Include="Interfaces\IRouteNode.cs" />
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
@@ -208,7 +208,7 @@
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IProcessNode.cs" />
-    <Compile Include="Interfaces\IProcess.cs" />
+    <Compile Include="Interfaces\IContainerService.cs" />
     <Compile Include="Interfaces\ISubroute.cs" />
     <Compile Include="Interfaces\IReport.cs" />
     <Compile Include="Interfaces\ISMSMessage.cs" />
@@ -269,14 +269,14 @@
     <Compile Include="Security\DockyardIdentityManager.cs" />
     <Compile Include="Security\DockyardUserStore.cs" />
     <Compile Include="Security\SecurityServices.cs" />
-    <Compile Include="Services\Activity.cs" />
+    <Compile Include="Services\RouteNode.cs" />
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\ActivityTemplate.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
     <Compile Include="Services\Crate.cs" />
     <Compile Include="Services\Criteria.cs" />
-    <Compile Include="Services\DockyardAccount.cs" />
+    <Compile Include="Services\Fr8Account.cs" />
     <Compile Include="Services\DockyardEvent.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />
@@ -287,7 +287,7 @@
     <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\ProcessNode.cs" />
-    <Compile Include="Services\Process.cs" />
+    <Compile Include="Services\ContainerService.cs" />
     <Compile Include="Services\Subroute.cs" />
     <Compile Include="Services\Route.cs" />
     <Compile Include="Services\Report.cs" />

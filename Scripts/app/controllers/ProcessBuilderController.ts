@@ -11,7 +11,7 @@ module dockyard.controllers {
         processTemplateId: number;
         processNodeTemplates: Array<model.ProcessNodeTemplateDTO>;
         fields: Array<model.Field>;
-        currentProcessNodeTemplate: model.ProcessNodeTemplateDTO;
+        currentSubroute: model.ProcessNodeTemplateDTO;
 
         // Identity of currently edited processNodeTemplate.
         //curNodeId: number;
@@ -118,15 +118,15 @@ module dockyard.controllers {
                 debugger;
 
                 this.$scope.current.processTemplate = curProcessTemplate;
-                this.$scope.currentProcessNodeTemplate = curProcessTemplate.processNodeTemplates[0];
+                this.$scope.currentSubroute = curProcessTemplate.subroutes[0];
                 this.renderProcessTemplate(curProcessTemplate);
             });
         }
 
         private renderProcessTemplate(curProcessTemplate: interfaces.IProcessTemplateVM) {
-            if (curProcessTemplate.processNodeTemplates.length == 0) return;
+            if (curProcessTemplate.subroutes.length == 0) return;
 
-            for (var curProcessNodeTemplate of curProcessTemplate.processNodeTemplates) {
+            for (var curProcessNodeTemplate of curProcessTemplate.subroutes) {
                 for (var curAction of curProcessNodeTemplate.actions) {
                     this.$scope.actions.push(curAction);
                 }
@@ -177,7 +177,7 @@ module dockyard.controllers {
             var id = this.LocalIdentityGenerator.getNextId();                
 
             // Create new action object.
-            var action = new model.ActionDTO(this.$scope.currentProcessNodeTemplate.id, id, true);
+            var action = new model.ActionDTO(this.$scope.currentSubroute.id, id, true);
             action.name = activityTemplate.name;
 
             // Add action to Workflow Designer.

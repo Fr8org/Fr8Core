@@ -11,9 +11,9 @@ using System;
 
 namespace Data.Entities
 {
-    public class ProcessDO : BaseDO
+    public class ContainerDO : BaseDO
     {
-        public ProcessDO()
+        public ContainerDO()
         {
             ProcessNodes = new List<ProcessNodeDO>();
         }
@@ -22,7 +22,7 @@ namespace Data.Entities
         public int Id { get; set; }
 
         public string Name { get; set; }
-        public string DockyardAccountId { get; set; }
+        public string Fr8AccountId { get; set; }
 
         [Required]
         [ForeignKey("Route")]
@@ -32,18 +32,18 @@ namespace Data.Entities
         public virtual ICollection<ProcessNodeDO> ProcessNodes { get; set; }
             
         [Required]
-        [ForeignKey("ProcessStateTemplate")]
-        public int ProcessState { get; set; }
+        [ForeignKey("ContainerStateTemplate")]
+        public int ContainerState { get; set; }
               
-        public virtual _ProcessStateTemplate ProcessStateTemplate { get; set; }
+        public virtual _ContainerStateTemplate ContainerStateTemplate { get; set; }
 
-        [ForeignKey("CurrentActivity")]
-        public int? CurrentActivityId { get; set; }
-        public virtual ActivityDO CurrentActivity { get; set; }
+        [ForeignKey("CurrentRouteNode")]
+        public int? CurrentRouteNodeId { get; set; }
+        public virtual RouteNodeDO CurrentRouteNode { get; set; }
 
-        [ForeignKey("NextActivity")]
-        public int? NextActivityId { get; set; }
-        public virtual ActivityDO NextActivity { get; set; }
+        [ForeignKey("NextRouteNode")]
+        public int? NextRouteNodeId { get; set; }
+        public virtual RouteNodeDO NextRouteNode { get; set; }
 
         public string CrateStorage { get; set; }
 

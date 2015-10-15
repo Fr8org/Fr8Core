@@ -23,7 +23,7 @@ namespace DockyardTest.Controllers
     [Category("RouteControllerTests")]
     public class RouteControllerTests : BaseTest
     {
-        private DockyardAccountDO _testUserAccount;
+        private Fr8AccountDO _testUserAccount;
 
 
         [SetUp]
@@ -73,7 +73,7 @@ namespace DockyardTest.Controllers
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
                 var ptdo = uow.RouteRepository.
-                    GetQuery().SingleOrDefault(pt => pt.DockyardAccount.Id == _testUserAccount.Id && pt.Name == processTemplateDto.Name);
+                    GetQuery().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == processTemplateDto.Name);
                 Assert.IsNotNull(ptdo);
                 Assert.AreEqual(processTemplateDto.Description, ptdo.Description);
             }
@@ -269,7 +269,7 @@ namespace DockyardTest.Controllers
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
                 var ptdo = uow.RouteRepository.
-                    GetQuery().SingleOrDefault(pt => pt.DockyardAccount.Id == _testUserAccount.Id && pt.Name == processTemplateDto.Name);
+                    GetQuery().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == processTemplateDto.Name);
                 Assert.IsNotNull(ptdo);
                 Assert.AreEqual(processTemplateDto.Name, ptdo.Name);
                 Assert.AreEqual(processTemplateDto.SubscribedDocuSignTemplates.Count(), 1);
@@ -296,7 +296,7 @@ namespace DockyardTest.Controllers
             Assert.AreEqual(curRouteDO.Name, curRouteDTO.Name);
             Assert.AreEqual(curRouteDO.Description, curRouteDTO.Description);
             Assert.AreEqual(curRouteDO.Subroutes.Count(), 2);
-            Assert.AreEqual(curRouteDO.Subroutes.First().Activities.Count, 1);
+            Assert.AreEqual(curRouteDO.Subroutes.First().RouteNodes.Count, 1);
 
         }
 

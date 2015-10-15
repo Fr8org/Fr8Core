@@ -35,7 +35,7 @@ namespace Data.Infrastructure
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
    
-        public delegate void CustomerCreatedHandler(DockyardAccountDO user);
+        public delegate void CustomerCreatedHandler(Fr8AccountDO user);
         public static event CustomerCreatedHandler AlertCustomerCreated;
 
         public delegate void EmailReceivedHandler(int emailId, string customerId);
@@ -50,7 +50,7 @@ namespace Data.Infrastructure
         public delegate void EmailProcessingHandler(string dateReceived, string errorMessage);
         public static event EmailProcessingHandler AlertEmailProcessingFailure;
 
-        public delegate void UserRegistrationHandler(DockyardAccountDO curUser);
+        public delegate void UserRegistrationHandler(Fr8AccountDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
 
         public delegate void UserRegistrationErrorHandler(Exception ex);
@@ -72,7 +72,7 @@ namespace Data.Infrastructure
         //public static event BookingRequestMergedHandler AlertBookingRequestMerged;
 
         //EventProcessRequestReceived 
-        public delegate void EventProcessRequestReceivedHandler(ProcessDO processId);
+        public delegate void EventProcessRequestReceivedHandler(ContainerDO processId);
         public static event EventProcessRequestReceivedHandler EventProcessRequestReceived;
 
         public delegate void OAuthEventHandler(string userId);
@@ -86,7 +86,7 @@ namespace Data.Infrastructure
         public delegate void EventDocuSignNotificationReceivedHandler();
         public static event EventDocuSignNotificationReceivedHandler EventDocuSignNotificationReceived;
 
-        public delegate void EventProcessLaunchedHandler(ProcessDO launchedProcess);
+        public delegate void EventProcessLaunchedHandler(ContainerDO launchedProcess);
         public static event EventProcessLaunchedHandler EventProcessLaunched;
 
         public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
@@ -195,7 +195,7 @@ namespace Data.Infrastructure
 
 
 
-        public static void CustomerCreated(DockyardAccountDO user)
+        public static void CustomerCreated(Fr8AccountDO user)
         {
             if (AlertCustomerCreated != null)
                 AlertCustomerCreated(user);
@@ -253,7 +253,7 @@ namespace Data.Infrastructure
         //    if (handler != null) handler(oldbookingrequests);
         //}
 
-        public static void UserRegistration(DockyardAccountDO curUser)
+        public static void UserRegistration(Fr8AccountDO curUser)
         {
             if (AlertUserRegistration != null)
                 AlertUserRegistration(curUser);
@@ -339,7 +339,7 @@ namespace Data.Infrastructure
             if (handler != null) handler();
         }
 
-        public static void ProcessLaunched(ProcessDO launchedProcess)
+        public static void ProcessLaunched(ContainerDO launchedProcess)
         {
             var handler = EventProcessLaunched;
             if (handler != null) handler(launchedProcess);
@@ -404,7 +404,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(action);
         }
 
-        public static void ProcessRequestReceived(ProcessDO process)
+        public static void ProcessRequestReceived(ContainerDO process)
         {
             var handler = EventProcessRequestReceived;
             if (handler != null) handler(process);

@@ -20,7 +20,7 @@ namespace Core.Security
 {
     internal class SecurityServices : ISecurityServices
     {
-        public void Login(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO)
+        public void Login(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO)
         {
             ClaimsIdentity identity = GetIdentity(uow, dockyardAccountDO);
             HttpContext.Current.GetOwinContext().Authentication.SignIn(new AuthenticationProperties
@@ -30,7 +30,7 @@ namespace Core.Security
             ObjectFactory.GetInstance<ITracker>().Identify(dockyardAccountDO);
         }
 
-        public DockyardAccountDO GetCurrentAccount(IUnitOfWork uow)
+        public Fr8AccountDO GetCurrentAccount(IUnitOfWork uow)
         {
             var currentUser = GetCurrentUser();
 
@@ -82,7 +82,7 @@ namespace Core.Security
             HttpContext.Current.GetOwinContext().Authentication.SignOut();
         }
 
-        public ClaimsIdentity GetIdentity(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO)
+        public ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO)
         {
             var um = new DockyardIdentityManager(uow);
             var identity = um.CreateIdentity(dockyardAccountDO, DefaultAuthenticationTypes.ApplicationCookie);

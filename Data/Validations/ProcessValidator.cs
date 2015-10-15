@@ -5,7 +5,7 @@ using Data.Interfaces;
 using System.Collections.Generic;
 namespace Data.Validations
 {
-    public class ProcessValidator : AbstractValidator<ProcessDO>
+    public class ProcessValidator : AbstractValidator<ContainerDO>
     {
         public ProcessValidator()
         {

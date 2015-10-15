@@ -411,7 +411,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        private static DockyardAccountDO CreateAdmin(string userEmail, string curPassword, IUnitOfWork uow)
+        private static Fr8AccountDO CreateAdmin(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
@@ -431,7 +431,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        private static DockyardAccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
+        private static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
@@ -449,7 +449,7 @@ namespace Data.Migrations
                 uow.UserRepository.AddDefaultProfile(user);
         }
 
-        private void AddSubscription(IUnitOfWork uow, DockyardAccountDO curAccount, PluginDO curPlugin, int curAccessLevel)
+        private void AddSubscription(IUnitOfWork uow, Fr8AccountDO curAccount, PluginDO curPlugin, int curAccessLevel)
         {
             var curSub = new SubscriptionDO()
             {

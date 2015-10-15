@@ -7,9 +7,9 @@ namespace Data.Infrastructure.StructureMap
 {
     public interface ISecurityServices
     {
-        void Login(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO);
+        void Login(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
         // Can throw AuthenticationException
-        DockyardAccountDO GetCurrentAccount(IUnitOfWork uow);
+        Fr8AccountDO GetCurrentAccount(IUnitOfWork uow);
         String GetCurrentUser();
         String GetUserName();
         String[] GetRoleNames();

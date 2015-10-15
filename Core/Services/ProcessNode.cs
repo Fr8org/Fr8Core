@@ -34,13 +34,14 @@ namespace Core.Services
         /// Creates ProcessNode Object
         /// </summary>
         /// <returns>New ProcessNodeDO instance</returns>
-        public ProcessNodeDO Create(IUnitOfWork uow, int parentProcessId, int subrouteId, string name="ProcessNode")
+        public ProcessNodeDO Create(IUnitOfWork uow, int parentContainerId,
+            int subrouteId, string name = "ProcessNode")
         {
             var processNode = new ProcessNodeDO
             {
                 ProcessNodeState = ProcessNodeState.Unstarted,
                 Name = name,
-                ParentProcessId = parentProcessId
+                ParentContainerId = parentContainerId
             };
 
             processNode.SubrouteId = subrouteId;
@@ -81,16 +82,16 @@ namespace Core.Services
             var result = _criteria.Evaluate(curEventData, curProcessNode);
             if (result)
             {
-                var activityService = ObjectFactory.GetInstance<IActivity>();
+                var activityService = ObjectFactory.GetInstance<IRouteNode>();
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var curSubroute = uow.SubrouteRepository.GetByKey(curProcessNode.SubrouteId);
-                    ActivityDO currentAction = curSubroute;
+                    RouteNodeDO currentAction = curSubroute;
 
                     do
                     {
-                        activityService.Process(currentAction.Id, curProcessNode.ParentProcess);
+                        activityService.Process(currentAction.Id, curProcessNode.ParentContainer);
                         currentAction = activityService.GetNextActivity(currentAction, curSubroute);
                     } while (currentAction != null);
                 }

@@ -330,7 +330,7 @@
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
-    <Compile Include="Controllers\ProcessController.cs" />
+    <Compile Include="Controllers\ContainerController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
     <Compile Include="Controllers\ManageFileController.cs" />
@@ -749,10 +749,11 @@
     <Content Include="Views\ExternalAuth\AuthSuccess.cshtml" />
     <Content Include="Views\AngularTemplate\TextArea.cshtml" />
     <Content Include="Views\AngularTemplate\FieldList.cshtml" />
-    <Content Include="RunFrontEndTests-VSO.ps1" />
+    <Content Include="_PowerShellScripts\RunFrontEndTests-VSO.ps1" />
     <Content Include="Views\DockyardAccount\_HeaderPartial.cshtml" />
     <None Include="Views\Home\DocuSign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
+    <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageFileListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SelectActionController.ts" />
@@ -3962,8 +3963,8 @@
     <Content Include="Views\AngularTemplate\PaneSelectActionModal.cshtml" />
     <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
     <Content Include="Scripts\tests\Chutzpah.json" />
-    <Content Include="RunFrontEndTests - With Web Server.ps1" />
-    <Content Include="RunFrontEndTests.ps1" />
+    <Content Include="_PowerShellScripts\RunFrontEndTests - With Web Server.ps1" />
+    <Content Include="_PowerShellScripts\RunFrontEndTests.ps1" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
     <Content Include="Views\AngularTemplate\ConfigurationControl.cshtml" />
     <Content Include="Views\AngularTemplate\FilePicker.cshtml" />
@@ -4169,7 +4170,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
+          <UseIIS>True</UseIIS>
           <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>30643</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

@@ -31,7 +31,7 @@ namespace DockyardTest.Services
 
                 //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestSubrouteDO2();
-                sampleNodeTemplate.ParentActivityId = route.Id;
+                sampleNodeTemplate.ParentRouteNodeId = route.Id;
 
                 // Create
                 _subroute.Create(uow, sampleNodeTemplate);
@@ -54,7 +54,7 @@ namespace DockyardTest.Services
 
                 //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestSubrouteDO2();
-                sampleNodeTemplate.ParentActivityId = route.Id;
+                sampleNodeTemplate.ParentRouteNodeId = route.Id;
 
 
                 // Create
@@ -87,13 +87,13 @@ namespace DockyardTest.Services
 
                 //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestSubrouteDO2();
-                sampleNodeTemplate.ParentActivityId = route.Id;
+                sampleNodeTemplate.ParentRouteNodeId = route.Id;
 
                 // Create
                 _subroute.Create(uow, sampleNodeTemplate);
                 //will throw exception if it fails
 
-                if (uow.ActivityRepository.GetByKey(sampleNodeTemplate.Id) == null)
+                if (uow.RouteNodeRepository.GetByKey(sampleNodeTemplate.Id) == null)
                 {
                     throw new Exception("SubrouteDO add logic was failed.");
                 }

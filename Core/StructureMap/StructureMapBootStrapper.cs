@@ -1,7 +1,6 @@
 using System.Net.Http.Formatting;
 using AutoMapper;
 using Core.ExternalServices;
-using Core.Interfaces;
 using Core.Managers;
 using Core.Managers.APIManagers.Authorizers;
 using Core.Managers.APIManagers.Authorizers.Docusign;
@@ -24,6 +23,7 @@ using StructureMap;
 using StructureMap.Configuration.DSL;
 using System.Threading.Tasks;
 using Utilities;
+using Core.Interfaces;
 
 namespace Core.StructureMap
 {
@@ -96,10 +96,10 @@ namespace Core.StructureMap
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
                 For<IPluginTransmitter>().Use<PluginTransmitter>();
                 For<IRoute>().Use<Route>();
-                For<IProcess>().Use<Process>();
+                For<IContainerService>().Use<ContainerService>();
                 For<ICriteria>().Use<Criteria>();
                 For<IAction>().Use<Action>();
-				For<IActivity>().Use<Activity>();
+				For<IRouteNode>().Use<RouteNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
                 For<ISubroute>().Use<Subroute>();
@@ -143,11 +143,11 @@ namespace Core.StructureMap
                 For<IActivityTemplate>().Use<ActivityTemplate>();
                 
                 For<ITracker>().Use(mockSegment.Object);
-                For<IProcess>().Use<Process>();
+                For<IContainerService>().Use<ContainerService>();
                 For<ICriteria>().Use<Criteria>();
                 For<ISubscription>().Use<Subscription>();
                 For<IAction>().Use<Action>();
-					 For<IActivity>().Use<Activity>();
+					 For<IRouteNode>().Use<RouteNode>();
 
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IRoute>().Use<Route>();

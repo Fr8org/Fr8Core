@@ -68,8 +68,8 @@ namespace Core.Services
 
             if (existingActionDO != null)
             {
-                existingActionDO.ParentActivity = submittedActionData.ParentActivity;
-                existingActionDO.ParentActivityId = submittedActionData.ParentActivityId;
+                existingActionDO.ParentRouteNode = submittedActionData.ParentRouteNode;
+                existingActionDO.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
                 existingActionDO.ActivityTemplateId = submittedActionData.ActivityTemplateId;
                 existingActionDO.Name = submittedActionData.Name;
                 existingActionDO.CrateStorage = submittedActionData.CrateStorage;
@@ -163,13 +163,13 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAction = uow.ActivityRepository.GetQuery().FirstOrDefault(al => al.Id == id);
+                var curAction = uow.RouteNodeRepository.GetQuery().FirstOrDefault(al => al.Id == id);
                 if (curAction == null) // Why we add something in Delete method?!!! (Vladimir)
                 {
-                    curAction = new ActivityDO { Id = id };
-                    uow.ActivityRepository.Attach(curAction);
+                    curAction = new RouteNodeDO { Id = id };
+                    uow.RouteNodeRepository.Attach(curAction);
                 }
-                uow.ActivityRepository.Remove(curAction);
+                uow.RouteNodeRepository.Remove(curAction);
                 uow.SaveChanges();
             }
         }
@@ -200,51 +200,23 @@ namespace Core.Services
 //            return curAction;
 //        }
             
-        public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
+        public async Task PrepareToExecute(ActionDO curAction, ContainerDO curProcessDO, IUnitOfWork uow)
         {
-            //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
-            if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
-            {
-                curAction.ActionState = ActionState.InProcess;
-                uow.SaveChanges();
-
                 EventManager.ActionStarted(curAction);
 
                 var payload = await Execute(curAction, curProcessDO);
+
                 if (payload != null)
                 {
                     curProcessDO.CrateStorage = payload.CrateStorage;
                 }
 
-                //this JSON error check is broken because it triggers on standard success messages, which look like this:
-                //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
-
-
-                //check if the returned JSON is Error
-                //  if (jsonResult.ToLower().Contains("error"))
-                // {
-                //     curAction.ActionState = ActionState.Error;
-                //  }
-                //   else
-                //   {
-                curAction.ActionState = ActionState.Active;
-                //   }
-
                 uow.ActionRepository.Attach(curAction);
                 uow.SaveChanges();
-            }
-            else
-            {
-                curAction.ActionState = ActionState.Error;
-                uow.ActionRepository.Attach(curAction);
-                uow.SaveChanges();
-                throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
-            }
-            return curAction.ActionState.Value;
         }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
-        public async Task<PayloadDTO> Execute(ActionDO curActionDO, ProcessDO curProcessDO)
+        public async Task<PayloadDTO> Execute(ActionDO curActionDO, ContainerDO curProcessDO)
         {
             if (curActionDO == null)
             {
@@ -268,7 +240,7 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                DockyardAccountDO curDockyardAccountDO = GetAccount(curActionDO);
+                Fr8AccountDO curDockyardAccountDO = GetAccount(curActionDO);
                 var curPlugin = curActionDO.ActivityTemplate.Plugin;
                 string curToken = string.Empty;
 
@@ -287,7 +259,7 @@ namespace Core.Services
             }
         }
 
-        public async Task AuthenticateInternal(DockyardAccountDO account, PluginDO plugin,
+        public async Task AuthenticateInternal(Fr8AccountDO account, PluginDO plugin,
             string username, string password)
         {
             if (!plugin.RequiresAuthentication)
@@ -378,7 +350,7 @@ namespace Core.Services
         }
 
         public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl(
-            DockyardAccountDO user, PluginDO plugin)
+            Fr8AccountDO user, PluginDO plugin)
         {
             if (!plugin.RequiresAuthentication)
             {
@@ -432,21 +404,21 @@ namespace Core.Services
         /// </summary>
         /// <param name="curActionDO"></param>
         /// <returns></returns>
-        public DockyardAccountDO GetAccount(ActionDO curActionDO)
+        public Fr8AccountDO GetAccount(ActionDO curActionDO)
         {
-            if (curActionDO.ParentActivity != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
+            if (curActionDO.ParentRouteNode != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
             {
                 // Can't follow guideline to init services inside constructor. 
                 // Current implementation of Route and Action services are not good and are depedant on each other.
                 // Initialization of services in constructor will cause stack overflow
                 var route = ObjectFactory.GetInstance<IRoute>().GetRoute(curActionDO);
-                return route != null ? route.DockyardAccount : null;
+                return route != null ? route.Fr8Account : null;
             }
 
             return null;
 
         }
-
+        
         public void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists)
         {
             if (curCrateDTOLists == null)
@@ -562,7 +534,7 @@ namespace Core.Services
                     // Current implementation of Route and Action services are not good and are depedant on each other.
                     // Initialization of services in constructor will cause stack overflow
                     var route = ObjectFactory.GetInstance<IRoute>().GetRoute(action);
-                    var dockyardAccount =  route != null ? route.DockyardAccount : null;
+                    var dockyardAccount = route != null ? route.Fr8Account : null;
                     
                     if (dockyardAccount == null)
                     {

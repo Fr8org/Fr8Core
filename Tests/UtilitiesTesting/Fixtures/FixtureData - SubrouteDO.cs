@@ -20,7 +20,7 @@ namespace UtilitiesTesting.Fixtures
             var SubrouteDO = new SubrouteDO
             {
                 Id = 50,
-                ParentActivityId = 23,
+                ParentRouteNodeId = 23,
                 NodeTransitions = "[{'TransitionKey':'true','ProcessNodeId':'2'}]"
             };
             return SubrouteDO;
@@ -34,7 +34,7 @@ namespace UtilitiesTesting.Fixtures
                 Name = "TestName",
                 NodeTransitions =
                     "[{'TransitionKey':'true','ProcessNodeId':'1'},{'TransitionKey':'false','ProcessNodeId':'2'}]",
-                ParentActivityId = 50,
+                ParentRouteNodeId = 50,
                 StartingSubroute = true
             };
             return SubrouteDO;
