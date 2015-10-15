@@ -5,8 +5,9 @@ using StructureMap;
 using System.IO;
 using Utilities;
 using System.Linq;
+using UtilitiesTesting;
 
-namespace UtilitiesTesting
+namespace DockyardTest
 {
 	[TestFixture]
 	[Category("CsvReader")]
