@@ -162,6 +162,15 @@ namespace Core.Services
             }
         }
 
+        public void ReplaceCratesByManifestType(IList<CrateDTO> sourceCrates, string manifestType, IList<CrateDTO> newCratesContent)
+        {
+            //remove existing crates with the manifest type
+            RemoveCrateByManifestType(sourceCrates, manifestType);
+            
+            //add the new content to the source crates
+            newCratesContent.ToList().ForEach(sourceCrates.Add);
+        }
+
         public CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)
         {
             return Create(crateLabel,
