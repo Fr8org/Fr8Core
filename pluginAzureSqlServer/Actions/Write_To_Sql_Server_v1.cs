@@ -138,7 +138,7 @@ namespace pluginAzureSqlServer.Actions
             return "Deactivated";
         }
 
-        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
             var processPayload = await GetProcessPayload(actionDto.ProcessId);
 

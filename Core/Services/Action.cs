@@ -204,7 +204,7 @@ namespace Core.Services
         {
                 EventManager.ActionStarted(curAction);
 
-                var payload = await Execute(curAction, curProcessDO);
+                var payload = await Run(curAction, curProcessDO);
 
                 if (payload != null)
                 {
@@ -216,14 +216,14 @@ namespace Core.Services
         }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
-        public async Task<PayloadDTO> Execute(ActionDO curActionDO, ContainerDO curProcessDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curProcessDO)
         {
             if (curActionDO == null)
             {
                 throw new ArgumentNullException("curActionDO");
             }
 
-            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curProcessDO.Id);
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Run", curActionDO, curProcessDO.Id);
             
             // Temporarily commented out by yakov.gnusin.
             EventManager.ActionDispatched(curActionDO, curProcessDO.Id);
