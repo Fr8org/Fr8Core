@@ -90,8 +90,10 @@ namespace Web.Controllers
             {               
                 return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>));
             }
+
             return Ok();
-        }
+        
+       }
 
         
         // GET api/<controller>

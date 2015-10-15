@@ -286,9 +286,17 @@
     <Compile Include="Migrations\201510141530275_Rename ProcessNodeTemplate to Subroute.Designer.cs">
       <DependentUpon>201510141530275_Rename ProcessNodeTemplate to Subroute.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510141822442_RemoveActionState.cs" />
+    <Compile Include="Migrations\201510141822442_RemoveActionState.Designer.cs">
+      <DependentUpon>201510141822442_RemoveActionState.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201510150439139_Rename_Process_To_Container_Migration.cs" />
     <Compile Include="Migrations\201510150439139_Rename_Process_To_Container_Migration.Designer.cs">
       <DependentUpon>201510150439139_Rename_Process_To_Container_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510150528051_FixUp_Migration.cs" />
+    <Compile Include="Migrations\201510150528051_FixUp_Migration.Designer.cs">
+      <DependentUpon>201510150528051_FixUp_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
@@ -301,9 +309,6 @@
     <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
-    <Compile Include="States\ActionListState.cs" />
-    <Compile Include="States\ActionListType.cs" />
-    <Compile Include="States\ActionState.cs" />
     <Compile Include="States\ActivityCategory.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
@@ -379,7 +384,6 @@
     <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
-    <Compile Include="States\Templates\_ActionStateTemplate.cs" />
     <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
@@ -518,8 +522,14 @@
     <EmbeddedResource Include="Migrations\201510141530275_Rename ProcessNodeTemplate to Subroute.resx">
       <DependentUpon>201510141530275_Rename ProcessNodeTemplate to Subroute.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510141822442_RemoveActionState.resx">
+      <DependentUpon>201510141822442_RemoveActionState.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510150439139_Rename_Process_To_Container_Migration.resx">
       <DependentUpon>201510150439139_Rename_Process_To_Container_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510150528051_FixUp_Migration.resx">
+      <DependentUpon>201510150528051_FixUp_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
