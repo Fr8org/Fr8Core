@@ -14,7 +14,7 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Services
 {
-    public class Process : IProcess
+    public class ContainerService : Core.Interfaces.IContainerService
     {
         
         // Declarations
@@ -27,7 +27,7 @@ namespace Core.Services
         
         
 
-        public Process()
+        public ContainerService()
         {
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
             _activity = ObjectFactory.GetInstance<IActivity>();
@@ -42,9 +42,9 @@ namespace Core.Services
         /// <param name="processTemplateId"></param>
         /// <param name="envelopeId"></param>
         /// <returns></returns>
-        public ProcessDO Create(IUnitOfWork uow, int processTemplateId, CrateDTO curEvent)
+        public ContainerDO Create(IUnitOfWork uow, int processTemplateId, CrateDTO curEvent)
         {
-            var curProcessDO = ObjectFactory.GetInstance<ProcessDO>();
+            var curProcessDO = ObjectFactory.GetInstance<ContainerDO>();
 
                 var curRoute = uow.RouteRepository.GetByKey(processTemplateId);
                 if (curRoute == null)
@@ -52,7 +52,7 @@ namespace Core.Services
                 curProcessDO.Route = curRoute;
 
                 curProcessDO.Name = curRoute.Name;
-                curProcessDO.ProcessState = ProcessState.Unstarted;
+                curProcessDO.ContainerState = ContainerState.Unstarted;
 
                 var crates = new List<CrateDTO>();
                 if (curEvent != null)
@@ -85,22 +85,22 @@ namespace Core.Services
             {
                 var curProcessDO = Create(uow, curRoute.Id, curEvent);
 
-            if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
+            if (curProcessDO.ContainerState == ContainerState.Failed || curProcessDO.ContainerState == ContainerState.Completed)
                 {
                 throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
                 }
 
-                curProcessDO.ProcessState = ProcessState.Executing;
+                curProcessDO.ContainerState = ContainerState.Executing;
                 uow.SaveChanges();
 
                 try
                 {
                     await Execute(uow, curProcessDO);
-                    curProcessDO.ProcessState = ProcessState.Completed;
+                    curProcessDO.ContainerState = ContainerState.Completed;
             }
                 catch
                 {
-                    curProcessDO.ProcessState = ProcessState.Failed;
+                    curProcessDO.ContainerState = ContainerState.Failed;
                     throw;
         }
                 finally
@@ -112,7 +112,7 @@ namespace Core.Services
 
         
 
-        public async Task Execute(IUnitOfWork uow, ProcessDO curProcessDO)
+        public async Task Execute(IUnitOfWork uow, ContainerDO curProcessDO)
         {
             if (curProcessDO == null)
                 throw new ArgumentNullException("ProcessDO is null");
@@ -136,7 +136,7 @@ namespace Core.Services
 
         
 
-        private ActivityDO MoveToTheNextActivity(IUnitOfWork uow, ProcessDO curProcessDo)
+        private ActivityDO MoveToTheNextActivity(IUnitOfWork uow, ContainerDO curProcessDo)
         {
             var next =  ObjectFactory.GetInstance<IActivity>().GetNextActivity(curProcessDo.CurrentActivity, null);
 

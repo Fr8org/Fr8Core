@@ -286,6 +286,10 @@
     <Compile Include="Migrations\201510141530275_Rename ProcessNodeTemplate to Subroute.Designer.cs">
       <DependentUpon>201510141530275_Rename ProcessNodeTemplate to Subroute.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510150439139_Rename_Process_To_Container_Migration.cs" />
+    <Compile Include="Migrations\201510150439139_Rename_Process_To_Container_Migration.Designer.cs">
+      <DependentUpon>201510150439139_Rename_Process_To_Container_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -313,7 +317,7 @@
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\PluginDO.cs" />
-    <Compile Include="Entities\ProcessDO.cs" />
+    <Compile Include="Entities\ContainerDO.cs" />
     <Compile Include="Entities\ProcessNodeDO.cs" />
     <Compile Include="Entities\RouteDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
@@ -381,7 +385,7 @@
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
     <Compile Include="Entities\SubrouteDO.cs" />
     <Compile Include="States\Templates\_ProcessNodeStatusTemplate.cs" />
-    <Compile Include="States\Templates\_ProcessStateTemplate.cs" />
+    <Compile Include="States\Templates\_ContainerStateTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
     <Compile Include="States\ServiceAuthorizationType.cs" />
@@ -513,6 +517,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510141530275_Rename ProcessNodeTemplate to Subroute.resx">
       <DependentUpon>201510141530275_Rename ProcessNodeTemplate to Subroute.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510150439139_Rename_Process_To_Container_Migration.resx">
+      <DependentUpon>201510150439139_Rename_Process_To_Container_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

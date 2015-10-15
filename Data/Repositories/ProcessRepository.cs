@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace Data.Repositories
 {
-    public class ProcessRepository : GenericRepository<ProcessDO>, IProcessRepository
+    public class ProcessRepository : GenericRepository<ContainerDO>, IProcessRepository
     {
       
         internal ProcessRepository(IUnitOfWork uow)
@@ -18,7 +18,7 @@ namespace Data.Repositories
 
 
     }
-    public interface IProcessRepository : IGenericRepository<ProcessDO>
+    public interface IProcessRepository : IGenericRepository<ContainerDO>
     {
     }
 

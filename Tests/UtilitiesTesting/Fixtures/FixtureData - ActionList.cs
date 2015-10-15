@@ -81,11 +81,11 @@ namespace UtilitiesTesting.Fixtures
         public static ActionListDO TestActionListHealth1()
         {
             //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
-            var processDo = new ProcessDO
+            var processDo = new ContainerDO
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
-                ProcessState = 1,
+                ContainerState = 1,
                 Name = "test name",
                 RouteId = TestRouteHealthDemo().Id
             };
@@ -193,7 +193,7 @@ namespace UtilitiesTesting.Fixtures
 //
         public static ActionListDO TestActionList6()
         {
-            ProcessDO processDO = FixtureData.TestProcess1();
+            ContainerDO processDO = FixtureData.TestContainer1();
             processDO.CrateStorage = "";
             return new ActionListDO
             {

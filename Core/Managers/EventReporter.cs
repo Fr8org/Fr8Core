@@ -193,7 +193,7 @@ namespace Core.Managers
             }
         }
 
-        private void EventManagerOnEventProcessRequestReceived(ProcessDO process)
+        private void EventManagerOnEventProcessRequestReceived(ContainerDO process)
         {
             var fact = new FactDO
             {
@@ -631,7 +631,7 @@ namespace Core.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogEventProcessLaunched(ProcessDO launchedProcess)
+        private void LogEventProcessLaunched(ContainerDO launchedProcess)
         {
             var fact = new FactDO
             {
@@ -648,10 +648,10 @@ namespace Core.Managers
 
         private void LogEventProcessNodeCreated(ProcessNodeDO processNode)
         {
-            ProcessDO processInExecution;
+            ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                processInExecution = uow.ProcessRepository.GetByKey(processNode.ParentProcessId);
+                processInExecution = uow.ProcessRepository.GetByKey(processNode.ParentContainerId);
             }
 
             var fact = new FactDO
@@ -669,7 +669,7 @@ namespace Core.Managers
 
         private void LogEventCriteriaEvaluationStarted(int processId)
         {
-            ProcessDO processInExecution;
+            ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 processInExecution = uow.ProcessRepository.GetByKey(processId);
@@ -690,7 +690,7 @@ namespace Core.Managers
 
         private void LogEventCriteriaEvaluationFinished(int curProcessId)
         {
-            ProcessDO processInExecution;
+            ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 processInExecution = uow.ProcessRepository.GetByKey(curProcessId);
@@ -711,7 +711,7 @@ namespace Core.Managers
 
         private void LogEventActionStarted(ActionDO curAction)
         {
-            ProcessDO processInExecution;
+            ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 processInExecution = uow.ProcessRepository.GetQuery()
@@ -734,7 +734,7 @@ namespace Core.Managers
         // Commented by Vladimir. DO-1214. If one action can have only one Process?
         private void LogEventActionDispatched(ActionDO curAction, int processId)
         {
-            ProcessDO processInExecution;
+            ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 processInExecution = uow.ProcessRepository.GetByKey(processId);

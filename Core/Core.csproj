@@ -207,7 +207,7 @@
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IProcessNode.cs" />
-    <Compile Include="Interfaces\IProcess.cs" />
+    <Compile Include="Interfaces\IContainerService.cs" />
     <Compile Include="Interfaces\ISubroute.cs" />
     <Compile Include="Interfaces\IReport.cs" />
     <Compile Include="Interfaces\ISMSMessage.cs" />
@@ -286,7 +286,7 @@
     <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\ProcessNode.cs" />
-    <Compile Include="Services\Process.cs" />
+    <Compile Include="Services\ContainerService.cs" />
     <Compile Include="Services\Subroute.cs" />
     <Compile Include="Services\Route.cs" />
     <Compile Include="Services\Report.cs" />

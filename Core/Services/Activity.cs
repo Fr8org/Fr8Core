@@ -200,7 +200,7 @@ namespace Core.Services
                 return orderedActivities;
             }
 
-        public async Task Process(int curActivityId, ProcessDO processDO)
+        public async Task Process(int curActivityId, ContainerDO processDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

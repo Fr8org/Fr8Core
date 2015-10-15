@@ -200,7 +200,7 @@ namespace Core.Services
 //            return curAction;
 //        }
             
-        public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
+        public async Task<int> PrepareToExecute(ActionDO curAction, ContainerDO curProcessDO, IUnitOfWork uow)
         {
             //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
             if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
@@ -244,7 +244,7 @@ namespace Core.Services
         }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
-        public async Task<PayloadDTO> Execute(ActionDO curActionDO, ProcessDO curProcessDO)
+        public async Task<PayloadDTO> Execute(ActionDO curActionDO, ContainerDO curProcessDO)
         {
             if (curActionDO == null)
             {

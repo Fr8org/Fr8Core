@@ -21,14 +21,14 @@ using Data.Interfaces.DataTransferObjects;
 namespace Web.Controllers
 {
     [RoutePrefix("api/processes")]
-    public class ProcessController : ApiController
+    public class ContainerController : ApiController
     {
-        private readonly IProcess _process;
+        private readonly IContainerService _container;
 
 
-        public ProcessController()
+        public ContainerController()
         {
-            _process = ObjectFactory.GetInstance<IProcess>();
+            _container = ObjectFactory.GetInstance<IContainerService>();
         }
 
         [HttpGet]
@@ -65,7 +65,7 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var processTemplateDO = uow.RouteRepository.GetByKey(processTemplateId);
-                await _process.Launch(processTemplateDO, null);
+                await _container.Launch(processTemplateDO, null);
 
                 return Ok();
             }

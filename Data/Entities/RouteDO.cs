@@ -78,7 +78,7 @@ namespace Data.Entities
         public virtual DockyardAccountDO DockyardAccount { get; set; }
 
         [InverseProperty("Route")]
-        public virtual ICollection<ProcessDO> ChildProcesses { get; set; }
+        public virtual ICollection<ContainerDO> ChildContainers { get; set; }
 
         [NotMapped]
         public IEnumerable<SubrouteDO> Subroutes
