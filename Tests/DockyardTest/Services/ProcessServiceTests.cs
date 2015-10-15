@@ -24,7 +24,7 @@ namespace DockyardTest.Services
     {
         private IContainerService _processService;
         //private IDocuSignNotification _docuSignNotificationService;
-        private DockyardAccount _userService;
+        private Fr8Account _userService;
         private string _testUserId = "testuser";
         private string xmlPayloadFullPath;
         DocuSignEventDO docusignEventDO;
@@ -35,7 +35,7 @@ namespace DockyardTest.Services
         {
             base.SetUp();
             _processService = ObjectFactory.GetInstance<IContainerService>();
-            _userService = ObjectFactory.GetInstance<DockyardAccount>();
+            _userService = ObjectFactory.GetInstance<Fr8Account>();
             //_docuSignNotificationService = ObjectFactory.GetInstance<IDocuSignNotification>();
 
             xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
@@ -56,7 +56,7 @@ namespace DockyardTest.Services
                 uow.RouteRepository.Add(route);
                 foreach (var p in FixtureData.GetContainers())
                 {
-                    uow.ProcessRepository.Add(p);
+                    uow.ContainerRepository.Add(p);
                 }
                 uow.SaveChanges();
             }
@@ -162,9 +162,9 @@ namespace DockyardTest.Services
                 var curEvent = FixtureData.TestDocuSignEvent1();
 
                 //Create activity mock to process the actions
-                Mock<IActivity> activityMock = new Mock<IActivity>(MockBehavior.Default);
+                Mock<IRouteNode> activityMock = new Mock<IRouteNode>(MockBehavior.Default);
                 activityMock.Setup(a => a.Process(1, It.IsAny<ContainerDO>())).Returns(Task.Delay(2));
-                ObjectFactory.Container.Inject(typeof(IActivity), activityMock.Object);
+                ObjectFactory.Container.Inject(typeof(IRouteNode), activityMock.Object);
 
                 //Act
                 _processService = new Core.Services.ContainerService();
@@ -180,23 +180,23 @@ namespace DockyardTest.Services
         [Test]
         public async void Execute_MoveToNextActivity_ProcessCurrentAndNextActivity()
         {
-            var _activity = new Mock<IActivity>();
+            var _activity = new Mock<IRouteNode>();
             _activity
                 .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ContainerDO>()))
                 .Returns(Task.Delay(100))
                 .Verifiable();
-            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
+            ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(_activity.Object));
             _processService = ObjectFactory.GetInstance<IContainerService>();
             ContainerDO processDO = FixtureData.TestContainerWithCurrentActivityAndNextActivity();
-            ActivityDO originalCurrentActivity = processDO.CurrentActivity;
+            RouteNodeDO originalCurrentActivity = processDO.CurrentRouteNode;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 await _processService.Execute(uow, processDO);
         }
 
-            Assert.AreNotEqual(originalCurrentActivity, processDO.CurrentActivity);
-            Assert.IsNull(processDO.CurrentActivity);
+            Assert.AreNotEqual(originalCurrentActivity, processDO.CurrentRouteNode);
+            Assert.IsNull(processDO.CurrentRouteNode);
             _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ContainerDO>()));
         }
 

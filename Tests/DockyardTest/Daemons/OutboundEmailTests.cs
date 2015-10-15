@@ -138,7 +138,7 @@ namespace DockyardTest.Daemons
                 };
                 uow.AspNetRolesRepository.Add(FixtureData.TestRole());
                 var u = new Fr8AccountDO();
-                var user = new DockyardAccount();
+                var user = new Fr8Account();
                 Fr8AccountDO currDockyardAccountDO = new Fr8AccountDO();
                 currDockyardAccountDO.EmailAddress = emailAddress;
                 uow.UserRepository.Add(currDockyardAccountDO);

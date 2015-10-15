@@ -20,7 +20,7 @@ namespace DockyardTest.Services
     [Category("DockyardAccountService")]
     public class DockyardAccountTest : BaseTest
     {
-        private DockyardAccount _dockyardAccount;
+        private Fr8Account _dockyardAccount;
         Fr8AccountDO _dockyardAccountDO;
         private readonly string userName = "alexlucre";
         private readonly string password = "alex@123";
@@ -29,7 +29,7 @@ namespace DockyardTest.Services
         public override void SetUp()
         {
             base.SetUp();
-            _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
+            _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>();
             _dockyardAccountDO = FixtureData.TestDockyardAccount3();
         }
 
@@ -116,7 +116,7 @@ namespace DockyardTest.Services
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public void FailsGetDisplayNameIfDockyardAccountDONull()
         {
-            DockyardAccount.GetDisplayName(null);
+            Fr8Account.GetDisplayName(null);
         }
 
         [Test]
@@ -125,7 +125,7 @@ namespace DockyardTest.Services
             _dockyardAccountDO.FirstName = "Alex";
             _dockyardAccountDO.LastName = "Lucre";
             string displayName = "Alex Lucre";
-            Assert.AreEqual(displayName, DockyardAccount.GetDisplayName(_dockyardAccountDO));
+            Assert.AreEqual(displayName, Fr8Account.GetDisplayName(_dockyardAccountDO));
         }
 
         [Test]
@@ -134,7 +134,7 @@ namespace DockyardTest.Services
             _dockyardAccountDO.FirstName = "Alex";
             _dockyardAccountDO.LastName = null;
             string displayName = "Alex";
-            Assert.AreEqual(displayName, DockyardAccount.GetDisplayName(_dockyardAccountDO));
+            Assert.AreEqual(displayName, Fr8Account.GetDisplayName(_dockyardAccountDO));
         }
 
         [Test]
@@ -142,7 +142,7 @@ namespace DockyardTest.Services
         {
             _dockyardAccountDO.EmailAddress = FixtureData.TestEmailAddress1();
             string displayName = "Alex";
-            Assert.AreEqual(displayName, DockyardAccount.GetDisplayName(_dockyardAccountDO));
+            Assert.AreEqual(displayName, Fr8Account.GetDisplayName(_dockyardAccountDO));
         }
 
         [Test]
@@ -151,7 +151,7 @@ namespace DockyardTest.Services
             _dockyardAccountDO.EmailAddress = FixtureData.TestEmailAddress1();
             _dockyardAccountDO.EmailAddress.Name = null;
             string displayName = "alexlucre1";
-            Assert.AreEqual(displayName, DockyardAccount.GetDisplayName(_dockyardAccountDO));
+            Assert.AreEqual(displayName, Fr8Account.GetDisplayName(_dockyardAccountDO));
         }
         #endregion
 

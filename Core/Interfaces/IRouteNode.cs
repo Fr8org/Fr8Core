@@ -7,19 +7,19 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Interfaces
 {
-	public interface IActivity
+	public interface IRouteNode
 	{
-		List<ActivityDO> GetUpstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO);
+		List<RouteNodeDO> GetUpstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO);
 
-        List<ActivityDO> GetDownstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO);
+        List<RouteNodeDO> GetDownstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO);
 
         Task Process(int curActivityId, ContainerDO curProcessDO);
 
         IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount);
 
-        ActivityDO GetNextActivity(ActivityDO currentActivity, ActivityDO root);
+        RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, RouteNodeDO root);
 
-	    void Delete(IUnitOfWork uow, ActivityDO activity);
+	    void Delete(IUnitOfWork uow, RouteNodeDO activity);
 
         IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IFr8AccountDO curAccount);
 

@@ -20,9 +20,9 @@ namespace Core.Services
         
         // private readonly IProcess _process;
         private readonly ISubroute _subroute;
-        private readonly DockyardAccount _dockyardAccount;
+        private readonly Fr8Account _dockyardAccount;
         private readonly IAction _action;
-        private readonly IActivity _activity;
+        private readonly IRouteNode _activity;
         private readonly ICrate _crate;
 
         
@@ -31,9 +31,9 @@ namespace Core.Services
         public Route()
         {
             _subroute = ObjectFactory.GetInstance<ISubroute>();
-            _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
+            _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>();
             _action = ObjectFactory.GetInstance<IAction>();
-            _activity = ObjectFactory.GetInstance<IActivity>();
+            _activity = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
@@ -46,7 +46,7 @@ namespace Core.Services
 
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var queryableRepo = unitOfWork.RouteRepository.GetQuery().Include(pt => pt.Activities); // whe have to include Activities as it is a real navigational property. Not Routes
+                var queryableRepo = unitOfWork.RouteRepository.GetQuery().Include(pt => pt.RouteNodes); // whe have to include Activities as it is a real navigational property. Not Routes
 
                 if (isAdmin)
                 {
@@ -69,8 +69,8 @@ namespace Core.Services
             {
                 ptdo.RouteState = RouteState.Inactive;
                 var subroute = new SubrouteDO(true);
-                subroute.ParentActivity = ptdo;
-                ptdo.Activities.Add(subroute);
+                subroute.ParentRouteNode = ptdo;
+                ptdo.RouteNodes.Add(subroute);
 
                 uow.RouteRepository.Add(ptdo);
                 _subroute.Create(uow, ptdo.StartingSubroute);
@@ -132,9 +132,9 @@ namespace Core.Services
 
                 firstNodeTemplate = false;
 
-                if (template.Activities != null)
+                if (template.RouteNodes != null)
                 {
-                    foreach (var activityDo in template.Activities.OfType<TActivity>())
+                    foreach (var activityDo in template.RouteNodes.OfType<TActivity>())
                     {
                         yield return activityDo;
                     }
@@ -305,24 +305,24 @@ namespace Core.Services
 
         
 
-        public ActivityDO GetFirstActivity(int curRouteId)
+        public RouteNodeDO GetFirstActivity(int curRouteId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return EnumerateActivities<ActivityDO>(uow.RouteRepository.GetByKey(curRouteId)).FirstOrDefault();
+                return EnumerateActivities<RouteNodeDO>(uow.RouteRepository.GetByKey(curRouteId)).FirstOrDefault();
             }
         }
 
         
 
-        public ActivityDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute)
+        public RouteNodeDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute)
         {
-            return EnumerateActivities<ActivityDO>(curRoute).OrderBy(a => a.Ordering).FirstOrDefault();
+            return EnumerateActivities<RouteNodeDO>(curRoute).OrderBy(a => a.Ordering).FirstOrDefault();
         }
 
         public RouteDO GetRoute(ActionDO action)
         {
-            var root = action.ParentActivity;
+            var root = action.ParentRouteNode;
 
             while (root != null)
             {
@@ -331,7 +331,7 @@ namespace Core.Services
                     return (RouteDO)root;
                 }
 
-                root = root.ParentActivity;
+                root = root.ParentRouteNode;
             }
 
             return null;

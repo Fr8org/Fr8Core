@@ -197,7 +197,7 @@ namespace Core.Managers
         {
             var fact = new FactDO
             {
-                CustomerId = process.DockyardAccountId,
+                CustomerId = process.Fr8AccountId,
                 Data = process.Id.ToStr(),
                 ObjectId = process.Id.ToStr(),
                 PrimaryCategory = "Process Access",
@@ -635,7 +635,7 @@ namespace Core.Managers
         {
             var fact = new FactDO
             {
-                CustomerId = launchedProcess.DockyardAccountId,
+                CustomerId = launchedProcess.Fr8AccountId,
                 Data = launchedProcess.Id.ToStr(),
                 ObjectId = launchedProcess.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
@@ -651,12 +651,12 @@ namespace Core.Managers
             ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                processInExecution = uow.ProcessRepository.GetByKey(processNode.ParentContainerId);
+                processInExecution = uow.ContainerRepository.GetByKey(processNode.ParentContainerId);
             }
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
+                CustomerId = processInExecution != null ? processInExecution.Fr8AccountId : "unknown",
                 Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = processNode.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
@@ -672,12 +672,12 @@ namespace Core.Managers
             ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                processInExecution = uow.ProcessRepository.GetByKey(processId);
+                processInExecution = uow.ContainerRepository.GetByKey(processId);
             }
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
+                CustomerId = processInExecution != null ? processInExecution.Fr8AccountId : "unknown",
                 Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = null,
                 PrimaryCategory = "Process Execution",
@@ -693,12 +693,12 @@ namespace Core.Managers
             ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                processInExecution = uow.ProcessRepository.GetByKey(curProcessId);
+                processInExecution = uow.ContainerRepository.GetByKey(curProcessId);
             }
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
+                CustomerId = processInExecution != null ? processInExecution.Fr8AccountId : "unknown",
                 Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = null,
                 PrimaryCategory = "Process Execution",
@@ -714,13 +714,13 @@ namespace Core.Managers
             ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                processInExecution = uow.ProcessRepository.GetQuery()
-                    .FirstOrDefault(p => p.CurrentActivityId.Value == curAction.Id);
+                processInExecution = uow.ContainerRepository.GetQuery()
+                    .FirstOrDefault(p => p.CurrentRouteNodeId.Value == curAction.Id);
             }
 
             var fact = new FactDO
             {
-                CustomerId = (processInExecution != null) ? processInExecution.DockyardAccountId : "unknown",
+                CustomerId = (processInExecution != null) ? processInExecution.Fr8AccountId : "unknown",
                 Data = (processInExecution != null) ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
@@ -737,12 +737,12 @@ namespace Core.Managers
             ContainerDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                processInExecution = uow.ProcessRepository.GetByKey(processId);
+                processInExecution = uow.ContainerRepository.GetByKey(processId);
             }
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
+                CustomerId = processInExecution != null ? processInExecution.Fr8AccountId : "unknown",
                 Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Process Execution",

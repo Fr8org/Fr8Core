@@ -45,7 +45,7 @@ namespace Core.Managers.APIManagers.Packagers.SegmentIO
 
         private Dictionary<String, object> GetProperties(Fr8AccountDO dockyardAccountDO)
         {
-            var user = new DockyardAccount();
+            var user = new Fr8Account();
 
             return new Dictionary<string, object>
             {

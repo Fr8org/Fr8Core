@@ -109,7 +109,7 @@ namespace pluginTests.PluginBaseTests.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityRepository.Add(FixtureData.TestActionTree());
+                uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
                 uow.SaveChanges();
 
                 ActionDO curAction = FixtureData.TestAction57();
@@ -126,7 +126,7 @@ namespace pluginTests.PluginBaseTests.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityRepository.Add(FixtureData.TestActionTree());
+                uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
                 uow.SaveChanges();
 
                 ActionDO curAction = FixtureData.TestAction57();

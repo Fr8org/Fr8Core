@@ -14,7 +14,7 @@ namespace Core.Managers
     {
         private readonly IConfigRepository _configRepository;
         private readonly EmailAddress _emailAddress;
-        private readonly DockyardAccount _dockyardAccount;
+        private readonly Fr8Account _dockyardAccount;
         //private readonly INegotiation _negotiation;
         //private readonly IBookingRequest _br;
 
@@ -27,7 +27,7 @@ namespace Core.Managers
             _configRepository = configRepository;
 
             _emailAddress = emailAddress;
-            _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>(); //can this be mocked? we would want an interface...
+            _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>(); //can this be mocked? we would want an interface...
             //_negotiation = ObjectFactory.GetInstance<INegotiation>();
             //_br = ObjectFactory.GetInstance<IBookingRequest>(); 
         }
