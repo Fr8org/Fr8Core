@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceDefinition name="terminalCloudService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2015-04.2.6">
+  <WebRole name="terminalWebRole" vmsize="Small">
+    <Sites>
+      <Site name="pluginAzureSqlServer" physicalDirectory="..\..\..\pluginAzureSqlServer">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="pluginAzureSqlServer" />
+        </Bindings>
+      </Site>
+      <Site name="pluginSlack" physicalDirectory="..\..\..\pluginSlack">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="pluginSlack" />
+        </Bindings>
+      </Site>     
+      <Site name="pluginDocuSign" physicalDirectory="..\..\..\pluginDocuSign">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="pluginDocuSign" />
+        </Bindings>
+      </Site>                  
+      <Site name="pluginSalesforce" physicalDirectory="..\..\..\pluginSalesforce">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="pluginSalesforce" />
+        </Bindings>
+      </Site>
+      <Site name="pluginDockyardCore" physicalDirectory="..\..\..\pluginDockyardCore">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="pluginDockyardCore" />
+        </Bindings>
+      </Site>      
+      <Site name="pluginSendGrid" physicalDirectory="..\..\..\pluginSendGrid">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="pluginSendGrid" />
+        </Bindings>
+      </Site>           
+      <Site name="pluginTwilio" physicalDirectory="..\..\..\pluginTwilio">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="pluginTwilio" />
+        </Bindings>
+      </Site>      
+      
+    </Sites>
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
+    </ConfigurationSettings>
+    <Endpoints>
+      <InputEndpoint name="pluginAzureSqlServer" protocol="http" port="46281" />
+      <InputEndpoint name="pluginSlack" protocol="http" port="39504" />
+      <InputEndpoint name="pluginDocuSign" protocol="http" port="53234" />
+      <InputEndpoint name="pluginSalesforce" protocol="http" port="51234" />
+      <InputEndpoint name="pluginDockyardCore" protocol="http" port="50705" />
+      <InputEndpoint name="pluginSendGrid" protocol="http" port="10601" />
+      <InputEndpoint name="pluginTwilio" protocol="http" port="30699" />
+    </Endpoints>
+  </WebRole>
+</ServiceDefinition>
