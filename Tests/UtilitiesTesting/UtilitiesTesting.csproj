@@ -85,10 +85,6 @@
       <HintPath>..\..\packages\Microsoft.Owin.Hosting.2.0.2\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.WindowsAzure.Storage, Version=5.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\WindowsAzure.Storage.5.0.2\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
       <Private>True</Private>
@@ -149,8 +145,6 @@
   <ItemGroup>
     <Compile Include="BaseTest.cs" />
     <Compile Include="ClassMethod.cs" />
-    <Compile Include="CsvReaderTests.cs" />
-    <Compile Include="ExcelUtilsTests.cs" />
     <Compile Include="Fixtures\FixtureData - Action.cs" />
     <Compile Include="Fixtures\FixtureData - ActionDTO.cs" />
     <Compile Include="Fixtures\FixtureData - ActionList.cs" />
@@ -182,9 +176,9 @@
     <Compile Include="Fixtures\FixtureData - PluginIntegration.cs" />
     <Compile Include="Fixtures\FixtureData - Process.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNode.cs" />
-    <Compile Include="Fixtures\FixtureData - ProcessNodeTemplateDO.cs" />
-    <Compile Include="Fixtures\FixtureData - ProcessTemplate.cs" />
-    <Compile Include="Fixtures\FixtureData - ProcessTemplateDTO.cs" />
+    <Compile Include="Fixtures\FixtureData - SubrouteDO.cs" />
+    <Compile Include="Fixtures\FixtureData - Route.cs" />
+    <Compile Include="Fixtures\FixtureData - RouteDTO.cs" />
     <Compile Include="Fixtures\FixtureData - RestSettings.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />
     <Compile Include="Fixtures\FixtureData - SQLScript.cs" />
@@ -196,7 +190,6 @@
     <Compile Include="Fixtures\FixtureData -Configuration.cs" />
     <Compile Include="Fixtures\FixtureData-MTOobjects.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Validations\ValidationsTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -244,10 +237,6 @@
     <ProjectReference Include="..\..\pluginBase\PluginBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>PluginBase</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\pluginExcel\pluginExcel.csproj">
-      <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
-      <Name>pluginExcel</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

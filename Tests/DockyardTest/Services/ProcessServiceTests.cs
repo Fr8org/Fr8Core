@@ -52,8 +52,8 @@ namespace DockyardTest.Services
             //Arrange 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplate = FixtureData.TestProcessTemplate2();
-                uow.ProcessTemplateRepository.Add(processTemplate);
+                var route = FixtureData.TestRoute2();
+                uow.RouteRepository.Add(route);
                 foreach (var p in FixtureData.GetProcesses())
                 {
                     uow.ProcessRepository.Add(p);
@@ -75,12 +75,12 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var envelopeCrate = FixtureData.EnvelopeIdCrateJson();
-                var processTemplate = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplateAndActionList();
+                var route = FixtureData.TestRouteWithStartingSubrouteAndActionList();
 
-                uow.ProcessTemplateRepository.Add(processTemplate);
+                uow.RouteRepository.Add(route);
                 uow.SaveChanges();
 
-                var process = _processService.Create(uow, processTemplate.Id, FixtureData.GetEnvelopeIdCrate());
+                var process = _processService.Create(uow, route.Id, FixtureData.GetEnvelopeIdCrate());
                 Assert.IsNotNull(process);
                 Assert.IsTrue(process.Id > 0);
             }
@@ -95,14 +95,14 @@ namespace DockyardTest.Services
             {
                 //Arrange
                 var envelope = FixtureData.TestEnvelope1();
-                var processTemplate = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplates();
+                var route = FixtureData.TestRouteWithStartingSubroutes();
 
                 uow.EnvelopeRepository.Add(envelope);
-                uow.ProcessTemplateRepository.Add(processTemplate);
+                uow.RouteRepository.Add(route);
                 uow.SaveChanges();
 
                 //Act
-                ProcessDO curProcess = _processService.Create(processTemplate.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
+                ProcessDO curProcess = _processService.Create(route.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
 
                 //Assert
                 int expectedProcessNodeCount = uow.ProcessNodeRepository.GetAll().Count();
@@ -117,14 +117,14 @@ namespace DockyardTest.Services
             {
                 //Arrange
                 var envelope = FixtureData.TestEnvelope1();
-                var processTemplate = FixtureData.TestProcessTemplate1();
+                var route = FixtureData.TestRoute1();
 
                 uow.EnvelopeRepository.Add(envelope);
-                uow.ProcessTemplateRepository.Add(processTemplate);
+                uow.RouteRepository.Add(route);
                 uow.SaveChanges();
 
                 //Act
-                ProcessDO curProcess = _processService.Create(processTemplate.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
+                ProcessDO curProcess = _processService.Create(route.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
 
                 //Assert
                 int expectedProcessId = curProcess.ProcessNodes.First().ParentProcessId;
@@ -136,17 +136,17 @@ namespace DockyardTest.Services
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ProcessService_CanNot_CreateProcessWithIncorrectProcessTemplate()
+        public void ProcessService_CanNot_CreateProcessWithIncorrectRoute()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                const int incorrectProcessTemplateId = 2;
+                const int incorrectRouteId = 2;
 
                 var envelope = FixtureData.TestEnvelope1();
 
                 uow.EnvelopeRepository.Add(envelope);
                 uow.SaveChanges();
-                _processService.Create(incorrectProcessTemplateId, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
+                _processService.Create(incorrectRouteId, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
             }
         }
 */
@@ -158,7 +158,7 @@ namespace DockyardTest.Services
             {
                 //Arrange
                 //Create a process template
-                var curProcessTemplate = FixtureData.TestProcessTemplateWithSubscribeEvent();
+                var curRoute = FixtureData.TestRouteWithSubscribeEvent();
                 var curEvent = FixtureData.TestDocuSignEvent1();
 
                 //Create activity mock to process the actions
@@ -168,7 +168,7 @@ namespace DockyardTest.Services
 
                 //Act
                 _processService = new Process();
-                _processService.Launch(curProcessTemplate, FixtureData.DocuSignEventToCrate(curEvent));
+                _processService.Launch(curRoute, FixtureData.DocuSignEventToCrate(curEvent));
 
                 //Assert
                 //since we have only one action in the template, the process should be called exactly once

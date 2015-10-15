@@ -375,20 +375,20 @@ namespace Core.Services
 		  //	 return packager.Login();
 		  //}
 
-        public IEnumerable<ProcessTemplateDO> GetActiveProcessTemplates(string userId)
+        public IEnumerable<RouteDO> GetActiveRoutes(string userId)
         {
-            IEnumerable<ProcessTemplateDO> activeProcessTemplates;
+            IEnumerable<RouteDO> activeRoutes;
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplateQuery = unitOfWork.ProcessTemplateRepository.GetQuery().Include(i => i.DockyardAccount);
+                var processTemplateQuery = unitOfWork.RouteRepository.GetQuery().Include(i => i.DockyardAccount);
 
                 processTemplateQuery
-                    .Where(pt => pt.ProcessTemplateState == ProcessTemplateState.Active)//1.
+                    .Where(pt => pt.RouteState == RouteState.Active)//1.
                     .Where(id => id.DockyardAccount.Id == userId);//2
 
-                activeProcessTemplates = processTemplateQuery.ToList();
+                activeRoutes = processTemplateQuery.ToList();
             }
-            return activeProcessTemplates;
+            return activeRoutes;
         }
     }
 }

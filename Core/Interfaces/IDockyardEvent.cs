@@ -12,7 +12,7 @@ namespace Core.Interfaces
     public interface IDockyardEvent
     {
         Task ProcessInboundEvents(CrateDTO curCrateStandardEventReport);
-        Task LaunchProcess(ProcessTemplateDO curProcessTemplate, CrateDTO curEventData = null);
-        Task LaunchProcesses(List<ProcessTemplateDO> curProcessTemplates, CrateDTO curEventReport);
+        Task LaunchProcess(RouteDO curRoute, CrateDTO curEventData = null);
+        Task LaunchProcesses(List<RouteDO> curRoutes, CrateDTO curEventReport);
     }
 }

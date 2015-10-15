@@ -95,14 +95,14 @@ namespace Core.StructureMap
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
                 For<IPluginTransmitter>().Use<PluginTransmitter>();
-                For<IProcessTemplate>().Use<ProcessTemplate>();
+                For<IRoute>().Use<Route>();
                 For<IProcess>().Use<Process>();
                 For<ICriteria>().Use<Criteria>();
                 For<IAction>().Use<Action>();
 				For<IActivity>().Use<Activity>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
-                For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
+                For<ISubroute>().Use<Subroute>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
@@ -150,8 +150,8 @@ namespace Core.StructureMap
 					 For<IActivity>().Use<Activity>();
 
                 For<IProcessNode>().Use<ProcessNode>();
-                For<IProcessTemplate>().Use<ProcessTemplate>();
-                For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
+                For<IRoute>().Use<Route>();
+                For<ISubroute>().Use<Subroute>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);

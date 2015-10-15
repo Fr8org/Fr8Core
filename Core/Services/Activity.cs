@@ -172,9 +172,9 @@ namespace Core.Services
                 // TODO: it is not very smart solution. Activity service should not knon about anything except Activities
                 // But we have to support correct deletion of any activity types and any level of hierarchy
                 // May be other services should register some kind of callback to get notifed when activity is being deleted.
-                if (x is ProcessNodeTemplateDO)
+                if (x is SubrouteDO)
                 {
-                    foreach (var criteria in uow.CriteriaRepository.GetQuery().Where(y => y.ProcessNodeTemplateId == x.Id).ToArray())
+                    foreach (var criteria in uow.CriteriaRepository.GetQuery().Where(y => y.SubrouteId == x.Id).ToArray())
                 {
                         uow.CriteriaRepository.Remove(criteria);
                 }

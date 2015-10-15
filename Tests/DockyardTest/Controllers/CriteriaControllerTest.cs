@@ -12,7 +12,7 @@ namespace DockyardTest.Controllers
 {
     public class CriteriaControllerTest : ApiControllerTestBase
     {
-        private ProcessNodeTemplateDO _curProcessNodeTemplate;
+        private SubrouteDO _curSubroute;
         private CriteriaDO _curCriteria;
 
         public override void SetUp()
@@ -22,13 +22,13 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        public void CriteriaController_GetByProcessNodeTemplateId()
+        public void CriteriaController_GetBySubrouteId()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var controller = CreateController<CriteriaController>();
 
-                var actionResult = controller.GetByProcessNodeTemplateId(_curProcessNodeTemplate.Id);
+                var actionResult = controller.GetBySubrouteId(_curSubroute.Id);
 
                 var okResult = actionResult as OkNegotiatedContentResult<CriteriaDTO>;
 
@@ -44,26 +44,26 @@ namespace DockyardTest.Controllers
             {
 
                 //Add a template
-                var curProcessTemplate = FixtureData.TestProcessTemplate1();
-                uow.ProcessTemplateRepository.Add(curProcessTemplate);
+                var curRoute = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(curRoute);
                 uow.SaveChanges();
 
                 //Add a template
-                var processTemplate = FixtureData.TestProcessTemplate1();
-                uow.ProcessTemplateRepository.Add(processTemplate);
+                var route = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(route);
                 uow.SaveChanges();
                 //Add a processnodetemplate to processtemplate 
-                _curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-                _curProcessNodeTemplate.ParentActivityId = processTemplate.Id;
-                uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
+                _curSubroute = FixtureData.TestSubrouteDO1();
+                _curSubroute.ParentActivityId = route.Id;
+                uow.SubrouteRepository.Add(_curSubroute);
                 uow.SaveChanges();
 
-                /*_curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-                uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
+                /*_curSubroute = FixtureData.TestSubrouteDO1();
+                uow.SubrouteRepository.Add(_curSubroute);
                 uow.SaveChanges();*/
 
                 _curCriteria = FixtureData.TestCriteria1();
-                _curCriteria.ProcessNodeTemplate = _curProcessNodeTemplate;
+                _curCriteria.Subroute = _curSubroute;
 
                 uow.CriteriaRepository.Add(_curCriteria);
                 uow.SaveChanges();

@@ -423,13 +423,13 @@ namespace Data.Infrastructure
 			  return _activityRepository ?? (_activityRepository = new ActivityRepository(this));
 		  }
 	  }
-      private IProcessTemplateRepository _processTemplateRepository;
+      private IRouteRepository _routeRepository;
 
-        public IProcessTemplateRepository ProcessTemplateRepository
+        public IRouteRepository RouteRepository
         {
             get
             {
-                return _processTemplateRepository ?? (_processTemplateRepository = new ProcessTemplateRepository(this));
+                return _routeRepository ?? (_routeRepository = new RouteRepository(this));
             }
         }
 
@@ -443,13 +443,13 @@ namespace Data.Infrastructure
             }
         }
 
-        private ProcessNodeTemplateRepository _processNodeTemplateRepository;
+        private SubrouteRepository _subrouteRepository;
 
-        public IProcessNodeTemplateRepository ProcessNodeTemplateRepository
+        public ISubrouteRepository SubrouteRepository
         {
             get
             {
-                return _processNodeTemplateRepository ?? (_processNodeTemplateRepository = new ProcessNodeTemplateRepository(this));
+                return _subrouteRepository ?? (_subrouteRepository = new SubrouteRepository(this));
             }
         }
 

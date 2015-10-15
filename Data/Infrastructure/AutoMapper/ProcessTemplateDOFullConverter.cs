@@ -8,39 +8,39 @@ using Data.Interfaces.DataTransferObjects;
 namespace Data.Infrastructure.AutoMapper
 {
     /// <summary>
-    /// AutoMapper converter to convert ProcessTemplateDO to FullProcessTemplateDTO.
+    /// AutoMapper converter to convert RouteDO to FullRouteDTO.
     /// </summary>
-    public class ProcessTemplateDOFullConverter
-        : ITypeConverter<ProcessTemplateDO, ProcessTemplateDTO>
+    public class RouteDOFullConverter
+        : ITypeConverter<RouteDO, RouteDTO>
     {
         public const string UnitOfWork_OptionsKey = "UnitOfWork";
 
 
-        public ProcessTemplateDTO Convert(ResolutionContext context)
+        public RouteDTO Convert(ResolutionContext context)
         {
-            var processTemplate = (ProcessTemplateDO)context.SourceValue;
+            var route = (RouteDO)context.SourceValue;
             var uow = (IUnitOfWork)context.Options.Items[UnitOfWork_OptionsKey];
 
-            if (processTemplate == null)
+            if (route == null)
             {
                 return null;
             }
 
-            var processNodeTemplateDTOList = uow.ProcessNodeTemplateRepository
+            var subrouteDTOList = uow.SubrouteRepository
                 .GetQuery()
                 .Include(x => x.Activities)
-                .Where(x => x.ParentActivityId == processTemplate.Id)
+                .Where(x => x.ParentActivityId == route.Id)
                 .OrderBy(x => x.Id)
                 .ToList()
-                .Select((ProcessNodeTemplateDO x) =>
+                .Select((SubrouteDO x) =>
                 {
-                    var pntDTO = Mapper.Map<FullProcessNodeTemplateDTO>(x);
+                    var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
                     pntDTO.Actions = x.Activities.OfType<ActionDO>().Select(Mapper.Map<ActionDTO>).ToList();
                     return pntDTO;
                 }).ToList();
 
-            var result = Mapper.Map<ProcessTemplateDTO>(Mapper.Map<ProcessTemplateOnlyDTO>(processTemplate));
-            result.ProcessNodeTemplates = processNodeTemplateDTOList;
+            var result = Mapper.Map<RouteDTO>(Mapper.Map<RouteOnlyDTO>(route));
+            result.Subroutes = subrouteDTOList;
 
             return result;
         }

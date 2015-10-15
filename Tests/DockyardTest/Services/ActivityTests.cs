@@ -24,7 +24,7 @@ namespace DockyardTest.Services
     {
         private IActivity _activity;
         //private Mock<IAction> _actionMock;
-        private ProcessNodeTemplateDO _curProcessNodeTemplate;
+        private SubrouteDO _curSubroute;
         [SetUp]
         public override void SetUp()
         {

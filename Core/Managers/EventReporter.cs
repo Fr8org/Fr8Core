@@ -382,19 +382,19 @@ namespace Core.Managers
         /// </summary>
         /// <param name="userId">UserId received from DocuSign.</param>
         /// <param name="processTemplateId">EnvelopeId received from DocuSign.</param>
-        public void ProcessTemplateCreated(string userId, string processTemplateName)
+        public void RouteCreated(string userId, string processTemplateName)
         {
             FactDO fact = new FactDO
             {
-                PrimaryCategory = "ProcessTemplateService",
+                PrimaryCategory = "RouteService",
                 SecondaryCategory = null,
                 Activity = "Created",
                 CustomerId = userId,
                 ObjectId = "0",
-                Data = string.Format("ProcessTemplate Name: {0}.",
+                Data = string.Format("Route Name: {0}.",
                         processTemplateName)
             };
-            LogFactInformation(fact, "ProcessTemplateCreated");
+            LogFactInformation(fact, "RouteCreated");
             SaveFact(fact);
         }
 
