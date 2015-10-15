@@ -15,12 +15,12 @@ using PluginUtilities.BaseClasses;
 
 namespace pluginDocuSign.Actions
 {
-    public class Extract_From_DocuSign_Envelope_v1 : BasePluginAction
+    public class Receive_DocuSign_Envelope_v1 : BasePluginAction
     {
         // TODO: remove this as of DO-1064
         // IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
 
-        public Extract_From_DocuSign_Envelope_v1()
+        public Receive_DocuSign_Envelope_v1()
         {
             // TODO: remove this as of DO-1064
             // _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();

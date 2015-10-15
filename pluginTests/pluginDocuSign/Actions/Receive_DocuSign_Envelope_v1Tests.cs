@@ -19,14 +19,14 @@ namespace pluginTests.pluginDocuSign.Actions
 {
     [TestFixture]
     [Category("pluginDocuSign")]
-    public class Extract_From_DocuSign_Envelope_v1Tests : BaseTest
+    public class Receive_DocuSign_Envelope_v1Tests : BaseTest
     {
-        Extract_From_DocuSign_Envelope_v1 _extract_From_DocuSign_Envelope_v1;
+        Receive_DocuSign_Envelope_v1 _extract_From_DocuSign_Envelope_v1;
 
-        public Extract_From_DocuSign_Envelope_v1Tests()
+        public Receive_DocuSign_Envelope_v1Tests()
         {
             base.SetUp();
-            _extract_From_DocuSign_Envelope_v1 = new Extract_From_DocuSign_Envelope_v1();
+            _extract_From_DocuSign_Envelope_v1 = new Receive_DocuSign_Envelope_v1();
 
         }
 
@@ -63,7 +63,7 @@ namespace pluginTests.pluginDocuSign.Actions
             object[] parameters = new object[] { curPayloadDTO };
 
             //Act
-            var result = (string)ClassMethod.Invoke(typeof(Extract_From_DocuSign_Envelope_v1), "GetEnvelopeId", parameters);
+            var result = (string)ClassMethod.Invoke(typeof(Receive_DocuSign_Envelope_v1), "GetEnvelopeId", parameters);
 
             //Assert
             Assert.AreEqual("EnvelopeIdValue", result);
@@ -79,7 +79,7 @@ namespace pluginTests.pluginDocuSign.Actions
             object[] parameters = new object[] { curActionDTO };
 
             //Act
-            var result = (List<FieldDTO>)ClassMethod.Invoke(typeof(Extract_From_DocuSign_Envelope_v1), "GetFields", parameters);
+            var result = (List<FieldDTO>)ClassMethod.Invoke(typeof(Receive_DocuSign_Envelope_v1), "GetFields", parameters);
 
             //Assert
             Assert.AreEqual(4, result.Count);
@@ -107,7 +107,7 @@ namespace pluginTests.pluginDocuSign.Actions
         }
 
     }
-    public class Extract_From_DocuSign_Envelope_v1_Proxy : Extract_From_DocuSign_Envelope_v1
+    public class Extract_From_DocuSign_Envelope_v1_Proxy : Receive_DocuSign_Envelope_v1
     {
         private readonly IActivity _activity;
 
