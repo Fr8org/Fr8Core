@@ -13,7 +13,7 @@ namespace pluginDockyardCore.Actions
 {
     public class AddPayloadManually_v1 : BasePluginAction
     {
-        public async Task<PayloadDTO> Execute(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
             var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
 

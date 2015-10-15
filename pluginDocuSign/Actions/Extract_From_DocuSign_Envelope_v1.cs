@@ -49,7 +49,7 @@ namespace pluginDocuSign.Actions
             return; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
             if (IsEmptyAuthToken(actionDto))
             {
