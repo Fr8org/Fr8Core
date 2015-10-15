@@ -399,7 +399,7 @@ namespace UtilitiesTesting.Fixtures
                 Description = "descr 1",
                 Name = "template1",
                 RouteState = RouteState.Active,
-                DockyardAccount = FixtureData.TestDockyardAccount1()
+                Fr8Account = FixtureData.TestDockyardAccount1()
             };
 
             var curProcessDO = new ContainerDO()

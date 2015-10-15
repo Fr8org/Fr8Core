@@ -274,7 +274,7 @@ namespace Web.Controllers
         //    }
         //}
 
-        private UserVM CreateUserVM(DockyardAccountDO u, IUnitOfWork uow)
+        private UserVM CreateUserVM(Fr8AccountDO u, IUnitOfWork uow)
         {
             return new UserVM
             {
@@ -295,7 +295,7 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                DockyardAccountDO curDockyardAccount = uow.UserRepository.GetQuery().Where(user => user.Id == userId).FirstOrDefault();
+                Fr8AccountDO curDockyardAccount = uow.UserRepository.GetQuery().Where(user => user.Id == userId).FirstOrDefault();
 
                 if (curDockyardAccount != null)
                 {
@@ -379,7 +379,7 @@ namespace Web.Controllers
                 var users = uow.UserRepository.GetAll();
                 var userDTOList = users.Select(user =>
                 {
-                    var dto = _mappingEngine.Map<DockyardAccountDO, UserDTO>(user);
+                    var dto = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
                 dto.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(user.Id).Select(r => r.Name).ToArray());
                 return dto;
                 }).ToList();
@@ -394,7 +394,7 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var user = uow.UserRepository.FindOne(u => u.Id == id);
-                var userDTO = _mappingEngine.Map<DockyardAccountDO, UserDTO>(user);
+                var userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
                 userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
                 return Ok(userDTO);
             }

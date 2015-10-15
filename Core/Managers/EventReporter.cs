@@ -489,7 +489,7 @@ namespace Core.Managers
             LogFactInformation(fact, fact.SecondaryCategory + " " + fact.Activity);
         }
 
-        public void UserRegistered(DockyardAccountDO curUser)
+        public void UserRegistered(Fr8AccountDO curUser)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

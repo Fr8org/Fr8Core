@@ -225,7 +225,7 @@ Please register first.");
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    DockyardAccountDO curDockyardAccountDO = uow.UserRepository.FindOne(u => u.Id == userId);
+                    Fr8AccountDO curDockyardAccountDO = uow.UserRepository.FindOne(u => u.Id == userId);
                     if (curDockyardAccountDO != null)
                     {
                         curDockyardAccountDO.EmailConfirmed = true;

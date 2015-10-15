@@ -178,7 +178,7 @@ namespace Daemons
             
             foreach (RecipientDO recipient in recipientList)
             {
-                DockyardAccountDO dockyardAccount = uow.UserRepository.FindOne(e => e.EmailAddress.Address == recipient.EmailAddress.Address);
+                Fr8AccountDO dockyardAccount = uow.UserRepository.FindOne(e => e.EmailAddress.Address == recipient.EmailAddress.Address);
 
                 if (dockyardAccount != null && !uow.AspNetUserRolesRepository.UserHasRole(Roles.Admin, dockyardAccount.Id) && !dockyardAccount.TestAccount)
                 {

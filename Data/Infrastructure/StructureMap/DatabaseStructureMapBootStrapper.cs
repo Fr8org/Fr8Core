@@ -17,7 +17,7 @@ namespace Data.Infrastructure.StructureMap
                 For<IAttachmentDO>().Use<AttachmentDO>();
                 For<IEmailDO>().Use<EmailDO>();
                 For<IEmailAddressDO>().Use<EmailAddressDO>();
-                For<IDockyardAccountDO>().Use<DockyardAccountDO>();
+                For<IFr8AccountDO>().Use<Fr8AccountDO>();
                 For<IAspNetRolesDO>().Use<AspNetRolesDO>();
                 For<IAspNetUserRolesDO>().Use<AspNetUserRolesDO>();
                 For<IUnitOfWork>().Use(_ => new UnitOfWork(_.GetInstance<IDBContext>()));

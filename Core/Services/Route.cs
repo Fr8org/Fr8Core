@@ -55,8 +55,8 @@ namespace Core.Services
                 }
 
                 queryableRepo = (id == null
-                    ? queryableRepo.Where(pt => pt.DockyardAccount.Id == userId)
-                    : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == userId));
+                    ? queryableRepo.Where(pt => pt.Fr8Account.Id == userId)
+                    : queryableRepo.Where(pt => pt.Id == id && pt.Fr8Account.Id == userId));
                 return (status == null
                     ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
             }

@@ -15,13 +15,13 @@ namespace Core.Interfaces
 
         Task Process(int curActivityId, ContainerDO curProcessDO);
 
-        IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IDockyardAccountDO curAccount);
+        IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount);
 
         ActivityDO GetNextActivity(ActivityDO currentActivity, ActivityDO root);
 
 	    void Delete(IUnitOfWork uow, ActivityDO activity);
 
-        IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IDockyardAccountDO curAccount);
+        IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IFr8AccountDO curAccount);
 
 	    Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction);
 	}
