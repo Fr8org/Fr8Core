@@ -158,7 +158,7 @@ namespace pluginSendGrid.Actions
             return htmlText;
         }
 
-        public async Task<PayloadDTO> Execute(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
             var fromAddress = _configRepository.Get("OutboundFromAddress");
 

@@ -98,11 +98,11 @@ namespace pluginDocuSign.Controllers
         }
 
         [HttpPost]
-        [Route("execute")]
-        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
+        [Route("run")]
+        public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
             return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(
-                curPlugin, "Execute", actionDto);
+                curPlugin, "Run", actionDto);
         }
     }
 }
