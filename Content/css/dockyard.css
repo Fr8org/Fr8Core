@@ -88,6 +88,29 @@
 
 /* Process Builder */
 
+.designer-header {
+    background-color: #58b8a9;
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.process-template-name {
+    display: inline-block;
+    font-size: 24px;
+    font-weight: bold;
+    vertical-align: top;
+    min-width: 300px;
+}
+
+.switch-btn {
+    background-color: lightgrey;
+    width: 80px;
+}
+
+.switch-btn.active {
+    background-color: #428bca;
+}
+
 .process-builder-container {
     overflow-y: auto;
     white-space: nowrap;

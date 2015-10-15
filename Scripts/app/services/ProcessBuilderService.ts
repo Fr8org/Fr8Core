@@ -8,6 +8,8 @@ module dockyard.services {
         getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IProcessTemplateVM>;
         getFull: (id: Object) => interfaces.IProcessTemplateVM;
         execute: (id: {id: number}) => void;
+        activate: (processTemplate: model.ProcessTemplateDTO) => void;
+        deactivate: (processTemplate: model.ProcessTemplateDTO) => void;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -76,6 +78,16 @@ module dockyard.services {
                     params: {
                         id: '@id'
                     }
+                },
+                'activate': {
+                    method: 'POST',
+                    url: '/api/processTemplate/activate',
+                    params: {}
+                },
+                'deactivate': {
+                    method: 'POST',
+                    url: '/api/processTemplate/deactivate',
+                    params: {}
                 }
             })
     ]);
