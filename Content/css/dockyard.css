@@ -229,3 +229,14 @@ input[type=radio] + div.nested-controls {
 input[type=radio]:checked + div.nested-controls {
     display: block;
 } 
+
+.page-header .page-header-top, 
+.page-header .page-header-menu {
+    padding-left: 10px;
+    padding-right: 2%;
+}
+
+.page-header .container{
+    width: 100%;
+    margin: 0;
+}
