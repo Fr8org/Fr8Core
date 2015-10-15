@@ -89,28 +89,28 @@ namespace DockyardTest.Services
         }
 
 
-        [Test]
-        [Ignore("ActionState will be removed and is not used")]
-        public void Activate_HasParentActivity_SetActionStateActive()
-        {
-            var curRouteDO = FixtureData.TestRoute3();
-            var _action = new Mock<IAction>();
-            _action
-                .Setup(c => c.Activate(It.IsAny<ActionDO>()))
-                .Returns(Task.FromResult(new ActionDTO()));
-            ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_action.Object));
-            _processTemplateService = ObjectFactory.GetInstance<IRoute>();
-
-            string result = _processTemplateService.Activate(curRouteDO);
-
-
-            Assert.AreEqual(result, "success");
-            var activities = curRouteDO.Subroutes.SelectMany(s => s.Activities).SelectMany(s => s.Activities);
-            foreach (ActionDO curActionDO in activities)
-            {
-                Assert.AreEqual(curActionDO.ActionState, ActionState.Active);
-            }
-        }
+//        [Test]
+//        [Ignore("ActionState will be removed and is not used")]
+//        public void Activate_HasParentActivity_SetActionStateActive()
+//        {
+//            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
+//            var _action = new Mock<IAction>();
+//            _action
+//                .Setup(c => c.Activate(It.IsAny<ActionDO>()))
+//                .Returns(Task.FromResult(new ActionDTO()));
+//            ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_action.Object));
+//            _processTemplateService = ObjectFactory.GetInstance<IProcessTemplate>();
+//
+//            string result = _processTemplateService.Activate(curProcessTemplateDO);
+//
+//
+//            Assert.AreEqual(result, "success");
+//            var activities = curProcessTemplateDO.ProcessNodeTemplates.SelectMany(s => s.Activities).SelectMany(s => s.Activities);
+//            foreach (ActionDO curActionDO in activities)
+//            {
+//                Assert.AreEqual(curActionDO.ActionState, ActionState.Active);
+//            }
+//        }
 
 //        [Test]
 //        [ExpectedException(typeof(ArgumentNullException))]

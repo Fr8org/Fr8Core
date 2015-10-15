@@ -123,7 +123,6 @@ namespace UtilitiesTesting.Fixtures
                 {
                     ParentActivity = processTemplateDO,
                     ParentActivityId = processTemplateDO.Id,
-                    ActionState = ActionState.Unstarted,
                     Name = "testaction",
 
                     Id = 1,
