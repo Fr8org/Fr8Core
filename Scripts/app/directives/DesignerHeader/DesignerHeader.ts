@@ -35,10 +35,11 @@ module dockyard.directives.designerHeader {
                 $attrs: ng.IAttributes) => {
 
                 $scope.onStateChange = () => {
+                    debugger;
                     if ($scope.processTemplate.processTemplateState === model.ProcessState.Inactive) {
-                        ProcessTemplateService.activate($scope.processTemplate);
-                    } else {
                         ProcessTemplateService.deactivate($scope.processTemplate);
+                    } else {
+                        ProcessTemplateService.activate($scope.processTemplate);
                     }
                 };
             };
