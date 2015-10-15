@@ -115,16 +115,32 @@ namespace pluginTests.PluginExcelTests
                     CrateDTO = new System.Collections.Generic.List<CrateDTO>(),
                 },
             };
-            StandardConfigurationControlsCM confControlsMS = new StandardConfigurationControlsCM()
+            StandardConfigurationControlsCM confControlsCM = new StandardConfigurationControlsCM()
             {
                 Controls = new List<ControlDefinitionDTO>()
                 {
-                    new FilePickerControlDefinisionDTO(),
+                    new ControlDefinitionDTO(ControlTypes.FilePicker)
+                    {
+                        Label = "Select Excel File",
+                        Name = "select_file",
+                        Required = true,
+                        Events = new List<ControlEvent>()
+                        {
+                            new ControlEvent("onChange", "requestConfig")
+                        },
+                        Source = new FieldSourceDTO
+                        {
+                            Label = "Select Excel File",
+                            ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+                        },
+                        Value = "Some Path",
+                    },
                 },
             };
+            
             curActionDTO.CrateStorage.CrateDTO.Add(new CrateDTO()
                 {
-                    Contents = JsonConvert.SerializeObject(confControlsMS),
+                    Contents = JsonConvert.SerializeObject(confControlsCM),
                     ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
                 });
             //Mock<ICrate> crateMock = new Mock<ICrate>();
