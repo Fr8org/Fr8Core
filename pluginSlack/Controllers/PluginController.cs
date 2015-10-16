@@ -31,7 +31,7 @@ namespace pluginSlack.Controllers
             var monitorChannelAction = new ActivityTemplateDO
             {
                 Name = "Monitor_Channel",
-                Category = ActivityCategory.fr8_Monitor,
+                Category = ActivityCategory.Monitors,
                 Plugin = plugin,
                 Version = "1"
             };
@@ -39,7 +39,7 @@ namespace pluginSlack.Controllers
             var publishToSlackAction = new ActivityTemplateDO
             {
                 Name = "Publish_To_Slack",
-                Category = ActivityCategory.fr8_Forwarder,
+                Category = ActivityCategory.Forwarders,
                 Plugin = plugin,
                 Version = "1"
             };

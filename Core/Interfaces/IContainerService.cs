@@ -5,11 +5,11 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Interfaces
 {
-    public interface IProcess
+    public interface IContainerService
     {
-        ProcessDO Create(IUnitOfWork uow, int processTemplateId, CrateDTO curEvent);
+        ContainerDO Create(IUnitOfWork uow, int processTemplateId, CrateDTO curEvent);
         Task Launch(RouteDO curRoute, CrateDTO curEvent);
-        Task Execute(IUnitOfWork uow, ProcessDO curProcessDO);
+        Task Execute(IUnitOfWork uow, ContainerDO curProcessDO);
         //void SetProcessNextActivity(ProcessDO curProcessDO);
     }
 }

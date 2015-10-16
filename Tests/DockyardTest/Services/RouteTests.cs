@@ -56,7 +56,7 @@ namespace DockyardTest.Services
             {
                 var curRouteDO = FixtureData.TestRoute_CanCreate();
                 var curUserAccount = FixtureData.TestDockyardAccount1();
-                curRouteDO.DockyardAccount = curUserAccount;
+                curRouteDO.Fr8Account = curUserAccount;
                 _processTemplateService.CreateOrUpdate(uow, curRouteDO, false);
                 uow.SaveChanges();
 
@@ -65,7 +65,7 @@ namespace DockyardTest.Services
                 Assert.AreNotEqual(result.Id, 0);
                 Assert.NotNull(result.StartingSubroute);
                 Assert.AreEqual(result.Subroutes.Count(), 1);
-                Assert.AreEqual(result.StartingSubroute.Activities.Count, 2);
+                Assert.AreEqual(result.StartingSubroute.RouteNodes.Count, 2);
             }
         }
 
@@ -89,28 +89,28 @@ namespace DockyardTest.Services
         }
 
 
-        [Test]
-        [Ignore("ActionState will be removed and is not used")]
-        public void Activate_HasParentActivity_SetActionStateActive()
-        {
-            var curRouteDO = FixtureData.TestRoute3();
-            var _action = new Mock<IAction>();
-            _action
-                .Setup(c => c.Activate(It.IsAny<ActionDO>()))
-                .Returns(Task.FromResult(new ActionDTO()));
-            ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_action.Object));
-            _processTemplateService = ObjectFactory.GetInstance<IRoute>();
-
-            string result = _processTemplateService.Activate(curRouteDO);
-
-
-            Assert.AreEqual(result, "success");
-            var activities = curRouteDO.Subroutes.SelectMany(s => s.Activities).SelectMany(s => s.Activities);
-            foreach (ActionDO curActionDO in activities)
-            {
-                Assert.AreEqual(curActionDO.ActionState, ActionState.Active);
-            }
-        }
+//        [Test]
+//        [Ignore("ActionState will be removed and is not used")]
+//        public void Activate_HasParentActivity_SetActionStateActive()
+//        {
+//            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
+//            var _action = new Mock<IAction>();
+//            _action
+//                .Setup(c => c.Activate(It.IsAny<ActionDO>()))
+//                .Returns(Task.FromResult(new ActionDTO()));
+//            ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_action.Object));
+//            _processTemplateService = ObjectFactory.GetInstance<IProcessTemplate>();
+//
+//            string result = _processTemplateService.Activate(curProcessTemplateDO);
+//
+//
+//            Assert.AreEqual(result, "success");
+//            var activities = curProcessTemplateDO.ProcessNodeTemplates.SelectMany(s => s.Activities).SelectMany(s => s.Activities);
+//            foreach (ActionDO curActionDO in activities)
+//            {
+//                Assert.AreEqual(curActionDO.ActionState, ActionState.Active);
+//            }
+//        }
 
 //        [Test]
 //        [ExpectedException(typeof(ArgumentNullException))]

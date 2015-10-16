@@ -17,13 +17,13 @@ namespace Core.Services
     public class DockyardEvent : IDockyardEvent
     {
         private readonly IRoute _route;
-        private readonly IProcess _process;
+        private readonly Core.Interfaces.IContainerService _process;
         private readonly ICrate _crate;
 
         public DockyardEvent()
         {
             _route = ObjectFactory.GetInstance<IRoute>();
-            _process = ObjectFactory.GetInstance<IProcess>();
+            _process = ObjectFactory.GetInstance<Core.Interfaces.IContainerService>();
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
@@ -69,7 +69,7 @@ namespace Core.Services
 
                 //find this Account's Routes
                 var initialRoutesList = uow.RouteRepository
-                    .FindList(pt => pt.DockyardAccount.Id == curDockyardAccount.Id)
+                    .FindList(pt => pt.Fr8Account.Id == curDockyardAccount.Id)
                     .Where(x => x.RouteState == RouteState.Active);
 
                 var subscribingRoutes = _route.MatchEvents(initialRoutesList.ToList(),

@@ -16,7 +16,6 @@ namespace Data.Repositories
 
         public new void Add(ActionDO entity)
         {
-            entity.ActionState = ActionState.Unstarted;
             _curValidator.ValidateAndThrow(entity);
             base.Add(entity);
         }

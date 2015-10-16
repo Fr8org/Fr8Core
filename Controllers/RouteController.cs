@@ -53,15 +53,15 @@ namespace Web.Controllers
         {
             var subrouteDTOList = uow.SubrouteRepository
                 .GetQuery()
-                .Include(x => x.Activities)
-                .Where(x => x.ParentActivityId == curRouteDO.Id)
+                .Include(x => x.RouteNodes)
+                .Where(x => x.ParentRouteNodeId == curRouteDO.Id)
                 .OrderBy(x => x.Id)
                 .ToList()
                 .Select((SubrouteDO x) =>
                 {
                     var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
 
-                    pntDTO.Actions = Enumerable.ToList(x.Activities.Select(Mapper.Map<ActionDTO>));
+                    pntDTO.Actions = Enumerable.ToList(x.RouteNodes.Select(Mapper.Map<ActionDTO>));
 
                     return pntDTO;
                 }).ToList();
@@ -90,8 +90,10 @@ namespace Web.Controllers
             {               
                 return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>));
             }
+
             return Ok();
-        }
+        
+       }
 
         
         // GET api/<controller>
@@ -134,7 +136,7 @@ namespace Web.Controllers
 
                 var curRouteDO = Mapper.Map<RouteOnlyDTO, RouteDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
                 var curUserId = User.Identity.GetUserId();
-                curRouteDO.DockyardAccount = uow.UserRepository
+                curRouteDO.Fr8Account = uow.UserRepository
                     .GetQuery()
                     .Single(x => x.Id == curUserId);
 

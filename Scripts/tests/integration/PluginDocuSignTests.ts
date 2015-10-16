@@ -37,7 +37,7 @@ module dockyard.tests.controller {
         var executeInvoker = function (done, dataToSave) {
             $.ajax({
                 type: "POST",
-                url: "http://localhost:53234/plugin_docusign/actions/execute",
+                url: "http://localhost:53234/plugin_docusign/actions/run",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(dataToSave),
                 dataType: "json"
