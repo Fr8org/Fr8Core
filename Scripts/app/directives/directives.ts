@@ -149,3 +149,13 @@ app.directive('container', ['$state', function ($state: ng.ui.IStateService) {
         }
     };
 }]);
+
+app.directive('stopClickPropagation', () => {
+    return {
+        link: (scope: ng.IScope, elem: ng.IAugmentedJQuery) => {
+            elem.bind('click', (event) => {
+                event.stopPropagation();
+            });
+        }
+    };
+});

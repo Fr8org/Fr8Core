@@ -1,8 +1,4 @@
-﻿@*<div class="tools">
-        <a href="#" class="remove" ng-click="removeAction()">
-        </a>
-    </div>*@
-<div class="pane-configure-action" block-if="processing === true">
+﻿<div class="pane-configure-action" block-if="processing === true" ng-click="loadConfiguration()">
     <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
         <configuration-control current-action="currentAction" field="field" />
     </div>
