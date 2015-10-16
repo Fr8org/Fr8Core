@@ -1,4 +1,8 @@
-﻿using PluginBase.Infrastructure;
+﻿using AutoMapper;
+using Data.Constants;
+using Data.Entities;
+using Newtonsoft.Json.Linq;
+using PluginBase.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -145,71 +149,76 @@ namespace pluginDocuSign.Actions
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(
                 curActionDTO.AuthToken.Token);
 
-            // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var textBlock = new TextBlockControlDefinitionDTO()
+            //get envelopeIdFromUpstreamActions
+            var envelopeIdFromUpstreamActions = await Action.FindKeysByCrateManifestType(
+                                                            Mapper.Map<ActionDO>(curActionDTO),
+                                                            new Manifest(MT.StandardDesignTimeFields),
+                                                            "EnvelopeId",
+                                                            "Key",
+                                                            GetCrateDirection.Upstream);
+
+            //In order to Receive a DocuSign Envelope as fr8, an upstream action needs to provide a DocuSign EnvelopeID.
+            TextBlockControlDefinitionDTO textBlock;
+            if (envelopeIdFromUpstreamActions.Any())
             {
-                Label = "Docu Sign Envelope",
-                Value = "This Action doesn't require any configuration.",
-                CssClass = "well well-lg"
-            };
-
-            var crateControls = PackControlsCrate(textBlock);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-            List<CrateDTO> upstreamCrates = new List<CrateDTO>();
-
-            // Extract upstream crates.
-            upstreamCrates = await GetCratesByDirection(
-                curActionDTO.Id,
-                CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
-                GetCrateDirection.Upstream
-            );
-
-
-            // Extract DocuSignTemplate Id.
-            string docusignTemplateId = null;
-            foreach (var crate in upstreamCrates)
-            {
-                var controlsMS = JsonConvert
-                    .DeserializeObject<StandardConfigurationControlsCM>(crate.Contents);
-
-                var control = controlsMS.Controls
-                    .FirstOrDefault(x => x.Name == "Selected_DocuSign_Template");
-
-                if (control != null)
+                textBlock = new TextBlockControlDefinitionDTO()
                 {
-                    docusignTemplateId = control.Value;
-                }
+                    Label = "Docu Sign Envelope",
+                    Value = "This Action doesn't require any configuration.",
+                    CssClass = "well well-lg"
+                };
+            }
+            else
+            {
+                textBlock = new TextBlockControlDefinitionDTO()
+                {
+                    Label = "Docu Sign Envelope",
+                    Value = "In order to Receive a DocuSign Envelope as fr8, an upstream action needs to provide a DocuSign EnvelopeID.",
+                    CssClass = "alert alert-warning"
+                };
             }
 
+            //add the text block crate
+            var crateControls = PackControlsCrate(textBlock);
+            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 
-            Crate.RemoveCrateByLabel(
-                curActionDTO.CrateStorage.CrateDTO,
-                "DocuSignTemplateUserDefinedFields"
-                );
+            //get the template ID from the upstream actions
+            string docuSignTemplateId = string.Empty;
+            var docusignTemplateIdFromUpstreamActions = await Action.FindKeysByCrateManifestType(
+                                                                    Mapper.Map<ActionDO>(curActionDTO),
+                                                                    new Manifest(MT.StandardDesignTimeFields),
+                                                                    "TemplateId",
+                                                                    "Key",
+                                                                    GetCrateDirection.Upstream);
+
+            var templateIdFromUpstreamActions = docusignTemplateIdFromUpstreamActions as JObject[] ?? docusignTemplateIdFromUpstreamActions.ToArray();
+            if (templateIdFromUpstreamActions.Length == 1)
+            {
+                docuSignTemplateId = templateIdFromUpstreamActions[0]["Value"].Value<string>();
+            }
 
             // If DocuSignTemplate Id was found, then add design-time fields.
-            if (!string.IsNullOrEmpty(docusignTemplateId))
+            if (!string.IsNullOrEmpty(docuSignTemplateId))
             {
                 var docusignEnvelope = new DocuSignEnvelope(
                     docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
                 var userDefinedFields = docusignEnvelope
-                    .GetEnvelopeDataByTemplate(docusignTemplateId);
+                    .GetEnvelopeDataByTemplate(docuSignTemplateId);
 
                 var fieldCollection = userDefinedFields
                     .Select(f => new FieldDTO()
                     {
                         Key = f.Name,
                         Value = f.Value
-                    })
-                    .ToArray();
+                    });
 
-                curActionDTO.CrateStorage.CrateDTO.Add(
-                    Crate.CreateDesignTimeFieldsCrate(
-                        "DocuSignTemplateUserDefinedFields",
-                        fieldCollection
-                        )
-                    );
+                Crate.ReplaceCratesByManifestType(curActionDTO.CrateStorage.CrateDTO,
+                    CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
+                    new List<CrateDTO>
+                    {
+                        Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", fieldCollection.ToArray())
+                    });
             }
 
             return curActionDTO;

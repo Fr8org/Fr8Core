@@ -44,11 +44,7 @@ namespace pluginDocuSign.Actions
             if (curCrates.CrateDTO.Count == 0)
                 return ConfigurationRequestType.Initial;
 
-            var controlsCrates = Action.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
-                curActionDTO.CrateStorage);
-            var curDocuSignTemplateId = Crate.GetElementByKey(controlsCrates, key: "Selected_DocuSign_Template", keyFieldName: "name")
-                .Select(e => (string)e["value"])
-                .FirstOrDefault(s => !string.IsNullOrEmpty(s));
+            var curDocuSignTemplateId = GetSelectedTemplateId(curActionDTO);
 
             if (curDocuSignTemplateId != null)
             {
@@ -58,6 +54,17 @@ namespace pluginDocuSign.Actions
             {
                 return ConfigurationRequestType.Initial;
             }
+        }
+
+        private string GetSelectedTemplateId(ActionDTO curActionDTO)
+        {
+            var controlsCrates = Action.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+                curActionDTO.CrateStorage);
+            var curDocuSignTemplateId = Crate.GetElementByKey(controlsCrates, key: "Selected_DocuSign_Template",
+                keyFieldName: "name")
+                .Select(e => (string) e["value"])
+                .FirstOrDefault(s => !string.IsNullOrEmpty(s));
+            return curDocuSignTemplateId;
         }
 
         public object Activate(ActionDTO curDataPackage)
@@ -178,6 +185,37 @@ namespace pluginDocuSign.Actions
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
+        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        {
+            string curSelectedTemplateId = GetSelectedTemplateId(curActionDTO);
+
+            if (!string.IsNullOrEmpty(curSelectedTemplateId))
+            {
+                //get the existing DocuSign event fields
+                var curEventFieldsCrate = Action.GetCratesByLabel("DocuSign Event Fields", curActionDTO.CrateStorage).Single();
+                var curEventFields = Crate.GetStandardDesignTimeFields(curEventFieldsCrate);
+
+                //set the selected template ID
+                curEventFields.Fields.ForEach(field =>
+                {
+                    if (field.Key.Equals("TemplateId"))
+                    {
+                        field.Value = curSelectedTemplateId;
+                    }
+                });
+
+
+                //update the DocuSign Event Fields with new value
+                Crate.ReplaceCratesByLabel(curActionDTO.CrateStorage.CrateDTO, "DocuSign Event Fields",
+                    new List<CrateDTO>
+                    {
+                        Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", curEventFields.Fields.ToArray())
+                    });
+            }
+
+            return curActionDTO;
+        }
+
         private CrateDTO PackCrate_EventSubscriptions(
             StandardConfigurationControlsCM configurationFields)
         {
@@ -280,11 +318,9 @@ namespace pluginDocuSign.Actions
 
         private CrateDTO PackCrate_DocuSignEventFields()
         {
-            return Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", new FieldDTO
-            {
-                Key = "EnvelopeId",
-                Value = string.Empty
-            });
+            return Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields",
+                new FieldDTO {Key = "EnvelopeId", Value = string.Empty},
+                new FieldDTO {Key = "TemplateId", Value = string.Empty});
         }
     }
 }

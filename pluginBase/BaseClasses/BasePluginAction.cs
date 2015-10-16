@@ -253,7 +253,7 @@ namespace PluginUtilities.BaseClasses
             //look for a text field name select_file with a value
             Manifest manifestSchema = new Manifest(Data.Constants.MT.StandardConfigurationControls);
 
-            var keys = Action.FindKeysByCrateManifestType(curActionDO, manifestSchema, fieldName)
+            var keys = Action.FindKeysByCrateManifestType(curActionDO, manifestSchema, fieldName).Result
                 .Select(e => (string)e["value"])
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using StructureMap;
 using Utilities;
 using JsonSerializer = Utilities.Serializers.Json.JsonSerializer;
 using Newtonsoft.Json.Converters;
@@ -97,6 +98,11 @@ namespace Core.Services
             return JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(crate.Contents, new ControlDefinitionDTOConverter());
         }
 
+        public StandardDesignTimeFieldsCM GetStandardDesignTimeFields(CrateDTO crate)
+        {
+            return JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(crate.Contents);
+        }
+
         /// <summary>
         /// Retrieves all JObject elements that have a key field equal to a key value
         /// </summary>
@@ -121,7 +127,7 @@ namespace Core.Services
                     .OfType<JObject>()
                     // where (object has a key field) && (key field value equals to key argument)
                     .Where(x => x[keyFieldName] != null && x[keyFieldName].Value<TKey>().Equals(key));
-                resultsObjects.AddRange(results); ;
+                resultsObjects.AddRange(results);
             }
             return resultsObjects;
         }
@@ -169,6 +175,16 @@ namespace Core.Services
             
             //add the new content to the source crates
             newCratesContent.ToList().ForEach(sourceCrates.Add);
+        }
+
+        public void ReplaceCratesByLabel(IList<CrateDTO> sourceCrates, string label, IList<CrateDTO> newCratesContent)
+        {
+            var curMatchedCrates = ObjectFactory.GetInstance<IAction>().GetCratesByLabel(label, new CrateStorageDTO {CrateDTO = sourceCrates.ToList()});
+
+            foreach (CrateDTO curMatchedCrate in curMatchedCrates)
+            {
+                ReplaceCratesByManifestType(sourceCrates, curMatchedCrate.ManifestType, newCratesContent);
+            }
         }
 
         public CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)
