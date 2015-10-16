@@ -33,14 +33,16 @@ namespace Core.Services
         //private IRoute _route;
         private readonly AuthorizationToken _authorizationToken;
 
-        private readonly IActivity _activity;
+        //private readonly IActivity _activity;
 
         public Action()
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
-            _crate= ObjectFactory.GetInstance<ICrate>();
-            _activity = ObjectFactory.GetInstance<IActivity>();
+
+            /*_crate= ObjectFactory.GetInstance<ICrate>();
+            _activity = ObjectFactory.GetInstance<IActivity>();*/
+
           //  _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
             _crate= ObjectFactory.GetInstance<ICrateManager>();
           //  _route = ObjectFactory.GetInstance<IRoute>();
@@ -170,9 +172,10 @@ namespace Core.Services
         {
             //we are using Kludge solution for now
             //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
-
+            /*
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+
                 var curAction = uow.ActivityRepository.GetQuery().FirstOrDefault(al => al.Id == id);
                 if (curAction == null)
                 {
@@ -198,14 +201,15 @@ namespace Core.Services
 
                     if (cratesToReset.Any())
                 {
-                    curAction = new RouteNodeDO { Id = id };
-                    uow.RouteNodeRepository.Attach(curAction);
+                    /*curAction = new RouteNodeDO { Id = id };
+                    uow.RouteNodeRepository.Attach(curAction);*//*
                         downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
                     }                    
                 }
                 uow.RouteNodeRepository.Remove(curAction);
                 uow.SaveChanges();
             }
+*/
         }
 
         /// <summary>
