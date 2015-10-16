@@ -4,8 +4,10 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using Core.Exceptions;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
@@ -14,11 +16,12 @@ using StructureMap;
 
 namespace Web.Controllers
 {
-    [Authorize]
+    [Fr8ApiAuthorize]
     [RoutePrefix("api/processTemplate")]
     public class ProcessTemplateController : ApiController
     {
         private readonly IRoute _route;
+        private readonly ISecurityServices _security;
         
         public ProcessTemplateController()
             : this(ObjectFactory.GetInstance<IRoute>())
@@ -30,6 +33,7 @@ namespace Web.Controllers
         public ProcessTemplateController(IRoute route)
         {
             _route = route;
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
         
@@ -84,22 +88,27 @@ namespace Web.Controllers
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
         {
-            var curRoutes = _route.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id,status);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id, status);
 
             if (curRoutes.Any())
             {               
-                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>));
+                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>).ToArray());
+            }
             }
 
             return Ok();
         
-       }
+        }
 
         
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
-            var curRoutes = _route.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id);
 
             if (curRoutes.Any())
             {
@@ -111,7 +120,8 @@ namespace Web.Controllers
                 }
 
                 // Return JSON array of objects, in case no id parameter was provided.
-                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>));
+                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>).ToArray());
+            }
             }
 
             //DO-840 Return empty view as having empty process templates are valid use case.
@@ -135,11 +145,7 @@ namespace Web.Controllers
                 }
 
                 var curRouteDO = Mapper.Map<RouteOnlyDTO, RouteDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
-                var curUserId = User.Identity.GetUserId();
-                curRouteDO.Fr8Account = uow.UserRepository
-                    .GetQuery()
-                    .Single(x => x.Id == curUserId);
-
+                curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
 
                 //this will return 0 on create operation because of not saved changes
                 _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);

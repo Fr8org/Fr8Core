@@ -10,14 +10,18 @@ using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using Data.Interfaces.DataTransferObjects;
 using AutoMapper;
+using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
+using Data.States;
 
 namespace Web.Controllers
 {
-    [Authorize]
+    [Fr8ApiAuthorize]
     [RoutePrefix("api/manageFile")]
     public class ManageFileController : ApiController
     {
         private readonly IFile _fileService;
+        private readonly ISecurityServices _security;
 
         public ManageFileController()
             : this(ObjectFactory.GetInstance<IFile>())
@@ -26,6 +30,7 @@ namespace Web.Controllers
 
         public ManageFileController(IFile fileService)
         {
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
             _fileService = fileService;
         }
 
@@ -33,15 +38,22 @@ namespace Web.Controllers
         {
             IList<FileDTO> fileList;
 
-            if (User.IsInRole("Admin"))
+            if (_security.IsCurrentUserHasRole(Roles.Admin))
             {
                 fileList = Mapper.Map<IList<FileDTO>>(_fileService.AllFilesList());
             }
             else
             {
-                var userID = User.Identity.GetUserId();
-                fileList = Mapper.Map<IList<FileDTO>>(_fileService.FilesList(userID));
+                string userId;
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    userId = _security.GetCurrentAccount(uow).Id;
+                }
+
+                fileList = Mapper.Map<IList<FileDTO>>(_fileService.FilesList(userId));
             }
+
             return Ok(fileList);
         }
 

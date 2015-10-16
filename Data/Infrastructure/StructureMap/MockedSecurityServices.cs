@@ -17,6 +17,14 @@ namespace Data.Infrastructure.StructureMap
                 _currentLoggedInDockyardAccount = dockyardAccountDO;
         }
 
+        public Fr8AccountDO GetCurrentAccount(IUnitOfWork uow)
+        {
+            lock (_locker)
+            {
+                return _currentLoggedInDockyardAccount;
+            }
+        }
+
         public String GetCurrentUser()
         {
             lock (_locker)
@@ -27,6 +35,11 @@ namespace Data.Infrastructure.StructureMap
         {
             lock (_locker)
                 return _currentLoggedInDockyardAccount == null ? String.Empty : (_currentLoggedInDockyardAccount.FirstName + " " + _currentLoggedInDockyardAccount.LastName);
+        }
+
+        public bool IsCurrentUserHasRole(string role)
+        {
+            return GetRoleNames().Any(x => x == role);
         }
 
         public String[] GetRoleNames()

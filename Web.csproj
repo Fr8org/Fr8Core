@@ -342,6 +342,10 @@
     <Compile Include="DependencyResolution\IoC.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
+    <Compile Include="ExceptionHandling\ExeceptionHandler.cs" />
+    <Compile Include="ExceptionHandling\Fr8ExceptionHandler.ErrorResult.cs" />
+    <Compile Include="Fr8ApiAuthorizeAttribute.cs" />
+    <Compile Include="ExceptionHandling\Fr8ExceptionHandler.cs" />
     <Compile Include="NotificationQueues\UserNotificationData.cs" />
     <Compile Include="NotificationQueues\UserNotificationQueue.cs" />
     <Compile Include="NotificationQueues\NotificationQueue.cs" />
@@ -385,7 +389,7 @@
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
-    <Compile Include="MvcHandleErrorAttribute.cs" />
+    <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
@@ -410,7 +414,7 @@
     <Compile Include="ViewModels\UserProfilesVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
     <Compile Include="ViewModels\Validators\ProcessTemplateDTO.cs" />
-    <Compile Include="WebApiExceptionFilterAttribute.cs" />
+    <Compile Include="ExceptionHandling\WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
@@ -4175,7 +4179,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
+          <UseIIS>False</UseIIS> 
           <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>30643</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

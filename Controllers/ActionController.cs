@@ -13,6 +13,7 @@ using Core.Interfaces;
 using Core.Managers;
 using Core.Services;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 
@@ -22,12 +23,14 @@ namespace Web.Controllers
     public class ActionController : ApiController
     {
         private readonly IAction _action;
+        private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
 
         public ActionController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
         public ActionController(IAction service)
@@ -52,6 +55,7 @@ namespace Web.Controllers
 
 
         [HttpGet]
+        [Fr8ApiAuthorize]
         [Route("auth_url")]
         public async Task<IHttpActionResult> GetExternalAuthUrl(
             [FromUri(Name = "id")] int activityTemplateId)
@@ -71,13 +75,7 @@ namespace Web.Controllers
 
                 plugin = activityTemplate.Plugin;
 
-                var accountId = User.Identity.GetUserId();
-                account = uow.UserRepository.FindOne(x => x.Id == accountId);
-
-                if (account == null)
-                {
-                    throw new ApplicationException("User was not found.");
-                }
+                account = _security.GetCurrentAccount(uow);
             }
 
             var externalAuthUrlDTO = await _action.GetExternalAuthUrl(account, plugin);
@@ -85,7 +83,7 @@ namespace Web.Controllers
         }
 
         private void ExtractPluginAndAccount(int activityTemplateId,
-            out Fr8AccountDO account, out PluginDO plugin)
+           out Fr8AccountDO account, out PluginDO plugin)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -125,13 +123,26 @@ namespace Web.Controllers
         }
 
         [HttpPost]
+        [Fr8ApiAuthorize]
         [Route("authenticate")]
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
         {
             Fr8AccountDO account;
             PluginDO plugin;
 
-            ExtractPluginAndAccount(credentials.ActivityTemplateId, out account, out plugin);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(credentials.ActivityTemplateId);
+
+                if (activityTemplate == null)
+                {
+                    throw new ApplicationException("ActivityTemplate was not found.");
+                }
+
+                plugin = activityTemplate.Plugin;
+                account = _security.GetCurrentAccount(uow);
+            }
 
             await _action.AuthenticateInternal(
                 account,

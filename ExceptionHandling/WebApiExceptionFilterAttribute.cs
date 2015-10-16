@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Web;
 using System.Web.Http.Filters;
+using Core.Exceptions;
 using Core.Managers;
+using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
+using PluginBase;
 using StructureMap;
 using Utilities;
-using PluginBase;
 
-namespace Web
+namespace Web.ExceptionHandling
 {
     /// <summary>
     /// This exception filter handles any non-handled exception. Usually for such 
@@ -23,8 +22,8 @@ namespace Web
     {
         public override void OnException(HttpActionExecutedContext context)
         {
-            string errorMessage = "Sorry, an unexpected error has occurred while serving your request. Please try again in a few minutes.";
-            
+            ErrorDTO errorDto;
+
             var alertManager = ObjectFactory.GetInstance<EventReporter>();
             var ex = context.Exception;
 
@@ -34,25 +33,38 @@ namespace Web
                 ex.Source));
 
             context.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+
+            if (ex is AuthenticationExeception)
+            {
+                errorDto = ErrorDTO.AuthenticationError();
+            }
+            else
+            {
+                errorDto = ErrorDTO.InternalError();
+            }
+
+            errorDto.Message = "Sorry, an unexpected error has occurred while serving your request. Please try again in a few minutes.";
+           
             // if debugging enabled send back the details of exception as well
             if (HttpContext.Current.IsDebuggingEnabled)
             {
-                if (ex is PluginCodedException) {
+                if (ex is PluginCodedException) 
+                {
                     var pluginEx = (PluginCodedException)ex;
-                    var pluginError = JsonConvert.SerializeObject(new { errorCode = pluginEx.ErrorCode, message = pluginEx.ErrorCode.GetEnumDescription() });
-                    context.Response.Content = new StringContent(pluginError, Encoding.UTF8, "application/json");
-                    return;
+                    
+                    errorDto.Details = new
+                    {
+                        errorCode = pluginEx.ErrorCode, 
+                        message = pluginEx.ErrorCode.GetEnumDescription()
+                    };
                 }
-                else {
-                    var detailedMessage =
-                        JsonConvert.SerializeObject(new { title = errorMessage, exception = context.Exception });
-
-                    context.Response.Content = new StringContent(detailedMessage, Encoding.UTF8, "application/json");
-                    return;
+                else 
+                {
+                    errorDto.Details = new {exception = context.Exception};
                 }
             }
-            context.Response.Content = new StringContent(errorMessage);
             
+            context.Response.Content = new StringContent(JsonConvert.SerializeObject(errorDto), Encoding.UTF8, "application/json");
         }
     }
 }

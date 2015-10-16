@@ -7,10 +7,12 @@ using Core.Interfaces;
 using Core.Managers;
 using Data.Entities;
 using Data.Exceptions;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
+using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 
 namespace Core.Services
@@ -26,9 +28,6 @@ namespace Core.Services
         private readonly IRouteNode _activity;
         private readonly ICrateManager _crate;
 
-        
-        
-
         public Route()
         {
             _subroute = ObjectFactory.GetInstance<ISubroute>();
@@ -38,16 +37,9 @@ namespace Core.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-
-
-        public IList<RouteDO> GetForUser(string userId, bool isAdmin = false, int? id = null, int? status = null)
+        public IList<RouteDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, int? id = null, int? status = null)
         {
-            if (userId == null)
-                throw new ApplicationException("UserId must not be null");
-
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var queryableRepo = unitOfWork.RouteRepository.GetQuery().Include(pt => pt.RouteNodes); // whe have to include Activities as it is a real navigational property. Not Routes
+            var queryableRepo = unitOfWork.RouteRepository.GetQuery().Include(pt => pt.ChildContainers); // whe have to include Activities as it is a real navigational property. Not Routes
 
                 if (isAdmin)
                 {
@@ -56,11 +48,11 @@ namespace Core.Services
                 }
 
                 queryableRepo = (id == null
-                    ? queryableRepo.Where(pt => pt.Fr8Account.Id == userId)
-                    : queryableRepo.Where(pt => pt.Id == id && pt.Fr8Account.Id == userId));
+                    ? queryableRepo.Where(pt => pt.Fr8Account.Id == account.Id)
+                    : queryableRepo.Where(pt => pt.Id == id && pt.Fr8Account.Id == account.Id));
                 return (status == null
                     ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
-            }
+
         }
         
         public void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool updateChildEntities)
