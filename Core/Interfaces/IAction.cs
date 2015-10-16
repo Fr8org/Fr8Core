@@ -20,7 +20,7 @@ namespace Core.Interfaces
         void Delete(int id);
         ActionDO MapFromDTO(ActionDTO curActionDTO);
         Task PrepareToExecute(ActionDO curAction, ContainerDO curProcessDO, IUnitOfWork uow);
-        Task<PayloadDTO> Execute(ActionDO curActionDO, ContainerDO curProcessDO);
+        Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curProcessDO);
         string Authenticate(ActionDO curActionDO);
         void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
         List<CrateDTO> GetCrates(ActionDO curActionDO);
@@ -30,6 +30,7 @@ namespace Core.Interfaces
         IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO);
 		StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO);
         StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction);
+        bool IsAuthenticated(Fr8AccountDO user, PluginDO plugin);
         Task AuthenticateInternal(Fr8AccountDO user, PluginDO plugin, string username, string password);
         Task<ExternalAuthUrlDTO> GetExternalAuthUrl(Fr8AccountDO user, PluginDO plugin);
         Task AuthenticateExternal(PluginDO plugin, ExternalAuthenticationDTO externalAuthenticateDTO);

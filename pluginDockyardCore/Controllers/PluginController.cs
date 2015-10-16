@@ -33,6 +33,7 @@ namespace pluginDockyardCore.Controllers
             result.Add(new ActivityTemplateDO
             {
                 Name = "FilterUsingRunTimeData",
+                Label = "Filter Using Runtime Data",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
                 Version = "1"

@@ -5,15 +5,16 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using Newtonsoft.Json;
+using StructureMap;
 using Core.Enums;
 using Core.Interfaces;
+using Core.Managers;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using fr8.Microsoft.Azure;
-using Newtonsoft.Json;
 using PluginBase.Infrastructure;
-using StructureMap;
 
 namespace PluginUtilities.BaseClasses
 {
@@ -26,14 +27,14 @@ namespace PluginUtilities.BaseClasses
         #region Fields
 
         protected IAction Action;
-        protected ICrate Crate;
+        protected ICrateManager Crate;
         protected IRouteNode Activity;
 
         #endregion
 
         public BasePluginAction()
         {
-            Crate = ObjectFactory.GetInstance<ICrate>();
+            Crate = ObjectFactory.GetInstance<ICrateManager>();
             Action = ObjectFactory.GetInstance<IAction>();
             Activity = ObjectFactory.GetInstance<IRouteNode>();
         }

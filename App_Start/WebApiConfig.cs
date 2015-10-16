@@ -1,4 +1,6 @@
 ﻿using System.Web.Http;
+using System.Web.Http.ExceptionHandling;
+using Web.ExceptionHandling;
 
 namespace Web
 {
@@ -22,6 +24,8 @@ namespace Web
 
             //Added XML Serializer - used for Salesforce Outbound Message Response
             config.Formatters.XmlFormatter.UseXmlSerializer = true;
+
+            config.Services.Replace(typeof(IExceptionHandler), new Fr8ExceptionHandler());
 		}
 	}
 }

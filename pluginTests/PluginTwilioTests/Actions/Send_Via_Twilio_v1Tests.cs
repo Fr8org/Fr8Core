@@ -1,22 +1,23 @@
-﻿using AutoMapper;
-using Core.StructureMap;
-using Data.Infrastructure.AutoMapper;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
-using Newtonsoft.Json;
-using NUnit.Framework;
-using pluginTwilio.Actions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UtilitiesTesting.Fixtures;
-using pluginTwilio;
-using StructureMap;
-using pluginTwilio.Services;
-using Core.Interfaces;
+using AutoMapper;
 using Moq;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using StructureMap;
+using Core.Interfaces;
+using Core.Managers;
+using Core.StructureMap;
+using Data.Infrastructure.AutoMapper;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using pluginTwilio;
+using pluginTwilio.Actions;
+using pluginTwilio.Services;
+using UtilitiesTesting.Fixtures;
 
 namespace pluginTests.PluginTwilioTests.Actions
 {
@@ -24,7 +25,7 @@ namespace pluginTests.PluginTwilioTests.Actions
     public class Send_Via_Twilio_v1Tests : BaseTest
     {
         private Send_Via_Twilio_v1 _twilioAction;
-        private ICrate _crate;
+        private ICrateManager _crate;
 
         public override void SetUp()
         {
@@ -34,7 +35,7 @@ namespace pluginTests.PluginTwilioTests.Actions
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             StructureMapBootStrapper.ConfigureDependencies(dependencyType).ConfigureTwilioDependencies(dependencyType);
             ObjectFactory.Configure(cfg => cfg.For<ITwilioService>().Use(new TwilioService()));
-            _crate = ObjectFactory.GetInstance<ICrate>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
 
             var twilioService = new Mock<ITwilioService>();
             twilioService

@@ -22,7 +22,7 @@ namespace pluginExcel.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<ActionDTO> Execute(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Run(ActionDTO curActionDTO)
         {
             return await CreateStandardPayloadDataFromStandardTableData(curActionDTO);
         }

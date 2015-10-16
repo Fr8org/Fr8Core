@@ -48,6 +48,7 @@ namespace pluginDocuSign.Controllers
             {
                 Version = "1",
                 Name = "Receive_DocuSign_Envelope",
+                Label = "Receive DocuSign Envelope",
                 Category = ActivityCategory.Receivers,
                 Plugin = plugin
             };

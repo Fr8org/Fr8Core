@@ -51,8 +51,12 @@ namespace pluginDocuSign.Controllers
         public async Task<AuthTokenDTO> Authenticate(CredentialsDTO curCredentials)
         {
             // Auth sequence according to https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#OAuth2/OAuth2%20Token%20Request.htm
-
             var oauthToken = await ObtainOAuthToken(curCredentials, CloudConfigurationManager.GetSetting("endpoint"));
+
+            if (string.IsNullOrEmpty(oauthToken))
+            {
+                return null;
+            }
 
             var docuSignAuthDTO = new DocuSignAuthDTO()
             {
@@ -91,6 +95,10 @@ namespace pluginDocuSign.Controllers
 
                 return responseObject.access_token;
             }
+            catch (Exception ex)
+            {
+                return null;
+            }
             finally
             {
                 response.Dispose();
@@ -98,11 +106,11 @@ namespace pluginDocuSign.Controllers
         }
 
         [HttpPost]
-        [Route("execute")]
-        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
+        [Route("run")]
+        public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
             return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(
-                curPlugin, "Execute", actionDto);
+                curPlugin, "Run", actionDto);
         }
     }
 }
