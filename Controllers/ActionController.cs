@@ -13,6 +13,7 @@ using Core.Interfaces;
 using Core.Managers;
 using Core.Services;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 
@@ -22,12 +23,14 @@ namespace Web.Controllers
     public class ActionController : ApiController
     {
         private readonly IAction _action;
+        private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
 
         public ActionController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
         public ActionController(IAction service)
@@ -52,11 +55,12 @@ namespace Web.Controllers
 
 
         [HttpGet]
+        [Fr8ApiAuthorize]
         [Route("auth_url")]
         public async Task<IHttpActionResult> GetExternalAuthUrl(
             [FromUri(Name = "id")] int activityTemplateId)
         {
-            DockyardAccountDO account;
+            Fr8AccountDO account;
             PluginDO plugin;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -71,6 +75,29 @@ namespace Web.Controllers
 
                 plugin = activityTemplate.Plugin;
 
+                account = _security.GetCurrentAccount(uow);
+            }
+
+            var externalAuthUrlDTO = await _action.GetExternalAuthUrl(account, plugin);
+            return Ok(new { Url = externalAuthUrlDTO.Url });
+        }
+
+        private void ExtractPluginAndAccount(int activityTemplateId,
+           out Fr8AccountDO account, out PluginDO plugin)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(activityTemplateId);
+
+                if (activityTemplate == null)
+                {
+                    throw new ApplicationException("ActivityTemplate was not found.");
+                }
+
+                plugin = activityTemplate.Plugin;
+
+
                 var accountId = User.Identity.GetUserId();
                 account = uow.UserRepository.FindOne(x => x.Id == accountId);
 
@@ -79,16 +106,28 @@ namespace Web.Controllers
                     throw new ApplicationException("User was not found.");
                 }
             }
+        }
 
-            var externalAuthUrlDTO = await _action.GetExternalAuthUrl(account, plugin);
-            return Ok(new { Url = externalAuthUrlDTO.Url });
+        [HttpGet]
+        [Route("is_authenticated")]
+        public IHttpActionResult IsAuthenticated(int activityTemplateId)
+        {
+            Fr8AccountDO account;
+            PluginDO plugin;
+
+            ExtractPluginAndAccount(activityTemplateId, out account, out plugin);
+
+            var isAuthenticated = _action.IsAuthenticated(account, plugin);
+
+            return Ok(new { authenticated = isAuthenticated });
         }
 
         [HttpPost]
+        [Fr8ApiAuthorize]
         [Route("authenticate")]
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
         {
-            DockyardAccountDO account;
+            Fr8AccountDO account;
             PluginDO plugin;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -102,15 +141,7 @@ namespace Web.Controllers
                 }
 
                 plugin = activityTemplate.Plugin;
-
-
-                var accountId = User.Identity.GetUserId();
-                account = uow.UserRepository.FindOne(x => x.Id == accountId);
-                
-                if (account == null)
-                {
-                    throw new ApplicationException("User was not found.");
-                }
+                account = _security.GetCurrentAccount(uow);
             }
 
             await _action.AuthenticateInternal(
@@ -160,7 +191,7 @@ namespace Web.Controllers
                
                 if (curActionDTO.IsTempId)
                 {
-                    ObjectFactory.GetInstance<IProcessNodeTemplate>().AddAction(uow, resultActionDO); // append action to the ProcessNodeTemplate
+                    ObjectFactory.GetInstance<ISubroute>().AddAction(uow, resultActionDO); // append action to the Subroute
                 }
 
                 var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);

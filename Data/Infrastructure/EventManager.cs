@@ -22,7 +22,7 @@ namespace Data.Infrastructure
         public delegate void EntityStateChangedHandler(string entityName, object id, string stateName, string stateValue);
         public static event EntityStateChangedHandler AlertEntityStateChanged;
 
-        public delegate void IncidentPluginConfigurePOSTFailureHandler(string pluginUrl, string curActionDTO);
+        public delegate void IncidentPluginConfigurePOSTFailureHandler(string pluginUrl, string curActionDTO, string errorMessage);
         public static event IncidentPluginConfigurePOSTFailureHandler IncidentPluginConfigureFailed;
 
         public delegate void IncidentPluginActionActivationPOSTFailureHandler(string pluginUrl, string curActionDTO);
@@ -34,15 +34,9 @@ namespace Data.Infrastructure
 
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
-
-        //public delegate void PostResolutionNegotiationResponseReceivedHandler(int negotiationId);
-        //public static event PostResolutionNegotiationResponseReceivedHandler AlertPostResolutionNegotiationResponseReceived;
-
-        public delegate void CustomerCreatedHandler(DockyardAccountDO user);
+   
+        public delegate void CustomerCreatedHandler(Fr8AccountDO user);
         public static event CustomerCreatedHandler AlertCustomerCreated;
-
-        //public delegate void BookingRequestCreatedHandler(int bookingRequestId);
-        //public static event BookingRequestCreatedHandler AlertBookingRequestCreated;
 
         public delegate void EmailReceivedHandler(int emailId, string customerId);
         public static event EmailReceivedHandler AlertEmailReceived;
@@ -56,32 +50,11 @@ namespace Data.Infrastructure
         public delegate void EmailProcessingHandler(string dateReceived, string errorMessage);
         public static event EmailProcessingHandler AlertEmailProcessingFailure;
 
-        //public delegate void BookingRequestTimeoutStateChangeHandler(int bookingRequestId, string bookerId);
-        //public static event BookingRequestTimeoutStateChangeHandler AlertBookingRequestProcessingTimeout;
-
-        //public delegate void BookingRequestReservedHandler(int bookingRequestId, string bookerId);
-        //public static event BookingRequestReservedHandler AlertBookingRequestReserved;
-
-        //public delegate void BookingRequestReservationTimeoutHandler(int bookingRequestId, string bookerId);
-        //public static event BookingRequestReservationTimeoutHandler AlertBookingRequestReservationTimeout;
-
-        //public delegate void StaleBookingRequestsDetectedHandler(BookingRequestDO[] oldBookingRequests);
-        //public static event StaleBookingRequestsDetectedHandler AlertStaleBookingRequestsDetected;
-
-        public delegate void UserRegistrationHandler(DockyardAccountDO curUser);
+        public delegate void UserRegistrationHandler(Fr8AccountDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
 
         public delegate void UserRegistrationErrorHandler(Exception ex);
         public static event UserRegistrationErrorHandler AlertUserRegistrationError;
-
-        //public delegate void BookingRequestCheckedOutHandler(int bookingRequestId, string bookerId);
-        //public static event BookingRequestCheckedOutHandler AlertBookingRequestCheckedOut;
-
-        //public delegate void BookingRequestMarkedProcessedHandler(int bookingRequestId, string bookerId);
-        //public static event BookingRequestMarkedProcessedHandler AlertBookingRequestMarkedProcessed;
-
-        //public delegate void BookingRequestOwnershipChangeHandler(int bookingRequestId, string bookerId);
-        //public static event BookingRequestOwnershipChangeHandler AlertBookingRequestOwnershipChange;
 
         public delegate void Error_EmailSendFailureHandler(int emailId, string message);
         public static event Error_EmailSendFailureHandler AlertError_EmailSendFailure;
@@ -99,7 +72,7 @@ namespace Data.Infrastructure
         //public static event BookingRequestMergedHandler AlertBookingRequestMerged;
 
         //EventProcessRequestReceived 
-        public delegate void EventProcessRequestReceivedHandler(ProcessDO processId);
+        public delegate void EventProcessRequestReceivedHandler(ContainerDO processId);
         public static event EventProcessRequestReceivedHandler EventProcessRequestReceived;
 
         public delegate void OAuthEventHandler(string userId);
@@ -113,7 +86,7 @@ namespace Data.Infrastructure
         public delegate void EventDocuSignNotificationReceivedHandler();
         public static event EventDocuSignNotificationReceivedHandler EventDocuSignNotificationReceived;
 
-        public delegate void EventProcessLaunchedHandler(ProcessDO launchedProcess);
+        public delegate void EventProcessLaunchedHandler(ContainerDO launchedProcess);
         public static event EventProcessLaunchedHandler EventProcessLaunched;
 
         public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
@@ -142,13 +115,19 @@ namespace Data.Infrastructure
 
         public delegate void UnparseableNotificationReceivedHandler(string curNotificationUrl, string curNotificationPayload);
         public static event UnparseableNotificationReceivedHandler UnparseableNotificationReceived;
+
+        public delegate void EventTwilioSMSSentHandler(string number, string message);
+        public static event EventTwilioSMSSentHandler EventTwilioSMSSent;
+
+        public delegate void IncidentTwilioSMSSendFailureHandler(string number, string message, string errorMsg);
+        public static event IncidentTwilioSMSSendFailureHandler IncidentTwilioSMSSendFailure;
         #region Method
 
 
-        public static void PluginConfigureFailed(string pluginUrl, string actionDTO)
+        public static void PluginConfigureFailed(string pluginUrl, string actionDTO, string errorMessage)
         {
             IncidentPluginConfigurePOSTFailureHandler handler = IncidentPluginConfigureFailed;
-            if (handler != null) handler(pluginUrl, actionDTO);
+            if (handler != null) handler(pluginUrl, actionDTO, errorMessage);
         }
 
         public static void PluginActionActivationFailed(string pluginUrl, string actionDTO)
@@ -216,7 +195,7 @@ namespace Data.Infrastructure
 
 
 
-        public static void CustomerCreated(DockyardAccountDO user)
+        public static void CustomerCreated(Fr8AccountDO user)
         {
             if (AlertCustomerCreated != null)
                 AlertCustomerCreated(user);
@@ -274,7 +253,7 @@ namespace Data.Infrastructure
         //    if (handler != null) handler(oldbookingrequests);
         //}
 
-        public static void UserRegistration(DockyardAccountDO curUser)
+        public static void UserRegistration(Fr8AccountDO curUser)
         {
             if (AlertUserRegistration != null)
                 AlertUserRegistration(curUser);
@@ -360,7 +339,7 @@ namespace Data.Infrastructure
             if (handler != null) handler();
         }
 
-        public static void ProcessLaunched(ProcessDO launchedProcess)
+        public static void ProcessLaunched(ContainerDO launchedProcess)
         {
             var handler = EventProcessLaunched;
             if (handler != null) handler(launchedProcess);
@@ -425,12 +404,23 @@ namespace Data.Infrastructure
             if (handler != null) handler(action);
         }
 
-        public static void ProcessRequestReceived(ProcessDO process)
+        public static void ProcessRequestReceived(ContainerDO process)
         {
             var handler = EventProcessRequestReceived;
             if (handler != null) handler(process);
         }
 
+        public static void TwilioSMSSent(string number, string message)
+        {
+            var handler = EventTwilioSMSSent;
+            if (handler != null) handler(number, message);
+        }
+
+        public static void TwilioSMSSendFailure(string number, string message, string errorMsg)
+        {
+            var handler = IncidentTwilioSMSSendFailure;
+            if (handler != null) handler(number, message, errorMsg);
+        }
         #endregion
 
         

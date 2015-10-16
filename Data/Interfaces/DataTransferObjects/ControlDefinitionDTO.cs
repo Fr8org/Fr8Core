@@ -33,6 +33,7 @@ namespace Data.Interfaces.DataTransferObjects
         public const string FilePicker = "FilePicker";
         public const string Routing = "Routing";
         public const string FieldList = "FieldList";
+        public const string Button = "Button";
     }
 
     public class CheckBoxControlDefinitionDTO : ControlDefinitionDTO
@@ -154,6 +155,17 @@ namespace Data.Interfaces.DataTransferObjects
             {
                 Value = "[]";
             }
+        }
+    }
+
+    public class ButtonControlDefinisionDTO : ControlDefinitionDTO
+    {
+        [JsonProperty("class")]
+        public string CssClass;
+
+        public ButtonControlDefinisionDTO()
+        {
+            Type = ControlTypes.Button;
         }
     }
 

@@ -20,23 +20,23 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ProcessTemplateDO ProcessTemplate_PluginIntegration()
+        public static RouteDO Route_PluginIntegration()
         {
-            return new ProcessTemplateDO()
+            return new RouteDO()
             {
                 Id=1000,
-                Name = "Test ProcessTemplate Name",
-                Description = "Test ProcessTemplate Description",
-                ProcessTemplateState = ProcessTemplateState.Active,
+                Name = "Test Route Name",
+                Description = "Test Route Description",
+                RouteState = RouteState.Active,
             };
         }
 
-        public static ProcessNodeTemplateDO ProcessNodeTemplate_PluginIntegration()
+        public static SubrouteDO Subroute_PluginIntegration()
         {
-            return new ProcessNodeTemplateDO()
+            return new SubrouteDO()
             {
                 Id = 1001,
-                Name = "Test ProcessNodeTemplate"
+                Name = "Test Subroute"
             };
         }
 
@@ -107,6 +107,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityTemplateDO()
             {
                 Name = "Monitor_DocuSign",
+                Label = "Monitor DocuSign",
                 Version = "1",
                 Plugin = TestPlugin_DocuSign()
             };

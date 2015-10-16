@@ -21,7 +21,7 @@ namespace DockyardTest.Integration
             string email;
             string id;
             // SETUP
-            var account = ObjectFactory.GetInstance<DockyardAccount>();
+            var account = ObjectFactory.GetInstance<Fr8Account>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userDO = FixtureData.TestUser1();

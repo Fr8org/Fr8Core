@@ -9,7 +9,8 @@
 </ul>
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
-<div ng-controller="ProcessBuilderController" class="margin-top-10">
+<div ng-controller="ProcessBuilderController" class="margin-top-10">    
+    <designer-header process-template="current.processTemplate"></designer-header>
     <div class="process-builder-container">
         <div class="action" ng-repeat-start="action in actions">
             <div class="action-header" dropdown>

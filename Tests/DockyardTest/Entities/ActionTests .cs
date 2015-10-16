@@ -60,8 +60,8 @@ namespace DockyardTest.Entities
 //                //SETUP
 //                //create a customer from fixture data
 //                
-//                var curProcessNodeTemplateDO = FixtureData.TestProcessNodeTemplateDO1();
-//                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplateDO);
+//                var curSubrouteDO = FixtureData.TestSubrouteDO1();
+//                uow.SubrouteRepository.Add(curSubrouteDO);
 //                uow.SaveChanges();
 //
 //                var curActionListDO = FixtureData.TestEmptyActionList();

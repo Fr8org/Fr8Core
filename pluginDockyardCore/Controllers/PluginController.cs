@@ -33,7 +33,8 @@ namespace pluginDockyardCore.Controllers
             result.Add(new ActivityTemplateDO
             {
                 Name = "FilterUsingRunTimeData",
-                Category = ActivityCategory.fr8_Processor,
+                Label = "Filter Using Runtime Data",
+                Category = ActivityCategory.Processors,
                 Plugin = plugin,
                 Version = "1"
             });
@@ -41,7 +42,7 @@ namespace pluginDockyardCore.Controllers
             result.Add(new ActivityTemplateDO
             {
                 Name = "MapFields",
-                Category = ActivityCategory.fr8_Processor,
+                Category = ActivityCategory.Processors,
                 Plugin = plugin,
                 Version = "1"
             });
@@ -49,7 +50,7 @@ namespace pluginDockyardCore.Controllers
             result.Add(new ActivityTemplateDO
             {
                 Name = "AddPayloadManually",
-                Category = ActivityCategory.fr8_Processor,
+                Category = ActivityCategory.Processors,
                 Plugin = plugin,
                 Version = "1"
             });

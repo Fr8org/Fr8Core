@@ -28,6 +28,7 @@ module dockyard.interfaces {
     export interface IProcessNodeTemplateVM extends ng.resource.IResource<model.ProcessNodeTemplateDTO>, model.ProcessNodeTemplateDTO { }
     export interface ICriteriaVM extends ng.resource.IResource<model.CriteriaDTO>, model.CriteriaDTO { }
     export interface IActionVM extends ng.resource.IResource<model.ActionDTO>, model.ActionDTO { }
+    export interface IIsAuthenticatedVM extends ng.resource.IResource<model.IsAuthenticatedDTO>, model.IsAuthenticatedDTO { }
     export interface IDocuSignTemplateVM extends ng.resource.IResource<IDocuSignTemplate> { }
     export interface IDocuSignExternalEventVM extends ng.resource.IResource<IDocuSignExternalEvent> { }
     export interface IExternalEventVM extends ng.resource.IResource<IExternalEvent> { }

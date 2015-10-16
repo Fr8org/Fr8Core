@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Web.Http;
-using Core.Interfaces;
-using Core.Services;
 using Microsoft.Owin.Hosting;
 using Owin;
 using StructureMap.Configuration.DSL;
 using StructureMap;
+using Core.Interfaces;
+using Core.Managers;
+using Core.Services;
 
 namespace pluginExcel
 {
@@ -17,8 +18,8 @@ namespace pluginExcel
             {
                 For<IAction>().Use<Core.Services.Action>();
                 For<IPlugin>().Use<Plugin>();
-                For<ICrate>().Use<Crate>();
-                For<IActivity>().Use<Activity>();
+                For<ICrateManager>().Use<CrateManager>();
+                For<IRouteNode>().Use<RouteNode>();
             }
         }
 

@@ -1,23 +1,18 @@
-﻿using Data.Entities;
-using PluginBase.Infrastructure;
+﻿using PluginBase.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using StructureMap;
 using Newtonsoft.Json;
 using Core.Interfaces;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using PluginBase;
-using PluginBase.BaseClasses;
 using DocuSign.Integrations.Client;
 using pluginDocuSign.DataTransferObjects;
-using pluginDocuSign.Interfaces;
 using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Services;
+using PluginUtilities.BaseClasses;
 
 namespace pluginDocuSign.Actions
 {
@@ -49,9 +44,9 @@ namespace pluginDocuSign.Actions
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name connection string with a value
-            var controlsCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+            var controlsCrates = Action.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
                 curActionDTO.CrateStorage);
-            var curDocuSignTemplateId = _crate.GetElementByKey(controlsCrates, key: "Selected_DocuSign_Template", keyFieldName: "name")
+            var curDocuSignTemplateId = Crate.GetElementByKey(controlsCrates, key: "Selected_DocuSign_Template", keyFieldName: "name")
                 .Select(e => (string)e["value"])
                 .FirstOrDefault(s => !string.IsNullOrEmpty(s));
 
@@ -93,7 +88,7 @@ namespace pluginDocuSign.Actions
             }
         }
 
-        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
             if (IsEmptyAuthToken(actionDto))
             {
@@ -101,7 +96,7 @@ namespace pluginDocuSign.Actions
             }
 
             var processPayload = await GetProcessPayload(actionDto.ProcessId);
-
+            
             // Extract envelope id from the payload Crate
             string envelopeId = GetEnvelopeId(processPayload);
 
@@ -119,7 +114,7 @@ namespace pluginDocuSign.Actions
                 }
             };
 
-            var cratePayload = _crate.Create(
+            var cratePayload = Crate.Create(
                 "DocuSign Envelope Payload Data",
                 JsonConvert.SerializeObject(fields),
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
@@ -165,10 +160,10 @@ namespace pluginDocuSign.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
 
-            var crateControls = CreateConfigurationCrate();
-            var crateDesignTimeFields = CreateDesignFieldsCrate_TemplateNames(docuSignAuthDTO);
+                var crateControls = CreateConfigurationCrate();
+			var crateDesignTimeFields = CreateDesignFieldsCrate_TemplateNames(docuSignAuthDTO);
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
+			curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
 
             var curCrates = curActionDTO.CrateStorage.CrateDTO;
 
@@ -186,7 +181,7 @@ namespace pluginDocuSign.Actions
             }
 
             // Remove previously added crate of "Standard Event Subscriptions" schema
-            _crate.RemoveCrateByManifestType(
+            Crate.RemoveCrateByManifestType(
                 curActionDTO.CrateStorage.CrateDTO,
                 CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME
                 );
@@ -208,7 +203,7 @@ namespace pluginDocuSign.Actions
             var subscriptions = new List<string>();
 
             var eventCheckBoxes = configurationFields.Controls
-                .Where(x => x.Type == "checkboxField" && x.Name.StartsWith("Event_"));
+                .Where(x => x.Type == "CheckBox" && x.Name.StartsWith("Event_"));
 
             foreach (var eventCheckBox in eventCheckBoxes)
             {
@@ -218,7 +213,7 @@ namespace pluginDocuSign.Actions
                 }
             }
 
-            return _crate.CreateStandardEventSubscriptionsCrate(
+            return Crate.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
                 subscriptions.ToArray()
                 );
@@ -228,10 +223,10 @@ namespace pluginDocuSign.Actions
         {
             var fieldSelectDocusignTemplate = new DropDownListControlDefinitionDTO()
             {
-                Label = "Select DocuSign Template",
-                Name = "Selected_DocuSign_Template",
-                Required = true,
-                Events = new List<ControlEvent>()
+	            Label = "Select DocuSign Template",
+	            Name = "Selected_DocuSign_Template",
+	            Required = true,
+	            Events = new List<ControlEvent>()
                 {
                     new ControlEvent("onChange", "requestConfig")
                 },
@@ -245,25 +240,41 @@ namespace pluginDocuSign.Actions
             var fieldEnvelopeSent = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Envelope Sent",
-                Name = "Event_Envelope_Sent"
+                Name = "Event_Envelope_Sent",
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onChange", "requestConfig")
+                }
             };
 
-            var fieldEnvelopeReceived = new CheckBoxControlDefinitionDTO()
+				var fieldEnvelopeReceived = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Envelope Received",
-                Name = "Event_Envelope_Received"
+                Name = "Event_Envelope_Received",
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onChange", "requestConfig")
+                }
             };
 
-            var fieldRecipientSigned = new CheckBoxControlDefinitionDTO()
-            {
+				var fieldRecipientSigned = new CheckBoxControlDefinitionDTO()
+                {
                 Label = "Recipient Signed",
-                Name = "Event_Recipient_Signed"
+                Name = "Event_Recipient_Signed",
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onChange", "requestConfig")
+                }
             };
 
-            var fieldEventRecipientSent = new CheckBoxControlDefinitionDTO()
-            {
+				var fieldEventRecipientSent = new CheckBoxControlDefinitionDTO()
+                {
                 Label = "Recipient Sent",
-                Name = "Event_Recipient_Sent"
+                Name = "Event_Recipient_Sent",
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onChange", "requestConfig")
+                }
             };
 
             return PackControlsCrate(
@@ -280,7 +291,7 @@ namespace pluginDocuSign.Actions
 
             var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
             var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();
-            var createDesignTimeFields = _crate.CreateDesignTimeFieldsCrate(
+            var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
                 "Available Templates",
                 fields);
             return createDesignTimeFields;

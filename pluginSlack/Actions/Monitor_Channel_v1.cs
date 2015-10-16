@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Core.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using pluginSlack.Interfaces;
 using pluginSlack.Services;
+using PluginUtilities.BaseClasses;
 
 namespace pluginSlack.Actions
 {
@@ -23,7 +22,7 @@ namespace pluginSlack.Actions
             _slackIntegration = new SlackIntegration();
         }
 
-        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
             if (IsEmptyAuthToken(actionDto))
             {
@@ -47,7 +46,7 @@ namespace pluginSlack.Actions
                 throw new ApplicationException("Unexpected channel-id.");
             }
 
-            var cratePayload = _crate.Create(
+            var cratePayload = Crate.Create(
                 "Slack Payload Data",
                 JsonConvert.SerializeObject(payloadFields),
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
@@ -167,7 +166,7 @@ namespace pluginSlack.Actions
             };
 
             var crate =
-                _crate.CreateDesignTimeFieldsCrate(
+                Crate.CreateDesignTimeFieldsCrate(
                     "Available Fields",
                     fields.ToArray()
                 );
@@ -178,7 +177,7 @@ namespace pluginSlack.Actions
         private CrateDTO CreateAvailableChannelsCrate(IEnumerable<FieldDTO> channels)
         {
             var crate =
-                _crate.CreateDesignTimeFieldsCrate(
+                Crate.CreateDesignTimeFieldsCrate(
                     "Available Channels",
                     channels.ToArray()
                 );
@@ -192,7 +191,7 @@ namespace pluginSlack.Actions
                 "Slack Outgoing Message"
             };
 
-            return _crate.CreateStandardEventSubscriptionsCrate(
+            return Crate.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
                 subscriptions.ToArray()
                 );

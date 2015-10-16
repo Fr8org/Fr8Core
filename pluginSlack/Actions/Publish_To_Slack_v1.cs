@@ -1,24 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Configuration;
-using System.Data;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
+using Core.Enums;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using StructureMap;
 using Core.Interfaces;
-using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using pluginSlack.Interfaces;
 using pluginSlack.Services;
+using PluginUtilities.BaseClasses;
 
 namespace pluginSlack.Actions
 {
@@ -33,7 +25,7 @@ namespace pluginSlack.Actions
             _slackIntegration = new SlackIntegration();
         }
 
-        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
             if (IsEmptyAuthToken(actionDto))
             {
@@ -174,7 +166,7 @@ namespace pluginSlack.Actions
         private CrateDTO CreateAvailableChannelsCrate(IEnumerable<FieldDTO> channels)
         {
             var crate =
-                _crate.CreateDesignTimeFieldsCrate(
+                Crate.CreateDesignTimeFieldsCrate(
                     "Available Channels",
                     channels.ToArray()
                 );
@@ -190,7 +182,7 @@ namespace pluginSlack.Actions
                 .ToArray();
 
             var availableFieldsCrate =
-                _crate.CreateDesignTimeFieldsCrate(
+                Crate.CreateDesignTimeFieldsCrate(
                     "Available Fields",
                     curUpstreamFields
                 );

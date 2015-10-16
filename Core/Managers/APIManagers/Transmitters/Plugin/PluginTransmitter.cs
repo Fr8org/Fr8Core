@@ -53,7 +53,7 @@ namespace Core.Managers.APIManagers.Transmitters.Plugin
                 BaseUri = null;
             }
             else
-            {
+        {
                 BaseUri = new Uri(plugin.Endpoint.StartsWith("http") ? plugin.Endpoint : "http://" + plugin.Endpoint);
             }
 
