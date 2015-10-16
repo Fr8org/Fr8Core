@@ -113,13 +113,13 @@ namespace Data.Infrastructure
             }
         }
 
-        private IProcessRepository _processRepository;
+        private IContainerRepository _processRepository;
 
-        public IProcessRepository ProcessRepository
+        public IContainerRepository ContainerRepository
         {
             get
             {
-                return _processRepository ?? (_processRepository = new ProcessRepository(this));
+                return _processRepository ?? (_processRepository = new ContainerRepository(this));
             }
         }
         private EmailStatusRepository _emailStatusRepository;

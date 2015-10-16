@@ -1,6 +1,6 @@
 ﻿namespace Data.States
 {
-	public class ProcessState
+	public class ContainerState
 	{
 		public const int Unstarted = 1;
 		public const int Executing = 2;

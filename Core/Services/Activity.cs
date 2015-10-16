@@ -209,11 +209,11 @@ namespace Core.Services
 
 	    
 
-        public async Task Process(int curActivityId, ProcessDO processDO)
+        public async Task Process(int curActivityId, ContainerDO containerDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessDO = uow.ProcessRepository.GetByKey(processDO.Id);
+                var curProcessDO = uow.ContainerRepository.GetByKey(containerDO.Id);
                 var curActivityDO = uow.ActivityRepository.GetByKey(curActivityId);
 
                 if (curActivityDO == null)

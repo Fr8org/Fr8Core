@@ -14,7 +14,7 @@ namespace UtilitiesTesting.Fixtures
             processNode.ProcessNodeTemplateId = 50;
             processNode.ProcessNodeTemplate = TestProcessNodeTemplateDO1();
             processNode.ProcessNodeState = ProcessNodeState.Unstarted;
-            processNode.ParentProcess = TestProcess1();
+            processNode.ParentContainer = TestProcess1();
 
             return processNode;
         }

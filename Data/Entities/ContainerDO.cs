@@ -10,9 +10,9 @@ using System;
 
 namespace Data.Entities
 {
-    public class ProcessDO : BaseDO
+    public class ContainerDO : BaseDO
     {
-        public ProcessDO()
+        public ContainerDO()
         {
             ProcessNodes = new List<ProcessNodeDO>();
         }
@@ -31,10 +31,10 @@ namespace Data.Entities
         public virtual ICollection<ProcessNodeDO> ProcessNodes { get; set; }
             
         [Required]
-        [ForeignKey("ProcessStateTemplate")]
-        public int ProcessState { get; set; }
-              
-        public virtual _ProcessStateTemplate ProcessStateTemplate { get; set; }
+        [ForeignKey("ContainerStateTemplate")]
+        public int ContainerState { get; set; }
+
+        public virtual _ContainerStateTemplate ContainerStateTemplate { get; set; }
 
         [ForeignKey("CurrentActivity")]
         public int? CurrentActivityId { get; set; }
@@ -45,8 +45,6 @@ namespace Data.Entities
         public virtual ActivityDO NextActivity { get; set; }
 
         public string CrateStorage { get; set; }
-
-       // public virtual DockyardAccountDO DockyardAccount { get; set; }
 
         public CrateStorageDTO CrateStorageDTO()
         {
@@ -71,7 +69,7 @@ namespace Data.Entities
         {
             base.BeforeSave();
 
-            ProcessValidator curValidator = new ProcessValidator();
+            ContainerValidator curValidator = new ContainerValidator();
             curValidator.ValidateAndThrow(this);
 
         }

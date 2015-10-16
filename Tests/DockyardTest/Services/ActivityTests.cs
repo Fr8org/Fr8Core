@@ -158,8 +158,8 @@ namespace DockyardTest.Services
         public void Process_curActivityDOIsNull()
         {
             _activity = ObjectFactory.GetInstance<IActivity>();
-            var processDo = FixtureData.TestProcess1();
-            Task result = _activity.Process(It.IsAny<int>(), processDo);
+            var containerDO = FixtureData.TestProcess1();
+            Task result = _activity.Process(It.IsAny<int>(), containerDO);
             Assert.AreEqual(result.Exception.InnerException.Message, "Cannot find Activity with the supplied curActivityId");
         }
 
@@ -181,9 +181,9 @@ namespace DockyardTest.Services
                 uow.ActivityRepository.Add(obj);
                 uow.SaveChanges();
 
-                ProcessDO processDo = FixtureData.TestProcess1();
+                ContainerDO containerDO = FixtureData.TestProcess1();
                 _activity = ObjectFactory.GetInstance<IActivity>();
-                _activity.Process(1, processDo);
+                _activity.Process(1, containerDO);
             }
         }
 

@@ -265,11 +265,11 @@ namespace UtilitiesTesting.Fixtures
 
             var processTemplateDo = TestProcessTemplate2();
 
-            var processDo = new ProcessDO()
+            var processDo = new ContainerDO()
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
-                ProcessState = 1,
+                ContainerState = 1,
                 ProcessTemplateId = processTemplateDo.Id,
                 ProcessTemplate = processTemplateDo
             };
@@ -350,11 +350,11 @@ namespace UtilitiesTesting.Fixtures
                 ProcessTemplateState = ProcessTemplateState.Active
             };
 
-            var processDo = new ProcessDO()
+            var processDo = new ContainerDO()
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
-                ProcessState = 1,
+                ContainerState = 1,
                 ProcessTemplateId = processTemplateDo.Id,
                 ProcessTemplate = processTemplateDo
             };
@@ -412,7 +412,7 @@ namespace UtilitiesTesting.Fixtures
                 DockyardAccount = FixtureData.TestDockyardAccount1()
             };
 
-            var curProcessDO = new ProcessDO()
+            var curProcessDO = new ContainerDO()
             {
                 Id = 1,
                 ProcessTemplateId = 1,
@@ -757,12 +757,12 @@ namespace UtilitiesTesting.Fixtures
         {
             var actionTemplate = ActionTemplate();
 
-            var processDo = new ProcessDO()
+            var processDo = new ContainerDO()
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
                 ProcessTemplateId = TestProcessTemplate2().Id,
-                ProcessState = 1
+                ContainerState = 1
             };
            
             var actionDo = new ActionDO()

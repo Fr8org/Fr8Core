@@ -1,4 +1,5 @@
 ﻿using System;
+using InternalInterface = Core.Interfaces;
 using Core.Interfaces;
 using Core.Services;
 using Data.Entities;
@@ -17,10 +18,10 @@ namespace DockyardTest.Services
 {
     
     [TestFixture]
-    [Category("ProcessExecute")]
-    public class ProcessExecuteTests: BaseTest
+    [Category("ContainerExecute")]
+    public class ContainerExecuteTests: BaseTest
     {
-        private IProcess _process;
+        private InternalInterface.IContainer _container;
 
         [SetUp]
         //constructor method as it is run at the test start
@@ -28,28 +29,28 @@ namespace DockyardTest.Services
         {
             base.SetUp();
 
-            _process = ObjectFactory.GetInstance<IProcess>();
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async void Execute_ProcessDoIsNull_ThrowsArgumentNullException()
+        public async void Execute_ContainerDoIsNull_ThrowsArgumentNullException()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                await _process.Execute(uow, null);
+                await _container.Execute(uow, null);
             }
         }
         
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async void Execute_ProcessDoCurrentActivityIsNull_ThrowsArgumentNullException()
+        public async void Execute_ContainerDoCurrentActivityIsNull_ThrowsArgumentNullException()
         {
             //Get ProcessDO entity from static partial class FixtureData for already prepared data
             //The CurrentActivity value is already set to null and pass it immediately to service
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                await _process.Execute(uow, FixtureData.TestProcessCurrentActivityNULL());
+                await _container.Execute(uow, FixtureData.TestProcessCurrentActivityNULL());
             }
         }
 
@@ -61,17 +62,17 @@ namespace DockyardTest.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = FixtureData.TestProcessExecute();
+                var containerDO = FixtureData.TestProcessExecute();
                 var currAction = FixtureData.TestAction4();
                 currAction.ActionState = ActionState.Active;
                 currAction.CrateStorage = crateStorage;
                 var nextAction = FixtureData.TestAction5();
                 nextAction.CrateStorage = crateStorage;
                 nextAction.ActionState = ActionState.Unstarted;
-                processDO.CurrentActivity = currAction;
-                processDO.NextActivity = nextAction;
+                containerDO.CurrentActivity = currAction;
+                containerDO.NextActivity = nextAction;
 
-                uow.ProcessRepository.Add(processDO);
+                uow.ContainerRepository.Add(containerDO);
                 uow.ActivityRepository.Add(currAction);
                 uow.ActivityRepository.Add(nextAction);
 
@@ -79,8 +80,8 @@ namespace DockyardTest.Services
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = uow.ProcessRepository.GetByKey(49);
-                var ex = Assert.Throws<Exception>(async () => await _process.Execute(uow, processDO));
+                var containerDO = uow.ContainerRepository.GetByKey(49);
+                var ex = Assert.Throws<Exception>(async () => await _container.Execute(uow, containerDO));
                 Assert.AreEqual("Action ID: 3 status is 4.", ex.Message);
             }
         }
@@ -91,17 +92,17 @@ namespace DockyardTest.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = FixtureData.TestProcessExecute();
+                var containerDO = FixtureData.TestProcessExecute();
                 var currAction = FixtureData.TestAction4();
                 currAction.ActionState = ActionState.Deactive;
                 currAction.CrateStorage = crateStorage;
                 var nextAction = FixtureData.TestAction5();
                 nextAction.CrateStorage = crateStorage;
                 nextAction.ActionState = ActionState.Unstarted;
-                processDO.CurrentActivity = currAction;
-                processDO.NextActivity = nextAction;
+                containerDO.CurrentActivity = currAction;
+                containerDO.NextActivity = nextAction;
 
-                uow.ProcessRepository.Add(processDO);
+                uow.ContainerRepository.Add(containerDO);
                 uow.ActivityRepository.Add(currAction);
                 uow.ActivityRepository.Add(nextAction);
 
@@ -109,8 +110,8 @@ namespace DockyardTest.Services
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = uow.ProcessRepository.GetByKey(49);
-                var ex = Assert.Throws<Exception>(async () => await _process.Execute(uow, processDO));
+                var containerDO = uow.ContainerRepository.GetByKey(49);
+                var ex = Assert.Throws<Exception>(async () => await _container.Execute(uow, containerDO));
                 Assert.AreEqual("Action ID: 3 status is 4.", ex.Message);
             }
         }
@@ -121,17 +122,17 @@ namespace DockyardTest.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = FixtureData.TestProcessExecute();
+                var containerDO = FixtureData.TestProcessExecute();
                 var currAction = FixtureData.TestAction4();
                 currAction.ActionState = ActionState.Error;
                 currAction.CrateStorage = crateStorage;
                 var nextAction = FixtureData.TestAction5();
                 nextAction.CrateStorage = crateStorage;
                 nextAction.ActionState = ActionState.Unstarted;
-                processDO.CurrentActivity = currAction;
-                processDO.NextActivity = nextAction;
+                containerDO.CurrentActivity = currAction;
+                containerDO.NextActivity = nextAction;
 
-                uow.ProcessRepository.Add(processDO);
+                uow.ContainerRepository.Add(containerDO);
                 uow.ActivityRepository.Add(currAction);
                 uow.ActivityRepository.Add(nextAction);
 
@@ -139,8 +140,8 @@ namespace DockyardTest.Services
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = uow.ProcessRepository.GetByKey(49);
-                var ex = Assert.Throws<Exception>(async () => await _process.Execute(uow, processDO));
+                var containerDO = uow.ContainerRepository.GetByKey(49);
+                var ex = Assert.Throws<Exception>(async () => await _container.Execute(uow, containerDO));
                 Assert.AreEqual("Action ID: 3 status is 4.", ex.Message);
             }
         }
@@ -151,17 +152,17 @@ namespace DockyardTest.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = FixtureData.TestProcessExecute();
+                var containerDO = FixtureData.TestProcessExecute();
                 var currAction = FixtureData.TestAction4();
                 currAction.ActionState = ActionState.Unstarted;
                 currAction.CrateStorage = crateStorage;
                 var nextAction = FixtureData.TestAction5();
                 nextAction.CrateStorage = crateStorage;
                 nextAction.ActionState = ActionState.Unstarted;
-                processDO.CurrentActivity = currAction;
-                processDO.NextActivity = nextAction;
+                containerDO.CurrentActivity = currAction;
+                containerDO.NextActivity = nextAction;
 
-                uow.ProcessRepository.Add(processDO);
+                uow.ContainerRepository.Add(containerDO);
                 uow.ActivityRepository.Add(currAction);
                 uow.ActivityRepository.Add(nextAction);
 
@@ -169,10 +170,10 @@ namespace DockyardTest.Services
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = uow.ProcessRepository.GetByKey(49);
-                await _process.Execute(uow, processDO);
+                var containerDO = uow.ContainerRepository.GetByKey(49);
+                await _container.Execute(uow, containerDO);
 
-                Assert.IsNull(processDO.CurrentActivity);
+                Assert.IsNull(containerDO.CurrentActivity);
                // Assert.IsNull(processDO.NextActivity);
             }
         }
@@ -183,11 +184,11 @@ namespace DockyardTest.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = FixtureData.TestProcessExecute();
+                var containerDO = FixtureData.TestProcessExecute();
                 var currActivity = FixtureData.TestActionTreeWithActionTemplates();
                 
-                processDO.CurrentActivity = currActivity;
-                uow.ProcessRepository.Add(processDO);
+                containerDO.CurrentActivity = currActivity;
+                uow.ContainerRepository.Add(containerDO);
                 
                 SetActionStateUnstarted(uow, currActivity);
                 
@@ -195,10 +196,10 @@ namespace DockyardTest.Services
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = uow.ProcessRepository.GetByKey(49);
-                await _process.Execute(uow, processDO);
+                var containerDO = uow.ContainerRepository.GetByKey(49);
+                await _container.Execute(uow, containerDO);
 
-                Assert.IsNull(processDO.CurrentActivity);
+                Assert.IsNull(containerDO.CurrentActivity);
                // Assert.IsNull(processDO.NextActivity);
             }
         }

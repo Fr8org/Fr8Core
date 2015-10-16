@@ -11,6 +11,8 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
 using StructureMap;
+//
+using InternalInterface = Core.Interfaces;
 using Core.Interfaces;
 using Core.Services;
 using Data.Entities;
@@ -22,16 +24,15 @@ using Microsoft.AspNet.Identity;
 
 namespace Web.Controllers
 {
-    [Authorize]
-    [RoutePrefix("api/processes")]
-    public class ProcessController : ApiController
+    [RoutePrefix("api/containers")]
+    public class ContainerController : ApiController
     {
-        private readonly IProcess _process;
+        private readonly InternalInterface.IContainer _container;
 
 
-        public ProcessController()
+        public ContainerController()
         {
-            _process = ObjectFactory.GetInstance<IProcess>();
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
         }
 
         [HttpGet]
@@ -40,10 +41,10 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessDO = uow.ProcessRepository.GetByKey(id);
-                var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, id);
+                var curContainerDO = uow.ContainerRepository.GetByKey(id);
+                var curPayloadDTO = new PayloadDTO(curContainerDO.CrateStorage, id);
 
-                EventManager.ProcessRequestReceived(curProcessDO);
+                EventManager.ProcessRequestReceived(curContainerDO);
 
                 return Ok(curPayloadDTO);
             }
@@ -55,8 +56,8 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processIds = uow.ProcessRepository.GetQuery().Where(x=>x.Name == name).Select(x=>x.Id).ToArray();
-                
+                var processIds = uow.ContainerRepository.GetQuery().Where(x => x.Name == name).Select(x => x.Id).ToArray();
+
                 return Json(processIds);
             }
         }
@@ -68,7 +69,7 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var processTemplateDO = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
-                await _process.Launch(processTemplateDO, null);
+                await _container.Launch(processTemplateDO, null);
 
                 return Ok();
             }
@@ -79,22 +80,23 @@ namespace Web.Controllers
         [HttpGet]
         public IHttpActionResult Get(int? id = null)
         {
-            var curProcess = _process.GetProcessOfAccount(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id);
+                IList<ContainerDO> curContainer = _container.GetByDockyardAccount(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id);
 
-            if (curProcess.Any())
-            {
-                if (id.HasValue)
+                if (curContainer.Any())
                 {
-                    return Ok(Mapper.Map<ProcessDTO>(curProcess.First()));
-                }
+                    if (id.HasValue)
+                    {
+                        return Ok(Mapper.Map<ContainerDTO>(curContainer.First()));
+                    }
 
-                return Ok(curProcess.Select(Mapper.Map<ProcessDTO>));
-            }
-            return Ok();
+                    return Ok(curContainer.Select(Mapper.Map<ContainerDTO>));
+                }
+                return Ok();
         }
 
-       //NOTE: IF AND WHEN THIS CLASS GETS USED, IT NEEDS TO BE FIXED TO USE OUR 
-       //STANDARD UOW APPROACH, AND NOT CONTACT THE DATABASE TABLE DIRECTLY.
+      
+        //NOTE: IF AND WHEN THIS CLASS GETS USED, IT NEEDS TO BE FIXED TO USE OUR 
+        //STANDARD UOW APPROACH, AND NOT CONTACT THE DATABASE TABLE DIRECTLY.
 
         //private DockyardDbContext db = new DockyardDbContext();
         // GET: api/Process

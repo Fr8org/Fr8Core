@@ -90,7 +90,7 @@ namespace Core.Services
 
                     do
                     {
-                        activityService.Process(currentAction.Id, curProcessNode.ParentProcess);
+                        activityService.Process(currentAction.Id, curProcessNode.ParentContainer);
                         currentAction = activityService.GetNextActivity(currentAction, curProcessNodeTemplate);
                     } while (currentAction != null);
                 }

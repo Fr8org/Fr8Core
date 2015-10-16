@@ -110,6 +110,7 @@ namespace DockyardTest.Controllers
             for (var i = 0; i < 2; i++)
             {
                 var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
+
                 // Commented out by yakov.gnusin:
                 // Do we really need to provider DockyardAccountDO inside ProcessTemplateDTO?
                 // We do override DockyardAccountDO in ProcessTemplateController.Post action.

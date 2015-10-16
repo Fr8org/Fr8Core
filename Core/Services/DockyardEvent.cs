@@ -1,4 +1,5 @@
-﻿using Core.Interfaces;
+﻿using InternalInterfaces = Core.Interfaces;
+using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -17,13 +18,13 @@ namespace Core.Services
     public class DockyardEvent : IDockyardEvent
     {
         private readonly IProcessTemplate _processTemplate;
-        private readonly IProcess _process;
+        private readonly InternalInterfaces.IContainer _process;
         private readonly ICrate _crate;
 
         public DockyardEvent()
         {
             _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
-            _process = ObjectFactory.GetInstance<IProcess>();
+            _process = ObjectFactory.GetInstance<InternalInterfaces.IContainer>();
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 

@@ -78,7 +78,7 @@ namespace Data.Entities
         public virtual DockyardAccountDO DockyardAccount { get; set; }
 
         [InverseProperty("ProcessTemplate")]
-        public virtual ICollection<ProcessDO> ChildProcesses { get; set; }
+        public virtual ICollection<ContainerDO> ChildContainer { get; set; }
 
         [NotMapped]
         public IEnumerable<ProcessNodeTemplateDO> ProcessNodeTemplates

@@ -330,7 +330,7 @@
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
-    <Compile Include="Controllers\ProcessController.cs" />
+    <Compile Include="Controllers\ContainerController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
     <Compile Include="Controllers\ManageFileController.cs" />
@@ -745,7 +745,7 @@
     <Content Include="newrelic\NewRelic.Profiler.dll" />
     <Content Include="Scripts\lib\jpattern.js" />
     <Content Include="Scripts\tests\integration\PluginActionExecuteTest.js" />
-    <Content Include="Scripts\tests\integration\ProcessControllerTests.js" />
+    <Content Include="Scripts\tests\integration\ContainerControllerTests.js" />
     <Content Include="Views\ExternalAuth\AuthSuccess.cshtml" />
     <Content Include="Views\AngularTemplate\TextArea.cshtml" />
     <Content Include="Views\AngularTemplate\FieldList.cshtml" />
@@ -777,6 +777,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ActionNameFormatter.ts" />
+    <TypeScriptCompile Include="Scripts\app\filters\ContainerState.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ProcessTemplateState.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IUser.ts" />
@@ -818,6 +819,7 @@
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\ContainerControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\PaneConfigurationActionTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDesignDTO.ts" />

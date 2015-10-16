@@ -228,6 +228,7 @@
     <Compile Include="Controllers\ActionListControllerTest.cs" />
     <Compile Include="Controllers\Api\ApiControllerTestBase.cs" />
     <Compile Include="Controllers\ActionControllerTest.cs" />
+    <Compile Include="Controllers\ContainerControllerTests.cs" />
     <Compile Include="Controllers\DockyardEventControllerTests.cs" />
     <Compile Include="Controllers\ReportControllerTest.cs" />
     <Compile Include="Controllers\CriteriaControllerTest.cs" />
@@ -265,13 +266,13 @@
     <Compile Include="Services\IPluginClient.cs" />
     <Compile Include="Services\FileTests.cs" />
     <Compile Include="Services\ProcessNodeTests.cs" />
-    <Compile Include="Services\ProcessServiceTests.cs" />
+    <Compile Include="Services\ContainerServiceTests.cs" />
     <Compile Include="Services\ProcessNodeTemplateTests.cs" />
     <Compile Include="Services\ProcessTemplateTests.cs" />
     <Compile Include="Services\SMSMessageTests.cs" />
     <Compile Include="Services\StartupTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />
-    <Compile Include="Services\ProcessExecuteTests.cs" />
+    <Compile Include="Services\ContainerExecuteTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
     <Compile Include="Wrapper\DcousingAccountTest.cs" />

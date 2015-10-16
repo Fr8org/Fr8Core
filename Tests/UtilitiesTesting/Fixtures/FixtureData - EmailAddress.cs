@@ -14,7 +14,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static EmailAddressDO TestEmailAddress1()
         {
-            var emailAddressDO =  new EmailAddressDO("alexlucre1@gmail.com");
+            var emailAddressDO = new EmailAddressDO("alexlucre1@gmail.com");
             emailAddressDO.Id = 1;
             emailAddressDO.Name = "Alex";
             return emailAddressDO;

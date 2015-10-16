@@ -59,8 +59,9 @@ module dockyard.controllers {
             return [
                 this.DTColumnDefBuilder.newColumnDef(0),
                 this.DTColumnDefBuilder.newColumnDef(1),
-                this.DTColumnDefBuilder.newColumnDef(2).notSortable(),
-                this.DTColumnDefBuilder.newColumnDef(3).notSortable()
+                this.DTColumnDefBuilder.newColumnDef(2),
+                this.DTColumnDefBuilder.newColumnDef(3),
+                this.DTColumnDefBuilder.newColumnDef(4).notSortable()
             ];
         }
 

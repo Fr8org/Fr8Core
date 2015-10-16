@@ -76,7 +76,7 @@ module dockyard.services {
                 'execute': {
                     method: 'POST',
                     isArray: false,
-                    url: '/api/processes/launch?processTemplateId=:id',
+                    url: '/api/containers/launch?processTemplateId=:id',
                     params: {
                         id: '@id'
                     }
@@ -432,17 +432,17 @@ module dockyard.services {
     // Container Read service
 
     app.factory('ContainerService', ['$resource', ($resource: ng.resource.IResourceService): IContainerService =>
-        <IContainerService>$resource('/api/processes/get/:id', { id: '@id' },
+        <IContainerService>$resource('/api/containers/get/:id', { id: '@id' },
             {
                 'getAll': {
                     method: 'GET',
                     isArray: true,
-                    url: '/api/processes/get'
+                    url: '/api/containers/get'
                 },
                 'getSingle': {
                     method: 'GET',
                     isArray: false,
-                    url: '/api/processes/get/:id'
+                    url: '/api/containers/get/:id'
                 }
             }
             )

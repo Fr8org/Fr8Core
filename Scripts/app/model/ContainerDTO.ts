@@ -3,13 +3,16 @@
         id: number;
         name: string;
         processTemplateId: number;
-        processState: number;
+        containerState: number;
         currentActivityId: string;
         nextActivityId: string;
     }
 
     export enum ContainerState {
-        Inactive = 1,
-        Active = 2
+        Unstarted = 1,
+        Executing = 2,
+        WaitingForPlugin = 3,
+        Completed = 4,
+        Failed = 5
     }
 }

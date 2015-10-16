@@ -11,10 +11,10 @@ namespace Data.Entities
 
         public string Name { get; set; }
 
-        [ForeignKey("ParentProcess")]
+        [ForeignKey("ParentContainer")]
         public int ParentProcessId { get; set; }
 
-        public virtual ProcessDO ParentProcess { get; set; }
+        public virtual ContainerDO ParentContainer { get; set; }
 
         [ForeignKey("ProcessNodeStatusTemplate")]
         public int? ProcessNodeState { get; set; }

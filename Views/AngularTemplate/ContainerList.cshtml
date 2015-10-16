@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="portlet-body">
-                    <div ng-show="ptvms.length == 0">You have no container yet.</div>
+                    <div ng-show="currentAccountContainers.length == 0">You have no container yet.</div>
                     <div class="table-scrollable table-scrollable-borderless">
                         @*Note:: reused the class table-process-templates*@
                         <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
@@ -33,8 +33,9 @@
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Process Template Id</th>
+                                    <th>Container State</th>
                                     <th>Current Activity Id</th>
-                                    <th style="text-align:right">Actions</th>
+                                    @*<th style="text-align:right">Actions</th>*@
                                 </tr>
                             </thead>
                             <tbody>
@@ -42,14 +43,17 @@
                                     <td>{{ container.id }}</td>
                                     <td>{{ container.name }}</td>
                                     <td>{{ container.processTemplateId }}</td>
-                                    <td>{{ container.currentActivityId }}</td>
                                     <td>
+                                            <span>{{ container.containerState | ContainerState }}</span>
+                                        </td>
+                                    <td>{{ container.currentActivityId }}</td>
+                                    @*<td>
                                         <div>
                                             <button type="button" class="btn btn-sm red">Execute</button>
                                             <button type="button" class="btn btn-sm red">Delete</button>
                                             <button type="button" class="btn btn-sm green">Edit</button>
                                         </div>
-                                    </td>
+                                    </td>*@
                                 </tr>
                             </tbody>
                         </table>

@@ -246,7 +246,7 @@
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ProcessDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ContainerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
@@ -275,6 +275,10 @@
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510160538103_ReNameContainer.cs" />
+    <Compile Include="Migrations\201510160538103_ReNameContainer.Designer.cs">
+      <DependentUpon>201510160538103_ReNameContainer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -302,7 +306,7 @@
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\PluginDO.cs" />
-    <Compile Include="Entities\ProcessDO.cs" />
+    <Compile Include="Entities\ContainerDO.cs" />
     <Compile Include="Entities\ProcessNodeDO.cs" />
     <Compile Include="Entities\ProcessTemplateDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
@@ -337,7 +341,7 @@
     <Compile Include="Repositories\ProcessNodeTemplateRepository.cs" />
     <Compile Include="Repositories\ProcessTemplateRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
-    <Compile Include="Repositories\ProcessRepository.cs" />
+    <Compile Include="Repositories\ContainerRepository.cs" />
     <Compile Include="Repositories\MetaflowRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
@@ -350,7 +354,7 @@
     <Compile Include="States\AccessLevel.cs" />
     <Compile Include="States\PluginStatus.cs" />
     <Compile Include="States\ProcessNodeState.cs" />
-    <Compile Include="States\ProcessState.cs" />
+    <Compile Include="States\ContainerState.cs" />
     <Compile Include="States\BookingRequestAvailability.cs" />
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\CommunicationMode.cs" />
@@ -370,7 +374,7 @@
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
     <Compile Include="Entities\ProcessNodeTemplateDO.cs" />
     <Compile Include="States\Templates\_ProcessNodeStatusTemplate.cs" />
-    <Compile Include="States\Templates\_ProcessStateTemplate.cs" />
+    <Compile Include="States\Templates\_ContainerStateTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
     <Compile Include="States\ServiceAuthorizationType.cs" />
@@ -459,7 +463,7 @@
     <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
-    <Compile Include="Validations\ProcessValidator.cs" />
+    <Compile Include="Validations\ContainerValidator.cs" />
     <Compile Include="Validations\ProcessNodeTemplateValidator.cs" />
     <Compile Include="Validations\IncidentValidator.cs" />
     <Compile Include="Validations\OutboundEmailValidatorBase.cs" />
@@ -493,6 +497,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201510120408332_InitialMigration.resx">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510160538103_ReNameContainer.resx">
+      <DependentUpon>201510160538103_ReNameContainer.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

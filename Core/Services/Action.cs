@@ -200,7 +200,7 @@ namespace Core.Services
 //            return curAction;
 //        }
 
-        public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
+        public async Task<int> PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow)
         {
             //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
             if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
@@ -210,10 +210,10 @@ namespace Core.Services
 
                 EventManager.ActionStarted(curAction);
 
-                var payload = await Execute(curAction, curProcessDO);
+                var payload = await Execute(curAction, curContainerDO);
                 if (payload != null)
                 {
-                    curProcessDO.CrateStorage = payload.CrateStorage;
+                    curContainerDO.CrateStorage = payload.CrateStorage;
                 }
 
                 //this JSON error check is broken because it triggers on standard success messages, which look like this:
@@ -244,17 +244,17 @@ namespace Core.Services
         }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
-        public async Task<PayloadDTO> Execute(ActionDO curActionDO, ProcessDO curProcessDO)
+        public async Task<PayloadDTO> Execute(ActionDO curActionDO, ContainerDO curContainerDO)
         {
             if (curActionDO == null)
             {
                 throw new ArgumentNullException("curActionDO");
             }
 
-            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curProcessDO.Id);
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curContainerDO.Id);
             
             // Temporarily commented out by yakov.gnusin.
-            EventManager.ActionDispatched(curActionDO, curProcessDO.Id);
+            EventManager.ActionDispatched(curActionDO, curContainerDO.Id);
 
             return payloadDTO;
         }

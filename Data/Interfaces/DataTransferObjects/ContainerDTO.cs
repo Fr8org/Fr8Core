@@ -4,9 +4,9 @@ using Data.Entities;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class ProcessDTO
+    public class ContainerDTO
     {
-        public ProcessDTO()
+        public ContainerDTO()
         {
         }
 
@@ -14,7 +14,7 @@ namespace Data.Interfaces.DataTransferObjects
         public int Id { get; set; }
         public string Name { get; set; }
         public int ProcessTemplateId { get; set; }
-        public int ProcessState;
+        public int ContainerState;
 
         public int? CurrentActivityId { get; set; }
         public int? NextActivityId { get; set; }

@@ -1,9 +1,9 @@
 ﻿/// <reference path="../../lib/jpattern.js" />
 
-describe("ProcessController tests", function () {
+describe("ContainerController tests", function () {
     var returnedData;
-    var apiUrl = "http://localhost:30643/api/processes";
-    var processIdList;
+    var apiUrl = "http://localhost:30643/api/containers";
+    var containerIdList;
 
     var errorHandler = function (response, done) {
         if (response.status === 401) {
@@ -34,18 +34,18 @@ describe("ProcessController tests", function () {
     beforeAll(function (done) {
         getDataFromApi(done, "/getIdsByName?name=TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}",
             function () {
-                processIdList = returnedData;
+                containerIdList = returnedData;
                 done();
             });
     });
 
-    it("can get list of process ids by name", function () {
-        expect(processIdList instanceof Array).toBe(true);
-        expect(processIdList.length).toBe(1);
+    it("can get list of container ids by name", function () {
+        expect(containerIdList instanceof Array).toBe(true);
+        expect(containerIdList.length).toBe(1);
     });
     // find(obj).where(function(x) {  }
-    it("can get process by id", function (done) {
-        getDataFromApi(done, "/" + processIdList[0], function () {
+    it("can get container by id", function (done) {
+        getDataFromApi(done, "/" + containerIdList[0], function () {
 
             var responsePattern = {
                 crateStorage: {

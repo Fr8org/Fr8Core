@@ -234,7 +234,7 @@ namespace Data.Infrastructure
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ProcessDO>().ToTable("Processes");
+            modelBuilder.Entity<ContainerDO>().ToTable("Processes");
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
@@ -281,7 +281,7 @@ namespace Data.Infrastructure
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<ProcessNodeDO>()
-                .HasRequired<ProcessDO>(pn => pn.ParentProcess)
+                .HasRequired<ContainerDO>(pn => pn.ParentContainer)
                 .WithMany(p => p.ProcessNodes)
                 .HasForeignKey(pn => pn.ParentProcessId)
                 .WillCascadeOnDelete(false);

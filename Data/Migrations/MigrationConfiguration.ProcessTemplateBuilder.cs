@@ -42,20 +42,20 @@ namespace Data.Migrations
             {
                 StoreTemplate(uow);
 
-                var process = uow.ProcessRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
+                var process = uow.ContainerRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
 
                 var add = process == null;
                 
                 if (add)
                 {
-                    process = new ProcessDO();
+                    process = new ContainerDO();
                 }
 
-                ConfigureProcess(process);
+                ConfigureContainer(process);
 
                 if (add)
                 {
-                    uow.ProcessRepository.Add(process);
+                    uow.ContainerRepository.Add(process);
                 }
             }
 
@@ -88,13 +88,13 @@ namespace Data.Migrations
 
             
 
-            private void ConfigureProcess(ProcessDO process)
+            private void ConfigureContainer(ContainerDO container)
             {
-                process.Name = _name;
-                process.ProcessTemplateId = _ptId;
-                process.ProcessState = ProcessState.Executing;
+                container.Name = _name;
+                container.ProcessTemplateId = _ptId;
+                container.ContainerState = ContainerState.Executing;
 
-                process.CrateStorage = JsonConvert.SerializeObject(new
+                container.CrateStorage = JsonConvert.SerializeObject(new
                 {
                     crates = _crates
                 });

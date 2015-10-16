@@ -151,7 +151,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         .state('containers', {
             url: "/containers",
             templateUrl: "/AngularTemplate/ContainerList",
-            data: { pageTitle: 'Containers', pageSubTitle: 'Container Lists ' },
+            data: { pageTitle: 'Containers', pageSubTitle: 'This page displays all Containers ' },
         });
 }]);
 

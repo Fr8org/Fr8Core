@@ -213,7 +213,7 @@
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IProcessNode.cs" />
-    <Compile Include="Interfaces\IProcess.cs" />
+    <Compile Include="Interfaces\IContainer.cs" />
     <Compile Include="Interfaces\IProcessNodeTemplate.cs" />
     <Compile Include="Interfaces\IReport.cs" />
     <Compile Include="Interfaces\ISMSMessage.cs" />
@@ -229,6 +229,7 @@
     <Compile Include="ExternalServices\ServiceManager.cs" />
     <Compile Include="ExternalServices\SmtpClientWrapper.cs" />
     <Compile Include="ExternalServices\TwilioRestClientWrapper.cs" />
+    <Compile Include="Interfaces\ProcessDO.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Json\JsonContent.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Plugin\IPluginTransmitter.cs" />
@@ -296,7 +297,7 @@
     <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\ProcessNode.cs" />
-    <Compile Include="Services\Process.cs" />
+    <Compile Include="Services\Container.cs" />
     <Compile Include="Services\ProcessNodeTemplate.cs" />
     <Compile Include="Services\ProcessTemplate.cs" />
     <Compile Include="Services\Report.cs" />
