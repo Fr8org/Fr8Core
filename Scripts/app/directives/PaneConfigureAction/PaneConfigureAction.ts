@@ -65,6 +65,7 @@ module dockyard.directives.paneConfigureAction {
         mapFields: (scope: IPaneConfigureActionScope) => void;
         processing: boolean;
         configurationWatchUnregisterer: Function;
+        isSelected: Function;
     }
 
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -76,7 +77,8 @@ module dockyard.directives.paneConfigureAction {
         public templateUrl = '/AngularTemplate/PaneConfigureAction';
         public controller: ($scope: IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
-            currentAction: '='
+            currentAction: '=',
+            isSelected: '&'
         };
         public restrict = 'E';
 
@@ -102,6 +104,11 @@ module dockyard.directives.paneConfigureAction {
 
                 $scope.$on("onChange", onControlChange);
                 $scope.$on("onClick", onClickEvent);
+
+                $scope.$watch(() => $scope.isSelected(), (newVal: boolean, oldVal: boolean) => {
+                    if (!oldVal && newVal)
+                        loadConfiguration();
+                });
 
                 // These are exposed for unit testing.
                 $scope.onControlChange = onControlChange;
