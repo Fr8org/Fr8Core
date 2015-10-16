@@ -51,8 +51,12 @@ namespace pluginDocuSign.Controllers
         public async Task<AuthTokenDTO> Authenticate(CredentialsDTO curCredentials)
         {
             // Auth sequence according to https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#OAuth2/OAuth2%20Token%20Request.htm
-
             var oauthToken = await ObtainOAuthToken(curCredentials, CloudConfigurationManager.GetSetting("endpoint"));
+
+            if (string.IsNullOrEmpty(oauthToken))
+            {
+                return null;
+            }
 
             var docuSignAuthDTO = new DocuSignAuthDTO()
             {
@@ -90,6 +94,10 @@ namespace pluginDocuSign.Controllers
                 var responseObject = JsonConvert.DeserializeAnonymousType(responseAsString, new { access_token = "" });
 
                 return responseObject.access_token;
+            }
+            catch (Exception ex)
+            {
+                return null;
             }
             finally
             {
