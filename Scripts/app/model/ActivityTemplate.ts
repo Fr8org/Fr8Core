@@ -31,4 +31,8 @@
             return result;
         }
     }
+
+    export class IsAuthenticatedDTO {
+        authenticated: boolean;
+    }
 }

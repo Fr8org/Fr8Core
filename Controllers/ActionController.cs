@@ -84,17 +84,13 @@ namespace Web.Controllers
             return Ok(new { Url = externalAuthUrlDTO.Url });
         }
 
-        [HttpPost]
-        [Route("authenticate")]
-        public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
+        private void ExtractPluginAndAccount(int activityTemplateId,
+            out Fr8AccountDO account, out PluginDO plugin)
         {
-            Fr8AccountDO account;
-            PluginDO plugin;
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(credentials.ActivityTemplateId);
+                    .GetByKey(activityTemplateId);
 
                 if (activityTemplate == null)
                 {
@@ -106,12 +102,36 @@ namespace Web.Controllers
 
                 var accountId = User.Identity.GetUserId();
                 account = uow.UserRepository.FindOne(x => x.Id == accountId);
-                
+
                 if (account == null)
                 {
                     throw new ApplicationException("User was not found.");
                 }
             }
+        }
+
+        [HttpGet]
+        [Route("is_authenticated")]
+        public IHttpActionResult IsAuthenticated(int activityTemplateId)
+        {
+            Fr8AccountDO account;
+            PluginDO plugin;
+
+            ExtractPluginAndAccount(activityTemplateId, out account, out plugin);
+
+            var isAuthenticated = _action.IsAuthenticated(account, plugin);
+
+            return Ok(new { authenticated = isAuthenticated });
+        }
+
+        [HttpPost]
+        [Route("authenticate")]
+        public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
+        {
+            Fr8AccountDO account;
+            PluginDO plugin;
+
+            ExtractPluginAndAccount(credentials.ActivityTemplateId, out account, out plugin);
 
             await _action.AuthenticateInternal(
                 account,

@@ -260,6 +260,23 @@ namespace Core.Services
             }
         }
 
+        public bool IsAuthenticated(Fr8AccountDO account, PluginDO plugin)
+        {
+            if (!plugin.RequiresAuthentication)
+            {
+                return true;
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var hasAuthToken = uow.AuthorizationTokenRepository
+                    .GetQuery()
+                    .Any(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
+
+                return hasAuthToken;
+            }
+        }
+
         public async Task AuthenticateInternal(Fr8AccountDO account, PluginDO plugin,
             string username, string password)
         {
@@ -288,29 +305,32 @@ namespace Core.Services
                 var authToken = uow.AuthorizationTokenRepository
                     .FindOne(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
 
-                var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
-                var curAccount = uow.UserRepository.GetByKey(account.Id);
-
-                if (authToken == null)
+                if (authTokenDTO != null)
                 {
-                    authToken = new AuthorizationTokenDO()
+                    var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
+                    var curAccount = uow.UserRepository.GetByKey(account.Id);
+
+                    if (authToken == null)
                     {
-                        Token = authTokenDTO.Token,
-                        ExternalAccountId = authTokenDTO.ExternalAccountId,
-                        Plugin = curPlugin,
-                        UserDO = curAccount,
-                        ExpiresAt = DateTime.Today.AddMonths(1)
-                    };
+                        authToken = new AuthorizationTokenDO()
+                        {
+                            Token = authTokenDTO.Token,
+                            ExternalAccountId = authTokenDTO.ExternalAccountId,
+                            Plugin = curPlugin,
+                            UserDO = curAccount,
+                            ExpiresAt = DateTime.Today.AddMonths(1)
+                        };
 
-                    uow.AuthorizationTokenRepository.Add(authToken);
-                }
-                else
-                {
-                    authToken.Token = authTokenDTO.Token;
-                    authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
-                }
+                        uow.AuthorizationTokenRepository.Add(authToken);
+                    }
+                    else
+                    {
+                        authToken.Token = authTokenDTO.Token;
+                        authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                    }
 
-                uow.SaveChanges();
+                    uow.SaveChanges();
+                }
             }
         }
 

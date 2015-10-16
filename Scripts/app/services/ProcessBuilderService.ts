@@ -15,6 +15,7 @@ module dockyard.services {
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
         configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
         getByProcessTemplate: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
+        isAuthenticated: (params: any) => ng.resource.IResource<interfaces.IIsAuthenticatedVM>;
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
 
@@ -138,6 +139,10 @@ module dockyard.services {
                     params: {
                         suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
                     }
+                },
+                'isAuthenticated': {
+                    method: 'GET',
+                    url: '/actions/is_authenticated'
                 },
                 'getByProcessTemplate': {
                     method: 'GET',

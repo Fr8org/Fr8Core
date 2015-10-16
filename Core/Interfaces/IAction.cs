@@ -29,6 +29,7 @@ namespace Core.Interfaces
         IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO);
 		StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO);
         StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction);
+        bool IsAuthenticated(Fr8AccountDO user, PluginDO plugin);
         Task AuthenticateInternal(Fr8AccountDO user, PluginDO plugin, string username, string password);
         Task<ExternalAuthUrlDTO> GetExternalAuthUrl(Fr8AccountDO user, PluginDO plugin);
         Task AuthenticateExternal(PluginDO plugin, ExternalAuthenticationDTO externalAuthenticateDTO);
