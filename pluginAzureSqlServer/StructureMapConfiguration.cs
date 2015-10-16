@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Web.Http;
-using Core.Interfaces;
-using Core.Services;
 using Microsoft.Owin.Hosting;
 using Owin;
-using StructureMap.Configuration.DSL;
-using pluginAzureSqlServer.Infrastructure;
 using StructureMap;
+using StructureMap.Configuration.DSL;
+using Core.Interfaces;
+using Core.Managers;
+using Core.Services;
+using pluginAzureSqlServer.Infrastructure;
 
 namespace pluginAzureSqlServer
 {
@@ -18,7 +19,7 @@ namespace pluginAzureSqlServer
             {
                 For<IAction>().Use<Core.Services.Action>();
                 For<IPlugin>().Use<Plugin>();
-                For<ICrate>().Use<Crate>();
+                For<ICrateManager>().Use<CrateManager>();
                 For<IDbProvider>().Use<SqlClientDbProvider>();
                 For<IRouteNode>().Use<RouteNode>();
             }

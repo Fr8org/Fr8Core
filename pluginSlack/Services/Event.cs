@@ -7,20 +7,21 @@ using System.Text.RegularExpressions;
 using System.Web;
 using Newtonsoft.Json;
 using StructureMap;
+using Core.Managers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using pluginAzureSqlServer.Interfaces;
 using fr8.Microsoft.Azure;
+using pluginAzureSqlServer.Interfaces;
 
 namespace pluginAzureSqlServer.Services
 {
     public class Event : IEvent
     {
-        private readonly Core.Interfaces.ICrate _crate;
+        private readonly ICrateManager _crate;
 
         public Event()
         {
-            _crate = ObjectFactory.GetInstance<Core.Interfaces.ICrate>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         public void Process(string externalEventPayload)

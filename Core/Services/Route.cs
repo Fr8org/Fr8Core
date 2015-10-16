@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Core.Interfaces;
+using Core.Managers;
 using Data.Entities;
 using Data.Exceptions;
 using Data.Interfaces;
@@ -23,7 +24,7 @@ namespace Core.Services
         private readonly Fr8Account _dockyardAccount;
         private readonly IAction _action;
         private readonly IRouteNode _activity;
-        private readonly ICrate _crate;
+        private readonly ICrateManager _crate;
 
         
         
@@ -34,7 +35,7 @@ namespace Core.Services
             _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>();
             _action = ObjectFactory.GetInstance<IAction>();
             _activity = ObjectFactory.GetInstance<IRouteNode>();
-            _crate = ObjectFactory.GetInstance<ICrate>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
 

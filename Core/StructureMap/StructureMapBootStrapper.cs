@@ -108,7 +108,7 @@ namespace Core.StructureMap
                 For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IFile>().Use<File>();
                 For<IPlugin>().Use<Plugin>();
-                For<ICrate>().Use<Crate>();
+                For<ICrateManager>().Use<CrateManager>();
                 For<IDockyardEvent>().Use<DockyardEvent>();
                 For<IReport>().Use<Report>();
             }
@@ -164,7 +164,7 @@ namespace Core.StructureMap
                 //For<ITemplate>().Use<Services.Template>();
                 For<IFile>().Use<File>();
                 For<IPlugin>().Use<Plugin>();
-                For<ICrate>().Use<Crate>();
+                For<ICrateManager>().Use<CrateManager>();
                 For<IDockyardEvent>().Use<DockyardEvent>();
             }
         }
