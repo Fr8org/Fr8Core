@@ -309,7 +309,7 @@ namespace pluginIntegrationTests
             Assert.NotNull(actionDTO);
             Assert.NotNull(actionDTO.Content);
             Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
-            Assert.AreEqual(4, actionDTO.Content.CrateStorage.CrateDTO.Count);//replace this with 3 when 1123 is fixed
+            Assert.AreEqual(3, actionDTO.Content.CrateStorage.CrateDTO.Count);//replace this with 3 when 1123 is fixed
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
             //Assert.True(result.Content.CrateDTO   //uncomment this when 1123 is fixed
