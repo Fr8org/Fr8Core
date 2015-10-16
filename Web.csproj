@@ -17,10 +17,14 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort>44301</IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <IISExpressSSLPort>
+    </IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>
+    </IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
@@ -772,7 +776,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextBlock.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AccountDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AccountListController.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\OldDropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\DesignerHeader\DesignerHeader.ts" />
@@ -4037,7 +4040,6 @@
     <Content Include="Views\User\ShowUserDetails.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilderWidget.cshtml" />
-    <Content Include="Views\AngularTemplate\OldDropDownListBox.cshtml" />
     <Content Include="Views\AngularTemplate\ShowIncidents.cshtml" />
     <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
     <Content Include="Views\AngularTemplate\RoutingControl.cshtml" />
@@ -4173,7 +4175,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS> 
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>30643</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
