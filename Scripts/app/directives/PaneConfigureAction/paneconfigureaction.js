@@ -176,17 +176,28 @@ var dockyard;
                         function processConfiguration() {
                             // Check if authentication is required.
                             if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, 'Standard Authentication')) {
-                                var authCrate = crateHelper
-                                    .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
-                                var authMS = angular.fromJson(authCrate.contents);
-                                // Dockyard auth mode.
-                                if (authMS.Mode == 1) {
-                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_InternalAuthentication], new InternalAuthenticationArgs($scope.currentAction.activityTemplateId));
-                                }
-                                else {
-                                    // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ExternalAuthentication], new ExternalAuthenticationArgs($scope.currentAction.activityTemplateId));
-                                }
+                                var isAuthResult = ActionService.isAuthenticated({
+                                    activityTemplateId: $scope.currentAction.activityTemplateId
+                                });
+                                isAuthResult
+                                    .$promise
+                                    .then(function (res) {
+                                    if (res.authenticated) {
+                                        loadConfiguration();
+                                        return;
+                                    }
+                                    var authCrate = crateHelper
+                                        .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
+                                    var authMS = angular.fromJson(authCrate.contents);
+                                    // Dockyard auth mode.
+                                    if (authMS.Mode == 1) {
+                                        $scope.$emit(MessageType[MessageType.PaneConfigureAction_InternalAuthentication], new InternalAuthenticationArgs($scope.currentAction.activityTemplateId));
+                                    }
+                                    else {
+                                        // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
+                                        $scope.$emit(MessageType[MessageType.PaneConfigureAction_ExternalAuthentication], new ExternalAuthenticationArgs($scope.currentAction.activityTemplateId));
+                                    }
+                                });
                                 return;
                             }
                             $scope.currentAction.configurationControls =

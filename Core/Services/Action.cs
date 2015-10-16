@@ -1,30 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using StructureMap;
 using Core.Interfaces;
+using Core.Managers;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.Managers.APIManagers.Transmitters.Restful;
+using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using StructureMap;
-using System.Data.Entity;
-using Data.Constants;
-using Newtonsoft.Json;
 using Data.Interfaces.ManifestSchemas;
+using Data.States;
 using Utilities;
-using Newtonsoft.Json.Linq;
 
 namespace Core.Services
 {
     public class Action : IAction
     {
-        private ICrate _crate;
+        private ICrateManager _crate;
         //private Task curAction;
         private IPlugin _plugin;
         //private IRoute _route;
@@ -34,7 +35,7 @@ namespace Core.Services
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
-            _crate= ObjectFactory.GetInstance<ICrate>();
+            _crate= ObjectFactory.GetInstance<ICrateManager>();
           //  _route = ObjectFactory.GetInstance<IRoute>();
         }
 
@@ -259,6 +260,23 @@ namespace Core.Services
             }
         }
 
+        public bool IsAuthenticated(Fr8AccountDO account, PluginDO plugin)
+        {
+            if (!plugin.RequiresAuthentication)
+            {
+                return true;
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var hasAuthToken = uow.AuthorizationTokenRepository
+                    .GetQuery()
+                    .Any(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
+
+                return hasAuthToken;
+            }
+        }
+
         public async Task AuthenticateInternal(Fr8AccountDO account, PluginDO plugin,
             string username, string password)
         {
@@ -287,6 +305,8 @@ namespace Core.Services
                 var authToken = uow.AuthorizationTokenRepository
                     .FindOne(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
 
+                if (authTokenDTO != null)
+                {
                 var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
                 var curAccount = uow.UserRepository.GetByKey(account.Id);
 
@@ -311,6 +331,7 @@ namespace Core.Services
 
                 uow.SaveChanges();
             }
+        }
         }
 
         public async Task AuthenticateExternal(
