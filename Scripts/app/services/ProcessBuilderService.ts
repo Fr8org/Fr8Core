@@ -4,12 +4,12 @@
     The service enables operations with Process Templates
 */
 module dockyard.services {
-    export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> {
-        getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IProcessTemplateVM>;
-        getFull: (id: Object) => interfaces.IProcessTemplateVM;
+    export interface IRouteService extends ng.resource.IResourceClass<interfaces.IRouteVM> {
+        getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IRouteVM>;
+        getFull: (id: Object) => interfaces.IRouteVM;
         execute: (id: {id: number}) => void;
-        activate: (processTemplate: model.ProcessTemplateDTO) => void;
-        deactivate: (processTemplate: model.ProcessTemplateDTO) => void;
+        activate: (processTemplate: model.RouteDTO) => void;
+        deactivate: (processTemplate: model.RouteDTO) => void;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -56,8 +56,8 @@ module dockyard.services {
     */
 
 
-    app.factory('ProcessTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IProcessTemplateService =>
-        <IProcessTemplateService>$resource('/api/processTemplate/:id', { id: '@id' },
+    app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
+        <IRouteService>$resource('/api/processTemplate/:id', { id: '@id' },
             {
                 'getbystatus': {
                     method: 'GET',

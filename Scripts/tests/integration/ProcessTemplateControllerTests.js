@@ -32,7 +32,7 @@ var dockyard;
                         expect(status).toBe("success");
                         expect(data.name).toBe(fx.newProcessTemplate.name);
                         expect(data.description).toBe(fx.newProcessTemplate.description);
-                        expect(data.processTemplateState).toBe(fx.newProcessTemplate.processTemplateState);
+                        expect(data.routeState).toBe(fx.newProcessTemplate.routeState);
                     });
                 });
                 it("should specify DocuSign template successfully", function () {
@@ -42,7 +42,7 @@ var dockyard;
                         expect(status).toBe("success");
                         expect(data.name).toBe(fx.updatedProcessTemplate.name);
                         expect(data.description).toBe(fx.updatedProcessTemplate.description);
-                        expect(data.processTemplateState).toBe(fx.updatedProcessTemplate.processTemplateState);
+                        expect(data.routeState).toBe(fx.updatedProcessTemplate.routeState);
                         expect($.isArray(data.subscribedDocuSignTemplates)).toBeTruthy();
                         expect(data.subscribedDocuSignTemplates.length).toBe(1);
                         expect(data.subscribedDocuSignTemplates[0]).toBe(fx.updatedProcessTemplate.subscribedDocuSignTemplates[0]);

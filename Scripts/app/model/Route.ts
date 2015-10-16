@@ -1,17 +1,17 @@
 ﻿module dockyard.model {
-    export class ProcessTemplateDTO {
+    export class RouteDTO {
         id: number;
         isTempId: boolean;
         name: string;
         description: string;
-        processTemplateState: ProcessState;
+        routeState: RouteState;
         subscribedDocuSignTemplates: Array<string>;
         externalEventSubscription: Array<number>; 
         startingProcessNodeTemplateId: number;
         subroutes: Array<ProcessNodeTemplateDTO>
     }
 
-    export enum ProcessState {
+    export enum RouteState {
         Inactive = 1,
         Active = 2
     }

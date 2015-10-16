@@ -3,7 +3,7 @@
         Current state is moved to this class
     */
     export class ProcessBuilderState {
-        processTemplate: model.ProcessTemplateDTO;
+        processTemplate: model.RouteDTO;
 
         // ProcessNodeTemplate for currently edited Crteria. Unlike criteria property, 
         // it is set null as soon as Criteria is done editing.

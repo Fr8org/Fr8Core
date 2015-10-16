@@ -2,7 +2,7 @@
 
 module dockyard.interfaces {
 
-    export interface IProcessTemplateVM extends ng.resource.IResource<model.ProcessTemplateDTO>, model.ProcessTemplateDTO { }
+    export interface IRouteVM extends ng.resource.IResource<model.RouteDTO>, model.RouteDTO { }
 
     export interface IReportFactVM extends ng.resource.IResource<model.FactDTO>, model.FactDTO { }
 
@@ -35,7 +35,7 @@ module dockyard.interfaces {
     export interface IDataSourceListVM extends ng.resource.IResource<Array<string>> { }
 
     export interface IProcessBuilderController extends ng.IControllerService {
-        ptvm: interfaces.IProcessTemplateVM;
+        ptvm: interfaces.IRouteVM;
         submit: (isValid: boolean) => void;
         errorMessage: string;
         pbAddCriteriaClick: () => void,

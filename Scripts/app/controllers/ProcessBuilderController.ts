@@ -42,7 +42,7 @@ module dockyard.controllers {
             '$state',
             'ActionService',
             '$http',
-            'ProcessTemplateService',
+            'RouteService',
             '$timeout',
             'ProcessBuilderService',
             'CrateHelper',
@@ -57,7 +57,7 @@ module dockyard.controllers {
             private $state: ng.ui.IState,
             private ActionService: services.IActionService,
             private $http: ng.IHttpService,
-            private ProcessTemplateService: services.IProcessTemplateService,
+            private RouteService: services.IRouteService,
             private $timeout: ng.ITimeoutService,
             private ProcessBuilderService: services.IProcessBuilderService,
             private CrateHelper: services.CrateHelper,
@@ -112,9 +112,9 @@ module dockyard.controllers {
         }
 
         private loadProcessTemplate() {
-            var processTemplatePromise = this.ProcessTemplateService.getFull({ id: this.$scope.processTemplateId });
+            var processTemplatePromise = this.RouteService.getFull({ id: this.$scope.processTemplateId });
 
-            processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IProcessTemplateVM) => {
+            processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IRouteVM) => {
                 debugger;
 
                 this.$scope.current.processTemplate = curProcessTemplate;
@@ -123,7 +123,7 @@ module dockyard.controllers {
             });
         }
 
-        private renderProcessTemplate(curProcessTemplate: interfaces.IProcessTemplateVM) {
+        private renderProcessTemplate(curProcessTemplate: interfaces.IRouteVM) {
             if (curProcessTemplate.subroutes.length == 0) return;
 
             for (var curProcessNodeTemplate of curProcessTemplate.subroutes) {
