@@ -18,7 +18,7 @@
                 <div class="portlet-title">
                     <div class="caption caption-md">
                         <i class="icon-bar-chart font-green-haze hide"></i>
-                        <span class="caption-subject font-green-haze bold uppercase">Active Processes</span>
+                        <span class="caption-subject font-green-haze bold uppercase">Active Routes</span>
                         <span class="caption-helper hide">weekly stats...</span>
                     </div>
                     <div class="actions">
@@ -27,7 +27,7 @@
                 </div>
                 
                 <div class="portlet-body">
-                    <div ng-show="ptvms.length == 0">You have no processes yet.</div>
+                    <div ng-show="ptvms.length == 0">You have no routes yet.</div>
                     <div class="table-scrollable table-scrollable-borderless">
                         <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
                             <thead>
@@ -66,7 +66,7 @@
                 <div class="portlet-title">
                     <div class="caption caption-md">
                         <i class="icon-bar-chart font-green-haze hide"></i>
-                        <span class="caption-subject font-green-haze bold uppercase">Inactive Processes</span>
+                        <span class="caption-subject font-green-haze bold uppercase">Inactive Routes</span>
                         <span class="caption-helper hide">weekly stats...</span>
                     </div>
                     <div class="actions">
@@ -75,7 +75,7 @@
                 </div>
 
                 <div class="portlet-body">
-                    <div ng-show="ptvms.length == 0">You have no processes yet.</div>
+                    <div ng-show="ptvms.length == 0">You have no routes yet.</div>
                     <div class="table-scrollable table-scrollable-borderless">
                         <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
                             <thead>
@@ -116,7 +116,7 @@
             <h3 class="modal-title">Delete Confirmation</h3>
         </div>
         <div class="modal-body">
-            Are you sure that you wish to delete this Process Template?
+            Are you sure that you wish to delete this Route?
         </div>
         <div class="modal-footer">
             <button class="btn btn-primary" ng-click="ok()">OK</button>

@@ -73,12 +73,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             .state('processTemplates', {
             url: "/processes",
             templateUrl: "/AngularTemplate/ProcessTemplateList",
-            data: { pageTitle: 'Process Templates', pageSubTitle: 'This page displays all process templates' }
+            data: { pageTitle: 'Routes', pageSubTitle: 'This page displays all routes' }
         })
             .state('processTemplate', {
             url: "/processes/{id}",
             templateUrl: "/AngularTemplate/ProcessTemplateForm",
-            data: { pageTitle: 'Process Templates', pageSubTitle: 'Add a new Process Template' },
+            data: { pageTitle: 'Routes', pageSubTitle: 'Add a new Route' },
         })
             .state('processBuilder', {
             url: "/processes/{id}/builder",
