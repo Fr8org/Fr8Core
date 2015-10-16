@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Core.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using StructureMap;
+using Core.Interfaces;
+using Core.Managers;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Web.Controllers
 {
     public class DockyardEventController : ApiController
     {
         private readonly IDockyardEvent _dockyardEvent;
-        private readonly ICrate _crate;
+        private readonly ICrateManager _crate;
         private IRoute _route;
 
 
         public DockyardEventController()
         {
             _dockyardEvent = ObjectFactory.GetInstance<IDockyardEvent>();
-            _crate = ObjectFactory.GetInstance<ICrate>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
             _route = ObjectFactory.GetInstance<IRoute>();
 
         }

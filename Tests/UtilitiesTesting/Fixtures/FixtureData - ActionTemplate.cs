@@ -1,10 +1,12 @@
-﻿using Core.Interfaces;
+﻿using System.Collections.Generic;
+using DocuSign.Integrations.Client;
+using StructureMap;
+using Core.Interfaces;
+using Core.Managers;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using DocuSign.Integrations.Client;
-using StructureMap;
-using System.Collections.Generic;
+
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -76,7 +78,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static CrateStorageDTO TestConfigurationStore()
         {
-            ICrate _crate = ObjectFactory.GetInstance<ICrate>();
+            ICrateManager _crate = ObjectFactory.GetInstance<ICrateManager>();
             return new CrateStorageDTO
             {
                 CrateDTO = new List<CrateDTO>

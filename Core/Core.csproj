@@ -198,7 +198,7 @@
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
-    <Compile Include="Interfaces\ICrate.cs" />
+    <Compile Include="Managers\ICrateManager.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
     <Compile Include="Interfaces\IDockyardEvent.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
@@ -273,7 +273,7 @@
     <Compile Include="Services\ActivityTemplate.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
-    <Compile Include="Services\Crate.cs" />
+    <Compile Include="Managers\CrateManager.cs" />
     <Compile Include="Services\Criteria.cs" />
     <Compile Include="Services\Fr8Account.cs" />
     <Compile Include="Services\DockyardEvent.cs" />

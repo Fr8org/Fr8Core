@@ -1,13 +1,14 @@
-﻿using Core.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
-using NUnit.Framework;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Interfaces;
+using Core.Managers;
+using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -17,13 +18,13 @@ namespace DockyardTest.Services
     [Category("CrateService")]
     public class CrateServiceTests : BaseTest
     {
-        ICrate _crate;
+        ICrateManager _crate;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _crate = ObjectFactory.GetInstance<ICrate>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         [Test]
@@ -54,7 +55,7 @@ namespace DockyardTest.Services
         public void CanDeserealizeStandardConfigurationControls()
         {
             // Arrange
-            var _crate = ObjectFactory.GetInstance<ICrate>();
+            var _crate = ObjectFactory.GetInstance<ICrateManager>();
             var controls = FixtureData.SampleConfigurationControls();
             var curCrateDTO = _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", controls.ToArray());
 

@@ -12,12 +12,12 @@ namespace pluginTwilio.Services
     public class Event : IEvent
     {
         private readonly EventReporter _alertReporter;
-        private readonly ICrate _crate;
+        private readonly ICrateManager _crate;
 
         public Event()
         {
             _alertReporter = ObjectFactory.GetInstance<EventReporter>();
-            _crate = ObjectFactory.GetInstance<ICrate>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         public void Process(string curExternalEventPayload)

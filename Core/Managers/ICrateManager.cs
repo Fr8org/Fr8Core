@@ -7,9 +7,9 @@ using Newtonsoft.Json.Linq;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 
-namespace Core.Interfaces
+namespace Core.Managers
 {
-    public interface ICrate
+    public interface ICrateManager
     {
         CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0);
         T GetContents<T>(CrateDTO crate);
