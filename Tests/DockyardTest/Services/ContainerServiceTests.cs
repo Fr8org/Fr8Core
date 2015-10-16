@@ -26,9 +26,9 @@ namespace DockyardTest.Services
     [Category("ContainerService")]
     public class ContainerServiceTests : BaseTest
     {
-        private InternalInterface.IContainer _containerService;
+        private InternalInterface.IContainer _container;
         //private IDocuSignNotification _docuSignNotificationService;
-        private DockyardAccount _userService;
+        private Fr8Account _userService;
         private string _testUserId = "testuser";
         private string xmlPayloadFullPath;
         DocuSignEventDO docusignEventDO;
@@ -38,8 +38,8 @@ namespace DockyardTest.Services
         public override void SetUp()
         {
             base.SetUp();
-            _containerService = ObjectFactory.GetInstance<InternalInterface.IContainer>();
-            _userService = ObjectFactory.GetInstance<DockyardAccount>();
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
+            _userService = ObjectFactory.GetInstance<Fr8Account>();
             //_docuSignNotificationService = ObjectFactory.GetInstance<IDocuSignNotification>();
 
             xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
@@ -56,9 +56,9 @@ namespace DockyardTest.Services
             //Arrange 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplate = FixtureData.TestProcessTemplate2();
-                uow.ProcessTemplateRepository.Add(processTemplate);
-                foreach (var p in FixtureData.GetProcesses())
+                var route = FixtureData.TestRoute2();
+                uow.RouteRepository.Add(route);
+                foreach (var p in FixtureData.GetContainers())
                 {
                     uow.ContainerRepository.Add(p);
                 }
@@ -79,12 +79,12 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var envelopeCrate = FixtureData.EnvelopeIdCrateJson();
-                var processTemplate = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplateAndActionList();
+                var route = FixtureData.TestRouteWithStartingSubrouteAndActionList();
 
-                uow.ProcessTemplateRepository.Add(processTemplate);
+                uow.RouteRepository.Add(route);
                 uow.SaveChanges();
 
-                var container = _containerService.Create(uow, processTemplate.Id, FixtureData.GetEnvelopeIdCrate());
+                var container = _container.Create(uow, route.Id, FixtureData.GetEnvelopeIdCrate());
                 Assert.IsNotNull(container);
                 Assert.IsTrue(container.Id > 0);
             }
@@ -99,14 +99,14 @@ namespace DockyardTest.Services
             {
                 //Arrange
                 var envelope = FixtureData.TestEnvelope1();
-                var processTemplate = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplates();
+                var route = FixtureData.TestRouteWithStartingSubroutes();
 
                 uow.EnvelopeRepository.Add(envelope);
-                uow.ProcessTemplateRepository.Add(processTemplate);
+                uow.RouteRepository.Add(route);
                 uow.SaveChanges();
 
                 //Act
-                ProcessDO curProcess = _processService.Create(processTemplate.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
+                ProcessDO curProcess = _processService.Create(route.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
 
                 //Assert
                 int expectedProcessNodeCount = uow.ProcessNodeRepository.GetAll().Count();
@@ -121,14 +121,14 @@ namespace DockyardTest.Services
             {
                 //Arrange
                 var envelope = FixtureData.TestEnvelope1();
-                var processTemplate = FixtureData.TestProcessTemplate1();
+                var route = FixtureData.TestRoute1();
 
                 uow.EnvelopeRepository.Add(envelope);
-                uow.ProcessTemplateRepository.Add(processTemplate);
+                uow.RouteRepository.Add(route);
                 uow.SaveChanges();
 
                 //Act
-                ProcessDO curProcess = _processService.Create(processTemplate.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
+                ProcessDO curProcess = _processService.Create(route.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
 
                 //Assert
                 int expectedProcessId = curProcess.ProcessNodes.First().ParentProcessId;
@@ -140,17 +140,17 @@ namespace DockyardTest.Services
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ProcessService_CanNot_CreateProcessWithIncorrectProcessTemplate()
+        public void ProcessService_CanNot_CreateProcessWithIncorrectRoute()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                const int incorrectProcessTemplateId = 2;
+                const int incorrectRouteId = 2;
 
                 var envelope = FixtureData.TestEnvelope1();
 
                 uow.EnvelopeRepository.Add(envelope);
                 uow.SaveChanges();
-                _processService.Create(incorrectProcessTemplateId, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
+                _processService.Create(incorrectRouteId, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
             }
         }
 */
@@ -162,98 +162,45 @@ namespace DockyardTest.Services
             {
                 //Arrange
                 //Create a process template
-                var curProcessTemplate = FixtureData.TestProcessTemplateWithSubscribeEvent();
+                var curRoute = FixtureData.TestRouteWithSubscribeEvent();
                 var curEvent = FixtureData.TestDocuSignEvent1();
 
                 //Create activity mock to process the actions
-                Mock<IActivity> activityMock = new Mock<IActivity>(MockBehavior.Default);
+                Mock<IRouteNode> activityMock = new Mock<IRouteNode>(MockBehavior.Default);
                 activityMock.Setup(a => a.Process(1, It.IsAny<ContainerDO>())).Returns(Task.Delay(2));
-                ObjectFactory.Container.Inject(typeof(IActivity), activityMock.Object);
+                ObjectFactory.Container.Inject(typeof(IRouteNode), activityMock.Object);
 
                 //Act
-                _containerService = new InternalClass.Container();
-                _containerService.Launch(curProcessTemplate, FixtureData.DocuSignEventToCrate(curEvent));
+                _container = new InternalClass.Container();
+                _container.Launch(curRoute, FixtureData.DocuSignEventToCrate(curEvent));
 
                 //Assert
                 //since we have only one action in the template, the process should be called exactly once
                 activityMock.Verify(activity => activity.Process(1, It.IsAny<ContainerDO>()), Times.Exactly(1));
             }
         }
-
-        [Test, Ignore("Process Execute has new implementation that uses CurrentActivity and NextActivity")]
-        [ExpectedException(ExpectedMessage = "ProcessNode.NodeTransitions did not have a key matching the returned transition target from Critera")]
-        public void Execute_NoMatchedNodeTransition_ThrowExceptionProcessNodeTransitions()
-        {
-            docusignEventDO = FixtureData.TestDocuSignEvent1();
-            processNodeDO = FixtureData.TestProcessNode3();
-            //mock processnode
-            var processNodeMock = new Mock<IProcessNode>();
-            processNodeMock
-                .Setup(c => c.Execute(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
-                .Returns("true1");
-            ObjectFactory.Configure(cfg => cfg.For<IProcessNode>().Use(processNodeMock.Object));
-
-            _containerService = ObjectFactory.GetInstance<InternalInterface.IContainer>();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                _containerService.Execute(uow, FixtureData.TestProcesswithCurrentActivityAndNextActivity());
-            }
-        }
-
-        // DO-1214
-//        [Test, Ignore("Process Execute has new implementation that uses CurrentActivity and NextActivity")]
-//        public void Execute_MatchedNodeTransition_ProcessNodeNull()
-//        {
-//            //mock processnode
-//            var processNodeMock = new Mock<IProcessNode>();
-//            processNodeMock
-//                .Setup(c => c.Execute(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
-//                .Returns("true");
-//            ObjectFactory.Configure(cfg => cfg.For<IProcessNode>().Use(processNodeMock.Object));
-//            //setup the next transition node during lookup key
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                uow.ProcessTemplateRepository.Add(FixtureData.TestProcessTemplate2());
-//                uow.ActionListRepository.Add(FixtureData.TestActionList6());
-//                uow.SaveChanges();
-//
-//                uow.ProcessRepository.Add(FixtureData.TestProcess1());
-//                uow.SaveChanges();
-//                uow.ProcessNodeRepository.Add(FixtureData.TestProcessNode4());
-//                uow.SaveChanges();
-//            }
-//            _processService = ObjectFactory.GetInstance<IProcess>();
-//
-//            docusignEventDO = FixtureData.TestDocuSignEvent1();
-//            var processNodeDO = FixtureData.TestProcessNode3();
-//
-//
-//            _processService.Execute(FixtureData.TestProcesswithCurrentActivityAndNextActivity());
-//
-//            Assert.Pass();//just set to pass because processNodeDo parameter will be set to null(where caller object is unaware) and reaching this line is success
-//        }
+     
 
         [Test]
         public async void Execute_MoveToNextActivity_ProcessCurrentAndNextActivity()
         {
-            var _activity = new Mock<IActivity>();
+            var _activity = new Mock<IRouteNode>();
             _activity
                 .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ContainerDO>()))
                 .Returns(Task.Delay(100))
                 .Verifiable();
-            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
-            _containerService = ObjectFactory.GetInstance<InternalInterface.IContainer>();
-            ContainerDO containerDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
-            ActivityDO originalCurrentActivity = containerDO.CurrentActivity;
+            ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(_activity.Object));
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
+            ContainerDO containerDO = FixtureData.TestContainerWithCurrentActivityAndNextActivity();
+            RouteNodeDO originalCurrentActivity = containerDO.CurrentRouteNode;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                await _containerService.Execute(uow, containerDO);
+                await _container.Execute(uow, containerDO);
         }
 
-            Assert.AreNotEqual(originalCurrentActivity, containerDO.CurrentActivity);
-            Assert.IsNull(containerDO.CurrentActivity);
+            Assert.AreNotEqual(originalCurrentActivity, containerDO.CurrentRouteNode);
+            Assert.IsNull(containerDO.CurrentRouteNode);
             _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ContainerDO>()));
         }
 
@@ -304,11 +251,11 @@ namespace DockyardTest.Services
         [ExpectedException(typeof(ArgumentNullException))]
         public async void Execute_SetCurrentActivityNull_ThrowsException()
         {
-            _containerService = ObjectFactory.GetInstance<InternalInterface.IContainer>();
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
         {
-                await _containerService.Execute(uow, FixtureData.TestProcessCurrentActivityNULL());
+                await _container.Execute(uow, FixtureData.TestContainerCurrentActivityNULL());
         }
         }
 //

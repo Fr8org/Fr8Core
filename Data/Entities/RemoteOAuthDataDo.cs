@@ -18,10 +18,10 @@ namespace Data.Entities
         }
 
         [NotMapped]
-        IDockyardAccountDO IRemoteOAuthDataDO.User
+        IFr8AccountDO IRemoteOAuthDataDO.User
         {
             get { return User; }
-            set { User = (DockyardAccountDO)value; }
+            set { User = (Fr8AccountDO)value; }
         }
 
         [Key]
@@ -34,7 +34,7 @@ namespace Data.Entities
         
         [Required, ForeignKey("User")]
         public string UserID { get; set; }
-        public virtual DockyardAccountDO User { get; set; }        
+        public virtual Fr8AccountDO User { get; set; }        
         
         public bool HasAccessToken()
         {

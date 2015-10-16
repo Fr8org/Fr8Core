@@ -197,8 +197,8 @@ namespace Core.Managers
         {
             var fact = new FactDO
             {
-                CustomerId = containerDO.DockyardAccountId,
-                Data = containerDO.Id.ToStr(),
+                CustomerId = containerDO.Fr8AccountId,
+                Data =  containerDO.Id.ToStr(),
                 ObjectId = containerDO.Id.ToStr(),
                 PrimaryCategory = "Process Access",
                 SecondaryCategory = "Process",
@@ -382,19 +382,19 @@ namespace Core.Managers
         /// </summary>
         /// <param name="userId">UserId received from DocuSign.</param>
         /// <param name="processTemplateId">EnvelopeId received from DocuSign.</param>
-        public void ProcessTemplateCreated(string userId, string processTemplateName)
+        public void RouteCreated(string userId, string routeName)
         {
             FactDO fact = new FactDO
             {
-                PrimaryCategory = "ProcessTemplateService",
+                PrimaryCategory = "RouteService",
                 SecondaryCategory = null,
                 Activity = "Created",
                 CustomerId = userId,
                 ObjectId = "0",
-                Data = string.Format("ProcessTemplate Name: {0}.",
-                        processTemplateName)
+                Data = string.Format("Route Name: {0}.",
+                        routeName)
             };
-            LogFactInformation(fact, "ProcessTemplateCreated");
+            LogFactInformation(fact, "RouteCreated");
             SaveFact(fact);
         }
 
@@ -456,7 +456,7 @@ namespace Core.Managers
         /// </summary>
         /// <param name="userId">UserId received from DocuSign.</param>
         /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
-        public void AlertProcessProcessing(string userId, string envelopeId, int processId)
+        public void AlertProcessProcessing(string userId, string envelopeId, int containerId)
         {
             FactDO fact = new FactDO
             {
@@ -465,10 +465,10 @@ namespace Core.Managers
                 Activity = "Processed",
                 CustomerId = userId,
                 ObjectId = null,
-                Data = string.Format("A notification from DocuSign is processed. UserId: {0}, EnvelopeId: {1}, ProcessDO id: {2}.",
+                Data = string.Format("A notification from DocuSign is processed. UserId: {0}, EnvelopeId: {1}, ContainerDO id: {2}.",
                         userId,
                         envelopeId,
-                        processId)
+                        containerId)
             };
             LogFactInformation(fact, "ProcessProcessing");
             SaveFact(fact);
@@ -489,7 +489,7 @@ namespace Core.Managers
             LogFactInformation(fact, fact.SecondaryCategory + " " + fact.Activity);
         }
 
-        public void UserRegistered(DockyardAccountDO curUser)
+        public void UserRegistered(Fr8AccountDO curUser)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -635,11 +635,11 @@ namespace Core.Managers
         {
             var fact = new FactDO
             {
-                CustomerId = launchedContainer.DockyardAccountId,
+                CustomerId =  launchedContainer.Fr8AccountId,
                 Data = launchedContainer.Id.ToStr(),
                 ObjectId = launchedContainer.Id.ToStr(),
-                PrimaryCategory = "Process Execution",
-                SecondaryCategory = "Process",
+                PrimaryCategory = "Container Execution",
+                SecondaryCategory = "Container",
                 Activity = "Launched"
             };
 
@@ -651,15 +651,15 @@ namespace Core.Managers
             ContainerDO containerInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                containerInExecution = uow.ContainerRepository.GetByKey(processNode.ParentProcessId);
+                containerInExecution = uow.ContainerRepository.GetByKey(processNode.ParentContainerId);
             }
 
             var fact = new FactDO
             {
-                CustomerId = containerInExecution.DockyardAccountId,
-                Data = containerInExecution.Id.ToStr(),
+                CustomerId = containerInExecution != null ? containerInExecution.Fr8AccountId : "unknown",
+                Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                 ObjectId = processNode.Id.ToStr(),
-                PrimaryCategory = "Process Execution",
+                PrimaryCategory = "Container Execution",
                 SecondaryCategory = "Process Node",
                 Activity = "Created"
             };
@@ -667,18 +667,18 @@ namespace Core.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogEventCriteriaEvaluationStarted(int processId)
+        private void LogEventCriteriaEvaluationStarted(int containerId)
         {
             ContainerDO containerInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                containerInExecution = uow.ContainerRepository.GetByKey(processId);
+                containerInExecution = uow.ContainerRepository.GetByKey(containerId);
             }
 
             var fact = new FactDO
             {
-                CustomerId = containerInExecution.DockyardAccountId,
-                Data = containerInExecution.Id.ToStr(),
+                CustomerId = containerInExecution != null ? containerInExecution.Fr8AccountId : "unknown",
+                Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                 ObjectId = null,
                 PrimaryCategory = "Process Execution",
                 SecondaryCategory = "Criteria Evaluation",
@@ -688,18 +688,18 @@ namespace Core.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogEventCriteriaEvaluationFinished(int curProcessId)
+        private void LogEventCriteriaEvaluationFinished(int curContainerId)
         {
             ContainerDO containerInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                containerInExecution = uow.ContainerRepository.GetByKey(curProcessId);
+                containerInExecution = uow.ContainerRepository.GetByKey(curContainerId);
             }
 
             var fact = new FactDO
             {
-                CustomerId = containerInExecution.DockyardAccountId,
-                Data = containerInExecution.Id.ToStr(),
+                CustomerId = containerInExecution != null ? containerInExecution.Fr8AccountId : "unknown",
+                Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                 ObjectId = null,
                 PrimaryCategory = "Process Execution",
                 SecondaryCategory = "Criteria Evaluation",
@@ -715,12 +715,12 @@ namespace Core.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 containerInExecution = uow.ContainerRepository.GetQuery()
-                    .FirstOrDefault(p => p.CurrentActivityId.Value == curAction.Id);
+                    .FirstOrDefault(p => p.CurrentRouteNodeId.Value == curAction.Id);
             }
 
             var fact = new FactDO
             {
-                CustomerId = (containerInExecution != null) ? containerInExecution.DockyardAccountId : "unknown",
+                CustomerId = (containerInExecution != null) ? containerInExecution.Fr8AccountId : "unknown",
                 Data = (containerInExecution != null) ? containerInExecution.Id.ToStr() : "unknown",
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
@@ -742,8 +742,8 @@ namespace Core.Managers
 
             var fact = new FactDO
             {
-                CustomerId = containerInExecution.DockyardAccountId,
-                Data = containerInExecution.Id.ToStr(),
+                CustomerId = containerInExecution != null ? containerInExecution.Fr8AccountId : "unknown",
+                Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
                 SecondaryCategory = "Action",
@@ -751,7 +751,7 @@ namespace Core.Managers
             };
 
             SaveAndLogFact(fact);
-            }
+        }
 
         private void LogPluginEvent(LoggingData eventData)
         {
@@ -796,6 +796,6 @@ namespace Core.Managers
             Info,
             Error,
             Warning
-        }     
+        }
     }
 }

@@ -81,7 +81,7 @@ namespace Data.Migrations
             SeedInstructions(uow);
         }
 
-        private static void AddProcessTemplate(IUnitOfWork uow)
+        private static void AddRoute(IUnitOfWork uow)
         {
         }
 
@@ -135,8 +135,8 @@ namespace Data.Migrations
 
         private static void AddProcessDOForTestingApi(IUnitOfWork uow)
         {
-            new ProcessTemplateBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}").AddCrate(GenerateInitialEventCrate()).Store(uow);
-            new ProcessTemplateBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}")
+            new RouteBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}").AddCrate(GenerateInitialEventCrate()).Store(uow);
+            new RouteBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}")
                 .AddCrate(GenerateInitialEventCrate())
                 .AddCrate(new CrateDTO
                 {
@@ -411,7 +411,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        private static DockyardAccountDO CreateAdmin(string userEmail, string curPassword, IUnitOfWork uow)
+        private static Fr8AccountDO CreateAdmin(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
@@ -431,7 +431,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        private static DockyardAccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
+        private static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
@@ -449,7 +449,7 @@ namespace Data.Migrations
                 uow.UserRepository.AddDefaultProfile(user);
         }
 
-        private void AddSubscription(IUnitOfWork uow, DockyardAccountDO curAccount, PluginDO curPlugin, int curAccessLevel)
+        private void AddSubscription(IUnitOfWork uow, Fr8AccountDO curAccount, PluginDO curPlugin, int curAccessLevel)
         {
             var curSub = new SubscriptionDO()
             {
@@ -466,13 +466,14 @@ namespace Data.Migrations
             // Create test DockYard account for plugin subscription.
             // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
 
-            AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1");
-            AddPlugins(uow, "pluginExcel", "localhost:47011", "1");
-            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1");
+            AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1", true);
+            AddPlugins(uow, "pluginExcel", "localhost:47011", "1", false);
+            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1", false);
             uow.SaveChanges();
         }
 
-        private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint, string version)
+        private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint,
+            string version, bool requiresAuthentication)
         {
             // Check that plugin does not exist yet.
             var pluginExists = uow.PluginRepository.GetQuery().Any(x => x.Name == pluginName);
@@ -487,10 +488,10 @@ namespace Data.Migrations
                     PluginStatus = PluginStatus.Active,
                     Endpoint = endPoint,
                     Version = version,
+                    RequiresAuthentication = requiresAuthentication
                 };
 
                 uow.PluginRepository.Add(pluginDO);
-     
             }
         }
 

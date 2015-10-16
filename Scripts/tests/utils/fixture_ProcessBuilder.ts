@@ -34,7 +34,7 @@
             'description': 'Description',
             'processTemplateState': 1,
             'subscribedDocuSignTemplates': ['58521204-58af-4e65-8a77-4f4b51fef626'],
-            processNodeTemplates: [
+            subroutes: [
                 <model.ProcessNodeTemplateDTO>{
                     id: 1,
                     isTempId: false,

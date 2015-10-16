@@ -74,21 +74,98 @@ module dockyard.tests.utils.fixtures {
                     "value": "Checkbox"
                 }
             ]
-        };/*
-
-        public static actionDesignDTO = <interfaces.IActionDesignDTO> {
-            name: "test action type",
-            crateStorage: null,
-            configurationControls: null,
-            processNodeTemplateId: 1,
-            activityTemplateId: 1,
-            isTempId: false,
-            id: 1,
-            fieldMappingSettings: ActionDesignDTO.fieldMappingSettings,
-            actionListId: null,
-            activityTemplate: ActivityTemplate.activityTemplateDO
         };
 
+        public static noAuthActionVM = <interfaces.IActionVM> {
+            crateStorage: {
+                crates: [{
+                    id: "37ea608f-eead-4d0f-b75f-8033474e6030",
+                    label: "Configuration_Controls",
+                    contents: "{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard Configuration Controls\"}",
+                    parentCrateId: null,
+                    manifestType: "Standard Configuration Controls",                    
+                    manufacturer: null
+                }]
+            },
+            configurationControls: {
+                fields: [{
+                    fieldLabel: "SQL Connection String",
+                    name: "connection_string",
+                    value: null
+                }]
+            },
+            activityTemplateId: 2,
+            isTempId: false,
+            currentView: null,
+            id: 81,
+            name: "Write_To_Sql_Server"
+        };
+
+        public static internalAuthActionVM = <interfaces.IActionVM> {
+            crateStorage: {
+                crates: [{
+                    id: "37ea608f-eead-4d0f-b75f-8033474e6030",
+                    label: "Configuration_Controls",
+                    contents: "{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard Configuration Controls\"}",
+                    parentCrateId: null,
+                    manifestType: "Standard Configuration Controls",
+                    manufacturer: null
+                }, {
+                        id: "37ea608f-eead-4d0f-b75f-8033474e6030",
+                        label: "Test_Auth_Crate",
+                        contents: "{\"Mode\":\"1\"}",
+                        parentCrateId: null,
+                        manifestType: "Standard Authentication",
+                        manufacturer: null
+                    }]
+            },
+            configurationControls: {
+                fields: [{
+                    fieldLabel: "SQL Connection String",
+                    name: "connection_string",
+                    value: null
+                }]
+            },
+            activityTemplateId: 2,
+            isTempId: false,
+            currentView: null,
+            id: 81,
+            name: "Write_To_Sql_Server"
+        };
+
+        public static externalAuthActionVM = <interfaces.IActionVM> {
+            crateStorage: {
+                crates: [{
+                    id: "37ea608f-eead-4d0f-b75f-8033474e6030",
+                    label: "Configuration_Controls",
+                    contents: "{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard Configuration Controls\"}",
+                    parentCrateId: null,
+                    manifestType: "Standard Configuration Controls",
+                    manufacturer: null
+                }, {
+                        id: "37ea608f-eead-4d0f-b75f-8033474e6030",
+                        label: "Test_Auth_Crate",
+                        contents: "{\"Mode\":\"2\"}",
+                        parentCrateId: null,
+                        manifestType: "Standard Authentication",
+                        manufacturer: null
+                    }]
+            },
+            configurationControls: {
+                fields: [{
+                    fieldLabel: "SQL Connection String",
+                    name: "connection_string",
+                    value: null
+                }]
+            },
+            activityTemplateId: 2,
+            isTempId: false,
+            currentView: null,
+            id: 81,
+            name: "Write_To_Sql_Server"
+        };
+
+        /*
         public static paneConfiguration = <dockyard.directives.paneConfigureAction.IPaneConfigureActionScope> {
             currentAction: ActionDesignDTO.actionDesignDTO
         };

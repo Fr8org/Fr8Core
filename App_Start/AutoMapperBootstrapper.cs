@@ -17,7 +17,7 @@ namespace Web.App_Start
         public static void ConfigureAutoMapper()
         {
 
-            Mapper.CreateMap<DockyardAccountDO, ManageUserVM>()
+            Mapper.CreateMap<Fr8AccountDO, ManageUserVM>()
                 .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(account => !string.IsNullOrEmpty(account.PasswordHash)))
                 .ForMember(mu => mu.HasDocusignToken, opts => opts.Ignore())
                 .ForMember(mu => mu.HasGoogleToken, opts => opts.Ignore())
@@ -27,11 +27,11 @@ namespace Web.App_Start
                   .ForMember(activityTemplateDO => activityTemplateDO.Name, opts => opts.ResolveUsing(e => e.Name))
                   .ForMember(activityTemplateDO => activityTemplateDO.Version, opts => opts.ResolveUsing(e => e.Version));
              
-            Mapper.CreateMap<ProcessTemplateOnlyDTO, ProcessTemplateDO>();
-            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateOnlyDTO>();
+            Mapper.CreateMap<RouteOnlyDTO, RouteDO>();
+            Mapper.CreateMap<RouteDO, RouteOnlyDTO>();
             Mapper.CreateMap<UserVM, EmailAddressDO>()
                 .ForMember(userDO => userDO.Address, opts => opts.ResolveUsing(e => e.EmailAddress));
-            Mapper.CreateMap<UserVM, DockyardAccountDO>()
+            Mapper.CreateMap<UserVM, Fr8AccountDO>()
                 .ForMember(userDO => userDO.Id, opts => opts.ResolveUsing(e => e.Id))
                 .ForMember(userDO => userDO.FirstName, opts => opts.ResolveUsing(e => e.FirstName))
                 .ForMember(userDO => userDO.LastName, opts => opts.ResolveUsing(e => e.LastName))
@@ -41,7 +41,7 @@ namespace Web.App_Start
 
             Mapper.CreateMap<ActionDO, ActionDTO>();
 
-            Mapper.CreateMap<DockyardAccountDO, UserDTO>()
+            Mapper.CreateMap<Fr8AccountDO, UserDTO>()
                 .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))
                 .ForMember(dto => dto.Status, opts => opts.ResolveUsing(e => e.State.Value));
         }

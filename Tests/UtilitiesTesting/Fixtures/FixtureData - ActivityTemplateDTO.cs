@@ -1,4 +1,6 @@
-﻿﻿using Data.Interfaces.DataTransferObjects;
+﻿﻿using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +31,24 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static ActivityTemplateDTO TestActivityTemplateSendGrid()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 1,
+                Name = "SendEmailViaSendGrid",
+                Version = "1"
+            };
+        }
 
+        public static ActivityTemplateDO TwilioActionTemplateDTO()
+        {
+            return new ActivityTemplateDO
+            {
+                Id = 1,
+                Name = "Send_Via_Twilio",
+                Version = "1"
+            };
+        }
     }
 }

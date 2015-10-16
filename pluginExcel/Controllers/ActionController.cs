@@ -5,6 +5,7 @@ using PluginBase.BaseClasses;
 using System.Collections.Generic;
 using Data.States;
 using System;
+using System.Threading.Tasks;
 
 namespace pluginExcel.Controllers
 {
@@ -16,9 +17,9 @@ namespace pluginExcel.Controllers
 
         [HttpPost]
         [Route("configure")]
-        public ActionDTO Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
+            return await (Task<ActionDTO>) _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
         }
 
         [HttpPost]
@@ -36,10 +37,10 @@ namespace pluginExcel.Controllers
         }
 
         [HttpPost]
-        [Route("execute")]
-        public ActionDTO Execute(ActionDTO curActionDTO)
+        [Route("run")]
+        public async Task<ActionDTO> Run(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDTO);
+            return await (Task<ActionDTO>) _basePluginController.HandleDockyardRequest(curPlugin, "Run", curActionDTO);
         }
     }
 }

@@ -234,7 +234,7 @@ namespace Data.Infrastructure
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ContainerDO>().ToTable("Processes");
+            modelBuilder.Entity<ContainerDO>().ToTable("Containers");
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
@@ -247,7 +247,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserAgentInfoDO>().ToTable("UserAgentInfos");
-            modelBuilder.Entity<DockyardAccountDO>().ToTable("Users");
+            modelBuilder.Entity<Fr8AccountDO>().ToTable("Users");
             modelBuilder.Entity<HistoryItemDO>().ToTable("History");
             modelBuilder.Entity<ConceptDO>().ToTable("Concepts");
             modelBuilder.Entity<SubscriptionDO>().ToTable("Subscriptions");
@@ -262,10 +262,10 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProfileNodeAncestorsCTE>().ToTable("ProfileNodeAncestorsCTEView");
             modelBuilder.Entity<ProfileNodeDescendantsCTE>().ToTable("ProfileNodeDescendantsCTEView");
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
-            modelBuilder.Entity<ProcessTemplateDO>().ToTable("ProcessTemplates");
+            modelBuilder.Entity<RouteDO>().ToTable("Routes");
             modelBuilder.Entity<ActionDO>().ToTable("Actions");
             modelBuilder.Entity<ProcessNodeDO>().ToTable("ProcessNodes");
-            modelBuilder.Entity<ProcessNodeTemplateDO>().ToTable("ProcessNodeTemplates");
+            modelBuilder.Entity<SubrouteDO>().ToTable("Subroutes");
             modelBuilder.Entity<DocuSignEventDO>().ToTable("DocuSignEvents");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
@@ -283,10 +283,10 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProcessNodeDO>()
                 .HasRequired<ContainerDO>(pn => pn.ParentContainer)
                 .WithMany(p => p.ProcessNodes)
-                .HasForeignKey(pn => pn.ParentProcessId)
+                .HasForeignKey(pn => pn.ParentContainerId)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<DockyardAccountDO>()
+            modelBuilder.Entity<Fr8AccountDO>()
                 .Property(u => u.EmailAddressID)
                 .IsRequired()
                 .HasColumnAnnotation(
@@ -309,11 +309,12 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ActionDO>()
                 .Property(p => p.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
+            modelBuilder.Entity<RouteNodeDO>().ToTable("RouteNodes");
 
-            modelBuilder.Entity<ActivityDO>()
-                .HasOptional(x => x.ParentActivity)
-                .WithMany(x => x.Activities)
-                .HasForeignKey(x => x.ParentActivityId)
+            modelBuilder.Entity<RouteNodeDO>()
+                .HasOptional(x => x.ParentRouteNode)
+                .WithMany(x => x.RouteNodes)
+                .HasForeignKey(x => x.ParentRouteNodeId)
                 .WillCascadeOnDelete(false);
             
             modelBuilder.Entity<TrackingStatusDO>()
@@ -326,9 +327,9 @@ namespace Data.Infrastructure
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
             
-//            modelBuilder.Entity<ProcessNodeTemplateDO>()
+//            modelBuilder.Entity<SubrouteDO>()
 //               .HasMany<CriteriaDO>(c => c.Criteria)
-//               .WithOptional(x => x.ProcessNodeTemplate)
+//               .WithOptional(x => x.Subroute)
 //               .WillCascadeOnDelete(true);
             
             modelBuilder.Entity<AuthorizationTokenDO>()

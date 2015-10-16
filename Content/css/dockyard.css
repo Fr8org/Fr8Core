@@ -88,13 +88,36 @@
 
 /* Process Builder */
 
+.designer-header {
+    background-color: #58b8a9;
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.process-template-name {
+    display: inline-block;
+    font-size: 24px;
+    font-weight: bold;
+    vertical-align: top;
+    min-width: 300px;
+}
+
+.switch-btn {
+    background-color: lightgrey;
+    width: 80px;
+}
+
+.switch-btn.active {
+    background-color: #428bca;
+}
+
 .process-builder-container {
     overflow-y: auto;
     white-space: nowrap;
 }
 
 .action-arrow {
-    background-image: url('https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_arrow_forward_48px-512.png');
+    background-image: url('/Content/img/site/arrow_blue_ic_arrow_forward_48px-512.png');
     background-size: contain;
     display: inline-block;
     height: 50px;
@@ -147,12 +170,29 @@
     vertical-align: top;
 }
 
+.select-action-category th {
+    background-color: #EBE9F1;
+}
+
+.select-action-category td, 
+.select-action-category th {
+    border: 1px solid #ddd;
+    padding: 5px;
+    width: 200px;
+}
+
+.select-action-category td:hover {
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
 .select-action-list {
     border: 2px solid black;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 200px;
 }
+
 
 .select-action-row {
     cursor: default;
@@ -229,3 +269,13 @@ input[type=radio] + div.nested-controls {
 input[type=radio]:checked + div.nested-controls {
     display: block;
 } 
+
+.page-header-top, .page-header-menu {
+    padding-left: 10px;
+    padding-right: 2%;
+}
+
+.page-header .container{
+    width: 100%;
+    margin: 0;
+}

@@ -21,8 +21,8 @@ namespace Core.Services
         
 
         private readonly IProcessNode _processNode;
-        private readonly IActivity _activity;
-        private readonly IProcessTemplate _processTemplate;
+        private readonly IRouteNode _activity;
+        private readonly IRoute _route;
 
         
         
@@ -30,8 +30,8 @@ namespace Core.Services
         public Container()
         {
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
-            _activity = ObjectFactory.GetInstance<IActivity>();
-            _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
+            _activity = ObjectFactory.GetInstance<IRouteNode>();
+            _route = ObjectFactory.GetInstance<IRoute>();
         }
 
         
@@ -44,46 +44,46 @@ namespace Core.Services
         /// <returns></returns>
         public ContainerDO Create(IUnitOfWork uow, int processTemplateId, CrateDTO curEvent)
         {
-            var curProcessDO = ObjectFactory.GetInstance<ContainerDO>();
+            var containerDO = ObjectFactory.GetInstance<ContainerDO>();
 
-                var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
-                if (curProcessTemplate == null)
+                var curRoute = uow.RouteRepository.GetByKey(processTemplateId);
+                if (curRoute == null)
                     throw new ArgumentNullException("processTemplateId");
-                curProcessDO.ProcessTemplate = curProcessTemplate;
+                containerDO.Route = curRoute;
 
-                curProcessDO.Name = curProcessTemplate.Name;
-                curProcessDO.ContainerState = ContainerState.Unstarted;
+                containerDO.Name = curRoute.Name;
+                containerDO.ContainerState = ContainerState.Unstarted;
 
                 var crates = new List<CrateDTO>();
                 if (curEvent != null)
                 {
                     crates.Add(curEvent);
                 }
-                curProcessDO.UpdateCrateStorageDTO(crates);
+                containerDO.UpdateCrateStorageDTO(crates);
 
-            curProcessDO.CurrentActivity = _processTemplate.GetInitialActivity(uow, curProcessTemplate);
+            containerDO.CurrentRouteNode = _route.GetInitialActivity(uow, curRoute);
 
-                uow.ContainerRepository.Add(curProcessDO);
+                uow.ContainerRepository.Add(containerDO);
                 uow.SaveChanges();
 
                 //then create process node
-                var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplate.Id;
-                
-            var curProcessNode = _processNode.Create(uow, curProcessDO.Id, processNodeTemplateId, "process node");
-                curProcessDO.ProcessNodes.Add(curProcessNode);
+               var subrouteId = containerDO.Route.StartingSubroute.Id;
+
+               var curProcessNode = _processNode.Create(uow, containerDO.Id, subrouteId, "process node");
+               containerDO.ProcessNodes.Add(curProcessNode);
 
                 uow.SaveChanges();
 
-            return curProcessDO;
+            return containerDO;
         }
 
         
 
-        public async Task Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
+        public async Task Launch(RouteDO curRoute, CrateDTO curEvent)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessDO = Create(uow, curProcessTemplate.Id, curEvent);
+                var curProcessDO = Create(uow, curRoute.Id, curEvent);
 
             if (curProcessDO.ContainerState == ContainerState.Failed || curProcessDO.ContainerState == ContainerState.Completed)
                 {
@@ -117,14 +117,14 @@ namespace Core.Services
             if (curContainerDO == null)
                 throw new ArgumentNullException("ProcessDO is null");
 
-            if (curContainerDO.CurrentActivity != null)
+            if (curContainerDO.CurrentRouteNode != null)
             {
 
                 //break if CurrentActivity Is NULL, it means all activities 
                 //are processed that there is no Next Activity to set as Current Activity
                 do
                 {
-                    await _activity.Process(curContainerDO.CurrentActivity.Id, curContainerDO);
+                    await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
                     // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
                 } while (MoveToTheNextActivity(uow, curContainerDO) != null);
             }
@@ -136,17 +136,17 @@ namespace Core.Services
 
         
 
-        private ActivityDO MoveToTheNextActivity(IUnitOfWork uow, ContainerDO curContainerDo)
+        private RouteNodeDO MoveToTheNextActivity(IUnitOfWork uow, ContainerDO curContainerDo)
         {
-            var next =  ObjectFactory.GetInstance<IActivity>().GetNextActivity(curContainerDo.CurrentActivity, null);
+            var next =  ObjectFactory.GetInstance<IRouteNode>().GetNextActivity(curContainerDo.CurrentRouteNode, null);
 
             // very simple check for cycles
-            if (next != null && next == curContainerDo.CurrentActivity)
+            if (next != null && next == curContainerDo.CurrentRouteNode)
                 {
-                throw new Exception(string.Format("Cycle detected. Current activty is {0}", curContainerDo.CurrentActivity.Id));
+                throw new Exception(string.Format("Cycle detected. Current activty is {0}", curContainerDo.CurrentRouteNode.Id));
             }
 
-            curContainerDo.CurrentActivity = next;
+            curContainerDo.CurrentRouteNode = next;
 
             uow.SaveChanges();
 
@@ -171,8 +171,8 @@ namespace Core.Services
                 }
 
                 return  (id == null
-                   ? containerRepository.Where(container => container.ProcessTemplate.DockyardAccount.Id == userId)
-                   : containerRepository.Where(container => container.Id == id && container.ProcessTemplate.DockyardAccount.Id == userId)).ToList();
+                   ? containerRepository.Where(container => container.Route.Fr8Account.Id == userId)
+                   : containerRepository.Where(container => container.Id == id && container.Route.Fr8Account.Id == userId)).ToList();
             }
         }
 

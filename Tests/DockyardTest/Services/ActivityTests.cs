@@ -22,14 +22,14 @@ namespace DockyardTest.Services
     [Category("Activity")]
     public class ActivityTests : BaseTest
     {
-        private IActivity _activity;
+        private IRouteNode _activity;
         //private Mock<IAction> _actionMock;
-        private ProcessNodeTemplateDO _curProcessNodeTemplate;
+        private SubrouteDO _curSubroute;
         [SetUp]
         public override void SetUp()
         {
  	        base.SetUp();
-            _activity = ObjectFactory.GetInstance<IActivity>();
+            _activity = ObjectFactory.GetInstance<IRouteNode>();
 
         }
 
@@ -43,12 +43,12 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var root = FixtureData.TestActivityTree();
-                uow.ActivityRepository.Add(root);
+                uow.RouteNodeRepository.Add(root);
                 uow.SaveChanges();
 
-                ActivityDO curActivity = root;
-                List<ActivityDO> seqToTest = new List<ActivityDO>();
-                List<ActivityDO> refSeq = new List<ActivityDO>();
+                RouteNodeDO curActivity = root;
+                List<RouteNodeDO> seqToTest = new List<RouteNodeDO>();
+                List<RouteNodeDO> refSeq = new List<RouteNodeDO>();
 
                 TraverseActivities(root, refSeq);
 
@@ -67,11 +67,11 @@ namespace DockyardTest.Services
             }
         }
 
-        private void TraverseActivities(ActivityDO root, List<ActivityDO> seq)
+        private void TraverseActivities(RouteNodeDO root, List<RouteNodeDO> seq)
         {
             seq.Add(root);
 
-            foreach (var activityDo in root.Activities.OrderBy(x=>x.Ordering))
+            foreach (var activityDo in root.RouteNodes.OrderBy(x=>x.Ordering))
             {
                 TraverseActivities(activityDo, seq);
             }
@@ -86,13 +86,13 @@ namespace DockyardTest.Services
             //print out the list of activity ids
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityRepository.Add(FixtureData.TestActivityTree());
+                uow.RouteNodeRepository.Add(FixtureData.TestActivityTree());
                 uow.SaveChanges();
 
 
-                ActivityDO curActivity = FixtureData.TestActivity57();
+                RouteNodeDO curActivity = FixtureData.TestActivity57();
 
-                List<ActivityDO> upstreamActivities = _activity.GetUpstreamActivities(uow, curActivity);
+                List<RouteNodeDO> upstreamActivities = _activity.GetUpstreamActivities(uow, curActivity);
                 foreach (var activity in upstreamActivities)
                 {
                     Debug.WriteLine(activity.Id);
@@ -112,13 +112,13 @@ namespace DockyardTest.Services
             //print out the list of activity ids
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityRepository.Add(FixtureData.TestActivityTree());
+                uow.RouteNodeRepository.Add(FixtureData.TestActivityTree());
                 uow.SaveChanges();
 
 
-                ActivityDO curActivity = FixtureData.TestActivity57();
+                RouteNodeDO curActivity = FixtureData.TestActivity57();
 
-                List<ActivityDO> downstreamActivities = _activity.GetDownstreamActivities(uow, curActivity);
+                List<RouteNodeDO> downstreamActivities = _activity.GetDownstreamActivities(uow, curActivity);
                 foreach (var activity in downstreamActivities)
                 {
                     Debug.WriteLine(activity.Id);
@@ -157,8 +157,8 @@ namespace DockyardTest.Services
         [Test]
         public void Process_curActivityDOIsNull()
         {
-            _activity = ObjectFactory.GetInstance<IActivity>();
-            var containerDO = FixtureData.TestProcess1();
+            _activity = ObjectFactory.GetInstance<IRouteNode>();
+            var containerDO = FixtureData.TestContainer1();
             Task result = _activity.Process(It.IsAny<int>(), containerDO);
             Assert.AreEqual(result.Exception.InnerException.Message, "Cannot find Activity with the supplied curActivityId");
         }
@@ -178,11 +178,11 @@ namespace DockyardTest.Services
                 uow.SaveChanges();
 
                 ActionDO obj = FixtureData.TestActionProcess();
-                uow.ActivityRepository.Add(obj);
+                uow.RouteNodeRepository.Add(obj);
                 uow.SaveChanges();
 
-                ContainerDO containerDO = FixtureData.TestProcess1();
-                _activity = ObjectFactory.GetInstance<IActivity>();
+                ContainerDO containerDO = FixtureData.TestContainer1();
+                _activity = ObjectFactory.GetInstance<IRouteNode>();
                 _activity.Process(1, containerDO);
             }
         }

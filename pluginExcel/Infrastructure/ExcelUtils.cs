@@ -1,17 +1,18 @@
-﻿using Core.Interfaces;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
-using Excel;
-using Newtonsoft.Json;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Excel;
+using Newtonsoft.Json;
+using StructureMap;
+using Core.Interfaces;
+using Core.Managers;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 
 namespace pluginExcel.Infrastructure
 {
@@ -160,7 +161,7 @@ namespace pluginExcel.Infrastructure
             };
 
             IFile file = ObjectFactory.GetInstance<IFile>();
-            ICrate crate = ObjectFactory.GetInstance<ICrate>();
+            ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
 
             // Read file from repository
             var fileAsByteArray = file.Retrieve(curFileDO);

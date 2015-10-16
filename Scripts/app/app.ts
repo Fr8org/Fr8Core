@@ -11,7 +11,8 @@ var app = angular.module("app", [
     "ngMockE2E",
     "datatables",
     "ngFileUpload",
-    "textAngular"
+    "textAngular",
+    "ui.select"
 ]);
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */

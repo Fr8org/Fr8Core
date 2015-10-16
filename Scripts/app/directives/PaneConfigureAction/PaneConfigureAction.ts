@@ -55,9 +55,10 @@ module dockyard.directives.paneConfigureAction {
     }
 
     export interface IPaneConfigureActionScope extends ng.IScope {
-        onConfigurationChanged: (newValue: model.ControlsList, oldValue: model.ControlsList, scope: IPaneConfigureActionScope) => void;
-        action: interfaces.IActionDTO;
-        isVisible: boolean;
+        onConfigurationChanged: (newValue: model.ControlsList, oldValue: model.ControlsList) => void;
+        onControlChange: (event: ng.IAngularEvent, eventArgs: ChangeEventArgs) => void;
+        processConfiguration: () => void;
+        loadConfiguration: () => void;
         currentAction: interfaces.IActionVM;
         configurationControls: ng.resource.IResource<model.ControlsList> | model.ControlsList;
         mapFields: (scope: IPaneConfigureActionScope) => void;
@@ -77,7 +78,6 @@ module dockyard.directives.paneConfigureAction {
             currentAction: '='
         };
         public restrict = 'E';
-        private configurationWatchUnregisterer: Function;
 
         constructor(
             private ActionService: services.IActionService,
@@ -100,20 +100,24 @@ module dockyard.directives.paneConfigureAction {
                 $attrs: ng.IAttributes) {
 
                 $scope.$on("onChange", onControlChange);
+                $scope.$on("onClick", onClickEvent);
 
-                // Get configuration settings template from the server if the current action does not 
-                // contain those or user has selected another action template.
-                //if (scope.currentAction.crateStorage == null
-                //    || scope.currentAction.configurationControls.fields == null
-                //    || scope.currentAction.configurationControls.fields.length == 0
-                //    || (eventArgs.action.id == this._currentAction.id &&
-                //        eventArgs.action.actionTemplateId != this._currentAction.actionTemplateId)) {
-                //FOR NOW we're going to simplify things by always checking with this server for a new configuration                
+                // These are exposed for unit testing.
+                $scope.onControlChange = onControlChange;
+                $scope.loadConfiguration = loadConfiguration;
+                $scope.onConfigurationChanged = onConfigurationChanged;
+                $scope.processConfiguration = processConfiguration;
+
+                // Get configuration settings template from the server if the current action does not contain those             
                 if ($scope.currentAction.activityTemplateId > 0) {
-                    loadConfiguration();
+                    if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
+                        $scope.loadConfiguration();
+                    } else {
+                        $scope.processConfiguration();
+                    }
                 }
                 
-                $scope.onConfigurationChanged = (newValue: model.ControlsList, oldValue: model.ControlsList) => {
+                function onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
                     if (!newValue || !newValue.fields || newValue.fields === oldValue.fields || newValue.fields.length == 0) return;
                     crateHelper.mergeControlListCrate(
                         $scope.currentAction.configurationControls,
@@ -125,10 +129,9 @@ module dockyard.directives.paneConfigureAction {
                 };
 
                 function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
-                    var scope = <IPaneConfigureActionScope>event.currentScope;
                     // Check if this event is defined for the current field
                     var fieldName = eventArgs.fieldName;
-                    var fieldList = scope.currentAction.configurationControls.fields;
+                    var fieldList = $scope.currentAction.configurationControls.fields;
 
                     // Find the configuration field object for which the event has fired
                     fieldList = <Array<model.ControlDefinitionDTO>>$filter('filter')(fieldList, { name: fieldName }, true);
@@ -142,15 +145,45 @@ module dockyard.directives.paneConfigureAction {
 
                     if (fieldEvent.handler === 'requestConfig') {
                         crateHelper.mergeControlListCrate(
-                            scope.currentAction.configurationControls,
-                            scope.currentAction.crateStorage
+                            $scope.currentAction.configurationControls,
+                            $scope.currentAction.crateStorage
                             );
-                        scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                        $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
                 
-                        loadConfiguration();
+                        $scope.loadConfiguration();
                     }
                 }
 
+                function onClickEvent(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
+                    var scope = <IPaneConfigureActionScope>event.currentScope;
+                    // Check if this event is defined for the current field
+                    var fieldName = eventArgs.fieldName;
+                    var fieldList = scope.currentAction.configurationControls.fields;
+
+                    // Find the configuration field object for which the event has fired
+                    fieldList = <Array<model.ControlDefinitionDTO>>$filter('filter')(fieldList, { name: fieldName }, true);
+                    if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0) return;
+                    var field = fieldList[0];
+
+                    // Find the onChange event object
+                    var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onClick' }, true);
+                    if (eventHandlerList.length == 0) {
+                        return;
+                    }
+                    else {
+                        var fieldEvent = eventHandlerList[0];
+
+                        if (fieldEvent.handler != null) {
+                            crateHelper.mergeControlListCrate(
+                                scope.currentAction.configurationControls,
+                                scope.currentAction.crateStorage
+                                );
+                            scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                
+                            loadConfiguration();
+                        }
+                    }
+                }
 
 
                 // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
@@ -158,60 +191,71 @@ module dockyard.directives.paneConfigureAction {
                 function loadConfiguration() {
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;
-                    var activityTemplateName = $scope.currentAction.activityTemplateName; // preserve activity name
-
-
+                    
                     if ($scope.configurationWatchUnregisterer) {
                         $scope.configurationWatchUnregisterer();
                     }
 
                     ActionService.configure($scope.currentAction).$promise.then((res: any) => {
-                        // Check if authentication is required.
-                        if (crateHelper.hasCrateOfManifestType(res.crateStorage, 'Standard Authentication')) {
-                            var authCrate = crateHelper
-                                .findByManifestType(res.crateStorage, 'Standard Authentication');
-
-                            var authMS = angular.fromJson(authCrate.contents);
-
-                            // Dockyard auth mode.
-                            if (authMS.Mode == 1) {
-                                $scope.$emit(
-                                    MessageType[MessageType.PaneConfigureAction_InternalAuthentication],
-                                    new InternalAuthenticationArgs(res.activityTemplateId)
-                                    );
-                            }
-
-                            // External auth mode.                           
-                            else {
-                                // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                                $scope.$emit(
-                                    MessageType[MessageType.PaneConfigureAction_ExternalAuthentication],
-                                    new ExternalAuthenticationArgs(res.activityTemplateId)
-                                    );
-                            }
-
-                            $scope.processing = false;
-                            return;
-                        }
-
                         // Unblock pane
                         $scope.processing = false;
-
-                        // Assign name to res rather than currentAction to prevent 
-                        // $watches from unnecessarily triggering
-                        res.activityTemplateName = activityTemplateName;
+                        
                         $scope.currentAction.crateStorage = res.crateStorage;
-                        $scope.currentAction.configurationControls =
-                            crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
-
-                        $timeout(() => { // let the control list create, we don't want false change notification during creation process
-                            $scope.configurationWatchUnregisterer = $scope.$watch<model.ControlsList>(
-                                (scope: IPaneConfigureActionScope) => $scope.currentAction.configurationControls,
-                                $scope.onConfigurationChanged,
-                                true);
-                        }, 1000);
+                        $scope.processConfiguration();
                     });
                 };
+
+                function processConfiguration() {
+                    // Check if authentication is required.
+                    if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, 'Standard Authentication')) {
+
+                        var isAuthResult = ActionService.isAuthenticated({
+                            activityTemplateId: $scope.currentAction.activityTemplateId
+                        });
+
+                        isAuthResult
+                            .$promise
+                            .then(function (res: any) {
+                                if (res.authenticated) {
+                                    loadConfiguration();
+                                    return;
+                                }
+
+                                var authCrate = crateHelper
+                                    .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
+
+                                var authMS = angular.fromJson(authCrate.contents);
+
+                                // Dockyard auth mode.
+                                if (authMS.Mode == 1) {
+                                    $scope.$emit(
+                                        MessageType[MessageType.PaneConfigureAction_InternalAuthentication],
+                                        new InternalAuthenticationArgs($scope.currentAction.activityTemplateId)
+                                        );
+                                }
+                                // External auth mode.                           
+                                else {
+                                    // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
+                                    $scope.$emit(
+                                        MessageType[MessageType.PaneConfigureAction_ExternalAuthentication],
+                                        new ExternalAuthenticationArgs($scope.currentAction.activityTemplateId)
+                                        );
+                                }
+                            });
+
+                        return;
+                    }
+
+                    $scope.currentAction.configurationControls =
+                    crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
+
+                    $timeout(() => { // let the control list create, we don't want false change notification during creation process
+                        $scope.configurationWatchUnregisterer = $scope.$watch<model.ControlsList>(
+                            (scope: IPaneConfigureActionScope) => $scope.currentAction.configurationControls,
+                            $scope.onConfigurationChanged,
+                            true);
+                    }, 1000);
+                }
             };
         }    
 

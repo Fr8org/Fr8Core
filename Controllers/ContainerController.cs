@@ -56,9 +56,9 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processIds = uow.ContainerRepository.GetQuery().Where(x => x.Name == name).Select(x => x.Id).ToArray();
+                var containerIds = uow.ContainerRepository.GetQuery().Where(x => x.Name == name).Select(x => x.Id).ToArray();
 
-                return Json(processIds);
+                return Json(containerIds);
             }
         }
 
@@ -68,14 +68,14 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplateDO = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
+                var processTemplateDO = uow.RouteRepository.GetByKey(processTemplateId);
                 await _container.Launch(processTemplateDO, null);
 
                 return Ok();
             }
         }
 
-        // Return the Processes accordingly to ID given 
+        // Return the Containers accordingly to ID given
         [Route("get/{id:int?}")]
         [HttpGet]
         public IHttpActionResult Get(int? id = null)

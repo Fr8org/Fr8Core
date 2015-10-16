@@ -34,9 +34,9 @@ namespace Data.Infrastructure.StructureMap
         public MockedDBContext()
         {
             SetUnique<EmailAddressDO, String>(ea => ea.Address);
-            SetUnique<DockyardAccountDO, int?>(u => u.EmailAddressID);
+            SetUnique<Fr8AccountDO, int?>(u => u.EmailAddressID);
 
-            SetPrimaryKey<DockyardAccountDO, String>(u => u.Id);
+            SetPrimaryKey<Fr8AccountDO, String>(u => u.Id);
 
             MigrationConfiguration.SeedIntoMockDb(new UnitOfWork(this));
         }

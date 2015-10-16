@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Linq;
+using Core.Enums;
 using NUnit.Framework;
 using pluginTests.Fixtures;
 
@@ -29,15 +30,13 @@ namespace pluginTests.pluginDocuSign.Actions
 
         }
 
-
         [Test]
         public async Task Configure_ConfigurationRequestTypeIsInitial_ShouldCrateStorage()
         {
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //Arrange
-                uow.ActivityRepository.Add(FixtureData.ConfigureTestActionTree());
+                uow.RouteNodeRepository.Add(FixtureData.ConfigureTestActionTree());
                 uow.SaveChanges();
                 ActionDO curAction = FixtureData.ConfigureTestAction57();
                 ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
@@ -53,7 +52,6 @@ namespace pluginTests.pluginDocuSign.Actions
                 Assert.AreEqual(2, result.CrateStorage.CrateDTO.Count);
                 Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
                 Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[1].ManifestType);
-
             }
         }
 
@@ -71,7 +69,6 @@ namespace pluginTests.pluginDocuSign.Actions
             Assert.AreEqual("EnvelopeIdValue", result);
 
         }
-
 
         [Test]
         public void GetFields_ActionDTOAsParameter_ReturnsFieldsInformation()
@@ -92,9 +89,7 @@ namespace pluginTests.pluginDocuSign.Actions
             Assert.AreEqual("Condition", result[3].Key);
         }
 
-        // TODO: @yakov.gnusin ignored this test. Looks like it cannot find envelope with specified EnvelopeId.
-        // This test probably should be improved to programmatically create envelope first.
-        [Test, Ignore]
+        [Test]
         public void CreateActionPayload_ReturnsFieldsValue()
         {
             //Arrange
@@ -102,27 +97,26 @@ namespace pluginTests.pluginDocuSign.Actions
             curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
 
             //Act
-            var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDTO, "f02c3d55-f6ef-4b2b-b0a0-02bf64ca1e09");
+            var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDTO, "8fcb42d3-1572-44eb-acb1-0fffa4ca65de");
 
             //Assert
-            Assert.AreEqual(4, result.Count);
-            Assert.AreEqual("Smathers", result[0].Value);
-            Assert.AreEqual("Golden Oriole", result[1].Value);
-            Assert.AreEqual("Johnson", result[2].Value);
-            Assert.AreEqual("Marthambles", result[3].Value);
-
+            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual("Dohemann", result.FirstOrDefault(x => x.Key == "Doctor").Value);
+            Assert.AreEqual("Gout", result.FirstOrDefault(x => x.Key == "Condition").Value);
+            Assert.AreEqual("test", result.FirstOrDefault(x => x.Key == "Text 5").Value);
         }
 
     }
     public class Extract_From_DocuSign_Envelope_v1_Proxy : Extract_From_DocuSign_Envelope_v1
     {
-        private readonly IActivity _activity;
+        private readonly IRouteNode _activity;
+
         public Extract_From_DocuSign_Envelope_v1_Proxy()
         {
-            _activity = ObjectFactory.GetInstance<IActivity>();
+            _activity = ObjectFactory.GetInstance<IRouteNode>();
         }
-        protected async override Task<List<CrateDTO>> GetCratesByDirection(int activityId,
-          string manifestType, GetCrateDirection direction)
+
+        protected async override Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -137,10 +131,8 @@ namespace pluginTests.pluginDocuSign.Actions
 
                 foreach (var curAction in upstreamActions)
                 {
-                    curCrates.AddRange(_action.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
+                    curCrates.AddRange(Action.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
                 }
-
-                //return curCrates;
 
                 return await Task.FromResult(curCrates);
             }

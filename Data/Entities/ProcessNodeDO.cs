@@ -12,7 +12,7 @@ namespace Data.Entities
         public string Name { get; set; }
 
         [ForeignKey("ParentContainer")]
-        public int ParentProcessId { get; set; }
+        public int ParentContainerId { get; set; }
 
         public virtual ContainerDO ParentContainer { get; set; }
 
@@ -21,8 +21,8 @@ namespace Data.Entities
 
         public virtual _ProcessNodeStatusTemplate ProcessNodeStatusTemplate { get; set; }
 
-        public int ProcessNodeTemplateId { get; set; }
+        public int SubrouteId { get; set; }
 
-        public virtual ProcessNodeTemplateDO ProcessNodeTemplate { get; set; }
+        public virtual SubrouteDO Subroute { get; set; }
     }
 }

@@ -3,20 +3,13 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
-using Newtonsoft.Json;
 using NUnit.Framework;
-using pluginAzureSqlServer.Actions;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
-using pluginTests.Fixtures;
 using StructureMap;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
+using Core.Enums;
+using PluginUtilities.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -116,13 +109,13 @@ namespace pluginTests.PluginBaseTests.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityRepository.Add(FixtureData.TestActionTree());
+                uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
                 uow.SaveChanges();
 
                 ActionDO curAction = FixtureData.TestAction57();
 
                 var result = await _basePluginAction.GetDesignTimeFields(
-                    curAction.Id, BasePluginAction.GetCrateDirection.Upstream);
+                    curAction.Id, GetCrateDirection.Upstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(16, result.Fields.Count);
             }
@@ -133,13 +126,13 @@ namespace pluginTests.PluginBaseTests.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityRepository.Add(FixtureData.TestActionTree());
+                uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
                 uow.SaveChanges();
 
                 ActionDO curAction = FixtureData.TestAction57();
 
                 var result = await _basePluginAction.GetDesignTimeFields(
-                    curAction.Id, BasePluginAction.GetCrateDirection.Downstream);
+                    curAction.Id, GetCrateDirection.Downstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(18, result.Fields.Count);
             }

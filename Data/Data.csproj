@@ -193,7 +193,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\ManifestIdEnum.cs" />
-    <Compile Include="Entities\ActivityDO.cs" />
+    <Compile Include="Entities\RouteNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
     <Compile Include="Entities\MT_Field.cs" />
@@ -247,7 +247,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ContainerDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\SubrouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
@@ -275,12 +275,44 @@
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201510160538103_ReNameContainer.cs" />
-    <Compile Include="Migrations\201510160538103_ReNameContainer.Designer.cs">
-      <DependentUpon>201510160538103_ReNameContainer.cs</DependentUpon>
+    <Compile Include="Migrations\201510130637359_UpdateDocuSignEventDo.cs" />
+    <Compile Include="Migrations\201510130637359_UpdateDocuSignEventDo.Designer.cs">
+      <DependentUpon>201510130637359_UpdateDocuSignEventDo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510141403432_Change ProcessTemplate to Route.cs" />
+    <Compile Include="Migrations\201510141403432_Change ProcessTemplate to Route.Designer.cs">
+      <DependentUpon>201510141403432_Change ProcessTemplate to Route.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510141530275_Rename ProcessNodeTemplate to Subroute.cs" />
+    <Compile Include="Migrations\201510141530275_Rename ProcessNodeTemplate to Subroute.Designer.cs">
+      <DependentUpon>201510141530275_Rename ProcessNodeTemplate to Subroute.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510141822442_RemoveActionState.cs" />
+    <Compile Include="Migrations\201510141822442_RemoveActionState.Designer.cs">
+      <DependentUpon>201510141822442_RemoveActionState.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510150439139_Rename_Process_To_Container_Migration.cs" />
+    <Compile Include="Migrations\201510150439139_Rename_Process_To_Container_Migration.Designer.cs">
+      <DependentUpon>201510150439139_Rename_Process_To_Container_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510150528051_FixUp_Migration.cs" />
+    <Compile Include="Migrations\201510150528051_FixUp_Migration.Designer.cs">
+      <DependentUpon>201510150528051_FixUp_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510150812534_Rename_DockyardAccount_To_Fr8Account_Migration.cs" />
+    <Compile Include="Migrations\201510150812534_Rename_DockyardAccount_To_Fr8Account_Migration.Designer.cs">
+      <DependentUpon>201510150812534_Rename_DockyardAccount_To_Fr8Account_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510151001212_Rename_Activity_To_RouteNode_Migration.cs" />
+    <Compile Include="Migrations\201510151001212_Rename_Activity_To_RouteNode_Migration.Designer.cs">
+      <DependentUpon>201510151001212_Rename_Activity_To_RouteNode_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.cs" />
+    <Compile Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.Designer.cs">
+      <DependentUpon>201510152143047_Add_Label_Property_To_ActionTemplate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
-    <Compile Include="Repositories\ActivityRepository.cs" />
+    <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
     <Compile Include="Repositories\MTFieldRepository.cs" />
@@ -290,9 +322,6 @@
     <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
-    <Compile Include="States\ActionListState.cs" />
-    <Compile Include="States\ActionListType.cs" />
-    <Compile Include="States\ActionState.cs" />
     <Compile Include="States\ActivityCategory.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
@@ -308,7 +337,7 @@
     <Compile Include="Entities\PluginDO.cs" />
     <Compile Include="Entities\ContainerDO.cs" />
     <Compile Include="Entities\ProcessNodeDO.cs" />
-    <Compile Include="Entities\ProcessTemplateDO.cs" />
+    <Compile Include="Entities\RouteDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Entities\SubscriptionDO.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
@@ -338,8 +367,8 @@
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\ProcessNodeRepository.cs" />
-    <Compile Include="Repositories\ProcessNodeTemplateRepository.cs" />
-    <Compile Include="Repositories\ProcessTemplateRepository.cs" />
+    <Compile Include="Repositories\SubrouteRepository.cs" />
+    <Compile Include="Repositories\RouteRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
     <Compile Include="Repositories\ContainerRepository.cs" />
     <Compile Include="Repositories\MetaflowRepository.cs" />
@@ -364,15 +393,14 @@
     <Compile Include="States\ExpectedResponseStatus.cs" />
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
-    <Compile Include="States\ProcessTemplateState.cs" />
+    <Compile Include="States\RouteState.cs" />
     <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
-    <Compile Include="States\Templates\_ActionStateTemplate.cs" />
     <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
-    <Compile Include="Entities\ProcessNodeTemplateDO.cs" />
+    <Compile Include="Entities\SubrouteDO.cs" />
     <Compile Include="States\Templates\_ProcessNodeStatusTemplate.cs" />
     <Compile Include="States\Templates\_ContainerStateTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
@@ -387,7 +415,7 @@
     <Compile Include="States\Templates\_EmailStatusTemplate.cs" />
     <Compile Include="States\Templates\_ExpectedResponseStatusTemplate.cs" />
     <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
-    <Compile Include="States\Templates\_ProcessTemplateStateTemplate.cs" />
+    <Compile Include="States\Templates\_RouteStateTemplate.cs" />
     <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
     <Compile Include="States\Templates\_TrackingTypeTemplate.cs" />
     <Compile Include="States\AnswerState.cs" />
@@ -451,10 +479,10 @@
     <Compile Include="Entities\EmailDO.cs" />
     <Compile Include="Entities\EmailAddressDO.cs" />
     <Compile Include="Interfaces\IAttachmentDO.cs" />
-    <Compile Include="Interfaces\IDockyardAccountDO.cs" />
+    <Compile Include="Interfaces\IFr8AccountDO.cs" />
     <Compile Include="Entities\InstructionDO.cs" />
     <Compile Include="Entities\StoredFileDO.cs" />
-    <Compile Include="Entities\DockyardAccountDO.cs" />
+    <Compile Include="Entities\Fr8AccountDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\TrackingStatusRepository.cs" />
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
@@ -464,7 +492,7 @@
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ContainerValidator.cs" />
-    <Compile Include="Validations\ProcessNodeTemplateValidator.cs" />
+    <Compile Include="Validations\SubrouteValidator.cs" />
     <Compile Include="Validations\IncidentValidator.cs" />
     <Compile Include="Validations\OutboundEmailValidatorBase.cs" />
     <Compile Include="Validations\OutboundHtmlEmailValidator.cs" />
@@ -498,8 +526,32 @@
     <EmbeddedResource Include="Migrations\201510120408332_InitialMigration.resx">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201510160538103_ReNameContainer.resx">
-      <DependentUpon>201510160538103_ReNameContainer.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201510130637359_UpdateDocuSignEventDo.resx">
+      <DependentUpon>201510130637359_UpdateDocuSignEventDo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510141403432_Change ProcessTemplate to Route.resx">
+      <DependentUpon>201510141403432_Change ProcessTemplate to Route.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510141530275_Rename ProcessNodeTemplate to Subroute.resx">
+      <DependentUpon>201510141530275_Rename ProcessNodeTemplate to Subroute.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510141822442_RemoveActionState.resx">
+      <DependentUpon>201510141822442_RemoveActionState.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510150439139_Rename_Process_To_Container_Migration.resx">
+      <DependentUpon>201510150439139_Rename_Process_To_Container_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510150528051_FixUp_Migration.resx">
+      <DependentUpon>201510150528051_FixUp_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510150812534_Rename_DockyardAccount_To_Fr8Account_Migration.resx">
+      <DependentUpon>201510150812534_Rename_DockyardAccount_To_Fr8Account_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510151001212_Rename_Activity_To_RouteNode_Migration.resx">
+      <DependentUpon>201510151001212_Rename_Activity_To_RouteNode_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.resx">
+      <DependentUpon>201510152143047_Add_Label_Property_To_ActionTemplate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

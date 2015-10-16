@@ -7,31 +7,31 @@ using Microsoft.AspNet.Identity;
 
 namespace Data.Repositories
 {
-    public class UserRepository : GenericRepository<DockyardAccountDO>, IUserRepository
+    public class UserRepository : GenericRepository<Fr8AccountDO>, IUserRepository
     {
         internal UserRepository(IUnitOfWork uow)
             : base(uow)
         {
 
         }
-        public override void Add(DockyardAccountDO entity)
+        public override void Add(Fr8AccountDO entity)
         {
             base.Add(entity);
             //AddDefaultCalendar(entity);
             //AddDefaultProfile(entity);
         }
 
-        public DockyardAccountDO UpdateUserCredentials(String emailAddress, String userName = null, String password = null)
+        public Fr8AccountDO UpdateUserCredentials(String emailAddress, String userName = null, String password = null)
         {
             return UpdateUserCredentials(UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress), userName, password);
         }
 
-        public DockyardAccountDO UpdateUserCredentials(EmailAddressDO emailAddressDO, String userName = null, String password = null)
+        public Fr8AccountDO UpdateUserCredentials(EmailAddressDO emailAddressDO, String userName = null, String password = null)
         {
             return UpdateUserCredentials(UnitOfWork.UserRepository.GetOrCreateUser(emailAddressDO), userName, password);
         }
 
-        public DockyardAccountDO UpdateUserCredentials(DockyardAccountDO dockyardAccountDO, String userName = null, String password = null)
+        public Fr8AccountDO UpdateUserCredentials(Fr8AccountDO dockyardAccountDO, String userName = null, String password = null)
         {
             if (userName != null)
                 dockyardAccountDO.UserName = userName;
@@ -45,12 +45,12 @@ namespace Data.Repositories
         }
 
 
-        public DockyardAccountDO GetOrCreateUser(String emailAddress)
+        public Fr8AccountDO GetOrCreateUser(String emailAddress)
         {
             return GetOrCreateUser(UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress));
         }
 
-        public DockyardAccountDO GetOrCreateUser(EmailAddressDO emailAddressDO)
+        public Fr8AccountDO GetOrCreateUser(EmailAddressDO emailAddressDO)
         {
             var matchingUser = UnitOfWork.UserRepository.DBSet.Local.FirstOrDefault(u => u.EmailAddress.Address == emailAddressDO.Address);
             if (matchingUser == null)
@@ -59,7 +59,7 @@ namespace Data.Repositories
             if (matchingUser == null)
             {
                 matchingUser =
-                    new DockyardAccountDO
+                    new Fr8AccountDO
                     {
                         EmailAddress = emailAddressDO,
                         UserName = emailAddressDO.Address,
@@ -94,7 +94,7 @@ namespace Data.Repositories
         //}
 
 
-        public void AddDefaultProfile(DockyardAccountDO curDockyardAccount)
+        public void AddDefaultProfile(Fr8AccountDO curDockyardAccount)
         {
             if (curDockyardAccount == null)
                 throw new ArgumentNullException("curDockyardAccount");

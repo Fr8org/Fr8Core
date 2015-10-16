@@ -8,7 +8,7 @@ namespace Data.Interfaces
         IRemoteServiceProviderDO Provider { get; set; }
 
         string UserID { get; set; }
-        IDockyardAccountDO User { get; set; }
+        IFr8AccountDO User { get; set; }
         
         string Token { get; set; }
         bool HasAccessToken();

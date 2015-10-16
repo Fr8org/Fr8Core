@@ -1,23 +1,17 @@
-﻿using Data.Entities;
-using PluginBase.Infrastructure;
+﻿using PluginBase.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Data.Interfaces.DataTransferObjects;
-using PluginBase.BaseClasses;
 using Newtonsoft.Json;
 using Core.Interfaces;
-using StructureMap;
-using System.Web.Http;
-using System.Web.Http.Results;
 using PluginBase;
-using Data.Interfaces;
 using Data.Interfaces.ManifestSchemas;
 using System.Threading.Tasks;
+using Core.Enums;
 using pluginDocuSign.DataTransferObjects;
-using pluginDocuSign.Interfaces;
 using pluginDocuSign.Services;
+using PluginUtilities.BaseClasses;
 
 namespace pluginDocuSign.Actions
 {
@@ -55,7 +49,7 @@ namespace pluginDocuSign.Actions
             return; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
             if (IsEmptyAuthToken(actionDto))
             {
@@ -74,7 +68,7 @@ namespace pluginDocuSign.Actions
             var payload = CreateActionPayload(actionDto, envelopeId);
             var cratesList = new List<CrateDTO>()
             {
-                _crate.Create("DocuSign Envelope Data",
+                Crate.Create("DocuSign Envelope Data",
                     JsonConvert.SerializeObject(payload),
                     CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
                     CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID)
@@ -188,7 +182,7 @@ namespace pluginDocuSign.Actions
             }
 
 
-            _crate.RemoveCrateByLabel(
+            Crate.RemoveCrateByLabel(
                 curActionDTO.CrateStorage.CrateDTO,
                 "DocuSignTemplateUserDefinedFields"
                 );
@@ -211,7 +205,7 @@ namespace pluginDocuSign.Actions
                     .ToArray();
 
                 curActionDTO.CrateStorage.CrateDTO.Add(
-                    _crate.CreateDesignTimeFieldsCrate(
+                    Crate.CreateDesignTimeFieldsCrate(
                         "DocuSignTemplateUserDefinedFields",
                         fieldCollection
                         )

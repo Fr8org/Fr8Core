@@ -113,13 +113,13 @@ namespace Data.Infrastructure
             }
         }
 
-        private IContainerRepository _processRepository;
+        private IContainerRepository _containerRepository;
 
         public IContainerRepository ContainerRepository
         {
             get
             {
-                return _processRepository ?? (_processRepository = new ContainerRepository(this));
+                return _containerRepository ?? (_containerRepository = new ContainerRepository(this));
             }
         }
         private EmailStatusRepository _emailStatusRepository;
@@ -415,21 +415,21 @@ namespace Data.Infrastructure
             }
         }
 
-	  private ActivityRepository _activityRepository;
-	  public ActivityRepository ActivityRepository
+	  private RouteNodeRepository _routeNodeRepository;
+	  public RouteNodeRepository RouteNodeRepository
 	  {
 		  get
 		  {
-			  return _activityRepository ?? (_activityRepository = new ActivityRepository(this));
+			  return _routeNodeRepository ?? (_routeNodeRepository = new RouteNodeRepository(this));
 		  }
 	  }
-      private IProcessTemplateRepository _processTemplateRepository;
+      private IRouteRepository _routeRepository;
 
-        public IProcessTemplateRepository ProcessTemplateRepository
+        public IRouteRepository RouteRepository
         {
             get
             {
-                return _processTemplateRepository ?? (_processTemplateRepository = new ProcessTemplateRepository(this));
+                return _routeRepository ?? (_routeRepository = new RouteRepository(this));
             }
         }
 
@@ -443,13 +443,13 @@ namespace Data.Infrastructure
             }
         }
 
-        private ProcessNodeTemplateRepository _processNodeTemplateRepository;
+        private SubrouteRepository _subrouteRepository;
 
-        public IProcessNodeTemplateRepository ProcessNodeTemplateRepository
+        public ISubrouteRepository SubrouteRepository
         {
             get
             {
-                return _processNodeTemplateRepository ?? (_processNodeTemplateRepository = new ProcessNodeTemplateRepository(this));
+                return _subrouteRepository ?? (_subrouteRepository = new SubrouteRepository(this));
             }
         }
 

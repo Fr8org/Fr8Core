@@ -71,12 +71,12 @@ namespace Core.Managers
                 uow.SaveChanges();
             }
         }
-        private void ProcessIncidentPluginConfigureFailed(string curPluginUrl, string curAction)
+        private void ProcessIncidentPluginConfigureFailed(string curPluginUrl, string curAction, string errorMessage)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
-                Data = curPluginUrl + "      " + curAction,
+                Data = curPluginUrl + "      " + curAction + " " + errorMessage,
                 ObjectId = "unknown",
                 PrimaryCategory = "Plugin",
                 SecondaryCategory = "Configure",
