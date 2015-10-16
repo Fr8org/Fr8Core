@@ -25,7 +25,7 @@ namespace DockyardTest.Controllers
     [Category("ContainerControllerTests")]
     class ContainerControllerTests :BaseTest
     {
-        private DockyardAccountDO _testUserAccount;
+        private Fr8AccountDO _testUserAccount;
 
         private Core.Interfaces.IContainer _containerService;
 
@@ -40,9 +40,9 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var envelopeCrate = FixtureData.EnvelopeIdCrateJson();
-                var processTemplate = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplateAndActionList();
+                var processTemplate = FixtureData.TestRouteWithStartingSubrouteAndActionList();
 
-                uow.ProcessTemplateRepository.Add(processTemplate);
+                uow.RouteRepository.Add(processTemplate);
                 uow.UserRepository.Add(_testUserAccount);
                 uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, _testUserAccount.Id);
                 uow.SaveChanges();

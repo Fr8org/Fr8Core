@@ -9,7 +9,7 @@ namespace Core.Interfaces
     public interface IContainer
     {
         ContainerDO Create(IUnitOfWork uow, int processTemplateId, CrateDTO curEvent);
-        Task Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent);
+        Task Launch(RouteDO curRoute, CrateDTO curEvent);
         Task Execute(IUnitOfWork uow, ContainerDO curContainerDO);
         //void SetProcessNextActivity(ProcessDO curProcessDO);
 
