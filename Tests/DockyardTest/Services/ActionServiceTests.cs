@@ -373,7 +373,7 @@ namespace DockyardTest.Services
             ContainerDO processDo = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
             var executeActionMock = new Mock<IAction>();
-            executeActionMock.Setup(s => s.Execute(actionDo, processDo)).Returns<Task<PayloadDTO>>(null);
+            executeActionMock.Setup(s => s.Run(actionDo, processDo)).Returns<Task<PayloadDTO>>(null);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -390,7 +390,7 @@ namespace DockyardTest.Services
         public async void PrepareToExecute_WithMockedExecute_WithPayload()
         {
             ActionDO actionDo = FixtureData.TestActionStateInProcess();
-            actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO() { ActionName = "Test Action" });
+            actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO() { Label = "Test Action" });
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

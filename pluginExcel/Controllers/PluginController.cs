@@ -32,7 +32,7 @@ namespace pluginExcel.Controllers
             {
                 Name = "Extract_Data",
                 Version = "1",
-                Category = ActivityCategory.fr8_Receiver,
+                Category = ActivityCategory.Receivers,
                 Plugin = plugin
             };
 

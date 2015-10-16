@@ -11,12 +11,12 @@
         <Bindings>
           <Binding name="Endpoint1" endpointName="pluginSlack" />
         </Bindings>
-      </Site>     
+      </Site>
       <Site name="pluginDocuSign" physicalDirectory="..\..\..\pluginDocuSign">
         <Bindings>
           <Binding name="Endpoint1" endpointName="pluginDocuSign" />
         </Bindings>
-      </Site>                  
+      </Site>
       <Site name="pluginSalesforce" physicalDirectory="..\..\..\pluginSalesforce">
         <Bindings>
           <Binding name="Endpoint1" endpointName="pluginSalesforce" />
@@ -26,18 +26,17 @@
         <Bindings>
           <Binding name="Endpoint1" endpointName="pluginDockyardCore" />
         </Bindings>
-      </Site>      
+      </Site>
       <Site name="pluginSendGrid" physicalDirectory="..\..\..\pluginSendGrid">
         <Bindings>
           <Binding name="Endpoint1" endpointName="pluginSendGrid" />
         </Bindings>
-      </Site>           
+      </Site>
       <Site name="pluginTwilio" physicalDirectory="..\..\..\pluginTwilio">
         <Bindings>
           <Binding name="Endpoint1" endpointName="pluginTwilio" />
         </Bindings>
-      </Site>      
-      
+      </Site>
     </Sites>
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
@@ -51,5 +50,9 @@
       <InputEndpoint name="pluginSendGrid" protocol="http" port="10601" />
       <InputEndpoint name="pluginTwilio" protocol="http" port="30699" />
     </Endpoints>
+    <Imports>
+      <Import moduleName="RemoteAccess" />
+      <Import moduleName="RemoteForwarder" />
+    </Imports>
   </WebRole>
 </ServiceDefinition>

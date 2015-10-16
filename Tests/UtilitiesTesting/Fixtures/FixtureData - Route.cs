@@ -1,13 +1,15 @@
-﻿using Core.Interfaces;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Core.Interfaces;
+using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 using Data.States;
 using StructureMap;
-using System.Collections.Generic;
-using System.Linq;
-using Data.Interfaces.ManifestSchemas;
 using Utilities.Serializers.Json;
+
 namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
@@ -130,7 +132,8 @@ namespace UtilitiesTesting.Fixtures
                     ActivityTemplate = actionTemplate,
                     Ordering = 1
                 };
-                ICrate crate = ObjectFactory.GetInstance<ICrate>();
+
+                ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
 
                 var serializer = new JsonSerializer();
                 EventSubscriptionCM eventSubscriptionMS = new EventSubscriptionCM();

@@ -12,11 +12,11 @@ using Utilities;
 using JsonSerializer = Utilities.Serializers.Json.JsonSerializer;
 using Newtonsoft.Json.Converters;
 
-namespace Core.Services
+namespace Core.Managers
 {
-    public class Crate : ICrate
+    public class CrateManager : ICrateManager
     {
-        public Crate()
+        public CrateManager()
         {
         }
 

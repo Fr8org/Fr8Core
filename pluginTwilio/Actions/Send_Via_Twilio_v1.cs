@@ -153,7 +153,7 @@ namespace pluginTwilio.Actions
             return curActionDO;
         }
 
-        public async Task<PayloadDTO> Execute(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
             var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
 
