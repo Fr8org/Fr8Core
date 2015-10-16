@@ -390,7 +390,7 @@ namespace DockyardTest.Services
         public async void PrepareToExecute_WithMockedExecute_WithPayload()
         {
             ActionDO actionDo = FixtureData.TestActionStateInProcess();
-            actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO() { ActionName = "Test Action" });
+            actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO() { Label = "Test Action" });
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

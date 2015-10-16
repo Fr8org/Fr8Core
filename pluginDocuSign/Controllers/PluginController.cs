@@ -48,6 +48,7 @@ namespace pluginDocuSign.Controllers
             {
                 Version = "1",
                 Name = "Extract_From_DocuSign_Envelope",
+                Label = "Extract From DocuSign Envelope",
                 Category = ActivityCategory.Receivers,
                 Plugin = plugin
             };

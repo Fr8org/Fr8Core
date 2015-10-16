@@ -107,6 +107,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityTemplateDO()
             {
                 Name = "Monitor_DocuSign",
+                Label = "Monitor DocuSign",
                 Version = "1",
                 Plugin = TestPlugin_DocuSign()
             };
