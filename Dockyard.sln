@@ -56,7 +56,7 @@ Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "terminalCloudService", "ter
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalWebRole", "terminalWebRole\terminalWebRole.csproj", "{8C7F0CB5-9CD8-40D8-A539-51F451CCB29E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginBaseTests", "..\basePluginTests\pluginBaseTests.csproj", "{3E685292-EA97-4C1C-846A-A40EBEF467E4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginBaseTests", "pluginBaseTests\pluginBaseTests.csproj", "{3E685292-EA97-4C1C-846A-A40EBEF467E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
