@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Enums;
 using Core.Interfaces;
 using Core.Managers;
 using Data.Entities;
@@ -24,21 +26,27 @@ namespace Core.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-
-        //TODO convert to real direction enum
-        public bool Exists(int direction, RouteNodeDO curRouteNode, string label)
+        public bool Exists(GetCrateDirection direction, ActionDO curAction, string fieldName)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 List<ActionDO> routeNodes;
-                if (direction == 1)
+                switch (direction)
                 {
-                    routeNodes = (List<ActionDO>) _routeNode.GetUpstreamActivities(uow, curRouteNode).OfType<ActionDO>();
+                    case GetCrateDirection.Upstream:
+                        routeNodes = (List<ActionDO>)_routeNode.GetUpstreamActivities(uow, curAction).OfType<ActionDO>();
+                        break;
+                    case GetCrateDirection.Downstream:
+                        routeNodes = (List<ActionDO>)_routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
+                    break;
+                    case GetCrateDirection.None:
+                        routeNodes = (List<ActionDO>)_routeNode.GetUpstreamActivities(uow, curAction).OfType<ActionDO>();
+                        routeNodes.AddRange(_routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>());
+                    break;
+                    default:
+                        throw new InvalidEnumArgumentException("Unknown GetCrateDirection type");
                 }
-                else
-                {
-                    routeNodes = (List<ActionDO>)_routeNode.GetDownstreamActivities(uow, curRouteNode).OfType<ActionDO>();
-                }
+
 
                 foreach (var upstreamRouteNode in routeNodes)
                 {
@@ -46,7 +54,7 @@ namespace Core.Services
                     foreach (var crate in crates)
                     {
                         var designTimeFieldsCM = _crate.GetStandardDesignTimeFields(crate);
-                        if (designTimeFieldsCM.Fields.Any(field => field.Key == label))
+                        if (designTimeFieldsCM.Fields.Any(field => field.Key == fieldName))
                         {
                             return true;
                         }

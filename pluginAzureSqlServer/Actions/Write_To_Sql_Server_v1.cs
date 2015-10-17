@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Enums;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using pluginAzureSqlServer.Infrastructure;
 using pluginAzureSqlServer.Services;
 using PluginBase.Infrastructure;
+using PluginUtilities.Infrastructure;
 using StructureMap;
 using PluginBase;
 using Core.Interfaces;
@@ -58,6 +60,7 @@ namespace pluginAzureSqlServer.Actions
                 return ConfigurationRequestType.Initial;
             else
             {
+                ValidateFields(curActionDTO, new List<ValidationDataTuple> {new ValidationDataTuple("connection_string", "test", GetCrateDirection.Upstream, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME)});
                 return ConfigurationRequestType.Followup;
             }            
         }

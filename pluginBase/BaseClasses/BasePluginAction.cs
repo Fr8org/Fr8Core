@@ -5,7 +5,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using Core.Services;
 using Newtonsoft.Json;
+using PluginUtilities.Infrastructure;
 using StructureMap;
 using Core.Enums;
 using Core.Interfaces;
@@ -29,6 +31,7 @@ namespace PluginUtilities.BaseClasses
         protected IAction Action;
         protected ICrateManager Crate;
         protected IRouteNode Activity;
+        protected Field Field;
 
         #endregion
 
@@ -37,6 +40,7 @@ namespace PluginUtilities.BaseClasses
             Crate = ObjectFactory.GetInstance<ICrateManager>();
             Action = ObjectFactory.GetInstance<IAction>();
             Activity = ObjectFactory.GetInstance<IRouteNode>();
+            Field = new Field();
         }
 
         protected bool IsEmptyAuthToken(ActionDTO actionDTO)
@@ -97,15 +101,22 @@ namespace PluginUtilities.BaseClasses
             }
         }
 
-        protected CrateDTO ValidateFields(Tuple<string> validationData)
+        protected CrateDTO ValidateFields(ActionDTO curActionDTO, List<ValidationDataTuple> validationDataList)
         {
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            foreach (var validationData in validationDataList)
+            {
+                var exists = Field.Exists(validationData.Item3, curActionDO, validationData.Item1);
+                int a = 12;
 
+            }
+            
             return null;
         }
 
         protected async Task<ActionDTO> ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
-            ValidateFields(new Tuple<string>("test"));
+            
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
             {
                 return await InitialConfigurationResponse(curActionDTO);
