@@ -17,6 +17,7 @@ var dockyard;
                 MessageType[MessageType["PaneConfigureAction_ActionRemoved"] = 1] = "PaneConfigureAction_ActionRemoved";
                 MessageType[MessageType["PaneConfigureAction_InternalAuthentication"] = 2] = "PaneConfigureAction_InternalAuthentication";
                 MessageType[MessageType["PaneConfigureAction_ExternalAuthentication"] = 3] = "PaneConfigureAction_ExternalAuthentication";
+                MessageType[MessageType["PaneConfigureAction_Reconfigure"] = 4] = "PaneConfigureAction_Reconfigure";
             })(paneConfigureAction.MessageType || (paneConfigureAction.MessageType = {}));
             var MessageType = paneConfigureAction.MessageType;
             var ActionUpdatedEventArgs = (function (_super) {
@@ -90,11 +91,15 @@ var dockyard;
                     };
                     PaneConfigureAction.prototype.controller = function ($scope, $element, $attrs) {
                         $scope.$on("onChange", onControlChange);
+                        $scope.$on("onClick", onClickEvent);
                         // These are exposed for unit testing.
                         $scope.onControlChange = onControlChange;
                         $scope.loadConfiguration = loadConfiguration;
                         $scope.onConfigurationChanged = onConfigurationChanged;
                         $scope.processConfiguration = processConfiguration;
+                        $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], function () {
+                            loadConfiguration();
+                        });
                         // Get configuration settings template from the server if the current action does not contain those             
                         if ($scope.currentAction.activityTemplateId > 0) {
                             if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
@@ -132,9 +137,34 @@ var dockyard;
                                 $scope.loadConfiguration();
                             }
                         }
+                        function onClickEvent(event, eventArgs) {
+                            var scope = event.currentScope;
+                            // Check if this event is defined for the current field
+                            var fieldName = eventArgs.fieldName;
+                            var fieldList = scope.currentAction.configurationControls.fields;
+                            // Find the configuration field object for which the event has fired
+                            fieldList = $filter('filter')(fieldList, { name: fieldName }, true);
+                            if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0)
+                                return;
+                            var field = fieldList[0];
+                            // Find the onChange event object
+                            var eventHandlerList = $filter('filter')(field.events, { name: 'onClick' }, true);
+                            if (eventHandlerList.length == 0) {
+                                return;
+                            }
+                            else {
+                                var fieldEvent = eventHandlerList[0];
+                                if (fieldEvent.handler != null) {
+                                    crateHelper.mergeControlListCrate(scope.currentAction.configurationControls, scope.currentAction.crateStorage);
+                                    scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
+                                    loadConfiguration();
+                                }
+                            }
+                        }
                         // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
                         // We parse its contents and put it into currentAction.configurationControls structure.
                         function loadConfiguration() {
+                            debugger;
                             // Block pane and show pane-level 'loading' spinner
                             $scope.processing = true;
                             if ($scope.configurationWatchUnregisterer) {

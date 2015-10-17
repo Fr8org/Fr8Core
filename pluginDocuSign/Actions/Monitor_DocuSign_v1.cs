@@ -42,18 +42,11 @@ namespace pluginDocuSign.Actions
             CrateStorageDTO curCrates = curActionDTO.CrateStorage;
 
             if (curCrates.CrateDTO.Count == 0)
-                return ConfigurationRequestType.Initial;
-
-            var curDocuSignTemplateId = GetSelectedTemplateId(curActionDTO);
-
-            if (curDocuSignTemplateId != null)
-            {
-                return ConfigurationRequestType.Followup;
-            }
-            else
             {
                 return ConfigurationRequestType.Initial;
             }
+
+            return ConfigurationRequestType.Followup;
         }
 
         private string GetSelectedTemplateId(ActionDTO curActionDTO)
@@ -167,9 +160,10 @@ namespace pluginDocuSign.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
 
-                var crateControls = PackCrate_ConfigurationControls();
+            var crateControls = PackCrate_ConfigurationControls();
 			var crateDesignTimeFields = PackCrate_TemplateNames(docuSignAuthDTO);
             var eventFields = PackCrate_DocuSignEventFields();
+
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 			curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
             curActionDTO.CrateStorage.CrateDTO.Add(eventFields);
@@ -185,7 +179,7 @@ namespace pluginDocuSign.Actions
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             string curSelectedTemplateId = GetSelectedTemplateId(curActionDTO);
 
@@ -213,7 +207,7 @@ namespace pluginDocuSign.Actions
                     });
             }
 
-            return curActionDTO;
+            return Task.FromResult(curActionDTO);
         }
 
         private CrateDTO PackCrate_EventSubscriptions(
