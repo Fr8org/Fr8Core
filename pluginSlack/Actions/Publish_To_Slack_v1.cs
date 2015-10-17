@@ -84,16 +84,9 @@ namespace pluginSlack.Actions
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
+            UpdateAuthenticationCrate(curActionDTO, AuthenticationMode.ExternalMode);
             if (IsEmptyAuthToken(curActionDTO))
-            {
-                AppendDockyardAuthenticationCrate(
-                    curActionDTO,
-                    AuthenticationMode.ExternalMode);
-
                 return curActionDTO;
-            }
-
-            RemoveAuthenticationCrate(curActionDTO);
 
             return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }

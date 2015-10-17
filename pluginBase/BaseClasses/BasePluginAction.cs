@@ -121,6 +121,23 @@ namespace PluginUtilities.BaseClasses
         }
 
         /// <summary>
+        ///
+        /// </summary>
+        /// <param name="curActionDTO"></param>
+        /// <param name="curAuthenticationMode"></param>
+        protected void UpdateAuthenticationCrate(ActionDTO curActionDTO, AuthenticationMode curAuthenticationMode)
+        {
+            if (IsEmptyAuthToken(curActionDTO))
+            {
+                AppendDockyardAuthenticationCrate(
+                    curActionDTO,
+                    curAuthenticationMode);
+            }
+            else
+                RemoveAuthenticationCrate(curActionDTO);
+        }
+
+        /// <summary>
         /// This method "evaluates" as to what configuration should be called. 
         /// Every plugin action will have its own decision making; hence this method must be implemented in the relevant child class.
         /// </summary>
