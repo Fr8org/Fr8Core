@@ -1,4 +1,5 @@
-﻿using UtilitiesTesting;
+﻿using Moq;
+using UtilitiesTesting;
 using pluginDocuSign.Actions;
 using Data.Interfaces.DataTransferObjects;
 using Core.Interfaces;
@@ -19,18 +20,17 @@ namespace pluginTests.pluginDocuSign.Actions
 {
     [TestFixture]
     [Category("pluginDocuSign")]
-    public class Extract_From_DocuSign_Envelope_v1Tests : BaseTest
+    public class Receive_DocuSign_Envelope_v1Tests : BaseTest
     {
-        Extract_From_DocuSign_Envelope_v1 _extract_From_DocuSign_Envelope_v1;
+        Receive_DocuSign_Envelope_v1 _extract_From_DocuSign_Envelope_v1;
 
-        public Extract_From_DocuSign_Envelope_v1Tests()
+        public Receive_DocuSign_Envelope_v1Tests()
         {
             base.SetUp();
-            _extract_From_DocuSign_Envelope_v1 = new Extract_From_DocuSign_Envelope_v1();
-
+            _extract_From_DocuSign_Envelope_v1 = new Receive_DocuSign_Envelope_v1();
         }
 
-        [Test]
+        [Test, Ignore("Vas, Introduced upstream actions logic to get the design time fields as part of DO-1300. This is invalid now")]
         public async Task Configure_ConfigurationRequestTypeIsInitial_ShouldCrateStorage()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -63,7 +63,7 @@ namespace pluginTests.pluginDocuSign.Actions
             object[] parameters = new object[] { curPayloadDTO };
 
             //Act
-            var result = (string)ClassMethod.Invoke(typeof(Extract_From_DocuSign_Envelope_v1), "GetEnvelopeId", parameters);
+            var result = (string)ClassMethod.Invoke(typeof(Receive_DocuSign_Envelope_v1), "GetEnvelopeId", parameters);
 
             //Assert
             Assert.AreEqual("EnvelopeIdValue", result);
@@ -79,7 +79,7 @@ namespace pluginTests.pluginDocuSign.Actions
             object[] parameters = new object[] { curActionDTO };
 
             //Act
-            var result = (List<FieldDTO>)ClassMethod.Invoke(typeof(Extract_From_DocuSign_Envelope_v1), "GetFields", parameters);
+            var result = (List<FieldDTO>)ClassMethod.Invoke(typeof(Receive_DocuSign_Envelope_v1), "GetFields", parameters);
 
             //Assert
             Assert.AreEqual(4, result.Count);
@@ -107,7 +107,7 @@ namespace pluginTests.pluginDocuSign.Actions
         }
 
     }
-    public class Extract_From_DocuSign_Envelope_v1_Proxy : Extract_From_DocuSign_Envelope_v1
+    public class Extract_From_DocuSign_Envelope_v1_Proxy : Receive_DocuSign_Envelope_v1
     {
         private readonly IRouteNode _activity;
 
@@ -131,7 +131,7 @@ namespace pluginTests.pluginDocuSign.Actions
 
                 foreach (var curAction in upstreamActions)
                 {
-                    curCrates.AddRange(Action.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
+                    curCrates.AddRange(Crate.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
                 }
 
                 return await Task.FromResult(curCrates);

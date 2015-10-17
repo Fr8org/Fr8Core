@@ -3,6 +3,7 @@
     public enum GetCrateDirection
     {
         Upstream,
-        Downstream
+        Downstream,
+        None
     }
 }

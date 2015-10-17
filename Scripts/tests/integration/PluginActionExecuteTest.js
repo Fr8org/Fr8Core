@@ -2,7 +2,7 @@
 
 describe("plugins execute actions tests", function () {
     var returnedData;
-    var apiUrl = "http://localhost:30643/api/processes";
+    var apiUrl = "http://localhost:30643/api/containers";
     var testProcessId1;
     var testProcessId2;
 

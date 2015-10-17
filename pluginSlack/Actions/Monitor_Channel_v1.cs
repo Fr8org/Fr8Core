@@ -116,7 +116,7 @@ namespace pluginSlack.Actions
             var oauthToken = curActionDTO.AuthToken.Token;
             var channels = await _slackIntegration.GetChannelList(oauthToken);
 
-            var crateControls = CreateConfigurationCrate();
+            var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = CreateDesignTimeFieldsCrate();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateEventSubscriptions = CreateEventSubscriptionCrate();
@@ -128,7 +128,7 @@ namespace pluginSlack.Actions
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
-        private CrateDTO CreateConfigurationCrate()
+        private CrateDTO PackCrate_ConfigurationControls()
         {
             var fieldSelectChannel = new DropDownListControlDefinitionDTO()
             {

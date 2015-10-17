@@ -16,8 +16,8 @@ module dockyard.tests.controller {
     };
 
     describe("Process Template Controller ", function () {
-        var endpoint = "/api/ProcessTemplate",
-            currentProcessTemplate: interfaces.IProcessTemplateVM,
+        var endpoint = "/api/route",
+            currentProcessTemplate: interfaces.IRouteVM,
             changeProcessTemplate1 = "";
 
         beforeAll(function () {
@@ -32,23 +32,23 @@ module dockyard.tests.controller {
 
         it("should get a Process Template successfully", function () {
             $.getJSON(endpoint, { id: currentProcessTemplate.id })
-                .done((data: interfaces.IProcessTemplateVM, status: string) => {
+                .done((data: interfaces.IRouteVM, status: string) => {
                     expect(data).not.toBe(null);
                     expect(status).toBe("success");
                     expect(data.name).toBe(fx.newProcessTemplate.name);
                     expect(data.description).toBe(fx.newProcessTemplate.description);
-                    expect(data.processTemplateState).toBe(fx.newProcessTemplate.processTemplateState);
+                    expect(data.routeState).toBe(fx.newProcessTemplate.routeState);
                 });
         });
 
         it("should specify DocuSign template successfully", function () {
             $.post(endpoint + "?updateRegistrations=true", JSON.stringify(fx.updatedProcessTemplate))
-                .done((data: interfaces.IProcessTemplateVM, status: string) => {
+                .done((data: interfaces.IRouteVM, status: string) => {
                     expect(data).not.toBe(null);
                     expect(status).toBe("success");
                     expect(data.name).toBe(fx.updatedProcessTemplate.name);
                     expect(data.description).toBe(fx.updatedProcessTemplate.description);
-                    expect(data.processTemplateState).toBe(fx.updatedProcessTemplate.processTemplateState);
+                    expect(data.routeState).toBe(fx.updatedProcessTemplate.routeState);
                     expect($.isArray(data.subscribedDocuSignTemplates)).toBeTruthy();
                     expect(data.subscribedDocuSignTemplates.length).toBe(1);
                     expect(data.subscribedDocuSignTemplates[0]).toBe(fx.updatedProcessTemplate.subscribedDocuSignTemplates[0]);

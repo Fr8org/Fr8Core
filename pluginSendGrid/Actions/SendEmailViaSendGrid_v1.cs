@@ -203,7 +203,7 @@ namespace pluginSendGrid.Actions
                 }
             };
 
-            _emailPackager.Send(mailerDO);
+            await _emailPackager.Send(mailerDO);
 
             return processPayload;
         }
