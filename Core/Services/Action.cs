@@ -28,21 +28,21 @@ namespace Core.Services
 {
     public class Action : IAction
     {
-        private ICrateManager _crate;
+        private readonly ICrateManager _crate;
         //private Task curAction;
-        private IPlugin _plugin;
+        private readonly IPlugin _plugin;
         //private IRoute _route;
         private readonly AuthorizationToken _authorizationToken;
 
-        //private readonly IActivity _activity;
+        private readonly IRouteNode _routeNode;
 
         public Action()
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
 
-            /*_crate= ObjectFactory.GetInstance<ICrate>();
-            _activity = ObjectFactory.GetInstance<IActivity>();*/
+            
+            _routeNode = ObjectFactory.GetInstance<IRouteNode>();
 
           //  _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
             _crate= ObjectFactory.GetInstance<ICrateManager>();
@@ -154,7 +154,7 @@ namespace Core.Services
         public StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO)
         {
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
+            var confControls = _crate.GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
             if (confControls.Count() != 0 && confControls.Count() != 1)
                 throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
             if (confControls.Count() == 0)
@@ -173,23 +173,23 @@ namespace Core.Services
         {
             //we are using Kludge solution for now
             //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
-            /*
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
 
-                var curAction = uow.ActivityRepository.GetQuery().FirstOrDefault(al => al.Id == id);
+                var curAction = uow.RouteNodeRepository.GetQuery().FirstOrDefault(al => al.Id == id);
                 if (curAction == null)
                 {
-                    throw new InvalidOperationException("Unknown action with id: "+ id);
+                    throw new InvalidOperationException("Unknown RouteNode with id: "+ id);
                 }
 
-                var downStreamActivities = _activity.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
+                var downStreamActivities = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
                 //we should clear values of configuration controls
 
                 foreach (var downStreamActivity in downStreamActivities)
                 {
                     var crateStorage = downStreamActivity.CrateStorageDTO();
-                    var cratesToReset = GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, crateStorage).ToList();
+                    var cratesToReset = _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, crateStorage).ToList();
                     foreach (var crateDTO in cratesToReset)
                     {
                         var configurationControls = _crate.GetStandardConfigurationControls(crateDTO);
@@ -202,15 +202,13 @@ namespace Core.Services
 
                     if (cratesToReset.Any())
                 {
-                    /*curAction = new RouteNodeDO { Id = id };
-                    uow.RouteNodeRepository.Attach(curAction);*//*
                         downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
                     }                    
                 }
                 uow.RouteNodeRepository.Remove(curAction);
                 uow.SaveChanges();
             }
-*/
+
         }
 
         /// <summary>
@@ -491,33 +489,9 @@ namespace Core.Services
             }
         }
 
-        public IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO)
-        {
-            if (String.IsNullOrEmpty(curManifestType))
-                throw new ArgumentNullException("Parameter Manifest Type is empty");
-            if (curCrateStorageDTO == null)
-                throw new ArgumentNullException("Parameter CrateStorageDTO is null.");
+        
 
-            IEnumerable<CrateDTO> crateDTO = null;
-
-            crateDTO = curCrateStorageDTO.CrateDTO.Where(crate => crate.ManifestType == curManifestType);
-
-            return crateDTO;
-        }
-
-        public IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO)
-        {
-            if (String.IsNullOrEmpty(curLabel))
-                throw new ArgumentNullException("Parameter Label is empty");
-            if (curCrateStorageDTO == null)
-                throw new ArgumentNullException("Parameter CrateStorageDTO is null.");
-
-            IEnumerable<CrateDTO> crateDTOList = null;
-
-            crateDTOList = curCrateStorageDTO.CrateDTO.Where(crate => crate.Label == curLabel);
-
-            return crateDTOList;
-        }
+        
 
         //looks for the Conifiguration Controls Crate and Extracts the ManifestSchema
         public StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction)
@@ -525,7 +499,7 @@ namespace Core.Services
 
             var curCrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curAction.CrateStorage);
             var curControlsCrate =
-                GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, curCrateStorage)
+                _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, curCrateStorage)
                     .FirstOrDefault();
 
             if (curControlsCrate == null || string.IsNullOrEmpty(curControlsCrate.Contents))
@@ -639,7 +613,7 @@ namespace Core.Services
 
         public void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO)
         {
-            var existingCratesWithLabelInActionDO = GetCratesByLabel(label, curActionDO.CrateStorageDTO());
+            var existingCratesWithLabelInActionDO = _crate.GetCratesByLabel(label, curActionDO.CrateStorageDTO());
             if (!existingCratesWithLabelInActionDO.Any()) // no existing crates with user provided label found, then add the crate
             {
                 AddCrate(curActionDO, curCrateDTO);
@@ -658,7 +632,7 @@ namespace Core.Services
                                                                 string fieldName = "name",
                                                                 GetCrateDirection direction = GetCrateDirection.None)
         {
-            var controlsCrates = GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO()).ToList();
+            var controlsCrates = _crate.GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO()).ToList();
 
             if (direction != GetCrateDirection.None)
             {

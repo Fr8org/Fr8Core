@@ -196,6 +196,7 @@
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Interfaces\CrateManifests.cs" />
+    <Compile Include="Interfaces\IProcessNodeTemplate.cs" />
     <Compile Include="Interfaces\IRouteNode.cs" />
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
@@ -270,6 +271,7 @@
     <Compile Include="Security\DockyardIdentityManager.cs" />
     <Compile Include="Security\DockyardUserStore.cs" />
     <Compile Include="Security\SecurityServices.cs" />
+    <Compile Include="Services\ProcessNodeTemplate.cs" />
     <Compile Include="Services\RouteNode.cs" />
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\ActivityTemplate.cs" />

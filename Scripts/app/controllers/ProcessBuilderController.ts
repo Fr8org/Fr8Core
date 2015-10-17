@@ -185,6 +185,7 @@ module dockyard.controllers {
                 self.ActionService.deleteById({ id: action.id }).$promise.then(() => {
                     //lets reload process template
                     self.$scope.actions = [];
+                    self.$scope.current = new model.ProcessBuilderState();
                     self.loadProcessTemplate();
                 });
 

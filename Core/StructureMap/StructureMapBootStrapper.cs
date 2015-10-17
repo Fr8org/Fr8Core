@@ -111,6 +111,7 @@ namespace Core.StructureMap
                 For<ICrateManager>().Use<CrateManager>();
                 For<IDockyardEvent>().Use<DockyardEvent>();
                 For<IReport>().Use<Report>();
+                For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
             }
         }
 

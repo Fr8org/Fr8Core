@@ -25,12 +25,14 @@ namespace Web.Controllers
         private readonly IAction _action;
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
+        private readonly IProcessNodeTemplate _processNodeTemplate;
 
         public ActionController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
+            _processNodeTemplate = ObjectFactory.GetInstance<IProcessNodeTemplate>();
         }
 
         public ActionController(IAction service)
@@ -133,7 +135,7 @@ namespace Web.Controllers
         [Route("{id:int}")]
         public void Delete(int id)
         {
-            _action.Delete(id);
+            _processNodeTemplate.DeleteAction(id);
         }
 
         /// <summary>
