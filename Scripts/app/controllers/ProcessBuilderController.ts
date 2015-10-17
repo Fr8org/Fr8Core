@@ -118,13 +118,13 @@ module dockyard.controllers {
 
         private loadProcessTemplate() {
             var processTemplatePromise = this.ProcessTemplateService.getFull({ id: this.$scope.processTemplateId });
-
+            var self = this;
             processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IProcessTemplateVM) => {
                 debugger;
 
-                this.$scope.current.processTemplate = curProcessTemplate;
-                this.$scope.currentSubroute = curProcessTemplate.subroutes[0];
-                this.renderProcessTemplate(curProcessTemplate);
+                self.$scope.current.processTemplate = curProcessTemplate;
+                self.$scope.currentSubroute = curProcessTemplate.subroutes[0];
+                self.renderProcessTemplate(curProcessTemplate);
             });
         }
 
