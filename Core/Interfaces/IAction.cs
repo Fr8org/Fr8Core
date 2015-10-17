@@ -17,7 +17,7 @@ namespace Core.Interfaces
         Task<ActionDTO> Configure(ActionDO curActionDO);
         ActionDO GetById(int id);
         ActionDO GetById(IUnitOfWork uow, int id);
-        void Delete(int id);
+        //void Delete(int id); -> Delete is moved to ProcessNodeTemplate
         ActionDO MapFromDTO(ActionDTO curActionDTO);
         Task PrepareToExecute(ActionDO curAction, ContainerDO curProcessDO, IUnitOfWork uow);
         Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curProcessDO);
@@ -26,8 +26,6 @@ namespace Core.Interfaces
         List<CrateDTO> GetCrates(ActionDO curActionDO);
         Task<ActionDTO> Activate(ActionDO curActionDO);
         Task<ActionDTO> Deactivate(ActionDO curActionDO);
-        IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
-        IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO);
 		StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO);
         StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction);
         bool IsAuthenticated(Fr8AccountDO user, PluginDO plugin);

@@ -112,19 +112,6 @@ namespace PluginUtilities.BaseClasses
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
         }
 
-        /// <summary>
-        /// Configure infrastructure.
-        /// </summary>
-        public virtual async Task<ActionDTO> Configure(ActionDTO actionDTO)
-        {
-            return await ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="curActionDTO"></param>
-        /// <param name="curAuthenticationMode"></param>
         protected void UpdateAuthenticationCrate(ActionDTO curActionDTO, AuthenticationMode curAuthenticationMode)
         {
             if (IsEmptyAuthToken(curActionDTO))
@@ -135,6 +122,14 @@ namespace PluginUtilities.BaseClasses
             }
             else
                 RemoveAuthenticationCrate(curActionDTO);
+        }
+
+        /// <summary>
+        /// Configure infrastructure.
+        /// </summary>
+        public virtual async Task<ActionDTO> Configure(ActionDTO actionDTO)
+        {
+            return await ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
         }
 
         /// <summary>
@@ -449,7 +444,7 @@ namespace PluginUtilities.BaseClasses
             CrateStorageDTO crateStorage,
             string fieldKey)
         {
-            var crates = Action.GetCratesByManifestType(
+            var crates = Crate.GetCratesByManifestType(
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, crateStorage);
 
             foreach (var crate in crates)
