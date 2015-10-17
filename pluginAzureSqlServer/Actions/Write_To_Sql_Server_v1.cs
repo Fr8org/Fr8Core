@@ -112,14 +112,14 @@ namespace pluginAzureSqlServer.Actions
             int foundSameCrateDTOAtIndex = curActionDO.CrateStorageDTO().CrateDTO.FindIndex(m => m.Label == "Sql Table Columns");
             if (foundSameCrateDTOAtIndex == -1)
             {
-                Action.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
+                Crate.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
             }
             else
             {
                 CrateStorageDTO localList = curActionDO.CrateStorageDTO();
                 localList.CrateDTO.RemoveAt(foundSameCrateDTOAtIndex);
                 curActionDO.CrateStorage = JsonConvert.SerializeObject(localList);
-                Action.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
+                Crate.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
             }
 
             curCrateStorageDTO = curActionDO.CrateStorageDTO();

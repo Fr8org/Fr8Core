@@ -30,6 +30,7 @@ namespace DockyardTest.Services
     public class ActionServiceTests : BaseTest
     {
         private IAction _action;
+        private ICrateManager _crate;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
         private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
@@ -46,6 +47,7 @@ namespace DockyardTest.Services
         {
             base.SetUp();
             _action = ObjectFactory.GetInstance<IAction>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
             _eventReceived = false;
@@ -310,7 +312,7 @@ namespace DockyardTest.Services
         {
             ActionDO actionDO = FixtureData.TestAction23();
 
-            _action.AddCrate(actionDO, FixtureData.CrateStorageDTO().CrateDTO);
+            _crate.AddCrate(actionDO, FixtureData.CrateStorageDTO().CrateDTO);
 
             Assert.IsNotEmpty(actionDO.CrateStorage);
         }
