@@ -352,7 +352,7 @@ module dockyard.controllers {
                     name: "test action type",
                     configurationControls: new model.ControlsList(),
                     crateStorage: new model.CrateStorage(),
-                    parentActivityId: 1,
+                    parentRouteNodeId: 1,
                     activityTemplateId: 1,
                     id: 1,
                     isTempId: false,
