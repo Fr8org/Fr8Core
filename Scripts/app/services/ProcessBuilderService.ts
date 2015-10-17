@@ -17,7 +17,7 @@ module dockyard.services {
         getByProcessTemplate: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
         //TODO make resource class do this operation
         deleteById: (id: { id: number }) => ng.resource.IResource<void>;
-        isAuthenticated: (params: any) => ng.resource.IResource<interfaces.IIsAuthenticatedVM>;
+        
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
 
@@ -141,10 +141,6 @@ module dockyard.services {
                     params: {
                         suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
                     }
-                },
-                'isAuthenticated': {
-                    method: 'GET',
-                    url: '/actions/is_authenticated'
                 },
                 'getByProcessTemplate': {
                     method: 'GET',

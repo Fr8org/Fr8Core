@@ -18,7 +18,7 @@ module dockyard.controllers {
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
         current: model.ProcessBuilderState;
-        actions: Array<model.ActionDTO>
+        actions: Array<model.ActionDTO>;
 
         addAction(): void;
         deleteAction: (action: model.ActionDTO) => void;
@@ -335,8 +335,9 @@ module dockyard.controllers {
             })
             .result
             .then(function () {
-                var pcaEventArgs = new pca.RenderEventArgs(self.$scope.current.action);
-               // self.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+                self.$scope.$broadcast(
+                    pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]
+                );
             });
         }
 
@@ -352,11 +353,9 @@ module dockyard.controllers {
 
                     var childWindow = self.$window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
 
-                    // TODO: fix that later (DO-1211).
                     // var isClosedHandler = function () {
                     //     if (childWindow.closed) {
-                    //         var pcaEventArgs = new pca.RenderEventArgs(self._scope.current.action);
-                    //         self._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+                    //         self.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);
                     //     }
                     //     else {
                     //         setTimeout(isClosedHandler, 500);

@@ -146,7 +146,7 @@
     <Compile Include="PluginBaseTests\BaseClasses\BasePluginControllerTests.cs" />
     <Compile Include="PluginBaseTests\Infrastructure\BasePluginEventTests.cs" />
     <Compile Include="PluginBaseTests\Infrastructure\TestBasePluginEvent.cs" />
-    <Compile Include="pluginDocuSign\Actions\Extract_From_DocuSign_Envelope_v1Tests.cs" />
+    <Compile Include="pluginDocuSign\Actions\Receive_DocuSign_Envelope_v1Tests.cs" />
     <Compile Include="pluginDocuSign\Actions\Monitor_DocuSignTests.cs" />
     <Compile Include="pluginDocuSign\DocusignApiHelper.cs" />
     <Compile Include="pluginDocuSign\IDocusignApiHelper.cs" />

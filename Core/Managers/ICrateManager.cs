@@ -14,6 +14,7 @@ namespace Core.Managers
         CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0);
         T GetContents<T>(CrateDTO crate);
         StandardConfigurationControlsCM GetStandardConfigurationControls(CrateDTO crate);
+        StandardDesignTimeFieldsCM GetStandardDesignTimeFields(CrateDTO crate);
 
         IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName);
         CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode);
@@ -27,6 +28,11 @@ namespace Core.Managers
         void RemoveCrateByManifestId(IList<CrateDTO> crates, int manifestId);
         void RemoveCrateByManifestType(IList<CrateDTO> crates, string manifestType);
         void RemoveCrateByLabel(IList<CrateDTO> crates, string label);
+
+        void ReplaceCratesByManifestType(IList<CrateDTO> sourceCrates, string manifestType,
+                                         IList<CrateDTO> newCratesContent);
+
+        void ReplaceCratesByLabel(IList<CrateDTO> sourceCrates, string label, IList<CrateDTO> newCratesContent);
 
         //StandardPayloadDataMS CreatePayloadDataCrate(string curObjectType);
         CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
