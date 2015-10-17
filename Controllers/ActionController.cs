@@ -25,17 +25,24 @@ namespace Web.Controllers
         private readonly IAction _action;
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
+        private readonly ISubroute _subRoute;
 
         public ActionController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
+            _subRoute = ObjectFactory.GetInstance<ISubroute>();
         }
 
         public ActionController(IAction service)
         {
             _action = service;
+        }
+
+        public ActionController(ISubroute service)
+        {
+            _subRoute = service;
         }
 
 
@@ -133,7 +140,7 @@ namespace Web.Controllers
         [Route("{id:int}")]
         public void Delete(int id)
         {
-            _action.Delete(id);
+            _subRoute.DeleteAction(id);
         }
 
         /// <summary>

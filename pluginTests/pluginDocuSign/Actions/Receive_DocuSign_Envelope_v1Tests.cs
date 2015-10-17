@@ -131,7 +131,7 @@ namespace pluginTests.pluginDocuSign.Actions
 
                 foreach (var curAction in upstreamActions)
                 {
-                    curCrates.AddRange(Action.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
+                    curCrates.AddRange(Crate.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
                 }
 
                 return await Task.FromResult(curCrates);

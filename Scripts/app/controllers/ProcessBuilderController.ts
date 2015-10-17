@@ -21,6 +21,7 @@ module dockyard.controllers {
         actions: Array<model.ActionDTO>;
 
         addAction(): void;
+        deleteAction: (action: model.ActionDTO) => void;
         selectAction(action): void;
     }
 
@@ -48,7 +49,8 @@ module dockyard.controllers {
             'CrateHelper',
             '$filter',
             '$modal',
-            '$window'
+            '$window',
+            'UIHelperService'
         ];
 
         constructor(
@@ -63,7 +65,8 @@ module dockyard.controllers {
             private CrateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
             private $modal,
-            private $window: ng.IWindowService
+            private $window: ng.IWindowService,
+            private uiHelperService: services.IUIHelperService
             ) {
             this.$scope.processTemplateId = $state.params.id;
             this.$scope.current = new model.ProcessBuilderState();
@@ -75,6 +78,8 @@ module dockyard.controllers {
             this.$scope.addAction = () => {
                 this.addAction();
             }
+
+            $scope.deleteAction = <() => void> angular.bind(this, this.deleteAction);
 
             this.$scope.selectAction = (action: model.ActionDTO) => {
                 if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
@@ -113,13 +118,13 @@ module dockyard.controllers {
 
         private loadProcessTemplate() {
             var processTemplatePromise = this.ProcessTemplateService.getFull({ id: this.$scope.processTemplateId });
-
+            var self = this;
             processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IProcessTemplateVM) => {
                 debugger;
 
-                this.$scope.current.processTemplate = curProcessTemplate;
-                this.$scope.currentSubroute = curProcessTemplate.subroutes[0];
-                this.renderProcessTemplate(curProcessTemplate);
+                self.$scope.current.processTemplate = curProcessTemplate;
+                self.$scope.currentSubroute = curProcessTemplate.subroutes[0];
+                self.renderProcessTemplate(curProcessTemplate);
             });
         }
 
@@ -168,6 +173,24 @@ module dockyard.controllers {
                 //we should just raise an event for this
                 self.$scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_ActionAdd],new psa.ActionAddEventArgs());
             });
+        }
+
+        private deleteAction(action: model.ActionDTO) {
+            //TODO -> should we generate an event for delete event?
+            var self = this;
+            this.uiHelperService
+                .openConfirmationModal('Are you sure you want to delete this Action? You will have to reconfigure all downstream Actions.')
+                .then(() => {
+
+                self.ActionService.deleteById({ id: action.id }).$promise.then(() => {
+                    //lets reload process template
+                    self.$scope.actions = [];
+                    self.$scope.current = new model.ProcessBuilderState();
+                    self.loadProcessTemplate();
+                });
+
+            });
+            
         }
 
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {

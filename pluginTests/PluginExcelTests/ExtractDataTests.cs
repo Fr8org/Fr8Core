@@ -85,8 +85,8 @@ namespace pluginTests.PluginExcelTests
             {
                 Controls = new List<ControlDefinitionDTO>()
                 {
-                    new FilePickerControlDefinisionDTO(),
-                    new FilePickerControlDefinisionDTO(),
+                    new FilePickerControlDefinitionDTO(),
+                    new FilePickerControlDefinitionDTO(),
                 },
             };
             curActionDTO.CrateStorage.CrateDTO.Add(new CrateDTO()
@@ -185,7 +185,7 @@ namespace pluginTests.PluginExcelTests
             };
 
             var result = await new Extract_Data_v1().Run(curActionDTO);
-            var payloadCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, result.CrateStorage);
+            var payloadCrates = _crate.GetCratesByManifestType(CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, result.CrateStorage);
             var payloadDataMS = JsonConvert.DeserializeObject<StandardPayloadDataCM>(payloadCrates.First().Contents);
 
             Assert.IsNotNull(result.CrateStorage);
