@@ -9,7 +9,7 @@ module dockyard.controllers {
 
     export interface ISandboxScope extends ng.IScope {
         processTemplateId: number;
-        processNodeTemplates: Array<model.ProcessNodeTemplateDTO>,
+        processNodeTemplates: Array<model.SubrouteDTO>,
         fields: Array<model.Field>;
 
         // Identity of currently edited processNodeTemplate.

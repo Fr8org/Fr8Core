@@ -25,7 +25,7 @@ module dockyard.interfaces {
         name: string
     }
 
-    export interface IProcessNodeTemplateVM extends ng.resource.IResource<model.ProcessNodeTemplateDTO>, model.ProcessNodeTemplateDTO { }
+    export interface ISubrouteVM extends ng.resource.IResource<model.SubrouteDTO>, model.SubrouteDTO { }
     export interface ICriteriaVM extends ng.resource.IResource<model.CriteriaDTO>, model.CriteriaDTO { }
     export interface IActionVM extends ng.resource.IResource<model.ActionDTO>, model.ActionDTO { }
     export interface IDocuSignTemplateVM extends ng.resource.IResource<IDocuSignTemplate> { }

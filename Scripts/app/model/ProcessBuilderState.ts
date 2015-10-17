@@ -3,11 +3,11 @@
         Current state is moved to this class
     */
     export class ProcessBuilderState {
-        processTemplate: model.RouteDTO;
+        route: model.RouteDTO;
 
         // ProcessNodeTemplate for currently edited Crteria. Unlike criteria property, 
         // it is set null as soon as Criteria is done editing.
-        processNodeTemplate: model.ProcessNodeTemplateDTO;
+        subroute: model.SubrouteDTO;
 
         // Either currently edited Criteria or context for currently edited Action.
         // Unlike ProcessNodeTemplate, it is not set null when an Action is selected. 
@@ -19,8 +19,8 @@
         constructor() {
             this.criteria = <model.CriteriaDTO> {};
             this.action = null;
-            this.processNodeTemplate = null;
-            this.processTemplate = null;
+            this.subroute = null;
+            this.route = null;
         }
     }
 }

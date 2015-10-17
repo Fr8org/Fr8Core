@@ -8,10 +8,10 @@ module dockyard.controllers {
     'use strict';
 
     export interface IProcessBuilderScope extends ng.IScope {
-        processTemplateId: number;
-        processNodeTemplates: Array<model.ProcessNodeTemplateDTO>;
+        routeId: number;
+        subroutes: Array<model.SubrouteDTO>;
         fields: Array<model.Field>;
-        currentSubroute: model.ProcessNodeTemplateDTO;
+        currentSubroute: model.SubrouteDTO;
 
         // Identity of currently edited processNodeTemplate.
         //curNodeId: number;
@@ -65,7 +65,7 @@ module dockyard.controllers {
             private $modal,
             private $window: ng.IWindowService
             ) {
-            this.$scope.processTemplateId = $state.params.id;
+            this.$scope.routeId = $state.params.id;
             this.$scope.current = new model.ProcessBuilderState();
             this.$scope.actions = [];
 
@@ -112,12 +112,12 @@ module dockyard.controllers {
         }
 
         private loadProcessTemplate() {
-            var processTemplatePromise = this.RouteService.getFull({ id: this.$scope.processTemplateId });
+            var processTemplatePromise = this.RouteService.getFull({ id: this.$scope.routeId });
 
             processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IRouteVM) => {
                 debugger;
 
-                this.$scope.current.processTemplate = curProcessTemplate;
+                this.$scope.current.route = curProcessTemplate;
                 this.$scope.currentSubroute = curProcessTemplate.subroutes[0];
                 this.renderProcessTemplate(curProcessTemplate);
             });

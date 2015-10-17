@@ -8,7 +8,7 @@
         subscribedDocuSignTemplates: Array<string>;
         externalEventSubscription: Array<number>; 
         startingProcessNodeTemplateId: number;
-        subroutes: Array<ProcessNodeTemplateDTO>
+        subroutes: Array<SubrouteDTO>
     }
 
     export enum RouteState {

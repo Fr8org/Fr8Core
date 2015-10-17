@@ -22,9 +22,9 @@ module dockyard.services {
 
     export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
 
-    interface __IProcessNodeTemplateService extends ng.resource.IResourceClass<interfaces.IProcessNodeTemplateVM> {
-        add: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => interfaces.IProcessNodeTemplateVM;
-        update: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => interfaces.IProcessNodeTemplateVM;
+    interface __ISubrouteService extends ng.resource.IResourceClass<interfaces.ISubrouteVM> {
+        add: (curProcessNodeTemplate: model.SubrouteDTO) => interfaces.ISubrouteVM;
+        update: (curProcessNodeTemplate: model.SubrouteDTO) => interfaces.ISubrouteVM;
     }
 
     interface __ICriteriaService extends ng.resource.IResourceClass<interfaces.ICriteriaVM> {
@@ -33,12 +33,12 @@ module dockyard.services {
     }
 
     export interface ICriteriaServiceWrapper {
-        load: (id: number) => ng.IPromise<model.ProcessNodeTemplateDTO>;
-        add: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => ng.IPromise<model.ProcessNodeTemplateDTO>;
-        update: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => ng.IPromise<model.ProcessNodeTemplateDTO>;
-        addOrUpdate(curProcessNodeTemplate: model.ProcessNodeTemplateDTO): {
+        load: (id: number) => ng.IPromise<model.SubrouteDTO>;
+        add: (curProcessNodeTemplate: model.SubrouteDTO) => ng.IPromise<model.SubrouteDTO>;
+        update: (curProcessNodeTemplate: model.SubrouteDTO) => ng.IPromise<model.SubrouteDTO>;
+        addOrUpdate(curProcessNodeTemplate: model.SubrouteDTO): {
             actionType: ActionTypeEnum,
-            promise: ng.IPromise<model.ProcessNodeTemplateDTO>
+            promise: ng.IPromise<model.SubrouteDTO>
         }
     }
 
@@ -176,8 +176,8 @@ module dockyard.services {
         This service is not intended to be used by anything except CriteriaServiceWrapper,
         that's why its name starts with underscores. 
     */
-    app.factory('__ProcessNodeTemplateService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService): __IProcessNodeTemplateService =>
-        <__IProcessNodeTemplateService>$resource('/api/processnodetemplate', null,
+    app.factory('__SubrouteService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService): __ISubrouteService =>
+        <__ISubrouteService>$resource('/api/processnodetemplate', null,
             {
                 'add': {
                     method: 'POST'
@@ -224,11 +224,11 @@ module dockyard.services {
             // TODO: bypass save for unchanged entities
               
                 // Save processNodeTemplate if not null
-                if (currentState.processNodeTemplate) {
-                    this.CriteriaServiceWrapper.addOrUpdate(currentState.processNodeTemplate).promise
-                        .then((result: interfaces.IProcessNodeTemplateVM) => {
+                if (currentState.subroute) {
+                    this.CriteriaServiceWrapper.addOrUpdate(currentState.subroute).promise
+                        .then((result: interfaces.ISubrouteVM) => {
                             //new model.CriteriaDTO(result.criteria.id, false, result.criteria.id, model.CriteriaExecutionType.NoSet);
-                            newState.processNodeTemplate = result;
+                            newState.subroute = result;
 
                             this.crateHelper.mergeControlListCrate(
                                 currentState.action.configurationControls,
@@ -303,19 +303,19 @@ module dockyard.services {
     class CriteriaServiceWrapper implements ICriteriaServiceWrapper {
         public constructor(
             private CriteriaService: __ICriteriaService,
-            private ProcessNodeTemplateService: __IProcessNodeTemplateService,
+            private SubrouteService: __ISubrouteService,
             private $q: ng.IQService) {
         }
 
-        public add(curProcessNodeTemplate: model.ProcessNodeTemplateDTO): ng.IPromise<model.ProcessNodeTemplateDTO> {
-            var deferred = this.$q.defer<interfaces.IProcessNodeTemplateVM>();
+        public add(curProcessNodeTemplate: model.SubrouteDTO): ng.IPromise<model.SubrouteDTO> {
+            var deferred = this.$q.defer<interfaces.ISubrouteVM>();
 
             // Save ProcessNodeTemplate object to server.
             // Server automatically creates empty criteria node.
-            var addDeferred = this.ProcessNodeTemplateService.add(curProcessNodeTemplate);
+            var addDeferred = this.SubrouteService.add(curProcessNodeTemplate);
 
             addDeferred.$promise
-                .then((addResult: interfaces.IProcessNodeTemplateVM) => {
+                .then((addResult: interfaces.ISubrouteVM) => {
                     curProcessNodeTemplate.isTempId = false;
                     curProcessNodeTemplate.id = addResult.id;    
                     // Fetch criteria object from server by ProcessNodeTemplate global ID.
@@ -337,15 +337,15 @@ module dockyard.services {
             return deferred.promise;
         }
 
-        public update(curProcessNodeTemplate: model.ProcessNodeTemplateDTO): ng.IPromise<model.ProcessNodeTemplateDTO> {
-            var deferred = this.$q.defer<interfaces.IProcessNodeTemplateVM>();
+        public update(curProcessNodeTemplate: model.SubrouteDTO): ng.IPromise<model.SubrouteDTO> {
+            var deferred = this.$q.defer<interfaces.ISubrouteVM>();
 
             // Save ProcessNodeTemplate object to server.
             // Server automatically creates empty criteria node.
-            var updateDeferred = this.ProcessNodeTemplateService.update(curProcessNodeTemplate);
+            var updateDeferred = this.SubrouteService.update(curProcessNodeTemplate);
 
             updateDeferred.$promise
-                .then((updateResult: interfaces.IProcessNodeTemplateVM) => {   
+                .then((updateResult: interfaces.ISubrouteVM) => {   
                     // Call REST api to update Criteria entity on server.
                     return this.CriteriaService.update(curProcessNodeTemplate.criteria).$promise;
                 })
@@ -359,12 +359,12 @@ module dockyard.services {
             return deferred.promise;
         }
 
-        public load(id: number): ng.IPromise<model.ProcessNodeTemplateDTO> {
-            var deferred = this.$q.defer<interfaces.IProcessNodeTemplateVM>();
+        public load(id: number): ng.IPromise<model.SubrouteDTO> {
+            var deferred = this.$q.defer<interfaces.ISubrouteVM>();
 
             // Save ProcessNodeTemplate object to server.
             // Server automatically creates empty criteria node.
-            var getPntDeferred = this.ProcessNodeTemplateService.get({ id: id }),
+            var getPntDeferred = this.SubrouteService.get({ id: id }),
                 getCriteriaDeferred = this.CriteriaService.byProcessNodeTemplate({ id: id });
 
             this.$q.all([getPntDeferred.$promise, getCriteriaDeferred.$promise])
@@ -391,14 +391,14 @@ module dockyard.services {
             This method does adding or updating depending on whether 
             ProcessNodeTemplate has been saved or not.
         */
-        public addOrUpdate(curProcessNodeTemplate: model.ProcessNodeTemplateDTO): {
+        public addOrUpdate(curProcessNodeTemplate: model.SubrouteDTO): {
             actionType: ActionTypeEnum,
-            promise: ng.IPromise<model.ProcessNodeTemplateDTO>
+            promise: ng.IPromise<model.SubrouteDTO>
         } {
             // Don't save anything if there is no criteria selected, 
             // just return a null-valued resolved promise
             if (!curProcessNodeTemplate) {
-                var deferred = this.$q.defer<model.ProcessNodeTemplateDTO>();
+                var deferred = this.$q.defer<model.SubrouteDTO>();
                 deferred.resolve(null);
                 return {
                     actionType: ActionTypeEnum.None,
@@ -432,8 +432,8 @@ module dockyard.services {
     /*
         Register CriteriaServiceWrapper with AngularJS.
     */
-    app.factory('CriteriaServiceWrapper', ['__CriteriaService', '__ProcessNodeTemplateService', '$q',
-        (CriteriaService, ProcessNodeTemplateService, $q) => {
-            return new CriteriaServiceWrapper(CriteriaService, ProcessNodeTemplateService, $q)
+    app.factory('CriteriaServiceWrapper', ['__CriteriaService', '__SubrouteService', '$q',
+        (CriteriaService, SubrouteService, $q) => {
+            return new CriteriaServiceWrapper(CriteriaService, SubrouteService, $q)
         }]);
 }
