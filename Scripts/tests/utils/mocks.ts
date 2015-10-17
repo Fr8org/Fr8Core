@@ -6,8 +6,8 @@
         //Creates a mock for ProcessBuilderController $scope
         public static GetProcessBuilderScope(rootScope: interfaces.IAppRootScope): dockyard.controllers.IProcessBuilderScope {
             var scope = <dockyard.controllers.IProcessBuilderScope>rootScope.$new();
-            scope.processTemplateId = 0;
-            scope.processNodeTemplates = null;
+            scope.routeId = 0;
+            scope.subroutes = null;
             scope.fields = null;
 
             return scope;

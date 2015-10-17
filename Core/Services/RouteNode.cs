@@ -273,7 +273,7 @@ namespace Core.Services
                 : "downstream_actions/";
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "activities/"
+                + "route_nodes/"
                 + directionSuffix
                 + "?id=" + activityId;
 
