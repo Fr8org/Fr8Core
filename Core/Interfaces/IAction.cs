@@ -22,19 +22,17 @@ namespace Core.Interfaces
         Task PrepareToExecute(ActionDO curAction, ContainerDO curProcessDO, IUnitOfWork uow);
         Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curProcessDO);
         string Authenticate(ActionDO curActionDO);
-        void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
-        List<CrateDTO> GetCrates(ActionDO curActionDO);
+        
         Task<ActionDTO> Activate(ActionDO curActionDO);
         Task<ActionDTO> Deactivate(ActionDO curActionDO);
-		StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO);
+		
         StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction);
         bool IsAuthenticated(Fr8AccountDO user, PluginDO plugin);
         Task AuthenticateInternal(Fr8AccountDO user, PluginDO plugin, string username, string password);
         Task<ExternalAuthUrlDTO> GetExternalAuthUrl(Fr8AccountDO user, PluginDO plugin);
         Task AuthenticateExternal(PluginDO plugin, ExternalAuthenticationDTO externalAuthenticateDTO);
         
-        void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO);
-        void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO);
+
         Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key, string fieldName = "name", GetCrateDirection direction = GetCrateDirection.None);
     }
 }

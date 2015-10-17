@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Entities;
 using Newtonsoft.Json.Linq;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
@@ -38,5 +39,11 @@ namespace Core.Managers
 
         //StandardPayloadDataMS CreatePayloadDataCrate(string curObjectType);
         CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
+
+        void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
+        void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO);
+        void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO);
+        StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO);
+        List<CrateDTO> GetCrates(ActionDO curActionDO);
     }
 }

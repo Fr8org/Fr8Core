@@ -38,7 +38,7 @@ namespace pluginExcel.Actions
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
             var payloadDataCrate = Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
-            Action.AddCrate(curActionDO, payloadDataCrate);
+            Crate.AddCrate(curActionDO, payloadDataCrate);
 
            return Mapper.Map<ActionDTO>(curActionDO);
             
@@ -224,7 +224,7 @@ namespace pluginExcel.Actions
                             "Spreadsheet Column Headers",
                             headers.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()
                         );
-                Action.AddOrReplaceCrate("Spreadsheet Column Headers", curActionDO, curCrateDTO);
+                Crate.AddOrReplaceCrate("Spreadsheet Column Headers", curActionDO, curCrateDTO);
             }
 
             CreatePayloadCrate_ExcelRows(curActionDO, fileAsByteArray, headersArray, ext);
@@ -248,7 +248,7 @@ namespace pluginExcel.Actions
                             Crate.CreateStandardTableDataCrate("Excel Payload Rows", true, rows.ToArray()),
                         }
                     };
-                    Action.AddCrate(curActionDO, curExcelPayloadRowsCrateStorageDTO.CrateDTO.ToList());
+                    Crate.AddCrate(curActionDO, curExcelPayloadRowsCrateStorageDTO.CrateDTO.ToList());
                 }
             }
         }
