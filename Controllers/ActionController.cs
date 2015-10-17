@@ -40,6 +40,11 @@ namespace Web.Controllers
             _action = service;
         }
 
+        public ActionController(IProcessNodeTemplate service)
+        {
+            _processNodeTemplate = service;
+        }
+
 
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
 

@@ -6,6 +6,7 @@ using Core.Interfaces;
 using Core.Managers;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.Managers.APIManagers.Transmitters.Restful;
+using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -132,8 +133,9 @@ namespace DockyardTest.Services
 
                 Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
 
+                IProcessNodeTemplate pnt = new ProcessNodeTemplate();
                 //Delete
-                action.Delete(actionDO.Id);
+                pnt.DeleteAction(actionDO.Id);
             }
         }
 

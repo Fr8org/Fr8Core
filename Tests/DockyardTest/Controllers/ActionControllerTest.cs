@@ -240,13 +240,13 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Mock<IAction> actionMock = new Mock<IAction>();
-                actionMock.Setup(a => a.Delete(It.IsAny<int>()));
+                Mock<IProcessNodeTemplate> pntMock = new Mock<IProcessNodeTemplate>();
+                pntMock.Setup(a => a.DeleteAction(It.IsAny<int>()));
 
                 ActionDO actionDO = new FixtureData(uow).TestAction3();
-                var controller = new ActionController(actionMock.Object);
+                var controller = new ActionController(pntMock.Object);
                 controller.Delete(actionDO.Id);
-                actionMock.Verify(a => a.Delete(actionDO.Id));
+                pntMock.Verify(a => a.DeleteAction(actionDO.Id));
             }
         }
 
