@@ -240,13 +240,13 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Mock<IProcessNodeTemplate> pntMock = new Mock<IProcessNodeTemplate>();
-                pntMock.Setup(a => a.DeleteAction(It.IsAny<int>()));
+                var subRouteMock = new Mock<ISubroute>();
+                subRouteMock.Setup(a => a.DeleteAction(It.IsAny<int>()));
 
                 ActionDO actionDO = new FixtureData(uow).TestAction3();
-                var controller = new ActionController(pntMock.Object);
+                var controller = new ActionController(subRouteMock.Object);
                 controller.Delete(actionDO.Id);
-                pntMock.Verify(a => a.DeleteAction(actionDO.Id));
+                subRouteMock.Verify(a => a.DeleteAction(actionDO.Id));
             }
         }
 

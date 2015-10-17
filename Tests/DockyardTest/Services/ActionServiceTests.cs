@@ -133,9 +133,9 @@ namespace DockyardTest.Services
 
                 Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
 
-                IProcessNodeTemplate pnt = new ProcessNodeTemplate();
+                ISubroute subRoute = new Subroute();
                 //Delete
-                pnt.DeleteAction(actionDO.Id);
+                subRoute.DeleteAction(actionDO.Id);
             }
         }
 
