@@ -16,7 +16,7 @@ namespace pluginDocuSign.Tests.Infrastructure
         [SetUp]
         public override void SetUp()
         {
-            var target = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Tests");
+            var target = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.FullName, "Tests");
             _xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(target);
 
             if (_xmlPayloadFullPath == string.Empty)

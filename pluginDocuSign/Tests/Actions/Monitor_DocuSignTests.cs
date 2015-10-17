@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using pluginDocuSign.Tests.Fixtures;
+using pluginDocuSign.Infrastructure.StructureMap;
+using pluginDocuSign.Infrastructure.AutoMapper;
 
 
 namespace pluginDocuSign.Tests.Actions
@@ -20,6 +22,8 @@ namespace pluginDocuSign.Tests.Actions
         public Monitor_DocuSignTests()
         {
             base.SetUp();
+            PluginDocuSignMapBootstrapper.ConfigureDependencies(Core.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
+            PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
             _monitor_DocuSign = new Monitor_DocuSign_v1();
         }
 

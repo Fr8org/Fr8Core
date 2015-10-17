@@ -8,7 +8,8 @@ using pluginAzureSqlServer;
 using StructureMap;
 using Utilities;
 using fr8.Microsoft.Azure;
-using pluginAzureSqlServer.Tests.Fixtures;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace pluginAzureSqlServer.Tests
 {
