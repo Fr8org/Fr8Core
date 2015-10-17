@@ -97,8 +97,15 @@ namespace PluginUtilities.BaseClasses
             }
         }
 
+        protected CrateDTO ValidateFields(Tuple<string> validationData)
+        {
+
+            return null;
+        }
+
         protected async Task<ActionDTO> ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
+            ValidateFields(new Tuple<string>("test"));
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
             {
                 return await InitialConfigurationResponse(curActionDTO);
