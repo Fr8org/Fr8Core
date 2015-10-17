@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Runtime.InteropServices;
+using AutoMapper;
 using Core.Interfaces;
 using Core.Managers;
 using Data.Entities;
@@ -19,8 +20,6 @@ namespace Core.Services
 {
     public class Route : IRoute
     {
-        
-        
         // private readonly IProcess _process;
         private readonly ISubroute _subroute;
         private readonly Fr8Account _dockyardAccount;
@@ -81,7 +80,62 @@ namespace Core.Services
             // return ptdo.Id;
         }
 
-        
+        public RouteDO Create(IUnitOfWork uow)
+        {
+            var route = new RouteDO();
+            
+            route.RouteState = RouteState.Inactive;
+
+            uow.RouteRepository.Add(route);
+
+            return route;
+        }
+
+        public RouteDO CreateRouteWithOneSubroute(IUnitOfWork uow, string name, out SubrouteDO subroute)
+        {
+            var route = Create(uow);
+            subroute = ObjectFactory.GetInstance<ISubroute>().Create(uow);
+
+            route.Name = name;
+            subroute.Name = name + " #1";
+
+            route.StartingSubroute = subroute;
+            route.RouteNodes.Add(subroute);
+
+            return route;
+        }
+
+        // Manual mapping method to resolve DO-1164.
+        public RouteDTO MapRouteToDto(IUnitOfWork uow, RouteDO curRouteDO)
+        {
+            var subrouteDTOList = uow.SubrouteRepository
+                .GetQuery()
+                .Include(x => x.RouteNodes)
+                .Where(x => x.ParentRouteNodeId == curRouteDO.Id)
+                .OrderBy(x => x.Id)
+                .ToList()
+                .Select((SubrouteDO x) =>
+                {
+                    var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
+
+                    pntDTO.Actions = Enumerable.ToList(x.RouteNodes.Select(Mapper.Map<ActionDTO>));
+
+                    return pntDTO;
+                }).ToList();
+
+            RouteDTO result = new RouteDTO()
+            {
+                Description = curRouteDO.Description,
+                Id = curRouteDO.Id,
+                Name = curRouteDO.Name,
+                RouteState = curRouteDO.RouteState,
+                StartingSubrouteId = curRouteDO.StartingSubrouteId,
+                Subroutes = subrouteDTOList
+            };
+
+            return result;
+        }
+
 
         public void Delete(IUnitOfWork uow, int id)
         {

@@ -13,10 +13,12 @@ namespace Core.Interfaces
         IEnumerable<TViewModel> GetAllActions<TViewModel>();
         ActionDO SaveOrUpdateAction(ActionDO currentActionDo);
         ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO currentActionDo);
+        ActionDO Update(IUnitOfWork uow, ActionDO submittedActionDo);
         Task<ActionDTO> Configure(ActionDO curActionDO);
         ActionDO GetById(int id);
         ActionDO GetById(IUnitOfWork uow, int id);
         void Delete(int id);
+        ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode);
         ActionDO MapFromDTO(ActionDTO curActionDTO);
         Task PrepareToExecute(ActionDO curAction, ContainerDO curProcessDO, IUnitOfWork uow);
         Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curProcessDO);

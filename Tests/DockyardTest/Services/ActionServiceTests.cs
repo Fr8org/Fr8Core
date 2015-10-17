@@ -446,6 +446,156 @@ namespace DockyardTest.Services
         //            Assert.AreEqual(actionDo.ActionState, ActionState.Active);
         }
 
+        [Test]
+        public void ActionWithNestedUpdated_StructureUnchanged()
+        {
+            var tree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+            var updatedTree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Visit(tree, x => uow.ActionRepository.Add(x));
+                Visit(updatedTree, x => x.Name = string.Format("We were here {0}", x.Id));
+
+                _action.Update(uow, updatedTree);
+
+                var result = uow.ActionRepository.GetByKey(tree.Id);
+                Compare(updatedTree, result, (r, a) =>
+                {
+                    if (r.Name != a.Name)
+                    {
+                        throw new Exception("Update failed");
+                    }
+                });
+            }
+        }
+
+        [Test]
+        public void ActionWithNestedUpdated_RemoveElements()
+        {
+            var tree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+            var updatedTree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+            
+            
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Visit(tree, x => uow.ActionRepository.Add(x));
+                
+                int removeCounter = 0;
+                
+                Visit(updatedTree, a=>
+                {
+                    if (removeCounter%3 == 0 && a.ParentRouteNode != null)
+                    {
+                        a.ParentRouteNode.RouteNodes.Remove(a);
+                    }
+
+                    removeCounter++;
+                });
+
+                _action.Update(uow, updatedTree);
+
+                var result = uow.ActionRepository.GetByKey(tree.Id);
+                Compare(updatedTree, result, (r, a) =>
+                {
+                    if (r.Id != a.Id)
+                    {
+                        throw new Exception("Update failed");
+                    }
+                });
+            }
+        }
+
+        [Test]
+        public void ActionWithNestedUpdated_AddElements()
+        {
+            var tree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+            var updatedTree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Visit(tree, x => uow.ActionRepository.Add(x));
+
+                int addCounter = 0;
+                
+                Visit(updatedTree, a =>
+                {
+                    if (addCounter % 3 == 0 && a.ParentRouteNode != null)
+                    {
+                        var newAction = new ActionDO
+                        {
+                            Id = addCounter + 666,
+                            ParentRouteNode = a,
+                            Name = "____New " + addCounter
+                        };
+
+                        a.ParentRouteNode.RouteNodes.Add(newAction);
+                        uow.ActionRepository.Add(newAction);
+                    }
+
+                    addCounter++;
+                });
+
+                for (int i = 0; i < 4; i ++)
+                {
+                    Visit(updatedTree, a =>
+                    {
+                        if (a.Id > 666)
+                        {
+                            var newAction = new ActionDO
+                            {
+                                Id = addCounter + 666,
+                                ParentRouteNode = a,
+                                Name = "____New " + addCounter
+                            };
+
+                            a.ParentRouteNode.RouteNodes.Add(newAction);
+                            uow.ActionRepository.Add(newAction);
+                        }
+
+                        addCounter++;
+                    });
+                }
+
+                _action.Update(uow, updatedTree);
+
+                var result = uow.ActionRepository.GetByKey(tree.Id);
+                Compare(updatedTree, result, (r, a) =>
+                {
+                    if (r.Id != a.Id)
+                    {
+                        throw new Exception("Update failed");
+                    }
+                });
+            }
+        }
+
+        private void Compare(ActionDO reference, ActionDO actual, Action<ActionDO, ActionDO> callback)
+        {
+            callback(reference, actual);
+
+            if (reference.RouteNodes.Count != actual.RouteNodes.Count)
+            {
+                throw new Exception("Unable to compare nodes with different number of children.");
+            }
+
+            for (int i = 0; i < reference.RouteNodes.Count; i ++)
+            {
+                Compare((ActionDO)reference.RouteNodes[i], (ActionDO)actual.RouteNodes[i], callback);
+            }
+        }
+
+        private void Visit(ActionDO action, Action<ActionDO> callback)
+        {
+            callback(action);
+
+            foreach (var child in action.RouteNodes.OfType<ActionDO>().ToArray())
+            {
+                Visit(child, callback);
+            }
+        }
+
         private void EventManager_EventActionStarted(ActionDO action)
         {
             _eventReceived = true;

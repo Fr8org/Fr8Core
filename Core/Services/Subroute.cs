@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using Core.Interfaces;
 using Data.Entities;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
 using StructureMap;
@@ -34,6 +31,15 @@ namespace Core.Services
             uow.CriteriaRepository.Add(criteria);
             
             //we don't want to save changes here, to enable upstream transactions
+        }
+
+        public SubrouteDO Create(IUnitOfWork uow)
+        {
+            var subroute = ObjectFactory.GetInstance<SubrouteDO>();
+
+            Create(uow, subroute);
+
+            return subroute;
         }
 
         /// <summary>

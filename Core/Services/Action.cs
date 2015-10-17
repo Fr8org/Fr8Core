@@ -19,6 +19,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
+using Microsoft.Runtime.CompilerServices;
 using Utilities;
 
 namespace Core.Services
@@ -87,6 +88,56 @@ namespace Core.Services
             return curAction;
         }
 
+
+        public ActionDO Update(IUnitOfWork uow, ActionDO submittedActionData)
+        {
+            var existingAction = UpdateRecursive(uow, submittedActionData);
+
+            existingAction.ParentRouteNode = submittedActionData.ParentRouteNode;
+            existingAction.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
+            
+            return existingAction;
+        }
+
+        private ActionDO UpdateRecursive(IUnitOfWork uow, ActionDO action)
+        {
+            var existingAction = uow.ActionRepository.GetByKey(action.Id);
+
+            if (existingAction == null)
+            {
+                throw new Exception("Action was not found");
+            }
+
+            existingAction.ActivityTemplateId = action.ActivityTemplateId;
+            existingAction.Name = action.Name;
+            existingAction.Label = action.Label;
+            existingAction.CrateStorage = action.CrateStorage;
+            
+            if (action.RouteNodes != null)
+            {
+                var newChildren = action.RouteNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
+                var currentChildren = existingAction.RouteNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
+
+                foreach (var newAction in newChildren.Where(x => !currentChildren.ContainsKey(x.Key)).ToArray())
+                {
+                    var newChild = Update(uow, newAction.Value);
+                    existingAction.RouteNodes.Add(newChild);
+                }
+                
+                foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
+                {
+                    existingAction.RouteNodes.Remove(actionToRemove.Value);
+                }
+
+                foreach (var actionToUpdate in newChildren.Where(x => currentChildren.ContainsKey(x.Key)))
+                {
+                    Update(uow, actionToUpdate.Value);
+                }
+            }
+
+            return existingAction;
+        }
+
         public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -106,6 +157,29 @@ namespace Core.Services
             {
                 return GetById(uow, id);
             }
+        }
+
+        public ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode)
+        {
+            var template = uow.ActivityTemplateRepository.GetByKey(actionTemplateId);
+
+            if (template == null)
+            {
+                throw new ApplicationException("Could not find ActivityTemplate.");
+            }
+
+            var action = new ActionDO
+            {
+                ActivityTemplate = template, 
+                Name = name,
+                Label = label
+            };
+
+            uow.ActionRepository.Add(action);
+
+            parentNode.RouteNodes.Add(action);
+
+            return action;
         }
 
         public ActionDO GetById(IUnitOfWork uow, int id)
@@ -622,5 +696,7 @@ namespace Core.Services
            var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: "name");
            return keys;
         }
+
+        
     }
 }
