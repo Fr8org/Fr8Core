@@ -12,15 +12,11 @@ using PluginBase.BaseClasses;
 [assembly: OwinStartup("SendGridStartup", typeof(pluginSendGrid.Startup))]
 namespace pluginSendGrid
 {
-    public class Startup
+    public class Startup : BaseConfiguration
     {
         public void Configuration(IAppBuilder app)
         {
-            Task.Run(() =>
-            {
-                BasePluginController curController = new BasePluginController();
-                curController.AfterStartup("plugin_sendgrid");
-            });
+            StartHosting("plugin_sendgrid");
         }
     }
 }
