@@ -752,9 +752,11 @@
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
     <Content Include="Scripts\lib\jpattern.js" />
+    <Content Include="Scripts\tests\integration\PluginActionExecuteTest.js" />
     <Content Include="Views\ExternalAuth\AuthSuccess.cshtml" />
     <Content Include="Views\AngularTemplate\TextArea.cshtml" />
     <Content Include="Views\AngularTemplate\FieldList.cshtml" />
+    <Content Include="Views\AngularTemplate\ConfirmationModal.cshtml" />
     <Content Include="_PowerShellScripts\RunFrontEndTests-VSO.ps1" />
     <Content Include="Views\DockyardAccount\_HeaderPartial.cshtml" />
     <Content Include="Views\AngularTemplate\DropDownListBox.cshtml" />
@@ -809,6 +811,7 @@
     <TypeScriptCompile Include="Scripts\app\services\CrateHelper.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManageFileService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ReportService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\UIHelperService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UserService.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\respond.js" />

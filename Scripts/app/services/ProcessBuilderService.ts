@@ -15,6 +15,9 @@ module dockyard.services {
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
         configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
         getByProcessTemplate: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
+        //TODO make resource class do this operation
+        deleteById: (id: { id: number }) => ng.resource.IResource<void>;
+        
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
 
@@ -143,6 +146,9 @@ module dockyard.services {
                     method: 'GET',
                     url: '/actions/bypt',
                     isArray: true
+                },
+                'deleteById': {
+                    method: 'DELETE'
                 },
                 'params': {
                     id: 'id'
@@ -285,7 +291,7 @@ module dockyard.services {
     /*
         Register ProcessBuilderService with AngularJS
     */
-    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', 'CrateHelper', (
+    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', 'CrateHelper', 'UIHelperService', (
         $q: ng.IQService,
         CriteriaServiceWrapper: ICriteriaServiceWrapper,
         ActionService: IActionService,
@@ -392,8 +398,8 @@ module dockyard.services {
             ProcessNodeTemplate has been saved or not.
         */
         public addOrUpdate(curProcessNodeTemplate: model.ProcessNodeTemplateDTO): {
-            actionType: ActionTypeEnum,
-            promise: ng.IPromise<model.ProcessNodeTemplateDTO>
+            actionType: ActionTypeEnum;
+            promise: ng.IPromise<model.ProcessNodeTemplateDTO>;
         } {
             // Don't save anything if there is no criteria selected, 
             // just return a null-valued resolved promise
