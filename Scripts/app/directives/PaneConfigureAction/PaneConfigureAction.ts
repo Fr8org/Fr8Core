@@ -6,7 +6,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ActionUpdated,
         PaneConfigureAction_ActionRemoved,
         PaneConfigureAction_InternalAuthentication,
-        PaneConfigureAction_ExternalAuthentication
+        PaneConfigureAction_ExternalAuthentication,
+        PaneConfigureAction_Reconfigure
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
@@ -108,6 +109,10 @@ module dockyard.directives.paneConfigureAction {
                 $scope.onConfigurationChanged = onConfigurationChanged;
                 $scope.processConfiguration = processConfiguration;
 
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], function () {
+                    loadConfiguration();
+                });
+
                 // Get configuration settings template from the server if the current action does not contain those             
                 if ($scope.currentAction.activityTemplateId > 0) {
                     if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
@@ -189,6 +194,8 @@ module dockyard.directives.paneConfigureAction {
                 // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
                 // We parse its contents and put it into currentAction.configurationControls structure.
                 function loadConfiguration() {
+                    debugger;
+
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;
                     
@@ -208,40 +215,26 @@ module dockyard.directives.paneConfigureAction {
                 function processConfiguration() {
                     // Check if authentication is required.
                     if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, 'Standard Authentication')) {
+                        var authCrate = crateHelper
+                            .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
 
-                        var isAuthResult = ActionService.isAuthenticated({
-                            activityTemplateId: $scope.currentAction.activityTemplateId
-                        });
+                        var authMS = angular.fromJson(authCrate.contents);
 
-                        isAuthResult
-                            .$promise
-                            .then(function (res: any) {
-                                if (res.authenticated) {
-                                    loadConfiguration();
-                                    return;
-                                }
-
-                                var authCrate = crateHelper
-                                    .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
-
-                                var authMS = angular.fromJson(authCrate.contents);
-
-                                // Dockyard auth mode.
-                                if (authMS.Mode == 1) {
-                                    $scope.$emit(
-                                        MessageType[MessageType.PaneConfigureAction_InternalAuthentication],
-                                        new InternalAuthenticationArgs($scope.currentAction.activityTemplateId)
-                                        );
-                                }
-                                // External auth mode.                           
-                                else {
-                                    // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                                    $scope.$emit(
-                                        MessageType[MessageType.PaneConfigureAction_ExternalAuthentication],
-                                        new ExternalAuthenticationArgs($scope.currentAction.activityTemplateId)
-                                        );
-                                }
-                            });
+                        // Dockyard auth mode.
+                        if (authMS.Mode == 1) {
+                            $scope.$emit(
+                                MessageType[MessageType.PaneConfigureAction_InternalAuthentication],
+                                new InternalAuthenticationArgs($scope.currentAction.activityTemplateId)
+                                );
+                        }
+                        // External auth mode.                           
+                        else {
+                            // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
+                            $scope.$emit(
+                                MessageType[MessageType.PaneConfigureAction_ExternalAuthentication],
+                                new ExternalAuthenticationArgs($scope.currentAction.activityTemplateId)
+                                );
+                        }
 
                         return;
                     }

@@ -8,6 +8,7 @@ using AutoMapper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
+using Core.Enums;
 using Core.Interfaces;
 using Core.Managers;
 using Core.Managers.APIManagers.Transmitters.Plugin;
@@ -616,10 +617,21 @@ namespace Core.Services
             }
         }
 
-        public IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key)
+        public async Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key,
+                                                                string fieldName = "name",
+                                                                GetCrateDirection direction = GetCrateDirection.None)
         {
-           var controlsCrates = GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO());
-           var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: "name");
+            var controlsCrates = GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO()).ToList();
+
+            if (direction != GetCrateDirection.None)
+            {
+                var upstreamCrates = await ObjectFactory.GetInstance<IRouteNode>()
+                    .GetCratesByDirection(curActionDO.Id, curSchema.ManifestName, direction).ConfigureAwait(false);
+
+                controlsCrates.AddRange(upstreamCrates);
+            }
+
+            var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: fieldName);
            return keys;
         }
     }
