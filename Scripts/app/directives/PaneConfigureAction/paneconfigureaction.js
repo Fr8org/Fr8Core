@@ -90,7 +90,6 @@ var dockyard;
                     };
                     PaneConfigureAction.prototype.controller = function ($scope, $element, $attrs) {
                         $scope.$on("onChange", onControlChange);
-                        $scope.$on("onClick", onClickEvent);
                         // These are exposed for unit testing.
                         $scope.onControlChange = onControlChange;
                         $scope.loadConfiguration = loadConfiguration;
@@ -133,30 +132,6 @@ var dockyard;
                                 $scope.loadConfiguration();
                             }
                         }
-                        function onClickEvent(event, eventArgs) {
-                            var scope = event.currentScope;
-                            // Check if this event is defined for the current field
-                            var fieldName = eventArgs.fieldName;
-                            var fieldList = scope.currentAction.configurationControls.fields;
-                            // Find the configuration field object for which the event has fired
-                            fieldList = $filter('filter')(fieldList, { name: fieldName }, true);
-                            if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0)
-                                return;
-                            var field = fieldList[0];
-                            // Find the onChange event object
-                            var eventHandlerList = $filter('filter')(field.events, { name: 'onClick' }, true);
-                            if (eventHandlerList.length == 0) {
-                                return;
-                            }
-                            else {
-                                var fieldEvent = eventHandlerList[0];
-                                if (fieldEvent.handler != null) {
-                                    crateHelper.mergeControlListCrate(scope.currentAction.configurationControls, scope.currentAction.crateStorage);
-                                    scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
-                                    loadConfiguration();
-                                }
-                            }
-                        }
                         // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
                         // We parse its contents and put it into currentAction.configurationControls structure.
                         function loadConfiguration() {
@@ -176,28 +151,17 @@ var dockyard;
                         function processConfiguration() {
                             // Check if authentication is required.
                             if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, 'Standard Authentication')) {
-                                var isAuthResult = ActionService.isAuthenticated({
-                                    activityTemplateId: $scope.currentAction.activityTemplateId
-                                });
-                                isAuthResult
-                                    .$promise
-                                    .then(function (res) {
-                                    if (res.authenticated) {
-                                        loadConfiguration();
-                                        return;
-                                    }
-                                    var authCrate = crateHelper
-                                        .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
-                                    var authMS = angular.fromJson(authCrate.contents);
-                                    // Dockyard auth mode.
-                                    if (authMS.Mode == 1) {
-                                        $scope.$emit(MessageType[MessageType.PaneConfigureAction_InternalAuthentication], new InternalAuthenticationArgs($scope.currentAction.activityTemplateId));
-                                    }
-                                    else {
-                                        // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                                        $scope.$emit(MessageType[MessageType.PaneConfigureAction_ExternalAuthentication], new ExternalAuthenticationArgs($scope.currentAction.activityTemplateId));
-                                    }
-                                });
+                                var authCrate = crateHelper
+                                    .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
+                                var authMS = angular.fromJson(authCrate.contents);
+                                // Dockyard auth mode.
+                                if (authMS.Mode == 1) {
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_InternalAuthentication], new InternalAuthenticationArgs($scope.currentAction.activityTemplateId));
+                                }
+                                else {
+                                    // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ExternalAuthentication], new ExternalAuthenticationArgs($scope.currentAction.activityTemplateId));
+                                }
                                 return;
                             }
                             $scope.currentAction.configurationControls =

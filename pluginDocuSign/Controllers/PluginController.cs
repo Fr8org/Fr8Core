@@ -47,8 +47,8 @@ namespace pluginDocuSign.Controllers
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
             {
                 Version = "1",
-                Name = "Extract_From_DocuSign_Envelope",
-                Label = "Extract From DocuSign Envelope",
+                Name = "Receive_DocuSign_Envelope",
+                Label = "Receive DocuSign Envelope",
                 Category = ActivityCategory.Receivers,
                 Plugin = plugin
             };
