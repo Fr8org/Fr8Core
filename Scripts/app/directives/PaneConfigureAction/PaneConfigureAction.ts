@@ -85,7 +85,7 @@ module dockyard.directives.paneConfigureAction {
             private crateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
             private $timeout: ng.ITimeoutService
-            ) {
+        ) {
 
             PaneConfigureAction.prototype.link = (
                 scope: IPaneConfigureActionScope,
@@ -121,13 +121,13 @@ module dockyard.directives.paneConfigureAction {
                         $scope.processConfiguration();
                     }
                 }
-                
+
                 function onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
                     if (!newValue || !newValue.fields || newValue.fields === oldValue.fields || newValue.fields.length == 0) return;
                     crateHelper.mergeControlListCrate(
                         $scope.currentAction.configurationControls,
                         $scope.currentAction.crateStorage
-                        );
+                    );
                     $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
                     ActionService.save({ id: $scope.currentAction.id },
                         $scope.currentAction, null, null);
@@ -152,7 +152,7 @@ module dockyard.directives.paneConfigureAction {
                         crateHelper.mergeControlListCrate(
                             $scope.currentAction.configurationControls,
                             $scope.currentAction.crateStorage
-                            );
+                        );
                         $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
                 
                         $scope.loadConfiguration();
@@ -182,7 +182,7 @@ module dockyard.directives.paneConfigureAction {
                             crateHelper.mergeControlListCrate(
                                 scope.currentAction.configurationControls,
                                 scope.currentAction.crateStorage
-                                );
+                            );
                             scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
                 
                             loadConfiguration();
@@ -198,18 +198,21 @@ module dockyard.directives.paneConfigureAction {
 
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;
-                    
+
                     if ($scope.configurationWatchUnregisterer) {
                         $scope.configurationWatchUnregisterer();
                     }
 
-                    ActionService.configure($scope.currentAction).$promise.then((res: any) => {
-                        // Unblock pane
-                        $scope.processing = false;
-                        
-                        $scope.currentAction.crateStorage = res.crateStorage;
-                        $scope.processConfiguration();
-                    });
+                    ActionService.configure($scope.currentAction).$promise
+                        .then((res: any) => {
+                            $scope.currentAction.crateStorage = res.crateStorage;
+                            $scope.processConfiguration();
+                        })
+                        .finally(() => {
+                            // Unblock pane
+                            $scope.processing = false;
+                            alert('Error while retrieving configuration.');
+                        });
                 };
 
                 function processConfiguration() {
@@ -225,7 +228,7 @@ module dockyard.directives.paneConfigureAction {
                             $scope.$emit(
                                 MessageType[MessageType.PaneConfigureAction_InternalAuthentication],
                                 new InternalAuthenticationArgs($scope.currentAction.activityTemplateId)
-                                );
+                            );
                         }
                         // External auth mode.                           
                         else {
@@ -233,7 +236,7 @@ module dockyard.directives.paneConfigureAction {
                             $scope.$emit(
                                 MessageType[MessageType.PaneConfigureAction_ExternalAuthentication],
                                 new ExternalAuthenticationArgs($scope.currentAction.activityTemplateId)
-                                );
+                            );
                         }
 
                         return;
@@ -259,7 +262,7 @@ module dockyard.directives.paneConfigureAction {
                 crateHelper: services.CrateHelper,
                 $filter: ng.IFilterService,
                 $timeout: ng.ITimeoutService
-                ) => {
+            ) => {
 
                 return new PaneConfigureAction(ActionService, crateHelper, $filter, $timeout);
             };
