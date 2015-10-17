@@ -153,6 +153,7 @@ namespace Core.StructureMap
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IRoute>().Use<Route>();
                 For<ISubroute>().Use<Subroute>();
+                For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
