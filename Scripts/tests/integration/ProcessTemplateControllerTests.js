@@ -18,7 +18,7 @@ var dockyard;
                 }
             };
             describe("Process Template Controller ", function () {
-                var endpoint = "/api/routes", currentProcessTemplate, changeProcessTemplate1 = "";
+                var endpoint = "/api/route", currentProcessTemplate, changeProcessTemplate1 = "";
                 beforeAll(function () {
                     $(document).ajaxError(errorHandler);
                     $.ajaxSetup({ async: false, url: endpoint, dataType: "json", contentType: "text/json" });

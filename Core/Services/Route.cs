@@ -270,7 +270,7 @@ namespace Core.Services
                 if (actionDO != null && !string.IsNullOrEmpty(actionDO.CrateStorage))
                 {
                     // Loop each CrateDTO in CrateStorage
-                    IEnumerable<CrateDTO> eventSubscriptionCrates = _action
+                    IEnumerable<CrateDTO> eventSubscriptionCrates = _crate
                         .GetCratesByManifestType(
                             CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
                             actionDO.CrateStorageDTO()

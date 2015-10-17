@@ -21,8 +21,8 @@ module dockyard.interfaces {
     }
 
     export interface IExternalEvent {
-        id: number,
-        name: string
+        id: number;
+        name: string;
     }
 
     export interface ISubrouteVM extends ng.resource.IResource<model.SubrouteDTO>, model.SubrouteDTO { }
@@ -37,12 +37,12 @@ module dockyard.interfaces {
         ptvm: interfaces.IRouteVM;
         submit: (isValid: boolean) => void;
         errorMessage: string;
-        pbAddCriteriaClick: () => void,
-        pbCriteriaClick: (criteriaId: number) => void,
-        pbAddActionClick: (criteriaId: number) => void,
-        pbActionClick: (criteriaId: number, actionId: number) => void,
+        pbAddCriteriaClick: () => void;
+        pbCriteriaClick: (criteriaId: number) => void;
+        pbAddActionClick: (criteriaId: number) => void;
+        pbActionClick: (criteriaId: number, actionId: number) => void;
 
-        processBuilder: any
+        processBuilder: any;
     }
 
     export interface IControlsListVM extends ng.resource.IResource<model.ControlsList>, model.ControlsList {

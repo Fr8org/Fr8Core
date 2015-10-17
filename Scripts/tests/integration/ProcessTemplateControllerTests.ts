@@ -16,7 +16,7 @@ module dockyard.tests.controller {
     };
 
     describe("Process Template Controller ", function () {
-        var endpoint = "/api/routes",
+        var endpoint = "/api/route",
             currentProcessTemplate: interfaces.IRouteVM,
             changeProcessTemplate1 = "";
 

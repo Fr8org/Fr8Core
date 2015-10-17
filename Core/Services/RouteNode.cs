@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core.Enums;
 using Core.Interfaces;
+using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -18,16 +19,16 @@ namespace Core.Services
 	public class RouteNode : IRouteNode
 	{
         #region Fields
-
-        private readonly IAction _action;
-
+        
+        private readonly ICrateManager _crate;
+        
         #endregion
 
         public RouteNode()
 		{
-            _action = ObjectFactory.GetInstance<IAction>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
 		}
-        
+
         //This builds a list of an activity and all of its descendants, over multiple levels
 	    public List<RouteNodeDO> GetActivityTree(IUnitOfWork uow, RouteNodeDO curActivity)
 	    {
@@ -285,9 +286,9 @@ namespace Core.Services
 
                 foreach (var curAction in curActions)
                 {
-                    curCrates.AddRange(_action.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
+                    curCrates.AddRange(_crate.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
                 }
-
+        
                 return curCrates;
             }
         }

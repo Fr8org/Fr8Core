@@ -432,7 +432,7 @@ namespace PluginUtilities.BaseClasses
             CrateStorageDTO crateStorage,
             string fieldKey)
         {
-            var crates = Action.GetCratesByManifestType(
+            var crates = Crate.GetCratesByManifestType(
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, crateStorage);
 
             foreach (var crate in crates)

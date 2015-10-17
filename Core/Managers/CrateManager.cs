@@ -179,7 +179,7 @@ namespace Core.Managers
 
         public void ReplaceCratesByLabel(IList<CrateDTO> sourceCrates, string label, IList<CrateDTO> newCratesContent)
         {
-            var curMatchedCrates = ObjectFactory.GetInstance<IAction>().GetCratesByLabel(label, new CrateStorageDTO {CrateDTO = sourceCrates.ToList()});
+            var curMatchedCrates = GetCratesByLabel(label, new CrateStorageDTO {CrateDTO = sourceCrates.ToList()});
 
             foreach (CrateDTO curMatchedCrate in curMatchedCrates)
             {
@@ -234,6 +234,34 @@ namespace Core.Managers
             }
 
             return payloadDataMS;
+        }
+
+        public IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO)
+        {
+            if (String.IsNullOrEmpty(curManifestType))
+                throw new ArgumentNullException("Parameter Manifest Type is empty");
+            if (curCrateStorageDTO == null)
+                throw new ArgumentNullException("Parameter CrateStorageDTO is null.");
+
+            IEnumerable<CrateDTO> crateDTO = null;
+
+            crateDTO = curCrateStorageDTO.CrateDTO.Where(crate => crate.ManifestType == curManifestType);
+
+            return crateDTO;
+        }
+
+        public IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO)
+        {
+            if (String.IsNullOrEmpty(curLabel))
+                throw new ArgumentNullException("Parameter Label is empty");
+            if (curCrateStorageDTO == null)
+                throw new ArgumentNullException("Parameter CrateStorageDTO is null.");
+
+            IEnumerable<CrateDTO> crateDTOList = null;
+
+            crateDTOList = curCrateStorageDTO.CrateDTO.Where(crate => crate.Label == curLabel);
+
+            return crateDTOList;
         }
 
     }

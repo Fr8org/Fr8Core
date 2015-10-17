@@ -15,6 +15,9 @@ module dockyard.services {
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
         configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
         getByProcessTemplate: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
+        //TODO make resource class do this operation
+        deleteById: (id: { id: number }) => ng.resource.IResource<void>;
+        
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
 
@@ -56,17 +59,17 @@ module dockyard.services {
 
 
     app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
-        <IRouteService>$resource('/api/routes/:id', { id: '@id' },
+        <IRouteService>$resource('/api/route/:id', { id: '@id' },
             {
                 'getbystatus': {
                     method: 'GET',
                     isArray: true,
-                    url: '/api/routes/getactive'
+                    url: '/api/route/getactive'
                 },
                 'getFull': {
                     method: 'GET',
                     isArray: false,
-                    url: '/api/routes/full/:id',
+                    url: '/api/route/full/:id',
                     params: {
                         id: '@id'
                     }
@@ -81,12 +84,12 @@ module dockyard.services {
                 },
                 'activate': {
                     method: 'POST',
-                    url: '/api/routes/activate',
+                    url: '/api/route/activate',
                     params: {}
                 },
                 'deactivate': {
                     method: 'POST',
-                    url: '/api/routes/deactivate',
+                    url: '/api/route/deactivate',
                     params: {}
                 }
             })
@@ -103,7 +106,7 @@ module dockyard.services {
         DocuSignExternalEventDTO CRUD service.
     */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
-        <IDocuSignTriggerService>$resource('/api/routes/triggersettings')
+        <IDocuSignTriggerService>$resource('/api/route/triggersettings')
     ]);
 
     /* 
@@ -143,6 +146,9 @@ module dockyard.services {
                     method: 'GET',
                     url: '/actions/bypt',
                     isArray: true
+                },
+                'deleteById': {
+                    method: 'DELETE'
                 },
                 'params': {
                     id: 'id'
@@ -285,7 +291,7 @@ module dockyard.services {
     /*
         Register ProcessBuilderService with AngularJS
     */
-    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', 'CrateHelper', (
+    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', 'CrateHelper', 'UIHelperService', (
         $q: ng.IQService,
         CriteriaServiceWrapper: ICriteriaServiceWrapper,
         ActionService: IActionService,
