@@ -14,7 +14,7 @@ using DocuSign.Integrations.Client;
 using pluginDocuSign.DataTransferObjects;
 using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Services;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 
 namespace pluginDocuSign.Actions
 {

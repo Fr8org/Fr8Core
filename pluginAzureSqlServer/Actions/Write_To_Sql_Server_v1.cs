@@ -13,7 +13,7 @@ using StructureMap;
 using PluginBase;
 using Core.Interfaces;
 using Data.Interfaces.ManifestSchemas;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 
 namespace pluginAzureSqlServer.Actions
 {

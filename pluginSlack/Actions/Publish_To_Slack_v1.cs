@@ -10,7 +10,7 @@ using Data.Interfaces.ManifestSchemas;
 using PluginBase.Infrastructure;
 using pluginSlack.Interfaces;
 using pluginSlack.Services;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 
 namespace pluginSlack.Actions
 {
