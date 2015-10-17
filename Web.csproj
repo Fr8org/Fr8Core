@@ -325,7 +325,7 @@
     <Compile Include="Controllers\CriteriaController.cs" />
     <Compile Include="Controllers\DockyardEventController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
-    <Compile Include="Controllers\ActivitiesController.cs" />
+    <Compile Include="Controllers\RouteNodesController.cs" />
     <Compile Include="Controllers\ExternalAuthController.cs" />
     <Compile Include="Controllers\FilesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />

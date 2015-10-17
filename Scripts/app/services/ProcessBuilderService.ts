@@ -56,17 +56,17 @@ module dockyard.services {
 
 
     app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
-        <IRouteService>$resource('/api/processTemplate/:id', { id: '@id' },
+        <IRouteService>$resource('/api/routes/:id', { id: '@id' },
             {
                 'getbystatus': {
                     method: 'GET',
                     isArray: true,
-                    url: '/api/processTemplate/getactive'
+                    url: '/api/routes/getactive'
                 },
                 'getFull': {
                     method: 'GET',
                     isArray: false,
-                    url: '/api/processTemplate/full/:id',
+                    url: '/api/routes/full/:id',
                     params: {
                         id: '@id'
                     }
@@ -74,19 +74,19 @@ module dockyard.services {
                 'execute': {
                     method: 'POST',
                     isArray: false,
-                    url: '/api/processes/launch?processTemplateId=:id',
+                    url: '/api/containers/launch?routeId=:id',
                     params: {
                         id: '@id'
                     }
                 },
                 'activate': {
                     method: 'POST',
-                    url: '/api/processTemplate/activate',
+                    url: '/api/routes/activate',
                     params: {}
                 },
                 'deactivate': {
                     method: 'POST',
-                    url: '/api/processTemplate/deactivate',
+                    url: '/api/routes/deactivate',
                     params: {}
                 }
             })
@@ -103,7 +103,7 @@ module dockyard.services {
         DocuSignExternalEventDTO CRUD service.
     */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
-        <IDocuSignTriggerService>$resource('/api/processtemplate/triggersettings')
+        <IDocuSignTriggerService>$resource('/api/routes/triggersettings')
     ]);
 
     /* 
@@ -193,7 +193,7 @@ module dockyard.services {
         {
             'getAvailableActivities': {
                 method: 'GET',
-                url: '/activities/available/',
+                url: '/route_nodes/available/',
                 isArray: true
             }
         })

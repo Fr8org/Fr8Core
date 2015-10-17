@@ -87,7 +87,7 @@ namespace PluginUtilities.BaseClasses
         {
             var httpClient = new HttpClient();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/processes/"
+                + "api/containers/"
                 + processId.ToString();
 
             using (var response = await httpClient.GetAsync(url))

@@ -17,7 +17,7 @@ using StructureMap;
 namespace Web.Controllers
 {
     [Fr8ApiAuthorize]
-    [RoutePrefix("api/processTemplate")]
+    [RoutePrefix("api/routes")]
     public class ProcessTemplateController : ApiController
     {
         private readonly IRoute _route;

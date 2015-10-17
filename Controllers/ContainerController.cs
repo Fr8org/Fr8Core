@@ -20,7 +20,7 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Web.Controllers
 {
-    [RoutePrefix("api/processes")]
+    [RoutePrefix("api/containers")]
     public class ContainerController : ApiController
     {
         private readonly IContainerService _container;
@@ -60,11 +60,11 @@ namespace Web.Controllers
 
         [Route("launch")]
         [HttpPost]
-        public async Task<IHttpActionResult> Launch(int processTemplateId)
+        public async Task<IHttpActionResult> Launch(int routeId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplateDO = uow.RouteRepository.GetByKey(processTemplateId);
+                var processTemplateDO = uow.RouteRepository.GetByKey(routeId);
                 await _container.Launch(processTemplateDO, null);
 
                 return Ok();
