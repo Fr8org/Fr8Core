@@ -18,6 +18,7 @@ using Core.Interfaces;
 using Moq;
 using pluginTwilio.Tests.Fixtures;
 using pluginTwilio.Tests;
+using Core.Managers;
 
 namespace PluginTwilio.Tests.Actions
 {
@@ -25,7 +26,7 @@ namespace PluginTwilio.Tests.Actions
     public class Send_Via_Twilio_v1Tests : BaseTest
     {
         private Send_Via_Twilio_v1 _twilioAction;
-        private ICrate _crate;
+        private ICrateManager _crate;
 
         public override void SetUp()
         {
@@ -35,7 +36,7 @@ namespace PluginTwilio.Tests.Actions
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             StructureMapBootStrapper.ConfigureDependencies(dependencyType).ConfigureTwilioDependencies(dependencyType);
             ObjectFactory.Configure(cfg => cfg.For<ITwilioService>().Use(new TwilioService()));
-            _crate = ObjectFactory.GetInstance<ICrate>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
 
             var twilioService = new Mock<ITwilioService>();
             twilioService

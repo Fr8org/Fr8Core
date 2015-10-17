@@ -21,7 +21,7 @@ namespace pluginBaseTests.BaseClasses
         {
             base.SetUp();
             _basePluginController = new BasePluginController();
-            _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
+            _coreServer = pluginBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
         }
 
         [TearDown]

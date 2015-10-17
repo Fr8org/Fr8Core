@@ -154,7 +154,6 @@
     <Compile Include="Fixtures\FixtureData - Activity.cs" />
     <Compile Include="Fixtures\FixtureData - ActivityTemplateDTO.cs" />
     <Compile Include="Fixtures\FixtureData - ConfigurationSettingsDTO.cs" />
-    <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="Fixtures\FixtureData - Crate.cs" />
     <Compile Include="Fixtures\FixtureData - CrateDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Criteria.cs" />
@@ -241,10 +240,6 @@
     <ProjectReference Include="..\..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Web.csproj">
-      <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
-      <Name>Web</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Core.Enums;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -36,6 +37,6 @@ namespace Core.Interfaces
         
         void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO);
         void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO);
-        IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key);
+        Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key, string fieldName = "name", GetCrateDirection direction = GetCrateDirection.None);
     }
 }

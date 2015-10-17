@@ -8,12 +8,11 @@ using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
 
-namespace UtilitiesTesting.Fixtures
+namespace pluginBaseTests.Fixtures
 {
     partial class FixtureData
     {
         public static readonly string CoreEndPoint = "http://localhost:30643";
-
 
         public class ActivitiesController_ControllerTypeResolver : IHttpControllerTypeResolver
         {

@@ -82,6 +82,10 @@
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -172,7 +176,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Extract_From_DocuSign_Envelope_v1.cs" />
+    <Compile Include="Actions\Receive_DocuSign_Envelope_v1.cs" />
     <Compile Include="Actions\Record_DocuSign_Events_v1.cs" />
     <Compile Include="Actions\Send_DocuSign_Envelope_v1.cs" />
     <Compile Include="Actions\Monitor_DocuSign_v1.cs" />

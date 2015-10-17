@@ -29,7 +29,7 @@ namespace pluginBaseTests.BaseClasses
         {
             base.SetUp();
             _basePluginAction = new BasePluginAction();
-            _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
+            _coreServer = pluginBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
         }
 
         [TearDown]

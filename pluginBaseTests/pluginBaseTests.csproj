@@ -132,6 +132,7 @@
   <ItemGroup>
     <Compile Include="BaseClasses\BasePluginActionTests.cs" />
     <Compile Include="BaseClasses\BasePluginControllerTests.cs" />
+    <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="Infrastructure\BasePluginEventTests.cs" />
     <Compile Include="Infrastructure\TestBasePluginEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
