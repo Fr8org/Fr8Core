@@ -133,7 +133,7 @@
     display: inline-block;
     height: 300px;
     margin: 10px;
-    padding: 5px;
+    
     vertical-align: top;
     width: 330px;
 }
@@ -144,22 +144,33 @@
 
 }
 
+
+
 .action-menu {
-    top: 3px;
+    bottom: 5px;
     position: absolute;
-    right: 3px;
-    color: #666;
+    right: 5px;
+    color: white;
 }
 .action-menu:hover {
-    color: #666;
+    color: #bab7b7;
 }
 .action-header {
-    margin-top: 10px;
+    padding-top:15px;
+    padding-right:10px;
+    background-color:#1eac48;
+    margin-top: 0px;
     padding-bottom: 10px;
-    border-bottom: 1px solid;
+    border-bottom: 1px;
     margin-bottom: 10px;
     text-align: center;
     position: relative;
+}
+.action-header p{
+    
+    font-weight:800;
+    font-size:22px;
+    color: white;
 }
 
 .action-to-add {
@@ -173,6 +184,7 @@
 }
 
 .action .pane-configure-action {    
+    padding: 5px;
     height: 250px;
     display: block;
     width: 100%;
