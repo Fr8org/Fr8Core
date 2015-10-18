@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-//
+// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using InternalInterface = Core.Interfaces;
 using Core.Interfaces;
-//
+// This alias is used to avoid ambiguity between StructureMap.Container and Core.Services.Container
 using InternalClass = Core.Services;
 using Core.Services;
 using Data.Entities;
@@ -51,16 +51,16 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void ContainerService_CanRetrieveValidProcesses()
+        public void ContainerService_CanRetrieveValidContainers()
         {
             //Arrange 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = FixtureData.TestRoute2();
+                var route = FixtureData.TestRoute5();
                 uow.RouteRepository.Add(route);
-                foreach (var p in FixtureData.GetContainers())
+                foreach (var container in FixtureData.GetContainers())
                 {
-                    uow.ContainerRepository.Add(p);
+                    uow.ContainerRepository.Add(container);
                 }
                 uow.SaveChanges();
             }

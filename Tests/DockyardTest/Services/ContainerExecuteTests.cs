@@ -1,11 +1,11 @@
 ﻿using System;
+// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using InternalInterface = Core.Interfaces;
 using Core.Interfaces;
 using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;

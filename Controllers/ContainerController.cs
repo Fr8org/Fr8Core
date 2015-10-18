@@ -11,7 +11,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
 using StructureMap;
-//
+// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using InternalInterface = Core.Interfaces;
 using Core.Interfaces;
 using Core.Services;

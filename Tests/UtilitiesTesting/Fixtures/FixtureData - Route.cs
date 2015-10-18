@@ -294,10 +294,23 @@ namespace UtilitiesTesting.Fixtures
             var route = new RouteDO
             {
                 Id = 30,
-                Description = "descr 2",
-                Name = "template2",
+                Description = "Description 4",
+                Name = "Route 4",
                 RouteState = RouteState.Active,
-                Fr8Account = FixtureData.TestDockyardAccount1()
+                Fr8Account = FixtureData.TestDockyardAccount5()
+            };
+            return route;
+        }
+
+        public static RouteDO TestRoute5()
+        {
+            var route = new RouteDO
+            {
+                Id = 40,
+                Description = "Description 5",
+                Name = "Route 5",
+                RouteState = RouteState.Active,
+                Fr8Account = FixtureData.TestDockyardAccount5()
             };
             return route;
         }

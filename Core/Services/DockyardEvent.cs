@@ -1,7 +1,5 @@
-﻿using InternalInterfaces = Core.Interfaces;
-using Core.Interfaces;
-using Data.Entities;
-using Data.Interfaces;
+﻿// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
+using InternalInterfaces = Core.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 using System;
@@ -9,15 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using StructureMap;
 using Core.Interfaces;
 using Core.Managers;
 using Data.Entities;
 using Data.Exceptions;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
+using Data.Interfaces;
 
 namespace Core.Services
 {

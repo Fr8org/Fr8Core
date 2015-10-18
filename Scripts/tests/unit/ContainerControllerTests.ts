@@ -36,6 +36,7 @@ module dockyard.tests.controller {
                 .done((data: interfaces.IContainerVM, status: string) => {
                     expect(data).not.toBe(null);
                     expect(status).toBe("success");
+                    expect((<any>data).length).toBe(2);
                 });
         });
     });

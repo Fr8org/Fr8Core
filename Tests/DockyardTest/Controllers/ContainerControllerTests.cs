@@ -34,20 +34,20 @@ namespace DockyardTest.Controllers
         {
             base.SetUp();
 
-            _testUserAccount = FixtureData.TestDockyardAccount1();
+            _testUserAccount = FixtureData.TestDockyardAccount5();
             _containerService = ObjectFactory.GetInstance<Core.Interfaces.IContainer>();
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //uow.UserRepository.Add(_testUserAccount);
                 var route = FixtureData.TestRoute4();
 
                 // This will Add a user as well as a route for creating Containers
-                uow.RouteRepository.Add(route);
-                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, _testUserAccount.Id);
-                uow.SaveChanges();
+                unitOfWork.RouteRepository.Add(route);
+                unitOfWork.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, _testUserAccount.Id);
+                unitOfWork.SaveChanges();
 
-                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, _testUserAccount);
+                ObjectFactory.GetInstance<ISecurityServices>().Login(unitOfWork, _testUserAccount);
             }
         }
 
@@ -112,13 +112,13 @@ namespace DockyardTest.Controllers
         private void Addcontainer()
         {
             //Arrange 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 foreach (var container in FixtureData.TestControllerContainersByUser())
                 {
-                    uow.ContainerRepository.Add(container);
+                    unitOfWork.ContainerRepository.Add(container);
                 }
-                uow.SaveChanges();
+                unitOfWork.SaveChanges();
             }
         }
 

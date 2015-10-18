@@ -22,7 +22,7 @@ namespace Data.Entities
 
         public string Name { get; set; }
 
-        public string Fr8AccountId { get; set; }
+        //public string Fr8AccountId { get; set; }
 
         [Required]
         [ForeignKey("Route")]

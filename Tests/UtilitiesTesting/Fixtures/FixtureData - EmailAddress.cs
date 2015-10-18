@@ -46,6 +46,13 @@ namespace UtilitiesTesting.Fixtures
             emailAddressDO.Id = 5;
             return emailAddressDO;
         }
+
+        public static EmailAddressDO TestEmailAddress6()
+        {
+            var emailAddressDO = new EmailAddressDO("nilesh@gmail.com");
+            emailAddressDO.Id = 6;
+            return emailAddressDO;
+        }
     }
 }
 

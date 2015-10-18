@@ -197,7 +197,8 @@ namespace Core.Managers
         {
             var fact = new FactDO
             {
-                CustomerId = containerDO.Fr8AccountId,
+                //CustomerId = containerDO.Fr8AccountId,
+                CustomerId = containerDO.Route.Fr8Account.Id,
                 Data =  containerDO.Id.ToStr(),
                 ObjectId = containerDO.Id.ToStr(),
                 PrimaryCategory = "Process Access",
@@ -635,7 +636,7 @@ namespace Core.Managers
         {
             var fact = new FactDO
             {
-                CustomerId =  launchedContainer.Fr8AccountId,
+                CustomerId =  launchedContainer.Route.Fr8Account.Id,
                 Data = launchedContainer.Id.ToStr(),
                 ObjectId = launchedContainer.Id.ToStr(),
                 PrimaryCategory = "Container Execution",
@@ -656,7 +657,7 @@ namespace Core.Managers
 
             var fact = new FactDO
             {
-                CustomerId = containerInExecution != null ? containerInExecution.Fr8AccountId : "unknown",
+                CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
                 Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                 ObjectId = processNode.Id.ToStr(),
                 PrimaryCategory = "Container Execution",
@@ -677,7 +678,7 @@ namespace Core.Managers
 
             var fact = new FactDO
             {
-                CustomerId = containerInExecution != null ? containerInExecution.Fr8AccountId : "unknown",
+                CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
                 Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                 ObjectId = null,
                 PrimaryCategory = "Process Execution",
@@ -698,7 +699,7 @@ namespace Core.Managers
 
             var fact = new FactDO
             {
-                CustomerId = containerInExecution != null ? containerInExecution.Fr8AccountId : "unknown",
+                CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
                 Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                 ObjectId = null,
                 PrimaryCategory = "Process Execution",
@@ -720,7 +721,7 @@ namespace Core.Managers
 
             var fact = new FactDO
             {
-                CustomerId = (containerInExecution != null) ? containerInExecution.Fr8AccountId : "unknown",
+                CustomerId = (containerInExecution != null) ? containerInExecution.Route.Fr8Account.Id : "unknown",
                 Data = (containerInExecution != null) ? containerInExecution.Id.ToStr() : "unknown",
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
@@ -742,7 +743,7 @@ namespace Core.Managers
 
             var fact = new FactDO
             {
-                CustomerId = containerInExecution != null ? containerInExecution.Fr8AccountId : "unknown",
+                CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
                 Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
