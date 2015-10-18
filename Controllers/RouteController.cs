@@ -17,20 +17,20 @@ using StructureMap;
 namespace Web.Controllers
 {
     [Fr8ApiAuthorize]
-    [RoutePrefix("api/processTemplate")]
-    public class ProcessTemplateController : ApiController
+    [RoutePrefix("api/route")]
+    public class RouteController : ApiController
     {
         private readonly IRoute _route;
         private readonly ISecurityServices _security;
         
-        public ProcessTemplateController()
+        public RouteController()
             : this(ObjectFactory.GetInstance<IRoute>())
         {
         }
 
         
 
-        public ProcessTemplateController(IRoute route)
+        public RouteController(IRoute route)
         {
             _route = route;
             _security = ObjectFactory.GetInstance<ISecurityServices>();
@@ -69,7 +69,7 @@ namespace Web.Controllers
 
             return Ok();
         
-        }
+       }
 
         
         // GET api/<controller>
@@ -97,7 +97,6 @@ namespace Web.Controllers
             return Ok();
         }
 
-        
         
         public IHttpActionResult Post(RouteOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {

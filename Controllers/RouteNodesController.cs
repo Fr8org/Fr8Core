@@ -15,13 +15,13 @@ using Microsoft.AspNet.Identity;
 
 namespace Web.Controllers
 {
-    [RoutePrefix("activities")]
-	public class ActivitiesController : ApiController
+    [RoutePrefix("route_nodes")]
+	public class RouteNodesController : ApiController
 	{
       	private readonly IRouteNode _activity;
       	private readonly ISecurityServices _security;
 
-		public ActivitiesController()
+		public RouteNodesController()
 		{
 			_activity = ObjectFactory.GetInstance<IRouteNode>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();

@@ -22,7 +22,7 @@ using System.IO;
 using System.Reflection;
 
 [assembly: CLSCompliant(true)]
-namespace fr8.Microsoft.Azure
+namespace Utilities.Configuration.Azure
 {
     /// <summary>
     /// Microsoft Azure settings.

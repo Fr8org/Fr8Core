@@ -14,7 +14,8 @@
 /// <reference path="model/condition.ts" />
 /// <reference path="model/criteria.ts" />
 /// <reference path="model/field.ts" />
-/// <reference path="model/processtemplate.ts" />
+/// <reference path="model/route.ts" />
+/// <reference path="model/subroute.ts" />
 /// <reference path="model/controlslist.ts" />
 /// <reference path="model/processbuilderstate.ts" />
 /// <reference path="model/user.ts" />
@@ -28,7 +29,7 @@
     FILTERS AND COMPONENTS
 */
 /// <reference path="directives/eventargsbase.ts" />
-/// <reference path="filters/processtemplatestate.ts" />
+/// <reference path="filters/routestate.ts" />
 /// <reference path="directives/paneconfigureaction/paneconfigureaction.ts" />
 /// <reference path="directives/paneconfigureaction/configurationcontrol.ts" />
 /// <reference path="directives/paneworkflowdesigner/ipaneworkflowdesignerscope.ts" />
@@ -39,8 +40,8 @@
     CONTROLLERS
 */
 /// <reference path="controllers/processbuildercontroller.ts" />
-/// <reference path="controllers/processtemplateformcontroller.ts" />
-/// <reference path="controllers/processtemplatelistcontroller.ts" />
+/// <reference path="controllers/routeformcontroller.ts" />
+/// <reference path="controllers/routelistcontroller.ts" />
 /// <reference path="controllers/managefilelistcontroller.ts" />
 /*
     LIBRARIES

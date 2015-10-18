@@ -146,7 +146,7 @@
     <Compile Include="PluginBaseTests\BaseClasses\BasePluginControllerTests.cs" />
     <Compile Include="PluginBaseTests\Infrastructure\BasePluginEventTests.cs" />
     <Compile Include="PluginBaseTests\Infrastructure\TestBasePluginEvent.cs" />
-    <Compile Include="pluginDocuSign\Actions\Extract_From_DocuSign_Envelope_v1Tests.cs" />
+    <Compile Include="pluginDocuSign\Actions\Receive_DocuSign_Envelope_v1Tests.cs" />
     <Compile Include="pluginDocuSign\Actions\Monitor_DocuSignTests.cs" />
     <Compile Include="pluginDocuSign\DocusignApiHelper.cs" />
     <Compile Include="pluginDocuSign\IDocusignApiHelper.cs" />
@@ -159,10 +159,6 @@
     <Compile Include="BaseTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Configuration\Configuration.csproj">
-      <Project>{d8f7f734-21ce-4277-a14f-ebdde71dff0c}</Project>
-      <Name>Configuration</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Core</Name>

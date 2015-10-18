@@ -13,5 +13,6 @@ namespace Core.Interfaces
         void Update(IUnitOfWork uow, SubrouteDO subroute);
         void Delete(IUnitOfWork uow, int id);
         void AddAction(IUnitOfWork uow, ActionDO resultActionDo);
+        void DeleteAction(int id);
     }
 }

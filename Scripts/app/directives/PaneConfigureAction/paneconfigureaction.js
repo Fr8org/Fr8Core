@@ -17,6 +17,7 @@ var dockyard;
                 MessageType[MessageType["PaneConfigureAction_ActionRemoved"] = 1] = "PaneConfigureAction_ActionRemoved";
                 MessageType[MessageType["PaneConfigureAction_InternalAuthentication"] = 2] = "PaneConfigureAction_InternalAuthentication";
                 MessageType[MessageType["PaneConfigureAction_ExternalAuthentication"] = 3] = "PaneConfigureAction_ExternalAuthentication";
+                MessageType[MessageType["PaneConfigureAction_Reconfigure"] = 4] = "PaneConfigureAction_Reconfigure";
             })(paneConfigureAction.MessageType || (paneConfigureAction.MessageType = {}));
             var MessageType = paneConfigureAction.MessageType;
             var ActionUpdatedEventArgs = (function (_super) {
@@ -96,6 +97,9 @@ var dockyard;
                         $scope.loadConfiguration = loadConfiguration;
                         $scope.onConfigurationChanged = onConfigurationChanged;
                         $scope.processConfiguration = processConfiguration;
+                        $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], function () {
+                            loadConfiguration();
+                        });
                         // Get configuration settings template from the server if the current action does not contain those             
                         if ($scope.currentAction.activityTemplateId > 0) {
                             if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
@@ -160,44 +164,40 @@ var dockyard;
                         // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
                         // We parse its contents and put it into currentAction.configurationControls structure.
                         function loadConfiguration() {
+                            debugger;
                             // Block pane and show pane-level 'loading' spinner
                             $scope.processing = true;
                             if ($scope.configurationWatchUnregisterer) {
                                 $scope.configurationWatchUnregisterer();
                             }
-                            ActionService.configure($scope.currentAction).$promise.then(function (res) {
-                                // Unblock pane
-                                $scope.processing = false;
+                            ActionService.configure($scope.currentAction).$promise
+                                .then(function (res) {
                                 $scope.currentAction.crateStorage = res.crateStorage;
                                 $scope.processConfiguration();
+                            })
+                                .catch(function () {
+                                alert('Error while retrieving configuration.');
+                            })
+                                .finally(function () {
+                                // Unblock pane
+                                $scope.processing = false;
                             });
                         }
                         ;
                         function processConfiguration() {
                             // Check if authentication is required.
                             if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, 'Standard Authentication')) {
-                                var isAuthResult = ActionService.isAuthenticated({
-                                    activityTemplateId: $scope.currentAction.activityTemplateId
-                                });
-                                isAuthResult
-                                    .$promise
-                                    .then(function (res) {
-                                    if (res.authenticated) {
-                                        loadConfiguration();
-                                        return;
-                                    }
-                                    var authCrate = crateHelper
-                                        .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
-                                    var authMS = angular.fromJson(authCrate.contents);
-                                    // Dockyard auth mode.
-                                    if (authMS.Mode == 1) {
-                                        $scope.$emit(MessageType[MessageType.PaneConfigureAction_InternalAuthentication], new InternalAuthenticationArgs($scope.currentAction.activityTemplateId));
-                                    }
-                                    else {
-                                        // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                                        $scope.$emit(MessageType[MessageType.PaneConfigureAction_ExternalAuthentication], new ExternalAuthenticationArgs($scope.currentAction.activityTemplateId));
-                                    }
-                                });
+                                var authCrate = crateHelper
+                                    .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
+                                var authMS = angular.fromJson(authCrate.contents);
+                                // Dockyard auth mode.
+                                if (authMS.Mode == 1) {
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_InternalAuthentication], new InternalAuthenticationArgs($scope.currentAction.activityTemplateId));
+                                }
+                                else {
+                                    // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ExternalAuthentication], new ExternalAuthenticationArgs($scope.currentAction.activityTemplateId));
+                                }
                                 return;
                             }
                             $scope.currentAction.configurationControls =

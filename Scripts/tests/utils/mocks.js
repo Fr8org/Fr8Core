@@ -11,8 +11,8 @@ var dockyard;
                 //Creates a mock for ProcessBuilderController $scope
                 Factory.GetProcessBuilderScope = function (rootScope) {
                     var scope = rootScope.$new();
-                    scope.processTemplateId = 0;
-                    scope.processNodeTemplates = null;
+                    scope.routeId = 0;
+                    scope.subroutes = null;
                     scope.fields = null;
                     return scope;
                 };

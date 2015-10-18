@@ -12,7 +12,7 @@
     <div class="loginmodal-container">
         <h1>Create a new user</h1><br>
 
-        @using (Html.BeginForm("Register", "DockyardAccount", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        @using (Html.BeginForm("ProcessRegistration", "DockyardAccount", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
         {
             @Html.AntiForgeryToken()
             @Html.ValidationSummary()

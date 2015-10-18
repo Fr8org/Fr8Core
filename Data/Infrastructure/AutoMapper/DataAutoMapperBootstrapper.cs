@@ -20,24 +20,24 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<JToken, string>().ConvertUsing<JTokenToStringConverter>();
 
             Mapper.CreateMap<ActionDO, ActionDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-            .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
-            .ForMember(a => a.ParentActivityId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
-            .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(ad.CrateStorage)))
-            .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
-            .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
+                .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
+                .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
+                .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(ad.CrateStorage)))
+                .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
+                .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
             .ForMember(a => a.ChildrenActions, opts => opts.ResolveUsing(ad => ad.RouteNodes.OfType<ActionDO>()))
-            .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate));
+                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate));
 
 
             Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-               .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
-               .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentActivityId))
-               .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
-               .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
+                .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
+                .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
+                .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
+                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                .ForMember(a => a.RouteNodes, opts => opts.ResolveUsing(ad => MapActions(ad.ChildrenActions)))
-               .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
-               .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
-               .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId));
+                .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
+                .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
+                .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId));
 
             Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
