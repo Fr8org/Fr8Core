@@ -83,12 +83,10 @@ namespace pluginSlack.Actions
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            UpdateAuthenticationCrate(curActionDTO, AuthenticationMode.ExternalMode);
-            if (IsEmptyAuthToken(curActionDTO))
-                return curActionDTO;
-
-            return await ProcessConfigurationRequest(curActionDTO,
+            if (ValidateAuthentication(curActionDTO, AuthenticationMode.ExternalMode))
+                return await ProcessConfigurationRequest(curActionDTO,
                 x => ConfigurationEvaluator(x));
+            return curActionDTO;
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
