@@ -20,6 +20,7 @@ namespace Data.Repositories
     }
     public interface IContainerRepository : IGenericRepository<ContainerDO>
     {
+        
     }
 
 

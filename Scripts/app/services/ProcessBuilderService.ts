@@ -53,10 +53,11 @@ module dockyard.services {
         getAvailableActivities: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
     }
 
+  
+
     /*
         ProcessTemplateDTO CRUD service.
     */
-
 
     app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
         <IRouteService>$resource('/api/route/:id', { id: '@id' },
@@ -442,4 +443,6 @@ module dockyard.services {
         (CriteriaService, SubrouteService, $q) => {
             return new CriteriaServiceWrapper(CriteriaService, SubrouteService, $q)
         }]);
+
+   
 }

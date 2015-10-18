@@ -41,7 +41,7 @@ namespace pluginDocuSign.Services
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Envelope" + curDocuSignEnvelopeInfo.EnvelopeStatus.Status,
-                ProcessDOId = "",
+                ContainerDoId = "",
                 EventPayload = ExtractEventPayload(curExternalEvents).ToList(),
                 ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.ExternalAccountId
             };
