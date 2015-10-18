@@ -4,6 +4,7 @@
         id: number;
         isTempId: boolean;
         name: string;
+        label: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
         activityTemplateId: number;
@@ -27,6 +28,7 @@
                 isTempId: this.isTempId,
                 parentRouteNodeId: this.parentRouteNodeId,
                 name: this.name,
+                label: this.label,
                 crateStorage: this.crateStorage,
                 configurationControls: this.configurationControls
             };
@@ -35,7 +37,7 @@
         clone(): ActionDTO {
             var result = new ActionDTO(this.parentRouteNodeId, this.id, this.isTempId);
             result.name = this.name;
-
+            result.name = this.label;
             return result;
         }
 
@@ -51,6 +53,7 @@
             result.id = dataObject.id;
             result.isTempId = dataObject.isTempId;
             result.name = dataObject.name;
+            result.label = dataObject.label;
             result.parentRouteNodeId = dataObject.parentRouteNodeId;
             return result;
         }
