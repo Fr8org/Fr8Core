@@ -16,7 +16,7 @@ using Data.Interfaces.ManifestSchemas;
 using Utilities.Configuration.Azure;
 using PluginBase.Infrastructure;
 
-namespace PluginUtilities.BaseClasses
+namespace PluginBase.BaseClasses
 {
     //this method allows a specific Action to inject its own evaluation function into the 
     //standard ProcessConfigurationRequest

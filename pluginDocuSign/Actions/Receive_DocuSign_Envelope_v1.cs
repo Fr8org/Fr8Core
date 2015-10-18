@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using Core.Enums;
 using pluginDocuSign.DataTransferObjects;
 using pluginDocuSign.Services;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 
 namespace pluginDocuSign.Actions
 {

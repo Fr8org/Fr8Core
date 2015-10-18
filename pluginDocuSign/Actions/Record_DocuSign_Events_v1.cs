@@ -8,7 +8,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using PluginBase.Infrastructure;
 using pluginDocuSign.Infrastructure;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 
 namespace pluginDocuSign.Actions
 {

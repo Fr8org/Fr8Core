@@ -2,7 +2,7 @@
 using System.Web.Http;
 using pluginDocuSign.Interfaces;
 using pluginDocuSign.Services;
-using PluginUtilities.Infrastructure;
+using PluginBase.Infrastructure;
 
 namespace pluginDocuSign.Controllers
 {
