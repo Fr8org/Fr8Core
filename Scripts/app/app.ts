@@ -74,11 +74,33 @@ app.controller('FooterController', ['$scope', function ($scope) {
 /* Setup Rounting For All Pages */
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
 
+    // Install a HTTP request interceptor that causes 'Processing...' message to display
+    $httpProvider.interceptors.push(($q: ng.IQService) => {
+        return {
+            request: function (config: ng.IRequestConfig) {
+                // Show page spinner If there is no request parameter suppressSpinner.
+                if (config && config.params && config.params['suppressSpinner']) {
+                    // We don't want this parameter to be sent to backend so remove it if found.
+                    delete (config.params.suppressSpinner);
+                }
+                else {
+                    Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
+                }
+                return config;
+            },
+            response: function (config: ng.IRequestConfig) {
+                Metronic.stopPageLoading();
+                return config;
+            },
+            responseError: function (config: ng.IRequestConfig) {
+                Metronic.stopPageLoading();
+                return $q.reject(config);
+            }
+        }
+    });
+
     // Redirect any unmatched url
     $urlRouterProvider.otherwise("/myaccount");
-
-    // Install a HTTP request interceptor that causes 'Processing...' message to display
-    $httpProvider.interceptors.push('spinnerHttpInterceptor');
 
     $stateProvider
         .state('myaccount', {
@@ -149,26 +171,3 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
 app.run(["$rootScope", "settings", "$state", function ($rootScope, settings, $state) {
     $rootScope.$state = $state; // state to be accessed from view
 }]);
-
-app.constant('spinnerHttpInterceptor', {
-    request: function (config: ng.IRequestConfig) {
-        // Show page spinner If there is no request parameter suppressSpinner.
-        if (config && config.params && config.params['suppressSpinner']) {
-            // We don't want this parameter to be sent to backend so remove it if found.
-            delete (config.params.suppressSpinner);
-        }
-        else{
-            Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
-        }
-        return config;
-    },
-    response: function (config: ng.IRequestConfig) {
-        Metronic.stopPageLoading();
-        return config;
-    },
-    responseError: function (config: ng.IRequestConfig) {
-        Metronic.stopPageLoading();
-        return config;
-    }
-});
-
