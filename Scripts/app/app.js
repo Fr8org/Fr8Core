@@ -61,25 +61,47 @@ app.controller('FooterController', ['$scope', function ($scope) {
     }]);
 /* Setup Rounting For All Pages */
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider, $urlRouterProvider, $httpProvider) {
+        // Install a HTTP request interceptor that causes 'Processing...' message to display
+        $httpProvider.interceptors.push(function ($q) {
+            return {
+                request: function (config) {
+                    // Show page spinner If there is no request parameter suppressSpinner.
+                    if (config && config.params && config.params['suppressSpinner']) {
+                        // We don't want this parameter to be sent to backend so remove it if found.
+                        delete (config.params.suppressSpinner);
+                    }
+                    else {
+                        Metronic.startPageLoading({ animate: true });
+                    }
+                    return config;
+                },
+                response: function (config) {
+                    Metronic.stopPageLoading();
+                    return config;
+                },
+                responseError: function (config) {
+                    Metronic.stopPageLoading();
+                    return $q.reject(config);
+                }
+            };
+        });
         // Redirect any unmatched url
         $urlRouterProvider.otherwise("/myaccount");
-        // Install a HTTP request interceptor that causes 'Processing...' message to display
-        $httpProvider.interceptors.push('spinnerHttpInterceptor');
         $stateProvider
             .state('myaccount', {
             url: "/myaccount",
             templateUrl: "/AngularTemplate/MyAccountPage",
             data: { pageTitle: 'My Account', pageSubTitle: '' }
         })
-            .state('processTemplates', {
+            .state('routeList', {
             url: "/processes",
-            templateUrl: "/AngularTemplate/ProcessTemplateList",
-            data: { pageTitle: 'Routes', pageSubTitle: 'This page displays all routes' }
+            templateUrl: "/AngularTemplate/RouteList",
+            data: { pageTitle: 'Routes', pageSubTitle: 'This page displays all process templates' }
         })
-            .state('processTemplate', {
+            .state('routeForm', {
             url: "/processes/{id}",
-            templateUrl: "/AngularTemplate/ProcessTemplateForm",
-            data: { pageTitle: 'Routes', pageSubTitle: 'Add a new Route' },
+            templateUrl: "/AngularTemplate/RouteForm",
+            data: { pageTitle: 'Route', pageSubTitle: 'Add a new Process Template' },
         })
             .state('processBuilder', {
             url: "/processes/{id}/builder",
@@ -96,10 +118,10 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             templateUrl: "/AngularTemplate/ShowFacts",
             data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
         })
-            .state('processTemplateDetails', {
+            .state('routeDetails', {
             url: "/processes/{id}/details",
-            templateUrl: "/AngularTemplate/ProcessTemplateDetails",
-            data: { pageTitle: 'Process Template Details', pageSubTitle: '' }
+            templateUrl: "/AngularTemplate/RouteDetails",
+            data: { pageTitle: 'Route Details', pageSubTitle: '' }
         })
             .state('managefiles', {
             url: "/managefiles",
@@ -131,25 +153,4 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
 app.run(["$rootScope", "settings", "$state", function ($rootScope, settings, $state) {
         $rootScope.$state = $state; // state to be accessed from view
     }]);
-app.constant('spinnerHttpInterceptor', {
-    request: function (config) {
-        // Show page spinner If there is no request parameter suppressSpinner.
-        if (config && config.params && config.params['suppressSpinner']) {
-            // We don't want this parameter to be sent to backend so remove it if found.
-            delete (config.params.suppressSpinner);
-        }
-        else {
-            Metronic.startPageLoading({ animate: true });
-        }
-        return config;
-    },
-    response: function (config) {
-        Metronic.stopPageLoading();
-        return config;
-    },
-    responseError: function (config) {
-        Metronic.stopPageLoading();
-        return config;
-    }
-});
 //# sourceMappingURL=app.js.map

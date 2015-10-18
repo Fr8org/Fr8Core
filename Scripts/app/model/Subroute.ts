@@ -1,8 +1,8 @@
 ﻿module dockyard.model {
-    export class ProcessNodeTemplateDTO {
+    export class SubrouteDTO {
         public id: number;
         public isTempId: boolean;
-        public processTemplateId: number;
+        public routeId: number;
         public name: string;
         public criteria: CriteriaDTO;
         public actions: Array<ActionDTO>;
@@ -10,20 +10,20 @@
         constructor(
             id: number,
             isTempId: boolean,
-            processTemplateId: number,
+            routeId: number,
             name: string
         ) {
             this.id = id;
             this.isTempId = isTempId;
-            this.processTemplateId = processTemplateId;
+            this.routeId = routeId;
             this.name = name;
 
             this.criteria = null;
             this.actions = [];
         }
 
-        clone(): ProcessNodeTemplateDTO {
-            var result = new ProcessNodeTemplateDTO(this.id, this.isTempId, this.processTemplateId, this.name);
+        clone(): SubrouteDTO {
+            var result = new SubrouteDTO(this.id, this.isTempId, this.routeId, this.name);
             result.criteria = this.criteria !== null ? this.criteria.clone() : null;
             angular.forEach(this.actions, function (it) { result.actions.push(it.clone()); });
 
@@ -33,15 +33,15 @@
         // Create and return empty ProcessNodeTemplate object,
         // if user selects just newly created Criteria diamond on WorkflowDesigner pane.
         static create(
-            processTemplateId,
-            processNodeTemplateId,
-            criteriaId): model.ProcessNodeTemplateDTO {
+            routeId,
+            subrouteId,
+            criteriaId): model.SubrouteDTO {
 
             // Create new ProcessNodeTemplate object with default name and provided temporary id.
-            var processNodeTemplate = new model.ProcessNodeTemplateDTO(
-                processNodeTemplateId,
+            var subroute = new model.SubrouteDTO(
+                subrouteId,
                 true,
-                processTemplateId,
+                routeId,
                 'New criteria'
                 );
 
@@ -49,13 +49,13 @@
             var criteria = new model.CriteriaDTO(
                 criteriaId,
                 true,
-                processNodeTemplate.id,
+                subroute.id,
                 model.CriteriaExecutionType.WithConditions
                 );
 
-            processNodeTemplate.criteria = criteria;
+            subroute.criteria = criteria;
 
-            return processNodeTemplate;
+            return subroute;
         };
     }
 }

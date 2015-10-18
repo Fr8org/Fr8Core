@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using fr8.Microsoft.Azure;
 
 namespace Utilities
 {
@@ -42,7 +41,7 @@ namespace Utilities
             }
             else
             {
-                stringValue = CloudConfigurationManager.GetSetting(key);
+                stringValue = Configuration.Azure.CloudConfigurationManager.GetSetting(key);
 
                 if (String.IsNullOrEmpty(stringValue))
                 {

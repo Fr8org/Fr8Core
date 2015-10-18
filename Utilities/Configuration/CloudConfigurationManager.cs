@@ -16,7 +16,7 @@
 using System;
 using System.Globalization;
 
-namespace fr8.Microsoft.Azure
+namespace Utilities.Configuration.Azure
 {
     /// <summary>
     /// Configuration manager for accessing Microsoft Azure sett    ings.

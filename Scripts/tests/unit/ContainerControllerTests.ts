@@ -24,7 +24,7 @@ module dockyard.tests.controller {
         
         it("Should get a Container successfully", function () {
             $.getJSON(endpoint, { id: 1})
-                .done((data: interfaces.IProcessTemplateVM, status: string) => {
+                .done((data: interfaces.IContainerVM, status: string) => {
                     expect(data).not.toBe(null);
                     expect(status).toBe("success");
                     expect(data.name).toBe(fx.newContainier.name);
@@ -33,7 +33,7 @@ module dockyard.tests.controller {
 
         it("Should get Container list successfully", function () {
             $.getJSON(endpoint)
-                .done((data: interfaces.IProcessTemplateVM, status: string) => {
+                .done((data: interfaces.IContainerVM, status: string) => {
                     expect(data).not.toBe(null);
                     expect(status).toBe("success");
                 });

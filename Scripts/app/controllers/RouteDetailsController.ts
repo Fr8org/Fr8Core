@@ -3,15 +3,15 @@
 module dockyard.controllers {
     'use strict';
 
-    export interface IProcessTemplateDetailsScope extends ng.IScope {
-        ptvm: interfaces.IProcessTemplateVM;
+    export interface IRouteDetailsScope extends ng.IScope {
+        ptvm: interfaces.IRouteVM;
         submit: (isValid: boolean) => void;
         errorMessage: string;
         processBuilder: any,
         id: string
     }
 
-    class ProcessTemplateDetailsController {
+    class RouteDetailsController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
@@ -19,23 +19,23 @@ module dockyard.controllers {
         public static $inject = [
             '$rootScope',
             '$scope',
-            'ProcessTemplateService',
+            'RouteService',
             '$stateParams'
         ];
 
         constructor(
             private $rootScope: interfaces.IAppRootScope,
-            private $scope: IProcessTemplateDetailsScope,
-            private ProcessTemplateService: services.IProcessTemplateService,
+            private $scope: IRouteDetailsScope,
+            private RouteService: services.IRouteService,
             private $stateParams: any) {
             
             //Load detailed information
             $scope.id = $stateParams.id;
             if (/^[0-9]+$/.test($scope.id) && parseInt($scope.id) > 0) {
-                $scope.ptvm = ProcessTemplateService.getFull({ id: $stateParams.id });
+                $scope.ptvm = RouteService.getFull({ id: $stateParams.id });
             }
         }
     }
 
-    app.controller('ProcessTemplateDetailsController', ProcessTemplateDetailsController);
+    app.controller('RouteDetailsController', RouteDetailsController);
 }

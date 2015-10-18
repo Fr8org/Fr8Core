@@ -10,7 +10,7 @@ using StructureMap;
 using Core.Managers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 using pluginAzureSqlServer.Interfaces;
 
 namespace pluginAzureSqlServer.Services

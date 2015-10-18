@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Entities;
 using Newtonsoft.Json.Linq;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
@@ -14,6 +15,9 @@ namespace Core.Managers
         CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0);
         T GetContents<T>(CrateDTO crate);
         StandardConfigurationControlsCM GetStandardConfigurationControls(CrateDTO crate);
+        StandardDesignTimeFieldsCM GetStandardDesignTimeFields(CrateDTO crate);
+        IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
+        IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO);
 
         IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName);
         CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode);
@@ -28,7 +32,18 @@ namespace Core.Managers
         void RemoveCrateByManifestType(IList<CrateDTO> crates, string manifestType);
         void RemoveCrateByLabel(IList<CrateDTO> crates, string label);
 
+        void ReplaceCratesByManifestType(IList<CrateDTO> sourceCrates, string manifestType,
+                                         IList<CrateDTO> newCratesContent);
+
+        void ReplaceCratesByLabel(IList<CrateDTO> sourceCrates, string label, IList<CrateDTO> newCratesContent);
+
         //StandardPayloadDataMS CreatePayloadDataCrate(string curObjectType);
         CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
+
+        void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
+        void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO);
+        void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO);
+        StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO);
+        List<CrateDTO> GetCrates(ActionDO curActionDO);
     }
 }

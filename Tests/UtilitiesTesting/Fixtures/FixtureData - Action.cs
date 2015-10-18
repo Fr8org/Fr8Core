@@ -477,7 +477,7 @@ namespace UtilitiesTesting.Fixtures
                 _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields)),
             };
 
-            _action.AddCrate(actionDo, crateConfiguration);
+            _crate.AddCrate(actionDo, crateConfiguration);
 
             return actionDo;
         }

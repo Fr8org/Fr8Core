@@ -16,7 +16,7 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort>44301</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
@@ -321,7 +321,7 @@
     <Compile Include="Controllers\CriteriaController.cs" />
     <Compile Include="Controllers\DockyardEventController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
-    <Compile Include="Controllers\ActivitiesController.cs" />
+    <Compile Include="Controllers\RouteNodesController.cs" />
     <Compile Include="Controllers\ExternalAuthController.cs" />
     <Compile Include="Controllers\FilesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
@@ -754,6 +754,7 @@
     <Content Include="Views\AngularTemplate\TextArea.cshtml" />
     <Content Include="Views\AngularTemplate\FieldList.cshtml" />
     <Content Include="Views\AngularTemplate\ContainerList.cshtml" />
+    <Content Include="Views\AngularTemplate\ConfirmationModal.cshtml" />
     <Content Include="_PowerShellScripts\RunFrontEndTests-VSO.ps1" />
     <Content Include="Views\AngularTemplate\ContainerDetails.cshtml" />
     <Content Include="Views\DockyardAccount\_HeaderPartial.cshtml" />
@@ -767,7 +768,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SelectActionController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateDetailsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\RouteDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ReportFactController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ReportIncidentController.ts" />
     <Content Include="Scripts\lib\jquery.blockui.min.js" />
@@ -788,7 +789,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ActionNameFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ContainerState.ts" />
-    <TypeScriptCompile Include="Scripts\app\filters\ProcessTemplateState.ts" />
+    <TypeScriptCompile Include="Scripts\app\filters\RouteState.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IUser.ts" />
@@ -806,15 +807,16 @@
     <TypeScriptCompile Include="Scripts\app\model\ActivityTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FieldMappingSettings.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncidentDTO.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\Subroute.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ContainerDTO.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\ProcessTemplate.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\Route.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessBuilderState.ts" />
     <TypeScriptCompile Include="Scripts\app\model\User.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ContainerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\CrateHelper.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManageFileService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ReportService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\UIHelperService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UserService.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\respond.js" />
@@ -842,14 +844,14 @@
     <Content Include="Scripts\_legacy\about-page.js" />
     <TypeScriptCompile Include="Scripts\app\app.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessBuilderController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\RouteListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilterPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\PaneWorkflowDesigner.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\QueryBuilderWidget.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateFormController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\RouteFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\directives.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
@@ -3972,8 +3974,7 @@
     <Content Include="Themes\scheduler_white\tree_nochildren.png" />
     <Content Include="UnauthorizedRequest.html" />
     <Compile Include="ViewModels\EventWindowVM.cs" />
-    <Content Include="Views\AngularTemplate\ProcessTemplateForm.cshtml" />
-    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteForm.cshtml" />
     <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
     <Content Include="tsd.json" />
     <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
@@ -3988,7 +3989,7 @@
     <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
     <Content Include="Views\AngularTemplate\RadioButtonOption.cshtml" />
     <Content Include="Views\AngularTemplate\TextBlock.cshtml" />
-    <Content Include="Views\AngularTemplate\ProcessTemplateDetails.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
     <Content Include="Web.config">
@@ -4054,9 +4055,8 @@
     <Content Include="Views\AngularTemplate\ShowIncidents.cshtml" />
     <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
     <Content Include="Views\AngularTemplate\RoutingControl.cshtml" />
-    <Content Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteList.cshtml" />
     <Content Include="Views\AngularTemplate\MyAccountPage.cshtml" />
-    <None Include="Views\Dashboard\Index.cshtml.bak" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\Email\Show.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
@@ -4125,10 +4125,6 @@
     <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Configuration\Configuration.csproj">
-      <Project>{d8f7f734-21ce-4277-a14f-ebdde71dff0c}</Project>
-      <Name>Configuration</Name>
-    </ProjectReference>
     <ProjectReference Include="Core\Core.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Core</Name>

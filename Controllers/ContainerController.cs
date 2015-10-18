@@ -64,11 +64,11 @@ namespace Web.Controllers
 
         [Route("launch")]
         [HttpPost]
-        public async Task<IHttpActionResult> Launch(int processTemplateId)
+        public async Task<IHttpActionResult> Launch(int routeId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplateDO = uow.RouteRepository.GetByKey(processTemplateId);
+                var processTemplateDO = uow.RouteRepository.GetByKey(routeId);
                 await _container.Launch(processTemplateDO, null);
 
                 return Ok();
