@@ -14,18 +14,16 @@ namespace pluginDocuSign.Actions
 {
     public class Record_DocuSign_Events_v1 : BasePluginAction
     {
+        /// <summary>
+        /// //For this action, both Initial and Followup configuration requests are same. Hence it returns Initial config request type always.
+        /// </summary>
+        /// <param name="curActionDTO"></param>
+        /// <returns></returns>
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (IsEmptyAuthToken(curActionDTO))
-            {
-                AppendDockyardAuthenticationCrate(curActionDTO, AuthenticationMode.InternalMode);
-                return curActionDTO;
-            }
-
-            RemoveAuthenticationCrate(curActionDTO);
-
-            //For this action, both Initial and Followup configuration requests are same. Hence it returns Initial config request type always.
-            return await ProcessConfigurationRequest(curActionDTO, dto => ConfigurationRequestType.Initial);
+            if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
+                return await ProcessConfigurationRequest(curActionDTO, dto => ConfigurationRequestType.Initial);
+            return curActionDTO;
         }
 
         protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)

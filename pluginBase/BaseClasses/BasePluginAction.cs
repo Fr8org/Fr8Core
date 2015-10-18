@@ -112,6 +112,20 @@ namespace PluginBase.BaseClasses
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
         }
 
+        protected bool ValidateAuthentication(ActionDTO curActionDTO, AuthenticationMode curAuthenticationMode)
+        {
+            if (IsEmptyAuthToken(curActionDTO))
+            {
+                AppendDockyardAuthenticationCrate(
+                    curActionDTO,
+                    curAuthenticationMode);
+                return false;
+            }
+            else
+                RemoveAuthenticationCrate(curActionDTO);
+            return true;
+        }
+
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
