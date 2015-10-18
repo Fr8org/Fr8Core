@@ -33,10 +33,10 @@ namespace pluginTwilio.Controllers
         }
         
         [HttpPost]
-        [Route("execute")]
-        public async Task<PayloadDTO> Execute(ActionDTO curActionDTO)
+        [Route("run")]
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
-            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDTO);
+            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Run", curActionDTO);
         }
     }
 }

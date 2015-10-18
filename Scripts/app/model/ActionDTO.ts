@@ -1,9 +1,10 @@
 ﻿module dockyard.model {
     export class ActionDTO implements interfaces.IActionDTO {
-        parentActivityId: number;
+        parentRouteNodeId: number;
         id: number;
         isTempId: boolean;
         name: string;
+        label: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
         activityTemplateId: number;
@@ -15,7 +16,7 @@
             id: number,
             isTempId: boolean
         ) {
-            this.parentActivityId = parentActivityId;
+            this.parentRouteNodeId = parentActivityId;
             this.id = id;
             this.isTempId = isTempId;
             this.configurationControls = new ControlsList();
@@ -25,17 +26,18 @@
             return <interfaces.IActionVM> {
                 id: this.id,
                 isTempId: this.isTempId,
-                parentActivityId: this.parentActivityId,
+                parentRouteNodeId: this.parentRouteNodeId,
                 name: this.name,
+                label: this.label,
                 crateStorage: this.crateStorage,
                 configurationControls: this.configurationControls
             };
         }
 
         clone(): ActionDTO {
-            var result = new ActionDTO(this.parentActivityId, this.id, this.isTempId);
+            var result = new ActionDTO(this.parentRouteNodeId, this.id, this.isTempId);
             result.name = this.name;
-
+            result.name = this.label;
             return result;
         }
 
@@ -51,7 +53,8 @@
             result.id = dataObject.id;
             result.isTempId = dataObject.isTempId;
             result.name = dataObject.name;
-            result.parentActivityId = dataObject.parentActivityId;
+            result.label = dataObject.label;
+            result.parentRouteNodeId = dataObject.parentRouteNodeId;
             return result;
         }
     }

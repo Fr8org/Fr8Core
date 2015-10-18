@@ -25,7 +25,7 @@ namespace pluginSlack.Actions
             _slackIntegration = new SlackIntegration();
         }
 
-        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
             if (IsEmptyAuthToken(actionDto))
             {
@@ -116,7 +116,7 @@ namespace pluginSlack.Actions
             var oauthToken = curActionDTO.AuthToken.Token;
             var channels = await _slackIntegration.GetChannelList(oauthToken);
 
-            var crateControls = CreateConfigurationCrate();
+            var crateControls = PackCrate_ConfigurationControls();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateAvailableFields = await CreateAvailableFieldsCrate(curActionDTO);
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
@@ -126,7 +126,7 @@ namespace pluginSlack.Actions
             return curActionDTO;
         }
 
-        private CrateDTO CreateConfigurationCrate()
+        private CrateDTO PackCrate_ConfigurationControls()
         {
             var fieldSelectChannel = new DropDownListControlDefinitionDTO()
             {

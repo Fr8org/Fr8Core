@@ -31,6 +31,7 @@ using System.Web.Http;
 using FluentValidation.WebApi;
 using System.Net.Http.Formatting;
 using Newtonsoft.Json.Serialization;
+using Web.ExceptionHandling;
 
 namespace Web
 {

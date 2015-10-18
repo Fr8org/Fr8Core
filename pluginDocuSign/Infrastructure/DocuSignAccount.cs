@@ -1,7 +1,7 @@
 ﻿using DocuSign.Integrations.Client;
 using Newtonsoft.Json.Linq;
 using System.Configuration;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 
 namespace pluginDocuSign.Infrastructure
 {

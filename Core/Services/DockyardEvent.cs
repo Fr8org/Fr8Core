@@ -1,14 +1,15 @@
-﻿using Core.Interfaces;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StructureMap;
+using Core.Interfaces;
+using Core.Managers;
+using Data.Entities;
 using Data.Exceptions;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
 
@@ -17,14 +18,14 @@ namespace Core.Services
     public class DockyardEvent : IDockyardEvent
     {
         private readonly IRoute _route;
-        private readonly Core.Interfaces.IContainerService _process;
-        private readonly ICrate _crate;
+        private readonly IContainerService _process;
+        private readonly ICrateManager _crate;
 
         public DockyardEvent()
         {
             _route = ObjectFactory.GetInstance<IRoute>();
-            _process = ObjectFactory.GetInstance<Core.Interfaces.IContainerService>();
-            _crate = ObjectFactory.GetInstance<ICrate>();
+            _process = ObjectFactory.GetInstance<IContainerService>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         //public void ProcessInbound(string userID, EventReportMS curEventReport)

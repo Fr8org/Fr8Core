@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
-using Core.Interfaces;
-using Core.Services;
-using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using StructureMap;
+using Core.Interfaces;
+using Core.Managers;
+using Core.Services;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 
 namespace UtilitiesTesting.Fixtures
@@ -24,7 +25,7 @@ namespace UtilitiesTesting.Fixtures
             fieldDTO.Label = "SQL Connection String";
 
             CrateStorageDTO curCrateStorage = new CrateStorageDTO();
-            ICrate crate = ObjectFactory.GetInstance<ICrate>();
+            ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
             curCrateStorage.CrateDTO.Add(crate.CreateStandardConfigurationControlsCrate("Configuration Data for WriteToAzureSqlServer", fieldDTO));
             return curCrateStorage;
         }
@@ -40,7 +41,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static CrateStorageDTO TestCrateStorage()
         {
-            ICrate crate = ObjectFactory.GetInstance<ICrate>();
+            ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
             var curConfigurationStore = new CrateStorageDTO
             {
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO

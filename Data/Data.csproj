@@ -243,11 +243,11 @@
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDescriptionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FullRouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SubrouteDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\RouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
@@ -305,6 +305,10 @@
     <Compile Include="Migrations\201510151001212_Rename_Activity_To_RouteNode_Migration.cs" />
     <Compile Include="Migrations\201510151001212_Rename_Activity_To_RouteNode_Migration.Designer.cs">
       <DependentUpon>201510151001212_Rename_Activity_To_RouteNode_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.cs" />
+    <Compile Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.Designer.cs">
+      <DependentUpon>201510152143047_Add_Label_Property_To_ActionTemplate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -502,10 +506,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Configuration\Configuration.csproj">
-      <Project>{d8f7f734-21ce-4277-a14f-ebdde71dff0c}</Project>
-      <Name>Configuration</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}</Project>
       <Name>Utilities</Name>
@@ -544,6 +544,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510151001212_Rename_Activity_To_RouteNode_Migration.resx">
       <DependentUpon>201510151001212_Rename_Activity_To_RouteNode_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.resx">
+      <DependentUpon>201510152143047_Add_Label_Property_To_ActionTemplate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

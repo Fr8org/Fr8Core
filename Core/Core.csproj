@@ -189,8 +189,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\SearchDirection.cs" />
     <Compile Include="Enums\GetCrateDirection.cs" />
     <Compile Include="Exceptions\AmbiguityException.cs" />
+    <Compile Include="Exceptions\AuthenticationExeception.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Interfaces\CrateManifests.cs" />
@@ -198,7 +200,7 @@
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
-    <Compile Include="Interfaces\ICrate.cs" />
+    <Compile Include="Managers\ICrateManager.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
     <Compile Include="Interfaces\IDockyardEvent.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
@@ -273,7 +275,7 @@
     <Compile Include="Services\ActivityTemplate.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
-    <Compile Include="Services\Crate.cs" />
+    <Compile Include="Managers\CrateManager.cs" />
     <Compile Include="Services\Criteria.cs" />
     <Compile Include="Services\Fr8Account.cs" />
     <Compile Include="Services\DockyardEvent.cs" />
@@ -294,10 +296,6 @@
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Configuration\Configuration.csproj">
-      <Project>{D8F7F734-21CE-4277-A14F-EBDDE71DFF0C}</Project>
-      <Name>Configuration</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>

@@ -1,13 +1,14 @@
-﻿using Core.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using Core.Interfaces;
+using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 using Data.States;
 using Newtonsoft.Json;
 using StructureMap;
-using System.Collections.Generic;
-using System;
-using Data.Interfaces.ManifestSchemas;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -442,7 +443,7 @@ namespace UtilitiesTesting.Fixtures
         {
             string templateId = "58521204-58af-4e65-8a77-4f4b51fef626";
             var actionTemplate = ActionTemplate();
-            ICrate _crate = ObjectFactory.GetInstance<ICrate>();
+            ICrateManager _crate = ObjectFactory.GetInstance<ICrateManager>();
             IAction _action = ObjectFactory.GetInstance<IAction>();
 
             var fieldSelectDockusignTemplate = new DropDownListControlDefinitionDTO()
@@ -476,7 +477,7 @@ namespace UtilitiesTesting.Fixtures
                 _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields)),
             };
 
-            _action.AddCrate(actionDo, crateConfiguration);
+            _crate.AddCrate(actionDo, crateConfiguration);
 
             return actionDo;
         }

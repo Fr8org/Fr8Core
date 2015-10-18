@@ -88,6 +88,29 @@
 
 /* Process Builder */
 
+.designer-header {
+    background-color: #58b8a9;
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.process-template-name {
+    display: inline-block;
+    font-size: 24px;
+    font-weight: bold;
+    vertical-align: top;
+    min-width: 300px;
+}
+
+.switch-btn {
+    background-color: lightgrey;
+    width: 80px;
+}
+
+.switch-btn.active {
+    background-color: #428bca;
+}
+
 .process-builder-container {
     overflow-y: auto;
     white-space: nowrap;
@@ -110,14 +133,44 @@
     display: inline-block;
     height: 300px;
     margin: 10px;
-    padding: 5px;
+    
     vertical-align: top;
     width: 330px;
 }
 
 .action-name {
-    margin-top: 10px;
+    
     text-align: center;
+
+}
+
+
+
+.action-menu {
+    bottom: 5px;
+    position: absolute;
+    right: 5px;
+    color: white;
+}
+.action-menu:hover {
+    color: #bab7b7;
+}
+.action-header {
+    padding-top:15px;
+    padding-right:10px;
+    background-color:#1eac48;
+    margin-top: 0px;
+    padding-bottom: 10px;
+    border-bottom: 1px;
+    margin-bottom: 10px;
+    text-align: center;
+    position: relative;
+}
+.action-header p{
+    
+    font-weight:800;
+    font-size:22px;
+    color: white;
 }
 
 .action-to-add {
@@ -131,6 +184,7 @@
 }
 
 .action .pane-configure-action {    
+    padding: 5px;
     height: 250px;
     display: block;
     width: 100%;
@@ -147,12 +201,29 @@
     vertical-align: top;
 }
 
+.select-action-category th {
+    background-color: #EBE9F1;
+}
+
+.select-action-category td, 
+.select-action-category th {
+    border: 1px solid #ddd;
+    padding: 5px;
+    width: 200px;
+}
+
+.select-action-category td:hover {
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
 .select-action-list {
     border: 2px solid black;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 200px;
 }
+
 
 .select-action-row {
     cursor: default;
@@ -229,3 +300,13 @@ input[type=radio] + div.nested-controls {
 input[type=radio]:checked + div.nested-controls {
     display: block;
 } 
+
+.page-header-top, .page-header-menu {
+    padding-left: 10px;
+    padding-right: 2%;
+}
+
+.page-header .container{
+    width: 100%;
+    margin: 0;
+}

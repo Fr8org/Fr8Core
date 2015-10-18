@@ -24,7 +24,8 @@ namespace pluginTwilio.Controllers
             var sendViaTwilioTemplate = new ActivityTemplateDO
             {
                 Name = "Send_Via_Twilio",
-                Category = ActivityCategory.fr8_Forwarder,
+                Label = "Send Via Twilio",
+                Category = ActivityCategory.Forwarders,
                 Version = "1",
                 Plugin = plugin
             };

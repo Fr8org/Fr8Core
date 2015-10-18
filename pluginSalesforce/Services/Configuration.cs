@@ -7,7 +7,7 @@ using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 
 namespace pluginSalesforce.Services
 {

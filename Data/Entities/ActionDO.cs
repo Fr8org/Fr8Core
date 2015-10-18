@@ -15,6 +15,7 @@ namespace Data.Entities
         public string Name { get; set; }
 
         public string CrateStorage { get; set; }
+        public string Label { get; set; }
 
         [ForeignKey("ActivityTemplate")]
         public int? ActivityTemplateId { get; set; }

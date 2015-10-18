@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Data.Entities;
 using Data.Interfaces;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
