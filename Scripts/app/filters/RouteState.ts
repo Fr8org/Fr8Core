@@ -5,14 +5,14 @@
 */
 module dockyard {
     'use strict';
-    app.filter('ProcessTemplateState', () =>
+    app.filter('RouteState', () =>
         function(input : number) : string {
             switch (input)
             {
-                case model.ProcessState.Active:
+                case model.RouteState.Active:
                     return "Active";
                     break;
-                case model.ProcessState.Inactive:
+                case model.RouteState.Inactive:
                     return "Inactive";
                     break;
                 default:

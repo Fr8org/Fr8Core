@@ -208,10 +208,12 @@ module dockyard.directives.paneConfigureAction {
                             $scope.currentAction.crateStorage = res.crateStorage;
                             $scope.processConfiguration();
                         })
+                        .catch(() => {
+                            alert('Error while retrieving configuration.');
+                        })
                         .finally(() => {
                             // Unblock pane
                             $scope.processing = false;
-                            alert('Error while retrieving configuration.');
                         });
                 };
 

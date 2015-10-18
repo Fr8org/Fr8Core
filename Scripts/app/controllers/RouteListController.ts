@@ -6,27 +6,27 @@
 module dockyard.controllers {
     'use strict';
 
-    export interface IProcessTemplateListScope extends ng.IScope {
-        executeProcessTemplate: (processTemplate: interfaces.IProcessTemplateVM) => void;
-        goToProcessTemplatePage: (processTemplate: interfaces.IProcessTemplateVM) => void;
-        deleteProcessTemplate: (processTemplate: interfaces.IProcessTemplateVM) => void;
+    export interface IRouteListScope extends ng.IScope {
+        executeProcessTemplate: (processTemplate: interfaces.IRouteVM) => void;
+        goToProcessTemplatePage: (processTemplate: interfaces.IRouteVM) => void;
+        deleteProcessTemplate: (processTemplate: interfaces.IRouteVM) => void;
         dtOptionsBuilder: any;
         dtColumnDefs: any;
-        activeProcessTemplates: Array<interfaces.IProcessTemplateVM>;
-        inActiveProcessTemplates: Array<interfaces.IProcessTemplateVM>;
+        activeProcessTemplates: Array<interfaces.IRouteVM>;
+        inActiveProcessTemplates: Array<interfaces.IRouteVM>;
     }
 
     /*
         List controller
     */
-    class ProcessTemplateListController {
+    class RouteListController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
         // See http://docs.angularjs.org/guide/di
         public static $inject = [
             '$scope',
-            'ProcessTemplateService',
+            'RouteService',
             '$modal',
             'DTOptionsBuilder',
             'DTColumnDefBuilder',
@@ -34,8 +34,8 @@ module dockyard.controllers {
         ];
 
         constructor(
-            private $scope: IProcessTemplateListScope,
-            private ProcessTemplateService: services.IProcessTemplateService,
+            private $scope: IRouteListScope,
+            private ProcessTemplateService: services.IRouteService,
             private $modal,
             private DTOptionsBuilder,
             private DTColumnDefBuilder,
@@ -51,9 +51,9 @@ module dockyard.controllers {
             $scope.dtColumnDefs = this.getColumnDefs(); 
             $scope.activeProcessTemplates = ProcessTemplateService.getbystatus({ id: null, status: 2 });   
             $scope.inActiveProcessTemplates = ProcessTemplateService.getbystatus({ id: null, status: 1 });
-            $scope.executeProcessTemplate = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.executeProcessTemplate);
-            $scope.goToProcessTemplatePage = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.goToProcessTemplatePage);
-            $scope.deleteProcessTemplate = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.deleteProcessTemplate);
+            $scope.executeProcessTemplate = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.executeProcessTemplate);
+            $scope.goToProcessTemplatePage = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.goToProcessTemplatePage);
+            $scope.deleteProcessTemplate = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.deleteProcessTemplate);
         }
 
         private getColumnDefs() {
@@ -79,7 +79,7 @@ module dockyard.controllers {
             this.$modal.open({
                 animation: true,
                 templateUrl: 'modalDeleteConfirmation',
-                controller: 'ProcessTemplateListController__DeleteConfirmation',
+                controller: 'RouteListController__DeleteConfirmation',
 
             }).result.then(() => {
                 //Deletion confirmed
@@ -96,14 +96,14 @@ module dockyard.controllers {
             });
         }
     }
-    app.controller('ProcessTemplateListController', ProcessTemplateListController);
+    app.controller('RouteListController', RouteListController);
 
     /*
         A simple controller for Delete confirmation dialog.
         Note: here goes a simple (not really a TypeScript) way to define a controller. 
         Not as a class but as a lambda function.
     */
-    app.controller('ProcessTemplateListController__DeleteConfirmation', ($scope: any, $modalInstance: any): void => {
+    app.controller('RouteListController__DeleteConfirmation', ($scope: any, $modalInstance: any): void => {
         $scope.ok = () => {
             $modalInstance.close();
         };

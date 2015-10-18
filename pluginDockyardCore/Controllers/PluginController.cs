@@ -42,6 +42,7 @@ namespace pluginDockyardCore.Controllers
             result.Add(new ActivityTemplateDO
             {
                 Name = "MapFields",
+                Label = "Map Fields",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
                 Version = "1"
@@ -50,6 +51,7 @@ namespace pluginDockyardCore.Controllers
             result.Add(new ActivityTemplateDO
             {
                 Name = "AddPayloadManually",
+                Label = "Add Payload Manually",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
                 Version = "1"

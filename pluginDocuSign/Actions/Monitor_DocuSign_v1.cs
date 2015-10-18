@@ -51,7 +51,7 @@ namespace pluginDocuSign.Actions
 
         private string GetSelectedTemplateId(ActionDTO curActionDTO)
         {
-            var controlsCrates = Action.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+            var controlsCrates = Crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
                 curActionDTO.CrateStorage);
             var curDocuSignTemplateId = Crate.GetElementByKey(controlsCrates, key: "Selected_DocuSign_Template",
                 keyFieldName: "name")
@@ -168,7 +168,7 @@ namespace pluginDocuSign.Actions
 			curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
             curActionDTO.CrateStorage.CrateDTO.Add(eventFields);
 
-            var configurationFields = Action.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
+            var configurationFields = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
 
             // Remove previously added crate of "Standard Event Subscriptions" schema
 
@@ -186,7 +186,7 @@ namespace pluginDocuSign.Actions
             if (!string.IsNullOrEmpty(curSelectedTemplateId))
             {
                 //get the existing DocuSign event fields
-                var curEventFieldsCrate = Action.GetCratesByLabel("DocuSign Event Fields", curActionDTO.CrateStorage).Single();
+                var curEventFieldsCrate = Crate.GetCratesByLabel("DocuSign Event Fields", curActionDTO.CrateStorage).Single();
                 var curEventFields = Crate.GetStandardDesignTimeFields(curEventFieldsCrate);
 
                 //set the selected template ID

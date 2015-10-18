@@ -87,7 +87,7 @@ namespace PluginUtilities.BaseClasses
         {
             var httpClient = new HttpClient();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/processes/"
+                + "api/containers/"
                 + processId.ToString();
 
             using (var response = await httpClient.GetAsync(url))
@@ -432,7 +432,7 @@ namespace PluginUtilities.BaseClasses
             CrateStorageDTO crateStorage,
             string fieldKey)
         {
-            var crates = Action.GetCratesByManifestType(
+            var crates = Crate.GetCratesByManifestType(
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, crateStorage);
 
             foreach (var crate in crates)

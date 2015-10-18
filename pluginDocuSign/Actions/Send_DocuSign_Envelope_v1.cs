@@ -120,7 +120,7 @@ namespace pluginDocuSign.Actions
 
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             // Try to find Configuration_Controls
-            var stdCfgControlMS = Action.GetConfigurationControls(curActionDO);
+            var stdCfgControlMS = Crate.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
             {
                 return ConfigurationRequestType.Initial;
@@ -199,7 +199,7 @@ namespace pluginDocuSign.Actions
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             
             // Try to find Configuration_Controls.
-            var stdCfgControlMS = Action.GetConfigurationControls(curActionDO);
+            var stdCfgControlMS = Crate.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
             {
                 return curActionDTO;

@@ -6,14 +6,14 @@
 module dockyard.controllers {
     'use strict';
 
-    export interface IProcessTemplateScope extends ng.IScope {
-        ptvm: interfaces.IProcessTemplateVM;
+    export interface IRouteScope extends ng.IScope {
+        ptvm: interfaces.IRouteVM;
         submit: (isValid: boolean) => void;
         errorMessage: string;
         processBuilder: any
     }
 
-    class ProcessTemplateFormController {
+    class RouteFormController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
@@ -21,15 +21,15 @@ module dockyard.controllers {
         public static $inject = [
             '$rootScope',
             '$scope',
-            'ProcessTemplateService',
+            'RouteService',
             '$stateParams',
             'StringService'
         ];
 
         constructor(
             private $rootScope: interfaces.IAppRootScope,
-            private $scope: IProcessTemplateScope,
-            private ProcessTemplateService: services.IProcessTemplateService,
+            private $scope: IRouteScope,
+            private RouteService: services.IRouteService,
             private $stateParams: any,
             private StringService: services.IStringService) {
 
@@ -40,17 +40,17 @@ module dockyard.controllers {
             //Load detailed information
             var id : string = $stateParams.id;
             if (/^[0-9]+$/.test(id) && parseInt(id) > 0) {
-                $scope.ptvm = ProcessTemplateService.get({ id: $stateParams.id });
+                $scope.ptvm = RouteService.get({ id: $stateParams.id });
             }
 
             //Save button
             $scope.submit = function (isValid) {
                 if (isValid) {
-                    if (!$scope.ptvm.processTemplateState) {
-                        $scope.ptvm.processTemplateState = dockyard.model.ProcessState.Inactive;
+                    if (!$scope.ptvm.routeState) {
+                        $scope.ptvm.routeState = dockyard.model.RouteState.Inactive;
                     }
 
-                    var result = ProcessTemplateService.save($scope.ptvm);
+                    var result = RouteService.save($scope.ptvm);
 
                     result.$promise
                         .then(function () {
@@ -76,5 +76,5 @@ module dockyard.controllers {
         }
     }
 
-    app.controller('ProcessTemplateFormController', ProcessTemplateFormController);
+    app.controller('RouteFormController', RouteFormController);
 }

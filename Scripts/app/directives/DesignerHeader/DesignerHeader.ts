@@ -5,7 +5,7 @@ module dockyard.directives.designerHeader {
 
     export interface IDesignerHeaderScope extends ng.IScope {
         onStateChange(): void;
-        processTemplate: model.ProcessTemplateDTO
+        route: model.RouteDTO
     }
 
     //More detail on creating directives in TypeScript: 
@@ -16,11 +16,11 @@ module dockyard.directives.designerHeader {
 
         public templateUrl = '/AngularTemplate/DesignerHeader';
         public scope = {
-            processTemplate: '='
+            route: '='
         };
         public restrict = 'E';
 
-        constructor(private ProcessTemplateService: services.IProcessTemplateService) {
+        constructor(private RouteService: services.IRouteService) {
             DesignerHeader.prototype.link = (
                 scope: IDesignerHeaderScope,
                 element: ng.IAugmentedJQuery,
@@ -36,10 +36,10 @@ module dockyard.directives.designerHeader {
 
                 $scope.onStateChange = () => {
                     debugger;
-                    if ($scope.processTemplate.processTemplateState === model.ProcessState.Inactive) {
-                        ProcessTemplateService.deactivate($scope.processTemplate);
+                    if ($scope.route.routeState === model.RouteState.Inactive) {
+                        RouteService.deactivate($scope.route);
                     } else {
-                        ProcessTemplateService.activate($scope.processTemplate);
+                        RouteService.activate($scope.route);
                     }
                 };
             };
@@ -47,11 +47,11 @@ module dockyard.directives.designerHeader {
 
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {
-            var directive = (ProcessTemplateService: services.IProcessTemplateService) => {
+            var directive = (ProcessTemplateService: services.IRouteService) => {
                 return new DesignerHeader(ProcessTemplateService);
             };
 
-            directive['$inject'] = ['ProcessTemplateService'];
+            directive['$inject'] = ['RouteService'];
             return directive;
         }
     }
