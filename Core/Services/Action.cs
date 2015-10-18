@@ -104,11 +104,6 @@ namespace Core.Services
                 return SaveOrUpdateAction(uow, submittedActionData);
             }
         }
-        
-        public List<CrateDTO> GetCrates(ActionDO curActionDO)
-        {
-            return curActionDO.CrateStorageDTO().CrateDTO;
-        }
 
         public ActionDO GetById(int id)
         {
@@ -149,18 +144,6 @@ namespace Core.Services
 
             //Returning ActionDTO
             return tempActionDTO;
-        }
-
-        public StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO)
-        {
-            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            var confControls = _crate.GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
-            if (confControls.Count() != 0 && confControls.Count() != 1)
-                throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
-            if (confControls.Count() == 0)
-                return null;
-            StandardConfigurationControlsCM standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(confControls.First().Contents);
-            return standardCfgControlsMs;
         }
 
         public ActionDO MapFromDTO(ActionDTO curActionDTO)
@@ -474,24 +457,7 @@ namespace Core.Services
 
             return null;
 
-        }
-        
-        public void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists)
-        {
-            if (curCrateDTOLists == null)
-                throw new ArgumentNullException("CrateDTO is null");
-            if (curActionDO == null)
-                throw new ArgumentNullException("ActionDO is null");
-
-            if (curCrateDTOLists.Count > 0)
-            {
-                curActionDO.UpdateCrateStorageDTO(curCrateDTOLists);
-            }
-        }
-
-        
-
-        
+        }       
 
         //looks for the Conifiguration Controls Crate and Extracts the ManifestSchema
         public StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction)
@@ -606,27 +572,6 @@ namespace Core.Services
                 .CallActionAsync<TResult>(actionName, dto);
         }
 
-        public void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO)
-        {
-            AddCrate(curActionDO, new List<CrateDTO>() { curCrateDTO });
-        }
-
-        public void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO)
-        {
-            var existingCratesWithLabelInActionDO = _crate.GetCratesByLabel(label, curActionDO.CrateStorageDTO());
-            if (!existingCratesWithLabelInActionDO.Any()) // no existing crates with user provided label found, then add the crate
-            {
-                AddCrate(curActionDO, curCrateDTO);
-            }
-            else
-            {
-                // Remove the existing crate for this label
-                _crate.RemoveCrateByLabel(curActionDO.CrateStorageDTO().CrateDTO, label);
-
-                // Add the newly created crate for this label to action's crate storage
-                AddCrate(curActionDO, curCrateDTO);
-            }
-        }
 
         public async Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key,
                                                                 string fieldName = "name",
