@@ -109,17 +109,17 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             data: { pageTitle: 'My Account', pageSubTitle: '' }
         })
     // Process Template list
-        .state('processTemplates', {
+        .state('routeList', {
             url: "/processes",
-            templateUrl: "/AngularTemplate/ProcessTemplateList",
-            data: { pageTitle: 'Process Templates', pageSubTitle: 'This page displays all process templates' }
+            templateUrl: "/AngularTemplate/RouteList",
+            data: { pageTitle: 'Routes', pageSubTitle: 'This page displays all process templates' }
         })
 
     // Process Template form
-        .state('processTemplate', {
+        .state('routeForm', {
             url: "/processes/{id}",
-            templateUrl: "/AngularTemplate/ProcessTemplateForm",
-            data: { pageTitle: 'Process Templates', pageSubTitle: 'Add a new Process Template' },
+            templateUrl: "/AngularTemplate/RouteForm",
+            data: { pageTitle: 'Route', pageSubTitle: 'Add a new Process Template' },
         })
 
     // Process Builder framework
@@ -141,10 +141,10 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
         })
 
-        .state('processTemplateDetails', {
+        .state('routeDetails', {
             url: "/processes/{id}/details",
-            templateUrl: "/AngularTemplate/ProcessTemplateDetails",
-            data: { pageTitle: 'Process Template Details', pageSubTitle: '' }
+            templateUrl: "/AngularTemplate/RouteDetails",
+            data: { pageTitle: 'Route Details', pageSubTitle: '' }
         })
 
     // Manage files

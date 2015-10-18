@@ -40,9 +40,9 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="processTemplate in activeProcessTemplates">
-                                    <td>{{ processTemplate.name }}</td>
-                                    <td>{{ processTemplate.description }}</td>
-                                    <td>
+                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.name }}</td>
+                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.description }}</td>
+                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">
                                         <span ng-if="processTemplate.RouteState == 1" class="bold font-green-haze">Inactive</span>
                                         <span ng-if="processTemplate.RouteState != 1" class="bold font-green-haze">Active</span>
                                     </td>
@@ -88,9 +88,9 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="processTemplate in inActiveProcessTemplates">
-                                    <td>{{ processTemplate.name }}</td>
-                                    <td>{{ processTemplate.description }}</td>
-                                    <td>
+                                    <td  ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.name }}</td>
+                                    <td  ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.description }}</td>
+                                    <td  ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">
                                         <span ng-if="processTemplate.RouteState == 1" class="bold font-green-haze">Inactive</span>
                                         <span ng-if="processTemplate.RouteState != 1" class="bold font-green-haze">Active</span>
                                     </td>

@@ -9,6 +9,7 @@ module dockyard.controllers {
     export interface IRouteListScope extends ng.IScope {
         executeProcessTemplate: (processTemplate: interfaces.IRouteVM) => void;
         goToProcessTemplatePage: (processTemplate: interfaces.IRouteVM) => void;
+        goToProcessTemplateDetailsPage: (processTemplate: interfaces.IRouteVM) => void;
         deleteProcessTemplate: (processTemplate: interfaces.IRouteVM) => void;
         dtOptionsBuilder: any;
         dtColumnDefs: any;
@@ -39,7 +40,7 @@ module dockyard.controllers {
             private $modal,
             private DTOptionsBuilder,
             private DTColumnDefBuilder,
-            private $state) {
+            private $state: ng.ui.IStateService) {
 
             $scope.$on('$viewContentLoaded', () => {
                 // initialize core components
@@ -53,6 +54,7 @@ module dockyard.controllers {
             $scope.inActiveProcessTemplates = ProcessTemplateService.getbystatus({ id: null, status: 1 });
             $scope.executeProcessTemplate = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.executeProcessTemplate);
             $scope.goToProcessTemplatePage = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.goToProcessTemplatePage);
+            $scope.goToProcessTemplateDetailsPage = <(processTemplate: interfaces.IRouteVM) => void>angular.bind(this, this.goToProcessTemplateDetailsPage);
             $scope.deleteProcessTemplate = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.deleteProcessTemplate);
         }
 
@@ -71,6 +73,10 @@ module dockyard.controllers {
 
         private goToProcessTemplatePage(processTemplateId) {
             this.$state.go('processBuilder', { id: processTemplateId });
+        }
+
+        private goToProcessTemplateDetailsPage(processTemplateId) {
+            this.$state.go('routeDetails', { id: processTemplateId });
         }
 
         private deleteProcessTemplate(processTemplateId: number, isActive: boolean) {
