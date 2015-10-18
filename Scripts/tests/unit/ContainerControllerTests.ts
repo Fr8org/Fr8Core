@@ -2,7 +2,7 @@
 /// <reference path="../../typings/angularjs/angular-mocks.d.ts" />
 
 module dockyard.tests.controller {
-    import fx = utils.fixtures.ProcessBuilder; // just an alias
+    import fx = utils.fixtures.ContainerBuilder; // just an alias
 
     var errorHandler = function (response, detail) {
         if (detail.status === 401) {

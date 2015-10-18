@@ -789,6 +789,7 @@
     <TypeScriptCompile Include="Scripts\app\filters\ActionNameFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ContainerState.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ProcessTemplateState.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IUser.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActivityCategoryDTO.ts" />
@@ -810,6 +811,7 @@
     <TypeScriptCompile Include="Scripts\app\model\ProcessTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessBuilderState.ts" />
     <TypeScriptCompile Include="Scripts\app\model\User.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ContainerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\CrateHelper.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManageFileService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ReportService.ts" />
@@ -834,6 +836,7 @@
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDesignDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionTemplate.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_ContainerDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\mocks.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ProcessBuilder.ts" />
     <Content Include="Scripts\_legacy\about-page.js" />

@@ -32,12 +32,12 @@ namespace UtilitiesTesting.Fixtures
         public static IList<ContainerDO> GetContainers()
 		{
             IList<ContainerDO> containeList = new List<ContainerDO>();
-            var processTemplateId = TestRoute2().Id;
+            var routeId = TestRoute2().Id;
             containeList.Add(new ContainerDO()
 			{
 				Id = 1,
 				Name = "Process 1",
-                RouteId = processTemplateId,
+                RouteId = routeId,
 				Fr8AccountId = "testuser",
 				ContainerState = ContainerState.Executing
 			});
@@ -46,7 +46,7 @@ namespace UtilitiesTesting.Fixtures
 			{
 				Id = 2,
 				Name = "Process 2",
-                RouteId = processTemplateId,
+                RouteId = routeId,
 				Fr8AccountId = "testuser",
 				ContainerState = ContainerState.Executing
 			});
@@ -55,7 +55,7 @@ namespace UtilitiesTesting.Fixtures
 			{
 				Id = 3,
 				Name = "Process 3",
-                RouteId = processTemplateId,
+                RouteId = routeId,
 				Fr8AccountId = "testuser",
 				ContainerState = ContainerState.Unstarted
 			});
@@ -64,7 +64,7 @@ namespace UtilitiesTesting.Fixtures
 			{
 				Id = 4,
 				Name = "Process 4",
-                RouteId = processTemplateId,
+                RouteId = routeId,
 				Fr8AccountId = "anotheruser",
 				ContainerState = ContainerState.Unstarted
 			});

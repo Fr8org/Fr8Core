@@ -1,11 +1,11 @@
 ﻿module dockyard.model {
-    export class ContainerDTO {
+    export class ContainerDTO{
         id: number;
         name: string;
-        processTemplateId: number;
+        routeId: number;
         containerState: number;
-        currentActivityId: string;
-        nextActivityId: string;
+        currentRouteNodeId: string;
+        nextRouteNodeId: string;
     }
 
     export enum ContainerState {

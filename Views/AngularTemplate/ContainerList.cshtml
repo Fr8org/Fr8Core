@@ -32,9 +32,9 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Name</th>
-                                    <th>Process Template Id</th>
+                                    <th>Route Id</th>
                                     <th>Container State</th>
-                                    <th>Current Activity Id</th>
+                                    <th>current Route Node Id</th>
                                     @*<th style="text-align:right">Actions</th>*@
                                 </tr>
                             </thead>
@@ -42,11 +42,11 @@
                                 <tr ng-repeat="container in currentAccountContainers" ng-click="goToContainerDetailsPage(container.id)">
                                     <td>{{ container.id }}</td>
                                     <td>{{ container.name }}</td>
-                                    <td>{{ container.processTemplateId }}</td>
+                                    <td>{{ container.routeId }}</td>
                                     <td>
                                             <span>{{ container.containerState | ContainerState }}</span>
                                         </td>
-                                    <td>{{ container.currentActivityId }}</td>
+                                    <td>{{ container.currentRouteNodeId }}</td>
                                     @*<td>
                                         <div>
                                             <button type="button" class="btn btn-sm red">Execute</button>

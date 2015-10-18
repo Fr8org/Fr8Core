@@ -66,10 +66,10 @@ namespace DockyardTest.Services
             }
 
             //Act
-            var processList = _userService.GetContainerList(_testUserId);
+            var containerList = _userService.GetContainerList(_testUserId);
 
             //Assert
-            Assert.AreEqual(2, processList.Count());
+            Assert.AreEqual(2, containerList.Count());
         }
 
         //get this working again once 1124 is merged
@@ -156,7 +156,7 @@ namespace DockyardTest.Services
 */
 
         [Test]
-        public void ProcessService_Can_LaunchWithoutExceptions()
+        public void ContainerService_Can_LaunchWithoutExceptions()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

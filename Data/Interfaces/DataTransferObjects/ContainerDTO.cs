@@ -13,11 +13,11 @@ namespace Data.Interfaces.DataTransferObjects
         [Required]
         public int Id { get; set; }
         public string Name { get; set; }
-        public int ProcessTemplateId { get; set; }
+        public int RouteId { get; set; }
         public int ContainerState;
 
-        public int? CurrentActivityId { get; set; }
-        public int? NextActivityId { get; set; }
+        public int? CurrentRouteNodeId { get; set; }
+        public int? NextRouteNodeId { get; set; }
 
     }
 }

@@ -11,15 +11,6 @@
             startingProcessNodeTemplateId: 1
         };
 
-        public static newContainier = <interfaces.IContainerVM> {
-            id: 1,
-            name: "TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}",
-            processTemplateId: 1,
-            containerState: 2,
-            currentActivityId: null,
-            nextActivityId: null
-        };
-
         public static processBuilderState = new model.ProcessBuilderState();
 
         public static updatedProcessTemplate = <interfaces.IProcessTemplateVM> {

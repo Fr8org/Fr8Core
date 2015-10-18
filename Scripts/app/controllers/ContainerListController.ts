@@ -14,17 +14,15 @@ module dockyard.controllers {
     }
 
     /*
-        Container controller
+      Container Controller 
     */
     class ContainerListController {
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
+        // $inject static.
+        // http://nick.perfectedz.com/angular-typescript-di-tip/
+        
         public static $inject = [
             '$scope',
             'ContainerService',
-            '$modal',
             'DTOptionsBuilder',
             'DTColumnDefBuilder',
             '$state'
@@ -33,7 +31,6 @@ module dockyard.controllers {
         constructor(
             private $scope: IContainerListScope,
             private ContainerService: services.IContainerService,
-            private $modal,
             private DTOptionsBuilder,
             private DTColumnDefBuilder,
             private $state) {
@@ -43,12 +40,10 @@ module dockyard.controllers {
                 Metronic.initAjax();
             });
 
-            //Load Process Templates view model
             $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withDisplayLength(10);   
             $scope.dtColumnDefs = this.getColumnDefs(); 
             $scope.currentAccountContainers = ContainerService.getAll({ id: null });
             $scope.goToContainerDetailsPage = <(container: interfaces.IContainerVM) => void> angular.bind(this, this.goToContainerDetailsPage);
-
         }
 
         private goToContainerDetailsPage(containerId) {
