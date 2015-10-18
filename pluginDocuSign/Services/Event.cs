@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 using pluginDocuSign.Infrastructure;
 using StructureMap;
 using Core.Interfaces;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 
 namespace pluginDocuSign.Services
 {

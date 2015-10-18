@@ -506,10 +506,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Configuration\Configuration.csproj">
-      <Project>{d8f7f734-21ce-4277-a14f-ebdde71dff0c}</Project>
-      <Name>Configuration</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}</Project>
       <Name>Utilities</Name>

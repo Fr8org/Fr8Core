@@ -12,7 +12,7 @@ using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Interfaces;
 using Signer = pluginDocuSign.Infrastructure.Signer;
 using Tab = pluginDocuSign.Infrastructure.Tab;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 
 namespace pluginDocuSign.Services
 {
