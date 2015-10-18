@@ -22,7 +22,7 @@ namespace pluginExcel.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<ActionDTO> Execute(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Run(ActionDTO curActionDTO)
         {
             return await CreateStandardPayloadDataFromStandardTableData(curActionDTO);
         }
@@ -38,7 +38,7 @@ namespace pluginExcel.Actions
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
             var payloadDataCrate = Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
-            Action.AddCrate(curActionDO, payloadDataCrate);
+            Crate.AddCrate(curActionDO, payloadDataCrate);
 
            return Mapper.Map<ActionDTO>(curActionDO);
             
@@ -47,7 +47,7 @@ namespace pluginExcel.Actions
         private async Task<StandardTableDataCM> GetTargetTableData(int actionId, CrateStorageDTO curCrateStorageDTO)
         {
             // Find crates of manifest type Standard Table Data
-            var standardTableDataCrates = Action.GetCratesByManifestType(CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME, curCrateStorageDTO);
+            var standardTableDataCrates = Crate.GetCratesByManifestType(CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME, curCrateStorageDTO);
 
             // If no crate of manifest type "Standard Table Data" found, try to find upstream for a crate of type "Standard File Handle"
             if (!standardTableDataCrates.Any())
@@ -177,7 +177,7 @@ namespace pluginExcel.Actions
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
-            var filePathsFromUserSelection = Action.FindKeysByCrateManifestType(curActionDO, new Manifest(Data.Constants.MT.StandardConfigurationControls), "select_file")
+            var filePathsFromUserSelection = Action.FindKeysByCrateManifestType(curActionDO, new Manifest(Data.Constants.MT.StandardConfigurationControls), "select_file").Result
                 .Select(e => (string)e["value"])
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
@@ -224,7 +224,7 @@ namespace pluginExcel.Actions
                             "Spreadsheet Column Headers",
                             headers.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()
                         );
-                Action.AddOrReplaceCrate("Spreadsheet Column Headers", curActionDO, curCrateDTO);
+                Crate.AddOrReplaceCrate("Spreadsheet Column Headers", curActionDO, curCrateDTO);
             }
 
             CreatePayloadCrate_ExcelRows(curActionDO, fileAsByteArray, headersArray, ext);
@@ -248,7 +248,7 @@ namespace pluginExcel.Actions
                             Crate.CreateStandardTableDataCrate("Excel Payload Rows", true, rows.ToArray()),
                         }
                     };
-                    Action.AddCrate(curActionDO, curExcelPayloadRowsCrateStorageDTO.CrateDTO.ToList());
+                    Crate.AddCrate(curActionDO, curExcelPayloadRowsCrateStorageDTO.CrateDTO.ToList());
                 }
             }
         }

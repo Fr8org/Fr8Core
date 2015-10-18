@@ -1,10 +1,11 @@
-﻿using Data.Entities;
+﻿using System.Threading.Tasks;
+using Data.Entities;
 using Data.Interfaces;
 
 namespace pluginSendGrid.Infrastructure
 {
     public interface IEmailPackager
     {
-        void Send(IMailerDO envelope);
+        Task Send(IMailerDO envelope);
     }
 }

@@ -5,15 +5,16 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using Newtonsoft.Json;
+using StructureMap;
 using Core.Enums;
 using Core.Interfaces;
+using Core.Managers;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using fr8.Microsoft.Azure;
-using Newtonsoft.Json;
+using Utilities.Configuration.Azure;
 using PluginBase.Infrastructure;
-using StructureMap;
 
 namespace PluginUtilities.BaseClasses
 {
@@ -26,14 +27,14 @@ namespace PluginUtilities.BaseClasses
         #region Fields
 
         protected IAction Action;
-        protected ICrate Crate;
+        protected ICrateManager Crate;
         protected IRouteNode Activity;
 
         #endregion
 
         public BasePluginAction()
         {
-            Crate = ObjectFactory.GetInstance<ICrate>();
+            Crate = ObjectFactory.GetInstance<ICrateManager>();
             Action = ObjectFactory.GetInstance<IAction>();
             Activity = ObjectFactory.GetInstance<IRouteNode>();
         }
@@ -86,7 +87,7 @@ namespace PluginUtilities.BaseClasses
         {
             var httpClient = new HttpClient();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/processes/"
+                + "api/containers/"
                 + processId.ToString();
 
             using (var response = await httpClient.GetAsync(url))
@@ -253,7 +254,7 @@ namespace PluginUtilities.BaseClasses
             //look for a text field name select_file with a value
             Manifest manifestSchema = new Manifest(Data.Constants.MT.StandardConfigurationControls);
 
-            var keys = Action.FindKeysByCrateManifestType(curActionDO, manifestSchema, fieldName)
+            var keys = Action.FindKeysByCrateManifestType(curActionDO, manifestSchema, fieldName).Result
                 .Select(e => (string)e["value"])
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
@@ -431,7 +432,7 @@ namespace PluginUtilities.BaseClasses
             CrateStorageDTO crateStorage,
             string fieldKey)
         {
-            var crates = Action.GetCratesByManifestType(
+            var crates = Crate.GetCratesByManifestType(
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, crateStorage);
 
             foreach (var crate in crates)

@@ -10,6 +10,7 @@ using StructureMap;
 using StructureMap.AutoMocking;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using UtilitiesTesting;
@@ -35,6 +36,8 @@ namespace DockyardTest.Controllers
             {
                 uow.UserRepository.Add(_testUserAccount);
                 uow.SaveChanges();
+
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, _testUserAccount);
             }
         }
 
@@ -45,6 +48,8 @@ namespace DockyardTest.Controllers
             {
                 var curUser = uow.UserRepository.GetQuery()
                     .SingleOrDefault(x => x.Id == _testUserAccount.Id);
+
+                ObjectFactory.GetInstance<ISecurityServices>().Logout();
 
                 uow.UserRepository.Remove(curUser);
                 uow.SaveChanges();
@@ -58,7 +63,7 @@ namespace DockyardTest.Controllers
             var processTemplateDto = FixtureData.CreateTestRouteDTO();
 
             //Act
-            ProcessTemplateController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            RouteController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var response = ptc.Post(processTemplateDto);
 
             //Assert
@@ -82,7 +87,7 @@ namespace DockyardTest.Controllers
             processTemplateDto.Name = String.Empty;
 
             //Act
-            ProcessTemplateController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address); ;
+            RouteController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address); ;
             var response = ptc.Post(processTemplateDto);
 
             //Assert
@@ -95,7 +100,7 @@ namespace DockyardTest.Controllers
         public void RouteController_Will_ReturnEmptyOkResult_If_No_Route_Found()
         {
             //Act
-            ProcessTemplateController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            RouteController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
 
             //Assert
             var postResult = processTemplateController.Get(55);
@@ -128,7 +133,7 @@ namespace DockyardTest.Controllers
             }
 
             //Act
-            var actionResult = processTemplateController.Get() as OkNegotiatedContentResult<IEnumerable<RouteOnlyDTO>>;
+            var actionResult = processTemplateController.Get() as OkNegotiatedContentResult<RouteOnlyDTO[]>;
 
             //Assert
             Assert.NotNull(actionResult);
@@ -162,7 +167,7 @@ namespace DockyardTest.Controllers
             //Arrange 
             var processTemplateDto = FixtureData.CreateTestRouteDTO();
 
-            ProcessTemplateController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            RouteController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var postResult = processTemplateController.Post(processTemplateDto) as OkNegotiatedContentResult<RouteOnlyDTO>;
 
             Assert.NotNull(postResult);
@@ -188,7 +193,7 @@ namespace DockyardTest.Controllers
             processTemplateDto.Name = String.Empty;
 
             //Act
-            ProcessTemplateController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            RouteController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             processTemplateController.Post(processTemplateDto);
 
             //Assert
@@ -250,7 +255,7 @@ namespace DockyardTest.Controllers
             externalEventList.AddRange(new int?[] { 1, 3 });
 
             //Act: first add a process template, then modify it. 
-            ProcessTemplateController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            RouteController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var response = ptc.Post(processTemplateDto);
             processTemplateDto.Name = "updated";
             processTemplateDto.SubscribedDocuSignTemplates = docuSignTemplateList;
@@ -276,7 +281,7 @@ namespace DockyardTest.Controllers
         [Test]
         public void ShouldGetFullRoute()
         {
-            var curRouteController = new ProcessTemplateController();
+            var curRouteController = new RouteController();
             var curRouteDO = FixtureData.TestRoute3();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -295,22 +300,10 @@ namespace DockyardTest.Controllers
 
         }
 
-
-        private static ProcessTemplateController CreateRouteController(string userId, string email)
+        // Current user shoud be resolved using mocked ISecurityServices.
+        private static RouteController CreateRouteController(string userId, string email)
         {
-            var claims = new List<Claim>();
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, userId));
-            claims.Add(new Claim(ClaimTypes.Name, email));
-            claims.Add(new Claim(ClaimTypes.Email, email));
-
-            var identity = new ClaimsIdentity(claims);
-
-            var ptc = new ProcessTemplateController
-            {
-                User = new GenericPrincipal(identity, new[] { "Users" })
-            };
-
-            return ptc;
+            return new RouteController();
         }
     }
 }

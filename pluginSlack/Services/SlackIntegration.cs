@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using pluginSlack.Interfaces;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 
 namespace pluginSlack.Services
 {

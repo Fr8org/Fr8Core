@@ -3,7 +3,7 @@ using System.IO;
 using Data.Entities;
 using Microsoft.WindowsAzure;
 using Utilities;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 
 namespace Data.Infrastructure
 {

@@ -6,6 +6,7 @@ using Core.Interfaces;
 using Core.Managers;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.Managers.APIManagers.Transmitters.Restful;
+using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -29,6 +30,7 @@ namespace DockyardTest.Services
     public class ActionServiceTests : BaseTest
     {
         private IAction _action;
+        private ICrateManager _crate;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
         private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
@@ -45,6 +47,7 @@ namespace DockyardTest.Services
         {
             base.SetUp();
             _action = ObjectFactory.GetInstance<IAction>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
             _eventReceived = false;
@@ -132,8 +135,9 @@ namespace DockyardTest.Services
 
                 Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
 
+                ISubroute subRoute = new Subroute();
                 //Delete
-                action.Delete(actionDO.Id);
+                subRoute.DeleteAction(actionDO.Id);
             }
         }
 
@@ -308,7 +312,7 @@ namespace DockyardTest.Services
         {
             ActionDO actionDO = FixtureData.TestAction23();
 
-            _action.AddCrate(actionDO, FixtureData.CrateStorageDTO().CrateDTO);
+            _crate.AddCrate(actionDO, FixtureData.CrateStorageDTO().CrateDTO);
 
             Assert.IsNotEmpty(actionDO.CrateStorage);
         }
@@ -373,7 +377,7 @@ namespace DockyardTest.Services
             ContainerDO processDo = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
             var executeActionMock = new Mock<IAction>();
-            executeActionMock.Setup(s => s.Execute(actionDo, processDo)).Returns<Task<PayloadDTO>>(null);
+            executeActionMock.Setup(s => s.Run(actionDo, processDo)).Returns<Task<PayloadDTO>>(null);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -390,7 +394,7 @@ namespace DockyardTest.Services
         public async void PrepareToExecute_WithMockedExecute_WithPayload()
         {
             ActionDO actionDo = FixtureData.TestActionStateInProcess();
-            actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO() { ActionName = "Test Action" });
+            actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO() { Label = "Test Action" });
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

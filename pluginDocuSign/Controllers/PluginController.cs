@@ -32,7 +32,8 @@ namespace pluginDocuSign.Controllers
             {
                 Version = "1",
                 Name = "Monitor_DocuSign",
-                Category = ActivityCategory.fr8_Monitor,
+                Label = "Monitor DocuSign",
+                Category = ActivityCategory.Monitors,
                 Plugin = plugin
             };
 
@@ -40,23 +41,26 @@ namespace pluginDocuSign.Controllers
 			{
 				Version = "1",
 				Name = "Send_DocuSign_Envelope",
-                Category = ActivityCategory.fr8_Forwarder,
+                Label = "Send DocuSign Envelope",
+                Category = ActivityCategory.Forwarders,
 				Plugin = plugin
 			};
 
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
             {
                 Version = "1",
-                Name = "Extract_From_DocuSign_Envelope",
-                Category = ActivityCategory.fr8_Receiver,
+                Name = "Receive_DocuSign_Envelope",
+                Label = "Receive DocuSign Envelope",
+                Category = ActivityCategory.Receivers,
                 Plugin = plugin
             };
 
             var recordDocuSignEvents = new ActivityTemplateDO
             {
                 Name = "Record_DocuSign_Events",
+                Label = "Record DocuSign Events",
                 Version = "1",
-                Category = ActivityCategory.fr8_Forwarder,
+                Category = ActivityCategory.Forwarders,
                 Plugin = plugin
             };
 

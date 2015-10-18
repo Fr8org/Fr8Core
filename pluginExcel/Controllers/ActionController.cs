@@ -37,10 +37,10 @@ namespace pluginExcel.Controllers
         }
 
         [HttpPost]
-        [Route("execute")]
-        public async Task<ActionDTO> Execute(ActionDTO curActionDTO)
+        [Route("run")]
+        public async Task<ActionDTO> Run(ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>) _basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDTO);
+            return await (Task<ActionDTO>) _basePluginController.HandleDockyardRequest(curPlugin, "Run", curActionDTO);
         }
     }
 }

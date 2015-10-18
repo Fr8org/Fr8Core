@@ -14,19 +14,19 @@ using Newtonsoft.Json;
 using pluginDocuSign.Infrastructure;
 using StructureMap;
 using Core.Interfaces;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 
 namespace pluginDocuSign.Services
 {
 	public class Event : pluginDocuSign.Interfaces.IEvent
     {
         private readonly EventReporter _alertReporter;
-        private readonly ICrate _crate;
+        private readonly ICrateManager _crate;
 
         public Event()
         {
             _alertReporter = ObjectFactory.GetInstance<EventReporter>();
-            _crate = ObjectFactory.GetInstance<ICrate>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         public async Task<object> Process(string curExternalEventPayload)
@@ -47,7 +47,7 @@ namespace pluginDocuSign.Services
             };
 
             //prepare the event report
-            CrateDTO curEventReport = ObjectFactory.GetInstance<ICrate>()
+            CrateDTO curEventReport = ObjectFactory.GetInstance<ICrateManager>()
                 .Create("Standard Event Report", JsonConvert.SerializeObject(eventReportContent), "Standard Event Report", 7);
 
             string url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";

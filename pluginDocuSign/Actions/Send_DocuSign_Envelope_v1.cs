@@ -44,7 +44,7 @@ namespace pluginDocuSign.Actions
             return "Activate Request"; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Execute(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
             if (curActionDTO.AuthToken == null)
             {
@@ -120,7 +120,7 @@ namespace pluginDocuSign.Actions
 
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             // Try to find Configuration_Controls
-            var stdCfgControlMS = Action.GetConfigurationControls(curActionDO);
+            var stdCfgControlMS = Crate.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
             {
                 return ConfigurationRequestType.Initial;
@@ -199,7 +199,7 @@ namespace pluginDocuSign.Actions
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             
             // Try to find Configuration_Controls.
-            var stdCfgControlMS = Action.GetConfigurationControls(curActionDO);
+            var stdCfgControlMS = Crate.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
             {
                 return curActionDTO;
@@ -250,7 +250,7 @@ namespace pluginDocuSign.Actions
         {
             var fieldSelectDocusignTemplateDTO = new DropDownListControlDefinitionDTO()
             {
-                Label = "target_docusign_template",
+                Label = "Use DocuSign Template",
                 Name = "target_docusign_template",
                 Required = true,
                 Events = new List<ControlEvent>()
