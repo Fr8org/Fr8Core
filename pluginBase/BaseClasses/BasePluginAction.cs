@@ -13,7 +13,7 @@ using Core.Managers;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 using PluginBase.Infrastructure;
 
 namespace PluginUtilities.BaseClasses

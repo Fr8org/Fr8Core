@@ -3,7 +3,7 @@ using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces.DataTransferObjects;
 using Moq;
 using NUnit.Framework;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 
 namespace pluginTests.PluginBaseTests.Infrastructure
 {

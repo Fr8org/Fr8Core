@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Core.ExternalServices;
 using Twilio;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 using System.Collections;
 using System.Collections.Generic;
 

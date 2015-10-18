@@ -1,25 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 using Owin;
 using StructureMap;
-using fr8.Microsoft.Azure;
-using Configuration;
-using Daemons;
+using Utilities.Configuration.Azure;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
 using Utilities;
 using Utilities.Logging;
-using Utilities.Serializers.Json;
 using Core.Services;
 using Core.Managers;
 using Microsoft.Owin.Hosting;
@@ -82,7 +75,7 @@ namespace Web
 
 
 
-            if (curConfigureCommunicationConfigs.Find(config => config.ToAddress == fr8.Microsoft.Azure.CloudConfigurationManager.GetSetting("MainSMSAlertNumber")) == null)
+            if (curConfigureCommunicationConfigs.Find(config => config.ToAddress == CloudConfigurationManager.GetSetting("MainSMSAlertNumber")) == null)
             // it is not true that there is at least one commConfig that has the Main alert number
             {
                 CommunicationConfigurationDO curCommConfig = new CommunicationConfigurationDO();

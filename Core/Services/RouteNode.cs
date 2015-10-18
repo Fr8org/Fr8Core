@@ -10,7 +10,7 @@ using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 using Newtonsoft.Json;
 using StructureMap;
 
