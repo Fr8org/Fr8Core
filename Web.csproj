@@ -3963,7 +3963,7 @@
     <Content Include="Themes\scheduler_white\tree_nochildren.png" />
     <Content Include="UnauthorizedRequest.html" />
     <Compile Include="ViewModels\EventWindowVM.cs" />
-    <Content Include="Views\AngularTemplate\ProcessTemplateForm.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteForm.cshtml" />
     <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
     <Content Include="tsd.json" />
     <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
@@ -3978,7 +3978,7 @@
     <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
     <Content Include="Views\AngularTemplate\RadioButtonOption.cshtml" />
     <Content Include="Views\AngularTemplate\TextBlock.cshtml" />
-    <Content Include="Views\AngularTemplate\ProcessTemplateDetails.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
     <Content Include="Web.config">
@@ -4044,7 +4044,7 @@
     <Content Include="Views\AngularTemplate\ShowIncidents.cshtml" />
     <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
     <Content Include="Views\AngularTemplate\RoutingControl.cshtml" />
-    <Content Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteList.cshtml" />
     <Content Include="Views\AngularTemplate\MyAccountPage.cshtml" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\Email\Show.cshtml" />
@@ -4172,7 +4172,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS> 
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>30643</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
