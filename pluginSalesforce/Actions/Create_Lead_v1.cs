@@ -83,7 +83,7 @@ namespace pluginSalesforce.Actions
             bool result = _salesforce.CreateLead(curActionDTO);
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             var controls = PackCrate_ErrorTextBox("", "Lead Created Successfully");
-            Action.AddCrate(curActionDO, controls);
+            Crate.AddCrate(curActionDO, controls);
             var curCrateStorageDTO = curActionDO.CrateStorageDTO();
             curActionDTO.CrateStorage = curCrateStorageDTO;        
             return await Task.FromResult<ActionDTO>(curActionDTO);

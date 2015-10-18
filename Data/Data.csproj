@@ -314,6 +314,10 @@
     <Compile Include="Migrations\201510181324114_AuthorizeTokenRepositaryUpdateWithSalesforceSpecificColumns.Designer.cs">
       <DependentUpon>201510181324114_AuthorizeTokenRepositaryUpdateWithSalesforceSpecificColumns.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510181719065_IngnoreChangesUpdate.cs" />
+    <Compile Include="Migrations\201510181719065_IngnoreChangesUpdate.Designer.cs">
+      <DependentUpon>201510181719065_IngnoreChangesUpdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -554,6 +558,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510181324114_AuthorizeTokenRepositaryUpdateWithSalesforceSpecificColumns.resx">
       <DependentUpon>201510181324114_AuthorizeTokenRepositaryUpdateWithSalesforceSpecificColumns.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510181719065_IngnoreChangesUpdate.resx">
+      <DependentUpon>201510181719065_IngnoreChangesUpdate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
