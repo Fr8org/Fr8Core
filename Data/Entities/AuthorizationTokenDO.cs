@@ -48,5 +48,10 @@ namespace Data.Entities
 
         public virtual _AuthorizationTokenStateTemplate AuthorizationTokenStateTemplate { get; set; }
 
+        public String InstanceUrl { get; set; }
+
+        public String ApiVersion { get; set; }
+
+        public String RefreshToken { get; set; }
     }
 }

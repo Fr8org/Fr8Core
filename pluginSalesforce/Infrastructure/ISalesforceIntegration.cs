@@ -11,8 +11,8 @@ namespace pluginSalesforce.Infrastructure
     {
         bool CreateLead(ActionDTO actionDTO);
 
-        string CreateAuthUrl();
+        string CreateAuthUrl(string externalStateValue);
 
-        Task<string> GetAuthToken(string code);
+        Task<object> GetAuthToken(string code);       
     }
 }

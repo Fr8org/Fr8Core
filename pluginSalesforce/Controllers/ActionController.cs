@@ -18,14 +18,7 @@ namespace pluginSalesforce.Controllers
     {
         private const string curPlugin = "pluginSalesforce";
         private BasePluginController _basePluginController = new BasePluginController();
-        private ISalesforceIntegration _salesforceIntegration = new SalesforceIntegration();
-
-        [HttpPost]
-        [Route("create")]
-        public ActionDTO Create(ActionDTO curActionDTO)
-        {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "CreateLead", curActionDTO);
-        }
+        private ISalesforceIntegration _salesforceIntegration = new SalesforceIntegration();     
 
         [HttpPost]
         [Route("configure")]
@@ -40,14 +33,12 @@ namespace pluginSalesforce.Controllers
         public ExternalAuthUrlDTO GetExternalAuthUrl()
         {
             var externalStateToken = Guid.NewGuid().ToString();
-            var url = _salesforceIntegration.CreateAuthUrl();
-
+            var url = _salesforceIntegration.CreateAuthUrl(externalStateToken);
             var externalAuthUrlDTO = new ExternalAuthUrlDTO()
             {
                 ExternalStateToken = externalStateToken,
                 Url = url
             };
-
             return externalAuthUrlDTO;
         }
 
@@ -59,24 +50,20 @@ namespace pluginSalesforce.Controllers
             string code;
             string state;
 
-            ParseCodeAndState(externalAuthDTO.RequestQueryString, out code, out state);
+            ParseCodeAndState(externalAuthDTO.RequestQueryString, out code, out state);         
 
-            //if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(state))
-            //{
-            //    throw new ApplicationException("Code or State is empty.");
-            //}
-
-            //var oauthToken = await _salesforceIntegration.GetOAuthToken(code);
-            //var userId = await _salesforceIntegration.GetUserId(oauthToken);
-
-            var oauthToken = _salesforceIntegration.GetAuthToken(code);
+            AuthenticationClient oauthToken = (AuthenticationClient)Task.Run(() => _salesforceIntegration.GetAuthToken(code)).Result;         
           
-
             return new AuthTokenDTO()
             {
-                Token = oauthToken.Result
+                Token = oauthToken.AccessToken,
+                ExternalAccountId = oauthToken.Id.Substring(oauthToken.Id.LastIndexOf("/")+1,oauthToken.Id.Length-(oauthToken.Id.LastIndexOf("/")+1)),
+                ExternalStateToken =state,
+                ExternalInstanceURL = oauthToken.InstanceUrl,
+                ExternalApiVersion = oauthToken.ApiVersion,
+                RefreshToken = oauthToken.RefreshToken
             };
-        }
+        }        
 
         private void ParseCodeAndState(string queryString, out string code, out string state)
         {

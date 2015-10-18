@@ -344,10 +344,13 @@ namespace Core.Services
                 authToken.Token = authTokenDTO.Token;
                 authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
                 authToken.ExternalStateToken = null;
-
+                authToken.InstanceUrl = authTokenDTO.ExternalInstanceURL;
+                authToken.ApiVersion = authTokenDTO.ExternalApiVersion;
+                authToken.RefreshToken = authTokenDTO.RefreshToken;
                 uow.SaveChanges();
-            }
+            }          
         }
+
 
         public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl(
             Fr8AccountDO user, PluginDO plugin)
@@ -553,7 +556,10 @@ namespace Core.Services
                     {
                         actionDTO.AuthToken = new AuthTokenDTO()
                         {
-                            Token = authToken.Token
+                            Token = authToken.Token,
+                            ExternalInstanceURL = authToken.InstanceUrl,
+                            ExternalApiVersion = authToken.ApiVersion,
+                            RefreshToken = authToken.RefreshToken
                         };
                     }
                 }
