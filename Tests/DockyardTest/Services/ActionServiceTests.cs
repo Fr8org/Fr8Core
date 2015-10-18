@@ -575,6 +575,39 @@ namespace DockyardTest.Services
             }
         }
 
+
+        [Test]
+        public void CreateNewAction()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var plugin = new PluginDO()
+                {
+                    PluginStatus = PluginStatus.Active,
+                    Endpoint = "ep",
+                    Version = "1",
+                    Name = "plugin",
+                };
+                
+                uow.PluginRepository.Add(plugin);
+                uow.SaveChanges();
+
+                var template = new ActivityTemplateDO("Template1", "label", "1", plugin.Id);
+                uow.ActivityTemplateRepository.Add(template);
+                var parent = new ActionDO();
+                uow.ActionRepository.Add(parent);
+                
+                uow.SaveChanges();
+
+                const string actionName = "TestAction";
+                var response = _action.Create(uow, template.Id, actionName, null, parent);
+
+                Assert.AreEqual(parent.RouteNodes.Count, 1);
+                Assert.AreEqual(parent.RouteNodes[0], response);
+                Assert.AreEqual(response.Name, actionName);
+            }
+        }
+
         private void Compare(ActionDO reference, ActionDO actual, Action<ActionDO, ActionDO> callback)
         {
             callback(reference, actual);

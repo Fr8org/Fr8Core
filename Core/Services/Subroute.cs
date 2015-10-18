@@ -48,7 +48,7 @@ namespace Core.Services
 
         public SubrouteDO Create(IUnitOfWork uow)
         {
-            var subroute = ObjectFactory.GetInstance<SubrouteDO>();
+            var subroute = new SubrouteDO();
 
             Create(uow, subroute);
 

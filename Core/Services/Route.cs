@@ -98,6 +98,7 @@ namespace Core.Services
 
             route.Name = name;
             subroute.Name = name + " #1";
+            subroute.StartingSubroute = true;
 
             route.StartingSubroute = subroute;
             route.RouteNodes.Add(subroute);
