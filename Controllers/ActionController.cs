@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Description;
-using System.Web.Mvc;
 using AutoMapper;
 using Microsoft.AspNet.Identity;
-using Newtonsoft.Json;
 using StructureMap;
 using Core.Interfaces;
-using Core.Managers;
-using Core.Services;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
@@ -20,7 +12,7 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Web.Controllers
 {
-    [System.Web.Http.RoutePrefix("actions")]
+    [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
         private readonly IAction _action;
@@ -49,9 +41,9 @@ namespace Web.Controllers
         }
 
 
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         [Fr8ApiAuthorize]
-        [System.Web.Http.Route("create")]
+        [Route("create")]
         public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
         {
             if (parentNodeId != null && createRoute)
@@ -98,9 +90,9 @@ namespace Web.Controllers
         
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
 
-        [System.Web.Http.HttpPost]
-        [System.Web.Http.Route("configuration")]
-        [System.Web.Http.Route("configure")]
+        [HttpPost]
+        [Route("configuration")]
+        [Route("configure")]
         //[ResponseType(typeof(CrateStorageDTO))]
         public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
         {
@@ -111,9 +103,9 @@ namespace Web.Controllers
         }
 
 
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         [Fr8ApiAuthorize]
-        [System.Web.Http.Route("auth_url")]
+        [Route("auth_url")]
         public async Task<IHttpActionResult> GetExternalAuthUrl(
             [FromUri(Name = "id")] int activityTemplateId)
         {
@@ -165,8 +157,8 @@ namespace Web.Controllers
             }
         }
 
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route("is_authenticated")]
+        [HttpGet]
+        [Route("is_authenticated")]
         public IHttpActionResult IsAuthenticated(int activityTemplateId)
         {
             Fr8AccountDO account;
@@ -179,9 +171,9 @@ namespace Web.Controllers
             return Ok(new { authenticated = isAuthenticated });
         }
 
-        [System.Web.Http.HttpPost]
+        [HttpPost]
         [Fr8ApiAuthorize]
-        [System.Web.Http.Route("authenticate")]
+        [Route("authenticate")]
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
         {
             Fr8AccountDO account;
@@ -213,8 +205,8 @@ namespace Web.Controllers
         /// <summary>
         /// GET : Returns an action with the specified id
         /// </summary>
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.Route("{id:int}")]
+        [HttpGet]
+        [Route("{id:int}")]
         public ActionDTO Get(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -226,8 +218,8 @@ namespace Web.Controllers
         /// <summary>
         /// GET : Returns an action with the specified id
         /// </summary>
-        [System.Web.Http.HttpDelete]
-        [System.Web.Http.Route("{id:int}")]
+        [HttpDelete]
+        [Route("{id:int}")]
         public void Delete(int id)
         {
             _subRoute.DeleteAction(id);
@@ -236,8 +228,8 @@ namespace Web.Controllers
         /// <summary>
         /// POST : Saves or updates the given action
         /// </summary>
-        [System.Web.Http.HttpPost]
-        [System.Web.Http.Route("save")]
+        [HttpPost]
+        [Route("save")]
         public IHttpActionResult Save(ActionDTO curActionDTO)
         {
             ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
@@ -260,8 +252,8 @@ namespace Web.Controllers
         /// <summary>
         /// POST : updates the given action
         /// </summary>
-        [System.Web.Http.HttpPost]
-        [System.Web.Http.Route("update")]
+        [HttpPost]
+        [Route("update")]
         public IHttpActionResult Update(ActionDTO curActionDTO)
         {
             ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
