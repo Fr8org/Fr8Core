@@ -12,7 +12,7 @@ using System.IO;
 using System.Threading.Tasks;
 using pluginExcel.Infrastructure;
 using Core.Exceptions;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 using AutoMapper;
 
 namespace pluginExcel.Actions

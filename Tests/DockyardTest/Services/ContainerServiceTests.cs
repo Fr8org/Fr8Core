@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
+using InternalInterface = Core.Interfaces;
 using Core.Interfaces;
+// This alias is used to avoid ambiguity between StructureMap.Container and Core.Services.Container
+using InternalClass = Core.Services;
 using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
@@ -19,10 +23,10 @@ using Newtonsoft.Json;
 namespace DockyardTest.Services
 {
     [TestFixture]
-    [Category("ProcessService")]
-    public class ProcessServiceTests : BaseTest
+    [Category("ContainerService")]
+    public class ContainerServiceTests : BaseTest
     {
-        private IContainerService _processService;
+        private InternalInterface.IContainer _container;
         //private IDocuSignNotification _docuSignNotificationService;
         private Fr8Account _userService;
         private string _testUserId = "testuser";
@@ -34,7 +38,7 @@ namespace DockyardTest.Services
         public override void SetUp()
         {
             base.SetUp();
-            _processService = ObjectFactory.GetInstance<IContainerService>();
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _userService = ObjectFactory.GetInstance<Fr8Account>();
             //_docuSignNotificationService = ObjectFactory.GetInstance<IDocuSignNotification>();
 
@@ -47,30 +51,30 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void ProcessService_CanRetrieveValidProcesses()
+        public void ContainerService_CanRetrieveValidContainers()
         {
             //Arrange 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var route = FixtureData.TestRoute2();
+                var route = FixtureData.TestRoute5();
                 uow.RouteRepository.Add(route);
-                foreach (var p in FixtureData.GetContainers())
+                foreach (var container in FixtureData.GetContainers())
                 {
-                    uow.ContainerRepository.Add(p);
+                    uow.ContainerRepository.Add(container);
                 }
                 uow.SaveChanges();
             }
 
             //Act
-            var processList = _userService.GetProcessList(_testUserId);
+            var containerList = _userService.GetContainerList(_testUserId);
 
             //Assert
-            Assert.AreEqual(2, processList.Count());
+            Assert.AreEqual(2, containerList.Count());
         }
 
         //get this working again once 1124 is merged
         [Test]
-        public void ProcessService_Can_CreateProcess()
+        public void ContainerService_Can_CreateContainer()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -80,9 +84,9 @@ namespace DockyardTest.Services
                 uow.RouteRepository.Add(route);
                 uow.SaveChanges();
 
-                var process = _processService.Create(uow, route.Id, FixtureData.GetEnvelopeIdCrate());
-                Assert.IsNotNull(process);
-                Assert.IsTrue(process.Id > 0);
+                var container = _container.Create(uow, route.Id, FixtureData.GetEnvelopeIdCrate());
+                Assert.IsNotNull(container);
+                Assert.IsTrue(container.Id > 0);
             }
         }
 
@@ -152,7 +156,7 @@ namespace DockyardTest.Services
 */
 
         [Test]
-        public void ProcessService_Can_LaunchWithoutExceptions()
+        public void ContainerService_Can_LaunchWithoutExceptions()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -167,8 +171,8 @@ namespace DockyardTest.Services
                 ObjectFactory.Container.Inject(typeof(IRouteNode), activityMock.Object);
 
                 //Act
-                _processService = new Core.Services.ContainerService();
-                _processService.Launch(curRoute, FixtureData.DocuSignEventToCrate(curEvent));
+                _container = new InternalClass.Container();
+                _container.Launch(curRoute, FixtureData.DocuSignEventToCrate(curEvent));
 
                 //Assert
                 //since we have only one action in the template, the process should be called exactly once
@@ -186,17 +190,17 @@ namespace DockyardTest.Services
                 .Returns(Task.Delay(100))
                 .Verifiable();
             ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(_activity.Object));
-            _processService = ObjectFactory.GetInstance<IContainerService>();
-            ContainerDO processDO = FixtureData.TestContainerWithCurrentActivityAndNextActivity();
-            RouteNodeDO originalCurrentActivity = processDO.CurrentRouteNode;
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
+            ContainerDO containerDO = FixtureData.TestContainerWithCurrentActivityAndNextActivity();
+            RouteNodeDO originalCurrentActivity = containerDO.CurrentRouteNode;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                await _processService.Execute(uow, processDO);
+                await _container.Execute(uow, containerDO);
         }
 
-            Assert.AreNotEqual(originalCurrentActivity, processDO.CurrentRouteNode);
-            Assert.IsNull(processDO.CurrentRouteNode);
+            Assert.AreNotEqual(originalCurrentActivity, containerDO.CurrentRouteNode);
+            Assert.IsNull(containerDO.CurrentRouteNode);
             _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ContainerDO>()));
         }
 
@@ -247,11 +251,11 @@ namespace DockyardTest.Services
         [ExpectedException(typeof(ArgumentNullException))]
         public async void Execute_SetCurrentActivityNull_ThrowsException()
         {
-            _processService = ObjectFactory.GetInstance<IContainerService>();
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
         {
-                await _processService.Execute(uow, FixtureData.TestContainerCurrentActivityNULL());
+                await _container.Execute(uow, FixtureData.TestContainerCurrentActivityNULL());
         }
         }
 //

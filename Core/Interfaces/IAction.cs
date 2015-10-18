@@ -21,8 +21,8 @@ namespace Core.Interfaces
         ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode);
         //void Delete(int id); -> Delete is moved to ProcessNodeTemplate
         ActionDO MapFromDTO(ActionDTO curActionDTO);
-        Task PrepareToExecute(ActionDO curAction, ContainerDO curProcessDO, IUnitOfWork uow);
-        Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curProcessDO);
+        Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow);
+        Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO);
         string Authenticate(ActionDO curActionDO);
         
         Task<ActionDTO> Activate(ActionDO curActionDO);

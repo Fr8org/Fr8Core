@@ -16,7 +16,7 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort>44301</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
@@ -749,11 +749,14 @@
     <Content Include="newrelic\NewRelic.Profiler.dll" />
     <Content Include="Scripts\lib\jpattern.js" />
     <Content Include="Scripts\tests\integration\PluginActionExecuteTest.js" />
+    <Content Include="Scripts\tests\integration\ContainerControllerTests.js" />
     <Content Include="Views\ExternalAuth\AuthSuccess.cshtml" />
     <Content Include="Views\AngularTemplate\TextArea.cshtml" />
     <Content Include="Views\AngularTemplate\FieldList.cshtml" />
+    <Content Include="Views\AngularTemplate\ContainerList.cshtml" />
     <Content Include="Views\AngularTemplate\ConfirmationModal.cshtml" />
     <Content Include="_PowerShellScripts\RunFrontEndTests-VSO.ps1" />
+    <Content Include="Views\AngularTemplate\ContainerDetails.cshtml" />
     <Content Include="Views\DockyardAccount\_HeaderPartial.cshtml" />
     <Content Include="Views\AngularTemplate\DropDownListBox.cshtml" />
     <Content Include="Views\AngularTemplate\DesignerHeader.cshtml" />
@@ -762,6 +765,8 @@
     <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageFileListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ContainerListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ContainerDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SelectActionController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\RouteDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ReportFactController.ts" />
@@ -783,7 +788,9 @@
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ActionNameFormatter.ts" />
+    <TypeScriptCompile Include="Scripts\app\filters\ContainerState.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\RouteState.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IUser.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActivityCategoryDTO.ts" />
@@ -801,9 +808,11 @@
     <TypeScriptCompile Include="Scripts\app\model\FieldMappingSettings.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncidentDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Subroute.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ContainerDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Route.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessBuilderState.ts" />
     <TypeScriptCompile Include="Scripts\app\model\User.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ContainerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\CrateHelper.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManageFileService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ReportService.ts" />
@@ -824,10 +833,12 @@
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\ContainerControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\PaneConfigurationActionTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDesignDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionTemplate.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_ContainerDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\mocks.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ProcessBuilder.ts" />
     <Content Include="Scripts\_legacy\about-page.js" />
@@ -4104,7 +4115,6 @@
     <Folder Include="Controllers\Templates\" />
     <Folder Include="Scripts\app\directives\filters\" />
     <Folder Include="ViewModelServices\" />
-    <Folder Include="Views\Admin\" />
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\DockyardEvent\" />

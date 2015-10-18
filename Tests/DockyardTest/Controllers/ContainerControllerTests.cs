@@ -1,0 +1,131 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Web.Http.Results;
+using NUnit.Framework;
+using StructureMap;
+using StructureMap.AutoMocking;
+using Core.Interfaces;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
+using Web.Controllers;
+using Data.States;
+using Data.Infrastructure.StructureMap;
+
+
+namespace DockyardTest.Controllers
+{
+    [TestFixture]
+    [Category("ContainerControllerTests")]
+    class ContainerControllerTests : BaseTest
+    {
+        private Fr8AccountDO _testUserAccount;
+
+        private Core.Interfaces.IContainer _containerService;
+
+        [SetUp]
+        public override void SetUp()
+        {
+            base.SetUp();
+
+            _testUserAccount = FixtureData.TestDockyardAccount5();
+            _containerService = ObjectFactory.GetInstance<Core.Interfaces.IContainer>();
+
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //uow.UserRepository.Add(_testUserAccount);
+                var route = FixtureData.TestRoute4();
+
+                // This will Add a user as well as a route for creating Containers
+                unitOfWork.RouteRepository.Add(route);
+                unitOfWork.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, _testUserAccount.Id);
+                unitOfWork.SaveChanges();
+
+                ObjectFactory.GetInstance<ISecurityServices>().Login(unitOfWork, _testUserAccount);
+            }
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUser = uow.UserRepository.GetQuery()
+                    .SingleOrDefault(x => x.Id == _testUserAccount.Id);
+
+                ObjectFactory.GetInstance<ISecurityServices>().Logout();
+
+                uow.UserRepository.Remove(curUser);
+                uow.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void ContainerController_Will_ReturnEmptyOkResult_If_No_Container_Found()
+        {
+            //Act
+            var containerController = CreateContainerController();
+            Addcontainer();
+            int? id = 55;
+            var actionResult = containerController.Get(id);
+            //Assert
+            Assert.IsNull(actionResult as OkNegotiatedContentResult<ContainerDO>);
+        }
+
+        [Test]
+        public void ContainerController_Will_Return_All_UserContainers_When_Get_Invoked_With_Null()
+        {
+            //Arrange
+            var containerController = CreateContainerController();
+            Addcontainer();
+
+            //Act
+            int? id = null;
+            var actionResult = containerController.Get(id) as OkNegotiatedContentResult<IEnumerable<ContainerDTO>>;
+
+            ////Assert
+            Assert.NotNull(actionResult);
+            Assert.AreEqual(4, actionResult.Content.Count());
+        }
+
+        [Test]
+        public void ContainerController_Will_Return_Single_Container_When_Get_Invoked_With_Id()
+        {
+            //Arrange
+            var containerController = CreateContainerController();
+            Addcontainer();
+
+            //Act
+            int? id = 1;
+            var actionResult = containerController.Get(id) as OkNegotiatedContentResult<ContainerDTO>;
+
+            ////Assert
+            Assert.NotNull(actionResult);
+        }
+
+        private void Addcontainer()
+        {
+            //Arrange 
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                foreach (var container in FixtureData.TestControllerContainersByUser())
+                {
+                    unitOfWork.ContainerRepository.Add(container);
+                }
+                unitOfWork.SaveChanges();
+            }
+        }
+
+        private static ContainerController CreateContainerController()
+        {
+            return new ContainerController();
+        }
+
+    }
+}

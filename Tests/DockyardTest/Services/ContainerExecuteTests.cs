@@ -1,10 +1,11 @@
 ﻿using System;
+// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
+using InternalInterface = Core.Interfaces;
 using Core.Interfaces;
 using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
@@ -17,10 +18,10 @@ namespace DockyardTest.Services
 {
     
     [TestFixture]
-    [Category("ProcessExecute")]
-    public class ProcessExecuteTests: BaseTest
+    [Category("ContainerExecute")]
+    public class ContainerExecuteTests: BaseTest
     {
-        private IContainerService _process;
+        private InternalInterface.IContainer _container;
 
         [SetUp]
         //constructor method as it is run at the test start
@@ -28,28 +29,28 @@ namespace DockyardTest.Services
         {
             base.SetUp();
 
-            _process = ObjectFactory.GetInstance<IContainerService>();
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async void Execute_ProcessDoIsNull_ThrowsArgumentNullException()
+        public async void Execute_ContainerDoIsNull_ThrowsArgumentNullException()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                await _process.Execute(uow, null);
+                await _container.Execute(uow, null);
             }
         }
         
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public async void Execute_ProcessDoCurrentActivityIsNull_ThrowsArgumentNullException()
+        public async void Execute_ContainerDoCurrentActivityIsNull_ThrowsArgumentNullException()
         {
             //Get ProcessDO entity from static partial class FixtureData for already prepared data
             //The CurrentActivity value is already set to null and pass it immediately to service
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                await _process.Execute(uow, FixtureData.TestContainerCurrentActivityNULL());
+                await _container.Execute(uow, FixtureData.TestContainerCurrentActivityNULL());
             }
         }
 
@@ -145,15 +146,15 @@ namespace DockyardTest.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = FixtureData.TestContainerExecute();
+                var containerDO = FixtureData.TestContainerExecute();
                 var currAction = FixtureData.TestAction4();
                 currAction.CrateStorage = crateStorage;
                 var nextAction = FixtureData.TestAction5();
                 nextAction.CrateStorage = crateStorage;
-                processDO.CurrentRouteNode = currAction;
-                processDO.NextRouteNode = nextAction;
+                containerDO.CurrentRouteNode = currAction;
+                containerDO.NextRouteNode = nextAction;
 
-                uow.ContainerRepository.Add(processDO);
+                uow.ContainerRepository.Add(containerDO);
                 uow.RouteNodeRepository.Add(currAction);
                 uow.RouteNodeRepository.Add(nextAction);
 
@@ -161,11 +162,11 @@ namespace DockyardTest.Services
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = uow.ContainerRepository.GetByKey(49);
-                await _process.Execute(uow, processDO);
+                var containerDO = uow.ContainerRepository.GetByKey(49);
+                await _container.Execute(uow, containerDO);
 
-                Assert.IsNull(processDO.CurrentRouteNode);
-               // Assert.IsNull(processDO.NextActivity);
+                Assert.IsNull(containerDO.CurrentRouteNode);
+               // Assert.IsNull(containerDO.NextActivity);
             }
         }
         [Test]
@@ -175,11 +176,11 @@ namespace DockyardTest.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = FixtureData.TestContainerExecute();
+                var containerDO = FixtureData.TestContainerExecute();
                 var currActivity = FixtureData.TestActionTreeWithActionTemplates();
                 
-                processDO.CurrentRouteNode = currActivity;
-                uow.ContainerRepository.Add(processDO);
+                containerDO.CurrentRouteNode = currActivity;
+                uow.ContainerRepository.Add(containerDO);
                 
                 AddActionToRepository(uow, currActivity);
                 
@@ -187,10 +188,10 @@ namespace DockyardTest.Services
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processDO = uow.ContainerRepository.GetByKey(49);
-                await _process.Execute(uow, processDO);
+                var containerDO = uow.ContainerRepository.GetByKey(49);
+                await _container.Execute(uow, containerDO);
 
-                Assert.IsNull(processDO.CurrentRouteNode);
+                Assert.IsNull(containerDO.CurrentRouteNode);
                // Assert.IsNull(processDO.NextActivity);
             }
         }
