@@ -207,7 +207,7 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessDO = uow.ContainerRepository.GetByKey(containerDO.Id);
+                var curContainerDO = uow.ContainerRepository.GetByKey(containerDO.Id);
                 var curActivityDO = uow.RouteNodeRepository.GetByKey(curActivityId);
 
                 if (curActivityDO == null)
@@ -218,7 +218,7 @@ namespace Core.Services
                 if (curActivityDO is ActionDO)
                 {
                     IAction _action = ObjectFactory.GetInstance<IAction>();
-                    await _action.PrepareToExecute((ActionDO) curActivityDO, curProcessDO, uow);
+                    await _action.PrepareToExecute((ActionDO) curActivityDO, curContainerDO, uow);
             }
         }
         }

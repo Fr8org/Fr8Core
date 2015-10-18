@@ -21,18 +21,22 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Microsoft.AspNet.Identity;
+using Data.Infrastructure.StructureMap;
 
 namespace Web.Controllers
 {
+    [Fr8ApiAuthorize]
     [RoutePrefix("api/containers")]
     public class ContainerController : ApiController
     {
         private readonly InternalInterface.IContainer _container;
+        private readonly ISecurityServices _security;
 
 
         public ContainerController()
         {
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
         [HttpGet]
@@ -80,7 +84,9 @@ namespace Web.Controllers
         [HttpGet]
         public IHttpActionResult Get(int? id = null)
         {
-                IList<ContainerDO> curContainer = _container.GetByDockyardAccount(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IList<ContainerDO> curContainer = _container.GetByFr8Account(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id);
 
                 if (curContainer.Any())
                 {
@@ -92,6 +98,7 @@ namespace Web.Controllers
                     return Ok(curContainer.Select(Mapper.Map<ContainerDTO>));
                 }
                 return Ok();
+            }
         }
 
       

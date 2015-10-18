@@ -188,7 +188,7 @@ namespace Core.Services
             {
                 return uow.ContainerRepository.GetQuery().Where
                     (r => r.ContainerState == ContainerState.Executing
-                          & r.Fr8AccountId == userId).ToList();
+                          & r.Route.Fr8Account.Id == userId).ToList();
             }
         }
 

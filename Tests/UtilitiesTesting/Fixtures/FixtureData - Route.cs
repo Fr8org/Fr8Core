@@ -22,7 +22,6 @@ namespace UtilitiesTesting.Fixtures
                 Description = "descr 1",
                 Name = "template1",
                 RouteState = RouteState.Active,
-
               
                 
             };
@@ -39,7 +38,7 @@ namespace UtilitiesTesting.Fixtures
                 RouteState = RouteState.Active,
 
                 //UserId = "testUser1"
-                //DockyardAccount = FixtureData.TestDockyardAccount1()
+                //Fr8Account = FixtureData.TestDockyardAccount1()
             };
             return route;
         }
@@ -100,14 +99,14 @@ namespace UtilitiesTesting.Fixtures
 
                 var actionTemplate = ActionTemplate();
 
-                var processDo = new ContainerDO()
+                var containerDO = new ContainerDO()
                 {
                     Id = 1,
                     CrateStorage = EnvelopeIdCrateJson(),
                     RouteId = processTemplateDO.Id,
                     ContainerState = 1
                 };
-                uow.ContainerRepository.Add(processDo);
+                uow.ContainerRepository.Add(containerDO);
 
 
 
@@ -288,6 +287,19 @@ namespace UtilitiesTesting.Fixtures
                 //Subroutes = new List<SubrouteDO>(),
             };
             return curRouteDO;
+        }
+
+        public static RouteDO TestRoute4()
+        {
+            var route = new RouteDO
+            {
+                Id = 30,
+                Description = "descr 2",
+                Name = "template2",
+                RouteState = RouteState.Active,
+                Fr8Account = FixtureData.TestDockyardAccount1()
+            };
+            return route;
         }
     }
 }

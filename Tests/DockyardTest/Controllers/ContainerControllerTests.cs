@@ -16,14 +16,14 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using Data.States;
-using System.Threading.Tasks;
+using Data.Infrastructure.StructureMap;
 
 
 namespace DockyardTest.Controllers
 {
     [TestFixture]
     [Category("ContainerControllerTests")]
-    class ContainerControllerTests :BaseTest
+    class ContainerControllerTests : BaseTest
     {
         private Fr8AccountDO _testUserAccount;
 
@@ -34,19 +34,20 @@ namespace DockyardTest.Controllers
         {
             base.SetUp();
 
-            _testUserAccount = FixtureData.TestUser1();
+            _testUserAccount = FixtureData.TestDockyardAccount1();
             _containerService = ObjectFactory.GetInstance<Core.Interfaces.IContainer>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var envelopeCrate = FixtureData.EnvelopeIdCrateJson();
-                var processTemplate = FixtureData.TestRouteWithStartingSubrouteAndActionList();
+                //uow.UserRepository.Add(_testUserAccount);
+                var route = FixtureData.TestRoute4();
 
-                uow.RouteRepository.Add(processTemplate);
-                uow.UserRepository.Add(_testUserAccount);
+                // This will Add a user as well as a route for creating Containers
+                uow.RouteRepository.Add(route);
                 uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, _testUserAccount.Id);
                 uow.SaveChanges();
-                var container = _containerService.Create(uow, processTemplate.Id, FixtureData.GetEnvelopeIdCrate());
+
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, _testUserAccount);
             }
         }
 
@@ -58,6 +59,8 @@ namespace DockyardTest.Controllers
                 var curUser = uow.UserRepository.GetQuery()
                     .SingleOrDefault(x => x.Id == _testUserAccount.Id);
 
+                ObjectFactory.GetInstance<ISecurityServices>().Logout();
+
                 uow.UserRepository.Remove(curUser);
                 uow.SaveChanges();
             }
@@ -67,8 +70,8 @@ namespace DockyardTest.Controllers
         public void ContainerController_Will_ReturnEmptyOkResult_If_No_Container_Found()
         {
             //Act
-            var containerController = CreateContainerController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-        
+            var containerController = CreateContainerController();
+            Addcontainer();
             int? id = 55;
             var actionResult = containerController.Get(id);
             //Assert
@@ -79,26 +82,24 @@ namespace DockyardTest.Controllers
         public void ContainerController_Will_Return_All_UserContainers_When_Get_Invoked_With_Null()
         {
             //Arrange
-            var containerController = CreateContainerController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            var containerController = CreateContainerController();
+            Addcontainer();
 
             //Act
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                int? id = null;
-                var actionResult = containerController.Get(id) as OkNegotiatedContentResult<IEnumerable<ContainerDTO>>;
+            int? id = null;
+            var actionResult = containerController.Get(id) as OkNegotiatedContentResult<IEnumerable<ContainerDTO>>;
 
-                ////Assert
-                Assert.NotNull(actionResult);
-                // Assert.AreEqual(2, actionResult.Content.Count());
-            }
+            ////Assert
+            Assert.NotNull(actionResult);
+            Assert.AreEqual(4, actionResult.Content.Count());
         }
-
 
         [Test]
         public void ContainerController_Will_Return_Single_Container_When_Get_Invoked_With_Id()
         {
             //Arrange
-            var containerController = CreateContainerController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            var containerController = CreateContainerController();
+            Addcontainer();
 
             //Act
             int? id = 1;
@@ -106,26 +107,25 @@ namespace DockyardTest.Controllers
 
             ////Assert
             Assert.NotNull(actionResult);
-            
         }
 
-        private static ContainerController CreateContainerController(string userId, string email)
+        private void Addcontainer()
         {
-            var claims = new List<Claim>();
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, userId));
-            claims.Add(new Claim(ClaimTypes.Name, email));
-            claims.Add(new Claim(ClaimTypes.Email, email));
-            claims.Add(new Claim(ClaimTypes.Role,Roles.Admin));
-
-            var identity = new ClaimsIdentity(claims);
-            
-            var containerController = new ContainerController
+            //Arrange 
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                User = new GenericPrincipal(identity, new[] { "Users" })
-            };
-
-            return containerController;
+                foreach (var container in FixtureData.TestControllerContainersByUser())
+                {
+                    uow.ContainerRepository.Add(container);
+                }
+                uow.SaveChanges();
+            }
         }
-      
+
+        private static ContainerController CreateContainerController()
+        {
+            return new ContainerController();
+        }
+
     }
 }

@@ -49,7 +49,7 @@ namespace Core.Managers
             EventManager.AlertTokenRevoked += OnAlertTokenRevoked;
 
             EventManager.EventDocuSignNotificationReceived += LogDocuSignNotificationReceived;
-            EventManager.EventProcessLaunched += LogEventProcessLaunched;
+            EventManager.EventContainerLaunched += LogEventProcessLaunched;
             EventManager.EventProcessNodeCreated += LogEventProcessNodeCreated;
             EventManager.EventCriteriaEvaluationStarted += LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished += LogEventCriteriaEvaluationFinished;
@@ -86,7 +86,7 @@ namespace Core.Managers
             EventManager.AlertTokenRevoked -= OnAlertTokenRevoked;
             
             EventManager.EventDocuSignNotificationReceived -= LogDocuSignNotificationReceived;
-            EventManager.EventProcessLaunched -= LogEventProcessLaunched;
+            EventManager.EventContainerLaunched -= LogEventProcessLaunched;
             EventManager.EventProcessNodeCreated -= LogEventProcessNodeCreated;
             EventManager.EventCriteriaEvaluationStarted -= LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished -= LogEventCriteriaEvaluationFinished;

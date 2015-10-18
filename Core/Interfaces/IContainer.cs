@@ -13,7 +13,6 @@ namespace Core.Interfaces
         Task Execute(IUnitOfWork uow, ContainerDO curContainerDO);
         //void SetProcessNextActivity(ProcessDO curProcessDO);
 
-        IList<ContainerDO> GetByDockyardAccount(string userId, bool isAdmin = false, int? id = null);
-
+        IList<ContainerDO> GetByFr8Account(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, int? id = null);
     }
 }

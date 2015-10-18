@@ -44,7 +44,7 @@ namespace pluginSalesforce.Services
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Lead Created",
-                ProcessDOId = "",
+                ContainerDoId = "",
                 EventPayload = ExtractEventPayload(leadId,accountId).ToList(),
                 ExternalAccountId = accountId,
                 Source = "Salesforce"

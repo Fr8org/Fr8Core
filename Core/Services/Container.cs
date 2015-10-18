@@ -83,24 +83,24 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessDO = Create(uow, curRoute.Id, curEvent);
+                var curContainerDO = Create(uow, curRoute.Id, curEvent);
 
-            if (curProcessDO.ContainerState == ContainerState.Failed || curProcessDO.ContainerState == ContainerState.Completed)
+            if (curContainerDO.ContainerState == ContainerState.Failed || curContainerDO.ContainerState == ContainerState.Completed)
                 {
                 throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
                 }
 
-                curProcessDO.ContainerState = ContainerState.Executing;
+                curContainerDO.ContainerState = ContainerState.Executing;
                 uow.SaveChanges();
 
                 try
                 {
-                    await Execute(uow, curProcessDO);
-                    curProcessDO.ContainerState = ContainerState.Completed;
+                    await Execute(uow, curContainerDO);
+                    curContainerDO.ContainerState = ContainerState.Completed;
             }
                 catch
                 {
-                    curProcessDO.ContainerState = ContainerState.Failed;
+                    curContainerDO.ContainerState = ContainerState.Failed;
                     throw;
         }
                 finally
@@ -115,7 +115,7 @@ namespace Core.Services
         public async Task Execute(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             if (curContainerDO == null)
-                throw new ArgumentNullException("ProcessDO is null");
+                throw new ArgumentNullException("ContainerDO is null");
 
             if (curContainerDO.CurrentRouteNode != null)
             {
@@ -154,28 +154,24 @@ namespace Core.Services
         }
 
         // Return the Containers of current Account
-        public IList<ContainerDO> GetByDockyardAccount(string userId, bool isAdmin = false, int? id = null)
+        public IList<ContainerDO> GetByFr8Account(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, int? id = null)
         {
-            if (userId == null)
-              throw new ApplicationException("UserId must not be null");
-            
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            if (account.Id == null)
+                throw new ApplicationException("UserId must not be null");
+
+            var containerRepository = unitOfWork.ContainerRepository.GetQuery();
+
+            if (isAdmin)
             {
-                var containerRepository = unitOfWork.ContainerRepository.GetQuery();
-
-                if (isAdmin)
-                {
-                    return  (id == null
-                   ? containerRepository
-                   : containerRepository.Where(container => container.Id == id)).ToList();
-                }
-
-                return  (id == null
-                   ? containerRepository.Where(container => container.Route.Fr8Account.Id == userId)
-                   : containerRepository.Where(container => container.Id == id && container.Route.Fr8Account.Id == userId)).ToList();
+                return (id == null
+               ? containerRepository
+               : containerRepository.Where(container => container.Id == id)).ToList();
             }
-        }
 
-             
+            return (id == null
+               ? containerRepository.Where(container => container.Route.Fr8Account.Id == account.Id)
+               : containerRepository.Where(container => container.Id == id && container.Route.Fr8Account.Id == account.Id)).ToList();
+
+        }
     }
 }

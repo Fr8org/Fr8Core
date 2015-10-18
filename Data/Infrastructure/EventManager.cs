@@ -86,8 +86,8 @@ namespace Data.Infrastructure
         public delegate void EventDocuSignNotificationReceivedHandler();
         public static event EventDocuSignNotificationReceivedHandler EventDocuSignNotificationReceived;
 
-        public delegate void EventProcessLaunchedHandler(ContainerDO launchedContainer);
-        public static event EventProcessLaunchedHandler EventProcessLaunched;
+        public delegate void EventContainerLaunchedHandler(ContainerDO launchedContainer);
+        public static event EventContainerLaunchedHandler EventContainerLaunched;
 
         public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
         public static event EventProcessNodeCreatedHandler EventProcessNodeCreated;
@@ -339,9 +339,9 @@ namespace Data.Infrastructure
             if (handler != null) handler();
         }
 
-        public static void ProcessLaunched(ContainerDO launchedContainer)
+        public static void ContainerLaunched(ContainerDO launchedContainer)
         {
-            var handler = EventProcessLaunched;
+            var handler = EventContainerLaunched;
             if (handler != null) handler(launchedContainer);
         }
 

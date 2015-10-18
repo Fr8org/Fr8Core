@@ -38,7 +38,7 @@ namespace UtilitiesTesting.Fixtures
 				Id = 1,
 				Name = "Process 1",
                 RouteId = routeId,
-				Fr8AccountId = "testuser",
+                Fr8AccountId = "testuser",
 				ContainerState = ContainerState.Executing
 			});
 
@@ -47,7 +47,7 @@ namespace UtilitiesTesting.Fixtures
 				Id = 2,
 				Name = "Process 2",
                 RouteId = routeId,
-				Fr8AccountId = "testuser",
+                Fr8AccountId = "testuser",
 				ContainerState = ContainerState.Executing
 			});
 
@@ -56,7 +56,7 @@ namespace UtilitiesTesting.Fixtures
 				Id = 3,
 				Name = "Process 3",
                 RouteId = routeId,
-				Fr8AccountId = "testuser",
+                Fr8AccountId = "testuser",
 				ContainerState = ContainerState.Unstarted
 			});
 
@@ -65,12 +65,51 @@ namespace UtilitiesTesting.Fixtures
 				Id = 4,
 				Name = "Process 4",
                 RouteId = routeId,
-				Fr8AccountId = "anotheruser",
+                Fr8AccountId = "anotheruser",
 				ContainerState = ContainerState.Unstarted
 			});
 
             return containeList;
 		}
+
+        public static IList<ContainerDO> TestControllerContainersByUser()
+        {
+            IList<ContainerDO> containerList = new List<ContainerDO>();
+            var routeId = TestRoute4().Id;
+            containerList.Add(new ContainerDO()
+            {
+                Id = 1,
+                Name = "Container 1",
+                RouteId = routeId,
+                ContainerState = ContainerState.Executing
+            });
+
+            containerList.Add(new ContainerDO()
+            {
+                Id = 2,
+                Name = "Container 2",
+                RouteId = routeId,
+                ContainerState = ContainerState.Executing
+            });
+
+            containerList.Add(new ContainerDO()
+            {
+                Id = 3,
+                Name = "Container 3",
+                RouteId = routeId,
+                ContainerState = ContainerState.Unstarted
+            });
+
+            containerList.Add(new ContainerDO()
+            {
+                Id = 4,
+                Name = "Container 4",
+                RouteId = routeId,
+                ContainerState = ContainerState.Unstarted
+            });
+
+            return containerList;
+        }
 
 		/// <summary>
 		/// Determines physical location of XML file with test data contents 
