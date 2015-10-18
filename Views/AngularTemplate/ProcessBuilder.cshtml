@@ -10,18 +10,22 @@
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
 <div ng-controller="ProcessBuilderController" class="margin-top-10">    
-    <designer-header process-template="current.processTemplate"></designer-header>
+    <designer-header route="current.processTemplate"></designer-header>
     <div class="process-builder-container">
         <div class="action" ng-repeat-start="action in actions">
             <div class="action-header" dropdown>
-                <p class="action-name">{{action.name}}
-                    
+                <p class="action-name">{{action.label}}
                 </p>
                 <a class="action-menu" dropdown-toggle>
-                    <i class="fa fa-gear"></i>
+                    <i class="fa fa-gear fa-5x"></i>
                 </a>
                 <ul class="dropdown-menu pull-right" role="menu">
-                    <li role="menuitem"><a ng-click="deleteAction(action);"><i class="fa fa-trash-o"></i> Delete</a></li>
+                    <li role="menuitem">
+                    <a ng-click="deleteAction(action);">
+                        <i class="fa fa-trash-o"></i> 
+                        Delete
+                    </a>
+                    </li>
                 </ul>
             </div>
             

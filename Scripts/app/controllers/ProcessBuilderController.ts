@@ -8,10 +8,10 @@ module dockyard.controllers {
     'use strict';
 
     export interface IProcessBuilderScope extends ng.IScope {
-        processTemplateId: number;
-        processNodeTemplates: Array<model.ProcessNodeTemplateDTO>;
+        routeId: number;
+        subroutes: Array<model.SubrouteDTO>;
         fields: Array<model.Field>;
-        currentSubroute: model.ProcessNodeTemplateDTO;
+        currentSubroute: model.SubrouteDTO;
 
         // Identity of currently edited processNodeTemplate.
         //curNodeId: number;
@@ -43,7 +43,7 @@ module dockyard.controllers {
             '$state',
             'ActionService',
             '$http',
-            'ProcessTemplateService',
+            'RouteService',
             '$timeout',
             'ProcessBuilderService',
             'CrateHelper',
@@ -59,7 +59,7 @@ module dockyard.controllers {
             private $state: ng.ui.IState,
             private ActionService: services.IActionService,
             private $http: ng.IHttpService,
-            private ProcessTemplateService: services.IProcessTemplateService,
+            private RouteService: services.IRouteService,
             private $timeout: ng.ITimeoutService,
             private ProcessBuilderService: services.IProcessBuilderService,
             private CrateHelper: services.CrateHelper,
@@ -68,7 +68,9 @@ module dockyard.controllers {
             private $window: ng.IWindowService,
             private uiHelperService: services.IUIHelperService
             ) {
-            this.$scope.processTemplateId = $state.params.id;
+            debugger;
+
+            this.$scope.routeId = $state.params.id;
             this.$scope.current = new model.ProcessBuilderState();
             this.$scope.actions = [];
 
@@ -117,18 +119,18 @@ module dockyard.controllers {
         }
 
         private loadProcessTemplate() {
-            var processTemplatePromise = this.ProcessTemplateService.getFull({ id: this.$scope.processTemplateId });
+            var processTemplatePromise = this.RouteService.getFull({ id: this.$scope.routeId });
             var self = this;
-            processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IProcessTemplateVM) => {
+            processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IRouteVM) => {
                 debugger;
 
-                self.$scope.current.processTemplate = curProcessTemplate;
-                self.$scope.currentSubroute = curProcessTemplate.subroutes[0];
-                self.renderProcessTemplate(curProcessTemplate);
+                this.$scope.current.route = curProcessTemplate;
+                this.$scope.currentSubroute = curProcessTemplate.subroutes[0];
+                this.renderProcessTemplate(curProcessTemplate);
             });
         }
 
-        private renderProcessTemplate(curProcessTemplate: interfaces.IProcessTemplateVM) {
+        private renderProcessTemplate(curProcessTemplate: interfaces.IRouteVM) {
             if (curProcessTemplate.subroutes.length == 0) return;
 
             for (var curProcessNodeTemplate of curProcessTemplate.subroutes) {
@@ -202,7 +204,7 @@ module dockyard.controllers {
             // Create new action object.
             var action = new model.ActionDTO(this.$scope.currentSubroute.id, id, true);
             action.name = activityTemplate.name;
-
+            action.label = activityTemplate.label;
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();
             this.$scope.current.action.activityTemplateId = activityTemplate.id;
@@ -375,7 +377,7 @@ module dockyard.controllers {
                     name: "test action type",
                     configurationControls: new model.ControlsList(),
                     crateStorage: new model.CrateStorage(),
-                    parentActivityId: 1,
+                    parentRouteNodeId: 1,
                     activityTemplateId: 1,
                     id: 1,
                     isTempId: false,

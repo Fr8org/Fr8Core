@@ -84,6 +84,9 @@
     <Compile Include="AutoMapper\JTokenToStringConverter.cs" />
     <Compile Include="AutoMapper\StringToJTokenConverter.cs" />
     <Compile Include="ConfigRepository.cs" />
+    <Compile Include="Configuration\AzureApplicationSettings.cs" />
+    <Compile Include="Configuration\CloudConfigurationManager.cs" />
+    <Compile Include="Configuration\NativeMethods.cs" />
     <Compile Include="CsvReader.cs" />
     <Compile Include="DateUtility.cs" />
     <Compile Include="Encryption.cs" />
@@ -130,12 +133,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DocuSign.Integration.Client.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Configuration\Configuration.csproj">
-      <Project>{d8f7f734-21ce-4277-a14f-ebdde71dff0c}</Project>
-      <Name>Configuration</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

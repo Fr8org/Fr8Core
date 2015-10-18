@@ -168,7 +168,7 @@ namespace pluginDocuSign.Actions
 			curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
             curActionDTO.CrateStorage.CrateDTO.Add(eventFields);
 
-            var configurationFields = Action.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
+            var configurationFields = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
 
             // Remove previously added crate of "Standard Event Subscriptions" schema
 

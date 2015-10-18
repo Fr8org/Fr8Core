@@ -7,9 +7,9 @@ using NUnit.Framework;
 using pluginAzureSqlServer;
 using StructureMap;
 using Utilities;
-using fr8.Microsoft.Azure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Utilities.Configuration.Azure;
 
 namespace pluginAzureSqlServer.Tests
 {

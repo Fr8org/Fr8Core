@@ -10,7 +10,7 @@ using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 using Newtonsoft.Json;
 using StructureMap;
 
@@ -273,7 +273,7 @@ namespace Core.Services
                 : "downstream_actions/";
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "activities/"
+                + "route_nodes/"
                 + directionSuffix
                 + "?id=" + activityId;
 

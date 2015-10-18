@@ -12,27 +12,21 @@ using StructureMap;
 
 namespace Web.Controllers
 {
-    [DockyardAuthorize(Roles = Roles.Booker)]
+    [DockyardAuthorize]
     public class DashboardController : Controller
     {
         //
         // GET: /Dashboard/
         public ActionResult Index(int id = 0)
         {
-            
-
-                return View("../Admin/Index");
-            
+            return View();
         }
 
         //
         // GET: /Dashboard/Sandbox
         public ActionResult Sandbox(int id = 0)
         {
-
-
             return View("../Sandbox/Index");
-
         }
     }
 }

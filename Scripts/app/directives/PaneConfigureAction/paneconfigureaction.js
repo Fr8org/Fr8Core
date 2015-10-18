@@ -170,11 +170,17 @@ var dockyard;
                             if ($scope.configurationWatchUnregisterer) {
                                 $scope.configurationWatchUnregisterer();
                             }
-                            ActionService.configure($scope.currentAction).$promise.then(function (res) {
-                                // Unblock pane
-                                $scope.processing = false;
+                            ActionService.configure($scope.currentAction).$promise
+                                .then(function (res) {
                                 $scope.currentAction.crateStorage = res.crateStorage;
                                 $scope.processConfiguration();
+                            })
+                                .catch(function () {
+                                alert('Error while retrieving configuration.');
+                            })
+                                .finally(function () {
+                                // Unblock pane
+                                $scope.processing = false;
                             });
                         }
                         ;

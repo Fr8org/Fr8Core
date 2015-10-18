@@ -1583,22 +1583,17 @@
   </div>
 </div>
 
-    <div class="btn-group right">
-      <a href="/alexed1/fr8company/find/dev"
-            class="js-show-file-finder btn btn-sm empty-icon tooltipped tooltipped-nw"
-            data-pjax
-            data-hotkey="t"
-            aria-label="Quickly jump between files">
-        <span class="octicon octicon-list-unordered"></span>
-      </a>
-      <button aria-label="Copy file path to clipboard" class="js-zeroclipboard btn btn-sm zeroclipboard-button tooltipped tooltipped-s" data-copied-hint="Copied!" type="button"><span class="octicon octicon-clippy"></span></button>
-    </div>
+describe("plugins execute actions tests", function () {
+    var returnedData;
+    var apiUrl = "http://localhost:30643/api/containers";
+    var testProcessId1;
+    var testProcessId2;
 
     <div class="breadcrumb js-zeroclipboard-target">
       <span class="repo-root js-repo-root"><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/alexed1/fr8company" class="" data-branch="dev" data-pjax="true" itemscope="url"><span itemprop="title">fr8company</span></a></span></span><span class="separator">/</span><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/alexed1/fr8company/tree/dev/Scripts" class="" data-branch="dev" data-pjax="true" itemscope="url"><span itemprop="title">Scripts</span></a></span><span class="separator">/</span><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/alexed1/fr8company/tree/dev/Scripts/tests" class="" data-branch="dev" data-pjax="true" itemscope="url"><span itemprop="title">tests</span></a></span><span class="separator">/</span><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/alexed1/fr8company/tree/dev/Scripts/tests/integration" class="" data-branch="dev" data-pjax="true" itemscope="url"><span itemprop="title">integration</span></a></span><span class="separator">/</span><strong class="final-path">PluginActionExecuteTest.js</strong>
     </div>
   </div>
-
+    
 
   <div class="commit-tease">
       <span class="right">
@@ -1612,7 +1607,7 @@
         <a href="/alexed1" class="user-mention" rel="author">alexed1</a>
           <a href="/alexed1/fr8company/commit/dcf6bbc57933039b33963d42b8f17b352da42948" class="message" data-pjax="true" title="Revert &quot;update Monitor_DocuSign_Event&quot;">Revert "update Monitor_DocuSign_Event"</a>
       </div>
-
+    
     <div class="commit-tease-contributors">
       <a class="muted-link contributors-toggle" href="#blob_contributors_box" rel="facebox">
         <strong>3</strong>
@@ -1621,8 +1616,8 @@
           <a class="avatar-link tooltipped tooltipped-s" aria-label="manishmishra256" href="/alexed1/fr8company/commits/dev/Scripts/tests/integration/PluginActionExecuteTest.js?author=manishmishra256"><img alt="@manishmishra256" class="avatar" height="20" src="https://avatars3.githubusercontent.com/u/3243256?v=3&amp;s=40" width="20" /> </a>
     <a class="avatar-link tooltipped tooltipped-s" aria-label="alexed1" href="/alexed1/fr8company/commits/dev/Scripts/tests/integration/PluginActionExecuteTest.js?author=alexed1"><img alt="@alexed1" class="avatar" height="20" src="https://avatars2.githubusercontent.com/u/3140883?v=3&amp;s=40" width="20" /> </a>
     <a class="avatar-link tooltipped tooltipped-s" aria-label="blazingmind" href="/alexed1/fr8company/commits/dev/Scripts/tests/integration/PluginActionExecuteTest.js?author=blazingmind"><img alt="@blazingmind" class="avatar" height="20" src="https://avatars1.githubusercontent.com/u/14808328?v=3&amp;s=40" width="20" /> </a>
-
-
+    
+    
     </div>
 
     <div id="blob_contributors_box" style="display:none">
@@ -1647,20 +1642,20 @@
 <div class="file">
   <div class="file-header">
   <div class="file-actions">
-
+    
     <div class="btn-group">
       <a href="/alexed1/fr8company/raw/dev/Scripts/tests/integration/PluginActionExecuteTest.js" class="btn btn-sm " id="raw-url">Raw</a>
         <a href="/alexed1/fr8company/blame/dev/Scripts/tests/integration/PluginActionExecuteTest.js" class="btn btn-sm js-update-url-with-hash">Blame</a>
       <a href="/alexed1/fr8company/commits/dev/Scripts/tests/integration/PluginActionExecuteTest.js" class="btn btn-sm " rel="nofollow">History</a>
     </div>
-
+    
       <a class="octicon-btn tooltipped tooltipped-nw"
          href="github-windows://openRepo/https://github.com/alexed1/fr8company?branch=dev&amp;filepath=Scripts%2Ftests%2Fintegration%2FPluginActionExecuteTest.js"
          aria-label="Open this file in GitHub Desktop"
          data-ga-click="Repository, open with desktop, type:windows">
           <span class="octicon octicon-device-desktop"></span>
       </a>
-
+    
         <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/alexed1/fr8company/edit/dev/Scripts/tests/integration/PluginActionExecuteTest.js" class="inline-form js-update-url-with-hash" data-form-nonce="87025f9b9d4f36784c77a32b1ca51ef5355bda59" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="Dsdw/pfk0EGELLScuFGUx5Kc60jIaL69qo/JIZBfQ4S5tEATqaH9y/UrIrqHiY+IWm85r9gbWokqBP2EY4Vl9g==" /></div>
           <button class="octicon-btn tooltipped tooltipped-nw" type="submit"
             aria-label="Edit this file" data-hotkey="e" data-disable-with>
@@ -1680,7 +1675,7 @@
   </div>
 </div>
 
-  
+
 
   <div class="blob-wrapper data type-javascript">
       <table class="highlight tab-size js-file-line-container" data-tab-size="8">
@@ -2555,11 +2550,11 @@
 </td>
       </tr>
 </table>
-
+            
   </div>
 
 </div>
-
+            
 <a href="#jump-to-line" rel="facebox[.linejump]" data-hotkey="l" style="display:none">Jump to Line</a>
 <div id="jump-to-line" style="display:none">
   <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="" class="js-jump-to-line-form" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
@@ -2573,7 +2568,7 @@
     </div>
   </div>
 
-
+    
     </div>
 
       <div class="container">
@@ -2605,10 +2600,10 @@
 
 
 
-    
-    
-    
 
+
+
+    
     <div id="ajax-error-message" class="flash flash-error">
       <span class="octicon octicon-alert"></span>
       <button type="button" class="flash-close js-flash-close js-ajax-error-dismiss" aria-label="Dismiss error">
@@ -2620,8 +2615,8 @@
 
       <script crossorigin="anonymous" integrity="sha256-CA8cFVoo9aQxXUpoYq6vt+J7ygp022966eAEjjITadE=" src="https://assets-cdn.github.com/assets/frameworks-080f1c155a28f5a4315d4a6862aeafb7e27bca0a74db6f7ae9e0048e321369d1.js"></script>
       <script async="async" crossorigin="anonymous" integrity="sha256-rAM/AGK9P0fEaNPag51hXf+Rz88OQW6goAmfvNRIOro=" src="https://assets-cdn.github.com/assets/github-ac033f0062bd3f47c468d3da839d615dff91cfcf0e416ea0a0099fbcd4483aba.js"></script>
-      
-      
+
+
     <div class="js-stale-session-flash stale-session-flash flash flash-warn flash-banner hidden">
       <span class="octicon octicon-alert"></span>
       <span class="signed-in-tab-flash">You signed in with another tab or window. <a href="">Reload</a> to refresh your session.</span>

@@ -32,6 +32,7 @@ namespace pluginDocuSign.Controllers
             {
                 Version = "1",
                 Name = "Monitor_DocuSign",
+                Label = "Monitor DocuSign",
                 Category = ActivityCategory.Monitors,
                 Plugin = plugin
             };
@@ -40,6 +41,7 @@ namespace pluginDocuSign.Controllers
 			{
 				Version = "1",
 				Name = "Send_DocuSign_Envelope",
+                Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
 				Plugin = plugin
 			};
@@ -56,6 +58,7 @@ namespace pluginDocuSign.Controllers
             var recordDocuSignEvents = new ActivityTemplateDO
             {
                 Name = "Record_DocuSign_Events",
+                Label = "Record DocuSign Events",
                 Version = "1",
                 Category = ActivityCategory.Forwarders,
                 Plugin = plugin

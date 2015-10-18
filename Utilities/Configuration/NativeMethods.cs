@@ -16,7 +16,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace fr8.Microsoft.Azure
+namespace Utilities.Configuration.Azure
 {
     static internal class NativeMethods
     {

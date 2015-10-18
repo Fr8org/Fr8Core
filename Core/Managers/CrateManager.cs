@@ -1,4 +1,7 @@
-﻿using Core.Interfaces;
+﻿using AutoMapper;
+using Core.Interfaces;
+using Data.Constants;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
@@ -262,6 +265,60 @@ namespace Core.Managers
             crateDTOList = curCrateStorageDTO.CrateDTO.Where(crate => crate.Label == curLabel);
 
             return crateDTOList;
+        }
+
+        //-----------------------------------------------------------------------------------------------------
+
+        public void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists)
+        {
+            if (curCrateDTOLists == null)
+                throw new ArgumentNullException("CrateDTO is null");
+            if (curActionDO == null)
+                throw new ArgumentNullException("ActionDO is null");
+
+            if (curCrateDTOLists.Count > 0)
+            {
+                curActionDO.UpdateCrateStorageDTO(curCrateDTOLists);
+            }
+        }
+
+        public void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO)
+        {
+            AddCrate(curActionDO, new List<CrateDTO>() { curCrateDTO });
+        }
+
+        public void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO)
+        {
+            var existingCratesWithLabelInActionDO = GetCratesByLabel(label, curActionDO.CrateStorageDTO());
+            if (!existingCratesWithLabelInActionDO.Any()) // no existing crates with user provided label found, then add the crate
+            {
+                AddCrate(curActionDO, curCrateDTO);
+            }
+            else
+            {
+                // Remove the existing crate for this label
+                RemoveCrateByLabel(curActionDO.CrateStorageDTO().CrateDTO, label);
+
+                // Add the newly created crate for this label to action's crate storage
+                AddCrate(curActionDO, curCrateDTO);
+            }
+        }
+
+        public List<CrateDTO> GetCrates(ActionDO curActionDO)
+        {
+            return curActionDO.CrateStorageDTO().CrateDTO;
+        }
+
+        public StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO)
+        {
+            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage).ToList();
+            if (confControls.Count() != 0 && confControls.Count() != 1)
+                throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
+            if (!confControls.Any())
+                return null;
+            var standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(confControls.First().Contents);
+            return standardCfgControlsMs;
         }
 
     }
