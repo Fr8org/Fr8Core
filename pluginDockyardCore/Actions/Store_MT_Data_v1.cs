@@ -20,6 +20,24 @@ namespace pluginDockyardCore.Actions
             return await ProcessConfigurationRequest(curActionDTO, actionDTO => ConfigurationRequestType.Initial);
         }
 
+        public Task<object> Activate(ActionDTO curActionDTO)
+        {
+            //No activation logic decided yet
+            return null;
+        }
+
+        public Task<object> Deactivate(ActionDTO curDataPackage)
+        {
+            //No deactivation logic decided yet
+            return null;
+        }
+
+        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        {
+            //Waiting for sergey changes to be merged in
+            return null;
+        }
+
         protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
