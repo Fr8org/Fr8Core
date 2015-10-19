@@ -6,7 +6,7 @@ using System.Web.Http;
 using PluginBase;
 using PluginBase.BaseClasses;
 
-namespace pluginDockyardCore
+namespace terminalFr8Core
 {
     public static class WebApiConfig
     {
@@ -15,8 +15,8 @@ namespace pluginDockyardCore
             BasePluginWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
-                name: "PluginDockyardCoreServer",
-                routeTemplate: "pluginDockyardCore/{controller}/{id}"
+                name: "TerminalFr8CoreServer",
+                routeTemplate: "terminalFr8Core/{controller}/{id}"
             );
         }
     }

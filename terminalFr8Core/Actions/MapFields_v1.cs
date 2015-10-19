@@ -11,7 +11,7 @@ using Data.Interfaces.ManifestSchemas;
 using PluginBase.Infrastructure;
 using PluginBase.BaseClasses;
 
-namespace pluginDockyardCore.Actions
+namespace terminalFr8Core.Actions
 {
     public class MapFields_v1 : BasePluginAction
     {

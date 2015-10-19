@@ -5,7 +5,7 @@ using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
 
-namespace pluginDockyardCore
+namespace terminalFr8Core
 {
     public class SelfHostFactory
     {

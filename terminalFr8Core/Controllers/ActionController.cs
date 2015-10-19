@@ -15,12 +15,12 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using PluginBase.BaseClasses;
 
-namespace pluginDockyardCore.Controllers
+namespace terminalFr8Core.Controllers
 {
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private const string curPlugin = "pluginDockyardCore";
+        private const string curPlugin = "terminalFr8Core";
         private BasePluginController _basePluginController = new BasePluginController();
 
         [HttpPost]
