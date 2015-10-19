@@ -34,6 +34,7 @@ namespace Data.Interfaces.DataTransferObjects
         public const string Routing = "Routing";
         public const string FieldList = "FieldList";
         public const string Button = "Button";
+        public const string TextSource = "TextSource";
     }
 
     public class CheckBoxControlDefinitionDTO : ControlDefinitionDTO
@@ -155,6 +156,20 @@ namespace Data.Interfaces.DataTransferObjects
             {
                 Value = "[]";
             }
+        }
+    }
+
+    public class TextSourceControlDefinitionDTO : ControlDefinitionDTO
+    {
+        [JsonProperty("initialLabel")]
+        public string InitialLabel;
+
+        [JsonProperty("upstreamSourceLabel")]
+        public string UpstreamSourceLabel;
+
+        public TextSourceControlDefinitionDTO()
+        {
+            Type = ControlTypes.TextSource;
         }
     }
 

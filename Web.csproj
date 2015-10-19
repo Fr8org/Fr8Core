@@ -757,6 +757,7 @@
     <Content Include="Views\DockyardAccount\_HeaderPartial.cshtml" />
     <Content Include="Views\AngularTemplate\DropDownListBox.cshtml" />
     <Content Include="Views\AngularTemplate\DesignerHeader.cshtml" />
+    <Content Include="Views\AngularTemplate\TextSource.cshtml" />
     <None Include="Views\Home\DocuSign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
@@ -769,6 +770,7 @@
     <Content Include="Scripts\lib\jquery.blockui.min.js" />
     <Content Include="Views\Sandbox\Index.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\TextSource.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FieldList.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
