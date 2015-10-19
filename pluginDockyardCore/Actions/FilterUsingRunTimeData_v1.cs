@@ -9,11 +9,11 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
-using PluginBase.Infrastructure;
-using pluginDockyardCore.Interfaces;
 using PluginBase.BaseClasses;
+using PluginBase.Infrastructure;
+using terminalFr8Core.Interfaces;
 
-namespace pluginDockyardCore.Actions
+namespace terminalFr8Core.Actions
 {
     public class FilterUsingRunTimeData_v1 : BasePluginAction
     {

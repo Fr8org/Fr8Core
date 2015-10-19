@@ -1,1 +1,1 @@
-﻿<%@ Application Codebehind="Global.asax.cs" Inherits="pluginDockyardCore.Global" Language="C#" %>
+﻿<%@ Application Codebehind="Global.asax.cs" Inherits="terminalFr8Core.Global" Language="C#" %>

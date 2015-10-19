@@ -5,7 +5,7 @@ using Core.Services;
 using Data.Entities;
 using Data.States;
 
-namespace pluginDockyardCore.Controllers
+namespace terminalFr8Core.Controllers
 {
     [RoutePrefix("plugins")]
     public class PluginController : ApiController
@@ -25,7 +25,7 @@ namespace pluginDockyardCore.Controllers
             {
                 Endpoint = "localhost:50705",
                 PluginStatus = PluginStatus.Active,
-                Name = "pluginDockyardCore",
+                Name = "terminalFr8Core",
                 RequiresAuthentication = false,
                 Version = "1"
             };
