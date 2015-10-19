@@ -105,13 +105,13 @@ namespace pluginIntegrationTests
                 uow.SaveChanges();
             }
 
-            _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
+            _coreServer = pluginIntegrationTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
 
             var docuSignServerUrl = "http://" + FixtureData.TestPlugin_DocuSign_EndPoint + "/";
             _docuSignServer = pluginDocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
 
             var dockyardCoreServerUrl = "http://" + FixtureData.TestPlugin_Core_EndPoint + "/";
-            _dockyardCoreServer = pluginDockyardCore.SelfHostFactory.CreateServer(dockyardCoreServerUrl);
+            _dockyardCoreServer = terminalFr8Core.SelfHostFactory.CreateServer(dockyardCoreServerUrl);
 
             var azureSqlServerServerUrl = "http://" + FixtureData.TestPlugin_AzureSqlServer_EndPoint + "/";
             _azureSqlServerServer = pluginAzureSqlServer.SelfHostFactory.CreateServer(azureSqlServerServerUrl);

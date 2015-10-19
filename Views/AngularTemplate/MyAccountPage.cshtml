@@ -10,12 +10,12 @@
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
 
-<div ng-controller="ProcessTemplateListController" class="margin-top-10" id="nav-tables">
+<div ng-controller="RouteListController" class="margin-top-10" id="nav-tables">
     <div class="row" ng-init="isFr = true;">
         <div class="col-md-2 col-sm-2 remove-padding">
             <div class="left-pills">
                 <ul>
-                    <li class="active" ng-click="isFr = true;"><a data-toggle="pill">Myfr8lines</a></li>
+                    <li class="active" ng-click="isFr = true;"><a data-toggle="pill">MyRoutes</a></li>
                     <li ng-click="isFr = false;"><a data-toggle="pill">Settings</a></li>
                 </ul>
             </div>
@@ -24,7 +24,7 @@
         <div class="col-md-10 col-sm-10 remove-left-padding">
             <div class="tab-content" id="inner-tab-content">
                 <div id="Myfr8lines" ng-show="isFr">
-                    <h3>Myfr8lines</h3>
+                    <h3>MyRoutes</h3>
                     <div class="row">
                         <div class="col-md-12 col-sm-12">
 
@@ -32,7 +32,7 @@
                                 <div class="portlet-title">
                                     <div class="caption caption-md">
                                         <i class="icon-bar-chart font-green-haze hide"></i>
-                                        <span class="caption-subject font-green-haze bold uppercase">ACTIVE fr8lines</span>
+                                        <span class="caption-subject font-green-haze bold uppercase">ACTIVE Routes</span>
                                         <span class="caption-helper hide">weekly stats...</span>
                                     </div>
                                     <div class="actions">
@@ -76,7 +76,7 @@
                                 <div class="portlet-title">
                                     <div class="caption caption-md">
                                         <i class="icon-bar-chart font-green-haze hide"></i>
-                                        <span class="caption-subject font-green-haze bold uppercase">INACTIVE fr8lines</span>
+                                        <span class="caption-subject font-green-haze bold uppercase">INACTIVE Routes</span>
                                         <span class="caption-helper hide">weekly stats...</span>
                                     </div>
                                     <div class="actions">

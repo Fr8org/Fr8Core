@@ -5,7 +5,6 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States.Templates;
 using Data.Validations;
 using FluentValidation;
-using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using System;
 
@@ -22,7 +21,8 @@ namespace Data.Entities
         public int Id { get; set; }
 
         public string Name { get; set; }
-        public string Fr8AccountId { get; set; }
+
+        //public string Fr8AccountId { get; set; }
 
         [Required]
         [ForeignKey("Route")]
@@ -70,7 +70,7 @@ namespace Data.Entities
         {
             base.BeforeSave();
 
-            ProcessValidator curValidator = new ProcessValidator();
+            ContainerValidator curValidator = new ContainerValidator();
             curValidator.ValidateAndThrow(this);
 
         }

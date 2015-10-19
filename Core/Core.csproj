@@ -189,6 +189,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\SearchDirection.cs" />
     <Compile Include="Enums\GetCrateDirection.cs" />
     <Compile Include="Exceptions\AmbiguityException.cs" />
     <Compile Include="Exceptions\AuthenticationExeception.cs" />
@@ -208,7 +209,7 @@
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IProcessNode.cs" />
-    <Compile Include="Interfaces\IContainerService.cs" />
+    <Compile Include="Interfaces\IContainer.cs" />
     <Compile Include="Interfaces\ISubroute.cs" />
     <Compile Include="Interfaces\IReport.cs" />
     <Compile Include="Interfaces\ISMSMessage.cs" />
@@ -288,7 +289,7 @@
     <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\ProcessNode.cs" />
-    <Compile Include="Services\ContainerService.cs" />
+    <Compile Include="Services\Container.cs" />
     <Compile Include="Services\Subroute.cs" />
     <Compile Include="Services\Route.cs" />
     <Compile Include="Services\Report.cs" />
@@ -296,10 +297,6 @@
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Configuration\Configuration.csproj">
-      <Project>{D8F7F734-21CE-4277-A14F-EBDDE71DFF0C}</Project>
-      <Name>Configuration</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>

@@ -133,14 +133,44 @@
     display: inline-block;
     height: 300px;
     margin: 10px;
-    padding: 5px;
+    
     vertical-align: top;
     width: 330px;
 }
 
 .action-name {
-    margin-top: 10px;
+    
     text-align: center;
+
+}
+
+
+
+.action-menu {
+    bottom: 5px;
+    position: absolute;
+    right: 5px;
+    color: white;
+}
+.action-menu:hover {
+    color: #bab7b7;
+}
+.action-header {
+    padding-top:15px;
+    padding-right:10px;
+    background-color:#1eac48;
+    margin-top: 0px;
+    padding-bottom: 10px;
+    border-bottom: 1px;
+    margin-bottom: 10px;
+    text-align: center;
+    position: relative;
+}
+.action-header p{
+    
+    font-weight:800;
+    font-size:22px;
+    color: white;
 }
 
 .action-to-add {
@@ -154,6 +184,7 @@
 }
 
 .action .pane-configure-action {    
+    padding: 5px;
     height: 250px;
     display: block;
     width: 100%;
@@ -278,4 +309,14 @@ input[type=radio]:checked + div.nested-controls {
 .page-header .container{
     width: 100%;
     margin: 0;
+}
+
+.nested-controls {
+    margin: 0;
+}
+
+.ui-select-match > span, .nested-controls input {
+    height: 26px;
+    padding-top: 3px; 
+    padding-bottom: 3px;
 }

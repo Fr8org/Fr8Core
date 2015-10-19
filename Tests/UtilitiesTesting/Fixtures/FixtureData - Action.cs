@@ -259,7 +259,7 @@ namespace UtilitiesTesting.Fixtures
 
             var processTemplateDo = TestRoute2();
 
-            var processDo = new ContainerDO()
+            var containerDO = new ContainerDO()
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
@@ -342,7 +342,7 @@ namespace UtilitiesTesting.Fixtures
                 RouteState = RouteState.Active
             };
 
-            var processDo = new ContainerDO()
+            var containerDO = new ContainerDO()
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
@@ -403,7 +403,7 @@ namespace UtilitiesTesting.Fixtures
                 Fr8Account = FixtureData.TestDockyardAccount1()
             };
 
-            var curProcessDO = new ContainerDO()
+            var curContainerDO = new ContainerDO()
             {
                 Id = 1,
                 RouteId = 1,
@@ -477,7 +477,7 @@ namespace UtilitiesTesting.Fixtures
                 _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields)),
             };
 
-            _action.AddCrate(actionDo, crateConfiguration);
+            _crate.AddCrate(actionDo, crateConfiguration);
 
             return actionDo;
         }
@@ -742,7 +742,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var actionTemplate = ActionTemplate();
 
-            var processDo = new ContainerDO()
+            var containerDO = new ContainerDO()
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
@@ -1057,6 +1057,6 @@ CrateStorage=  crateStorage,
             };
 
             return actionDO;
-        }
+    }
     }
 }

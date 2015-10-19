@@ -188,7 +188,7 @@ namespace UtilitiesTesting.Fixtures
                 CssClass = "well well-lg"
             };
 
-            var filepickerControl = new FilePickerControlDefinisionDTO()
+            var filepickerControl = new FilePickerControlDefinitionDTO()
             {
                 Label = "Select a File"
             };

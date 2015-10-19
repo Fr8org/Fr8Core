@@ -16,7 +16,7 @@ using pluginDocuSign.DataTransferObjects;
 using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Interfaces;
 using pluginDocuSign.Services;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 
 namespace pluginDocuSign.Actions
 {
@@ -28,15 +28,9 @@ namespace pluginDocuSign.Actions
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (IsEmptyAuthToken(curActionDTO))
-            {
-                AppendDockyardAuthenticationCrate(curActionDTO, AuthenticationMode.InternalMode);
-                return curActionDTO;
-            }
-
-            RemoveAuthenticationCrate(curActionDTO);
-
-            return await ProcessConfigurationRequest(curActionDTO, actionDTO => ConfigurationEvaluator(actionDTO));
+            if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
+                return await ProcessConfigurationRequest(curActionDTO, actionDTO => ConfigurationEvaluator(actionDTO));
+            return curActionDTO;
         }
 
         public object Activate(ActionDTO curActionDTO)
@@ -120,7 +114,7 @@ namespace pluginDocuSign.Actions
 
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             // Try to find Configuration_Controls
-            var stdCfgControlMS = Action.GetConfigurationControls(curActionDO);
+            var stdCfgControlMS = Crate.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
             {
                 return ConfigurationRequestType.Initial;
@@ -199,7 +193,7 @@ namespace pluginDocuSign.Actions
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             
             // Try to find Configuration_Controls.
-            var stdCfgControlMS = Action.GetConfigurationControls(curActionDO);
+            var stdCfgControlMS = Crate.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
             {
                 return curActionDTO;

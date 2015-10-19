@@ -11,24 +11,34 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
 using StructureMap;
+// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
+using InternalInterface = Core.Interfaces;
 using Core.Interfaces;
 using Core.Services;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using Microsoft.AspNet.Identity;
+using Data.Infrastructure.StructureMap;
 
 namespace Web.Controllers
 {
-    [RoutePrefix("api/processes")]
+    // commented out by yakov.gnusin.
+    // Please DO NOT put [Fr8ApiAuthorize] on class, this breaks process execution!
+    // [Fr8ApiAuthorize]
+    [RoutePrefix("api/containers")]
     public class ContainerController : ApiController
     {
-        private readonly IContainerService _container;
+        private readonly InternalInterface.IContainer _container;
+        private readonly ISecurityServices _security;
 
 
         public ContainerController()
         {
-            _container = ObjectFactory.GetInstance<IContainerService>();
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
         [HttpGet]
@@ -37,42 +47,68 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessDO = uow.ContainerRepository.GetByKey(id);
-                var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, id);
+                var curContainerDO = uow.ContainerRepository.GetByKey(id);
+                var curPayloadDTO = new PayloadDTO(curContainerDO.CrateStorage, id);
 
-                EventManager.ProcessRequestReceived(curProcessDO);
+                EventManager.ProcessRequestReceived(curContainerDO);
 
                 return Ok(curPayloadDTO);
             }
         }
 
+        [Fr8ApiAuthorize]
         [Route("getIdsByName")]
         [HttpGet]
         public IHttpActionResult GetIdsByName(string name)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processIds = uow.ContainerRepository.GetQuery().Where(x=>x.Name == name).Select(x=>x.Id).ToArray();
-                
-                return Json(processIds);
+                var containerIds = uow.ContainerRepository.GetQuery().Where(x => x.Name == name).Select(x => x.Id).ToArray();
+
+                return Json(containerIds);
             }
         }
 
+        [Fr8ApiAuthorize]
         [Route("launch")]
         [HttpPost]
-        public async Task<IHttpActionResult> Launch(int processTemplateId)
+        public async Task<IHttpActionResult> Launch(int routeId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplateDO = uow.RouteRepository.GetByKey(processTemplateId);
+                var processTemplateDO = uow.RouteRepository.GetByKey(routeId);
                 await _container.Launch(processTemplateDO, null);
 
                 return Ok();
             }
         }
 
-       //NOTE: IF AND WHEN THIS CLASS GETS USED, IT NEEDS TO BE FIXED TO USE OUR 
-       //STANDARD UOW APPROACH, AND NOT CONTACT THE DATABASE TABLE DIRECTLY.
+        // Return the Containers accordingly to ID given
+        [Fr8ApiAuthorize]
+        [Route("get/{id:int?}")]
+        [HttpGet]
+        public IHttpActionResult Get(int? id = null)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IList<ContainerDO> curContainer = _container.GetByFr8Account(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id);
+
+                if (curContainer.Any())
+                {
+                    if (id.HasValue)
+                    {
+                        return Ok(Mapper.Map<ContainerDTO>(curContainer.First()));
+                    }
+
+                    return Ok(curContainer.Select(Mapper.Map<ContainerDTO>));
+                }
+                return Ok();
+            }
+        }
+
+      
+        //NOTE: IF AND WHEN THIS CLASS GETS USED, IT NEEDS TO BE FIXED TO USE OUR 
+        //STANDARD UOW APPROACH, AND NOT CONTACT THE DATABASE TABLE DIRECTLY.
 
         //private DockyardDbContext db = new DockyardDbContext();
         // GET: api/Process

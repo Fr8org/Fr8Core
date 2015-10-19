@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Core.Interfaces;
 using Data.Infrastructure;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 
 namespace pluginTwilio.Actions
 {
@@ -118,6 +118,7 @@ namespace pluginTwilio.Actions
         private CrateDTO GetAvailableDataFields(ActionDTO curActionDTO)
         {
             CrateDTO crateDTO = new CrateDTO();
+
             ActionDO curActionDO = Action.MapFromDTO(curActionDTO);
             var curUpstreamFields = GetRegisteredSenderNumbersData().ToArray();
 

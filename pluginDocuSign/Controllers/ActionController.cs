@@ -13,7 +13,7 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using PluginBase.BaseClasses;
 using pluginDocuSign.DataTransferObjects;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 
 namespace pluginDocuSign.Controllers
 {    

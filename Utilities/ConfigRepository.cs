@@ -41,7 +41,7 @@ namespace Utilities
 
         private T InternalGet<T>(String key, T defaultValue = default(T), bool defaultProvided = false)
         {
-            var stringValue = fr8.Microsoft.Azure.CloudConfigurationManager.GetSetting(key);
+            var stringValue = Configuration.Azure.CloudConfigurationManager.GetSetting(key);
 
             if (String.IsNullOrEmpty(stringValue))
             {

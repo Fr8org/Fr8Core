@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Web.Http;
 using Newtonsoft.Json.Serialization;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 
 namespace pluginSendGrid
 {

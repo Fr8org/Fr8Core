@@ -72,7 +72,7 @@ namespace Data.Infrastructure
         //public static event BookingRequestMergedHandler AlertBookingRequestMerged;
 
         //EventProcessRequestReceived 
-        public delegate void EventProcessRequestReceivedHandler(ContainerDO processId);
+        public delegate void EventProcessRequestReceivedHandler(ContainerDO containerId);
         public static event EventProcessRequestReceivedHandler EventProcessRequestReceived;
 
         public delegate void OAuthEventHandler(string userId);
@@ -86,8 +86,8 @@ namespace Data.Infrastructure
         public delegate void EventDocuSignNotificationReceivedHandler();
         public static event EventDocuSignNotificationReceivedHandler EventDocuSignNotificationReceived;
 
-        public delegate void EventProcessLaunchedHandler(ContainerDO launchedProcess);
-        public static event EventProcessLaunchedHandler EventProcessLaunched;
+        public delegate void EventContainerLaunchedHandler(ContainerDO launchedContainer);
+        public static event EventContainerLaunchedHandler EventContainerLaunched;
 
         public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
         public static event EventProcessNodeCreatedHandler EventProcessNodeCreated;
@@ -339,10 +339,10 @@ namespace Data.Infrastructure
             if (handler != null) handler();
         }
 
-        public static void ProcessLaunched(ContainerDO launchedProcess)
+        public static void ContainerLaunched(ContainerDO launchedContainer)
         {
-            var handler = EventProcessLaunched;
-            if (handler != null) handler(launchedProcess);
+            var handler = EventContainerLaunched;
+            if (handler != null) handler(launchedContainer);
         }
 
         public static void ProcessNodeCreated(ProcessNodeDO processNode)
@@ -404,10 +404,10 @@ namespace Data.Infrastructure
             if (handler != null) handler(action);
         }
 
-        public static void ProcessRequestReceived(ContainerDO process)
+        public static void ProcessRequestReceived(ContainerDO containerDO)
         {
             var handler = EventProcessRequestReceived;
-            if (handler != null) handler(process);
+            if (handler != null) handler(containerDO);
         }
 
         public static void TwilioSMSSent(string number, string message)

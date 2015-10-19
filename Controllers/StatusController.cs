@@ -22,7 +22,7 @@ using System.IO;
 using System.Net;
 using System.Xml;
 using System.Xml.Linq;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 
 namespace DocusignTutorial.Controllers 
 {

@@ -34,7 +34,7 @@ namespace Web.DependencyResolution
         /// <summary>
         /// The container.
         /// </summary>
-        protected readonly IContainer Container;
+        protected readonly StructureMap.IContainer Container;
 
         #endregion
 
@@ -48,7 +48,7 @@ namespace Web.DependencyResolution
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// </exception>
-        public StructureMapDependencyScope(IContainer container)
+        public StructureMapDependencyScope(StructureMap.IContainer container)
         {
             if (container == null)
             {

@@ -15,10 +15,10 @@ using Core.Managers;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 using PluginBase.Infrastructure;
 
-namespace PluginUtilities.BaseClasses
+namespace PluginBase.BaseClasses
 {
     //this method allows a specific Action to inject its own evaluation function into the 
     //standard ProcessConfigurationRequest
@@ -91,7 +91,7 @@ namespace PluginUtilities.BaseClasses
         {
             var httpClient = new HttpClient();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/processes/"
+                + "api/containers/"
                 + processId.ToString();
 
             using (var response = await httpClient.GetAsync(url))
@@ -128,6 +128,20 @@ namespace PluginUtilities.BaseClasses
             }
 
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
+        }
+
+        protected bool ValidateAuthentication(ActionDTO curActionDTO, AuthenticationMode curAuthenticationMode)
+        {
+            if (IsEmptyAuthToken(curActionDTO))
+            {
+                AppendDockyardAuthenticationCrate(
+                    curActionDTO,
+                    curAuthenticationMode);
+                return false;
+            }
+            else
+                RemoveAuthenticationCrate(curActionDTO);
+            return true;
         }
 
         /// <summary>
@@ -450,7 +464,7 @@ namespace PluginUtilities.BaseClasses
             CrateStorageDTO crateStorage,
             string fieldKey)
         {
-            var crates = Action.GetCratesByManifestType(
+            var crates = Crate.GetCratesByManifestType(
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, crateStorage);
 
             foreach (var crate in crates)

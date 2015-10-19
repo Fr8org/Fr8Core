@@ -15,7 +15,7 @@ using StructureMap;
 using PluginBase;
 using Core.Interfaces;
 using Data.Interfaces.ManifestSchemas;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 
 namespace pluginAzureSqlServer.Actions
 {
@@ -43,7 +43,7 @@ namespace pluginAzureSqlServer.Actions
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name connection string with a value
-            var controlsCrates = Action.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+            var controlsCrates = Crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
                 curActionDTO.CrateStorage);
             var connectionStrings = Crate.GetElementByKey(controlsCrates, key: "connection_string", keyFieldName: "name")
                 .Select(e => (string)e["value"])
@@ -115,14 +115,14 @@ namespace pluginAzureSqlServer.Actions
             int foundSameCrateDTOAtIndex = curActionDO.CrateStorageDTO().CrateDTO.FindIndex(m => m.Label == "Sql Table Columns");
             if (foundSameCrateDTOAtIndex == -1)
             {
-                Action.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
+                Crate.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
             }
             else
             {
                 CrateStorageDTO localList = curActionDO.CrateStorageDTO();
                 localList.CrateDTO.RemoveAt(foundSameCrateDTOAtIndex);
                 curActionDO.CrateStorage = JsonConvert.SerializeObject(localList);
-                Action.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
+                Crate.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
             }
 
             curCrateStorageDTO = curActionDO.CrateStorageDTO();

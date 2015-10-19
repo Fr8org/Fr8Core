@@ -5,7 +5,7 @@ using System.Web.Http;
 using Core.StructureMap;
 using pluginAzureSqlServer.Infrastructure;
 using PluginBase;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 using StructureMap;
 
 namespace pluginAzureSqlServer

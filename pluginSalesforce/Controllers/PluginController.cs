@@ -29,6 +29,7 @@ namespace pluginSalesforce.Controllers
             {
                 Version = "1",
                 Name = "Create_Lead",
+                Label = "Create Lead",
                 Plugin = plugin,
                 Category = ActivityCategory.Forwarders
             };

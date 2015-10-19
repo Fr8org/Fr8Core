@@ -7,7 +7,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using PluginBase.Infrastructure;
 using pluginSendGrid.Infrastructure;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 using Utilities;
 
 namespace pluginSendGrid.Actions
@@ -203,7 +203,7 @@ namespace pluginSendGrid.Actions
                 }
             };
 
-            _emailPackager.Send(mailerDO);
+            await _emailPackager.Send(mailerDO);
 
             return processPayload;
         }

@@ -6,6 +6,7 @@ using Core.Interfaces;
 using Core.Managers;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.Managers.APIManagers.Transmitters.Restful;
+using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -29,6 +30,7 @@ namespace DockyardTest.Services
     public class ActionServiceTests : BaseTest
     {
         private IAction _action;
+        private ICrateManager _crate;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
         private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
@@ -45,6 +47,7 @@ namespace DockyardTest.Services
         {
             base.SetUp();
             _action = ObjectFactory.GetInstance<IAction>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
             _eventReceived = false;
@@ -132,8 +135,9 @@ namespace DockyardTest.Services
 
                 Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
 
+                ISubroute subRoute = new Subroute();
                 //Delete
-                action.Delete(actionDO.Id);
+                subRoute.DeleteAction(actionDO.Id);
             }
         }
 
@@ -257,12 +261,12 @@ namespace DockyardTest.Services
             PluginTransmitterMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>()))
                 .Returns(() => Task.FromResult<string>(JsonConvert.SerializeObject(actionDto)));
 
-            ContainerDO procesDO = FixtureData.TestContainer1();
+            ContainerDO containerDO = FixtureData.TestContainer1();
 
             //Act
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var response = _action.PrepareToExecute(actionDo, procesDO, uow);
+                var response = _action.PrepareToExecute(actionDo, containerDO, uow);
 
                 //Assert
                 Assert.That(response.Status, Is.EqualTo(TaskStatus.RanToCompletion));
@@ -308,7 +312,7 @@ namespace DockyardTest.Services
         {
             ActionDO actionDO = FixtureData.TestAction23();
 
-            _action.AddCrate(actionDO, FixtureData.CrateStorageDTO().CrateDTO);
+            _crate.AddCrate(actionDO, FixtureData.CrateStorageDTO().CrateDTO);
 
             Assert.IsNotEmpty(actionDO.CrateStorage);
         }
@@ -370,18 +374,18 @@ namespace DockyardTest.Services
             }
 
             Action _action = ObjectFactory.GetInstance<Action>();
-            ContainerDO processDo = FixtureData.TestContainer1();
+            ContainerDO containerDO = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
             var executeActionMock = new Mock<IAction>();
-            executeActionMock.Setup(s => s.Run(actionDo, processDo)).Returns<Task<PayloadDTO>>(null);
+            executeActionMock.Setup(s => s.Run(actionDo, containerDO)).Returns<Task<PayloadDTO>>(null);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var count = uow.ActionRepository.GetAll().Count();
-                await _action.PrepareToExecute(actionDo, processDo, uow);
+                await _action.PrepareToExecute(actionDo, containerDO, uow);
                 //Assert.AreEqual(uow.ActionRepository.GetAll().Count(), count + 1);
             }
-            Assert.IsNull(processDo.CrateStorage);
+            Assert.IsNull(containerDO.CrateStorage);
             Assert.IsTrue(_eventReceived);
            // Assert.AreEqual(actionDo.ActionState, ActionState.Active);
         }
@@ -400,21 +404,21 @@ namespace DockyardTest.Services
             }
 
             IAction _action = ObjectFactory.GetInstance<IAction>();
-            ContainerDO processDo = FixtureData.TestContainer1();
+            ContainerDO containerDO = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var pluginClientMock = new Mock<IPluginTransmitter>();
                 pluginClientMock.Setup(s => s.CallActionAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>()))
-                                .Returns(Task.FromResult(new PayloadDTO(actionDo.CrateStorage, processDo.Id)));
+                                .Returns(Task.FromResult(new PayloadDTO(actionDo.CrateStorage, containerDO.Id)));
                 ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
 
                 var count = uow.ActionRepository.GetAll().Count();
-                await _action.PrepareToExecute(actionDo, processDo, uow);
+                await _action.PrepareToExecute(actionDo, containerDO, uow);
                 //Assert.AreEqual(uow.ActionRepository.GetAll().Count(), count + 1);
             }
-            Assert.IsNotNull(processDo.CrateStorage);
+            Assert.IsNotNull(containerDO.CrateStorage);
             Assert.IsTrue(_eventReceived);
            // Assert.AreEqual(actionDo.ActionState, ActionState.Active);
         }
@@ -434,12 +438,12 @@ namespace DockyardTest.Services
 
 
             Action _action = ObjectFactory.GetInstance<Action>();
-            ContainerDO procesDo = FixtureData.TestContainer1();
+            ContainerDO containerDO = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var count = uow.ActionRepository.GetAll().Count();
-                await _action.PrepareToExecute(actionDo, procesDo, uow);
+                await _action.PrepareToExecute(actionDo, containerDO, uow);
                 //Assert.AreEqual(uow.ActionRepository.GetAll().Count(), count + 1);
             }
             Assert.IsTrue(_eventReceived);

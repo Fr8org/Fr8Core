@@ -3,10 +3,10 @@ module dockyard.tests.utils.fixtures {
 
     export class ActionDesignDTO {
 
-        public static newProcessTemplate = <interfaces.IProcessTemplateVM> {
+        public static newProcessTemplate = <interfaces.IRouteVM> {
             name: 'Test',
             description: 'Description',
-            processTemplateState: 1
+            routeState: 1
         };
 
         public static configurationControls = {

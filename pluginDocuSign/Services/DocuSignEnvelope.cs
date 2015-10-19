@@ -12,7 +12,7 @@ using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Interfaces;
 using Signer = pluginDocuSign.Infrastructure.Signer;
 using Tab = pluginDocuSign.Infrastructure.Tab;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 
 namespace pluginDocuSign.Services
 {
@@ -168,19 +168,30 @@ namespace pluginDocuSign.Services
 
             var templateDetails = curDocuSignTemplate.GetTemplate(templateId);
 
+            var envelopeData = new List<EnvelopeDataDTO>();
+
             foreach (var signer in templateDetails["recipients"]["signers"])
             {
                 if (signer["tabs"]["textTabs"] != null)
+                {
                     foreach (var textTab in signer["tabs"]["textTabs"])
                     {
-                        yield return CreateEnvelopeData(textTab, textTab["value"].ToString());
+                        envelopeData.Add(CreateEnvelopeData(textTab, textTab["value"].ToString()));
                     }
-                if (signer["tabs"]["checkboxTabs"] == null) continue;
+                }
+
+                if (signer["tabs"]["checkboxTabs"] == null)
+                {
+                    continue;
+                }
+
                 foreach (var chekBoxTabs in signer["tabs"]["checkboxTabs"])
                 {
-                    yield return CreateEnvelopeData(chekBoxTabs, chekBoxTabs["selected"].ToString());
+                    envelopeData.Add(CreateEnvelopeData(chekBoxTabs, chekBoxTabs["selected"].ToString()));
                 }
             }
+
+            return envelopeData;
         }
 
         private EnvelopeDataDTO CreateEnvelopeData(dynamic tab, string value)
