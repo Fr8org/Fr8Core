@@ -12,6 +12,6 @@ namespace Core.Interfaces
 {
     public interface IField
     {
-        bool Exists(FieldCheckDTO data);
+        bool Exists(FieldValidationDTO data);
     }
 }

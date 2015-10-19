@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.Constants
 {
-    public enum FieldCheckResult
+    public enum FieldValidationResult
     {
         Exists,
         NotExists,

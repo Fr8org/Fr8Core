@@ -39,13 +39,13 @@ namespace Web.Controllers
         [HttpPost]
         //[Fr8ApiAuthorize]
         [Route("exists")]
-        [ResponseType(typeof(List<FieldCheckResult>))]
-        public async Task<IHttpActionResult> Exists(List<FieldCheckDTO> fieldCheckList)
+        [ResponseType(typeof(List<FieldValidationResult>))]
+        public async Task<IHttpActionResult> Exists(List<FieldValidationDTO> fieldCheckList)
         {
-            var result = new List<FieldCheckResult>();
+            var result = new List<FieldValidationResult>();
             foreach (var fieldCheck in fieldCheckList)
             {
-                result.Add(_field.Exists(fieldCheck) ? FieldCheckResult.Exists : FieldCheckResult.NotExists);
+                result.Add(_field.Exists(fieldCheck) ? FieldValidationResult.Exists : FieldValidationResult.NotExists);
             }
             return Ok(result);
         }    

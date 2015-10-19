@@ -28,7 +28,7 @@ namespace Core.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        public bool Exists(FieldCheckDTO data)
+        public bool Exists(FieldValidationDTO data)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

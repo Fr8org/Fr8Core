@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class FieldCheckDTO
+    public class FieldValidationDTO
     {
         [JsonProperty("fieldName")]
         public string FieldName { get; set; }
@@ -21,7 +21,7 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("currentActionId")]
         public int CurrentActionId { get; set; }
 
-        public FieldCheckDTO(int currentActionId, string fieldName, ActivityDirection direction, string manifestType, string crateLabel)
+        public FieldValidationDTO(int currentActionId, string fieldName, ActivityDirection direction, string manifestType, string crateLabel)
         {
             FieldName = fieldName;
             CrateLabel = crateLabel;
@@ -30,7 +30,7 @@ namespace Data.Interfaces.DataTransferObjects
             CurrentActionId = currentActionId;
         }
 
-        public FieldCheckDTO(int currentActionId, string fieldName)
+        public FieldValidationDTO(int currentActionId, string fieldName)
         {
             FieldName = fieldName;
             CurrentActionId = currentActionId;

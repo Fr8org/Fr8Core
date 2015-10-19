@@ -8,7 +8,7 @@ using AutoMapper;
 using Core.Services;
 using Data.Constants;
 using Newtonsoft.Json;
-using PluginUtilities.Infrastructure;
+
 using StructureMap;
 using Core.Enums;
 using Core.Interfaces;
@@ -100,7 +100,7 @@ namespace PluginBase.BaseClasses
             }
         }
 
-        protected async Task<CrateDTO> CheckRequiredFields(List<FieldCheckDTO> requiredFieldList)
+        protected async Task<CrateDTO> ValidateFields(List<FieldValidationDTO> requiredFieldList)
         {
             var httpClient = new HttpClient();
 
@@ -109,7 +109,7 @@ namespace PluginBase.BaseClasses
             using (var response = await httpClient.PostAsJsonAsync(url, requiredFieldList))
             {
                 var content = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<List<FieldCheckResult>>(content);
+                var result = JsonConvert.DeserializeObject<List<FieldValidationResult>>(content);
                 //do something with result
                 //Crate.CreateDesignTimeFieldsCrate("ValidationErrors",)
                 var validationErrorList = new List<FieldDTO>();
@@ -117,7 +117,7 @@ namespace PluginBase.BaseClasses
                 for (var i = 0; i < result.Count; i++)
                 {
                     var fieldCheckResult = result[i];
-                    if (fieldCheckResult == FieldCheckResult.NotExists)
+                    if (fieldCheckResult == FieldValidationResult.NotExists)
                     {
                         validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required"});
                     }

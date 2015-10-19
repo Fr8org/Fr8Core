@@ -78,7 +78,6 @@
     <Compile Include="Infrastructure\BasePluginEvent.cs" />
     <Compile Include="Infrastructure\States\ConfigurationRequestType.cs" />
     <Compile Include="Infrastructure\JsonParser.cs" />
-    <Compile Include="Infrastructure\ValidationData.cs" />
     <Compile Include="Infrastructure\Validations.cs" />
     <Compile Include="Errors\PluginCodedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
