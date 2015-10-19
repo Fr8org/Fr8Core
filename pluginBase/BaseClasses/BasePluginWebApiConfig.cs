@@ -1,7 +1,7 @@
 ﻿using System.Web.Http;
 using PluginBase;
 
-namespace PluginUtilities.BaseClasses
+namespace PluginBase.BaseClasses
 {
     public static class BasePluginWebApiConfig
     {

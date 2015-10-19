@@ -70,6 +70,21 @@ namespace UtilitiesTesting.Fixtures
 
         }
 
+        public static Fr8AccountDO TestDockyardAccount5()
+        {
+            var curEmailAddressDO = TestEmailAddress6();
+            return new Fr8AccountDO()
+            {
+                EmailAddress = curEmailAddressDO,
+                Id = "testuser",
+                FirstName = "GMCS",
+                LastName = "Team",
+                UserName = "testing",
+                State = 1
+
+            };
+        }
+
         /* public DockyardAccountDO TestDockyardAccount2()
          {
              var curEmailAddressDO = TestEmailAddress5();

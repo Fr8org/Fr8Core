@@ -246,6 +246,7 @@
     <Compile Include="Interfaces\DataTransferObjects\FullRouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ContainerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SubrouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\RouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
@@ -317,6 +318,10 @@
     <Compile Include="Migrations\201510181719065_IngnoreChangesUpdate.cs" />
     <Compile Include="Migrations\201510181719065_IngnoreChangesUpdate.Designer.cs">
       <DependentUpon>201510181719065_IngnoreChangesUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.cs" />
+    <Compile Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.Designer.cs">
+      <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -390,7 +395,7 @@
     <Compile Include="States\AccessLevel.cs" />
     <Compile Include="States\PluginStatus.cs" />
     <Compile Include="States\ProcessNodeState.cs" />
-    <Compile Include="States\ProcessState.cs" />
+    <Compile Include="States\ContainerState.cs" />
     <Compile Include="States\BookingRequestAvailability.cs" />
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\CommunicationMode.cs" />
@@ -498,7 +503,7 @@
     <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
-    <Compile Include="Validations\ProcessValidator.cs" />
+    <Compile Include="Validations\ContainerValidator.cs" />
     <Compile Include="Validations\SubrouteValidator.cs" />
     <Compile Include="Validations\IncidentValidator.cs" />
     <Compile Include="Validations\OutboundEmailValidatorBase.cs" />
@@ -561,6 +566,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510181719065_IngnoreChangesUpdate.resx">
       <DependentUpon>201510181719065_IngnoreChangesUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.resx">
+      <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

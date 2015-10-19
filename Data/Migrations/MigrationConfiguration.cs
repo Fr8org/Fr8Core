@@ -71,7 +71,7 @@ namespace Data.Migrations
             SeedMultiTenantTables(uow);
              
              AddAuthorizationTokens(uow);
-            AddProcessDOForTestingApi(uow);
+            AddContainerDOForTestingApi(uow);
         }
 
         //Method to let us seed into memory as well
@@ -133,7 +133,7 @@ namespace Data.Migrations
             return eventPayload;
         }
 
-        private static void AddProcessDOForTestingApi(IUnitOfWork uow)
+        private static void AddContainerDOForTestingApi(IUnitOfWork uow)
         {
             new RouteBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}").AddCrate(GenerateInitialEventCrate()).Store(uow);
             new RouteBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}")

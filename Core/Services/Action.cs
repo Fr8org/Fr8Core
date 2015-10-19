@@ -220,15 +220,15 @@ namespace Core.Services
 //            return curAction;
 //        }
 
-        public async Task PrepareToExecute(ActionDO curAction, ContainerDO curProcessDO, IUnitOfWork uow)
-            {
+        public async Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow)
+        {
                 EventManager.ActionStarted(curAction);
 
-                var payload = await Run(curAction, curProcessDO);
+                var payload = await Run(curAction, curContainerDO);
 
                 if (payload != null)
                 {
-                    curProcessDO.CrateStorage = payload.CrateStorage;
+                    curContainerDO.CrateStorage = payload.CrateStorage;
                 }
 
                 uow.ActionRepository.Attach(curAction);
@@ -236,17 +236,17 @@ namespace Core.Services
             }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curProcessDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO)
         {
             if (curActionDO == null)
             {
                 throw new ArgumentNullException("curActionDO");
             }
 
-            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Run", curActionDO, curProcessDO.Id);
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Run", curActionDO, curContainerDO.Id);
             
             // Temporarily commented out by yakov.gnusin.
-            EventManager.ActionDispatched(curActionDO, curProcessDO.Id);
+            EventManager.ActionDispatched(curActionDO, curContainerDO.Id);
 
             return payloadDTO;
         }
@@ -586,7 +586,7 @@ namespace Core.Services
             var controlsCrates = _crate.GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO()).ToList();
 
             if (direction != GetCrateDirection.None)
-            {
+        {
                 var upstreamCrates = await ObjectFactory.GetInstance<IRouteNode>()
                     .GetCratesByDirection(curActionDO.Id, curSchema.ManifestName, direction).ConfigureAwait(false);
 

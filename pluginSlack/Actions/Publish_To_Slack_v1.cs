@@ -10,7 +10,7 @@ using Data.Interfaces.ManifestSchemas;
 using PluginBase.Infrastructure;
 using pluginSlack.Interfaces;
 using pluginSlack.Services;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 
 namespace pluginSlack.Actions
 {
@@ -84,18 +84,9 @@ namespace pluginSlack.Actions
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (IsEmptyAuthToken(curActionDTO))
-            {
-                AppendDockyardAuthenticationCrate(
-                    curActionDTO,
-                    AuthenticationMode.ExternalMode);
-
-                return curActionDTO;
-            }
-
-            RemoveAuthenticationCrate(curActionDTO);
-
-            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
+            if (ValidateAuthentication(curActionDTO, AuthenticationMode.ExternalMode))
+                return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
+            return curActionDTO;
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
