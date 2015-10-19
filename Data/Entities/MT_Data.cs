@@ -13,9 +13,6 @@ namespace Data.Entities
         public int Id { get; set; }
 
         [Required]
-        public string Name { get; set; }
-
-        [Required]
         public DateTime CreatedAt { get; set; }
 
         [Required]
@@ -25,7 +22,7 @@ namespace Data.Entities
         public int MT_ObjectId { get; set; }
 
         [Required]
-        public int fr8AccountId { get; set; }
+        public string fr8AccountId { get; set; }
 
         public MT_Object MT_Object { get; set; }
 

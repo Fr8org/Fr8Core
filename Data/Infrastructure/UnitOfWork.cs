@@ -504,16 +504,6 @@ namespace Data.Infrastructure
             }
         }
 
-        private MTOrganizationRepository _mtOrganizationdRepository;
-
-        public IMTOrganizationRepository MTOrganizationRepository
-        {
-            get
-            {
-                return _mtOrganizationdRepository ?? (_mtOrganizationdRepository = new MTOrganizationRepository(this));
-            }
-        }
-
         private MTDataRepository _mtDataRepository;
 
         public IMTDataRepository MTDataRepository

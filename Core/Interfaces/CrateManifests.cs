@@ -31,5 +31,11 @@ namespace Core.Interfaces
 
         public const int STANDARD_AUTHENTICATION_ID = 12;
         public const string STANDARD_AUTHENTICATION_NAME = "Standard Authentication";
+
+        public const int DOCUSIGN_EVENT_ID = 14;
+        public const string DOCUSIGN_EVENT_NAME = "Docusign Event";
+
+        public const int DOCUSIGN_ENVELOPE_ID = 15;
+        public const string DOCUSIGN_ENVELOPE_NAME = "Docusign Envelope";
     }
 }
