@@ -105,7 +105,7 @@ namespace pluginIntegrationTests
                 uow.SaveChanges();
             }
 
-            _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
+            _coreServer = pluginIntegrationTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
 
             var docuSignServerUrl = "http://" + FixtureData.TestPlugin_DocuSign_EndPoint + "/";
             _docuSignServer = pluginDocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
