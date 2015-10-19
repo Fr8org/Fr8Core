@@ -12,7 +12,6 @@
     <AssemblyName>terminalCloudService</AssemblyName>
     <StartDevelopmentStorage>True</StartDevelopmentStorage>
     <Name>terminalCloudService</Name>
-    <PackageEnableRemoteDebugger>False</PackageEnableRemoteDebugger>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,22 +39,20 @@
   <ItemGroup>
     <Folder Include="Profiles" />
     <Folder Include="terminalWebRoleContent\" />
-    <Folder Include="WebContent\" />
   </ItemGroup>
   <ItemGroup>
     <DiagnosticsConfiguration Include="terminalWebRoleContent\diagnostics.wadcfgx" />
-    <DiagnosticsConfiguration Include="WebContent\diagnostics.wadcfgx" />
   </ItemGroup>
   <ItemGroup>
     <PublishProfile Include="Profiles\fr8companySAProduction.azurePubxml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\dockyard\Web.csproj">
-      <Name>Web</Name>
-      <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
+    <ProjectReference Include="..\terminalWebRole\terminalWebRole.csproj">
+      <Name>terminalWebRole</Name>
+      <Project>{8c7f0cb5-9cd8-40d8-a539-51f451ccb29e}</Project>
       <Private>True</Private>
       <RoleType>Web</RoleType>
-      <RoleName>Web</RoleName>
+      <RoleName>terminalWebRole</RoleName>
       <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
     </ProjectReference>
   </ItemGroup>
