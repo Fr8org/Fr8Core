@@ -323,6 +323,10 @@
     <Compile Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.Designer.cs">
       <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510190426587_test.cs" />
+    <Compile Include="Migrations\201510190426587_test.Designer.cs">
+      <DependentUpon>201510190426587_test.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -569,6 +573,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.resx">
       <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510190426587_test.resx">
+      <DependentUpon>201510190426587_test.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
