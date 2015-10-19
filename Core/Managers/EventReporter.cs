@@ -650,20 +650,22 @@ namespace Core.Managers
         private void LogEventProcessNodeCreated(ProcessNodeDO processNode)
         {
             ContainerDO containerInExecution;
+            FactDO fact;
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 containerInExecution = uow.ContainerRepository.GetByKey(processNode.ParentContainerId);
-            }
 
-            var fact = new FactDO
-            {
-                CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
-                Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
-                ObjectId = processNode.Id.ToStr(),
-                PrimaryCategory = "Container Execution",
-                SecondaryCategory = "Process Node",
-                Activity = "Created"
-            };
+                fact = new FactDO
+                {
+                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
+                    Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
+                    ObjectId = processNode.Id.ToStr(),
+                    PrimaryCategory = "Container Execution",
+                    SecondaryCategory = "Process Node",
+                    Activity = "Created"
+                };
+            }
 
             SaveAndLogFact(fact);
         }
@@ -671,20 +673,22 @@ namespace Core.Managers
         private void LogEventCriteriaEvaluationStarted(int containerId)
         {
             ContainerDO containerInExecution;
+            FactDO fact;
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 containerInExecution = uow.ContainerRepository.GetByKey(containerId);
-            }
 
-            var fact = new FactDO
-            {
-                CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
-                Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
-                ObjectId = null,
-                PrimaryCategory = "Process Execution",
-                SecondaryCategory = "Criteria Evaluation",
-                Activity = "Started"
-            };
+                fact = new FactDO
+                {
+                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
+                    Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
+                    ObjectId = null,
+                    PrimaryCategory = "Process Execution",
+                    SecondaryCategory = "Criteria Evaluation",
+                    Activity = "Started"
+                };
+            }
 
             SaveAndLogFact(fact);
         }
@@ -692,20 +696,22 @@ namespace Core.Managers
         private void LogEventCriteriaEvaluationFinished(int curContainerId)
         {
             ContainerDO containerInExecution;
+            FactDO fact;
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 containerInExecution = uow.ContainerRepository.GetByKey(curContainerId);
-            }
 
-            var fact = new FactDO
-            {
-                CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
-                Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
-                ObjectId = null,
-                PrimaryCategory = "Process Execution",
-                SecondaryCategory = "Criteria Evaluation",
-                Activity = "Finished"
-            };
+                fact = new FactDO
+                {
+                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
+                    Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
+                    ObjectId = null,
+                    PrimaryCategory = "Process Execution",
+                    SecondaryCategory = "Criteria Evaluation",
+                    Activity = "Finished"
+                };
+            }
 
             SaveAndLogFact(fact);
         }
@@ -713,21 +719,23 @@ namespace Core.Managers
         private void LogEventActionStarted(ActionDO curAction)
         {
             ContainerDO containerInExecution;
+            FactDO fact;
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 containerInExecution = uow.ContainerRepository.GetQuery()
                     .FirstOrDefault(p => p.CurrentRouteNodeId.Value == curAction.Id);
-            }
 
-            var fact = new FactDO
-            {
-                CustomerId = (containerInExecution != null) ? containerInExecution.Route.Fr8Account.Id : "unknown",
-                Data = (containerInExecution != null) ? containerInExecution.Id.ToStr() : "unknown",
-                ObjectId = curAction.Id.ToStr(),
-                PrimaryCategory = "Process Execution",
-                SecondaryCategory = "Action",
-                Activity = "Started"
-            };
+                fact = new FactDO
+                {
+                    CustomerId = (containerInExecution != null) ? containerInExecution.Route.Fr8Account.Id : "unknown",
+                    Data = (containerInExecution != null) ? containerInExecution.Id.ToStr() : "unknown",
+                    ObjectId = curAction.Id.ToStr(),
+                    PrimaryCategory = "Process Execution",
+                    SecondaryCategory = "Action",
+                    Activity = "Started"
+                };
+            }
 
             SaveAndLogFact(fact);
         }
@@ -736,20 +744,22 @@ namespace Core.Managers
         private void LogEventActionDispatched(ActionDO curAction, int processId)
         {
             ContainerDO containerInExecution;
+            FactDO fact;
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 containerInExecution = uow.ContainerRepository.GetByKey(processId);
-            }
 
-            var fact = new FactDO
-            {
-                CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
-                Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
-                ObjectId = curAction.Id.ToStr(),
-                PrimaryCategory = "Process Execution",
-                SecondaryCategory = "Action",
-                Activity = "Dispatched"
-            };
+                fact = new FactDO
+                {
+                    CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
+                    Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
+                    ObjectId = curAction.Id.ToStr(),
+                    PrimaryCategory = "Process Execution",
+                    SecondaryCategory = "Action",
+                    Activity = "Dispatched"
+                };
+            }
 
             SaveAndLogFact(fact);
         }

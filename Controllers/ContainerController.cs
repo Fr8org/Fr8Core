@@ -25,7 +25,9 @@ using Data.Infrastructure.StructureMap;
 
 namespace Web.Controllers
 {
-    [Fr8ApiAuthorize]
+    // commented out by yakov.gnusin.
+    // Please DO NOT put [Fr8ApiAuthorize] on class, this breaks process execution!
+    // [Fr8ApiAuthorize]
     [RoutePrefix("api/containers")]
     public class ContainerController : ApiController
     {
@@ -54,6 +56,7 @@ namespace Web.Controllers
             }
         }
 
+        [Fr8ApiAuthorize]
         [Route("getIdsByName")]
         [HttpGet]
         public IHttpActionResult GetIdsByName(string name)
@@ -66,6 +69,7 @@ namespace Web.Controllers
             }
         }
 
+        [Fr8ApiAuthorize]
         [Route("launch")]
         [HttpPost]
         public async Task<IHttpActionResult> Launch(int routeId)
@@ -80,6 +84,7 @@ namespace Web.Controllers
         }
 
         // Return the Containers accordingly to ID given
+        [Fr8ApiAuthorize]
         [Route("get/{id:int?}")]
         [HttpGet]
         public IHttpActionResult Get(int? id = null)
