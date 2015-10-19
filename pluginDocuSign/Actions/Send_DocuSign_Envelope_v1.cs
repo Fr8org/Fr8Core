@@ -2,24 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
+using Core.Enums;
 using Newtonsoft.Json;
-using StructureMap;
 using Core.Interfaces;
 using Data.Constants;
 using Data.Entities;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using DocuSign.Integrations.Client;
-using PluginBase;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using Utilities;
 using pluginDocuSign.DataTransferObjects;
 using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Interfaces;
 using pluginDocuSign.Services;
+using PluginBase.BaseClasses;
 
 namespace pluginDocuSign.Actions
 {
@@ -31,15 +28,9 @@ namespace pluginDocuSign.Actions
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (IsEmptyAuthToken(curActionDTO))
-            {
-                AppendDockyardAuthenticationCrate(curActionDTO, AuthenticationMode.InternalMode);
-                return curActionDTO;
-            }
-
-            RemoveAuthenticationCrate(curActionDTO);
-
-            return await ProcessConfigurationRequest(curActionDTO, actionDTO => ConfigurationEvaluator(actionDTO));
+            if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
+                return await ProcessConfigurationRequest(curActionDTO, actionDTO => ConfigurationEvaluator(actionDTO));
+            return curActionDTO;
         }
 
         public object Activate(ActionDTO curActionDTO)
@@ -47,7 +38,7 @@ namespace pluginDocuSign.Actions
             return "Activate Request"; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Execute(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
             if (curActionDTO.AuthToken == null)
             {
@@ -76,7 +67,7 @@ namespace pluginDocuSign.Actions
             var confCrate = curActionDTO.CrateStorage.CrateDTO.FirstOrDefault(
                 c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
 
-            var controls = _crate.GetStandardConfigurationControls(confCrate).Controls;
+            var controls = Crate.GetStandardConfigurationControls(confCrate).Controls;
 
             var templateDropDown = controls.SingleOrDefault(x => x.Name == "target_docusign_template");
 
@@ -123,7 +114,7 @@ namespace pluginDocuSign.Actions
 
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             // Try to find Configuration_Controls
-            var stdCfgControlMS = _action.GetConfigurationControls(curActionDO);
+            var stdCfgControlMS = Crate.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
             {
                 return ConfigurationRequestType.Initial;
@@ -183,7 +174,7 @@ namespace pluginDocuSign.Actions
                 .Fields
                 .ToArray();
 
-            curUpstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+            curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
             curActionDTO.CrateStorage.CrateDTO.Add(curUpstreamFieldsCrate);
 
             return curActionDTO;
@@ -202,7 +193,7 @@ namespace pluginDocuSign.Actions
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             
             // Try to find Configuration_Controls.
-            var stdCfgControlMS = _action.GetConfigurationControls(curActionDO);
+            var stdCfgControlMS = Crate.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
             {
                 return curActionDTO;
@@ -233,12 +224,12 @@ namespace pluginDocuSign.Actions
                 new FieldDTO() { Key = "recipient", Value = "recipient" }
             };
             
-            var crateUserDefinedDTO = _crate.CreateDesignTimeFieldsCrate(
+            var crateUserDefinedDTO = Crate.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateUserDefinedFields",
                 userDefinedFields.ToArray()
             );
             
-            var crateStandardDTO = _crate.CreateDesignTimeFieldsCrate(
+            var crateStandardDTO = Crate.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateStandardFields",
                 standartFields.ToArray()
             );
@@ -253,7 +244,7 @@ namespace pluginDocuSign.Actions
         {
             var fieldSelectDocusignTemplateDTO = new DropDownListControlDefinitionDTO()
             {
-                Label = "target_docusign_template",
+                Label = "Use DocuSign Template",
                 Name = "target_docusign_template",
                 Required = true,
                 Events = new List<ControlEvent>()
@@ -318,7 +309,7 @@ namespace pluginDocuSign.Actions
                 Controls = fieldsDTO
             };
 
-            return _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+            return Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
 
         private CrateDTO CreateDocusignTemplateNameCrate(IDocuSignTemplate template)
@@ -329,7 +320,7 @@ namespace pluginDocuSign.Actions
             {
                 Fields = fieldsDTO,
             };
-            return _crate.CreateDesignTimeFieldsCrate("Available Templates", fieldsDTO.ToArray());
+            return Crate.CreateDesignTimeFieldsCrate("Available Templates", fieldsDTO.ToArray());
         }
     }
 }

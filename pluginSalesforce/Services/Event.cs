@@ -24,13 +24,13 @@ namespace pluginSalesforce.Services
     public class Event : pluginSalesforce.Infrastructure.IEvent
     {
        
-        private readonly ICrate _crate;        
+        private readonly ICrateManager _crate;        
         private BasePluginController _basePluginController = new BasePluginController();
        
 
         public Event()
         {
-            _crate = ObjectFactory.GetInstance<ICrate>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
 
@@ -44,13 +44,13 @@ namespace pluginSalesforce.Services
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Lead Created",
-                ProcessDOId = "",
+                ContainerDoId = "",
                 EventPayload = ExtractEventPayload(leadId,accountId).ToList(),
                 ExternalAccountId = accountId,
                 Source = "Salesforce"
             };
 
-            CrateDTO curEventReport = ObjectFactory.GetInstance<ICrate>()
+            CrateDTO curEventReport = ObjectFactory.GetInstance<ICrateManager>()
                 .Create("Lead Created", JsonConvert.SerializeObject(eventReportContent), "Standard Event Report", 7);
 
             return curEventReport;

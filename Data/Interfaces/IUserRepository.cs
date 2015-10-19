@@ -3,12 +3,12 @@ using Data.Entities;
 
 namespace Data.Interfaces
 {
-    public interface IUserRepository : IGenericRepository<DockyardAccountDO>
+    public interface IUserRepository : IGenericRepository<Fr8AccountDO>
     {
-        DockyardAccountDO UpdateUserCredentials(String emailAddress, String userName = null, String password = null);
-        DockyardAccountDO UpdateUserCredentials(EmailAddressDO emailAddressDO, String userName = null, String password = null);
-        DockyardAccountDO UpdateUserCredentials(DockyardAccountDO dockyardAccountDO, String userName = null, String password = null);
-        DockyardAccountDO GetOrCreateUser(String emailAddress);
-        DockyardAccountDO GetOrCreateUser(EmailAddressDO emailAddressDO);
+        Fr8AccountDO UpdateUserCredentials(String emailAddress, String userName = null, String password = null);
+        Fr8AccountDO UpdateUserCredentials(EmailAddressDO emailAddressDO, String userName = null, String password = null);
+        Fr8AccountDO UpdateUserCredentials(Fr8AccountDO dockyardAccountDO, String userName = null, String password = null);
+        Fr8AccountDO GetOrCreateUser(String emailAddress);
+        Fr8AccountDO GetOrCreateUser(EmailAddressDO emailAddressDO);
     }
 }

@@ -2,19 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using AutoMapper;
+using Core.Enums;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using StructureMap;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
-using Utilities;
+using PluginBase.BaseClasses;
 
 namespace pluginDockyardCore.Actions
 {
@@ -51,7 +46,7 @@ namespace pluginDockyardCore.Actions
 
             var actionPayloadCrates = new List<CrateDTO>()
             {
-                _crate.Create("MappedFields",
+                Crate.Create("MappedFields",
                     JsonConvert.SerializeObject(mappedFields),
                     CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
                     CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID)
@@ -128,8 +123,8 @@ namespace pluginDockyardCore.Actions
             }
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
-            CrateDTO downstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Downstream Plugin-Provided Fields", curDownstreamFields);
-            CrateDTO upstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+            CrateDTO downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Plugin-Provided Fields", curDownstreamFields);
+            CrateDTO upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
 
             var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 

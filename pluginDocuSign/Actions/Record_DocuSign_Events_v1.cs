@@ -6,28 +6,24 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using DocuSign.Integrations.Client;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using pluginDocuSign.Infrastructure;
-using Configuration = DocuSign.Integrations.Client.Configuration;
+using PluginBase.BaseClasses;
 
 namespace pluginDocuSign.Actions
 {
     public class Record_DocuSign_Events_v1 : BasePluginAction
     {
+        /// <summary>
+        /// //For this action, both Initial and Followup configuration requests are same. Hence it returns Initial config request type always.
+        /// </summary>
+        /// <param name="curActionDTO"></param>
+        /// <returns></returns>
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (IsEmptyAuthToken(curActionDTO))
-            {
-                AppendDockyardAuthenticationCrate(curActionDTO, AuthenticationMode.InternalMode);
-                return curActionDTO;
-            }
-
-            RemoveAuthenticationCrate(curActionDTO);
-
-            //For this action, both Initial and Followup configuration requests are same. Hence it returns Initial config request type always.
-            return await ProcessConfigurationRequest(curActionDTO, dto => ConfigurationRequestType.Initial);
+            if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
+                return await ProcessConfigurationRequest(curActionDTO, dto => ConfigurationRequestType.Initial);
+            return curActionDTO;
         }
 
         protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
@@ -45,11 +41,11 @@ namespace pluginDocuSign.Actions
             var curControlsCrate = PackControlsCrate(textBlock);
 
             //create a Standard Event Subscription crate
-            var curEventSubscriptionsCrate = _crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", DocuSignEventNames.GetAllEventNames());
+            var curEventSubscriptionsCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", DocuSignEventNames.GetAllEventNames());
 
             //create Standard Design Time Fields for Available Run-Time Objects
             var curAvailableRunTimeObjectsDesignTimeCrate =
-                _crate.CreateDesignTimeFieldsCrate("Available Run-Time Objects", new FieldDTO[]
+                Crate.CreateDesignTimeFieldsCrate("Available Run-Time Objects", new FieldDTO[]
                 {
                     new FieldDTO {Key = "DocuSign Envelope", Value = string.Empty},
                     new FieldDTO {Key = "DocuSign Event"}
@@ -111,7 +107,7 @@ namespace pluginDocuSign.Actions
             return true;
         }
 
-        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
             if (IsEmptyAuthToken(actionDto))
             {

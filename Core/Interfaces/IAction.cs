@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Core.Enums;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -16,25 +17,22 @@ namespace Core.Interfaces
         Task<ActionDTO> Configure(ActionDO curActionDO);
         ActionDO GetById(int id);
         ActionDO GetById(IUnitOfWork uow, int id);
-        void Delete(int id);
+        //void Delete(int id); -> Delete is moved to ProcessNodeTemplate
         ActionDO MapFromDTO(ActionDTO curActionDTO);
-        Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow);
-        Task<PayloadDTO> Execute(ActionDO curActionDO, ProcessDO curProcessDO);
+        Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow);
+        Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO);
         string Authenticate(ActionDO curActionDO);
-        void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
-        List<CrateDTO> GetCrates(ActionDO curActionDO);
+        
         Task<ActionDTO> Activate(ActionDO curActionDO);
         Task<ActionDTO> Deactivate(ActionDO curActionDO);
-        IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
-        IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO);
-		StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO);
+		
         StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction);
-        Task AuthenticateInternal(DockyardAccountDO user, PluginDO plugin, string username, string password);
-        Task<ExternalAuthUrlDTO> GetExternalAuthUrl(DockyardAccountDO user, PluginDO plugin);
+        bool IsAuthenticated(Fr8AccountDO user, PluginDO plugin);
+        Task AuthenticateInternal(Fr8AccountDO user, PluginDO plugin, string username, string password);
+        Task<ExternalAuthUrlDTO> GetExternalAuthUrl(Fr8AccountDO user, PluginDO plugin);
         Task AuthenticateExternal(PluginDO plugin, ExternalAuthenticationDTO externalAuthenticateDTO);
         
-        void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO);
-        void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO);
-        IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key);
+
+        Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key, string fieldName = "name", GetCrateDirection direction = GetCrateDirection.None);
     }
 }

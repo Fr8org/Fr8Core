@@ -22,7 +22,7 @@ namespace DockyardTest.Models
                 
                 //SETUP
                 //create a customer from fixture data
-                DockyardAccountDO curDockyardAccountDO = FixtureData.TestUser1();
+                Fr8AccountDO curDockyardAccountDO = FixtureData.TestUser1();
 
                 //EXECUTE
                 uow.UserRepository.Add(curDockyardAccountDO);
@@ -30,7 +30,7 @@ namespace DockyardTest.Models
 
                 //VERIFY
                 //check that it was saved to the db
-                DockyardAccountDO savedDockyardAccountDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == curDockyardAccountDO.Id);
+                Fr8AccountDO savedDockyardAccountDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == curDockyardAccountDO.Id);
                 Assert.AreEqual(curDockyardAccountDO.FirstName, savedDockyardAccountDO.FirstName);
                 Assert.AreEqual(curDockyardAccountDO.EmailAddress, savedDockyardAccountDO.EmailAddress);
 

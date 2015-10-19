@@ -21,7 +21,7 @@ namespace DockyardTest.Security
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 const string originalURL = @"http://www.google.com";
-                var user = new DockyardAccount();
+                var user = new Fr8Account();
                 var emailAddress = new EmailAddressDO
                 {
                     Address = "rjrudman@gmail.com",
@@ -51,7 +51,7 @@ namespace DockyardTest.Security
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 const string originalURL = @"http://www.google.com";
-                var user = new DockyardAccount();
+                var user = new Fr8Account();
                 var emailAddress = new EmailAddressDO
                 {
                     Address = "rjrudman@gmail.com",

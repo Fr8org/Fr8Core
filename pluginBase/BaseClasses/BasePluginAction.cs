@@ -1,20 +1,20 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AutoMapper;
+using Newtonsoft.Json;
+using StructureMap;
+using Core.Enums;
 using Core.Interfaces;
+using Core.Managers;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using PluginBase.Infrastructure;
-using StructureMap;
-using AutoMapper;
 using Data.Interfaces.ManifestSchemas;
-using Data.States.Templates;
-using Newtonsoft.Json;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
+using PluginBase.Infrastructure;
 
 namespace PluginBase.BaseClasses
 {
@@ -24,19 +24,19 @@ namespace PluginBase.BaseClasses
 
     public class BasePluginAction
     {
-        public enum GetCrateDirection
-        {
-            Upstream,
-            Downstream
-        }
+        #region Fields
 
-        protected IAction _action;
-        protected ICrate _crate;
+        protected IAction Action;
+        protected ICrateManager Crate;
+        protected IRouteNode Activity;
+
+        #endregion
 
         public BasePluginAction()
         {
-            _crate = ObjectFactory.GetInstance<ICrate>();
-            _action = ObjectFactory.GetInstance<IAction>();
+            Crate = ObjectFactory.GetInstance<ICrateManager>();
+            Action = ObjectFactory.GetInstance<IAction>();
+            Activity = ObjectFactory.GetInstance<IRouteNode>();
         }
 
         protected bool IsEmptyAuthToken(ActionDTO actionDTO)
@@ -79,7 +79,7 @@ namespace PluginBase.BaseClasses
             }
 
             actionDTO.CrateStorage.CrateDTO.Add(
-                _crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
+                Crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
             );
         }
 
@@ -87,7 +87,7 @@ namespace PluginBase.BaseClasses
         {
             var httpClient = new HttpClient();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/processes/"
+                + "api/containers/"
                 + processId.ToString();
 
             using (var response = await httpClient.GetAsync(url))
@@ -110,6 +110,20 @@ namespace PluginBase.BaseClasses
             }
 
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
+        }
+
+        protected bool ValidateAuthentication(ActionDTO curActionDTO, AuthenticationMode curAuthenticationMode)
+        {
+            if (IsEmptyAuthToken(curActionDTO))
+            {
+                AppendDockyardAuthenticationCrate(
+                    curActionDTO,
+                    curAuthenticationMode);
+                return false;
+            }
+            else
+                RemoveAuthenticationCrate(curActionDTO);
+            return true;
         }
 
         /// <summary>
@@ -145,35 +159,10 @@ namespace PluginBase.BaseClasses
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
-        protected async virtual Task<List<CrateDTO>> GetCratesByDirection(int activityId,
-            string manifestType, GetCrateDirection direction)
+        //wrapper for support test method
+        protected async virtual Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
         {
-            var httpClient = new HttpClient();
-
-            // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
-            var directionSuffix = (direction == GetCrateDirection.Upstream)
-                ? "upstream_actions/"
-                : "downstream_actions/";
-
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "activities/"
-                + directionSuffix
-                + "?id=" + activityId.ToString();
-
-            using (var response = await httpClient.GetAsync(url))
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                var curActions = JsonConvert.DeserializeObject<List<ActionDTO>>(content);
-
-                var curCrates = new List<CrateDTO>();
-
-                foreach (var curAction in curActions)
-                {
-                    curCrates.AddRange(_action.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
-                }
-
-                return curCrates;
-            }
+            return await Activity.GetCratesByDirection(activityId, manifestType, direction);
         }
 
         public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(
@@ -183,7 +172,7 @@ namespace PluginBase.BaseClasses
             //1) Build a merged list of the upstream design fields to go into our drop down list boxes
             StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
 
-            List<CrateDTO> curCrates = await GetCratesByDirection(
+            List<CrateDTO> curCrates = await Activity.GetCratesByDirection(
                 activityId,
                 CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 direction);
@@ -219,7 +208,7 @@ namespace PluginBase.BaseClasses
 
         protected CrateDTO PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
-            var controlsCrate = _crate.CreateStandardConfigurationControlsCrate(
+            var controlsCrate = Crate.CreateStandardConfigurationControlsCrate(
                 "Configuration_Controls", controlsList);
 
             return controlsCrate;
@@ -255,13 +244,13 @@ namespace PluginBase.BaseClasses
 
         protected async virtual Task<List<CrateDTO>> GetUpstreamFileHandleCrates(int curActionId)
         {
-            return await GetCratesByDirection(curActionId, CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME, GetCrateDirection.Upstream);
+            return await Activity.GetCratesByDirection(curActionId, CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME, GetCrateDirection.Upstream);
         }
 
         protected async Task<CrateDTO> MergeUpstreamFields(int curActionDOId, string label)
         {
             var curUpstreamFields = (await GetDesignTimeFields(curActionDOId, GetCrateDirection.Upstream)).Fields.ToArray();
-            CrateDTO upstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
+            CrateDTO upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
 
             return upstreamFieldsCrate;
         }
@@ -279,7 +268,7 @@ namespace PluginBase.BaseClasses
             //look for a text field name select_file with a value
             Manifest manifestSchema = new Manifest(Data.Constants.MT.StandardConfigurationControls);
 
-            var keys = _action.FindKeysByCrateManifestType(curActionDO, manifestSchema, fieldName)
+            var keys = Action.FindKeysByCrateManifestType(curActionDO, manifestSchema, fieldName).Result
                 .Select(e => (string)e["value"])
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
@@ -299,18 +288,18 @@ namespace PluginBase.BaseClasses
 
         protected CrateDTO PackCrate_ErrorTextBox(string fieldLabel, string errorMessage)
         {
-            ControlDefinitionDTO[] controls =  
+            ControlDefinitionDTO[] controls =
             {
                 new TextBlockControlDefinitionDTO()
                 {
                     Label = fieldLabel,
                     Value = errorMessage,
                     CssClass = "well well-lg"
-                    
+
                 }
             };
 
-            var crateControls = _crate.CreateStandardConfigurationControlsCrate(
+            var crateControls = Crate.CreateStandardConfigurationControlsCrate(
                         "Configuration_Controls", controls
                     );
 
@@ -323,13 +312,13 @@ namespace PluginBase.BaseClasses
         protected CrateDTO GetTextBoxControlForDisplayingError(
             string fieldLabel, string errorMessage)
         {
-            var fields = new List<ControlDefinitionDTO>() 
+            var fields = new List<ControlDefinitionDTO>()
             {
                 new TextBlockControlDefinitionDTO()
                 {
                     Label = fieldLabel,
                     Value = errorMessage,
-                    CssClass = "well well-lg"                    
+                    CssClass = "well well-lg"
                 }
             };
 
@@ -338,7 +327,7 @@ namespace PluginBase.BaseClasses
                 Controls = fields
             };
 
-            var crateControls = _crate.Create(
+            var crateControls = Crate.Create(
                 "Configuration_Controls",
                 JsonConvert.SerializeObject(controls),
                 CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
@@ -411,7 +400,7 @@ namespace PluginBase.BaseClasses
             var controlsCrate = designTimeCrateStorage.CrateDTO.FirstOrDefault(
                 c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
 
-            var controls = _crate.GetStandardConfigurationControls(controlsCrate).Controls;
+            var controls = Crate.GetStandardConfigurationControls(controlsCrate).Controls;
             var radioButtonGroupControl = controls
                 .SingleOrDefault(c => c.Name == controlName) as RadioButtonGroupControlDefinitionDTO;
 
@@ -457,7 +446,7 @@ namespace PluginBase.BaseClasses
             CrateStorageDTO crateStorage,
             string fieldKey)
         {
-            var crates = _action.GetCratesByManifestType(
+            var crates = Crate.GetCratesByManifestType(
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, crateStorage);
 
             foreach (var crate in crates)

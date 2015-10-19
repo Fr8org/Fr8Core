@@ -24,7 +24,8 @@ namespace pluginAzureSqlServer.Controllers
             var template = new ActivityTemplateDO
             {
                 Name = "Write_To_Sql_Server",
-                Category = ActivityCategory.fr8_Forwarder,
+                Label = "Write to Azure Sql Server",
+                Category = ActivityCategory.Forwarders,
                 Version = "1"
             };
 

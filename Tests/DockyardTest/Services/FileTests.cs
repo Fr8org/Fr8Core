@@ -5,7 +5,7 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Repositories;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Moq;
@@ -187,7 +187,10 @@ namespace DockyardTest.Services
             _curBlobFile = new FileStream(FixtureData.TestRealPdfFile1(), FileMode.Open);
             string curNameOfBlob = "small_pdf_file.pdf";
 
-            _file.Store(curFileDO, _curBlobFile, curNameOfBlob);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _file.Store(uow, curFileDO, _curBlobFile, curNameOfBlob);
+            }
         }
 
         private void MakeFileRepositoryTimeOut()

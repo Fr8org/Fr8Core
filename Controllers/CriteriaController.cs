@@ -20,18 +20,18 @@ namespace Web.Controllers
     public class CriteriaController : ApiController
     {
         /// <summary>
-        /// Retrieve criteria by ProcessNodeTemplate.Id.
+        /// Retrieve criteria by Subroute.Id.
         /// </summary>
-        /// <param name="id">ProcessNodeTemplate.id.</param>
+        /// <param name="id">Subroute.id.</param>
         [ResponseType(typeof(CriteriaDTO))]
-        [Route("byProcessNodeTemplate")]
+        [Route("bySubroute")]
         [HttpGet]
-        public IHttpActionResult GetByProcessNodeTemplateId(int id)
+        public IHttpActionResult GetBySubrouteId(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curCriteria = uow.CriteriaRepository.GetQuery()
-                    .SingleOrDefault(x => x.ProcessNodeTemplateId == id);
+                    .SingleOrDefault(x => x.SubrouteId == id);
 
                 return Ok(Mapper.Map<CriteriaDTO>(curCriteria));
             };

@@ -71,7 +71,7 @@ namespace Data.Migrations
             SeedMultiTenantTables(uow);
              
              AddAuthorizationTokens(uow);
-            AddProcessDOForTestingApi(uow);
+            AddContainerDOForTestingApi(uow);
         }
 
         //Method to let us seed into memory as well
@@ -81,7 +81,7 @@ namespace Data.Migrations
             SeedInstructions(uow);
         }
 
-        private static void AddProcessTemplate(IUnitOfWork uow)
+        private static void AddRoute(IUnitOfWork uow)
         {
         }
 
@@ -133,10 +133,10 @@ namespace Data.Migrations
             return eventPayload;
         }
 
-        private static void AddProcessDOForTestingApi(IUnitOfWork uow)
+        private static void AddContainerDOForTestingApi(IUnitOfWork uow)
         {
-            new ProcessTemplateBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}").AddCrate(GenerateInitialEventCrate()).Store(uow);
-            new ProcessTemplateBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}")
+            new RouteBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}").AddCrate(GenerateInitialEventCrate()).Store(uow);
+            new RouteBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}")
                 .AddCrate(GenerateInitialEventCrate())
                 .AddCrate(new CrateDTO
                 {
@@ -411,7 +411,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        private static DockyardAccountDO CreateAdmin(string userEmail, string curPassword, IUnitOfWork uow)
+        private static Fr8AccountDO CreateAdmin(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
@@ -431,7 +431,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        private static DockyardAccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
+        private static Fr8AccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
@@ -449,7 +449,7 @@ namespace Data.Migrations
                 uow.UserRepository.AddDefaultProfile(user);
         }
 
-        private void AddSubscription(IUnitOfWork uow, DockyardAccountDO curAccount, PluginDO curPlugin, int curAccessLevel)
+        private void AddSubscription(IUnitOfWork uow, Fr8AccountDO curAccount, PluginDO curPlugin, int curAccessLevel)
         {
             var curSub = new SubscriptionDO()
             {

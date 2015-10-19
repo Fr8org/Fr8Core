@@ -10,7 +10,7 @@ namespace Core.Interfaces
 	{
 		List<ActivityDO> GetUpstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO);
         List<ActivityDO> GetDownstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO);
-        Task Process(int curActivityId, ProcessDO curProcessDO);
+        Task Process(int curActivityId, ContainerDO curContainerDO);
         IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IDockyardAccountDO curAccount);
         ActivityDO GetNextActivity(ActivityDO currentActivity, ActivityDO root);
 	    void Delete(IUnitOfWork uow, ActivityDO activity);

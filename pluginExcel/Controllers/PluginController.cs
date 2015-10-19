@@ -31,8 +31,9 @@ namespace pluginExcel.Controllers
             var template = new ActivityTemplateDO
             {
                 Name = "Extract_Data",
+                Label = "Extract Data",
                 Version = "1",
-                Category = ActivityCategory.fr8_Receiver,
+                Category = ActivityCategory.Receivers,
                 Plugin = plugin
             };
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Web;
+using Core.Exceptions;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
@@ -17,9 +18,9 @@ using StructureMap;
 
 namespace Core.Security
 {
-    class SecurityServices : ISecurityServices
+    internal class SecurityServices : ISecurityServices
     {
-        public void Login(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO)
+        public void Login(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO)
         {
             ClaimsIdentity identity = GetIdentity(uow, dockyardAccountDO);
             HttpContext.Current.GetOwinContext().Authentication.SignIn(new AuthenticationProperties
@@ -27,6 +28,30 @@ namespace Core.Security
                 IsPersistent = true
             }, identity);
             ObjectFactory.GetInstance<ITracker>().Identify(dockyardAccountDO);
+        }
+
+        public Fr8AccountDO GetCurrentAccount(IUnitOfWork uow)
+        {
+            var currentUser = GetCurrentUser();
+
+            if (string.IsNullOrWhiteSpace(currentUser))
+            {
+                throw new AuthenticationExeception("Failed to resolve current user id.");
+            }
+
+            var account = uow.UserRepository.FindOne(x => x.Id == currentUser);
+
+            if (account == null)
+            {
+                throw new AuthenticationExeception("Current user id can't be mapped to fr8 user.");
+            }
+
+            return account;
+        }
+
+        public bool IsCurrentUserHasRole(string role)
+        {
+            return GetRoleNames().Any(x => x == role);
         }
 
         public String GetCurrentUser()
@@ -57,7 +82,7 @@ namespace Core.Security
             HttpContext.Current.GetOwinContext().Authentication.SignOut();
         }
 
-        public ClaimsIdentity GetIdentity(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO)
+        public ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO)
         {
             var um = new DockyardIdentityManager(uow);
             var identity = um.CreateIdentity(dockyardAccountDO, DefaultAuthenticationTypes.ApplicationCookie);

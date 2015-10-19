@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 namespace UtilitiesTesting.Fixtures
 {
-    public class ActionListDO : List<ActivityDO>
+    public class ActionListDO : List<RouteNodeDO>
     {
-        private ActivityDO _parentActivity;
+        private RouteNodeDO _parentActivity;
         private int? _parentActivityId;
 
-        internal ActivityDO ParentActivity
+        internal RouteNodeDO ParentActivity
         {
             get
             {
@@ -20,7 +20,7 @@ namespace UtilitiesTesting.Fixtures
                 _parentActivity = value;
                 foreach (var a in this)
                 {
-                    a.ParentActivity = value;
+                    a.ParentRouteNode = value;
                 }
             }
         }
@@ -37,13 +37,13 @@ namespace UtilitiesTesting.Fixtures
                 _parentActivityId = value;
                 foreach (var a in this)
                 {
-                    a.ParentActivityId = value;
+                    a.ParentRouteNodeId = value;
                 }
             }
         }
 
 
-        internal int? ProcessNodeTemplateId
+        internal int? SubrouteId
         {
             get
             {
@@ -54,12 +54,12 @@ namespace UtilitiesTesting.Fixtures
                 _parentActivityId = value;
                 foreach (var a in this)
                 {
-                    a.ParentActivityId = value;
+                    a.ParentRouteNodeId = value;
                 }
             }
         }
 
-        internal List<ActivityDO> Activities
+        internal List<RouteNodeDO> Activities
         {
             get { return this; }
             set
@@ -68,8 +68,8 @@ namespace UtilitiesTesting.Fixtures
                 AddRange(value);
                 foreach (var activityDo in value)
                 {
-                    activityDo.ParentActivityId = _parentActivityId;
-                    activityDo.ParentActivity = _parentActivity;
+                    activityDo.ParentRouteNodeId = _parentActivityId;
+                    activityDo.ParentRouteNode = _parentActivity;
                 }
             }
         }
@@ -81,13 +81,13 @@ namespace UtilitiesTesting.Fixtures
         public static ActionListDO TestActionListHealth1()
         {
             //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
-            var processDo = new ProcessDO
+            var containerDO = new ContainerDO
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
-                ProcessState = 1,
+                ContainerState = 1,
                 Name = "test name",
-                ProcessTemplateId = TestProcessTemplateHealthDemo().Id
+                RouteId = TestRouteHealthDemo().Id
             };
 //
             return new ActionListDO
@@ -95,7 +95,7 @@ namespace UtilitiesTesting.Fixtures
 //               Id = 88,
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate,
-//               ProcessNodeTemplateID = 50,
+//               SubrouteID = 50,
 //               CurrentActivity = TestActionHealth1(),
 //               Process = processDo
             };
@@ -106,7 +106,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionListDO = new ActionListDO
             {
 //               Id = 1,
-//               ProcessNodeTemplateID = 1,
+//               SubrouteID = 1,
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate
             };
@@ -135,7 +135,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionListDO = new ActionListDO
             {
 //               Id = 4,
-//               ProcessNodeTemplateID = 1,
+//               SubrouteID = 1,
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate
             };
@@ -147,7 +147,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionListDO = new ActionListDO
             {
 //               Id = 4,
-//               ProcessNodeTemplateID = 1,
+//               SubrouteID = 1,
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate,                    
             };
@@ -182,7 +182,7 @@ namespace UtilitiesTesting.Fixtures
 //               ActionListType = ActionListType.Immediate,
 //               CurrentActivity = FixtureData.TestAction6(),
 //               ActionListState = ActionListState.Unstarted,
-                Activities = new System.Collections.Generic.List<ActivityDO>() 
+                Activities = new System.Collections.Generic.List<RouteNodeDO>() 
                 { 
                     FixtureData.TestAction22(),
                    FixtureData.TestAction7(),
@@ -193,8 +193,8 @@ namespace UtilitiesTesting.Fixtures
 //
         public static ActionListDO TestActionList6()
         {
-            ProcessDO processDO = FixtureData.TestProcess1();
-            processDO.CrateStorage = "";
+            ContainerDO containerDO = FixtureData.TestContainer1();
+            containerDO.CrateStorage = "";
             return new ActionListDO
             {
 //               Id = 2,
@@ -211,7 +211,7 @@ namespace UtilitiesTesting.Fixtures
 //               Id = 2,
 //               CurrentActivity = FixtureData.TestAction6(),
 //               ActionListState = ActionListState.Unstarted,
-                Activities = new System.Collections.Generic.List<ActivityDO>() 
+                Activities = new System.Collections.Generic.List<RouteNodeDO>() 
                 { 
                     FixtureData.TestAction10(),
                     FixtureData.TestAction7(),
@@ -322,7 +322,7 @@ namespace UtilitiesTesting.Fixtures
 //			  return actionLists;
 //		  }
 //
-        public static List<ActivityDO> TestActionList1()
+        public static List<RouteNodeDO> TestActionList1()
           {
               List<ActionListDO> actionLists = new List<ActionListDO>();
 //
@@ -348,10 +348,10 @@ namespace UtilitiesTesting.Fixtures
               al_1.Activities.Add(a_23);
              
               actionLists.Add(al_1);
-             return new List<ActivityDO>() { a_23 };
+             return new List<RouteNodeDO>() { a_23 };
           }
 //
-         public static List<ActivityDO> TestActionListParentActivityID12()
+         public static List<RouteNodeDO> TestActionListParentActivityID12()
           {
               List<ActionListDO> actionLists = new List<ActionListDO>();
 //
@@ -374,7 +374,7 @@ namespace UtilitiesTesting.Fixtures
               al_1.Activities.Add(a_23);
              
               actionLists.Add(al_1);
-             return new List<ActivityDO>() { a_23 };
+             return new List<RouteNodeDO>() { a_23 };
           }
 
         // Commented out by Vladimir. There is no ActionLists now. Empty action list has no sense after DO-1214

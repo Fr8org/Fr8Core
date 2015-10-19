@@ -9,7 +9,7 @@ using StructureMap;
 using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 
 namespace pluginTests.PluginAzureSqlServerTests
 {

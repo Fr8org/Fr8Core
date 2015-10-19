@@ -1,6 +1,8 @@
 using System.Net.Http.Formatting;
 using AutoMapper;
 using Core.ExternalServices;
+// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
+using InternalInterfaces = Core.Interfaces;
 using Core.Interfaces;
 using Core.Managers;
 using Core.Managers.APIManagers.Authorizers;
@@ -11,6 +13,8 @@ using Core.Managers.APIManagers.Packagers.SegmentIO;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.Managers.APIManagers.Transmitters.Restful;
 using Core.Security;
+// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
+using InternalClass = Core.Services;
 using Core.Services;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
@@ -20,10 +24,13 @@ using Data.Repositories;
 using DocuSign.Integrations.Client;
 using Moq;
 using SendGrid;
+// This is used to avoid ambiguity between StructureMap.IContainer and  Core.Interfaces.IContainer
+using ExtternalStructureMap = StructureMap;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using System.Threading.Tasks;
 using Utilities;
+
 
 namespace Core.StructureMap
 {
@@ -37,7 +44,7 @@ namespace Core.StructureMap
 
         #region Method
 
-        public static IContainer ConfigureDependencies(DependencyType type)
+        public static ExtternalStructureMap.IContainer ConfigureDependencies(DependencyType type)
         {
 
             switch (type)
@@ -95,20 +102,20 @@ namespace Core.StructureMap
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
                 For<IPluginTransmitter>().Use<PluginTransmitter>();
-                For<IProcessTemplate>().Use<ProcessTemplate>();
-                For<IProcess>().Use<Process>();
+                For<IRoute>().Use<Route>();
+                For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
                 For<IAction>().Use<Action>();
-				For<IActivity>().Use<Activity>();
+				For<IRouteNode>().Use<RouteNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
-                For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
+                For<ISubroute>().Use<Subroute>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IFile>().Use<File>();
                 For<IPlugin>().Use<Plugin>();
-                For<ICrate>().Use<Crate>();
+                For<ICrateManager>().Use<CrateManager>();
                 For<IDockyardEvent>().Use<DockyardEvent>();
                 For<IReport>().Use<Report>();
             }
@@ -143,15 +150,15 @@ namespace Core.StructureMap
                 For<IActivityTemplate>().Use<ActivityTemplate>();
                 
                 For<ITracker>().Use(mockSegment.Object);
-                For<IProcess>().Use<Process>();
+                For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
                 For<ISubscription>().Use<Subscription>();
                 For<IAction>().Use<Action>();
-					 For<IActivity>().Use<Activity>();
+					 For<IRouteNode>().Use<RouteNode>();
 
                 For<IProcessNode>().Use<ProcessNode>();
-                For<IProcessTemplate>().Use<ProcessTemplate>();
-                For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
+                For<IRoute>().Use<Route>();
+                For<ISubroute>().Use<Subroute>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
@@ -164,7 +171,7 @@ namespace Core.StructureMap
                 //For<ITemplate>().Use<Services.Template>();
                 For<IFile>().Use<File>();
                 For<IPlugin>().Use<Plugin>();
-                For<ICrate>().Use<Crate>();
+                For<ICrateManager>().Use<CrateManager>();
                 For<IDockyardEvent>().Use<DockyardEvent>();
             }
         }

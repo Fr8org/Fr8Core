@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Core.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using pluginSlack.Interfaces;
 using pluginSlack.Services;
+using PluginBase.BaseClasses;
 
 namespace pluginSlack.Actions
 {
@@ -23,7 +22,7 @@ namespace pluginSlack.Actions
             _slackIntegration = new SlackIntegration();
         }
 
-        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
             if (IsEmptyAuthToken(actionDto))
             {
@@ -47,7 +46,7 @@ namespace pluginSlack.Actions
                 throw new ApplicationException("Unexpected channel-id.");
             }
 
-            var cratePayload = _crate.Create(
+            var cratePayload = Crate.Create(
                 "Slack Payload Data",
                 JsonConvert.SerializeObject(payloadFields),
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
@@ -84,19 +83,10 @@ namespace pluginSlack.Actions
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (IsEmptyAuthToken(curActionDTO))
-            {
-                AppendDockyardAuthenticationCrate(
-                    curActionDTO,
-                    AuthenticationMode.ExternalMode);
-
-                return curActionDTO;
-            }
-
-            RemoveAuthenticationCrate(curActionDTO);
-
-            return await ProcessConfigurationRequest(curActionDTO,
+            if (ValidateAuthentication(curActionDTO, AuthenticationMode.ExternalMode))
+                return await ProcessConfigurationRequest(curActionDTO,
                 x => ConfigurationEvaluator(x));
+            return curActionDTO;
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
@@ -117,7 +107,7 @@ namespace pluginSlack.Actions
             var oauthToken = curActionDTO.AuthToken.Token;
             var channels = await _slackIntegration.GetChannelList(oauthToken);
 
-            var crateControls = CreateConfigurationCrate();
+            var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = CreateDesignTimeFieldsCrate();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateEventSubscriptions = CreateEventSubscriptionCrate();
@@ -129,7 +119,7 @@ namespace pluginSlack.Actions
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
-        private CrateDTO CreateConfigurationCrate()
+        private CrateDTO PackCrate_ConfigurationControls()
         {
             var fieldSelectChannel = new DropDownListControlDefinitionDTO()
             {
@@ -167,7 +157,7 @@ namespace pluginSlack.Actions
             };
 
             var crate =
-                _crate.CreateDesignTimeFieldsCrate(
+                Crate.CreateDesignTimeFieldsCrate(
                     "Available Fields",
                     fields.ToArray()
                 );
@@ -178,7 +168,7 @@ namespace pluginSlack.Actions
         private CrateDTO CreateAvailableChannelsCrate(IEnumerable<FieldDTO> channels)
         {
             var crate =
-                _crate.CreateDesignTimeFieldsCrate(
+                Crate.CreateDesignTimeFieldsCrate(
                     "Available Channels",
                     channels.ToArray()
                 );
@@ -192,7 +182,7 @@ namespace pluginSlack.Actions
                 "Slack Outgoing Message"
             };
 
-            return _crate.CreateStandardEventSubscriptionsCrate(
+            return Crate.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
                 subscriptions.ToArray()
                 );

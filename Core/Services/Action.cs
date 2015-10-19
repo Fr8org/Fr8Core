@@ -1,41 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web.UI;
 using AutoMapper;
+using Core.Enums;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using StructureMap;
+using Core.Enums;
 using Core.Interfaces;
+using Core.Managers;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.Managers.APIManagers.Transmitters.Restful;
+using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using StructureMap;
-using System.Data.Entity;
-using Data.Constants;
-using Newtonsoft.Json;
 using Data.Interfaces.ManifestSchemas;
+using Data.States;
 using Utilities;
-using Newtonsoft.Json.Linq;
 
 namespace Core.Services
 {
     public class Action : IAction
     {
-        private ICrate _crate;
+        private readonly ICrateManager _crate;
         //private Task curAction;
-        private IPlugin _plugin;
-        //private IProcessTemplate _processTemplate;
+        private readonly IPlugin _plugin;
+        //private IRoute _route;
         private readonly AuthorizationToken _authorizationToken;
+
+        private readonly IRouteNode _routeNode;
 
         public Action()
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
-            _crate= ObjectFactory.GetInstance<ICrate>();
+
+            
+            _routeNode = ObjectFactory.GetInstance<IRouteNode>();
+
           //  _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
+            _crate= ObjectFactory.GetInstance<ICrateManager>();
+          //  _route = ObjectFactory.GetInstance<IRoute>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -68,8 +79,8 @@ namespace Core.Services
 
             if (existingActionDO != null)
             {
-                existingActionDO.ParentActivity = submittedActionData.ParentActivity;
-                existingActionDO.ParentActivityId = submittedActionData.ParentActivityId;
+                existingActionDO.ParentRouteNode = submittedActionData.ParentRouteNode;
+                existingActionDO.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
                 existingActionDO.ActivityTemplateId = submittedActionData.ActivityTemplateId;
                 existingActionDO.Name = submittedActionData.Name;
                 existingActionDO.CrateStorage = submittedActionData.CrateStorage;
@@ -93,11 +104,6 @@ namespace Core.Services
                 return SaveOrUpdateAction(uow, submittedActionData);
             }
         }
-        
-        public List<CrateDTO> GetCrates(ActionDO curActionDO)
-        {
-            return curActionDO.CrateStorageDTO().CrateDTO;
-        }
 
         public ActionDO GetById(int id)
         {
@@ -119,14 +125,14 @@ namespace Core.Services
             {
                 tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
             }
-            catch (ArgumentException)
+            catch (ArgumentException e)
             {
-                EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO));
+                EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO), e.Message);
                 throw;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                EventManager.PluginConfigureFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO));
+                EventManager.PluginConfigureFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO), e.Message);
                 throw;
             }
 
@@ -140,18 +146,6 @@ namespace Core.Services
             return tempActionDTO;
         }
 
-        public StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO)
-        {
-            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
-            if (confControls.Count() != 0 && confControls.Count() != 1)
-                throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
-            if (confControls.Count() == 0)
-                return null;
-            StandardConfigurationControlsCM standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(confControls.First().Contents);
-            return standardCfgControlsMs;
-        }
-
         public ActionDO MapFromDTO(ActionDTO curActionDTO)
         {
             ActionDO submittedAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
@@ -160,18 +154,44 @@ namespace Core.Services
 
         public void Delete(int id)
         {
-
+            //we are using Kludge solution for now
+            //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAction = uow.ActivityRepository.GetQuery().FirstOrDefault(al => al.Id == id);
-                if (curAction == null) // Why we add something in Delete method?!!! (Vladimir)
+
+                var curAction = uow.RouteNodeRepository.GetQuery().FirstOrDefault(al => al.Id == id);
+                if (curAction == null)
                 {
-                    curAction = new ActivityDO { Id = id };
-                    uow.ActivityRepository.Attach(curAction);
+                    throw new InvalidOperationException("Unknown RouteNode with id: "+ id);
                 }
-                uow.ActivityRepository.Remove(curAction);
+
+                var downStreamActivities = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
+                //we should clear values of configuration controls
+
+                foreach (var downStreamActivity in downStreamActivities)
+                {
+                    var crateStorage = downStreamActivity.CrateStorageDTO();
+                    var cratesToReset = _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, crateStorage).ToList();
+                    foreach (var crateDTO in cratesToReset)
+                    {
+                        var configurationControls = _crate.GetStandardConfigurationControls(crateDTO);
+                        foreach (var controlDefinitionDTO in configurationControls.Controls)
+                        {
+                            (controlDefinitionDTO as IResettable).Reset();
+                        }
+                        crateDTO.Contents = JsonConvert.SerializeObject(configurationControls);
+                    }
+
+                    if (cratesToReset.Any())
+                {
+                        downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
+                    }                    
+                }
+                uow.RouteNodeRepository.Remove(curAction);
                 uow.SaveChanges();
             }
+
         }
 
         /// <summary>
@@ -199,62 +219,34 @@ namespace Core.Services
 //
 //            return curAction;
 //        }
-            
-        public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
-        {
-            //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
-            if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
-            {
-                curAction.ActionState = ActionState.InProcess;
-                uow.SaveChanges();
 
+        public async Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow)
+        {
                 EventManager.ActionStarted(curAction);
 
-                var payload = await Execute(curAction, curProcessDO);
+                var payload = await Run(curAction, curContainerDO);
+
                 if (payload != null)
                 {
-                    curProcessDO.CrateStorage = payload.CrateStorage;
+                    curContainerDO.CrateStorage = payload.CrateStorage;
                 }
 
-                //this JSON error check is broken because it triggers on standard success messages, which look like this:
-                //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
-
-
-                //check if the returned JSON is Error
-                //  if (jsonResult.ToLower().Contains("error"))
-                // {
-                //     curAction.ActionState = ActionState.Error;
-                //  }
-                //   else
-                //   {
-                curAction.ActionState = ActionState.Active;
-                //   }
-
                 uow.ActionRepository.Attach(curAction);
                 uow.SaveChanges();
             }
-            else
-            {
-                curAction.ActionState = ActionState.Error;
-                uow.ActionRepository.Attach(curAction);
-                uow.SaveChanges();
-                throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
-            }
-            return curAction.ActionState.Value;
-        }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
-        public async Task<PayloadDTO> Execute(ActionDO curActionDO, ProcessDO curProcessDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO)
         {
             if (curActionDO == null)
             {
                 throw new ArgumentNullException("curActionDO");
             }
 
-            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curProcessDO.Id);
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Run", curActionDO, curContainerDO.Id);
             
             // Temporarily commented out by yakov.gnusin.
-            EventManager.ActionDispatched(curActionDO, curProcessDO.Id);
+            EventManager.ActionDispatched(curActionDO, curContainerDO.Id);
 
             return payloadDTO;
         }
@@ -268,7 +260,7 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                DockyardAccountDO curDockyardAccountDO = GetAccount(curActionDO);
+                Fr8AccountDO curDockyardAccountDO = GetAccount(curActionDO);
                 var curPlugin = curActionDO.ActivityTemplate.Plugin;
                 string curToken = string.Empty;
 
@@ -287,7 +279,24 @@ namespace Core.Services
             }
         }
 
-        public async Task AuthenticateInternal(DockyardAccountDO account, PluginDO plugin,
+        public bool IsAuthenticated(Fr8AccountDO account, PluginDO plugin)
+        {
+            if (!plugin.RequiresAuthentication)
+            {
+                return true;
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var hasAuthToken = uow.AuthorizationTokenRepository
+                    .GetQuery()
+                    .Any(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
+
+                return hasAuthToken;
+            }
+        }
+
+        public async Task AuthenticateInternal(Fr8AccountDO account, PluginDO plugin,
             string username, string password)
         {
             if (!plugin.RequiresAuthentication)
@@ -315,6 +324,8 @@ namespace Core.Services
                 var authToken = uow.AuthorizationTokenRepository
                     .FindOne(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
 
+                if (authTokenDTO != null)
+                {
                 var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
                 var curAccount = uow.UserRepository.GetByKey(account.Id);
 
@@ -339,6 +350,7 @@ namespace Core.Services
 
                 uow.SaveChanges();
             }
+        }
         }
 
         public async Task AuthenticateExternal(
@@ -378,7 +390,7 @@ namespace Core.Services
         }
 
         public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl(
-            DockyardAccountDO user, PluginDO plugin)
+            Fr8AccountDO user, PluginDO plugin)
         {
             if (!plugin.RequiresAuthentication)
             {
@@ -432,61 +444,20 @@ namespace Core.Services
         /// </summary>
         /// <param name="curActionDO"></param>
         /// <returns></returns>
-        public DockyardAccountDO GetAccount(ActionDO curActionDO)
+        public Fr8AccountDO GetAccount(ActionDO curActionDO)
         {
-            if (curActionDO.ParentActivity != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
+            if (curActionDO.ParentRouteNode != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
             {
                 // Can't follow guideline to init services inside constructor. 
-                // Current implementation of ProcessTemplate and Action services are not good and are depedant on each other.
+                // Current implementation of Route and Action services are not good and are depedant on each other.
                 // Initialization of services in constructor will cause stack overflow
-                var processTemplate = ObjectFactory.GetInstance<IProcessTemplate>().GetProcessTemplate(curActionDO);
-                return processTemplate != null ? processTemplate.DockyardAccount : null;
+                var route = ObjectFactory.GetInstance<IRoute>().GetRoute(curActionDO);
+                return route != null ? route.Fr8Account : null;
             }
 
             return null;
 
-        }
-
-        public void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists)
-        {
-            if (curCrateDTOLists == null)
-                throw new ArgumentNullException("CrateDTO is null");
-            if (curActionDO == null)
-                throw new ArgumentNullException("ActionDO is null");
-
-            if (curCrateDTOLists.Count > 0)
-            {
-                curActionDO.UpdateCrateStorageDTO(curCrateDTOLists);
-            }
-        }
-
-        public IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO)
-        {
-            if (String.IsNullOrEmpty(curManifestType))
-                throw new ArgumentNullException("Parameter Manifest Type is empty");
-            if (curCrateStorageDTO == null)
-                throw new ArgumentNullException("Parameter CrateStorageDTO is null.");
-
-            IEnumerable<CrateDTO> crateDTO = null;
-
-            crateDTO = curCrateStorageDTO.CrateDTO.Where(crate => crate.ManifestType == curManifestType);
-
-            return crateDTO;
-        }
-
-        public IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO)
-        {
-            if (String.IsNullOrEmpty(curLabel))
-                throw new ArgumentNullException("Parameter Label is empty");
-            if (curCrateStorageDTO == null)
-                throw new ArgumentNullException("Parameter CrateStorageDTO is null.");
-
-            IEnumerable<CrateDTO> crateDTOList = null;
-
-            crateDTOList = curCrateStorageDTO.CrateDTO.Where(crate => crate.Label == curLabel);
-
-            return crateDTOList;
-        }
+        }       
 
         //looks for the Conifiguration Controls Crate and Extracts the ManifestSchema
         public StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction)
@@ -494,7 +465,7 @@ namespace Core.Services
 
             var curCrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curAction.CrateStorage);
             var curControlsCrate =
-                GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, curCrateStorage)
+                _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, curCrateStorage)
                     .FirstOrDefault();
 
             if (curControlsCrate == null || string.IsNullOrEmpty(curControlsCrate.Contents))
@@ -557,16 +528,16 @@ namespace Core.Services
                 // Try to find AuthToken if plugin requires authentication.
                 if (activityTemplate.Plugin.RequiresAuthentication)
                 {
-                    // Try to get owner's account for Action -> ProcessTemplate.
+                    // Try to get owner's account for Action -> Route.
                     // Can't follow guideline to init services inside constructor. 
-                    // Current implementation of ProcessTemplate and Action services are not good and are depedant on each other.
+                    // Current implementation of Route and Action services are not good and are depedant on each other.
                     // Initialization of services in constructor will cause stack overflow
-                    var processTemplate = ObjectFactory.GetInstance<IProcessTemplate>().GetProcessTemplate(action);
-                    var dockyardAccount =  processTemplate != null ? processTemplate.DockyardAccount : null;
+                    var route = ObjectFactory.GetInstance<IRoute>().GetRoute(action);
+                    var dockyardAccount = route != null ? route.Fr8Account : null;
                     
                     if (dockyardAccount == null)
                     {
-                        throw new ApplicationException("Could not find DockyardAccount for Action's ProcessTemplate.");
+                        throw new ApplicationException("Could not find DockyardAccount for Action's Route.");
                     }
 
                     var accountId = dockyardAccount.Id;
@@ -601,32 +572,22 @@ namespace Core.Services
                 .CallActionAsync<TResult>(actionName, dto);
         }
 
-        public void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO)
-        {
-            AddCrate(curActionDO, new List<CrateDTO>() { curCrateDTO });
-        }
 
-        public void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO)
+        public async Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key,
+                                                                string fieldName = "name",
+                                                                GetCrateDirection direction = GetCrateDirection.None)
         {
-            var existingCratesWithLabelInActionDO = GetCratesByLabel(label, curActionDO.CrateStorageDTO());
-            if (!existingCratesWithLabelInActionDO.Any()) // no existing crates with user provided label found, then add the crate
-            {
-                AddCrate(curActionDO, curCrateDTO);
+            var controlsCrates = _crate.GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO()).ToList();
+
+            if (direction != GetCrateDirection.None)
+        {
+                var upstreamCrates = await ObjectFactory.GetInstance<IRouteNode>()
+                    .GetCratesByDirection(curActionDO.Id, curSchema.ManifestName, direction).ConfigureAwait(false);
+
+                controlsCrates.AddRange(upstreamCrates);
             }
-            else
-            {
-                // Remove the existing crate for this label
-                _crate.RemoveCrateByLabel(curActionDO.CrateStorageDTO().CrateDTO, label);
 
-                // Add the newly created crate for this label to action's crate storage
-                AddCrate(curActionDO, curCrateDTO);
-            }
-        }
-
-        public IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key)
-        {
-           var controlsCrates = GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO());
-           var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: "name");
+            var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: fieldName);
            return keys;
         }
     }

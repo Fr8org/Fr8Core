@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using PluginBase.BaseClasses;
-using Data.Interfaces.DataTransferObjects;
-using Core.Interfaces;
+﻿using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 using pluginSalesforce.Infrastructure;
+using PluginBase.BaseClasses;
 
 namespace pluginSalesforce.Actions
 {

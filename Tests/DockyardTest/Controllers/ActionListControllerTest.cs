@@ -20,7 +20,7 @@ namespace DockyardTest.Controllers
     [Category("ActionListController")]
     public class ActionListControllerTest : ApiControllerTestBase
     {
-        private ProcessNodeTemplateDO _curProcessNodeTemplate;
+        private SubrouteDO _curSubroute;
         private ActionListController _actionListController;
 
         public override void SetUp()
@@ -32,14 +32,14 @@ namespace DockyardTest.Controllers
         }
         // DO-1214
 //        [Test]
-//        public void ActionListController_CanGetByProcessNodeTemplateId()
+//        public void ActionListController_CanGetBySubrouteId()
 //        {
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
 //
 //
-//                var actionResult = _actionListController.GetByProcessNodeTemplateId(
-//                    _curProcessNodeTemplate.Id, ActionListType.Immediate);
+//                var actionResult = _actionListController.GetBySubrouteId(
+//                    _curSubroute.Id, ActionListType.Immediate);
 //
 //                var okResult = actionResult as OkNegotiatedContentResult<ActionListDTO>;
 //
@@ -55,23 +55,23 @@ namespace DockyardTest.Controllers
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
 //                //Add a template
-//                var curProcessTemplate = FixtureData.TestProcessTemplate1();
-//                uow.ProcessTemplateRepository.Add(curProcessTemplate);
+//                var curRoute = FixtureData.TestRoute1();
+//                uow.RouteRepository.Add(curRoute);
 //                uow.SaveChanges();
 //
-//                _curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-//                _curProcessNodeTemplate.ParentTemplateId = curProcessTemplate.Id;
-//                uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
+//                _curSubroute = FixtureData.TestSubrouteDO1();
+//                _curSubroute.ParentTemplateId = curRoute.Id;
+//                uow.SubrouteRepository.Add(_curSubroute);
 //                uow.SaveChanges();
 //
-//                /*_curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-//                uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
+//                /*_curSubroute = FixtureData.TestSubrouteDO1();
+//                uow.SubrouteRepository.Add(_curSubroute);
 //                uow.SaveChanges();*/
 //
 //                _curActionList = FixtureData.TestActionList();
 //                _curActionList.ActionListType = ActionListType.Immediate;
 //                _curActionList.CurrentActivity = null;
-//                _curActionList.ProcessNodeTemplateID = _curProcessNodeTemplate.Id;
+//                _curActionList.SubrouteID = _curSubroute.Id;
 //
 //                uow.ActionListRepository.Add(_curActionList);
 //                uow.SaveChanges();

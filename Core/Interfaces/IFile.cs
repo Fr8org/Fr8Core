@@ -2,6 +2,7 @@
 using System.IO;
 using Data.Entities;
 using System.Collections.Generic;
+using Data.Interfaces;
 
 namespace Core.Interfaces
 {
@@ -14,7 +15,7 @@ namespace Core.Interfaces
         /// Stores the file into file repository
         /// </summary>
         /// <remarks>WARNING: THIS METHOD IS NOT TRANSACTIONAL. It is possible to successfuly save to the remote store and then have the FileDO update fail.</remarks>
-        void Store(FileDO curFileDO, Stream curFile, string curFileName);
+        void Store(IUnitOfWork uow, FileDO curFileDO, Stream curFile, string curFileName);
 
         /// <summary>
         /// Retrieves file from repository

@@ -1,6 +1,5 @@
-﻿using Core.Interfaces;
-using Data.Entities;
-using Data.Interfaces;
+﻿// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
+using InternalInterfaces = Core.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 using System;
@@ -8,23 +7,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Interfaces;
+using Core.Managers;
+using Data.Entities;
 using Data.Exceptions;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
+using Data.Interfaces;
 
 namespace Core.Services
 {
     public class DockyardEvent : IDockyardEvent
     {
-        private readonly IProcessTemplate _processTemplate;
-        private readonly IProcess _process;
-        private readonly ICrate _crate;
+        private readonly IRoute _route;
+        private readonly InternalInterfaces.IContainer _process;
+        private readonly ICrateManager _crate;
 
         public DockyardEvent()
         {
-            _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
-            _process = ObjectFactory.GetInstance<IProcess>();
-            _crate = ObjectFactory.GetInstance<ICrate>();
+            _route = ObjectFactory.GetInstance<IRoute>();
+            _process = ObjectFactory.GetInstance<InternalInterfaces.IContainer>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         //public void ProcessInbound(string userID, EventReportMS curEventReport)
@@ -34,14 +37,14 @@ namespace Core.Services
         //        throw new ArgumentNullException("Paramter Standard Event Report is null.");
 
         //    //Matchup process
-        //    IList<ProcessTemplateDO> matchingProcessTemplates = _processTemplate.GetMatchingProcessTemplates(userID, curEventReport);
+        //    IList<RouteDO> matchingRoutes = _route.GetMatchingRoutes(userID, curEventReport);
         //    using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
         //    {
-        //        foreach (var processNodeTemplate in matchingProcessTemplates)
+        //        foreach (var subroute in matchingRoutes)
         //        {
-        //            //4. When there's a match, it means that it's time to launch a new Process based on this ProcessTemplate, 
-        //            //so make the existing call to ProcessTemplate#LaunchProcess.
-        //            _processTemplate.LaunchProcess(unitOfWork, processNodeTemplate);
+        //            //4. When there's a match, it means that it's time to launch a new Process based on this Route, 
+        //            //so make the existing call to Route#LaunchProcess.
+        //            _route.LaunchProcess(unitOfWork, subroute);
         //        }
         //    }
         //}
@@ -67,43 +70,43 @@ namespace Core.Services
 
                 var curDockyardAccount = authToken.UserDO;
 
-                //find this Account's ProcessTemplates
-                var initialProcessTemplatesList = uow.ProcessTemplateRepository
-                    .FindList(pt => pt.DockyardAccount.Id == curDockyardAccount.Id)
-                    .Where(x => x.ProcessTemplateState == ProcessTemplateState.Active);
+                //find this Account's Routes
+                var initialRoutesList = uow.RouteRepository
+                    .FindList(pt => pt.Fr8Account.Id == curDockyardAccount.Id)
+                    .Where(x => x.RouteState == RouteState.Active);
 
-                var subscribingProcessTemplates = _processTemplate.MatchEvents(initialProcessTemplatesList.ToList(),
+                var subscribingRoutes = _route.MatchEvents(initialRoutesList.ToList(),
                     eventReportMS);
 
 
 
-                await LaunchProcesses(subscribingProcessTemplates, curCrateStandardEventReport);
+                await LaunchProcesses(subscribingRoutes, curCrateStandardEventReport);
             
             }
         }
 
-        public Task LaunchProcesses(List<ProcessTemplateDO> curProcessTemplates, CrateDTO curEventReport)
+        public Task LaunchProcesses(List<RouteDO> curRoutes, CrateDTO curEventReport)
         {
             var processes = new List<Task>();
 
-            foreach (var curProcessTemplate in curProcessTemplates)
+            foreach (var curRoute in curRoutes)
             {
-                //4. When there's a match, it means that it's time to launch a new Process based on this ProcessTemplate, 
-                //so make the existing call to ProcessTemplate#LaunchProcess.
-                processes.Add(LaunchProcess(curProcessTemplate, curEventReport));
+                //4. When there's a match, it means that it's time to launch a new Process based on this Route, 
+                //so make the existing call to Route#LaunchProcess.
+                processes.Add(LaunchProcess(curRoute, curEventReport));
             }
             
             return Task.WhenAll(processes);
         }
 
-        public async Task LaunchProcess(ProcessTemplateDO curProcessTemplate, CrateDTO curEventData)
+        public async Task LaunchProcess(RouteDO curRoute, CrateDTO curEventData)
         {
-            if (curProcessTemplate == null)
-                throw new EntityNotFoundException(curProcessTemplate);
+            if (curRoute == null)
+                throw new EntityNotFoundException(curRoute);
 
-            if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
+            if (curRoute.RouteState != RouteState.Inactive)
             {
-                await _process.Launch(curProcessTemplate, curEventData);
+                await _process.Launch(curRoute, curEventData);
             }
         }
     }

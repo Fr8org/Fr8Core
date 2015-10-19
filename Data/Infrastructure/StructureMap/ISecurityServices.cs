@@ -7,10 +7,13 @@ namespace Data.Infrastructure.StructureMap
 {
     public interface ISecurityServices
     {
-        void Login(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO);
+        void Login(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
+        // Can throw AuthenticationException
+        Fr8AccountDO GetCurrentAccount(IUnitOfWork uow);
         String GetCurrentUser();
         String GetUserName();
         String[] GetRoleNames();
+        bool IsCurrentUserHasRole(string role);
         bool IsAuthenticated();
         void Logout();
     }

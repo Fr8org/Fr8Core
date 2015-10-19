@@ -29,8 +29,9 @@ namespace pluginSalesforce.Controllers
             {
                 Version = "1",
                 Name = "Create_Lead",
+                Label = "Create Lead",
                 Plugin = plugin,
-                Category = ActivityCategory.fr8_Forwarder
+                Category = ActivityCategory.Forwarders
             };
 
             var actionList = new List<ActivityTemplateDO>()

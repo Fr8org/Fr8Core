@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Web.Http;
+using StructureMap;
 using Core.Interfaces;
+using Core.Managers;
 using Core.Managers.APIManagers.Transmitters.Restful;
 using Core.Services;
 using Data.Crates.Helpers;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
-using StructureMap;
-using System.Xml;
-using System.Net;
 
 namespace Web.Controllers
 {
@@ -22,7 +22,7 @@ namespace Web.Controllers
     public class EventController : ApiController
     {
         private readonly IEvent _event;
-        private readonly ICrate _crate;
+        private readonly ICrateManager _crate;
       
 
         private delegate void EventRouter(LoggingData loggingData);
@@ -30,7 +30,7 @@ namespace Web.Controllers
         public EventController()
         {
             _event = ObjectFactory.GetInstance<IEvent>();
-            _crate = ObjectFactory.GetInstance<ICrate>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
             
         }
 

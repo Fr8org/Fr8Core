@@ -10,9 +10,9 @@ using System.Configuration;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using fr8.Microsoft.Azure;
+using Utilities.Configuration.Azure;
 
-namespace PluginUtilities.Infrastructure
+namespace PluginBase.Infrastructure
 {
     public class BasePluginEvent
     {

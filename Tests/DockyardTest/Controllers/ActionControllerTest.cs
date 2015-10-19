@@ -240,13 +240,13 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Mock<IAction> actionMock = new Mock<IAction>();
-                actionMock.Setup(a => a.Delete(It.IsAny<int>()));
+                var subRouteMock = new Mock<ISubroute>();
+                subRouteMock.Setup(a => a.DeleteAction(It.IsAny<int>()));
 
                 ActionDO actionDO = new FixtureData(uow).TestAction3();
-                var controller = new ActionController(actionMock.Object);
+                var controller = new ActionController(subRouteMock.Object);
                 controller.Delete(actionDO.Id);
-                actionMock.Verify(a => a.Delete(actionDO.Id));
+                subRouteMock.Verify(a => a.DeleteAction(actionDO.Id));
             }
         }
 
@@ -275,20 +275,20 @@ namespace DockyardTest.Controllers
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
 //                // 
-//                var curProcessTemplate = FixtureData.TestProcessTemplate1();
-//                uow.ProcessTemplateRepository.Add(curProcessTemplate);
+//                var curRoute = FixtureData.TestRoute1();
+//                uow.RouteRepository.Add(curRoute);
 //                uow.SaveChanges();
 //                //Add a processnodetemplate to processtemplate 
-//                var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-//                curProcessNodeTemplate.ParentTemplateId = curProcessTemplate.Id;
+//                var curSubroute = FixtureData.TestSubrouteDO1();
+//                curSubroute.ParentTemplateId = curRoute.Id;
 //
-//                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
+//                uow.SubrouteRepository.Add(curSubroute);
 //                uow.SaveChanges();
 //                
 //                var actionList = FixtureData.TestEmptyActionList();
 //                actionList.Id = 1;
 //                actionList.ActionListType = 1;
-//                actionList.ProcessNodeTemplateID = curProcessNodeTemplate.Id;
+//                actionList.SubrouteID = curSubroute.Id;
 //
 //                uow.ActionListRepository.Add(actionList);
 //                uow.SaveChanges();

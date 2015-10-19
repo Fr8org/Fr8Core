@@ -1,24 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Configuration;
-using System.Data;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
+using Core.Enums;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using StructureMap;
 using Core.Interfaces;
-using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using pluginSlack.Interfaces;
 using pluginSlack.Services;
+using PluginBase.BaseClasses;
 
 namespace pluginSlack.Actions
 {
@@ -33,7 +25,7 @@ namespace pluginSlack.Actions
             _slackIntegration = new SlackIntegration();
         }
 
-        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
             if (IsEmptyAuthToken(actionDto))
             {
@@ -92,18 +84,9 @@ namespace pluginSlack.Actions
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (IsEmptyAuthToken(curActionDTO))
-            {
-                AppendDockyardAuthenticationCrate(
-                    curActionDTO,
-                    AuthenticationMode.ExternalMode);
-
-                return curActionDTO;
-            }
-
-            RemoveAuthenticationCrate(curActionDTO);
-
-            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
+            if (ValidateAuthentication(curActionDTO, AuthenticationMode.ExternalMode))
+                return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
+            return curActionDTO;
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
@@ -124,7 +107,7 @@ namespace pluginSlack.Actions
             var oauthToken = curActionDTO.AuthToken.Token;
             var channels = await _slackIntegration.GetChannelList(oauthToken);
 
-            var crateControls = CreateConfigurationCrate();
+            var crateControls = PackCrate_ConfigurationControls();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateAvailableFields = await CreateAvailableFieldsCrate(curActionDTO);
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
@@ -134,7 +117,7 @@ namespace pluginSlack.Actions
             return curActionDTO;
         }
 
-        private CrateDTO CreateConfigurationCrate()
+        private CrateDTO PackCrate_ConfigurationControls()
         {
             var fieldSelectChannel = new DropDownListControlDefinitionDTO()
             {
@@ -174,7 +157,7 @@ namespace pluginSlack.Actions
         private CrateDTO CreateAvailableChannelsCrate(IEnumerable<FieldDTO> channels)
         {
             var crate =
-                _crate.CreateDesignTimeFieldsCrate(
+                Crate.CreateDesignTimeFieldsCrate(
                     "Available Channels",
                     channels.ToArray()
                 );
@@ -190,7 +173,7 @@ namespace pluginSlack.Actions
                 .ToArray();
 
             var availableFieldsCrate =
-                _crate.CreateDesignTimeFieldsCrate(
+                Crate.CreateDesignTimeFieldsCrate(
                     "Available Fields",
                     curUpstreamFields
                 );
