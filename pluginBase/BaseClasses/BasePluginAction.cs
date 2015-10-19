@@ -31,7 +31,6 @@ namespace PluginBase.BaseClasses
         protected IAction Action;
         protected ICrateManager Crate;
         protected IRouteNode Activity;
-        protected Field Field;
 
         #endregion
 
@@ -40,7 +39,6 @@ namespace PluginBase.BaseClasses
             Crate = ObjectFactory.GetInstance<ICrateManager>();
             Action = ObjectFactory.GetInstance<IAction>();
             Activity = ObjectFactory.GetInstance<IRouteNode>();
-            Field = new Field();
         }
 
         protected bool IsEmptyAuthToken(ActionDTO actionDTO)
@@ -101,15 +99,10 @@ namespace PluginBase.BaseClasses
             }
         }
 
-        protected CrateDTO ValidateFields(ActionDTO curActionDTO, List<ValidationDataTuple> validationDataList)
+        protected CrateDTO ValidateFields(List<FieldCheckDTO> validationFieldList)
         {
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
-            foreach (var validationData in validationDataList)
-            {
-                var exists = Field.Exists(validationData.Item3, curActionDO, validationData.Item1);
-                int a = 12;
-
-            }
+            
+            
             
             return null;
         }

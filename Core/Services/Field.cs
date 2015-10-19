@@ -7,13 +7,15 @@ using System.Threading.Tasks;
 using Core.Enums;
 using Core.Interfaces;
 using Core.Managers;
+using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 
 namespace Core.Services
 {
-    public class Field
+    public class Field : IField
     {
         private readonly IRouteNode _routeNode;
         private readonly IAction _action;
@@ -26,35 +28,42 @@ namespace Core.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        public bool Exists(GetCrateDirection direction, ActionDO curAction, string fieldName)
+        public bool Exists(FieldCheckDTO data)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var curAction = _action.GetById(uow, data.CurrentActionId);
+
                 List<ActionDO> routeNodes;
-                switch (direction)
+                switch (data.Direction)
                 {
-                    case GetCrateDirection.Upstream:
+                    case ActivityDirection.Up:
                         routeNodes = (List<ActionDO>)_routeNode.GetUpstreamActivities(uow, curAction).OfType<ActionDO>();
                         break;
-                    case GetCrateDirection.Downstream:
+                    case ActivityDirection.Down:
                         routeNodes = (List<ActionDO>)_routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
                     break;
-                    case GetCrateDirection.None:
+                    case ActivityDirection.Both:
                         routeNodes = (List<ActionDO>)_routeNode.GetUpstreamActivities(uow, curAction).OfType<ActionDO>();
                         routeNodes.AddRange(_routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>());
                     break;
                     default:
-                        throw new InvalidEnumArgumentException("Unknown GetCrateDirection type");
+                    throw new InvalidEnumArgumentException("Unknown ActivityDirection type");
                 }
 
 
                 foreach (var upstreamRouteNode in routeNodes)
                 {
-                    var crates = _action.GetCratesByManifestType(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, upstreamRouteNode.CrateStorageDTO());
+                    var crates = _crate.GetCratesByManifestType(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, upstreamRouteNode.CrateStorageDTO());
                     foreach (var crate in crates)
                     {
+                        if (data.CrateLabel != null && data.CrateLabel != crate.Label)
+                        {
+                            continue;
+                        }
+
                         var designTimeFieldsCM = _crate.GetStandardDesignTimeFields(crate);
-                        if (designTimeFieldsCM.Fields.Any(field => field.Key == fieldName))
+                        if (designTimeFieldsCM.Fields.Any(field => field.Key == data.FieldName))
                         {
                             return true;
                         }

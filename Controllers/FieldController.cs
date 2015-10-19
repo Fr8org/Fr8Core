@@ -22,142 +22,37 @@ namespace Web.Controllers
     [RoutePrefix("field")]
     public class FieldController : ApiController
     {
-        private readonly IAction _action;
-        private readonly ISecurityServices _security;
-        private readonly IActivityTemplate _activityTemplate;
+        private readonly IField _field;
 
         public FieldController()
         {
-            _action = ObjectFactory.GetInstance<IAction>();
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            _security = ObjectFactory.GetInstance<ISecurityServices>();
+            _field = ObjectFactory.GetInstance<IField>();
         }
 
-        public FieldController(IAction service)
+        public FieldController(IField service)
         {
-            _action = service;
+            _field = service;
         }
 
-
-        //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
 
         [HttpPost]
-        [Route("configuration")]
-        [Route("configure")]
-        //[ResponseType(typeof(CrateStorageDTO))]
-        public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
+        //[Fr8ApiAuthorize]
+        [Route("exists")]
+        //[ResponseType(typeof(ResponseType))]
+        public async Task<IHttpActionResult> Exists(List<FieldCheckDTO> fieldCheckList)
         {
-            curActionDesignDTO.CurrentView = null;
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            ActionDTO actionDTO = await _action.Configure(curActionDO);
-            return Ok(actionDTO);
-        }
-
-
-        [HttpGet]
-        [Fr8ApiAuthorize]
-        [Route("auth_url")]
-        public async Task<IHttpActionResult> GetExternalAuthUrl(
-            [FromUri(Name = "id")] int activityTemplateId)
-        {
-            Fr8AccountDO account;
-            PluginDO plugin;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            //create a response type
+            String testResult = "";
+            foreach (var fieldCheck in fieldCheckList)
             {
-                var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(activityTemplateId);
-
-                if (activityTemplate == null)
-                {
-                    throw new ApplicationException("ActivityTemplate was not found.");
-                }
-
-                plugin = activityTemplate.Plugin;
-
-                account = _security.GetCurrentAccount(uow);
+                //build response type
+                testResult += _field.Exists(fieldCheck);
+                testResult += ",";
             }
 
-            var externalAuthUrlDTO = await _action.GetExternalAuthUrl(account, plugin);
-            return Ok(new { Url = externalAuthUrlDTO.Url });
-        }
+            //and return this Responsetype as list
 
-        [HttpPost]
-        [Fr8ApiAuthorize]
-        [Route("authenticate")]
-        public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
-        {
-            Fr8AccountDO account;
-            PluginDO plugin;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(credentials.ActivityTemplateId);
-
-                if (activityTemplate == null)
-                {
-                    throw new ApplicationException("ActivityTemplate was not found.");
-                }
-
-                plugin = activityTemplate.Plugin;
-                account = _security.GetCurrentAccount(uow);
-            }
-
-            await _action.AuthenticateInternal(
-                account,
-                plugin,
-                credentials.Username,
-                credentials.Password);
-
-            return Ok();
-        }
-
-        /// <summary>
-        /// GET : Returns an action with the specified id
-        /// </summary>
-        [HttpGet]
-        [Route("{id:int}")]
-        public ActionDTO Get(int id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                return Mapper.Map<ActionDTO>(_action.GetById(uow, id));
-            }
-        }
-
-        /// <summary>
-        /// GET : Returns an action with the specified id
-        /// </summary>
-        [HttpDelete]
-        [Route("{id:int}")]
-        public void Delete(int id)
-        {
-            _action.Delete(id);
-        }
-
-        /// <summary>
-        /// POST : Saves or updates the given action
-        /// </summary>
-        [HttpPost]
-        [Route("save")]
-        public IHttpActionResult Save(ActionDTO curActionDTO)
-        {
-            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var resultActionDO = _action.SaveOrUpdateAction(uow, submittedActionDO);
-               
-                if (curActionDTO.IsTempId)
-                {
-                    ObjectFactory.GetInstance<ISubroute>().AddAction(uow, resultActionDO); // append action to the Subroute
-                }
-
-                var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
-
-                return Ok(resultActionDTO);
-            }
+            return Ok(testResult);
         }    
     }
 }
