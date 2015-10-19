@@ -67,7 +67,7 @@ namespace pluginSalesforce.Actions
             };
             var buttonControl = new ButtonControlDefinisionDTO()
             {
-                Label = "Button Control",
+                Label = "Create Lead",
                 Name = "button_new",
                 CssClass = "btn red",
                 Events = new List<ControlEvent>() { new ControlEvent("onClick", "requestConfig") }

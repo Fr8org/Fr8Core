@@ -12,14 +12,14 @@ namespace pluginTests.PluginSalesforceTests
     [TestFixture]
     public class SalesforceActionControllerTests : BaseTest
     {
-        BasePluginController _basePluginController;
+        //BasePluginController _basePluginController;
 
-        [SetUp]
-        public override void SetUp()
-        {
-            base.SetUp();
-            _basePluginController = new BasePluginController();
-            PluginSalesforceStructureMapBootstrapper.ConfigureDependencies(PluginSalesforceStructureMapBootstrapper.DependencyType.LIVE);            
-        }       
+        //[SetUp]
+        //public override void SetUp()
+        //{
+        //    base.SetUp();
+        //    _basePluginController = new BasePluginController();
+        //    PluginSalesforceStructureMapBootstrapper.ConfigureDependencies(PluginSalesforceStructureMapBootstrapper.DependencyType.LIVE);            
+        //}       
     }
 }
