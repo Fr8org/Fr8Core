@@ -1,7 +1,7 @@
 ﻿using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 using pluginSalesforce.Infrastructure;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 
 namespace pluginSalesforce.Actions
 {

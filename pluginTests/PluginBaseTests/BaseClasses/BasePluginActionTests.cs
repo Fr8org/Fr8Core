@@ -9,7 +9,7 @@ using StructureMap;
 using System;
 using System.Threading.Tasks;
 using Core.Enums;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

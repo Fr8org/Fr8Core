@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Core.Interfaces;
 using Data.Infrastructure;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 
 namespace pluginTwilio.Actions
 {
