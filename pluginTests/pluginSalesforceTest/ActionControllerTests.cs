@@ -20,16 +20,6 @@ namespace pluginTests.PluginSalesforceTests
             base.SetUp();
             _basePluginController = new BasePluginController();
             PluginSalesforceStructureMapBootstrapper.ConfigureDependencies(PluginSalesforceStructureMapBootstrapper.DependencyType.LIVE);            
-        }
-
-        [Test]
-        public void HandleDockyardRequest_PluginTypeIsSalesforce_CreateLead()
-        {
-            string curPlugin = "pluginSalesforce";
-            string curActionPath = "CreateLead";
-            ActionDTO curActionDTO = FixtureData.TestActionDTOForSalesforce();            
-            ActionDTO result = (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, curActionPath, curActionDTO);
-            Assert.AreEqual(curActionDTO, result);
-        }
+        }       
     }
 }
