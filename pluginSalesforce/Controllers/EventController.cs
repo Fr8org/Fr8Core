@@ -1,6 +1,6 @@
 ﻿using pluginSalesforce.Infrastructure;
 using pluginSalesforce.Services;
-using PluginUtilities.Infrastructure;
+using PluginBase.Infrastructure;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -27,7 +27,7 @@ namespace pluginSalesforce.Controllers
         public async Task<string> ProcessIncomingNotification()
         {
             //_event.Process(await Request.Content.ReadAsStringAsync());
-            PluginUtilities.Infrastructure.BasePluginEvent.EventParser parser= new BasePluginEvent.EventParser(_event.ProcessEvent);
+            PluginBase.Infrastructure.BasePluginEvent.EventParser parser= new BasePluginEvent.EventParser(_event.ProcessEvent);
             string eventPayLoadContent = Request.Content.ReadAsStringAsync().Result;
             await _basePluginEvent.Process(eventPayLoadContent, parser);
 

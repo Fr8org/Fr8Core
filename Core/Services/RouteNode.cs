@@ -201,11 +201,13 @@ namespace Core.Services
                 return orderedActivities;
             }
 
-        public async Task Process(int curActivityId, ContainerDO processDO)
+	    
+
+        public async Task Process(int curActivityId, ContainerDO containerDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessDO = uow.ContainerRepository.GetByKey(processDO.Id);
+                var curContainerDO = uow.ContainerRepository.GetByKey(containerDO.Id);
                 var curActivityDO = uow.RouteNodeRepository.GetByKey(curActivityId);
 
                 if (curActivityDO == null)
@@ -216,7 +218,7 @@ namespace Core.Services
                 if (curActivityDO is ActionDO)
                 {
                     IAction _action = ObjectFactory.GetInstance<IAction>();
-                    await _action.PrepareToExecute((ActionDO) curActivityDO, curProcessDO, uow);
+                    await _action.PrepareToExecute((ActionDO) curActivityDO, curContainerDO, uow);
             }
         }
         }
@@ -287,7 +289,7 @@ namespace Core.Services
                 foreach (var curAction in curActions)
                 {
                     curCrates.AddRange(_crate.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
-                }
+    }
         
                 return curCrates;
             }

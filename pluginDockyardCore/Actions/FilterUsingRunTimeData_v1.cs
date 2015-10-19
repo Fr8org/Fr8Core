@@ -11,7 +11,7 @@ using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using PluginBase.Infrastructure;
 using pluginDockyardCore.Interfaces;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 
 namespace pluginDockyardCore.Actions
 {

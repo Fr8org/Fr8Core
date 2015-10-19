@@ -2,7 +2,7 @@
 using System.Reflection;
 using Data.Interfaces.DataTransferObjects;
 using System.Web.Http;
-using PluginUtilities.Infrastructure;
+using PluginBase.Infrastructure;
 using System.Threading.Tasks;
 
 namespace PluginBase.BaseClasses

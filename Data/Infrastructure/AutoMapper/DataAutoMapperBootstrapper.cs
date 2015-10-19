@@ -86,6 +86,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<StringToJSONConverter<CrateStorageDTO>>();
             Mapper.CreateMap<FileDO, FileDTO>();
 
+            Mapper.CreateMap<ContainerDO, ContainerDTO>();
         }
 
         private static List<RouteNodeDO> MapActions(IEnumerable<ActionDTO> actions)
