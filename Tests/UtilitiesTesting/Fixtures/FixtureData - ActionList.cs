@@ -81,7 +81,7 @@ namespace UtilitiesTesting.Fixtures
         public static ActionListDO TestActionListHealth1()
         {
             //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
-            var processDo = new ContainerDO
+            var containerDO = new ContainerDO
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
@@ -193,8 +193,8 @@ namespace UtilitiesTesting.Fixtures
 //
         public static ActionListDO TestActionList6()
         {
-            ContainerDO processDO = FixtureData.TestContainer1();
-            processDO.CrateStorage = "";
+            ContainerDO containerDO = FixtureData.TestContainer1();
+            containerDO.CrateStorage = "";
             return new ActionListDO
             {
 //               Id = 2,

@@ -182,13 +182,13 @@ namespace Core.Services
         /// <summary>
         /// Returns the list of all processes to run for the specified user.
         /// </summary>
-        public IEnumerable<ContainerDO> GetProcessList(string userId)
+        public IEnumerable<ContainerDO> GetContainerList(string userId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return uow.ContainerRepository.GetQuery().Where
                     (r => r.ContainerState == ContainerState.Executing
-                          & r.Fr8AccountId == userId).ToList();
+                          & r.Route.Fr8Account.Id == userId).ToList();
             }
         }
 

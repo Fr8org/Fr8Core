@@ -16,7 +16,7 @@ using Data.Interfaces.ManifestSchemas;
 using Utilities.Configuration.Azure;
 using PluginBase.Infrastructure;
 
-namespace PluginUtilities.BaseClasses
+namespace PluginBase.BaseClasses
 {
     //this method allows a specific Action to inject its own evaluation function into the 
     //standard ProcessConfigurationRequest
@@ -110,6 +110,20 @@ namespace PluginUtilities.BaseClasses
             }
 
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
+        }
+
+        protected bool ValidateAuthentication(ActionDTO curActionDTO, AuthenticationMode curAuthenticationMode)
+        {
+            if (IsEmptyAuthToken(curActionDTO))
+            {
+                AppendDockyardAuthenticationCrate(
+                    curActionDTO,
+                    curAuthenticationMode);
+                return false;
+            }
+            else
+                RemoveAuthenticationCrate(curActionDTO);
+            return true;
         }
 
         /// <summary>

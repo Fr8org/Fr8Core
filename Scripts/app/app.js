@@ -137,6 +137,16 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: '/accounts/{id}',
             templateUrl: '/AngularTemplate/AccountDetails',
             data: { pageTitle: 'Account Details', pageSubTitle: '' }
+        })
+            .state('containerDetails', {
+            url: "/container/{id}/details",
+            templateUrl: "/AngularTemplate/containerDetails",
+            data: { pageTitle: 'Container  Details', pageSubTitle: '' }
+        })
+            .state('containers', {
+            url: "/containers",
+            templateUrl: "/AngularTemplate/ContainerList",
+            data: { pageTitle: 'Containers', pageSubTitle: 'This page displays all Containers ' },
         });
     }]);
 /* Init global settings and run the app */
