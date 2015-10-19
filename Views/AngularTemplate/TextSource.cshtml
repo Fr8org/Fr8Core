@@ -1,4 +1,6 @@
 ﻿@*TextBlock control main container*@
-<div class="{{field.class}}">
-    {{field.value}}
-</div>
+<label for="pca__chk__{{field.$$hashKey}}">this specific value</label>
+<input type="radio" name="pca__chk__{{field.$$hashKey}}"/>
+
+<label for="pca__chk__{{field.$$hashKey}}">a value from an Upstream crate</label>
+<input type="radio" name="pca__chk__{{field.$$hashKey}}" />
