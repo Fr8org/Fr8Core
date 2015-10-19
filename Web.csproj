@@ -754,6 +754,7 @@
     <TypeScriptCompile Include="Scripts\app\interfaces\IContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IUser.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ActionGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActivityCategoryDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\CrateStorage.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FactDTO.ts" />
@@ -775,6 +776,7 @@
     <TypeScriptCompile Include="Scripts\app\model\User.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ContainerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\CrateHelper.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\LayoutService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManageFileService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ReportService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UIHelperService.ts" />

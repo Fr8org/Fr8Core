@@ -112,7 +112,9 @@
 }
 
 .process-builder-container {
+    height: 800px;
     overflow-y: auto;
+    position: relative;
     white-space: nowrap;
 }
 
@@ -121,8 +123,26 @@
     background-size: contain;
     display: inline-block;
     height: 50px;
-    margin-top: 120px;
+    margin-top: 125px;
     width: 50px;
+}
+
+.action-arrow-bottom {
+    background-color: #58B8A9;
+    margin-left: 160px;
+    position: absolute;
+    width: 16px;
+}
+
+.action-arrow-bottom::after {
+    content: '';
+    border-right: 14px solid transparent;
+    border-left: 14px solid transparent;
+    border-top: 20px solid #58B8A9;
+    display: block;
+    bottom: -13px;
+    left: -6px;
+    position: absolute;
 }
 
 .action {
@@ -188,6 +208,11 @@
     height: 250px;
     display: block;
     width: 100%;
+}
+
+.action-group {
+    display: inline-block;
+    position: absolute;
 }
 
 /* Select Action */
