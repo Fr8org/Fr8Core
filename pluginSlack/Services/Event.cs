@@ -42,7 +42,7 @@ namespace pluginAzureSqlServer.Services
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Slack Outgoing Message",
-                ProcessDOId = "",
+                ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
                 ExternalAccountId = slackToken.Value
             };

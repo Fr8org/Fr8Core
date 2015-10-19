@@ -7,7 +7,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using PluginBase.Infrastructure;
 using pluginSendGrid.Infrastructure;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 using Utilities;
 
 namespace pluginSendGrid.Actions

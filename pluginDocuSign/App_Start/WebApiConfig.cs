@@ -5,7 +5,7 @@ using System.Web.Http;
 using Core.StructureMap;
 using PluginBase;
 using pluginDocuSign.Infrastructure;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 using StructureMap;
 
 namespace pluginDocuSign

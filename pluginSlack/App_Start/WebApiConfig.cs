@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using Core.StructureMap;
 using PluginBase;
-using PluginUtilities.BaseClasses;
+using PluginBase.BaseClasses;
 using StructureMap;
 
 namespace pluginSlack

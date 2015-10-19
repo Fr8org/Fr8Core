@@ -42,20 +42,20 @@ namespace Data.Migrations
             {
                 StoreTemplate(uow);
 
-                var process = uow.ContainerRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
+                var container = uow.ContainerRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
 
-                var add = process == null;
+                var add = container == null;
                 
                 if (add)
                 {
-                    process = new ContainerDO();
+                    container = new ContainerDO();
                 }
 
-                ConfigureProcess(process);
+                ConfigureProcess(container);
 
                 if (add)
                 {
-                    uow.ContainerRepository.Add(process);
+                    uow.ContainerRepository.Add(container);
                 }
             }
 
@@ -63,38 +63,38 @@ namespace Data.Migrations
 
             private void StoreTemplate(IUnitOfWork uow)
             {
-                var pt = uow.RouteRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
-                bool add = pt == null;
+                var route = uow.RouteRepository.GetQuery().FirstOrDefault(x => x.Name == _name);
+                bool add = route == null;
 
                 if (add)
                 {
-                    pt = new RouteDO();
+                    route = new RouteDO();
                 }
 
-                pt.Name = _name;
-                pt.Description = "Template for testing";
-                pt.CreateDate = DateTime.Now;
-                pt.LastUpdated = DateTime.Now;
-                pt.RouteState = RouteState.Inactive; // we don't want this process template can be executed ouside of tests
+                route.Name = _name;
+                route.Description = "Template for testing";
+                route.CreateDate = DateTime.Now;
+                route.LastUpdated = DateTime.Now;
+                route.RouteState = RouteState.Inactive; // we don't want this process template can be executed ouside of tests
 
                 if (add)
                 {
-                    uow.RouteRepository.Add(pt);
+                    uow.RouteRepository.Add(route);
                     uow.SaveChanges();
                 }
 
-                _ptId = pt.Id;
+                _ptId = route.Id;
             }
 
             
 
-            private void ConfigureProcess(ContainerDO process)
+            private void ConfigureProcess(ContainerDO container)
             {
-                process.Name = _name;
-                process.RouteId = _ptId;
-                process.ContainerState = ContainerState.Executing;
+                container.Name = _name;
+                container.RouteId = _ptId;
+                container.ContainerState = ContainerState.Executing;
 
-                process.CrateStorage = JsonConvert.SerializeObject(new
+                container.CrateStorage = JsonConvert.SerializeObject(new
                 {
                     crates = _crates
                 });

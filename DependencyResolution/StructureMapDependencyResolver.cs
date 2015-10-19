@@ -33,7 +33,7 @@ namespace Web.DependencyResolution
         /// <param name="container">
         /// The container.
         /// </param>
-        public StructureMapDependencyResolver(IContainer container)
+        public StructureMapDependencyResolver(StructureMap.IContainer container)
             : base(container)
         {
         }
@@ -50,7 +50,7 @@ namespace Web.DependencyResolution
         /// </returns>
         public IDependencyScope BeginScope()
         {
-            IContainer child = this.Container.GetNestedContainer();
+            StructureMap.IContainer child = this.Container.GetNestedContainer();
             return new StructureMapDependencyResolver(child);
         }
 
