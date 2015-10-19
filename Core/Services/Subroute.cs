@@ -24,33 +24,38 @@ namespace Core.Services
         }
 
         /// <summary>
-        /// Create Subroute entity with required children criteria entity.
+        /// Store Subroute entity
         /// </summary>
-        public void Create(IUnitOfWork uow, SubrouteDO subroute )
+        public void Store(IUnitOfWork uow, SubrouteDO subroute)
         {
-            if (subroute == null)
-            {
-                subroute = ObjectFactory.GetInstance<SubrouteDO>();
-            }
-
+            if (subroute == null) throw new ArgumentNullException("subroute");
+            
             uow.SubrouteRepository.Add(subroute);
-            
-            // Saving criteria entity in repository.
-            var criteria = new CriteriaDO()
-            {
-                Subroute = subroute,
-                CriteriaExecutionType = CriteriaExecutionType.WithoutConditions
-            };
-            uow.CriteriaRepository.Add(criteria);
-            
-            //we don't want to save changes here, to enable upstream transactions
         }
 
-        public SubrouteDO Create(IUnitOfWork uow)
+        /// <summary>
+        /// Creates noew Subroute entity and add it to RouteDO. If RouteDO has no child subroute created route becomes starting subroute.
+        /// </summary>
+        public SubrouteDO Create(IUnitOfWork uow, RouteDO route, string name)
         {
             var subroute = new SubrouteDO();
 
-            Create(uow, subroute);
+            uow.SubrouteRepository.Add(subroute);
+
+            if (route != null)
+            {
+                if (!route.Subroutes.Any())
+                {
+                    route.StartingSubroute = subroute;
+                    subroute.StartingSubroute = true;
+                }
+
+                route.RouteNodes.Add(subroute);
+            }
+
+            subroute.Name = name;
+
+            
 
             return subroute;
         }

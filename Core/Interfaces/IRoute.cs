@@ -10,8 +10,7 @@ namespace Core.Interfaces
 	{
         IList<RouteDO> GetForUser(IUnitOfWork uow, Fr8AccountDO account, bool isAdmin, int? id = null, int? status = null);
 		void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool withTemplate);
-	    RouteDO Create(IUnitOfWork uow);
-	    RouteDO CreateRouteWithOneSubroute(IUnitOfWork uow, string name, out SubrouteDO subroute);
+	    RouteDO Create(IUnitOfWork uow, string name);
 		void Delete(IUnitOfWork uow, int id);
 	    RouteNodeDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute);
 	    RouteDTO MapRouteToDto(IUnitOfWork uow, RouteDO curRouteDO);

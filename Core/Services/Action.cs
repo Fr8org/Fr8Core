@@ -187,6 +187,45 @@ namespace Core.Services
             return action;
         }
 
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
+        {
+            if (parentNodeId != null && createRoute)
+            {
+                throw new ArgumentException("Parent node id can't be set together with create route flag");
+            }
+
+            if (parentNodeId == null && !createRoute)
+            {
+                throw new ArgumentException("Either Parent node id or create route flag must be set");
+            }
+
+            RouteNodeDO parentNode;
+            RouteDO route = null;
+
+            if (createRoute)
+            {
+                route = ObjectFactory.GetInstance<IRoute>().Create(uow, name);
+                parentNode = ObjectFactory.GetInstance<ISubroute>().Create(uow, route, name + " #1");
+            }
+            else
+            {
+                parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId.Value);
+            }
+
+            var action = Create(uow, actionTemplateId, name, label, parentNode);
+
+            uow.SaveChanges();
+
+            await Configure(action);
+
+            if (createRoute)
+            {
+                return route;
+            }
+
+            return action;
+        }
+
         public ActionDO GetById(IUnitOfWork uow, int id)
         {
             return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).FirstOrDefault(i => i.Id == id);

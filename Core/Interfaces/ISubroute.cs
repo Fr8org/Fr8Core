@@ -8,8 +8,8 @@ namespace Core.Interfaces
     /// </summary>
     public interface ISubroute
     {
-        void Create(IUnitOfWork uow, SubrouteDO subroute);
-        SubrouteDO Create(IUnitOfWork uow);
+        void Store(IUnitOfWork uow, SubrouteDO subroute);
+        SubrouteDO Create(IUnitOfWork uow, RouteDO route, string name);
         void Update(IUnitOfWork uow, SubrouteDO subroute);
         void Delete(IUnitOfWork uow, int id);
         void AddAction(IUnitOfWork uow, ActionDO resultActionDo);

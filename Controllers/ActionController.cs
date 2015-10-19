@@ -46,45 +46,21 @@ namespace Web.Controllers
         [Route("create")]
         public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
         {
-            if (parentNodeId != null && createRoute)
-            {
-                throw new ArgumentException("Parent node id can't be set together with create route flag");
-            }
-
-            if (parentNodeId == null && !createRoute)
-            {
-                throw new ArgumentException("Either Parent node id or create route flag must be set");
-            }
-            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                RouteNodeDO parentNode;
-                RouteDO route = null;
-
-                if (createRoute)
-                {
-                    SubrouteDO subroute;
-                    
-                    route = _route.CreateRouteWithOneSubroute(uow, name, out subroute);
-                    parentNode = subroute;
-                }
-                else
-                {
-                    parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId.Value);
-                }
+                var result = await _action.CreateAndConfigure(uow, actionTemplateId, name, label, parentNodeId, createRoute);
                 
-                var action = _action.Create(uow, actionTemplateId, name, label, parentNode);
-                
-                uow.SaveChanges();
-
-                await _action.Configure(action);
-
-                if (createRoute)
+                if (result is ActionDO)
                 {
-                    return Ok(_route.MapRouteToDto(uow, route));
+                    return Ok(Mapper.Map<ActionDTO>(result));
                 }
 
-                return Ok(Mapper.Map<ActionDTO>(action));
+                if (result is RouteDO)
+                {
+                    return Ok(_route.MapRouteToDto(uow, (RouteDO)result));
+                }
+
+                throw new Exception("Unsupported type " + result.GetType());
             }
         }
         
@@ -130,47 +106,7 @@ namespace Web.Controllers
             var externalAuthUrlDTO = await _action.GetExternalAuthUrl(account, plugin);
             return Ok(new { Url = externalAuthUrlDTO.Url });
         }
-
-        private void ExtractPluginAndAccount(int activityTemplateId,
-           out Fr8AccountDO account, out PluginDO plugin)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(activityTemplateId);
-
-                if (activityTemplate == null)
-                {
-                    throw new ApplicationException("ActivityTemplate was not found.");
-                }
-
-                plugin = activityTemplate.Plugin;
-
-
-                var accountId = User.Identity.GetUserId();
-                account = uow.UserRepository.FindOne(x => x.Id == accountId);
-
-                if (account == null)
-                {
-                    throw new ApplicationException("User was not found.");
-                }
-            }
-        }
-
-        [HttpGet]
-        [Route("is_authenticated")]
-        public IHttpActionResult IsAuthenticated(int activityTemplateId)
-        {
-            Fr8AccountDO account;
-            PluginDO plugin;
-
-            ExtractPluginAndAccount(activityTemplateId, out account, out plugin);
-
-            var isAuthenticated = _action.IsAuthenticated(account, plugin);
-
-            return Ok(new { authenticated = isAuthenticated });
-        }
-
+        
         [HttpPost]
         [Fr8ApiAuthorize]
         [Route("authenticate")]

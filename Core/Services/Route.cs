@@ -65,7 +65,7 @@ namespace Core.Services
                 ptdo.RouteNodes.Add(subroute);
 
                 uow.RouteRepository.Add(ptdo);
-                _subroute.Create(uow, ptdo.StartingSubroute);
+                _subroute.Store(uow, ptdo.StartingSubroute);
             }
             else
             {
@@ -80,28 +80,16 @@ namespace Core.Services
             // return ptdo.Id;
         }
 
-        public RouteDO Create(IUnitOfWork uow)
+        public RouteDO Create(IUnitOfWork uow, string name)
         {
-            var route = new RouteDO();
+            var route = new RouteDO()
+            {
+                Name = name
+            };
             
             route.RouteState = RouteState.Inactive;
 
             uow.RouteRepository.Add(route);
-
-            return route;
-        }
-
-        public RouteDO CreateRouteWithOneSubroute(IUnitOfWork uow, string name, out SubrouteDO subroute)
-        {
-            var route = Create(uow);
-            subroute = ObjectFactory.GetInstance<ISubroute>().Create(uow);
-
-            route.Name = name;
-            subroute.Name = name + " #1";
-            subroute.StartingSubroute = true;
-
-            route.StartingSubroute = subroute;
-            route.RouteNodes.Add(subroute);
 
             return route;
         }

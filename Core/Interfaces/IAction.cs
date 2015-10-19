@@ -19,6 +19,7 @@ namespace Core.Interfaces
         ActionDO GetById(int id);
         ActionDO GetById(IUnitOfWork uow, int id);
         ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode);
+        Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false);
         //void Delete(int id); -> Delete is moved to ProcessNodeTemplate
         ActionDO MapFromDTO(ActionDTO curActionDTO);
         Task PrepareToExecute(ActionDO curAction, ContainerDO curProcessDO, IUnitOfWork uow);
