@@ -60,7 +60,7 @@ namespace pluginAzureSqlServer.Actions
                 return ConfigurationRequestType.Initial;
             else
             {
-                ValidateFields(curActionDTO, new List<ValidationDataTuple> {new ValidationDataTuple("connection_string", "test", GetCrateDirection.Upstream, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME)});
+                //CheckFields(curActionDTO, new List<ValidationDataTuple> { new ValidationDataTuple("connection_string", "test", GetCrateDirection.Upstream, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) });
                 return ConfigurationRequestType.Followup;
             }            
         }

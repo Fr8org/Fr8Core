@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using Data.Constants;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using StructureMap;
@@ -38,21 +39,15 @@ namespace Web.Controllers
         [HttpPost]
         //[Fr8ApiAuthorize]
         [Route("exists")]
-        //[ResponseType(typeof(ResponseType))]
+        [ResponseType(typeof(List<FieldCheckResult>))]
         public async Task<IHttpActionResult> Exists(List<FieldCheckDTO> fieldCheckList)
         {
-            //create a response type
-            String testResult = "";
+            var result = new List<FieldCheckResult>();
             foreach (var fieldCheck in fieldCheckList)
             {
-                //build response type
-                testResult += _field.Exists(fieldCheck);
-                testResult += ",";
+                result.Add(_field.Exists(fieldCheck) ? FieldCheckResult.Exists : FieldCheckResult.NotExists);
             }
-
-            //and return this Responsetype as list
-
-            return Ok(testResult);
+            return Ok(result);
         }    
     }
 }
