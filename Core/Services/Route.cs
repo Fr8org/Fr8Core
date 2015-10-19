@@ -62,7 +62,7 @@ namespace Core.Services
                 ptdo.RouteState = RouteState.Inactive;
                 var subroute = new SubrouteDO(true);
                 subroute.ParentRouteNode = ptdo;
-                ptdo.RouteNodes.Add(subroute);
+                ptdo.ChildNodes.Add(subroute);
 
                 uow.RouteRepository.Add(ptdo);
                 _subroute.Store(uow, ptdo.StartingSubroute);
@@ -99,7 +99,7 @@ namespace Core.Services
         {
             var subrouteDTOList = uow.SubrouteRepository
                 .GetQuery()
-                .Include(x => x.RouteNodes)
+                .Include(x => x.ChildNodes)
                 .Where(x => x.ParentRouteNodeId == curRouteDO.Id)
                 .OrderBy(x => x.Id)
                 .ToList()
@@ -107,7 +107,7 @@ namespace Core.Services
                 {
                     var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
 
-                    pntDTO.Actions = Enumerable.ToList(x.RouteNodes.Select(Mapper.Map<ActionDTO>));
+                    pntDTO.Actions = Enumerable.ToList(x.ChildNodes.Select(Mapper.Map<ActionDTO>));
 
                     return pntDTO;
                 }).ToList();
@@ -168,9 +168,9 @@ namespace Core.Services
 
                 firstNodeTemplate = false;
 
-                if (template.RouteNodes != null)
+                if (template.ChildNodes != null)
                 {
-                    foreach (var activityDo in template.RouteNodes.OfType<TActivity>())
+                    foreach (var activityDo in template.ChildNodes.OfType<TActivity>())
                     {
                         yield return activityDo;
                     }

@@ -491,7 +491,7 @@ namespace DockyardTest.Services
                 {
                     if (removeCounter%3 == 0 && a.ParentRouteNode != null)
                     {
-                        a.ParentRouteNode.RouteNodes.Remove(a);
+                        a.ParentRouteNode.ChildNodes.Remove(a);
                     }
 
                     removeCounter++;
@@ -534,7 +534,7 @@ namespace DockyardTest.Services
                             Name = "____New " + addCounter
                         };
 
-                        a.ParentRouteNode.RouteNodes.Add(newAction);
+                        a.ParentRouteNode.ChildNodes.Add(newAction);
                         uow.ActionRepository.Add(newAction);
                     }
 
@@ -554,7 +554,7 @@ namespace DockyardTest.Services
                                 Name = "____New " + addCounter
                             };
 
-                            a.ParentRouteNode.RouteNodes.Add(newAction);
+                            a.ParentRouteNode.ChildNodes.Add(newAction);
                             uow.ActionRepository.Add(newAction);
                         }
 
@@ -602,8 +602,8 @@ namespace DockyardTest.Services
                 const string actionName = "TestAction";
                 var response = _action.Create(uow, template.Id, actionName, null, parent);
 
-                Assert.AreEqual(parent.RouteNodes.Count, 1);
-                Assert.AreEqual(parent.RouteNodes[0], response);
+                Assert.AreEqual(parent.ChildNodes.Count, 1);
+                Assert.AreEqual(parent.ChildNodes[0], response);
                 Assert.AreEqual(response.Name, actionName);
             }
         }
@@ -612,14 +612,14 @@ namespace DockyardTest.Services
         {
             callback(reference, actual);
 
-            if (reference.RouteNodes.Count != actual.RouteNodes.Count)
+            if (reference.ChildNodes.Count != actual.ChildNodes.Count)
             {
                 throw new Exception("Unable to compare nodes with different number of children.");
             }
 
-            for (int i = 0; i < reference.RouteNodes.Count; i ++)
+            for (int i = 0; i < reference.ChildNodes.Count; i ++)
             {
-                Compare((ActionDO)reference.RouteNodes[i], (ActionDO)actual.RouteNodes[i], callback);
+                Compare((ActionDO)reference.ChildNodes[i], (ActionDO)actual.ChildNodes[i], callback);
             }
         }
 
@@ -627,7 +627,7 @@ namespace DockyardTest.Services
         {
             callback(action);
 
-            foreach (var child in action.RouteNodes.OfType<ActionDO>().ToArray())
+            foreach (var child in action.ChildNodes.OfType<ActionDO>().ToArray())
             {
                 Visit(child, callback);
             }

@@ -425,7 +425,7 @@ namespace UtilitiesTesting.Fixtures
             curActionDO.ActivityTemplate = curActivityTemplateDO;
             curActionDO.Name = "testaction";
 
-            subroute.RouteNodes.Add(curActionDO);
+            subroute.ChildNodes.Add(curActionDO);
 
             //  curActionDO.ConfigurationSettings = "config settings";
             //  curActionDO.ParentActionListId = 1;
@@ -527,7 +527,7 @@ namespace UtilitiesTesting.Fixtures
                 Ordering = 1,
                  CrateStorage=  crateStorage,
                  
-                RouteNodes = new List<RouteNodeDO>
+                ChildNodes = new List<RouteNodeDO>
                 {
                     new ActionDO
                     {
@@ -542,7 +542,7 @@ namespace UtilitiesTesting.Fixtures
                         ParentRouteNodeId = 1,
                         Ordering = 2,
                          CrateStorage=  crateStorage,
-                        RouteNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<RouteNodeDO>
                         {
                             new ActionDO
                             {
@@ -573,7 +573,7 @@ namespace UtilitiesTesting.Fixtures
                         Id = 52,
                         Ordering = 3,
                         ParentRouteNodeId = 1,
-                        RouteNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<RouteNodeDO>
                         {
                             new ActionDO
                             {
@@ -588,7 +588,7 @@ namespace UtilitiesTesting.Fixtures
                                 ParentRouteNodeId = 52,
                                 Ordering = 2,
 
-                                RouteNodes = new List<RouteNodeDO>
+                                ChildNodes = new List<RouteNodeDO>
                                 {
                                     new ActionDO
                                     {
@@ -630,7 +630,7 @@ namespace UtilitiesTesting.Fixtures
                         Ordering = 4,
                         ParentRouteNodeId = 1,
                          CrateStorage=  crateStorage,
-                        RouteNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<RouteNodeDO>
                         {
                             new ActionDO
                             {
@@ -645,7 +645,7 @@ namespace UtilitiesTesting.Fixtures
                                 ParentRouteNodeId = 59,
                                 Ordering = 2,
                                 CrateStorage=  crateStorage,
-                                RouteNodes = new List<RouteNodeDO>
+                                ChildNodes = new List<RouteNodeDO>
                                 {
                                     new ActionDO
                                     {
@@ -776,7 +776,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 1,
                 Ordering = 1,
                 CrateStorage = crateStorage,
-                RouteNodes = new List<RouteNodeDO>
+                ChildNodes = new List<RouteNodeDO>
                 {
                     new ActionDO
                     {
@@ -791,7 +791,7 @@ namespace UtilitiesTesting.Fixtures
                         ParentRouteNodeId = 1,
                                         Ordering = 2,
                          CrateStorage=  crateStorage,
-                        RouteNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<RouteNodeDO>
                         {
                             new ActionDO
                             {
@@ -822,7 +822,7 @@ namespace UtilitiesTesting.Fixtures
                         Id = 52,
                         Ordering = 3,
                         ParentRouteNodeId = 1,
-                        RouteNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<RouteNodeDO>
                         {
                             new ActionDO
                             {
@@ -837,7 +837,7 @@ namespace UtilitiesTesting.Fixtures
                                 ParentRouteNodeId = 52,
                                 Ordering = 2,
 
-                                RouteNodes = new List<RouteNodeDO>
+                                ChildNodes = new List<RouteNodeDO>
                                 {
                                     new ActionDO
                                     {
@@ -878,7 +878,7 @@ namespace UtilitiesTesting.Fixtures
                         Ordering = 4,
                         ParentRouteNodeId = 1,
                          CrateStorage=  crateStorage,
-                        RouteNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<RouteNodeDO>
                         {
                             new ActionDO
                             {
@@ -893,7 +893,7 @@ namespace UtilitiesTesting.Fixtures
                                 ParentRouteNodeId = 59,
                                 Ordering = 2,
                                 CrateStorage=  crateStorage,
-                                RouteNodes = new List<RouteNodeDO>
+                                ChildNodes = new List<RouteNodeDO>
                                 {
                                     new ActionDO
                                     {
@@ -950,7 +950,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 1,
                 Ordering = 1,
                 CrateStorage = crateStorage,
-                RouteNodes = new List<RouteNodeDO>
+                ChildNodes = new List<RouteNodeDO>
                 {
                     new ActionDO
                     {
@@ -965,7 +965,7 @@ namespace UtilitiesTesting.Fixtures
                         ParentRouteNodeId = 1,
                                         Ordering = 2,
                          CrateStorage=  crateStorage,
-                        RouteNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<RouteNodeDO>
                         {
                             new ActionDO
                             {
@@ -996,7 +996,7 @@ namespace UtilitiesTesting.Fixtures
                         Id = 52,
                         Ordering = 3,
                         ParentRouteNodeId = 1,
-                        RouteNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<RouteNodeDO>
                         {
                             new ActionDO
                             {
@@ -1011,7 +1011,7 @@ namespace UtilitiesTesting.Fixtures
                                 ParentRouteNodeId = 52,
                                 Ordering = 2,
 
-                                RouteNodes = new List<RouteNodeDO>
+                                ChildNodes = new List<RouteNodeDO>
                                 {
                                     new ActionDO
                                     {
@@ -1052,7 +1052,7 @@ namespace UtilitiesTesting.Fixtures
                         Ordering = 4,
                         ParentRouteNodeId = 1,
                          CrateStorage=  crateStorage,
-                        RouteNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<RouteNodeDO>
                         {
                             new ActionDO
                             {
@@ -1067,7 +1067,7 @@ namespace UtilitiesTesting.Fixtures
                                 ParentRouteNodeId = 59,
                                 Ordering = 2,
                                 CrateStorage=  crateStorage,
-                                RouteNodes = new List<RouteNodeDO>
+                                ChildNodes = new List<RouteNodeDO>
                                 {
                                     new ActionDO
                                     {
@@ -1125,7 +1125,7 @@ namespace UtilitiesTesting.Fixtures
                 Ordering = 1,
                 CrateStorage = crateStorage,
                 ActivityTemplate = curActionTemplate,
-                RouteNodes = new List<RouteNodeDO>
+                ChildNodes = new List<RouteNodeDO>
                 {
                     new ActionDO
                     {
@@ -1142,7 +1142,7 @@ namespace UtilitiesTesting.Fixtures
                         Ordering = 2,
                         CrateStorage=  crateStorage,
                          ActivityTemplate = curActionTemplate,
-                        RouteNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<RouteNodeDO>
                         {
                             new ActionDO
                             {
@@ -1177,7 +1177,7 @@ namespace UtilitiesTesting.Fixtures
                         ParentRouteNodeId = 1,
 CrateStorage=  crateStorage,
                          ActivityTemplate = curActionTemplate,
-                        RouteNodes = new List<RouteNodeDO>
+                        ChildNodes = new List<RouteNodeDO>
                         {
                             new ActionDO
                             {

@@ -50,7 +50,7 @@ namespace Core.Services
                     subroute.StartingSubroute = true;
                 }
 
-                route.RouteNodes.Add(subroute);
+                route.ChildNodes.Add(subroute);
             }
 
             subroute.Name = name;
@@ -128,9 +128,9 @@ namespace Core.Services
                 throw new Exception(string.Format("Unable to find Subroute by id = {0}", curActionDO.ParentRouteNodeId));
             }
 
-            curActionDO.Ordering = subroute.RouteNodes.Count > 0 ? subroute.RouteNodes.Max(x => x.Ordering) + 1 : 1;
+            curActionDO.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
 
-            subroute.RouteNodes.Add(curActionDO);
+            subroute.ChildNodes.Add(curActionDO);
 
             uow.SaveChanges();
         }

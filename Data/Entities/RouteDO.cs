@@ -37,7 +37,7 @@ namespace Data.Entities
         {
             get
             {
-                var startingSubroute = RouteNodes.OfType<SubrouteDO>().SingleOrDefault(pnt => pnt.StartingSubroute == true);
+                var startingSubroute = ChildNodes.OfType<SubrouteDO>().SingleOrDefault(pnt => pnt.StartingSubroute == true);
                 if (null != startingSubroute)
                     return startingSubroute.Id;
                 else
@@ -64,7 +64,7 @@ namespace Data.Entities
                 {
                     Subroutes.ToList().ForEach(pnt => pnt.StartingSubroute = false);
                     value.StartingSubroute = true;
-                    RouteNodes.Add(value);
+                    ChildNodes.Add(value);
                 }
             }
         }
@@ -85,7 +85,7 @@ namespace Data.Entities
         {
             get
             {
-                return RouteNodes.OfType<SubrouteDO>();
+                return ChildNodes.OfType<SubrouteDO>();
             }
         }
     }
