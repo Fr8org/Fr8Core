@@ -42,6 +42,7 @@ namespace PluginBase.BaseClasses
             Crate = ObjectFactory.GetInstance<ICrateManager>();
             Action = ObjectFactory.GetInstance<IAction>();
             Activity = ObjectFactory.GetInstance<IRouteNode>();
+            _plugin = ObjectFactory.GetInstance<IPlugin>();
             _authorizationToken = new Authorization();
         }
 
