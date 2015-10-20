@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Enums;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
@@ -58,6 +59,8 @@ namespace pluginAzureSqlServer.Actions
                 return ConfigurationRequestType.Initial;
             else
             {
+                //we should validate our data now
+                //CheckFields(curActionDTO, new List<ValidationDataTuple> { new ValidationDataTuple("connection_string", "test", GetCrateDirection.Upstream, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) });
                 return ConfigurationRequestType.Followup;
             }            
         }
