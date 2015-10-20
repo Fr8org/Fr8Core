@@ -24,7 +24,8 @@ namespace PluginBase.BaseClasses
         [HttpGet]
         public IHttpActionResult ReportPluginError(string pluginName, Exception pluginError)
         {
-            return Json(_basePluginEvent.SendPluginErrorIncident(pluginName, pluginError.Message, pluginError.GetType().Name));
+            var exceptionMessage = string.Format("{0}\r\n{1}", pluginError.Message, pluginError.StackTrace);
+            return Json(_basePluginEvent.SendPluginErrorIncident(pluginName, exceptionMessage, pluginError.GetType().Name));
         }
 
         /// <summary>

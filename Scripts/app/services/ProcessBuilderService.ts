@@ -85,13 +85,15 @@ module dockyard.services {
                 },
                 'activate': {
                     method: 'POST',
-                    url: '/api/route/activate',
-                    params: {}
+                    url: '/api/route/activate/',
+                    params: {
+                    }
                 },
                 'deactivate': {
                     method: 'POST',
-                    url: '/api/route/deactivate',
-                    params: {}
+                    url: '/api/route/deactivate/',
+                    params: {
+                    }
                 }
             })
     ]);

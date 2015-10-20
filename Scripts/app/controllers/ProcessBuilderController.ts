@@ -349,6 +349,16 @@ module dockyard.controllers {
 
             var self = this;
 
+            var messageListener = function (event) {
+                debugger;
+
+                if (!self.$scope || !event.data || event.data != 'external-auth-success') {
+                    return;
+                }
+
+                self.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);
+            };
+
             this.$http
                 .get('/actions/auth_url?id=' + eventArgs.activityTemplateId)
                 .then(function (res) {
@@ -356,16 +366,18 @@ module dockyard.controllers {
 
                     var childWindow = self.$window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
 
-                    // var isClosedHandler = function () {
-                    //     if (childWindow.closed) {
-                    //         self.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);
-                    //     }
-                    //     else {
-                    //         setTimeout(isClosedHandler, 500);
-                    //     }
-                    // };
-                    // 
-                    // setTimeout(isClosedHandler, 500);
+                    window.addEventListener('message', messageListener);
+
+                    var isClosedHandler = function () {
+                        if (childWindow.closed) {
+                            window.removeEventListener('message', messageListener);
+                        }
+                        else {
+                            setTimeout(isClosedHandler, 500);
+                        }
+                    };
+                    
+                    setTimeout(isClosedHandler, 500);
                 });
         }
     }
