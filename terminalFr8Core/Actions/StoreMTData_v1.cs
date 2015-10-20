@@ -44,6 +44,7 @@ namespace terminalFr8Core.Actions
 
             var curEventReport = JsonConvert.DeserializeObject<EventReportCM>(curProcessPayload.CrateStorageDTO().CrateDTO[0].Contents);
 
+
             return null;
         }
 
