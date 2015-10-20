@@ -135,4 +135,24 @@ app.directive('container', ['$state', function ($state) {
             }
         };
     }]);
+app.directive('stopClickPropagation', function () {
+    return {
+        link: function (scope, elem) {
+            elem.bind('click', function (event) {
+                event.stopPropagation();
+            });
+        }
+    };
+});
+// temporary solution to reload configuration when action header is clicked.
+app.directive('transferClickConfigurePane', function () {
+    return {
+        link: function (scope, elem) {
+            elem.bind('click', function (event) {
+                elem.parent().find('.pane-configure-action').click();
+                //angular.element(elem.siblings()[0]).click();
+            });
+        }
+    };
+});
 //# sourceMappingURL=directives.js.map

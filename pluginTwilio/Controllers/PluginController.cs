@@ -27,7 +27,8 @@ namespace pluginTwilio.Controllers
                 Label = "Send Via Twilio",
                 Category = ActivityCategory.Forwarders,
                 Version = "1",
-                Plugin = plugin
+                Plugin = plugin,
+                MinPaneWidth = 330
             };
 
             var actionList = new List<ActivityTemplateDO>

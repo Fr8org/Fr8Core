@@ -319,6 +319,10 @@
     <Compile Include="Migrations\201510200747079_UpdateMTTables.Designer.cs">
       <DependentUpon>201510200747079_UpdateMTTables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510201804511_AddMinPaneWidth.cs" />
+    <Compile Include="Migrations\201510201804511_AddMinPaneWidth.Designer.cs">
+      <DependentUpon>201510201804511_AddMinPaneWidth.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -561,6 +565,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510200747079_UpdateMTTables.resx">
       <DependentUpon>201510200747079_UpdateMTTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510201804511_AddMinPaneWidth.resx">
+      <DependentUpon>201510201804511_AddMinPaneWidth.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

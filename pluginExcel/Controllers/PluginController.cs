@@ -34,7 +34,8 @@ namespace pluginExcel.Controllers
                 Label = "Extract Data",
                 Version = "1",
                 Category = ActivityCategory.Receivers,
-                Plugin = plugin
+                Plugin = plugin,
+                MinPaneWidth = 330
             };
 
            
