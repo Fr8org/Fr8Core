@@ -12,7 +12,7 @@
           <Binding name="Endpoint1" endpointName="pluginSlack" />
         </Bindings>
       </Site>
-      <Site name="pluginDocuSign" physicalDirectory="..\..\..\pluginDocuSign\azure.publish">
+      <Site name="terminalDocuSign" physicalDirectory="..\..\..\terminalDocuSign\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="pluginDocuSign" />
         </Bindings>
@@ -22,7 +22,7 @@
           <Binding name="Endpoint1" endpointName="pluginSalesforce" />
         </Bindings>
       </Site>
-      <Site name="pluginDockyardCore" physicalDirectory="..\..\..\pluginDockyardCore\azure.publish">
+      <Site name="terminalFr8Core" physicalDirectory="..\..\..\terminalFr8Core\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="pluginDockyardCore" />
         </Bindings>
@@ -49,9 +49,9 @@
     <Endpoints>
       <InputEndpoint name="pluginAzureSqlServer" protocol="http" port="46281" />
       <InputEndpoint name="pluginSlack" protocol="http" port="39504" />
-      <InputEndpoint name="pluginDocuSign" protocol="http" port="53234" />
+      <InputEndpoint name="terminalDocuSign" protocol="http" port="53234" />
       <InputEndpoint name="pluginSalesforce" protocol="http" port="51234" />
-      <InputEndpoint name="pluginDockyardCore" protocol="http" port="50705" />
+      <InputEndpoint name="terminalFr8Core" protocol="http" port="50705" />
       <InputEndpoint name="pluginSendGrid" protocol="http" port="10601" />
       <InputEndpoint name="pluginTwilio" protocol="http" port="30699" />
       <InputEndpoint name="pluginExcel" protocol="http" port="47011" />
