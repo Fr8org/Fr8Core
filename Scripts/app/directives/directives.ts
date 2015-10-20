@@ -159,3 +159,15 @@ app.directive('stopClickPropagation', () => {
         }
     };
 });
+
+// temporary solution to reload configuration when action header is clicked.
+app.directive('transferClickConfigurePane', () => {
+    return {
+        link: (scope: ng.IScope, elem: ng.IAugmentedJQuery) => {
+            elem.bind('click', (event) => {
+                elem.parent().find('.pane-configure-action').click();
+                //angular.element(elem.siblings()[0]).click();
+            });
+        }
+    };
+});
