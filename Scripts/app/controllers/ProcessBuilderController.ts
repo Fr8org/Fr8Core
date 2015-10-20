@@ -267,7 +267,8 @@ module dockyard.controllers {
                 }
                 if (canBypassActionLoading) {
                     this.$scope.current.action = result.action;
-                    //this.$scope.actions[this.$scope.actions.length - 1] = result.action;
+                    var actions = this.$scope.actionGroups[0].actions
+                    actions[actions.length - 1] = result.action;
                 }
                 else {
                     this.ActionService.get({ id: actionId }).$promise.then(action => {

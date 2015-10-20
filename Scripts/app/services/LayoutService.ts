@@ -21,8 +21,12 @@ module dockyard.services {
                 _.groupBy<model.ActionDTO>(actions, (action) => action.parentRouteNodeId)
             );
 
-            var startingGroup = this.findChildGroup(actionGroups, startingId);
-            this.processGroup(actionGroups, new model.ActionGroup(startingGroup), processedGroups);
+            if (actions.length) {
+                var startingGroup = this.findChildGroup(actionGroups, startingId);
+                this.processGroup(actionGroups, new model.ActionGroup(startingGroup), processedGroups);
+            } else {
+                processedGroups.push(new model.ActionGroup([]));
+            }
 
             return processedGroups;
         }
