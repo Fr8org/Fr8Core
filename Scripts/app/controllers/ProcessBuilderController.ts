@@ -205,6 +205,7 @@ module dockyard.controllers {
             var action = new model.ActionDTO(this.$scope.currentSubroute.id, id, true);
             action.name = activityTemplate.name;
             action.label = activityTemplate.label;
+            action.minPaneWidth = activityTemplate.minPaneWidth;
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();
             this.$scope.current.action.activityTemplateId = activityTemplate.id;
