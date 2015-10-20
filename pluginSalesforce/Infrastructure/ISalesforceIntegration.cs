@@ -9,10 +9,6 @@ namespace pluginSalesforce.Infrastructure
 {
     public interface ISalesforceIntegration
     {
-        bool CreateLead(ActionDTO actionDTO);
-
-        string CreateAuthUrl(string externalStateValue);
-
-        Task<object> GetAuthToken(string code);       
+        bool CreateLead(ActionDTO actionDTO);       
     }
 }

@@ -22,6 +22,7 @@ using System.Web.Helpers;
 
 using Newtonsoft.Json;
 using Data.Infrastructure;
+using PluginBase.BaseClasses;
 
 namespace DockyardTest.Services
 {
@@ -36,7 +37,7 @@ namespace DockyardTest.Services
         private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
         private readonly IEnumerable<ActivityTemplateDO> _pr2Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "SQL Read", Version = "1.0" } };
         private bool _eventReceived;
-
+        private BasePluginAction _basePluginAction = new BasePluginAction();
         private Mock<IPluginTransmitter> PluginTransmitterMock
         {
             get { return Mock.Get(ObjectFactory.GetInstance<IPluginTransmitter>()); }
@@ -286,7 +287,7 @@ namespace DockyardTest.Services
                 uow.AuthorizationTokenRepository.Add(curAuthorizationTokenDO);
                 uow.SaveChanges();
             }
-            string result = _action.Authenticate(curActionDO);
+            string result = _basePluginAction.Authenticate(curActionDO);
             Assert.AreEqual("TestToken", result);
         }
 
@@ -303,7 +304,7 @@ namespace DockyardTest.Services
                 uow.AuthorizationTokenRepository.Add(curAuthorizationTokenDO);
                 uow.SaveChanges();
             }
-            string result = _action.Authenticate(curActionDO);
+            string result = _basePluginAction.Authenticate(curActionDO);
             Assert.AreEqual("AuthorizationToken", result);
         }
 

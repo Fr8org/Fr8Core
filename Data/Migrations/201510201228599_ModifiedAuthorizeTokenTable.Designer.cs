@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class AuthorizeTokenRepositaryUpdateWithSalesforceSpecificColumns : IMigrationMetadata
+    public sealed partial class ModifiedAuthorizeTokenTable : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AuthorizeTokenRepositaryUpdateWithSalesforceSpecificColumns));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ModifiedAuthorizeTokenTable));
         
         string IMigrationMetadata.Id
         {
-            get { return "201510181324114_AuthorizeTokenRepositaryUpdateWithSalesforceSpecificColumns"; }
+            get { return "201510201228599_ModifiedAuthorizeTokenTable"; }
         }
         
         string IMigrationMetadata.Source

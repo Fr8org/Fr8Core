@@ -276,7 +276,7 @@
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\ActivityTemplate.cs" />
     <Compile Include="Services\AuthData.cs" />
-    <Compile Include="Services\AuthorizationToken.cs" />
+    <Compile Include="Services\Authorization.cs" />
     <Compile Include="Managers\CrateManager.cs" />
     <Compile Include="Services\Criteria.cs" />
     <Compile Include="Services\Fr8Account.cs" />

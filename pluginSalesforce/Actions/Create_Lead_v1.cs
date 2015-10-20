@@ -9,39 +9,72 @@ using PluginBase.Infrastructure;
 using System.Collections.Generic;
 using Data.Entities;
 using PluginBase.BaseClasses;
+using System;
 
 namespace pluginSalesforce.Actions
 {
     public class Create_Lead_v1 : BasePluginAction
     {
-        ISalesforceIntegration _salesforce = new SalesforceIntegration();       
+        ISalesforceIntegration _salesforce = new SalesforceIntegration();
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (IsEmptyAuthToken(curActionDTO))
+            if (NeedsAuthentication(curActionDTO))
             {
-                AppendDockyardAuthenticationCrate(
-                    curActionDTO,
-                    AuthenticationMode.ExternalMode);
+                FlaggedForAuthentication(curActionDTO);
+                return curActionDTO;
+            }
 
-            return curActionDTO;
-        }
-
-           // RemoveAuthenticationCrate(curActionDTO);
+            RemoveAuthenticationCrate(curActionDTO);
 
             return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }
 
+        public object Activate(ActionDO curActionDO)
+        {
+            //not implemented currently
+            return null;
+        }
+
+        public object Deactivate(ActionDO curActionDO)
+        {
+            //not implemented currentlys
+            return "Deactivated";
+        }
+
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        {
+            PayloadDTO processPayload = null;
+          
+                processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+
+                if (NeedsAuthentication(curActionDTO))
+                {
+                    throw new ApplicationException("No AuthToken provided.");
+                }
+
+
+                var lastName = ExtractControlFieldValue(curActionDTO,"lastName");
+                if (string.IsNullOrEmpty(lastName))
+                {
+                    throw new ApplicationException("No last name found in action.");
+                }
+
+                var company = ExtractControlFieldValue(curActionDTO, "companyName");
+                if (string.IsNullOrEmpty(company))
+                {
+                    throw new ApplicationException("No company name found in action.");
+                }
+
+                bool result = _salesforce.CreateLead(curActionDTO);
+           
+          
+            return processPayload;
+        }
+
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
         {
-            var crateStorage = curActionDTO.CrateStorage;
-
-            if (crateStorage.CrateDTO.Count == 0)
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
+            return ConfigurationRequestType.Initial;
         }
 
         protected override async Task<ActionDTO> InitialConfigurationResponse(
@@ -51,43 +84,28 @@ namespace pluginSalesforce.Actions
             {
                 Label = "First Name",
                 Name = "firstName",
+                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
 
             };
             var lastNAme = new TextBoxControlDefinitionDTO()
             {
                 Label = "Last Name",
                 Name = "lastName",
-                Required = true
+                Required = true,
+                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
             };
             var company = new TextBoxControlDefinitionDTO()
             {
                 Label = "Company ",
-                Name = "CompanyName",
-                Required = true
-            };
-            var buttonControl = new ButtonControlDefinisionDTO()
-            {
-                Label = "Create Lead",
-                Name = "button_new",
-                CssClass = "btn red",
-                Events = new List<ControlEvent>() { new ControlEvent("onClick", "requestConfig") }
+                Name = "companyName",
+                Required = true,
+                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
             };
 
-            var controls = PackControlsCrate(firstNameCrate, lastNAme, company, buttonControl);
+            var controls = PackControlsCrate(firstNameCrate, lastNAme, company);
             curActionDTO.CrateStorage.CrateDTO.Add(controls);
 
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
-
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
-        {
-            bool result = _salesforce.CreateLead(curActionDTO);
-            var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
-            var controls = PackCrate_ErrorTextBox("", "Lead Created Successfully");
-            Crate.AddCrate(curActionDO, controls);
-            var curCrateStorageDTO = curActionDO.CrateStorageDTO();
-            curActionDTO.CrateStorage = curCrateStorageDTO;        
-            return await Task.FromResult<ActionDTO>(curActionDTO);
-        }       
     }
 }

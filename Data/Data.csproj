@@ -314,10 +314,6 @@
     <Compile Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.Designer.cs">
       <DependentUpon>201510152143047_Add_Label_Property_To_ActionTemplate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201510181324114_AuthorizeTokenRepositaryUpdateWithSalesforceSpecificColumns.cs" />
-    <Compile Include="Migrations\201510181324114_AuthorizeTokenRepositaryUpdateWithSalesforceSpecificColumns.Designer.cs">
-      <DependentUpon>201510181324114_AuthorizeTokenRepositaryUpdateWithSalesforceSpecificColumns.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201510181719065_IngnoreChangesUpdate.cs" />
     <Compile Include="Migrations\201510181719065_IngnoreChangesUpdate.Designer.cs">
       <DependentUpon>201510181719065_IngnoreChangesUpdate.cs</DependentUpon>
@@ -326,9 +322,9 @@
     <Compile Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.Designer.cs">
       <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201510190426587_test.cs" />
-    <Compile Include="Migrations\201510190426587_test.Designer.cs">
-      <DependentUpon>201510190426587_test.cs</DependentUpon>
+    <Compile Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.cs" />
+    <Compile Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.Designer.cs">
+      <DependentUpon>201510201228599_ModifiedAuthorizeTokenTable.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -568,17 +564,14 @@
     <EmbeddedResource Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.resx">
       <DependentUpon>201510152143047_Add_Label_Property_To_ActionTemplate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201510181324114_AuthorizeTokenRepositaryUpdateWithSalesforceSpecificColumns.resx">
-      <DependentUpon>201510181324114_AuthorizeTokenRepositaryUpdateWithSalesforceSpecificColumns.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510181719065_IngnoreChangesUpdate.resx">
       <DependentUpon>201510181719065_IngnoreChangesUpdate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.resx">
       <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201510190426587_test.resx">
-      <DependentUpon>201510190426587_test.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.resx">
+      <DependentUpon>201510201228599_ModifiedAuthorizeTokenTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
