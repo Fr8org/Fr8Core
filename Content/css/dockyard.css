@@ -57,7 +57,6 @@
 .processActionStep {
     background-image: URL("/Content/img/ProcessBuilder/circle.png");
     display: inline-flex;
-    ;
     width: 80px;
     height: 50px;
     background-repeat: no-repeat;
@@ -118,12 +117,12 @@
     white-space: nowrap;
 }
 
-.action-arrow {
+.action-arrow-right {
     background-image: url('/Content/img/site/arrow_blue_ic_arrow_forward_48px-512.png');
     background-size: contain;
     display: inline-block;
     height: 50px;
-    margin-top: 125px;
+    margin: 125px 10px 0 7px;
     width: 50px;
 }
 
@@ -152,19 +151,14 @@
                 rgba(0, 0, 0, 0.117647) 0px 2px 1px -1px;
     display: inline-block;
     height: 300px;
-    margin: 10px;
     
     vertical-align: top;
     width: 330px;
 }
 
-.action-name {
-    
+.action-name {    
     text-align: center;
-
 }
-
-
 
 .action-menu {
     bottom: 5px;
@@ -196,6 +190,7 @@
 .action-to-add {
     cursor: pointer;
     opacity: 0.5;
+    margin-left: -3px;
 }
 
 .action-to-add:hover {

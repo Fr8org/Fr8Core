@@ -166,34 +166,7 @@ app.directive('transferClickConfigurePane', () => {
         link: (scope: ng.IScope, elem: ng.IAugmentedJQuery) => {
             elem.bind('click', (event) => {
                 elem.parent().find('.pane-configure-action').click();
-                //angular.element(elem.siblings()[0]).click();
             });
-        }
-    };
-});
-
-app.directive('layoutActionGroup', () => {
-    return {
-        restrict: 'A',
-        link: (scope: any, elem: ng.IAugmentedJQuery) => {
-            elem.css('left', scope.group.offsetLeft);
-            elem.css('top', scope.group.offsetTop);
-            var arrow = angular.element(elem.children()[0]);
-
-            if (arrow.hasClass('action-arrow-bottom')) {
-                arrow.css('top', -scope.group.arrowLength - 55);
-                arrow.css('height', scope.group.arrowLength + 35);
-            }
-        }
-    };
-});
-
-app.directive('layoutActionVerticalArrow', () => {
-    return {
-        restrict: 'A',
-        link: (scope: any, elem: ng.IAugmentedJQuery) => {
-            elem.css('top', -scope.group.arrowLength - 55);
-            elem.css('height', scope.group.arrowLength + 30);
         }
     };
 });

@@ -7,8 +7,9 @@ module dockyard.services {
     }
 
     export class LayoutService implements ILayoutService {
-        private actionHeight = 385;
-        private actionWidth = 403;
+        private ACTION_HEIGHT = 300;
+        private ACTION_WIDTH = 330;
+        private ACTION_PADDING = 70;
 
         constructor() {
         }
@@ -17,7 +18,7 @@ module dockyard.services {
             var processedGroups: model.ActionGroup[] = [];
 
             var actionGroups = _.toArray<model.ActionDTO[]>(
-                _.groupBy<model.ActionDTO>(actions, 'parentActivityId')
+                _.groupBy<model.ActionDTO>(actions, (action) => action.parentRouteNodeId)
             );
 
             var startingGroup = this.findChildGroup(actionGroups, startingId);
@@ -26,7 +27,7 @@ module dockyard.services {
             return processedGroups;
         }
         
-        // Depth first search on the ActionGroup tree going from last to first.
+        // Depth first search on the ActionGroup tree going from last sibling to first.
         private processGroup(actionGroups: model.ActionDTO[][], group: model.ActionGroup, processedGroups: model.ActionGroup[]) {
             processedGroups.push(group);
             for (var i = group.actions.length - 1; i > -1; i--) {
@@ -43,16 +44,16 @@ module dockyard.services {
             var parentActionIdx = _.findIndex(parentGroup.actions, (action: model.ActionDTO) => {
                 return action.id === group.actions[0].parentRouteNodeId;
             });
-            group.offsetLeft = parentGroup.offsetLeft + parentActionIdx * this.actionWidth;
+            group.offsetLeft = parentGroup.offsetLeft + parentActionIdx * (this.ACTION_WIDTH + this.ACTION_PADDING);
 
-            var offsetTop = parentGroup.offsetTop + this.actionHeight;
+            var offsetTop = parentGroup.offsetTop + this.ACTION_HEIGHT + this.ACTION_PADDING;
             for (var processedGroup of processedGroups) {
                 if (offsetTop <= processedGroup.offsetTop) {
-                    offsetTop = processedGroup.offsetTop + this.actionHeight;
+                    offsetTop = processedGroup.offsetTop + this.ACTION_HEIGHT + this.ACTION_PADDING;
                 }
             }
             group.offsetTop = offsetTop;
-            group.arrowLength = offsetTop - parentGroup.offsetTop - this.actionHeight;
+            group.arrowLength = offsetTop - parentGroup.offsetTop - this.ACTION_HEIGHT - this.ACTION_PADDING;
         }
 
         private findChildGroup(actionGroups: model.ActionDTO[][], parentId: number) {

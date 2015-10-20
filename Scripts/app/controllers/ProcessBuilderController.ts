@@ -18,8 +18,7 @@ module dockyard.controllers {
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
         current: model.ProcessBuilderState;
-        actions: model.ActionDTO[];
-        actionGroups: model.ActionGroup[];
+        actionGroups: model.ActionGroup[]
 
         addAction(): void;
         deleteAction: (action: model.ActionDTO) => void;
@@ -74,7 +73,6 @@ module dockyard.controllers {
 
             this.$scope.routeId = $state.params.id;
             this.$scope.current = new model.ProcessBuilderState();
-            this.$scope.actions = [];
             this.$scope.actionGroups = [];
 
             this.setupMessageProcessing();
@@ -190,7 +188,7 @@ module dockyard.controllers {
 
                 self.ActionService.deleteById({ id: action.id }).$promise.then(() => {
                     //lets reload process template
-                    self.$scope.actions = [];
+                    self.$scope.actionGroups = [];
                     self.$scope.current = new model.ProcessBuilderState();
                     self.loadProcessTemplate();
                 });
@@ -212,7 +210,7 @@ module dockyard.controllers {
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();
             this.$scope.current.action.activityTemplateId = activityTemplate.id;
-            this.$scope.actions.push(action);
+            this.$scope.actionGroups[0].actions.push(action);
 
             this.selectAction(action);
         }
@@ -269,7 +267,7 @@ module dockyard.controllers {
                 }
                 if (canBypassActionLoading) {
                     this.$scope.current.action = result.action;
-                    this.$scope.actions[this.$scope.actions.length - 1] = result.action;
+                    //this.$scope.actions[this.$scope.actions.length - 1] = result.action;
                 }
                 else {
                     this.ActionService.get({ id: actionId }).$promise.then(action => {
