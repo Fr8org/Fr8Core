@@ -151,12 +151,19 @@ namespace Core.Services
                 try
                 {
                     _action.Activate(curActionDO).Wait();
+                    
                     result = "success";
                 }
                 catch (Exception ex)
                 {
                     throw new ApplicationException("Process template activation failed.", ex);
                 }
+            }
+
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                unitOfWork.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Active;
+                unitOfWork.SaveChanges();
             }
 
             return result;
@@ -173,12 +180,19 @@ namespace Core.Services
                 try
                 {
                     _action.Deactivate(curActionDO).Wait();
+                    
                     result = "success";
                 }
                 catch (Exception ex)
                 {
                     throw new ApplicationException("Process template Deactivation failed.", ex);
                 }
+            }
+
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                unitOfWork.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Inactive;
+                unitOfWork.SaveChanges();
             }
 
             return result;

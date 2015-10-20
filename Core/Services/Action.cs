@@ -462,7 +462,7 @@ namespace Core.Services
 
         }       
 
-        //looks for the Conifiguration Controls Crate and Extracts the ManifestSchema
+        //looks for the Configuration Controls Crate and Extracts the ManifestSchema
         public StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction)
         {
 
