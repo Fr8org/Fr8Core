@@ -13,7 +13,7 @@ using PluginBase.Infrastructure;
 
 namespace pluginDockyardCore.Actions
 {
-    public class Store_MT_Data_v1 : BasePluginAction
+    public class StoreMTData_v1 : BasePluginAction
     {
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
