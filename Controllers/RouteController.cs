@@ -51,7 +51,7 @@ namespace Web.Controllers
             };
         }
 
-       
+        
         
         [Route("getactive")]
         [HttpGet]
@@ -157,14 +157,14 @@ namespace Web.Controllers
             return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
         }
 
-        
+        [HttpPost]
         [Route("activate")]
         public IHttpActionResult Activate(RouteDO curRoute)
         {
             return Ok(_route.Activate(curRoute));
         }
 
-        
+        [HttpPost]
         [Route("deactivate")]
         public IHttpActionResult Deactivate(RouteDO curRoute)
         {

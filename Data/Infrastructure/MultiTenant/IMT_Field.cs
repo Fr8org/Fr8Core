@@ -5,14 +5,13 @@ using System.IO;
 using System.Linq;
 using Data.Interfaces;
 using Data.Entities;
-using Data.Interfaces.MultiTenantObjects;
 using System.Collections.Generic;
 using System.Reflection;
 namespace Data.Infrastructure.MultiTenant
 {
     public interface IMT_Field
     {
-        List<Data.Entities.MT_Field> CreateList(IUnitOfWork _uow, List<PropertyInfo> curDataProperties, Data.Entities.MT_Object correspondingMTObject, Dictionary<Type, Data.Entities.MT_FieldType> typesDict);
+        List<Data.Entities.MT_Field> CreateList(IUnitOfWork _uow, List<PropertyInfo> curDataProperties, Data.Entities.MT_Object correspondingMTObject);
 
         //int? GetFieldColumnOffset(IUnitOfWork uow, string curMtFieldName, int curMtObjectId);
 

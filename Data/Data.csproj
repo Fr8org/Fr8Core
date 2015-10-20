@@ -192,13 +192,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\FieldValidationResult.cs" />
+    <Compile Include="Constants\ActivityDirection.cs" />
     <Compile Include="Constants\ManifestIdEnum.cs" />
     <Compile Include="Entities\RouteNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
     <Compile Include="Entities\MT_Field.cs" />
     <Compile Include="Entities\MT_Object.cs" />
-    <Compile Include="Entities\MT_Organization.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
@@ -213,6 +214,7 @@
     <Compile Include="Infrastructure\MultiTenant\MT_FieldType.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_Object.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
@@ -256,8 +258,9 @@
     <Compile Include="Interfaces\IMTFieldRepository.cs" />
     <Compile Include="Interfaces\IMTFieldTypeRepository.cs" />
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
-    <Compile Include="Interfaces\IMTOrganizationRepository.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\DocuSignEnvelopeCM.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\DocuSignEventCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\Manifest.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardAuthenticationCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsCM.cs" />
@@ -268,9 +271,6 @@
     <Compile Include="Interfaces\ManifestSchemas\StandardDesignTimeFieldsCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\EventReportCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\EventSubscriptionCM.cs" />
-    <Compile Include="Interfaces\MultiTenantObjects\DocuSignEnvelopeStatusReportMTO.cs" />
-    <Compile Include="Interfaces\MultiTenantObjects\DocuSignRecipientStatusReportMTO.cs" />
-    <Compile Include="Interfaces\MultiTenantObjects\MultiTenantObject.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
@@ -315,6 +315,10 @@
     <Compile Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.Designer.cs">
       <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510200747079_UpdateMTTables.cs" />
+    <Compile Include="Migrations\201510200747079_UpdateMTTables.Designer.cs">
+      <DependentUpon>201510200747079_UpdateMTTables.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -322,7 +326,6 @@
     <Compile Include="Repositories\MTFieldRepository.cs" />
     <Compile Include="Repositories\MTFieldTypeRepository.cs" />
     <Compile Include="Repositories\MTObjectRepository.cs" />
-    <Compile Include="Repositories\MTOrganizationRepository.cs" />
     <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -555,6 +558,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.resx">
       <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510200747079_UpdateMTTables.resx">
+      <DependentUpon>201510200747079_UpdateMTTables.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
