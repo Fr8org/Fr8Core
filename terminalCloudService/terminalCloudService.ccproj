@@ -73,6 +73,9 @@
     <!-- This is the directory within the web application project directory to which the project will be "published" for later packaging by the Azure project. -->
     <SecondarySitePublishDir>azure.publish\</SecondarySitePublishDir>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Dev' ">
+    <OutputPath>bin\Dev\</OutputPath>
+  </PropertyGroup>
   <!-- These SecondarySite items represent the collection of sites (other than the web application associated with the role) that need special packaging. -->
   <ItemGroup>
     <SecondarySite Include="..\pluginAzureSqlServer\pluginAzureSqlServer.csproj" />

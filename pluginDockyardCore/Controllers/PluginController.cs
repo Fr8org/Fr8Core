@@ -4,6 +4,7 @@ using System.Web.Http;
 using Core.Services;
 using Data.Entities;
 using Data.States;
+using Utilities.Configuration.Azure;
 
 namespace pluginDockyardCore.Controllers
 {
@@ -23,7 +24,7 @@ namespace pluginDockyardCore.Controllers
             
             var plugin = new PluginDO
             {
-                Endpoint = "localhost:50705",
+                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 PluginStatus = PluginStatus.Active,
                 Name = "pluginDockyardCore",
                 RequiresAuthentication = false,
