@@ -75,7 +75,7 @@ namespace pluginDocuSign.Actions
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
 
             if (curConnectProfile.configurations != null &&
-                !curConnectProfile.configurations.Any(config => config.name.Equals("MonitorAllDocuSignEvents")))
+                !curConnectProfile.configurations.Any(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")))
             {
                 var monitorConnectConfiguration = new DocuSign.Integrations.Client.Configuration
                 {
