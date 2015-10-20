@@ -213,6 +213,7 @@
     <Compile Include="Tests\Actions\Extract_From_DocuSign_Envelope_v1Tests.cs" />
     <Compile Include="Tests\Actions\Monitor_DocuSignTests.cs" />
     <Compile Include="Tests\DocusignApiHelper.cs" />
+    <Compile Include="Tests\Fixtures\AppSettingsFixture.cs" />
     <Compile Include="Tests\Fixtures\PluginFixtureData - Recipient.cs" />
     <Compile Include="Tests\Fixtures\PluginFixtureData - Signer.cs" />
     <Compile Include="Tests\IDocusignApiHelper.cs" />

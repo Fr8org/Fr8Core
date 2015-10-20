@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using terminalDocuSign.Tests.Fixtures;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Infrastructure.AutoMapper;
+using Utilities.Configuration.Azure;
 
 
 namespace terminalDocuSign.Tests.Actions
@@ -24,6 +25,8 @@ namespace terminalDocuSign.Tests.Actions
             base.SetUp();
             PluginDocuSignMapBootstrapper.ConfigureDependencies(Core.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
             PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
+            CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
+
             _monitor_DocuSign = new Monitor_DocuSign_v1();
         }
 

@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using Core.Enums;
 using NUnit.Framework;
+using Utilities.Configuration.Azure;
 using terminalDocuSign.Tests.Fixtures;
 
 namespace terminalDocuSign.Tests.Actions
@@ -27,6 +28,8 @@ namespace terminalDocuSign.Tests.Actions
         public Receive_DocuSign_Envelope_v1Tests()
         {
             base.SetUp();
+            CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
+
             _extract_From_DocuSign_Envelope_v1 = new Receive_DocuSign_Envelope_v1();
         }
 

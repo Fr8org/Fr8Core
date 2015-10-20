@@ -24,6 +24,7 @@ using terminalDocuSign.Infrastructure.StructureMap;
 using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
+using terminalDocuSign.Tests.Fixtures;
 
 namespace terminalDocuSign.Tests.Infrastructure
 {
@@ -41,7 +42,7 @@ namespace terminalDocuSign.Tests.Infrastructure
 			base.SetUp();
 			PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
 			PluginDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
-            CloudConfigurationManager.RegisterApplicationSettings(new ConfigurationManagerApplicationSettings());
+            CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
 
 			// _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
             _docusignTemplate = new DocuSignTemplate();
