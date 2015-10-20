@@ -1,4 +1,10 @@
-﻿namespace Data.Interfaces.ManifestSchemas
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Data.Interfaces.ManifestSchemas
 {
     public class DocuSignEventCM : Manifest
     {
@@ -10,7 +16,7 @@
         public string RecepientId { get; set; }
 
         public DocuSignEventCM()
-            : base(Constants.MT.DocuSignEvent)
+              : base(Constants.MT.DocuSignEvent)
         {
 
         }

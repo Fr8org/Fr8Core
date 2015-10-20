@@ -105,13 +105,13 @@ namespace pluginIntegrationTests
                 uow.SaveChanges();
             }
 
-            _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
+            _coreServer = pluginIntegrationTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
 
             var docuSignServerUrl = "http://" + FixtureData.TestPlugin_DocuSign_EndPoint + "/";
             _docuSignServer = pluginDocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
 
             var dockyardCoreServerUrl = "http://" + FixtureData.TestPlugin_Core_EndPoint + "/";
-            _dockyardCoreServer = pluginDockyardCore.SelfHostFactory.CreateServer(dockyardCoreServerUrl);
+            _dockyardCoreServer = terminalFr8Core.SelfHostFactory.CreateServer(dockyardCoreServerUrl);
 
             var azureSqlServerServerUrl = "http://" + FixtureData.TestPlugin_AzureSqlServer_EndPoint + "/";
             _azureSqlServerServer = pluginAzureSqlServer.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
@@ -190,10 +190,10 @@ namespace pluginIntegrationTests
             var curActionController = CreateActionController();
             var curActionDO = FixtureData.TestAction_Blank();
 
-            if (_subrouteDO.RouteNodes == null)
+            if (_subrouteDO.ChildNodes == null)
             {
-                _subrouteDO.RouteNodes = new List<RouteNodeDO>();
-                _subrouteDO.RouteNodes.Add(curActionDO);
+                _subrouteDO.ChildNodes = new List<RouteNodeDO>();
+                _subrouteDO.ChildNodes.Add(curActionDO);
             }
 
             if (activityTemplate != null)

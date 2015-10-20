@@ -17,7 +17,7 @@ namespace Data.Interfaces.ManifestSchemas
         public string ExternalAccountId { get; set; }
 
         public DocuSignEnvelopeCM()
-            : base(Constants.MT.DocuSignEnvelope)
+              : base(Constants.MT.DocuSignEnvelope)
         {
 
         }

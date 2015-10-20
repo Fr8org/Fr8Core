@@ -5,7 +5,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using Core.Services;
+using Data.Constants;
 using Newtonsoft.Json;
+
 using StructureMap;
 using Core.Enums;
 using Core.Interfaces;
@@ -97,8 +100,41 @@ namespace PluginBase.BaseClasses
             }
         }
 
+        protected async Task<CrateDTO> ValidateFields(List<FieldValidationDTO> requiredFieldList)
+        {
+            var httpClient = new HttpClient();
+
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                      + "field/exists";
+            using (var response = await httpClient.PostAsJsonAsync(url, requiredFieldList))
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<FieldValidationResult>>(content);
+                //do something with result
+                //Crate.CreateDesignTimeFieldsCrate("ValidationErrors",)
+                var validationErrorList = new List<FieldDTO>();
+                //lets create necessary validationError crates
+                for (var i = 0; i < result.Count; i++)
+                {
+                    var fieldCheckResult = result[i];
+                    if (fieldCheckResult == FieldValidationResult.NotExists)
+                    {
+                        validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required"});
+                    }
+                }
+
+                if (validationErrorList.Any())
+                {
+                    return Crate.CreateDesignTimeFieldsCrate("ValidationErrors", validationErrorList.ToArray());
+                }
+            }
+
+            return null;
+        }
+
         protected async Task<ActionDTO> ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
+            
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
             {
                 return await InitialConfigurationResponse(curActionDTO);

@@ -57,7 +57,7 @@ namespace DockyardTest.Security
                     Address = "rjrudman@gmail.com",
                     Name = "Robert Rudman"
                 };
-
+                
                 var userDO = uow.UserRepository.GetOrCreateUser(emailAddress);
 
                 var authTokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(originalURL, userDO);
