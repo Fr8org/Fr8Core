@@ -249,11 +249,13 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curActivityTemplates = uow.ActivityTemplateRepository.GetAll()
+                curActivityTemplates = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Where(a => a.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                     .GroupBy(t => t.Category)
                     .OrderBy(c => c.Key)
                     //lets load them all before memory processing
-                    .ToList()
+                    .AsEnumerable()
                     .Select(c => new ActivityTemplateCategoryDTO
                     {
                         Activities = c.Select(Mapper.Map<ActivityTemplateDTO>),
