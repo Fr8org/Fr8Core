@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ using Newtonsoft.Json;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 
-namespace pluginDockyardCore.Actions
+namespace terminalFr8Core.Actions
 {
     public class StoreMTData_v1 : BasePluginAction
     {
@@ -34,7 +35,15 @@ namespace pluginDockyardCore.Actions
 
         public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
-            //Waiting for sergey changes to be merged in
+            if (IsEmptyAuthToken(actionDto))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            var curProcessPayload = await GetProcessPayload(actionDto.ProcessId);
+
+            var curEventReport = JsonConvert.DeserializeObject<EventReportCM>(curProcessPayload.CrateStorageDTO().CrateDTO[0].Contents);
+
             return null;
         }
 

@@ -57,6 +57,15 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             });
 
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "StoreMTData",
+                Label = "Store MT Data",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1"
+            });
+
             return Json(result);    
         }
     }
