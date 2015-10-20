@@ -37,7 +37,7 @@ namespace Data.Entities
         {
             get
             {
-                var startingSubroute = ChildNodes.OfType<SubrouteDO>().SingleOrDefault(pnt => pnt.StartingSubroute == true);
+                var startingSubroute = RouteNodes.OfType<SubrouteDO>().SingleOrDefault(pnt => pnt.StartingSubroute == true);
                 if (null != startingSubroute)
                     return startingSubroute.Id;
                 else
@@ -64,7 +64,7 @@ namespace Data.Entities
                 {
                     Subroutes.ToList().ForEach(pnt => pnt.StartingSubroute = false);
                     value.StartingSubroute = true;
-                    ChildNodes.Add(value);
+                    RouteNodes.Add(value);
                 }
             }
         }
@@ -85,8 +85,74 @@ namespace Data.Entities
         {
             get
             {
-                return ChildNodes.OfType<SubrouteDO>();
+                return RouteNodes.OfType<SubrouteDO>();
+            }
+        }
+        
+        private class SmartNavigationalPropertyCollectionProxy<TBase, TDerived> : ICollection<TDerived>
+            where TDerived : TBase
+        {
+            private readonly ICollection<TBase> _baseCollection;
+
+            public int Count
+            {
+                get
+                {
+                    return _baseCollection.OfType<TDerived>().Count();
+                }
+            }
+
+            public bool IsReadOnly
+            {
+                get { return false; }
+            }
+
+            public SmartNavigationalPropertyCollectionProxy(ICollection<TBase> baseCollection)
+            {
+                _baseCollection = baseCollection;
+            }
+
+            public IEnumerator<TDerived> GetEnumerator()
+            {
+                return _baseCollection.OfType<TDerived>().GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public void Add(TDerived item)
+            {
+                _baseCollection.Add(item);
+            }
+
+            public void Clear()
+            {
+                throw new NotSupportedException();
+            }
+
+            public bool Contains(TDerived item)
+            {
+                return _baseCollection.Contains(item);
+            }
+
+            public void CopyTo(TDerived[] array, int arrayIndex)
+            {
+                foreach (var derived in _baseCollection.OfType<TDerived>())
+                {
+                    array[arrayIndex] = derived;
+                    arrayIndex++;
+                }
+            }
+
+            public bool Remove(TDerived item)
+            {
+                return _baseCollection.Remove(item);
             }
         }
     }
+
+
+    
 }
