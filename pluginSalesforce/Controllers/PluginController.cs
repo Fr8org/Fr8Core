@@ -8,6 +8,8 @@ using System.Reflection;
 using PluginBase.BaseClasses;
 using System.Collections.Generic;
 using Data.States;
+using Utilities.Configuration.Azure;
+
 namespace pluginSalesforce.Controllers
 {
      [RoutePrefix("plugins")]
@@ -21,7 +23,7 @@ namespace pluginSalesforce.Controllers
             {
                 Name = "pluginSalesforce",
                 PluginStatus = PluginStatus.Active,
-                Endpoint = "localhost:51234",
+                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 Version = "1"
             };
 

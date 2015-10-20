@@ -27,7 +27,7 @@ namespace Utilities.Configuration.Azure
     /// <summary>
     /// Microsoft Azure settings.
     /// </summary>
-    internal class AzureApplicationSettings
+    public class AzureApplicationSettings : IApplicationSettings
     {
         private const string RoleEnvironmentTypeName = "Microsoft.WindowsAzure.ServiceRuntime.RoleEnvironment";
         private const string RoleEnvironmentExceptionTypeName = "Microsoft.WindowsAzure.ServiceRuntime.RoleEnvironmentException";
@@ -108,7 +108,7 @@ namespace Utilities.Configuration.Azure
         /// </summary>
         /// <param name="name">Setting name.</param>
         /// <returns>Setting value or null if such setting does not exist.</returns>
-        internal string GetSetting(string name)
+        public string GetSetting(string name)
         {
             Debug.Assert(!string.IsNullOrEmpty(name));
 

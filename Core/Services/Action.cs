@@ -251,7 +251,7 @@ namespace Core.Services
             return payloadDTO;
         }
 
-        
+
         //looks for the Configuration Controls Crate and Extracts the ManifestSchema
         public StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction)
         {
@@ -295,7 +295,7 @@ namespace Core.Services
         {
             return await CallPluginActionAsync<ActionDTO>("deactivate", curActionDO);
         }
-      
+
         private Task<TResult> CallPluginActionAsync<TResult>(string actionName, ActionDO curActionDO, int processId = 0)
         {
             if (actionName == null) throw new ArgumentNullException("actionName");
