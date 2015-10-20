@@ -9,6 +9,7 @@ using PluginBase.BaseClasses;
 using System.Collections.Generic;
 using Core.Services;
 using Data.States;
+using Utilities.Configuration.Azure;
 
 namespace pluginDocuSign.Controllers
 {    
@@ -23,7 +24,7 @@ namespace pluginDocuSign.Controllers
             {
                 Name = "pluginDocuSign",
                 PluginStatus = PluginStatus.Active,
-                Endpoint = "localhost:53234",
+                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 RequiresAuthentication = true,
                 Version = "1"
             };

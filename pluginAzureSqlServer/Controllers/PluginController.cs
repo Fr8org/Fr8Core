@@ -4,6 +4,7 @@ using System.Web.Http.Description;
 using System.Web.Http;
 using Data.Entities;
 using Data.States;
+using Utilities.Configuration.Azure;
 
 namespace pluginAzureSqlServer.Controllers
 {
@@ -31,7 +32,7 @@ namespace pluginAzureSqlServer.Controllers
 
             var plugin = new PluginDO
             {
-                Endpoint = "localhost:46281",
+                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 PluginStatus = PluginStatus.Active,
                 Name = "pluginAzureSqlServer",
                 RequiresAuthentication = false,
