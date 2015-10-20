@@ -28,7 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{9A01
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginAzureSqlServer", "pluginAzureSqlServer\pluginAzureSqlServer.csproj", "{D019B112-55A8-4661-AFF5-329F998D9E28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginDocuSign", "pluginDocuSign\pluginDocuSign.csproj", "{4E04FEB2-B452-4739-8336-EA2CEFB18D87}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalDocuSign", "terminalDocuSign\terminalDocuSign.csproj", "{4E04FEB2-B452-4739-8336-EA2CEFB18D87}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginBase", "pluginBase\PluginBase.csproj", "{D6A0A493-E926-439A-9CE2-E093E75132CD}"
 EndProject
