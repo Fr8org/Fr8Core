@@ -1,6 +1,6 @@
 ﻿<div>
     <div ng-class="{'noclick-background': isDisabled}">
-        <table class="table query-builder-table">
+        <table class="table query-builder-table" stop-click-propagation>
             <thead>
                 <tr>
                     <th class="col-md-5">Field</th>
@@ -39,7 +39,7 @@
             </tbody>
         </table>
         <div>
-            <a href class="btn btn-primary query-builder-add-button" ng-click="addRow()">Add Row</a>
+            <a href class="btn btn-primary query-builder-add-button" ng-click="addRow()" stop-click-propagation>Add Row</a>
         </div>
     </div>
 </div>

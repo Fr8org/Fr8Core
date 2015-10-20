@@ -1,5 +1,5 @@
 ﻿<div>
-    <table class="table">
+    <table class="table" stop-click-propagation>
         <thead>
             <tr>
                 <th class="col-md-5">Field</th>
@@ -25,6 +25,6 @@
         </tbody>
     </table>
     <div>
-        <a href class="btn btn-primary field-list-add-button" ng-click="addRow()">Add Row</a>
+        <a href class="btn btn-primary field-list-add-button" ng-click="addRow()" stop-click-propagation>Add Row</a>
     </div>
 </div>
