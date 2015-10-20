@@ -10,9 +10,10 @@ namespace Core.Interfaces
 	{
         IList<RouteDO> GetForUser(IUnitOfWork uow, Fr8AccountDO account, bool isAdmin, int? id = null, int? status = null);
 		void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool withTemplate);
+	    RouteDO Create(IUnitOfWork uow, string name);
 		void Delete(IUnitOfWork uow, int id);
 	    RouteNodeDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute);
-
+	    RouteDTO MapRouteToDto(IUnitOfWork uow, RouteDO curRouteDO);
         IList<SubrouteDO> GetSubroutes(RouteDO curRouteDO);
         IList<RouteDO> GetMatchingRoutes(string userId, EventReportCM curEventReport);
         RouteNodeDO GetFirstActivity(int curRouteId);

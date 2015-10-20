@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Runtime.InteropServices;
+using AutoMapper;
 using Core.Interfaces;
 using Core.Managers;
 using Data.Entities;
@@ -19,8 +20,6 @@ namespace Core.Services
 {
     public class Route : IRoute
     {
-        
-        
         // private readonly IProcess _process;
         private readonly ISubroute _subroute;
         private readonly Fr8Account _dockyardAccount;
@@ -63,10 +62,10 @@ namespace Core.Services
                 ptdo.RouteState = RouteState.Inactive;
                 var subroute = new SubrouteDO(true);
                 subroute.ParentRouteNode = ptdo;
-                ptdo.RouteNodes.Add(subroute);
+                ptdo.ChildNodes.Add(subroute);
 
                 uow.RouteRepository.Add(ptdo);
-                _subroute.Create(uow, ptdo.StartingSubroute);
+                _subroute.Store(uow, ptdo.StartingSubroute);
             }
             else
             {
@@ -81,7 +80,51 @@ namespace Core.Services
             // return ptdo.Id;
         }
 
+        public RouteDO Create(IUnitOfWork uow, string name)
+        {
+            var route = new RouteDO()
+            {
+                Name = name
+            };
+            
+            route.RouteState = RouteState.Inactive;
         
+            uow.RouteRepository.Add(route);
+
+            return route;
+        }
+
+        // Manual mapping method to resolve DO-1164.
+        public RouteDTO MapRouteToDto(IUnitOfWork uow, RouteDO curRouteDO)
+        {
+            var subrouteDTOList = uow.SubrouteRepository
+                .GetQuery()
+                .Include(x => x.ChildNodes)
+                .Where(x => x.ParentRouteNodeId == curRouteDO.Id)
+                .OrderBy(x => x.Id)
+                .ToList()
+                .Select((SubrouteDO x) =>
+                {
+                    var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
+
+                    pntDTO.Actions = Enumerable.ToList(x.ChildNodes.Select(Mapper.Map<ActionDTO>));
+
+                    return pntDTO;
+                }).ToList();
+
+            RouteDTO result = new RouteDTO()
+            {
+                Description = curRouteDO.Description,
+                Id = curRouteDO.Id,
+                Name = curRouteDO.Name,
+                RouteState = curRouteDO.RouteState,
+                StartingSubrouteId = curRouteDO.StartingSubrouteId,
+                Subroutes = subrouteDTOList
+            };
+
+            return result;
+        }
+
 
         public void Delete(IUnitOfWork uow, int id)
         {
@@ -125,9 +168,9 @@ namespace Core.Services
 
                 firstNodeTemplate = false;
 
-                if (template.RouteNodes != null)
+                if (template.ChildNodes != null)
                 {
-                    foreach (var activityDo in template.RouteNodes.OfType<TActivity>())
+                    foreach (var activityDo in template.ChildNodes.OfType<TActivity>())
                     {
                         yield return activityDo;
                     }

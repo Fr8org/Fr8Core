@@ -190,10 +190,10 @@ namespace pluginIntegrationTests
             var curActionController = CreateActionController();
             var curActionDO = FixtureData.TestAction_Blank();
 
-            if (_subrouteDO.RouteNodes == null)
+            if (_subrouteDO.ChildNodes == null)
             {
-                _subrouteDO.RouteNodes = new List<RouteNodeDO>();
-                _subrouteDO.RouteNodes.Add(curActionDO);
+                _subrouteDO.ChildNodes = new List<RouteNodeDO>();
+                _subrouteDO.ChildNodes.Add(curActionDO);
             }
 
             if (activityTemplate != null)

@@ -6,16 +6,18 @@
                        name="executionType"
                        value="2"
                        ng-model="executionType" 
-                       id="executionTypeRadio2"/>
-                <label for="executionTypeRadio2">Always proceed</label>
+                       id="executionTypeRadio2"
+                       stop-click-propagation />
+                <label for="executionTypeRadio2" stop-click-propagation>Always proceed</label>
             </div>
             <div class="radio">
                 <input type="radio"
                        name="executionType"
                        value="1"
                        ng-model="executionType" 
-                       id="executionTypeRadio1"/>
-                <label for="executionTypeRadio1">Proceed only if:</label>
+                       id="executionTypeRadio1"
+                       stop-click-propagation />
+                <label for="executionTypeRadio1" stop-click-propagation>Proceed only if:</label>
             </div>
         </div>
 

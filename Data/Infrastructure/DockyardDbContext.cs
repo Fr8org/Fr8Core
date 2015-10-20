@@ -271,7 +271,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
             modelBuilder.Entity<MT_Field>().ToTable("MT_Fields");
             modelBuilder.Entity<MT_Object>().ToTable("MT_Objects");
-            modelBuilder.Entity<MT_Organization>().ToTable("MT_Organizations");
             modelBuilder.Entity<MT_Data>().ToTable("MT_Data");
 
             modelBuilder.Entity<EmailDO>()
@@ -313,7 +312,7 @@ namespace Data.Infrastructure
 
             modelBuilder.Entity<RouteNodeDO>()
                 .HasOptional(x => x.ParentRouteNode)
-                .WithMany(x => x.RouteNodes)
+                .WithMany(x => x.ChildNodes)
                 .HasForeignKey(x => x.ParentRouteNodeId)
                 .WillCascadeOnDelete(false);
             

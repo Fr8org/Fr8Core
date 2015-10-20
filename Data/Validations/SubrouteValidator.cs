@@ -34,7 +34,7 @@ namespace Data.Validations
                 .Must(lst => lst.Count > 0)
                 .WithMessage("Must have at least one child Criteria");
 
-            RuleFor(pntDO => pntDO.RouteNodes).NotNull()
+            RuleFor(pntDO => pntDO.ChildNodes).NotNull()
                 .Must(lst => lst.Count > 0)
                 .WithMessage("Must have at least one child ActionList");
         }
