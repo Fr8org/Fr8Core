@@ -317,7 +317,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\terminalFr8Core\terminalFr8Core.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
-      <Name>pluginDockyardCore</Name>
+      <Name>terminalFr8Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\pluginExcel\pluginExcel.csproj">
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
