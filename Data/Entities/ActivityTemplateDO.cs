@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -64,6 +65,12 @@ namespace Data.Entities
         public string AuthenticationType { get; set; }
 
         public string ComponentActivities { get; set; }
+
+        [Required]
+        [ForeignKey("ActivityTemplateStateTemplate")]
+        public int ActivityTemplateState { get; set; }
+
+        public _ActivityTemplateStateTemplate ActivityTemplateStateTemplate { get; set; }
 
         [ForeignKey("Plugin")]
         public int PluginID { get; set; }

@@ -2,6 +2,7 @@
 using Core.Managers.APIManagers;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -50,11 +51,17 @@ namespace Core.Services
                     uow.SaveChanges();
                 }
 
-                if (!uow.ActivityTemplateRepository.GetQuery().Any(t => t.Name == activityTemplateDO.Name))
+                var activity = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(t => t.Name == activityTemplateDO.Name);
+
+                if (activity == null)
                 {
                     uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                    uow.SaveChanges();
                 }
+                else
+                {
+                    activity.ActivityTemplateState = ActivityTemplateState.Active;
+                }
+                uow.SaveChanges();
             }
         }
     }

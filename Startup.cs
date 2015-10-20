@@ -129,6 +129,8 @@ namespace Web
         public async Task RegisterPluginActions()
         {
             var alertReporter = ObjectFactory.GetInstance<EventReporter>();
+
+            SetActivityTemplatesInactive();
             
             var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
             int count = 0;
@@ -149,6 +151,7 @@ namespace Web
 
                     foreach (var curItem in activityTemplateList)
                     {
+                        curItem.ActivityTemplateState = ActivityTemplateState.Active;
                         new ActivityTemplate().Register(curItem);
                         count++;
                     }
@@ -162,6 +165,28 @@ namespace Web
              }
                 
              alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
+        }
+
+        public void SetActivityTemplatesInactive()
+        {
+            try
+            {
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    ActivityTemplateRepository activityTemplateRepository = uow.ActivityTemplateRepository;
+
+                    foreach(var item in activityTemplateRepository.GetAll())
+                    {
+                        item.ActivityTemplateState = ActivityTemplateState.Inactive;
+                    }
+
+                    uow.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error setting activity templates inactive ", e);
+            }
         }
 
         public bool CheckForActivityTemplate(string templateName)
