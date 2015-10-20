@@ -28,14 +28,14 @@ namespace Data.Infrastructure.AutoMapper
 
             var subrouteDTOList = uow.SubrouteRepository
                 .GetQuery()
-                .Include(x => x.ChildNodes)
+                .Include(x => x.RouteNodes)
                 .Where(x => x.ParentRouteNodeId == route.Id)
                 .OrderBy(x => x.Id)
                 .ToList()
                 .Select((SubrouteDO x) =>
                 {
                     var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
-                    pntDTO.Actions = x.ChildNodes.OfType<ActionDO>().Select(Mapper.Map<ActionDTO>).ToList();
+                    pntDTO.Actions = x.RouteNodes.OfType<ActionDO>().Select(Mapper.Map<ActionDTO>).ToList();
                     return pntDTO;
                 }).ToList();
 

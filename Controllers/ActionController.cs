@@ -1,10 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Description;
 using AutoMapper;
 using Microsoft.AspNet.Identity;
+using Newtonsoft.Json;
 using StructureMap;
 using Core.Interfaces;
+using Core.Managers;
+using Core.Services;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
@@ -16,7 +23,6 @@ namespace Web.Controllers
     public class ActionController : ApiController
     {
         private readonly IAction _action;
-        private readonly IRoute _route;
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly ISubroute _subRoute;
@@ -24,7 +30,6 @@ namespace Web.Controllers
         public ActionController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
-            _route = ObjectFactory.GetInstance<IRoute>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _subRoute = ObjectFactory.GetInstance<ISubroute>();
@@ -41,29 +46,6 @@ namespace Web.Controllers
         }
 
 
-        [HttpGet]
-        [Fr8ApiAuthorize]
-        [Route("create")]
-        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var result = await _action.CreateAndConfigure(uow, actionTemplateId, name, label, parentNodeId, createRoute);
-                
-                if (result is ActionDO)
-                {
-                    return Ok(Mapper.Map<ActionDTO>(result));
-                }
-
-                if (result is RouteDO)
-                {
-                    return Ok(_route.MapRouteToDto(uow, (RouteDO)result));
-                }
-
-                throw new Exception("Unsupported type " + result.GetType());
-            }
-        }
-        
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
 
         [HttpPost]
@@ -106,7 +88,7 @@ namespace Web.Controllers
             var externalAuthUrlDTO = await _action.GetExternalAuthUrl(account, plugin);
             return Ok(new { Url = externalAuthUrlDTO.Url });
         }
-        
+
         [HttpPost]
         [Fr8ApiAuthorize]
         [Route("authenticate")]
@@ -183,23 +165,6 @@ namespace Web.Controllers
 
                 return Ok(resultActionDTO);
             }
-        }
-
-        /// <summary>
-        /// POST : updates the given action
-        /// </summary>
-        [HttpPost]
-        [Route("update")]
-        public IHttpActionResult Update(ActionDTO curActionDTO)
-        {
-            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                _action.Update(uow, submittedActionDO);
-            }
-
-            return Ok();
         }    
     }
 }
