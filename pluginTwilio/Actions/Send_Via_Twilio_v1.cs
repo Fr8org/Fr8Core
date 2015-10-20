@@ -118,6 +118,7 @@ namespace pluginTwilio.Actions
         private CrateDTO GetAvailableDataFields(ActionDTO curActionDTO)
         {
             CrateDTO crateDTO = new CrateDTO();
+
             ActionDO curActionDO = Action.MapFromDTO(curActionDTO);
             var curUpstreamFields = GetRegisteredSenderNumbersData().ToArray();
 
