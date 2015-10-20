@@ -315,7 +315,7 @@
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>PluginBase</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\pluginDockyardCore\pluginDockyardCore.csproj">
+    <ProjectReference Include="..\..\terminalFr8Core\terminalFr8Core.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
       <Name>pluginDockyardCore</Name>
     </ProjectReference>
