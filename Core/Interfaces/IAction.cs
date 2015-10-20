@@ -14,12 +14,9 @@ namespace Core.Interfaces
         IEnumerable<TViewModel> GetAllActions<TViewModel>();
         ActionDO SaveOrUpdateAction(ActionDO currentActionDo);
         ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO currentActionDo);
-        ActionDO Update(IUnitOfWork uow, ActionDO submittedActionDo);
         Task<ActionDTO> Configure(ActionDO curActionDO);
         ActionDO GetById(int id);
         ActionDO GetById(IUnitOfWork uow, int id);
-        ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode);
-        Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false);
         //void Delete(int id); -> Delete is moved to ProcessNodeTemplate
         ActionDO MapFromDTO(ActionDTO curActionDTO);
         Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow);
