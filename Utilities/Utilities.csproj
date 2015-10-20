@@ -95,6 +95,8 @@
     <Compile Include="ConfigRepository.cs" />
     <Compile Include="Configuration\AzureApplicationSettings.cs" />
     <Compile Include="Configuration\CloudConfigurationManager.cs" />
+    <Compile Include="Configuration\ConfigurationManagerApplicationSettings.cs" />
+    <Compile Include="Configuration\IApplicationSettings.cs" />
     <Compile Include="Configuration\NativeMethods.cs" />
     <Compile Include="CsvReader.cs" />
     <Compile Include="DateUtility.cs" />
