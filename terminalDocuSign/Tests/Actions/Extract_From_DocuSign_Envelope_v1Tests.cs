@@ -19,7 +19,7 @@ using terminalDocuSign.Tests.Fixtures;
 namespace terminalDocuSign.Tests.Actions
 {
     [TestFixture]
-    [Category("pluginDocuSign")]
+    [Category("terminalDocuSign")]
     public class Receive_DocuSign_Envelope_v1Tests : BaseTest
     {
         Receive_DocuSign_Envelope_v1 _extract_From_DocuSign_Envelope_v1;

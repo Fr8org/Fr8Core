@@ -85,7 +85,7 @@ namespace terminalDocuSign.Actions
                     name = "MonitorAllDocuSignEvents",
                     urlToPublishTo =
                         Regex.Match(ConfigurationManager.AppSettings["EventWebServerUrl"], @"(\w+://\w+:\d+)").Value +
-                        "/events?dockyard_plugin=pluginDocuSign&version=1"
+                        "/events?dockyard_plugin=terminalDocuSign&version=1"
                 };
 
                 curDocuSignAccount.CreateDocuSignConnectProfile(monitorConnectConfiguration);

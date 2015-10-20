@@ -14,7 +14,7 @@ using terminalDocuSign.Infrastructure.AutoMapper;
 namespace terminalDocuSign.Tests.Actions
 {
     [TestFixture]
-    [Category("pluginDocuSign")]
+    [Category("terminalDocuSign")]
     public class Monitor_DocuSignTests : BaseTest
     {
         Monitor_DocuSign_v1 _monitor_DocuSign;
