@@ -20,14 +20,14 @@ namespace Data.Entities
         public virtual RouteNodeDO ParentRouteNode { get; set; }
 
         [InverseProperty("ParentRouteNode")]
-        public virtual IList<RouteNodeDO> ChildNodes { get; set; }
+        public virtual IList<RouteNodeDO> RouteNodes { get; set; }
 
         public int Ordering { get; set; }
 
 
         public RouteNodeDO()
         {
-            ChildNodes = new List<RouteNodeDO>();
+            RouteNodes = new List<RouteNodeDO>();
         }
     }
 }

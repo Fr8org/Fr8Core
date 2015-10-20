@@ -41,7 +41,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Ordering = 1,
-                ChildNodes = new List<RouteNodeDO>
+                RouteNodes = new List<RouteNodeDO>
                 {
                     new RouteNodeDO
                     {
@@ -54,7 +54,7 @@ namespace UtilitiesTesting.Fixtures
                         Id = 43,
                         ParentRouteNodeId = 1,
                         Ordering = 2,
-                        ChildNodes = new List<RouteNodeDO>
+                        RouteNodes = new List<RouteNodeDO>
                         {
                             new RouteNodeDO
                             {
@@ -82,7 +82,7 @@ namespace UtilitiesTesting.Fixtures
                         Id = 52,
                         Ordering = 3,
                         ParentRouteNodeId = 1,
-                        ChildNodes = new List<RouteNodeDO>
+                        RouteNodes = new List<RouteNodeDO>
                         {
                             new RouteNodeDO
                             {
@@ -96,7 +96,7 @@ namespace UtilitiesTesting.Fixtures
                                 ParentRouteNodeId = 52,
                                 Ordering = 2,
 
-                                ChildNodes = new List<RouteNodeDO>
+                                RouteNodes = new List<RouteNodeDO>
                                 {
                                     new RouteNodeDO
                                     {
@@ -133,7 +133,7 @@ namespace UtilitiesTesting.Fixtures
                         Id = 59,
                         Ordering = 4,
                         ParentRouteNodeId = 1,
-                        ChildNodes = new List<RouteNodeDO>
+                        RouteNodes = new List<RouteNodeDO>
                         {
                             new RouteNodeDO
                             {
@@ -147,7 +147,7 @@ namespace UtilitiesTesting.Fixtures
                                 ParentRouteNodeId = 59,
                                 Ordering = 2,
 
-                                ChildNodes = new List<RouteNodeDO>
+                                RouteNodes = new List<RouteNodeDO>
                                 {
                                     new RouteNodeDO
                                     {
@@ -211,7 +211,7 @@ namespace UtilitiesTesting.Fixtures
         {
             allActivities.Add(root.Id, root);
 
-            foreach (var activityDo in root.ChildNodes)
+            foreach (var activityDo in root.RouteNodes)
             {
                 TraverseActivityTree(activityDo, allActivities);
             }

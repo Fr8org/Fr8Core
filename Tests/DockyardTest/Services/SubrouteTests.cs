@@ -34,7 +34,7 @@ namespace DockyardTest.Services
                 sampleNodeTemplate.ParentRouteNodeId = route.Id;
 
                 // Create
-                _subroute.Store(uow, sampleNodeTemplate);
+                _subroute.Create(uow, sampleNodeTemplate);
                 //will throw exception if it fails
 
                 if (uow.SubrouteRepository.GetByKey(sampleNodeTemplate.Id) == null)
@@ -58,7 +58,7 @@ namespace DockyardTest.Services
 
 
                 // Create
-                _subroute.Store(uow, sampleNodeTemplate);
+                _subroute.Create(uow, sampleNodeTemplate);
                 //will throw exception if it fails
 
                 sampleNodeTemplate.Name = "UpdateTest";
@@ -90,7 +90,7 @@ namespace DockyardTest.Services
                 sampleNodeTemplate.ParentRouteNodeId = route.Id;
 
                 // Create
-                _subroute.Store(uow, sampleNodeTemplate);
+                _subroute.Create(uow, sampleNodeTemplate);
                 //will throw exception if it fails
 
                 if (uow.RouteNodeRepository.GetByKey(sampleNodeTemplate.Id) == null)
