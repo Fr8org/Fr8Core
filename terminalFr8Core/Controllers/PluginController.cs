@@ -10,7 +10,7 @@ namespace terminalFr8Core.Controllers
 {
     [RoutePrefix("plugins")]
     public class PluginController : ApiController
-    {
+    { 
         /// <summary>
         /// Plugin discovery infrastructure.
         /// Action returns list of supported actions by plugin.
