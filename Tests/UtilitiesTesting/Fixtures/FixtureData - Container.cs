@@ -118,8 +118,6 @@ namespace UtilitiesTesting.Fixtures
 		/// <returns></returns>
 		public static string FindXmlPayloadFullPath(string physLocation, string filepath="DockyardTest\\Content\\DocusignXmlPayload.xml")
 		{
-            throw new System.ApplicationException(physLocation);
-
 			if (string.IsNullOrEmpty(physLocation))
 				return string.Empty;
 

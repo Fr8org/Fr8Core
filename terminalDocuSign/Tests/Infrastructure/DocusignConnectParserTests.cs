@@ -17,6 +17,8 @@ namespace terminalDocuSign.Tests.Infrastructure
         public override void SetUp()
         {
             var target = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.FullName, "Tests");
+            throw new System.ApplicationException(target);
+
             _xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(target);
 
             if (_xmlPayloadFullPath == string.Empty)
