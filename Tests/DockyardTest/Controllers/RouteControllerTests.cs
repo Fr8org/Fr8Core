@@ -297,7 +297,7 @@ namespace DockyardTest.Controllers
             Assert.AreEqual(curRouteDO.Name, curRouteDTO.Name);
             Assert.AreEqual(curRouteDO.Description, curRouteDTO.Description);
             Assert.AreEqual(curRouteDO.Subroutes.Count(), 2);
-            Assert.AreEqual(curRouteDO.Subroutes.First().RouteNodes.Count, 1);
+            Assert.AreEqual(curRouteDO.Subroutes.First().ChildNodes.Count, 1);
 
         }
 
