@@ -15,7 +15,7 @@ namespace Data.Entities
     {
         public ActivityTemplateDO()
         {
-
+            this.ActivityTemplateState = States.ActivityTemplateState.Active;
         }
 
 
@@ -27,6 +27,7 @@ namespace Data.Entities
             /* We don't need to validate pluginId because of EF chack ForeignKey and if pluginId doesn't exist in table Plugins then 
              * EF will throw 'System.Data.Entity.Infrastructure.DbUpdateException'  */
             this.PluginID = pluginId;
+            this.ActivityTemplateState = States.ActivityTemplateState.Active;
         }
 
         /// <summary>
@@ -51,6 +52,7 @@ namespace Data.Entities
                 PluginStatus = PluginStatus.Active,
                 Endpoint = endPoint
             };
+            this.ActivityTemplateState = States.ActivityTemplateState.Active;
         }
 
         [Key]
