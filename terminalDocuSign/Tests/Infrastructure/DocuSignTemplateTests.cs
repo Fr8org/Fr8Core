@@ -7,6 +7,7 @@ using DocuSign.Integrations.Client;
 
 using NUnit.Framework;
 using Utilities;
+using Utilities.Configuration.Azure;
 
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
@@ -40,6 +41,7 @@ namespace terminalDocuSign.Tests.Infrastructure
 			base.SetUp();
 			PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
 			PluginDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
+            CloudConfigurationManager.RegisterApplicationSettings(new ConfigurationManagerApplicationSettings());
 
 			// _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
             _docusignTemplate = new DocuSignTemplate();
