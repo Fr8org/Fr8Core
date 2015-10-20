@@ -11,15 +11,14 @@ namespace Data.Entities
         public int Id { get; set; }
 
         [Required]
+        public int ManifestId { get; set; }
+
+        [Required]
         public string Name { get; set; }
 
         public IEnumerable<MT_Field> Fields { get; set; }
 
         public MT_FieldType MT_FieldType { get; set; }
 
-        [Required, ForeignKey("MT_Organization")]
-        public int MT_OrganizationId { get; set; }
-
-        public MT_Organization MT_Organization { get; set; }
     }
 }

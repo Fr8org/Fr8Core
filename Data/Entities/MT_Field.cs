@@ -15,9 +15,7 @@ namespace Data.Entities
         [Index("FieldColumnOffsetIndex", 2)]
         public string Name { get; set; }
 
-
-
-      
+        [Required]
         public MT_FieldType MT_FieldType { get; set; }
 
         [Required, Index("FieldColumnOffsetIndex", 3)]

@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using Data.Interfaces;
 using Data.Entities;
-using Data.Interfaces.MultiTenantObjects;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -20,7 +19,7 @@ namespace Data.Infrastructure.MultiTenant
             this._mtFieldType = new MT_FieldType();
         }
 
-        public List<Data.Entities.MT_Field> CreateList(IUnitOfWork _uow, List<PropertyInfo> curDataProperties, Data.Entities.MT_Object correspondingMTObject, Dictionary<Type, Data.Entities.MT_FieldType> typesDict)
+        public List<Data.Entities.MT_Field> CreateList(IUnitOfWork _uow, List<PropertyInfo> curDataProperties, Data.Entities.MT_Object correspondingMTObject)
         {
             var fieldsList = new List<Data.Entities.MT_Field>();
             int i = 1;
@@ -32,7 +31,7 @@ namespace Data.Infrastructure.MultiTenant
                 mtField.Name = property.Name;
                 mtField.MT_Object = correspondingMTObject;
                 //get or create FieldType
-                mtField.MT_FieldType = _mtFieldType.GetOrCreateMT_FieldType(_uow, property.PropertyType, typesDict);
+                mtField.MT_FieldType = _mtFieldType.GetOrCreateMT_FieldType(_uow, property.PropertyType);
                 fieldsList.Add(mtField);
                 _uow.MTFieldRepository.Add(mtField);
                 i++;
