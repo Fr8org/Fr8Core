@@ -14,7 +14,7 @@
       </Site>
       <Site name="terminalDocuSign" physicalDirectory="..\..\..\terminalDocuSign\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="pluginDocuSign" />
+          <Binding name="Endpoint1" endpointName="terminalDocuSign" />
         </Bindings>
       </Site>
       <Site name="pluginSalesforce" physicalDirectory="..\..\..\pluginSalesforce\azure.publish">
@@ -24,7 +24,7 @@
       </Site>
       <Site name="terminalFr8Core" physicalDirectory="..\..\..\terminalFr8Core\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="pluginDockyardCore" />
+          <Binding name="Endpoint1" endpointName="terminalFr8Core" />
         </Bindings>
       </Site>
       <Site name="pluginSendGrid" physicalDirectory="..\..\..\pluginSendGrid\azure.publish">
