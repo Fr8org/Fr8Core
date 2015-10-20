@@ -299,11 +299,11 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>if exist $(TargetDir)pluginDocuSign.dll del /Q $(TargetDir)pluginDocuSign.dll
+    <PostBuildEvent>rem if exist $(TargetDir)pluginDocuSign.dll del /Q $(TargetDir)pluginDocuSign.dll
 
-if exist $(TargetDir)pluginDocuSign.dll.config del /Q $(TargetDir)pluginDocuSign.dll.config
+rem if exist $(TargetDir)pluginDocuSign.dll.config del /Q $(TargetDir)pluginDocuSign.dll.config
 
-if exist $(TargetDir)pluginDocuSign.pdb del /Q $(TargetDir)pluginDocuSign.pdb</PostBuildEvent>
+rem if exist $(TargetDir)pluginDocuSign.pdb del /Q $(TargetDir)pluginDocuSign.pdb</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
