@@ -7,9 +7,9 @@ module dockyard.services {
     }
 
     export class LayoutService implements ILayoutService {
-        private ACTION_HEIGHT = 300;
-        private ACTION_WIDTH = 330;
-        private ACTION_PADDING = 70;
+        public ACTION_HEIGHT = 300;
+        public ACTION_WIDTH = 330;
+        public ACTION_PADDING = 70;
 
         constructor() {
         }
