@@ -34,8 +34,8 @@ namespace pluginExcel
 
             //if (selfHost)
             //{
-            //    // Web API routes
-            //    _configuration.Services.Replace(typeof(IHttpControllerTypeResolver), new PluginControllerTypeResolver());
+            // Web API routes
+            _configuration.Services.Replace(typeof(IHttpControllerTypeResolver), new PluginControllerTypeResolver());
             //}
 
             //DataAutoMapperBootStrapper.ConfigureAutoMapper();
@@ -50,25 +50,25 @@ namespace pluginExcel
             }
         }
 
-        public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-        {
-            return new Type[] {
-                    typeof(Controllers.ActionController),
-                    typeof(Controllers.EventController),
-                    typeof(Controllers.PluginController)
-                };
-        }
-
-        //public class PluginControllerTypeResolver : IHttpControllerTypeResolver
+        //public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
         //{
-        //    public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-        //    {
-        //        return new Type[] {
+        //    return new Type[] {
         //            typeof(Controllers.ActionController),
         //            typeof(Controllers.EventController),
         //            typeof(Controllers.PluginController)
         //        };
-        //    }
         //}
+
+        public class PluginControllerTypeResolver : IHttpControllerTypeResolver
+        {
+            public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
+            {
+                return new Type[] {
+                    typeof(Controllers.ActionController),
+                    typeof(Controllers.EventController),
+                    typeof(Controllers.PluginController)
+                };
+            }
+        }
     }
 }

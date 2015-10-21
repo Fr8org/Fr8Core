@@ -37,6 +37,11 @@
           <Binding name="Endpoint1" endpointName="pluginTwilio" />
         </Bindings>
       </Site>
+      <Site name="pluginExcel" physicalDirectory="..\..\..\pluginExcel">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="pluginExcel" />
+        </Bindings>
+      </Site>
     </Sites>
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
@@ -49,6 +54,7 @@
       <InputEndpoint name="pluginDockyardCore" protocol="http" port="50705" />
       <InputEndpoint name="pluginSendGrid" protocol="http" port="10601" />
       <InputEndpoint name="pluginTwilio" protocol="http" port="30699" />
+      <InputEndpoint name="pluginExcel" protocol="http" port="47011" />
     </Endpoints>
     <Imports>
       <Import moduleName="RemoteAccess" />

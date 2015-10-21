@@ -14,6 +14,7 @@ using pluginExcel.Infrastructure;
 using Core.Exceptions;
 using PluginBase.BaseClasses;
 using AutoMapper;
+using Data.Interfaces;
 
 namespace pluginExcel.Actions
 {
@@ -40,8 +41,17 @@ namespace pluginExcel.Actions
             var payloadDataCrate = Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
             Crate.AddCrate(curActionDO, payloadDataCrate);
 
-           return Mapper.Map<ActionDTO>(curActionDO);
-            
+            //Action.SaveOrUpdateAction(curActionDO); 
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var routeNodeDO = uow.RouteNodeRepository.GetByKey(curActionDO.ParentRouteNodeId.Value);
+                var containerDO = uow.ContainerRepository.FindOne(x => x.RouteId == routeNodeDO.ParentRouteNodeId.Value && x.ContainerState == Data.States.ContainerState.Executing);
+                containerDO.UpdateCrateStorageDTO(new List<CrateDTO>() { payloadDataCrate });
+                uow.SaveChanges();
+            }
+
+            return Mapper.Map<ActionDTO>(curActionDO);
+
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(int actionId, CrateStorageDTO curCrateStorageDTO)
@@ -190,7 +200,7 @@ namespace pluginExcel.Actions
             // Creating configuration control crate with a file picker and textblock
             var configControlsCrateDTO = CreateConfigurationControlsCrate(true);
             curActionDTO.CrateStorage.CrateDTO.Add(configControlsCrateDTO);
-            
+
             var selectedFilePath = filePathsFromUserSelection[0];
 
             return await TransformExcelFileDataToStandardTableDataCrate(curActionDTO, selectedFilePath);

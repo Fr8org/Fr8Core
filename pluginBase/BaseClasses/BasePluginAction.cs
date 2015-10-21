@@ -485,16 +485,24 @@ namespace PluginBase.BaseClasses
             var crates = Crate.GetCratesByManifestType(
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, crateStorage);
 
-            foreach (var crate in crates)
-            {
-                var allFields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
-                var searchField = allFields.FirstOrDefault(x => x.Key == fieldKey);
+            var fieldValues = Crate.GetElementByKey(crates, key: fieldKey, keyFieldName: "Key")
+                .Select(e => (string)e["Value"])
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToArray();
 
-                if (searchField != null)
-                {
-                    return searchField.Value;
-                }
-            }
+            if (fieldValues.Length > 0)
+                return fieldValues[0];
+
+            //foreach (var crate in crates)
+            //{
+            //    var allFields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
+            //    var searchField = allFields.FirstOrDefault(x => x.Key == fieldKey);
+
+            //    if (searchField != null)
+            //    {
+            //        return searchField.Value;
+            //    }
+            //}
 
             throw new ApplicationException("No field found with specified key.");
         }
