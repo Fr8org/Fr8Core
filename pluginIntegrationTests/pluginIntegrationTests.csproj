@@ -221,7 +221,10 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy  $(SolutionDir)\terminalDocuSign\bin\terminalDocuSign.dll.config $(TargetDir) /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy  $(SolutionDir)\terminalDocuSign\bin\terminalDocuSign.dll.config $(TargetDir) /C /Y </PostBuildEvent>
+    <PostBuildEvent>xcopy  $(SolutionDir)\pluginAzureSqlServer\bin\pluginAzureSqlServer.dll.config $(TargetDir) /C /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy  $(SolutionDir)\terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy  $(SolutionDir)\pluginExcel\bin\pluginExcel.dll.config $(TargetDir) /C /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
