@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201510201804511_AddMinPaneWidth"; }
+            get { return "201510212105295_AddMinPaneWidth"; }
         }
         
         string IMigrationMetadata.Source
