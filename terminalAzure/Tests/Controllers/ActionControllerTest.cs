@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using NUnit.Framework;
-using terminalAzure.Controllers;
-using UtilitiesTesting;
 using Data.Interfaces.DataTransferObjects;
-using UtilitiesTesting.Fixtures;
-using System.Threading.Tasks;
 using PluginBase.BaseClasses;
+using Utilities.Configuration.Azure;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
+using terminalAzure.Controllers;
+using terminalAzure.Tests.Fixtures;
 
 namespace terminalAzure.Tests.Controllers
 {
@@ -20,6 +22,9 @@ namespace terminalAzure.Tests.Controllers
         public override void SetUp()
         {
             base.SetUp();
+
+            CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
+
             _basePluginController = new BasePluginController();
         }
 
