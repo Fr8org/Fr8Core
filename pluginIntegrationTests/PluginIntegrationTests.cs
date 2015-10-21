@@ -13,15 +13,15 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using pluginAzureSqlServer;
+using terminalAzure;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using UtilitiesTesting;
-using pluginDocuSign;
+using terminalDocuSign;
 
 using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
-using pluginDocuSign.Infrastructure.StructureMap;
-using pluginDocuSign.Infrastructure.AutoMapper;
+using terminalDocuSign.Infrastructure.StructureMap;
+using terminalDocuSign.Infrastructure.AutoMapper;
 
 namespace pluginIntegrationTests
 {
@@ -108,13 +108,13 @@ namespace pluginIntegrationTests
             _coreServer = pluginIntegrationTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
 
             var docuSignServerUrl = "http://" + FixtureData.TestPlugin_DocuSign_EndPoint + "/";
-            _docuSignServer = pluginDocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
+            _docuSignServer = terminalDocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
 
             var dockyardCoreServerUrl = "http://" + FixtureData.TestPlugin_Core_EndPoint + "/";
             _dockyardCoreServer = terminalFr8Core.SelfHostFactory.CreateServer(dockyardCoreServerUrl);
 
             var azureSqlServerServerUrl = "http://" + FixtureData.TestPlugin_AzureSqlServer_EndPoint + "/";
-            _azureSqlServerServer = pluginAzureSqlServer.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
+            _azureSqlServerServer = terminalAzure.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
 
 
         }

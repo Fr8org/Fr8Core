@@ -4,6 +4,7 @@ using System.Web.Http;
 using Core.Services;
 using Data.Entities;
 using Data.States;
+using Utilities.Configuration.Azure;
 
 namespace terminalFr8Core.Controllers
 {
@@ -23,7 +24,7 @@ namespace terminalFr8Core.Controllers
             
             var plugin = new PluginDO
             {
-                Endpoint = "localhost:50705",
+                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 PluginStatus = PluginStatus.Active,
                 Name = "terminalFr8Core",
                 RequiresAuthentication = false,

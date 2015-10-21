@@ -31,6 +31,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
@@ -132,8 +141,8 @@
       <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -200,7 +209,6 @@
     <Compile Include="Entities\MT_Data.cs" />
     <Compile Include="Entities\MT_Field.cs" />
     <Compile Include="Entities\MT_Object.cs" />
-    <Compile Include="Entities\MT_Organization.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
@@ -259,8 +267,9 @@
     <Compile Include="Interfaces\IMTFieldRepository.cs" />
     <Compile Include="Interfaces\IMTFieldTypeRepository.cs" />
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
-    <Compile Include="Interfaces\IMTOrganizationRepository.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\DocuSignEnvelopeCM.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\DocuSignEventCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\Manifest.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardAuthenticationCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsCM.cs" />
@@ -271,9 +280,6 @@
     <Compile Include="Interfaces\ManifestSchemas\StandardDesignTimeFieldsCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\EventReportCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\EventSubscriptionCM.cs" />
-    <Compile Include="Interfaces\MultiTenantObjects\DocuSignEnvelopeStatusReportMTO.cs" />
-    <Compile Include="Interfaces\MultiTenantObjects\DocuSignRecipientStatusReportMTO.cs" />
-    <Compile Include="Interfaces\MultiTenantObjects\MultiTenantObject.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
@@ -314,9 +320,25 @@
     <Compile Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.Designer.cs">
       <DependentUpon>201510152143047_Add_Label_Property_To_ActionTemplate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510181719065_IngnoreChangesUpdate.cs" />
+    <Compile Include="Migrations\201510181719065_IngnoreChangesUpdate.Designer.cs">
+      <DependentUpon>201510181719065_IngnoreChangesUpdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.cs" />
     <Compile Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.Designer.cs">
       <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510200747079_UpdateMTTables.cs" />
+    <Compile Include="Migrations\201510200747079_UpdateMTTables.Designer.cs">
+      <DependentUpon>201510200747079_UpdateMTTables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.cs" />
+    <Compile Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.Designer.cs">
+      <DependentUpon>201510201228599_ModifiedAuthorizeTokenTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510202031291_NothingIgnoreChanages.cs" />
+    <Compile Include="Migrations\201510202031291_NothingIgnoreChanages.Designer.cs">
+      <DependentUpon>201510202031291_NothingIgnoreChanages.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -325,7 +347,6 @@
     <Compile Include="Repositories\MTFieldRepository.cs" />
     <Compile Include="Repositories\MTFieldTypeRepository.cs" />
     <Compile Include="Repositories\MTObjectRepository.cs" />
-    <Compile Include="Repositories\MTOrganizationRepository.cs" />
     <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -556,8 +577,20 @@
     <EmbeddedResource Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.resx">
       <DependentUpon>201510152143047_Add_Label_Property_To_ActionTemplate.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510181719065_IngnoreChangesUpdate.resx">
+      <DependentUpon>201510181719065_IngnoreChangesUpdate.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.resx">
       <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510200747079_UpdateMTTables.resx">
+      <DependentUpon>201510200747079_UpdateMTTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.resx">
+      <DependentUpon>201510201228599_ModifiedAuthorizeTokenTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510202031291_NothingIgnoreChanages.resx">
+      <DependentUpon>201510202031291_NothingIgnoreChanages.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
