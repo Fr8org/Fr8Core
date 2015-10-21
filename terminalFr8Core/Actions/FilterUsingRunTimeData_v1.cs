@@ -12,6 +12,7 @@ using Data.Interfaces.DataTransferObjects;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using terminalFr8Core.Interfaces;
+using Utilities;
 
 namespace terminalFr8Core.Actions
 {
@@ -31,7 +32,7 @@ namespace terminalFr8Core.Actions
 
             ActionDO curAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             var controlsMS = Action.GetControlsManifest(curAction);
-            
+
             ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane);
             if (filterPaneControl == null)
             {
@@ -61,7 +62,7 @@ namespace terminalFr8Core.Actions
         }
 
         private bool Evaluate(string criteria, int processId, IEnumerable<FieldDTO> values)
-            {
+        {
             if (criteria == null)
                 throw new ArgumentNullException("criteria");
             if (criteria == string.Empty)
@@ -99,29 +100,40 @@ namespace terminalFr8Core.Actions
         }
 
         private Expression ParseCriteriaExpression(
-            IEnumerable<FilterConditionDTO> conditions,
-            IQueryable<FieldDTO> queryableData)
+                IEnumerable<FilterConditionDTO> conditions,
+                IQueryable<FieldDTO> queryableData)
         {
             var curType = typeof(FieldDTO);
+            var comparators = new string[] { "gt", "gte", "lt", "lte" };
 
             Expression criteriaExpression = null;
             var pe = Expression.Parameter(curType, "p");
 
             foreach (var condition in conditions)
             {
+                var op = condition.Operator;
                 var namePropInfo = curType.GetProperty("Key");
                 var valuePropInfo = curType.GetProperty("Value");
+                var valueIntPropInfo = curType.GetProperty("IntValue");
 
                 var nameLeftExpr = Expression.Property(pe, namePropInfo);
                 var nameRightExpr = Expression.Constant(condition.Field);
                 var nameExpression = Expression.Equal(nameLeftExpr, nameRightExpr);
 
-                var valueLeftExpr = Expression.Property(pe, valuePropInfo);
-                var valueRightExpr = Expression.Constant(condition.Value);
-
-
-                var op = condition.Operator;
+                MemberExpression valueLeftExpr;
+                ConstantExpression valueRightExpr;
                 Expression criterionExpression;
+
+                if (comparators.Contains(op))
+                {
+                    valueLeftExpr = Expression.Property(pe, valueIntPropInfo);
+                    valueRightExpr = Expression.Constant(condition.Value.ToInt());
+                }
+                else
+                {
+                    valueLeftExpr = Expression.Property(pe, valuePropInfo);
+                    valueRightExpr = Expression.Constant(condition.Value);
+                }
 
                 switch (op)
                 {
@@ -163,7 +175,7 @@ namespace terminalFr8Core.Actions
             }
 
             var whereCallExpression = Expression.Call(
-                typeof (Queryable),
+                typeof(Queryable),
                 "Where",
                 new[] { curType },
                 queryableData.Expression,
@@ -172,6 +184,7 @@ namespace terminalFr8Core.Actions
 
             return whereCallExpression;
         }
+
 
         /// <summary>
         /// Configure infrastructure.
@@ -214,7 +227,7 @@ namespace terminalFr8Core.Actions
                 //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
                 CrateDTO queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
                     "Queryable Criteria", curUpstreamFields);
-                    
+
                 //build a controls crate to render the pane
                 CrateDTO configurationControlsCrate = CreateControlsCrate();
 

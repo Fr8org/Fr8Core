@@ -95,5 +95,98 @@ namespace UtilitiesTesting.Fixtures
                 return "{\"fields\": [ { \"name\": \"Physicial\", \"value\": \"[Customer].physician_string\" }, { \"name\": \"Condition\", \"value\": \"[Customer].medical_condition\"} ] }";
             }
         }
+
+        public static List<FieldDTO> ListFieldMappings3()
+        {
+
+            return new List<FieldDTO>(){
+                    new FieldDTO()
+                    {
+                        Key = "Physician",
+                        Value = "Test1"
+                    },
+                    new FieldDTO()
+                    {
+                        Key="Condition",
+                        Value = "Test2"
+                    }
+                };
+        }
+
+        public static List<FieldDTO> ListFieldMappings4()
+        {
+
+            return new List<FieldDTO>(){
+                    new FieldDTO()
+                    {
+                        Key = "ID",
+                        Value = "10"
+                    },
+                    new FieldDTO()
+                    {
+                        Key="ID",
+                        Value = "20"
+                    },
+                      new FieldDTO()
+                    {
+                        Key="ID",
+                        Value = "30"
+                    },
+                       new FieldDTO()
+                    {
+                        Key="ID",
+                        Value = "30"
+                    },
+                       new FieldDTO()
+                    {
+                        Key="ID",
+                        Value = "40"
+                    }
+
+                };
+        }
+
+        public static List<FieldDTO> ListFieldMappings5()
+        {
+
+            return new List<FieldDTO>(){
+                    new FieldDTO()
+                    {
+                        Key = "ID",
+                        Value = "10"
+                    },
+                    new FieldDTO()
+                    {
+                        Key="ID",
+                        Value = "20"
+                    },
+                      new FieldDTO()
+                    {
+                        Key="ID",
+                        Value = "30"
+                    },
+                       new FieldDTO()
+                    {
+                        Key="ID",
+                        Value = "30"
+                    },
+                       new FieldDTO()
+                    {
+                        Key="ID",
+                        Value = "40"
+                    },
+                       new FieldDTO()
+                    {
+                        Key="ID",
+                        Value = "50"
+                    }
+
+                };
+        }
+
+
+
+       
+
     }
 }
