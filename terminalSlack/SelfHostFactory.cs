@@ -3,7 +3,7 @@ using System.Web.Http;
 using Microsoft.Owin.Hosting;
 using Owin;
 
-namespace pluginSlack
+namespace terminalSlack
 {
     public class SelfHostFactory
     {

@@ -11,9 +11,9 @@ using Core.Managers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Utilities.Configuration.Azure;
-using pluginAzureSqlServer.Interfaces;
+using terminalSlack.Interfaces;
 
-namespace pluginAzureSqlServer.Services
+namespace terminalSlack.Services
 {
     public class Event : IEvent
     {

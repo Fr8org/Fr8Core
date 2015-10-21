@@ -9,9 +9,9 @@ using PluginBase;
 using PluginBase.BaseClasses;
 using System.Threading.Tasks;
 
-[assembly: OwinStartup(typeof(pluginSlack.Startup))]
+[assembly: OwinStartup(typeof(terminalSlack.Startup))]
 
-namespace pluginSlack
+namespace terminalSlack
 {
     public class Startup : BaseConfiguration
     {

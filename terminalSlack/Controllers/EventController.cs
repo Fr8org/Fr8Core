@@ -1,9 +1,9 @@
 ﻿using System.Web.Http;
 using StructureMap;
-using pluginAzureSqlServer.Interfaces;
-using pluginAzureSqlServer.Services;
+using terminalSlack.Interfaces;
+using terminalSlack.Services;
 
-namespace pluginSlack.Controllers
+namespace terminalSlack.Controllers
 {
     public class EventController : ApiController
     {

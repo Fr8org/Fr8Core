@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
 
-namespace pluginSlack.Interfaces
+namespace terminalSlack.Interfaces
 {
     public interface ISlackIntegration
     {

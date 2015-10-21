@@ -2,7 +2,7 @@
 using Core.StructureMap;
 using Data.Infrastructure.AutoMapper;
 
-namespace pluginSlack
+namespace terminalSlack
 {
     public class WebApiApplication : System.Web.HttpApplication
     {

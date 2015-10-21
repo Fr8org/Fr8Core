@@ -23,6 +23,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Dev|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants></DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -83,7 +92,7 @@
     <SecondarySite Include="..\pluginExcel\pluginExcel.csproj" />
     <SecondarySite Include="..\pluginSalesforce\pluginSalesforce.csproj" />
     <SecondarySite Include="..\pluginSendGrid\pluginSendGrid.csproj" />
-    <SecondarySite Include="..\pluginSlack\pluginSlack.csproj" />
+    <SecondarySite Include="..\terminalSlack\terminalSlack.csproj" />
     <SecondarySite Include="..\pluginTwilio\pluginTwilio.csproj" />
     <SecondarySite Include="..\terminalDocuSign\terminalDocuSign.csproj" />
   </ItemGroup>

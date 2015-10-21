@@ -9,6 +9,7 @@ using PluginBase.BaseClasses;
 using System.Collections.Generic;
 using Core.Services;
 using Data.States;
+using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Controllers
 {    
@@ -23,7 +24,7 @@ namespace terminalDocuSign.Controllers
             {
                 Name = "terminalDocuSign",
                 PluginStatus = PluginStatus.Active,
-                Endpoint = "localhost:53234",
+                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 RequiresAuthentication = true,
                 Version = "1"
             };

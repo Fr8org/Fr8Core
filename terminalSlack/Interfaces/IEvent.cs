@@ -1,4 +1,4 @@
-﻿namespace pluginAzureSqlServer.Interfaces
+﻿namespace terminalSlack.Interfaces
 {
     public interface IEvent
     {

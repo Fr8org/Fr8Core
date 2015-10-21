@@ -7,7 +7,7 @@ using PluginBase;
 using PluginBase.BaseClasses;
 using StructureMap;
 
-namespace pluginSlack
+namespace terminalSlack
 {
     public static class WebApiConfig
     {

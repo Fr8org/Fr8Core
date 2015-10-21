@@ -64,11 +64,11 @@ namespace Data.Migrations
             AddRoles(uow);
             AddAdmins(uow);
             AddDockyardAccounts(uow);
-            AddProfiles(uow); 
-            
-             AddPlugins(uow);                     
-             
-             AddAuthorizationTokens(uow);
+            AddProfiles(uow);
+
+            //AddPlugins(uow);
+
+            //AddAuthorizationTokens(uow);
             AddContainerDOForTestingApi(uow);
         }
 
@@ -99,17 +99,17 @@ namespace Data.Migrations
                 CreateTime = DateTime.Now,
                 ManifestType = string.Empty,
                 Contents = JsonConvert.SerializeObject(new object[]{
-                new 
+                new
                 {
                     Key="EnvelopeId",
                     Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"
                 },
-                new 
+                new
                 {
                     Key="ExternalEventType",
                     Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"
                 },
-                new 
+                new
                 {
                     Key="RecipientId",
                     Value="279a1173-04cc-4902-8039-68b1992639e9"
@@ -181,11 +181,11 @@ namespace Data.Migrations
             }
         }
 
-    //This method will automatically seed any constants file
-    //It looks for rows which implement IConstantRow<>
-    //For example, BookingRequestStateRow implements IConstantRow<BookingRequestState>
-    //The below method will then generate a new row for each constant found in BookingRequestState.
-    private static void SeedConstants(IUnitOfWork context)
+        //This method will automatically seed any constants file
+        //It looks for rows which implement IConstantRow<>
+        //For example, BookingRequestStateRow implements IConstantRow<BookingRequestState>
+        //The below method will then generate a new row for each constant found in BookingRequestState.
+        private static void SeedConstants(IUnitOfWork context)
         {
             var constantsToSeed =
                 typeof(MigrationConfiguration).Assembly.GetTypes()
@@ -205,7 +205,7 @@ namespace Data.Migrations
                     .FirstOrDefault(m => m.Name == "SeedConstants" && m.IsGenericMethod);
             if (seedMethod == null)
                 throw new Exception("Unable to find SeedConstants method.");
-            
+
             foreach (var constantToSeed in constantsToSeed)
             {
                 var rowType = constantToSeed.RowType;
@@ -264,8 +264,8 @@ namespace Data.Migrations
         {
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
             var instructionsToAdd = (from constant in constants
-                let name = constant.Name
-                let value = constant.GetValue(null)
+                                     let name = constant.Name
+                                     let value = constant.GetValue(null)
                                      select creatorFunc((int)value, name)).ToList();
 
             //First, we find rows in the DB that don't exist in our seeding. We delete those.
@@ -327,9 +327,9 @@ namespace Data.Migrations
             };
             FieldInfo[] constants = typeof(Roles).GetFields();
             var rolesToAdd = (from constant in constants
-                                     let name = constant.Name
-                                     let value = constant.GetValue(null)
-                                     select creatorFunc((string)value, name)).ToList();
+                              let name = constant.Name
+                              let value = constant.GetValue(null)
+                              select creatorFunc((string)value, name)).ToList();
 
             var repo = new GenericRepository<AspNetRolesDO>(uow);
             var existingRows = new GenericRepository<AspNetRolesDO>(uow).GetAll().ToList();
@@ -338,7 +338,7 @@ namespace Data.Migrations
                 if (!rolesToAdd.Select(i => i.Name).Contains(row.Name))
                 {
                     repo.Remove(row);
-            }
+                }
             }
             foreach (var row in rolesToAdd)
             {
@@ -491,16 +491,16 @@ namespace Data.Migrations
             var curActivityTemplateDO = new ActivityTemplateDO(
                 name, version, endPoint, endPoint);
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
-            }       
+        }
 
-        
+
         //Getting random working time within next 3 days
         private static DateTimeOffset GetRandomEventStartTime()
         {
             TimeSpan timeSpan = DateTime.Now.AddDays(3) - DateTime.Now;
             var randomTest = new Random();
             TimeSpan newSpan = new TimeSpan(0, randomTest.Next(0, (int)timeSpan.TotalMinutes), 0);
-            DateTime newDate = DateTime.Now; 
+            DateTime newDate = DateTime.Now;
             while (newDate.TimeOfDay.Hours < 9)
             {
                 newDate = newDate.Add(new TimeSpan(1, 0, 0));
