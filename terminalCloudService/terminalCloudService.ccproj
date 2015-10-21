@@ -92,7 +92,7 @@
     <SecondarySite Include="..\pluginExcel\pluginExcel.csproj" />
     <SecondarySite Include="..\pluginSalesforce\pluginSalesforce.csproj" />
     <SecondarySite Include="..\pluginSendGrid\pluginSendGrid.csproj" />
-    <SecondarySite Include="..\pluginSlack\pluginSlack.csproj" />
+    <SecondarySite Include="..\terminalSlack\terminalSlack.csproj" />
     <SecondarySite Include="..\pluginTwilio\pluginTwilio.csproj" />
     <SecondarySite Include="..\terminalDocuSign\terminalDocuSign.csproj" />
   </ItemGroup>

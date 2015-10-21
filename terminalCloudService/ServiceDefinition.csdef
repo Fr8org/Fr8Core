@@ -7,9 +7,9 @@
           <Binding name="Endpoint1" endpointName="pluginAzureSqlServer" />
         </Bindings>
       </Site>
-      <Site name="pluginSlack" physicalDirectory="..\..\..\pluginSlack\azure.publish">
+      <Site name="terminalSlack" physicalDirectory="..\..\..\terminalSlack\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="pluginSlack" />
+          <Binding name="Endpoint1" endpointName="terminalSlack" />
         </Bindings>
       </Site>
       <Site name="terminalDocuSign" physicalDirectory="..\..\..\terminalDocuSign\azure.publish">
@@ -48,7 +48,7 @@
     </ConfigurationSettings>
     <Endpoints>
       <InputEndpoint name="pluginAzureSqlServer" protocol="http" port="46281" />
-      <InputEndpoint name="pluginSlack" protocol="http" port="39504" />
+      <InputEndpoint name="terminalSlack" protocol="http" port="39504" />
       <InputEndpoint name="terminalDocuSign" protocol="http" port="53234" />
       <InputEndpoint name="pluginSalesforce" protocol="http" port="51234" />
       <InputEndpoint name="terminalFr8Core" protocol="http" port="50705" />

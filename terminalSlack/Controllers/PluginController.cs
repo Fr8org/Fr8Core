@@ -6,7 +6,7 @@ using Data.Entities;
 using Data.States;
 using Utilities.Configuration.Azure;
 
-namespace pluginSlack.Controllers
+namespace terminalSlack.Controllers
 {
     [RoutePrefix("plugins")]
     public class PluginController : ApiController
@@ -24,7 +24,7 @@ namespace pluginSlack.Controllers
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 PluginStatus = PluginStatus.Active,
-                Name = "pluginSlack",
+                Name = "terminalSlack",
                 RequiresAuthentication = true,
                 Version = "1"
             };
