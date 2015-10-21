@@ -24,7 +24,7 @@ namespace Utilities.Configuration.Azure
     public static class CloudConfigurationManager
     {
         private static object _lock = new object();
-        private static AzureApplicationSettings _appSettings;
+        private static IApplicationSettings _appSettings;
 
         /// <summary>
         /// Gets a setting with the given name.
@@ -45,10 +45,18 @@ namespace Utilities.Configuration.Azure
             return AppSettings.GetSetting(name);
         }
 
+        public static void RegisterApplicationSettings(IApplicationSettings appSettings)
+        {
+            lock (_lock)
+            {
+                _appSettings = appSettings;
+            }
+        }
+
         /// <summary>
         /// Gets application settings.
         /// </summary>
-        internal static AzureApplicationSettings AppSettings
+        internal static IApplicationSettings AppSettings
         {
             get
             {

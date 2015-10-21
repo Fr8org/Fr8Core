@@ -4,6 +4,7 @@ using Data.Interfaces.DataTransferObjects;
 using System.Web.Http;
 using PluginBase.Infrastructure;
 using System.Threading.Tasks;
+using Utilities.Configuration.Azure;
 
 namespace PluginBase.BaseClasses
 {

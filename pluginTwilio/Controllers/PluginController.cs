@@ -3,6 +3,8 @@ using System.Web.Http;
 using Data.Entities;
 using Data.States;
 using System.Web.Http.Description;
+using Utilities.Configuration.Azure;
+
 namespace pluginTwilio.Controllers
 {    
     [RoutePrefix("plugins")]
@@ -17,7 +19,7 @@ namespace pluginTwilio.Controllers
             {
                 Name = "pluginTwilio",
                 PluginStatus = PluginStatus.Active,
-                Endpoint = "localhost:30699",
+                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 Version = "1"
             };
 

@@ -6,8 +6,7 @@
         }
 
         public throwError(errorText: string) {
-            alert(errorText);
-            throw errorText;
+            throw new Error(errorText);
         }
 
         public hasCrateOfManifestType(crateStorage: model.CrateStorage, manifestType: string): boolean {

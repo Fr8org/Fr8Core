@@ -22,7 +22,6 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
-using Microsoft.Runtime.CompilerServices;
 using Utilities;
 
 namespace Core.Services
@@ -33,13 +32,13 @@ namespace Core.Services
         //private Task curAction;
         private readonly IPlugin _plugin;
         //private IRoute _route;
-        private readonly AuthorizationToken _authorizationToken;
+        private readonly Authorization _authorizationToken;
 
         private readonly IRouteNode _routeNode;
 
         public Action()
         {
-            _authorizationToken = new AuthorizationToken();
+            _authorizationToken = new Authorization();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
 
             
@@ -98,73 +97,6 @@ namespace Core.Services
             return curAction;
         }
 
-        /// <summary>
-        /// Update properties and structure of the actions and all descendats.
-        /// </summary>
-        /// <param name="uow"></param>
-        /// <param name="submittedActionData"></param>
-        /// <returns></returns>
-        public ActionDO Update(IUnitOfWork uow, ActionDO submittedActionData)
-        {
-            // Update properties and structure recisurively
-            var existingAction = UpdateRecursive(uow, submittedActionData);
-
-            // Change parent it it is necessary
-            existingAction.ParentRouteNode = submittedActionData.ParentRouteNode;
-            existingAction.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
-            
-            return existingAction;
-        }
-
-        private ActionDO UpdateRecursive(IUnitOfWork uow, ActionDO action)
-        {
-            var existingAction = uow.ActionRepository.GetByKey(action.Id);
-
-            if (existingAction == null)
-            {
-                throw new Exception("Action was not found");
-            }
-
-            // Update properties
-            existingAction.ActivityTemplateId = action.ActivityTemplateId;
-            existingAction.Name = action.Name;
-            existingAction.Label = action.Label;
-            existingAction.CrateStorage = action.CrateStorage;
-            
-            // If existing actions has children their structure and properties
-            if (action.ChildNodes != null)
-            {
-                // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
-                // desired set of children. 
-                var newChildren = action.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
-                // current set of children
-                var currentChildren = existingAction.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
-
-                // Now we must find what child must be added to existingAction
-                // Chilren to be added are difference between set newChildren and currentChildren (those elements that exist in newChildren but do not exist in currentChildren).
-                foreach (var newAction in newChildren.Where(x => !currentChildren.ContainsKey(x.Key)).ToArray())
-                {
-                    var newChild = Update(uow, newAction.Value);
-                    existingAction.ChildNodes.Add(newChild);
-                }
-
-                // Now we must find what child must be removed from existingAction
-                // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
-                foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
-                {
-                    existingAction.ChildNodes.Remove(actionToRemove.Value);
-                }
-
-                // We just update those children that haven't changed (exists both in newChildren and currentChildren)
-                foreach (var actionToUpdate in newChildren.Where(x => currentChildren.ContainsKey(x.Key)))
-                {
-                    Update(uow, actionToUpdate.Value);
-                }
-            }
-
-            return existingAction;
-        }
-
         public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -179,68 +111,6 @@ namespace Core.Services
             {
                 return GetById(uow, id);
             }
-        }
-
-        public ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode)
-        {
-            var template = uow.ActivityTemplateRepository.GetByKey(actionTemplateId);
-
-            if (template == null)
-            {
-                throw new ApplicationException("Could not find ActivityTemplate.");
-            }
-
-            var action = new ActionDO
-            {
-                ActivityTemplate = template, 
-                Name = name,
-                Label = label
-            };
-
-            uow.ActionRepository.Add(action);
-
-            parentNode.ChildNodes.Add(action);
-
-            return action;
-        }
-
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
-        {
-            if (parentNodeId != null && createRoute)
-            {
-                throw new ArgumentException("Parent node id can't be set together with create route flag");
-            }
-
-            if (parentNodeId == null && !createRoute)
-            {
-                throw new ArgumentException("Either Parent node id or create route flag must be set");
-            }
-
-            RouteNodeDO parentNode;
-            RouteDO route = null;
-
-            if (createRoute)
-            {
-                route = ObjectFactory.GetInstance<IRoute>().Create(uow, name);
-                parentNode = ObjectFactory.GetInstance<ISubroute>().Create(uow, route, name + " #1");
-            }
-            else
-            {
-                parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId.Value);
-        }
-
-            var action = Create(uow, actionTemplateId, name, label, parentNode);
-
-            uow.SaveChanges();
-
-            await Configure(action);
-
-            if (createRoute)
-            {
-                return route;
-            }
-
-            return action;
         }
 
         public ActionDO GetById(IUnitOfWork uow, int id)
@@ -381,213 +251,6 @@ namespace Core.Services
             return payloadDTO;
         }
 
-        /// <summary>
-        /// Retrieve authorization token
-        /// </summary>
-        /// <param name="curActionDO"></param>
-        /// <returns></returns>
-        public string Authenticate(ActionDO curActionDO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                Fr8AccountDO curDockyardAccountDO = GetAccount(curActionDO);
-                var curPlugin = curActionDO.ActivityTemplate.Plugin;
-                string curToken = string.Empty;
-
-                if (curDockyardAccountDO != null)
-                {
-                    curToken = _authorizationToken.GetToken(curDockyardAccountDO.Id, curPlugin.Id);
-
-                    if (!string.IsNullOrEmpty(curToken))
-                        return curToken;
-                }
-
-                curToken = _authorizationToken.GetPluginToken(curPlugin.Id);
-                if (!string.IsNullOrEmpty(curToken))
-                    return curToken;
-                return _plugin.Authorize();
-            }
-        }
-
-        public bool IsAuthenticated(Fr8AccountDO account, PluginDO plugin)
-        {
-            if (!plugin.RequiresAuthentication)
-            {
-                return true;
-            }
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var hasAuthToken = uow.AuthorizationTokenRepository
-                    .GetQuery()
-                    .Any(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
-
-                return hasAuthToken;
-            }
-        }
-
-        public async Task AuthenticateInternal(Fr8AccountDO account, PluginDO plugin,
-            string username, string password)
-        {
-            if (!plugin.RequiresAuthentication)
-            {
-                throw new ApplicationException("Plugin does not require authentication.");
-            }
-
-            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-
-            var credentialsDTO = new CredentialsDTO()
-            {
-                Username = username,
-                Password = password
-            };
-
-            var response = await restClient.PostAsync<CredentialsDTO>(
-                new Uri("http://" + plugin.Endpoint + "/actions/authenticate_internal"),
-                credentialsDTO
-            );
-
-            var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var authToken = uow.AuthorizationTokenRepository
-                    .FindOne(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
-
-                if (authTokenDTO != null)
-                {
-                var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
-                var curAccount = uow.UserRepository.GetByKey(account.Id);
-
-                if (authToken == null)
-                {
-                    authToken = new AuthorizationTokenDO()
-                    {
-                        Token = authTokenDTO.Token,
-                        ExternalAccountId = authTokenDTO.ExternalAccountId,
-                        Plugin = curPlugin,
-                        UserDO = curAccount,
-                        ExpiresAt = DateTime.Today.AddMonths(1)
-                    };
-
-                    uow.AuthorizationTokenRepository.Add(authToken);
-                }
-                else
-                {
-                    authToken.Token = authTokenDTO.Token;
-                    authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
-                }
-
-                uow.SaveChanges();
-            }
-        }
-        }
-
-        public async Task AuthenticateExternal(
-            PluginDO plugin,
-            ExternalAuthenticationDTO externalAuthDTO)
-        {
-            if (!plugin.RequiresAuthentication)
-            {
-                throw new ApplicationException("Plugin does not require authentication.");
-            }
-
-            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-
-            var response = await restClient.PostAsync<ExternalAuthenticationDTO>(
-                new Uri("http://" + plugin.Endpoint + "/actions/authenticate_external"),
-                externalAuthDTO
-            );
-
-            var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var authToken = uow.AuthorizationTokenRepository
-                    .FindOne(x => x.ExternalStateToken == authTokenDTO.ExternalStateToken);
-
-                if (authToken == null)
-                {
-                    throw new ApplicationException("No AuthToken found with specified ExternalStateToken.");
-                }
-
-                authToken.Token = authTokenDTO.Token;
-                authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
-                authToken.ExternalStateToken = null;
-
-                uow.SaveChanges();
-            }
-        }
-
-        public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl(
-            Fr8AccountDO user, PluginDO plugin)
-        {
-            if (!plugin.RequiresAuthentication)
-            {
-                throw new ApplicationException("Plugin does not require authentication.");
-            }
-
-            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-
-            var response = await restClient.PostAsync(
-                new Uri("http://" + plugin.Endpoint + "/actions/auth_url")
-            );
-
-            var externalAuthUrlDTO = JsonConvert.DeserializeObject<ExternalAuthUrlDTO>(response);
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var authToken = uow.AuthorizationTokenRepository
-                    .FindOne(x => x.Plugin.Id == plugin.Id
-                        && x.UserDO.Id == user.Id);
-
-                if (authToken == null)
-                {
-                    var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
-                    var curAccount = uow.UserRepository.GetByKey(user.Id);
-
-                    authToken = new AuthorizationTokenDO()
-                    {
-                        UserDO = curAccount,
-                        Plugin = curPlugin,
-                        ExpiresAt = DateTime.Today.AddMonths(1),
-                        ExternalStateToken = externalAuthUrlDTO.ExternalStateToken
-                    };
-
-                    uow.AuthorizationTokenRepository.Add(authToken);
-                }
-                else
-                {
-                    authToken.ExternalAccountId = null;
-                    authToken.Token = null;
-                    authToken.ExternalStateToken = externalAuthUrlDTO.ExternalStateToken;
-                }
-
-                uow.SaveChanges();
-            }
-
-            return externalAuthUrlDTO;
-        }
-
-        /// <summary>
-        /// Retrieve account
-        /// </summary>
-        /// <param name="curActionDO"></param>
-        /// <returns></returns>
-        public Fr8AccountDO GetAccount(ActionDO curActionDO)
-        {
-            if (curActionDO.ParentRouteNode != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
-            {
-                // Can't follow guideline to init services inside constructor. 
-                // Current implementation of Route and Action services are not good and are depedant on each other.
-                // Initialization of services in constructor will cause stack overflow
-                var route = ObjectFactory.GetInstance<IRoute>().GetRoute(curActionDO);
-                return route != null ? route.Fr8Account : null;
-            }
-
-            return null;
-
-        }       
 
         //looks for the Configuration Controls Crate and Extracts the ManifestSchema
         public StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction)
@@ -633,62 +296,6 @@ namespace Core.Services
             return await CallPluginActionAsync<ActionDTO>("deactivate", curActionDO);
         }
 
-        /// <summary>
-        /// Prepare AuthToken for ActionDTO request message.
-        /// </summary>
-        private void PrepareAuthToken(ActionDTO actionDTO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                // Fetch ActivityTemplate.
-                var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(actionDTO.ActivityTemplateId);
-                if (activityTemplate == null)
-                {
-                    throw new ApplicationException("Could not find ActivityTemplate.");
-                }
-
-                // Fetch Action.
-                var action = uow.ActionRepository.GetByKey(actionDTO.Id);
-                if (action == null)
-                {
-                    throw new ApplicationException("Could not find Action.");
-                }
-
-                // Try to find AuthToken if plugin requires authentication.
-                if (activityTemplate.Plugin.RequiresAuthentication)
-                {
-                    // Try to get owner's account for Action -> Route.
-                    // Can't follow guideline to init services inside constructor. 
-                    // Current implementation of Route and Action services are not good and are depedant on each other.
-                    // Initialization of services in constructor will cause stack overflow
-                    var route = ObjectFactory.GetInstance<IRoute>().GetRoute(action);
-                    var dockyardAccount = route != null ? route.Fr8Account : null;
-                    
-                    if (dockyardAccount == null)
-                    {
-                        throw new ApplicationException("Could not find DockyardAccount for Action's Route.");
-                    }
-
-                    var accountId = dockyardAccount.Id;
-
-                    // Try to find AuthToken for specified plugin and account.
-                    var authToken = uow.AuthorizationTokenRepository
-                        .FindOne(x => x.Plugin.Id == activityTemplate.Plugin.Id
-                            && x.UserDO.Id == accountId);
-
-                    // If AuthToken is not empty, fill AuthToken property for ActionDTO.
-                    if (authToken != null && !string.IsNullOrEmpty(authToken.Token))
-                    {
-                        actionDTO.AuthToken = new AuthTokenDTO()
-                        {
-                            Token = authToken.Token
-                        };
-                    }
-                }
-            }
-        }
-
         private Task<TResult> CallPluginActionAsync<TResult>(string actionName, ActionDO curActionDO, int processId = 0)
         {
             if (actionName == null) throw new ArgumentNullException("actionName");
@@ -696,7 +303,7 @@ namespace Core.Services
             
             var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
             dto.ProcessId = processId;
-            PrepareAuthToken(dto);
+            _authorizationToken.PrepareAuthToken(dto);
 
             return ObjectFactory.GetInstance<IPluginTransmitter>()
                 .CallActionAsync<TResult>(actionName, dto);
@@ -720,7 +327,5 @@ namespace Core.Services
             var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: fieldName);
            return keys;
         }
-
-        
     }
 }

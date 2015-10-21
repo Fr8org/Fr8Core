@@ -35,7 +35,7 @@ namespace UtilitiesTesting.Fixtures
             processNode.Id = 51;
             processNode.ParentContainerId = 49;
             processNode.Subroute = TestSubrouteDO1();
-            processNode.Subroute.ChildNodes.AddRange(TestActionList5());
+            processNode.Subroute.RouteNodes.AddRange(TestActionList5());
 
             return processNode;
         }
@@ -46,7 +46,7 @@ namespace UtilitiesTesting.Fixtures
             processNode.Id = 51;
             processNode.ParentContainerId = 49;
             processNode.Subroute = TestSubrouteDO2();
-            processNode.Subroute.ChildNodes.AddRange(TestActionList5());
+            processNode.Subroute.RouteNodes.AddRange(TestActionList5());
 
             return processNode;
         }
@@ -59,7 +59,7 @@ namespace UtilitiesTesting.Fixtures
             processNode.ParentContainerId = 49;
             processNode.SubrouteId = 50;
             processNode.Subroute = TestSubrouteDO3();
-            processNode.Subroute.ChildNodes.AddRange(TestActionList6());
+            processNode.Subroute.RouteNodes.AddRange(TestActionList6());
 
             return processNode;
         }

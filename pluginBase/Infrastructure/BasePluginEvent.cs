@@ -25,7 +25,7 @@ namespace PluginBase.Infrastructure
         public BasePluginEvent()
         {
             //Regex used to fetch http://localhost:30643 
-            eventWebServerUrl = Regex.Match(ConfigurationManager.AppSettings["EventWebServerUrl"], @"(\w+://\w+:\d+)").Value + "/dockyard_events";
+            eventWebServerUrl = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
         }

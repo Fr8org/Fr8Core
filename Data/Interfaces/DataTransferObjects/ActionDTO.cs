@@ -33,7 +33,5 @@ namespace Data.Interfaces.DataTransferObjects
         public int ProcessId { get; set; }
 
         public AuthTokenDTO AuthToken { get; set; }
-
-        public ActionDTO[] ChildrenActions { get; set; }
     }
 }

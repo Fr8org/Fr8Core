@@ -203,9 +203,9 @@ namespace DockyardTest.Services
           
             uow.RouteNodeRepository.Add(currActivity);
 
-            if (currActivity.ChildNodes != null)
+            if (currActivity.RouteNodes != null)
             {
-                foreach (var activity in currActivity.ChildNodes)
+                foreach (var activity in currActivity.RouteNodes)
                     AddActionToRepository(uow, activity);
             }
         }

@@ -31,6 +31,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -276,7 +285,7 @@
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\ActivityTemplate.cs" />
     <Compile Include="Services\AuthData.cs" />
-    <Compile Include="Services\AuthorizationToken.cs" />
+    <Compile Include="Services\Authorization.cs" />
     <Compile Include="Managers\CrateManager.cs" />
     <Compile Include="Services\Criteria.cs" />
     <Compile Include="Services\Fr8Account.cs" />

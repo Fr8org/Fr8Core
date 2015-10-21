@@ -6,6 +6,5 @@
 	    Receivers = 2,
 	    Processors = 3,
 	    Forwarders = 4,
-        Solution = 5
     }
 }
