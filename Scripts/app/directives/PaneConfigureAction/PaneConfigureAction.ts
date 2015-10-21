@@ -194,7 +194,6 @@ module dockyard.directives.paneConfigureAction {
                 // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
                 // We parse its contents and put it into currentAction.configurationControls structure.
                 function loadConfiguration() {
-                    debugger;
 
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;
@@ -208,8 +207,18 @@ module dockyard.directives.paneConfigureAction {
                             $scope.currentAction.crateStorage = res.crateStorage;
                             $scope.processConfiguration();
                         })
-                        .catch(() => {
-                            alert('Error while retrieving configuration.');
+                        .catch((result) => {
+                            var errorText = 'Something went wrong. Click to retry.';
+                            if (result.status && result.status >= 300) {
+                                // Bad http response
+                                errorText = 'Configuration loading error. Click to retry.';
+                            } else if (result.message) {
+                                // Exception was thrown in the code
+                                errorText = result.message;
+                            }
+                            var control = new model.TextBlock('TextBlock', errorText, 'well well-lg alert-danger');
+                            $scope.currentAction.configurationControls = new model.ControlsList();
+                            $scope.currentAction.configurationControls.fields = [control];
                         })
                         .finally(() => {
                             // Unblock pane

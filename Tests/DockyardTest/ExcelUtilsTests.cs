@@ -12,7 +12,7 @@ using UtilitiesTesting;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using pluginExcel.Infrastructure;
+using terminalExcel.Infrastructure;
 
 namespace DockyardTest
 {
