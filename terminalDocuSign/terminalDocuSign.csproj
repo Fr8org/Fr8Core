@@ -316,8 +316,6 @@
 
 rem if exist $(TargetDir)pluginDocuSign.dll.config del /Q $(TargetDir)pluginDocuSign.dll.config
 
-copy $(TargetPath).config $(SolutionDir)\pluginIntegrationTests\bin\Debug /Y
-
 rem if exist $(TargetDir)pluginDocuSign.pdb del /Q $(TargetDir)pluginDocuSign.pdb</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
