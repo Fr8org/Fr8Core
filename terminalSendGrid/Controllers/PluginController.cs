@@ -21,7 +21,7 @@ namespace pluginSalesforce.Controllers
         {
             var plugin = new PluginDO()
             {
-                Name = "pluginSendGrid",
+                Name = "terminalSendGrid",
                 PluginStatus = PluginStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 Version = "1"

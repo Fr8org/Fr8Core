@@ -207,8 +207,16 @@ module dockyard.directives.paneConfigureAction {
                             $scope.currentAction.crateStorage = res.crateStorage;
                             $scope.processConfiguration();
                         })
-                        .catch(() => {
-                            var control = new model.TextBlock('TextBlock', 'Configuration loading error. Click to retry.', 'well well-lg alert-danger');
+                        .catch((result) => {
+                            var errorText = 'Something went wrong. Click to retry.';
+                            if (result.status && result.status >= 300) {
+                                // Bad http response
+                                errorText = 'Configuration loading error. Click to retry.';
+                            } else if (result.message) {
+                                // Exception was thrown in the code
+                                errorText = result.message;
+                            }
+                            var control = new model.TextBlock('TextBlock', errorText, 'well well-lg alert-danger');
                             $scope.currentAction.configurationControls = new model.ControlsList();
                             $scope.currentAction.configurationControls.fields = [control];
                         })

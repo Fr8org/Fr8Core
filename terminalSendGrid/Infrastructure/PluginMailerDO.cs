@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Data.Interfaces;
 
-namespace pluginSendGrid.Infrastructure
+namespace terminalSendGrid.Infrastructure
 {
     public class PluginMailerDO : IMailerDO
     {

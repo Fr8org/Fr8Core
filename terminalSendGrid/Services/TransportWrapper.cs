@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Core.ExternalServices;
 using SendGrid;
 
-namespace pluginSendGrid.Services
+namespace terminalSendGrid.Services
 {
     class TransportWrapper : ITransport
     {

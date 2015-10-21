@@ -40,7 +40,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginIntegrationTests", "p
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginSalesforce", "pluginSalesforce\pluginSalesforce.csproj", "{85CB0215-96DF-4C38-A022-1BE6C952813B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginSendGrid", "pluginSendGrid\pluginSendGrid.csproj", "{1E1AB01B-F6AB-4420-BF1D-5E6EF41D76BF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSendGrid", "terminalSendGrid\terminalSendGrid.csproj", "{1E1AB01B-F6AB-4420-BF1D-5E6EF41D76BF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalExcel", "terminalExcel\terminalExcel.csproj", "{57373D06-6B82-4EC6-AF62-ED25FE170C61}"
 EndProject

@@ -5,12 +5,12 @@ using Core.Services;
 using StructureMap.Configuration.DSL;
 using StructureMap;
 using Core.StructureMap;
-using pluginSendGrid.Infrastructure;
-using pluginSendGrid.Services;
+using terminalSendGrid.Infrastructure;
+using terminalSendGrid.Services;
 using SendGrid;
 using Utilities;
 
-namespace pluginSendGrid
+namespace terminalSendGrid
 {
     public class PluginSendGridStructureMapBootstrapper
     {
