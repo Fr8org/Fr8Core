@@ -320,6 +320,10 @@
     <Compile Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.Designer.cs">
       <DependentUpon>201510152143047_Add_Label_Property_To_ActionTemplate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510181719065_IngnoreChangesUpdate.cs" />
+    <Compile Include="Migrations\201510181719065_IngnoreChangesUpdate.Designer.cs">
+      <DependentUpon>201510181719065_IngnoreChangesUpdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.cs" />
     <Compile Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.Designer.cs">
       <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
@@ -327,6 +331,14 @@
     <Compile Include="Migrations\201510200747079_UpdateMTTables.cs" />
     <Compile Include="Migrations\201510200747079_UpdateMTTables.Designer.cs">
       <DependentUpon>201510200747079_UpdateMTTables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.cs" />
+    <Compile Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.Designer.cs">
+      <DependentUpon>201510201228599_ModifiedAuthorizeTokenTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510202031291_NothingIgnoreChanages.cs" />
+    <Compile Include="Migrations\201510202031291_NothingIgnoreChanages.Designer.cs">
+      <DependentUpon>201510202031291_NothingIgnoreChanages.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -565,11 +577,20 @@
     <EmbeddedResource Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.resx">
       <DependentUpon>201510152143047_Add_Label_Property_To_ActionTemplate.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510181719065_IngnoreChangesUpdate.resx">
+      <DependentUpon>201510181719065_IngnoreChangesUpdate.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.resx">
       <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510200747079_UpdateMTTables.resx">
       <DependentUpon>201510200747079_UpdateMTTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.resx">
+      <DependentUpon>201510201228599_ModifiedAuthorizeTokenTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510202031291_NothingIgnoreChanages.resx">
+      <DependentUpon>201510202031291_NothingIgnoreChanages.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

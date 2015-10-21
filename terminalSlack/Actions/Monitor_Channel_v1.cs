@@ -24,7 +24,7 @@ namespace terminalSlack.Actions
 
         public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
-            if (IsEmptyAuthToken(actionDto))
+            if (NeedsAuthentication(actionDto))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
