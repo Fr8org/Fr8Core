@@ -320,3 +320,15 @@ input[type=radio]:checked + div.nested-controls {
     padding-top: 3px; 
     padding-bottom: 3px;
 }
+
+
+/*Class to display the text block properly*/
+.TextBlockClass
+{
+    display: block;
+    width: 100%;
+    height: auto;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: normal;
+}
