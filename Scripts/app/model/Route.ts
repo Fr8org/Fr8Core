@@ -7,7 +7,7 @@
         routeState: RouteState;
         subscribedDocuSignTemplates: Array<string>;
         externalEventSubscription: Array<number>; 
-        startingProcessNodeTemplateId: number;
+        startingSubrouteId: number;
         subroutes: Array<SubrouteDTO>
     }
 

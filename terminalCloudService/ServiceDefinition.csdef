@@ -2,14 +2,14 @@
 <ServiceDefinition name="terminalCloudService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2015-04.2.6">
   <WebRole name="terminalWebRole" vmsize="Small">
     <Sites>
-      <Site name="pluginAzureSqlServer" physicalDirectory="..\..\..\pluginAzureSqlServer\azure.publish">
+      <Site name="terminalAzure" physicalDirectory="..\..\..\terminalAzure\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="pluginAzureSqlServer" />
+          <Binding name="Endpoint1" endpointName="terminalAzure" />
         </Bindings>
       </Site>
-      <Site name="pluginSlack" physicalDirectory="..\..\..\pluginSlack\azure.publish">
+      <Site name="terminalSlack" physicalDirectory="..\..\..\terminalSlack\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="pluginSlack" />
+          <Binding name="Endpoint1" endpointName="terminalSlack" />
         </Bindings>
       </Site>
       <Site name="terminalDocuSign" physicalDirectory="..\..\..\terminalDocuSign\azure.publish">
@@ -27,9 +27,9 @@
           <Binding name="Endpoint1" endpointName="terminalFr8Core" />
         </Bindings>
       </Site>
-      <Site name="pluginSendGrid" physicalDirectory="..\..\..\pluginSendGrid\azure.publish">
+      <Site name="terminalSendGrid" physicalDirectory="..\..\..\terminalSendGrid\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="pluginSendGrid" />
+          <Binding name="Endpoint1" endpointName="terminalSendGrid" />
         </Bindings>
       </Site>
       <Site name="pluginTwilio" physicalDirectory="..\..\..\pluginTwilio\azure.publish">
@@ -37,9 +37,9 @@
           <Binding name="Endpoint1" endpointName="pluginTwilio" />
         </Bindings>
       </Site>
-      <Site name="pluginExcel" physicalDirectory="..\..\..\pluginExcel\azure.publish">
+      <Site name="terminalExcel" physicalDirectory="..\..\..\terminalExcel\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="pluginExcel" />
+          <Binding name="Endpoint1" endpointName="terminalExcel" />
         </Bindings>
       </Site>
     </Sites>
@@ -47,14 +47,14 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
     </ConfigurationSettings>
     <Endpoints>
-      <InputEndpoint name="pluginAzureSqlServer" protocol="http" port="46281" />
-      <InputEndpoint name="pluginSlack" protocol="http" port="39504" />
+      <InputEndpoint name="terminalAzure" protocol="http" port="46281" />
+      <InputEndpoint name="terminalSlack" protocol="http" port="39504" />
       <InputEndpoint name="terminalDocuSign" protocol="http" port="53234" />
       <InputEndpoint name="pluginSalesforce" protocol="http" port="51234" />
       <InputEndpoint name="terminalFr8Core" protocol="http" port="50705" />
-      <InputEndpoint name="pluginSendGrid" protocol="http" port="10601" />
+      <InputEndpoint name="terminalSendGrid" protocol="http" port="10601" />
       <InputEndpoint name="pluginTwilio" protocol="http" port="30699" />
-      <InputEndpoint name="pluginExcel" protocol="http" port="47011" />
+      <InputEndpoint name="terminalExcel" protocol="http" port="47011" />
     </Endpoints>
     <Imports>
       <Import moduleName="RemoteAccess" />
