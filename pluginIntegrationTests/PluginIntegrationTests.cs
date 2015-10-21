@@ -13,7 +13,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using pluginAzureSqlServer;
+using terminalAzure;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using UtilitiesTesting;
@@ -114,7 +114,7 @@ namespace pluginIntegrationTests
             _dockyardCoreServer = terminalFr8Core.SelfHostFactory.CreateServer(dockyardCoreServerUrl);
 
             var azureSqlServerServerUrl = "http://" + FixtureData.TestPlugin_AzureSqlServer_EndPoint + "/";
-            _azureSqlServerServer = pluginAzureSqlServer.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
+            _azureSqlServerServer = terminalAzure.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
 
 
         }
