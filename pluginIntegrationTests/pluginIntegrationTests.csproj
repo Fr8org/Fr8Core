@@ -36,6 +36,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -134,6 +143,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="PluginIntegrationTests_SendDocuSignEnvelopeV1.cs" />
     <Compile Include="PluginIntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -151,21 +161,21 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\pluginAzureSqlServer\pluginAzureSqlServer.csproj">
+    <ProjectReference Include="..\terminalAzure\terminalAzure.csproj">
       <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>
-      <Name>pluginAzureSqlServer</Name>
+      <Name>terminalAzure</Name>
     </ProjectReference>
     <ProjectReference Include="..\pluginBase\PluginBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>PluginBase</Name>
     </ProjectReference>
-    <ProjectReference Include="..\pluginDockyardCore\pluginDockyardCore.csproj">
+    <ProjectReference Include="..\terminalFr8Core\terminalFr8Core.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
-      <Name>pluginDockyardCore</Name>
+      <Name>terminalFr8Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\pluginDocuSign\pluginDocuSign.csproj">
+    <ProjectReference Include="..\terminalDocuSign\terminalDocuSign.csproj">
       <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
-      <Name>pluginDocuSign</Name>
+      <Name>terminalDocuSign</Name>
     </ProjectReference>
     <ProjectReference Include="..\pluginExcel\pluginExcel.csproj">
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>

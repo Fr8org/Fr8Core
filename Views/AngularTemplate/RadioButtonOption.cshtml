@@ -1,7 +1,8 @@
-﻿<label for="pca__chk__{{groupName | validId }}__{{field.$$hashKey}}">
+﻿<label for="pca__chk__{{groupName | validId }}__{{field.$$hashKey}}" stop-click-propagation>
     {{field.value}}
 </label>
-<input type="radio" ng-click="changeSelection(field)" name="pca__chk__{{groupName}}" id="pca__chk__{{groupName | validId}}__{{field.$$hashKey}}" ng-checked="{{field.selected}}" ng-value="true" />
+<input type="radio" ng-click="changeSelection(field)" name="pca__chk__{{groupName}}" id="pca__chk__{{groupName | validId}}__{{field.$$hashKey}}" 
+       ng-checked="{{field.selected}}" ng-value="true" stop-click-propagation/>
 @* Support nested controls *@
 <div class="nested-controls">
 </div>

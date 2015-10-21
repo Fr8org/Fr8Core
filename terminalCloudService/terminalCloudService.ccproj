@@ -12,6 +12,7 @@
     <AssemblyName>terminalCloudService</AssemblyName>
     <StartDevelopmentStorage>True</StartDevelopmentStorage>
     <Name>terminalCloudService</Name>
+    <PackageEnableRemoteDebugger>False</PackageEnableRemoteDebugger>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -19,6 +20,15 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Dev|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -62,4 +72,39 @@
     <CloudExtensionsDir Condition=" '$(CloudExtensionsDir)' == '' ">$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Windows Azure Tools\2.7\</CloudExtensionsDir>
   </PropertyGroup>
   <Import Project="$(CloudExtensionsDir)Microsoft.WindowsAzure.targets" />
+  <PropertyGroup>
+    <!-- Inject the publication of "secondary" sites into the Windows Azure build/project packaging process. -->
+    <CoreBuildDependsOn>
+      CleanSecondarySites;
+      PublishSecondarySites;
+      $(CoreBuildDependsOn)
+    </CoreBuildDependsOn>
+    <!-- This is the directory within the web application project directory to which the project will be "published" for later packaging by the Azure project. -->
+    <SecondarySitePublishDir>azure.publish\</SecondarySitePublishDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Dev' ">
+    <OutputPath>bin\Dev\</OutputPath>
+  </PropertyGroup>
+  <!-- These SecondarySite items represent the collection of sites (other than the web application associated with the role) that need special packaging. -->
+  <ItemGroup>
+    <SecondarySite Include="..\terminalAzure\terminalAzure.csproj" />
+    <SecondarySite Include="..\terminalFr8Core\terminalFr8Core.csproj" />
+    <SecondarySite Include="..\pluginExcel\pluginExcel.csproj" />
+    <SecondarySite Include="..\pluginSalesforce\pluginSalesforce.csproj" />
+    <SecondarySite Include="..\pluginSendGrid\pluginSendGrid.csproj" />
+    <SecondarySite Include="..\terminalSlack\terminalSlack.csproj" />
+    <SecondarySite Include="..\pluginTwilio\pluginTwilio.csproj" />
+    <SecondarySite Include="..\terminalDocuSign\terminalDocuSign.csproj" />
+  </ItemGroup>
+  <Target Name="CleanSecondarySites">
+    <RemoveDir Directories="%(SecondarySite.RootDir)%(Directory)$(SecondarySitePublishDir)" />
+  </Target>
+  <Target Name="PublishSecondarySites" Condition="'$(PackageForComputeEmulator)' == 'true'&#xA;                      Or '$(IsExecutingPublishTarget)' == 'true' ">
+    <!--
+    Execute the Build (and more importantly the _WPPCopyWebApplication) target to "publish" each secondary web application project.
+     
+    Note the setting of the WebProjectOutputDir property; this is where the project will be published to be later picked up by CSPack.
+  -->
+    <MSBuild Projects="%(SecondarySite.Identity)" Targets="Build;_WPPCopyWebApplication" Properties="Configuration=$(Configuration);Platform=$(Platform);WebProjectOutputDir=$(SecondarySitePublishDir)" />
+  </Target>
 </Project>
