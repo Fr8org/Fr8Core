@@ -31,6 +31,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
@@ -311,6 +320,10 @@
     <Compile Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.Designer.cs">
       <DependentUpon>201510152143047_Add_Label_Property_To_ActionTemplate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510181719065_IngnoreChangesUpdate.cs" />
+    <Compile Include="Migrations\201510181719065_IngnoreChangesUpdate.Designer.cs">
+      <DependentUpon>201510181719065_IngnoreChangesUpdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.cs" />
     <Compile Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.Designer.cs">
       <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
@@ -322,6 +335,14 @@
     <Compile Include="Migrations\201510201804511_AddMinPaneWidth.cs" />
     <Compile Include="Migrations\201510201804511_AddMinPaneWidth.Designer.cs">
       <DependentUpon>201510201804511_AddMinPaneWidth.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.cs" />
+    <Compile Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.Designer.cs">
+      <DependentUpon>201510201228599_ModifiedAuthorizeTokenTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510202031291_NothingIgnoreChanages.cs" />
+    <Compile Include="Migrations\201510202031291_NothingIgnoreChanages.Designer.cs">
+      <DependentUpon>201510202031291_NothingIgnoreChanages.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -560,6 +581,9 @@
     <EmbeddedResource Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.resx">
       <DependentUpon>201510152143047_Add_Label_Property_To_ActionTemplate.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510181719065_IngnoreChangesUpdate.resx">
+      <DependentUpon>201510181719065_IngnoreChangesUpdate.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.resx">
       <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
     </EmbeddedResource>
@@ -568,6 +592,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510201804511_AddMinPaneWidth.resx">
       <DependentUpon>201510201804511_AddMinPaneWidth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.resx">
+      <DependentUpon>201510201228599_ModifiedAuthorizeTokenTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510202031291_NothingIgnoreChanages.resx">
+      <DependentUpon>201510202031291_NothingIgnoreChanages.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
