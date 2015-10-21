@@ -87,7 +87,7 @@
   </PropertyGroup>
   <!-- These SecondarySite items represent the collection of sites (other than the web application associated with the role) that need special packaging. -->
   <ItemGroup>
-    <SecondarySite Include="..\pluginAzureSqlServer\pluginAzureSqlServer.csproj" />
+    <SecondarySite Include="..\terminalAzure\terminalAzure.csproj" />
     <SecondarySite Include="..\terminalFr8Core\terminalFr8Core.csproj" />
     <SecondarySite Include="..\pluginExcel\pluginExcel.csproj" />
     <SecondarySite Include="..\pluginSalesforce\pluginSalesforce.csproj" />

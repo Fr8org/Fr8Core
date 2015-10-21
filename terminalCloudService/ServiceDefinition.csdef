@@ -2,9 +2,9 @@
 <ServiceDefinition name="terminalCloudService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2015-04.2.6">
   <WebRole name="terminalWebRole" vmsize="Small">
     <Sites>
-      <Site name="pluginAzureSqlServer" physicalDirectory="..\..\..\pluginAzureSqlServer\azure.publish">
+      <Site name="terminalAzure" physicalDirectory="..\..\..\terminalAzure\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="pluginAzureSqlServer" />
+          <Binding name="Endpoint1" endpointName="terminalAzure" />
         </Bindings>
       </Site>
       <Site name="terminalSlack" physicalDirectory="..\..\..\terminalSlack\azure.publish">
@@ -47,7 +47,7 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
     </ConfigurationSettings>
     <Endpoints>
-      <InputEndpoint name="pluginAzureSqlServer" protocol="http" port="46281" />
+      <InputEndpoint name="terminalAzure" protocol="http" port="46281" />
       <InputEndpoint name="terminalSlack" protocol="http" port="39504" />
       <InputEndpoint name="terminalDocuSign" protocol="http" port="53234" />
       <InputEndpoint name="pluginSalesforce" protocol="http" port="51234" />
