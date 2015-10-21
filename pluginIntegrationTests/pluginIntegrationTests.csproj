@@ -223,7 +223,7 @@
   <PropertyGroup>
     <PostBuildEvent>
 		xcopy  $(SolutionDir)\terminalDocuSign\bin\terminalDocuSign.dll.config $(TargetDir) /C /Y 
-		xcopy  $(SolutionDir)\pluginAzureSqlServer\bin\pluginAzureSqlServer.dll.config $(TargetDir) /C /Y
+		xcopy  $(SolutionDir)\terminalAzure\bin\terminalAzure.dll.config $(TargetDir) /C /Y
 		xcopy  $(SolutionDir)\terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
 		xcopy  $(SolutionDir)\pluginExcel\bin\pluginExcel.dll.config $(TargetDir) /C /Y 
 	</PostBuildEvent>
