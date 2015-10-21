@@ -1,27 +1,14 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using pluginSalesforce.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Configuration;
-using StructureMap;
-using Utilities.Logging;
-using Salesforce.Force;
+﻿using System;
 using System.Threading.Tasks;
-using Salesforce.Common;
-using Microsoft.WindowsAzure;
-using System.Net.Http;
-using Newtonsoft.Json;
-using Data.Interfaces.ManifestSchemas;
-using Salesforce.Common.Models;
-using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using pluginSalesforce.Infrastructure;
+using Utilities.Logging;
 
 namespace pluginSalesforce.Services
 {
     public class SalesforceIntegration : ISalesforceIntegration
     {
-        private Authentication _authentication = new pluginSalesforce.Infrastructure.Authentication();
+        private Authentication _authentication = new Authentication();
         private Lead _lead = new Lead();
 
         public SalesforceIntegration()
