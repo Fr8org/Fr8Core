@@ -7,11 +7,11 @@ using Core.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using PluginBase.Infrastructure;
-using pluginSlack.Interfaces;
-using pluginSlack.Services;
+using terminalSlack.Interfaces;
+using terminalSlack.Services;
 using PluginBase.BaseClasses;
 
-namespace pluginSlack.Actions
+namespace terminalSlack.Actions
 {
     public class Monitor_Channel_v1 : BasePluginAction
     {

@@ -9,16 +9,16 @@ using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using PluginBase.BaseClasses;
-using pluginSlack.Actions;
-using pluginSlack.Interfaces;
-using pluginSlack.Services;
+using terminalSlack.Actions;
+using terminalSlack.Interfaces;
+using terminalSlack.Services;
 
-namespace pluginSlack.Controllers
+namespace terminalSlack.Controllers
 {
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private const string curPlugin = "pluginSlack";
+        private const string curPlugin = "terminalSlack";
         private readonly BasePluginController _basePluginController;
         private readonly ISlackIntegration _slackIntegration;
 
