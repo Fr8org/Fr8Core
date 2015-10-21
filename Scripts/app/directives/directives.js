@@ -150,7 +150,6 @@ app.directive('transferClickConfigurePane', function () {
         link: function (scope, elem) {
             elem.bind('click', function (event) {
                 elem.parent().find('.pane-configure-action').click();
-                //angular.element(elem.siblings()[0]).click();
             });
         }
     };

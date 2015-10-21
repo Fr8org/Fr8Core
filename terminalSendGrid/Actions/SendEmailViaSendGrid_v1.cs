@@ -6,11 +6,11 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using PluginBase.Infrastructure;
-using pluginSendGrid.Infrastructure;
+using terminalSendGrid.Infrastructure;
 using PluginBase.BaseClasses;
 using Utilities;
 
-namespace pluginSendGrid.Actions
+namespace terminalSendGrid.Actions
 {
     public class SendEmailViaSendGrid_v1 : BasePluginAction
     {
