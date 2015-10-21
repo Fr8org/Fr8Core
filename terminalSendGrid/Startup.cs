@@ -9,8 +9,8 @@ using Owin;
 using PluginBase;
 using PluginBase.BaseClasses;
 
-[assembly: OwinStartup("SendGridStartup", typeof(pluginSendGrid.Startup))]
-namespace pluginSendGrid
+[assembly: OwinStartup("SendGridStartup", typeof(terminalSendGrid.Startup))]
+namespace terminalSendGrid
 {
     public class Startup : BaseConfiguration
     {

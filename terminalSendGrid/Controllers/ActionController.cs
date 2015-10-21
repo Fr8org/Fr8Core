@@ -8,12 +8,12 @@ using System.Reflection;
 using PluginBase.BaseClasses;
 using System.Threading.Tasks;
 
-namespace pluginSendGrid.Controllers
+namespace terminalSendGrid.Controllers
 {
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private const string curPlugin = "pluginSendGrid";
+        private const string curPlugin = "terminalSendGrid";
         private BasePluginController _basePluginController = new BasePluginController();
 
         [HttpPost]

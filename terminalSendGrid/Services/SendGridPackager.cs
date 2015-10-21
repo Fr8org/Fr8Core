@@ -10,10 +10,10 @@ using SendGrid;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using pluginSendGrid.Infrastructure;
+using terminalSendGrid.Infrastructure;
 using Utilities;
 
-namespace pluginSendGrid.Services
+namespace terminalSendGrid.Services
 {
     public class SendGridPackager : IEmailPackager
     {
