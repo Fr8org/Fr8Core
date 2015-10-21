@@ -5,7 +5,6 @@ using System.Linq;
 using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces;
 using NUnit.Framework;
-using pluginAzureSqlServer;
 using StructureMap;
 using Utilities;
 using UtilitiesTesting;
