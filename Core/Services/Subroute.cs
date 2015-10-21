@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using Core.Interfaces;
 using Core.Managers;
+using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
@@ -19,11 +21,13 @@ namespace Core.Services
 
         private readonly ICrateManager _crate;
         private readonly IRouteNode _routeNode;
+        private readonly IAction _action;
 
         public Subroute()
         {
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
+            _action = ObjectFactory.GetInstance<IAction>();
         }
 
         /// <summary>
@@ -124,9 +128,90 @@ namespace Core.Services
             uow.SaveChanges();
         }
 
-        public void DeleteAction(int id)
+        protected CrateDTO GetValidationErrors(CrateStorageDTO crateStorage)
         {
-            //we are using Kludge solution for now
+            return crateStorage.CrateDTO.FirstOrDefault(crateDTO => 
+                crateDTO.Label == "Validation Errors" && crateDTO.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
+        }
+
+        protected async Task<bool> ValidateDownstreamActionsAndDelete(int id)
+        {
+            var validationErrors = new List<CrateDTO>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //we should backup this action to see it's effect to downstream actions on deletion
+                //with asNoTracking we can keep a copy of curAction on memory
+                var curActionBackup = await uow.RouteNodeRepository.GetQuery().AsNoTracking().SingleAsync(a => a.Id == id);
+
+                //to prevent one more call to db; attach object by it's id and delete it
+                var curAction = new ActionDO { Id = id };
+                uow.RouteNodeRepository.Attach(curAction);
+                uow.RouteNodeRepository.Remove(curAction);
+                uow.SaveChanges();
+
+                var downstreamActions = _routeNode.GetDownstreamActivities(uow, curActionBackup).OfType<ActionDO>();
+                //lets start multithreaded calls
+                var configureTaskList = new List<Task<ActionDTO>>();
+                foreach (var downstreamAction in downstreamActions)
+                {
+                    configureTaskList.Add(_action.Configure(downstreamAction));
+                }
+
+                await Task.WhenAll(configureTaskList);
+
+                //collect plugin responses
+                //all tasks are completed by now
+                var pluginResponseList = configureTaskList.Select(t => t.Result);
+
+                foreach (var pluginResponse in pluginResponseList)
+                {
+                    var pluginError = GetValidationErrors(pluginResponse.CrateStorage);
+                    if (pluginError != null)
+                    {
+                        validationErrors.Add(pluginError);
+                    }
+                }
+
+                //if there are validation errors restore curActionBackup
+                if (validationErrors.Count > 0)
+                {
+                    //restore it
+                    uow.RouteNodeRepository.Add(curActionBackup);
+                    uow.SaveChanges();
+                }
+                else
+                {
+                    //TODO update ordering of downstream actions
+                }
+
+            }
+            return validationErrors.Count < 1;
+        }
+
+        public async Task<string> DeleteAction(int id, bool confirmed)
+        {
+            if (confirmed)
+            {
+                //we can assume that there has been some validation errors on previous call
+                //but user still wants to delete this action
+                //lets use kludge solution
+                DeleteActionKludge(id);
+            }
+            else
+            {
+                bool isDeleted = await ValidateDownstreamActionsAndDelete(id);
+                if (!isDeleted)
+                {
+                    //we need user confirmation
+                    return "we need confirmation";
+                }
+            }
+            return "we have deleted it";
+        }
+
+        protected void DeleteActionKludge(int id)
+        {
+            //Kludge solution
             //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

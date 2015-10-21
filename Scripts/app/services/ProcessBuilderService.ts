@@ -16,7 +16,7 @@ module dockyard.services {
         configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
         getByProcessTemplate: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
         //TODO make resource class do this operation
-        deleteById: (id: { id: number }) => ng.resource.IResource<void>;
+        deleteById: (id: { id: number; confirmed: boolean }) => ng.resource.IResource<string>;
         
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
@@ -40,7 +40,7 @@ module dockyard.services {
         add: (curProcessNodeTemplate: model.SubrouteDTO) => ng.IPromise<model.SubrouteDTO>;
         update: (curProcessNodeTemplate: model.SubrouteDTO) => ng.IPromise<model.SubrouteDTO>;
         addOrUpdate(curProcessNodeTemplate: model.SubrouteDTO): {
-            actionType: ActionTypeEnum,
+            actionType: ActionTypeEnum;
             promise: ng.IPromise<model.SubrouteDTO>
         }
     }
@@ -151,7 +151,8 @@ module dockyard.services {
                     isArray: true
                 },
                 'deleteById': {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    url: '/actions/:id?confirmed=:confirmed'
                 },
                 'params': {
                     id: 'id'

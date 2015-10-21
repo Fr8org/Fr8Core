@@ -65,7 +65,7 @@ namespace Web.Controllers
                 {
                     var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
 
-                    pntDTO.Actions = Enumerable.ToList(x.RouteNodes.Select(Mapper.Map<ActionDTO>));
+                    pntDTO.Actions = Enumerable.ToList(x.RouteNodes.OrderBy(r => r.Ordering).Select(Mapper.Map<ActionDTO>));
 
                     return pntDTO;
                 }).ToList();

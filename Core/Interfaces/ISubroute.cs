@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Interfaces
 {
@@ -13,6 +15,6 @@ namespace Core.Interfaces
         void Update(IUnitOfWork uow, SubrouteDO subroute);
         void Delete(IUnitOfWork uow, int id);
         void AddAction(IUnitOfWork uow, ActionDO resultActionDo);
-        void DeleteAction(int id);
+        Task<string> DeleteAction(int id, bool confirmed);
     }
 }

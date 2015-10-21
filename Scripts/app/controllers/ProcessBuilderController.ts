@@ -186,7 +186,9 @@ module dockyard.controllers {
                 .openConfirmationModal('Are you sure you want to delete this Action? You will have to reconfigure all downstream Actions.')
                 .then(() => {
 
-                self.ActionService.deleteById({ id: action.id }).$promise.then(() => {
+                self.ActionService.deleteById({ id: action.id, confirmed: false }).$promise.then((response) => {
+                    console.log(response);
+                    alert(response);
                     //lets reload process template
                     self.$scope.actionGroups = [];
                     self.$scope.current = new model.ProcessBuilderState();

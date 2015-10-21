@@ -140,9 +140,10 @@ namespace Web.Controllers
         /// </summary>
         [HttpDelete]
         [Route("{id:int}")]
-        public void Delete(int id)
+        public IHttpActionResult Delete(int id, bool confirmed = false)
         {
-            _subRoute.DeleteAction(id);
+            var msg = _subRoute.DeleteAction(id, confirmed);
+            return Ok(msg);
         }
 
         /// <summary>
