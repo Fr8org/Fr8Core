@@ -11,6 +11,8 @@ module dockyard.controllers {
         goToProcessTemplatePage: (processTemplate: interfaces.IRouteVM) => void;
         goToProcessTemplateDetailsPage: (processTemplate: interfaces.IRouteVM) => void;
         deleteProcessTemplate: (processTemplate: interfaces.IRouteVM) => void;
+        activateProcessTemplate: (processTemplate: interfaces.IRouteVM) => void;
+        deactivateProcessTemplate: (processTemplate: interfaces.IRouteVM) => void;
         dtOptionsBuilder: any;
         dtColumnDefs: any;
         activeProcessTemplates: Array<interfaces.IRouteVM>;
@@ -56,6 +58,8 @@ module dockyard.controllers {
             $scope.goToProcessTemplatePage = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.goToProcessTemplatePage);
             $scope.goToProcessTemplateDetailsPage = <(processTemplate: interfaces.IRouteVM) => void>angular.bind(this, this.goToProcessTemplateDetailsPage);
             $scope.deleteProcessTemplate = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.deleteProcessTemplate);
+            $scope.activateProcessTemplate = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.activateProcessTemplate);
+            $scope.deactivateProcessTemplate = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.deactivateProcessTemplate);
         }
 
         private getColumnDefs() {
@@ -67,6 +71,12 @@ module dockyard.controllers {
             ];
         }
 
+        private activateProcessTemplate(processTemplate) {
+            this.ProcessTemplateService.activate(processTemplate);
+        };
+        private deactivateProcessTemplate(processTemplate) {
+            this.ProcessTemplateService.deactivate(processTemplate);
+        };
         private executeProcessTemplate(processTemplateId, $event) {
             this.ProcessTemplateService.execute({ id: processTemplateId });
         }

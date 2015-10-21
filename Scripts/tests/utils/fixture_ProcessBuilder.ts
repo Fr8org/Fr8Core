@@ -8,7 +8,7 @@
             routeState: 1,
             subscribedDocuSignTemplates: [],
             externalEventSubscription: [],
-            startingProcessNodeTemplateId: 1
+            startingSubrouteId: 1
         };
 
         public static processBuilderState = new model.ProcessBuilderState();

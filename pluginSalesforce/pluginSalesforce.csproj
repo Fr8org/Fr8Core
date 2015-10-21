@@ -214,9 +214,10 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\Authentication.cs" />
     <Compile Include="Infrastructure\IEvent.cs" />
-    <Compile Include="Infrastructure\ILead.cs" />
-    <Compile Include="Infrastructure\IConfiguration.cs" />
+    <Compile Include="Infrastructure\ISalesforceIntegration.cs" />
+    <Compile Include="Infrastructure\Lead.cs" />
     <Compile Include="Infrastructure\LeadDTO.cs" />
     <Compile Include="Infrastructure\SalesforceEnvelopeInformation.cs" />
     <Compile Include="Infrastructure\SalesforceNotificationParser.cs" />
@@ -227,8 +228,7 @@
     </Compile>
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Services\Event.cs" />
-    <Compile Include="Services\Lead.cs" />
-    <Compile Include="Services\Configuration.cs" />
+    <Compile Include="Services\SalesforceIntegration.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
   </ItemGroup>
@@ -241,6 +241,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
@@ -268,12 +271,6 @@
       <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WebReferences Include="Web References\" />
-  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -281,6 +278,15 @@
   <PropertyGroup>
     <StartupObject>
     </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

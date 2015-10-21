@@ -4,6 +4,7 @@ using Data.Interfaces.DataTransferObjects;
 using System.Web.Http;
 using PluginBase.Infrastructure;
 using System.Threading.Tasks;
+using Utilities.Configuration.Azure;
 
 namespace PluginBase.BaseClasses
 {
@@ -24,7 +25,8 @@ namespace PluginBase.BaseClasses
         [HttpGet]
         public IHttpActionResult ReportPluginError(string pluginName, Exception pluginError)
         {
-            return Json(_basePluginEvent.SendPluginErrorIncident(pluginName, pluginError.Message, pluginError.GetType().Name));
+            var exceptionMessage = string.Format("{0}\r\n{1}", pluginError.Message, pluginError.StackTrace);
+            return Json(_basePluginEvent.SendPluginErrorIncident(pluginName, exceptionMessage, pluginError.GetType().Name));
         }
 
         /// <summary>

@@ -5,7 +5,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using Core.Services;
+using Data.Constants;
 using Newtonsoft.Json;
+
 using StructureMap;
 using Core.Enums;
 using Core.Interfaces;
@@ -15,6 +18,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Utilities.Configuration.Azure;
 using PluginBase.Infrastructure;
+using Data.Interfaces;
 
 namespace PluginBase.BaseClasses
 {
@@ -29,7 +33,8 @@ namespace PluginBase.BaseClasses
         protected IAction Action;
         protected ICrateManager Crate;
         protected IRouteNode Activity;
-
+        private readonly Authorization _authorizationToken;
+        private readonly IPlugin _plugin;
         #endregion
 
         public BasePluginAction()
@@ -37,9 +42,11 @@ namespace PluginBase.BaseClasses
             Crate = ObjectFactory.GetInstance<ICrateManager>();
             Action = ObjectFactory.GetInstance<IAction>();
             Activity = ObjectFactory.GetInstance<IRouteNode>();
+            _plugin = ObjectFactory.GetInstance<IPlugin>();
+            _authorizationToken = new Authorization();
         }
 
-        protected bool IsEmptyAuthToken(ActionDTO actionDTO)
+        protected bool NeedsAuthentication(ActionDTO actionDTO)
         {
             if (actionDTO == null
                 || actionDTO.AuthToken == null
@@ -67,7 +74,7 @@ namespace PluginBase.BaseClasses
             }
         }
 
-        protected void AppendDockyardAuthenticationCrate(
+        protected void AddAuthenticationCrate(
             ActionDTO actionDTO, AuthenticationMode mode)
         {
             if (actionDTO.CrateStorage == null)
@@ -97,8 +104,41 @@ namespace PluginBase.BaseClasses
             }
         }
 
+        protected async Task<CrateDTO> ValidateFields(List<FieldValidationDTO> requiredFieldList)
+        {
+            var httpClient = new HttpClient();
+
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                      + "field/exists";
+            using (var response = await httpClient.PostAsJsonAsync(url, requiredFieldList))
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<FieldValidationResult>>(content);
+                //do something with result
+                //Crate.CreateDesignTimeFieldsCrate("ValidationErrors",)
+                var validationErrorList = new List<FieldDTO>();
+                //lets create necessary validationError crates
+                for (var i = 0; i < result.Count; i++)
+                {
+                    var fieldCheckResult = result[i];
+                    if (fieldCheckResult == FieldValidationResult.NotExists)
+                    {
+                        validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required"});
+                    }
+                }
+
+                if (validationErrorList.Any())
+                {
+                    return Crate.CreateDesignTimeFieldsCrate("ValidationErrors", validationErrorList.ToArray());
+                }
+            }
+
+            return null;
+        }
+
         protected async Task<ActionDTO> ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
+            
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
             {
                 return await InitialConfigurationResponse(curActionDTO);
@@ -114,9 +154,9 @@ namespace PluginBase.BaseClasses
 
         protected bool ValidateAuthentication(ActionDTO curActionDTO, AuthenticationMode curAuthenticationMode)
         {
-            if (IsEmptyAuthToken(curActionDTO))
+            if (NeedsAuthentication(curActionDTO))
             {
-                AppendDockyardAuthenticationCrate(
+                AddAuthenticationCrate(
                     curActionDTO,
                     curAuthenticationMode);
                 return false;
@@ -462,5 +502,78 @@ namespace PluginBase.BaseClasses
 
             throw new ApplicationException("No field found with specified key.");
         }
+
+        public void FlaggedForAuthentication(ActionDTO curActionDTO)
+        {
+            AddAuthenticationCrate(
+                    curActionDTO,
+                    AuthenticationMode.ExternalMode);
+        }
+
+
+        /// <summary>
+        /// Retrieve authorization token
+        /// </summary>
+        /// <param name="curActionDO"></param>
+        /// <returns></returns>
+        public string Authenticate(ActionDO curActionDO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Fr8AccountDO curDockyardAccountDO = GetAccount(curActionDO);
+                var curPlugin = curActionDO.ActivityTemplate.Plugin;
+                string curToken = string.Empty;
+
+                if (curDockyardAccountDO != null)
+                {
+                    curToken = _authorizationToken.GetToken(curDockyardAccountDO.Id, curPlugin.Id);
+
+                    if (!string.IsNullOrEmpty(curToken))
+                        return curToken;
+                }
+
+                curToken = _authorizationToken.GetPluginToken(curPlugin.Id);
+                if (!string.IsNullOrEmpty(curToken))
+                    return curToken;
+                return _plugin.Authorize();
+            }
+        }
+
+        public bool IsAuthenticated(Fr8AccountDO account, PluginDO plugin)
+        {
+            if (!plugin.RequiresAuthentication)
+            {
+                return true;
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var hasAuthToken = uow.AuthorizationTokenRepository
+                    .GetQuery()
+                    .Any(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
+
+                return hasAuthToken;
+            }
+        }
+
+        /// <summary>
+        /// Retrieve account
+        /// </summary>
+        /// <param name="curActionDO"></param>
+        /// <returns></returns>
+        public Fr8AccountDO GetAccount(ActionDO curActionDO)
+        {
+            if (curActionDO.ParentRouteNode != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
+            {
+                // Can't follow guideline to init services inside constructor. 
+                // Current implementation of Route and Action services are not good and are depedant on each other.
+                // Initialization of services in constructor will cause stack overflow
+                var route = ObjectFactory.GetInstance<IRoute>().GetRoute(curActionDO);
+                return route != null ? route.Fr8Account : null;
+            }
+
+            return null;
+
+        }      
     }
 }
