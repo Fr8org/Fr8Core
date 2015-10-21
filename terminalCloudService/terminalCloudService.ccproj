@@ -89,7 +89,7 @@
   <ItemGroup>
     <SecondarySite Include="..\terminalAzure\terminalAzure.csproj" />
     <SecondarySite Include="..\terminalFr8Core\terminalFr8Core.csproj" />
-    <SecondarySite Include="..\pluginExcel\pluginExcel.csproj" />
+    <SecondarySite Include="..\terminalExcel\terminalExcel.csproj" />
     <SecondarySite Include="..\pluginSalesforce\pluginSalesforce.csproj" />
     <SecondarySite Include="..\pluginSendGrid\pluginSendGrid.csproj" />
     <SecondarySite Include="..\terminalSlack\terminalSlack.csproj" />

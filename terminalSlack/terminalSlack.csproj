@@ -255,9 +255,7 @@
   <PropertyGroup>
     <PostBuildEvent>if exist $(TargetDir)pluginSlack.dll del /Q $(TargetDir)pluginSlack.dll
 
-if exist $(TargetDir)pluginSlack.dll.config del /Q $(TargetDir)pluginSlack.dll.config
-
-if exist $(TargetDir)pluginSlack.pdb del /Q $(TargetDir)pluginSlack.pdb</PostBuildEvent>
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

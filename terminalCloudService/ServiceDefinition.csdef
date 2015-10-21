@@ -37,9 +37,9 @@
           <Binding name="Endpoint1" endpointName="pluginTwilio" />
         </Bindings>
       </Site>
-      <Site name="pluginExcel" physicalDirectory="..\..\..\pluginExcel\azure.publish">
+      <Site name="terminalExcel" physicalDirectory="..\..\..\terminalExcel\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="pluginExcel" />
+          <Binding name="Endpoint1" endpointName="terminalExcel" />
         </Bindings>
       </Site>
     </Sites>
@@ -54,7 +54,7 @@
       <InputEndpoint name="terminalFr8Core" protocol="http" port="50705" />
       <InputEndpoint name="pluginSendGrid" protocol="http" port="10601" />
       <InputEndpoint name="pluginTwilio" protocol="http" port="30699" />
-      <InputEndpoint name="pluginExcel" protocol="http" port="47011" />
+      <InputEndpoint name="terminalExcel" protocol="http" port="47011" />
     </Endpoints>
     <Imports>
       <Import moduleName="RemoteAccess" />
