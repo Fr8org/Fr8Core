@@ -9,34 +9,40 @@
 </ul>
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
-<div ng-controller="ProcessBuilderController" class="margin-top-10">    
+<div ng-controller="ProcessBuilderController" class="margin-top-10">
     <designer-header route="current.route"></designer-header>
-    <div class="process-builder-container">
-        <div class="action" ng-repeat-start="action in actions">
-            <div class="action-header" dropdown transfer-click-configure-pane>
-                <p class="action-name">{{action.label}}
-                </p>
-                <a class="action-menu" dropdown-toggle stop-click-propagation>
-                    <i class="fa fa-gear fa-5x"></i>
-                </a>
-                <ul class="dropdown-menu pull-right" role="menu" stop-click-propagation>
-                    <li role="menuitem">
-                    <a ng-click="deleteAction(action);">
-                        <i class="fa fa-trash-o"></i> 
-                        Delete
-                    </a>
-                    </li>
-                </ul>
-            </div>
-            
-            <pane-configure-action id="paneConfigureAction" current-action="action"></pane-configure-action>
-        </div>
-        <div class="action-arrow" ng-repeat-end></div>
+    <div class="process-builder-container" layout-container>
+        <div ng-repeat="group in actionGroups" layout-action-group class="action-group">
+            <div class="action-arrow-bottom"></div>
+            <div>
+                <div class="action" ng-repeat-start="action in group.actions">
+                    <div class="action-header" dropdown transfer-click-configure-pane>
+                        <p class="action-name">
+                            {{action.label}}
+                        </p>
+                        <a class="action-menu" dropdown-toggle stop-click-propagation>
+                            <i class="fa fa-gear fa-5x"></i>
+                        </a>
+                        <ul class="dropdown-menu pull-right" role="menu" stop-click-propagation>
+                            <li role="menuitem">
+                                <a ng-click="deleteAction(action);">
+                                    <i class="fa fa-trash-o"></i>
+                                    Delete
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
 
-        <div class="action action-to-add" ng-click="addAction()">
-            <p class="action-name">Click to add action</p>
+                    <pane-configure-action id="paneConfigureAction" current-action="action"></pane-configure-action>
+                </div>
+                <div class="action-arrow-right" ng-repeat-end></div>
+
+                <div class="action action-to-add" ng-click="addAction()">
+                    <p class="action-name">Click to add action</p>
+                </div>
+            </div>
         </div>
-    </div>    
+    </div>
     <!-- END MAIN CONTENT -->
 
     <pane-select-action></pane-select-action>
