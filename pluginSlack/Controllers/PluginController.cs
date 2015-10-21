@@ -4,6 +4,7 @@ using System.Web.Http.Description;
 using System.Web.Http;
 using Data.Entities;
 using Data.States;
+using Utilities.Configuration.Azure;
 
 namespace pluginSlack.Controllers
 {
@@ -21,7 +22,7 @@ namespace pluginSlack.Controllers
         {
             var plugin = new PluginDO
             {
-                Endpoint = "localhost:39504",
+                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 PluginStatus = PluginStatus.Active,
                 Name = "pluginSlack",
                 RequiresAuthentication = true,
