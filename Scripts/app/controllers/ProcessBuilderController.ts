@@ -18,7 +18,7 @@ module dockyard.controllers {
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
         current: model.ProcessBuilderState;
-        actions: Array<model.ActionDTO>;
+        actionGroups: model.ActionGroup[]
 
         addAction(): void;
         deleteAction: (action: model.ActionDTO) => void;
@@ -50,7 +50,8 @@ module dockyard.controllers {
             '$filter',
             '$modal',
             '$window',
-            'UIHelperService'
+            'UIHelperService',
+            'LayoutService'
         ];
 
         constructor(
@@ -66,13 +67,13 @@ module dockyard.controllers {
             private $filter: ng.IFilterService,
             private $modal,
             private $window: ng.IWindowService,
-            private uiHelperService: services.IUIHelperService
+            private uiHelperService: services.IUIHelperService,
+            private LayoutService: services.ILayoutService
             ) {
-            debugger;
 
             this.$scope.routeId = $state.params.id;
             this.$scope.current = new model.ProcessBuilderState();
-            this.$scope.actions = [];
+            this.$scope.actionGroups = [];
 
             this.setupMessageProcessing();
             $timeout(() => this.loadProcessTemplate(), 500, true);
@@ -122,8 +123,6 @@ module dockyard.controllers {
             var processTemplatePromise = this.RouteService.getFull({ id: this.$scope.routeId });
             var self = this;
             processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IRouteVM) => {
-                debugger;
-
                 this.$scope.current.route = curProcessTemplate;
                 this.$scope.currentSubroute = curProcessTemplate.subroutes[0];
                 this.renderProcessTemplate(curProcessTemplate);
@@ -133,11 +132,14 @@ module dockyard.controllers {
         private renderProcessTemplate(curProcessTemplate: interfaces.IRouteVM) {
             if (curProcessTemplate.subroutes.length == 0) return;
 
-            for (var curProcessNodeTemplate of curProcessTemplate.subroutes) {
-                for (var curAction of curProcessNodeTemplate.actions) {
-                    this.$scope.actions.push(curAction);
+            var actions = [];
+            for (var subroute of curProcessTemplate.subroutes) {
+                for (var action of subroute.actions) {
+                    actions.push(action);
                 }
             }
+
+            this.$scope.actionGroups = this.LayoutService.placeActions(actions, curProcessTemplate.startingSubrouteId);  
         }
 
         // If action updated, notify interested parties and update $scope.current.action
@@ -186,7 +188,7 @@ module dockyard.controllers {
 
                 self.ActionService.deleteById({ id: action.id }).$promise.then(() => {
                     //lets reload process template
-                    self.$scope.actions = [];
+                    self.$scope.actionGroups = [];
                     self.$scope.current = new model.ProcessBuilderState();
                     self.loadProcessTemplate();
                 });
@@ -208,7 +210,7 @@ module dockyard.controllers {
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();
             this.$scope.current.action.activityTemplateId = activityTemplate.id;
-            this.$scope.actions.push(action);
+            this.$scope.actionGroups[0].actions.push(action);
 
             this.selectAction(action);
         }
@@ -265,7 +267,8 @@ module dockyard.controllers {
                 }
                 if (canBypassActionLoading) {
                     this.$scope.current.action = result.action;
-                    this.$scope.actions[this.$scope.actions.length - 1] = result.action;
+                    var actions = this.$scope.actionGroups[0].actions
+                    actions[actions.length - 1] = result.action;
                 }
                 else {
                     this.ActionService.get({ id: actionId }).$promise.then(action => {
