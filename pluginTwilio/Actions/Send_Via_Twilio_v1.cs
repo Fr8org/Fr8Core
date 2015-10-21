@@ -119,13 +119,12 @@ namespace pluginTwilio.Actions
         {
             CrateDTO crateDTO = new CrateDTO();
 
-            ActionDO curActionDO = Action.MapFromDTO(curActionDTO);
             var curUpstreamFields = GetRegisteredSenderNumbersData().ToArray();
 
             if (curUpstreamFields.Length == 0)
             {
                 crateDTO = PackCrate_ErrorTextBox("Error_NoUpstreamLists",
-                         "No Upstream fr8 Lists Were Found.");
+                            "No Upstream fr8 Lists Were Found.");
                 curActionDTO.CurrentView = "Error_NoUpstreamLists";
             }
             else
