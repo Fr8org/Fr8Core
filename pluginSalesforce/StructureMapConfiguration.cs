@@ -43,8 +43,7 @@ namespace pluginSalesforce
              public LiveMode()
              {
                    For<pluginSalesforce.Infrastructure.IEvent>().Use<pluginSalesforce.Services.Event>();     
-                   For<ILead>().Use<pluginSalesforce.Services.Lead>();
-                   For<IConfiguration>().Use<pluginSalesforce.Services.Configuration>();
+                   For<ISalesforceIntegration>().Use<pluginSalesforce.Services.SalesforceIntegration>();                  
              }
          }       
     }

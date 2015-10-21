@@ -21,16 +21,16 @@ namespace Core.Interfaces
         ActionDO MapFromDTO(ActionDTO curActionDTO);
         Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow);
         Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO);
-        string Authenticate(ActionDO curActionDO);
+       // string Authenticate(ActionDO curActionDO);
         
         Task<ActionDTO> Activate(ActionDO curActionDO);
         Task<ActionDTO> Deactivate(ActionDO curActionDO);
 		
         StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction);
-        bool IsAuthenticated(Fr8AccountDO user, PluginDO plugin);
-        Task AuthenticateInternal(Fr8AccountDO user, PluginDO plugin, string username, string password);
-        Task<ExternalAuthUrlDTO> GetExternalAuthUrl(Fr8AccountDO user, PluginDO plugin);
-        Task AuthenticateExternal(PluginDO plugin, ExternalAuthenticationDTO externalAuthenticateDTO);
+        //bool IsAuthenticated(Fr8AccountDO user, PluginDO plugin);
+        //Task AuthenticateInternal(Fr8AccountDO user, PluginDO plugin, string username, string password);
+        //Task<ExternalAuthUrlDTO> GetExternalAuthUrl(Fr8AccountDO user, PluginDO plugin);
+        //Task AuthenticateExternal(PluginDO plugin, ExternalAuthenticationDTO externalAuthenticateDTO);
         
 
         Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key, string fieldName = "name", GetCrateDirection direction = GetCrateDirection.None);

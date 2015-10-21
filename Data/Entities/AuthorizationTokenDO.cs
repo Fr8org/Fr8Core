@@ -48,5 +48,7 @@ namespace Data.Entities
 
         public virtual _AuthorizationTokenStateTemplate AuthorizationTokenStateTemplate { get; set; }
 
+        //Additional Attributes such as version number ,  instance url etc..
+        public String AdditionalAttributes { get; set; }
     }
 }
