@@ -2,39 +2,44 @@
 <ServiceDefinition name="terminalCloudService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2015-04.2.6">
   <WebRole name="terminalWebRole" vmsize="Small">
     <Sites>
-      <Site name="pluginAzureSqlServer" physicalDirectory="..\..\..\pluginAzureSqlServer">
+      <Site name="pluginAzureSqlServer" physicalDirectory="..\..\..\pluginAzureSqlServer\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="pluginAzureSqlServer" />
         </Bindings>
       </Site>
-      <Site name="pluginSlack" physicalDirectory="..\..\..\pluginSlack">
+      <Site name="terminalSlack" physicalDirectory="..\..\..\terminalSlack\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="pluginSlack" />
+          <Binding name="Endpoint1" endpointName="terminalSlack" />
         </Bindings>
       </Site>
-      <Site name="pluginDocuSign" physicalDirectory="..\..\..\pluginDocuSign">
+      <Site name="terminalDocuSign" physicalDirectory="..\..\..\terminalDocuSign\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="pluginDocuSign" />
+          <Binding name="Endpoint1" endpointName="terminalDocuSign" />
         </Bindings>
       </Site>
-      <Site name="pluginSalesforce" physicalDirectory="..\..\..\pluginSalesforce">
+      <Site name="pluginSalesforce" physicalDirectory="..\..\..\pluginSalesforce\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="pluginSalesforce" />
         </Bindings>
       </Site>
-      <Site name="pluginDockyardCore" physicalDirectory="..\..\..\pluginDockyardCore">
+      <Site name="terminalFr8Core" physicalDirectory="..\..\..\terminalFr8Core\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="pluginDockyardCore" />
+          <Binding name="Endpoint1" endpointName="terminalFr8Core" />
         </Bindings>
       </Site>
-      <Site name="pluginSendGrid" physicalDirectory="..\..\..\pluginSendGrid">
+      <Site name="pluginSendGrid" physicalDirectory="..\..\..\pluginSendGrid\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="pluginSendGrid" />
         </Bindings>
       </Site>
-      <Site name="pluginTwilio" physicalDirectory="..\..\..\pluginTwilio">
+      <Site name="pluginTwilio" physicalDirectory="..\..\..\pluginTwilio\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="pluginTwilio" />
+        </Bindings>
+      </Site>
+      <Site name="pluginExcel" physicalDirectory="..\..\..\pluginExcel\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="pluginExcel" />
         </Bindings>
       </Site>
     </Sites>
@@ -43,12 +48,13 @@
     </ConfigurationSettings>
     <Endpoints>
       <InputEndpoint name="pluginAzureSqlServer" protocol="http" port="46281" />
-      <InputEndpoint name="pluginSlack" protocol="http" port="39504" />
-      <InputEndpoint name="pluginDocuSign" protocol="http" port="53234" />
+      <InputEndpoint name="terminalSlack" protocol="http" port="39504" />
+      <InputEndpoint name="terminalDocuSign" protocol="http" port="53234" />
       <InputEndpoint name="pluginSalesforce" protocol="http" port="51234" />
-      <InputEndpoint name="pluginDockyardCore" protocol="http" port="50705" />
+      <InputEndpoint name="terminalFr8Core" protocol="http" port="50705" />
       <InputEndpoint name="pluginSendGrid" protocol="http" port="10601" />
       <InputEndpoint name="pluginTwilio" protocol="http" port="30699" />
+      <InputEndpoint name="pluginExcel" protocol="http" port="47011" />
     </Endpoints>
     <Imports>
       <Import moduleName="RemoteAccess" />

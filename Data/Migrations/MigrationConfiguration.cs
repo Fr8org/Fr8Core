@@ -66,9 +66,9 @@ namespace Data.Migrations
             AddDockyardAccounts(uow);
             AddProfiles(uow);
 
-            AddPlugins(uow);
+            //AddPlugins(uow);
 
-            AddAuthorizationTokens(uow);
+            //AddAuthorizationTokens(uow);
             AddContainerDOForTestingApi(uow);
         }
 

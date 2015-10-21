@@ -16,7 +16,7 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>True</UseIISExpress>
+    <UseIISExpress>False</UseIISExpress>
     <IISExpressSSLPort>44301</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
@@ -488,87 +488,18 @@
     <Content Include="Content\img\ProcessBuilder\circle-selected.png" />
     <Content Include="Content\img\ProcessBuilder\circle.png" />
     <Content Include="Content\img\ProcessBuilder\criteria-node-bg.png" />
+    <Content Include="Content\img\ProcessBuilder\delete-icon.png" />
     <Content Include="Content\img\ProcessBuilder\right-arrow.png" />
     <Content Include="Content\img\ProcessBuilder\start-node-bg.png" />
     <Content Include="Content\img\select-info.png" />
     <Content Include="Content\img\site\alex-photo.png" />
+    <Content Include="Content\img\site\arrow_blue_ic_arrow_forward_48px-512.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
     <Content Include="Content\img\site\email-header.png" />
     <Content Include="Content\img\site\How_it_works_diagram.png" />
     <Content Include="Content\img\site\kwasant-video-screen-logo.png" />
     <Content Include="Content\img\site\kwasant-video-screen.png" />
     <Content Include="Content\img\site\site-logo.png" />
-    <Content Include="Content\img\temp\background-test9.jpg" />
-    <Content Include="Content\img\temp\homepage89.png" />
-    <Content Include="Content\img\temp\homepagesecond.jpg" />
-    <Content Include="Content\img\temp\kwasant-video-screen.png" />
-    <Content Include="Content\img\temp\kwasant_header.png" />
-    <Content Include="Content\img\temp\old\background-match.jpg" />
-    <Content Include="Content\img\temp\old\background-test5.jpg" />
-    <Content Include="Content\img\temp\old\background-test6.jpg" />
-    <Content Include="Content\img\temp\old\background-test7.jpg" />
-    <Content Include="Content\img\temp\old\bg1.jpg" />
-    <Content Include="Content\img\temp\old\bg2.jpg" />
-    <Content Include="Content\img\temp\old\bg3.jpg" />
-    <Content Include="Content\img\temp\old\bg4.jpg" />
-    <Content Include="Content\img\temp\old\bg5.jpg" />
-    <Content Include="Content\img\temp\old\bg6.jpg" />
-    <Content Include="Content\img\temp\old\bg7.jpg" />
-    <Content Include="Content\img\temp\old\bg8.jpg" />
-    <Content Include="Content\img\temp\old\bg9.jpg" />
-    <Content Include="Content\img\temp\old\blue_tag.psd" />
-    <Content Include="Content\img\temp\old\Booking Details.png" />
-    <Content Include="Content\img\temp\old\calendar5.jpg" />
-    <Content Include="Content\img\temp\old\client-1.png" />
-    <Content Include="Content\img\temp\old\client-2.png" />
-    <Content Include="Content\img\temp\old\client-3.png" />
-    <Content Include="Content\img\temp\old\client-4.png" />
-    <Content Include="Content\img\temp\old\client-5.png" />
-    <Content Include="Content\img\temp\old\client-6.png" />
-    <Content Include="Content\img\temp\old\Database layout.pdf" />
-    <Content Include="Content\img\temp\old\Email thread .docx" />
-    <Content Include="Content\img\temp\old\homepage1.jpg" />
-    <Content Include="Content\img\temp\old\homepage2.jpg" />
-    <Content Include="Content\img\temp\old\homepage3.jpg" />
-    <Content Include="Content\img\temp\old\homepage4.jpg" />
-    <Content Include="Content\img\temp\old\homepagefirst.jpg" />
-    <Content Include="Content\img\temp\old\homepagelower3.jpg" />
-    <Content Include="Content\img\temp\old\image_1.jpg" />
-    <Content Include="Content\img\temp\old\image_2.jpg" />
-    <Content Include="Content\img\temp\old\image_3.jpg" />
-    <Content Include="Content\img\temp\old\image_4.jpg" />
-    <Content Include="Content\img\temp\old\image_5.jpg" />
-    <Content Include="Content\img\temp\old\image_6.jpg" />
-    <Content Include="Content\img\temp\old\image_7.jpg" />
-    <Content Include="Content\img\temp\old\kwasant-logo.png" />
-    <Content Include="Content\img\temp\old\largehome.jpg" />
-    <Content Include="Content\img\temp\old\largehome1.jpg" />
-    <Content Include="Content\img\temp\old\logo11.png" />
-    <Content Include="Content\img\temp\old\logo2.png" />
-    <Content Include="Content\img\temp\old\logo5.png" />
-    <Content Include="Content\img\temp\old\logo6.png" />
-    <Content Include="Content\img\temp\old\logo7.png" />
-    <Content Include="Content\img\temp\old\logo9.png" />
-    <Content Include="Content\img\temp\old\love.jpg" />
-    <Content Include="Content\img\temp\old\older-calendar.jpg" />
-    <Content Include="Content\img\temp\old\scheduler1.jpg" />
-    <Content Include="Content\img\temp\old\screen.jpg" />
-    <Content Include="Content\img\temp\old\second-home.jpg" />
-    <Content Include="Content\img\temp\old\step1.png" />
-    <Content Include="Content\img\temp\old\step1a.png" />
-    <Content Include="Content\img\temp\old\step1b.png" />
-    <Content Include="Content\img\temp\old\step1c.png" />
-    <Content Include="Content\img\temp\old\stock-photo-17850747-businessman-writing-in-a-planner.jpg" />
-    <Content Include="Content\img\temp\old\stock-photo-18215604-daily-planner.jpg" />
-    <Content Include="Content\img\temp\old\stock-photo-4316947-schedule.jpg" />
-    <Content Include="Content\img\temp\old\stone-calendar.jpg" />
-    <Content Include="Content\img\temp\old\test-background.jpg" />
-    <Content Include="Content\img\temp\old\test-background2.jpg" />
-    <Content Include="Content\img\temp\old\test-background3.jpg" />
-    <Content Include="Content\img\temp\old\test-background4.jpg" />
-    <Content Include="Content\img\temp\old\Workflow.vsdx" />
-    <Content Include="Content\img\temp\old\Workflowv2.png" />
-    <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
     <Content Include="fr8terminals.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />
@@ -751,16 +682,45 @@
     <Content Include="Scripts\lib\jpattern.js" />
     <Content Include="Scripts\tests\integration\PluginActionExecuteTest.js" />
     <Content Include="Scripts\tests\integration\ContainerControllerTests.js" />
-    <Content Include="Views\ExternalAuth\AuthSuccess.cshtml" />
-    <Content Include="Views\AngularTemplate\TextArea.cshtml" />
-    <Content Include="Views\AngularTemplate\FieldList.cshtml" />
-    <Content Include="Views\AngularTemplate\ContainerList.cshtml" />
+    <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
+    <Content Include="Views\AngularTemplate\AccountList.cshtml" />
+    <Content Include="Views\AngularTemplate\ConfigurationControl.cshtml" />
     <Content Include="Views\AngularTemplate\ConfirmationModal.cshtml" />
-    <Content Include="_PowerShellScripts\RunFrontEndTests-VSO.ps1" />
     <Content Include="Views\AngularTemplate\ContainerDetails.cshtml" />
-    <Content Include="Views\DockyardAccount\_HeaderPartial.cshtml" />
-    <Content Include="Views\AngularTemplate\DropDownListBox.cshtml" />
+    <Content Include="Views\AngularTemplate\ContainerList.cshtml" />
     <Content Include="Views\AngularTemplate\DesignerHeader.cshtml" />
+    <Content Include="Views\AngularTemplate\DropDownListBox.cshtml" />
+    <Content Include="Views\AngularTemplate\FieldList.cshtml" />
+    <Content Include="Views\AngularTemplate\FilePicker.cshtml" />
+    <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
+    <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
+    <Content Include="Views\AngularTemplate\Footer.cshtml" />
+    <Content Include="Views\AngularTemplate\Header.cshtml" />
+    <Content Include="Views\AngularTemplate\InternalAuthentication.cshtml" />
+    <Content Include="Views\AngularTemplate\ManageFileList.cshtml" />
+    <Content Include="Views\AngularTemplate\MappingPane.cshtml" />
+    <Content Include="Views\AngularTemplate\MyAccountPage.cshtml" />
+    <Content Include="Views\AngularTemplate\PageHead.cshtml" />
+    <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
+    <Content Include="Views\AngularTemplate\PaneSelectActionModal.cshtml" />
+    <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
+    <Content Include="Views\AngularTemplate\QueryBuilderWidget.cshtml" />
+    <Content Include="Views\AngularTemplate\RadioButtonOption.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteDetails.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteForm.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteList.cshtml" />
+    <Content Include="Views\AngularTemplate\RoutingControl.cshtml" />
+    <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
+    <Content Include="Views\AngularTemplate\ShowIncidents.cshtml" />
+    <Content Include="Views\AngularTemplate\TextArea.cshtml" />
+    <Content Include="Views\AngularTemplate\TextBlock.cshtml" />
+    <Content Include="Views\ExternalAuth\AuthSuccess.cshtml" />
+    <Content Include="_PowerShellScripts\RunFrontEndTests-VSO.ps1" />
+    <Content Include="Views\DockyardAccount\_HeaderPartial.cshtml" />
+    <None Include="Properties\PublishProfiles\dockyard - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\dockyard - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\fr8 - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\fr8 - Web Deploy.pubxml" />
     <None Include="Views\Home\DocuSign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
@@ -828,9 +788,6 @@
     <TypeScriptCompile Include="Scripts\tests\integration\PluginDocuSignTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ProcessTemplateControllerTests.ts" />
     <Content Include="Scripts\tests\.gitignore" />
-    <Content Include="Views\AngularTemplate\ManageFileList.cshtml" />
-    <Content Include="Views\AngularTemplate\InternalAuthentication.cshtml" />
-    <None Include="Views\AngularTemplate\MappingPane.cshtml" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
@@ -3975,24 +3932,11 @@
     <Content Include="Themes\scheduler_white\tree_nochildren.png" />
     <Content Include="UnauthorizedRequest.html" />
     <Compile Include="ViewModels\EventWindowVM.cs" />
-    <Content Include="Views\AngularTemplate\RouteForm.cshtml" />
-    <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
     <Content Include="tsd.json" />
-    <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
-    <Content Include="Views\AngularTemplate\PaneSelectActionModal.cshtml" />
-    <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
     <Content Include="Scripts\tests\Chutzpah.json" />
     <Content Include="_PowerShellScripts\RunFrontEndTests - With Web Server.ps1" />
     <Content Include="_PowerShellScripts\RunFrontEndTests.ps1" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
-    <Content Include="Views\AngularTemplate\ConfigurationControl.cshtml" />
-    <Content Include="Views\AngularTemplate\FilePicker.cshtml" />
-    <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
-    <Content Include="Views\AngularTemplate\RadioButtonOption.cshtml" />
-    <Content Include="Views\AngularTemplate\TextBlock.cshtml" />
-    <Content Include="Views\AngularTemplate\RouteDetails.cshtml" />
-    <Content Include="Views\AngularTemplate\AccountList.cshtml" />
-    <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -4052,12 +3996,6 @@
     <Content Include="Views\User\ShowUserCreationSettings.cshtml" />
     <Content Include="Views\User\ShowUserDetails.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
-    <Content Include="Views\AngularTemplate\QueryBuilderWidget.cshtml" />
-    <Content Include="Views\AngularTemplate\ShowIncidents.cshtml" />
-    <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
-    <Content Include="Views\AngularTemplate\RoutingControl.cshtml" />
-    <Content Include="Views\AngularTemplate\RouteList.cshtml" />
-    <Content Include="Views\AngularTemplate\MyAccountPage.cshtml" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\Email\Show.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
@@ -4082,9 +4020,6 @@
     <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />
     <Content Include="Views\Shared\403.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
-    <Content Include="Views\AngularTemplate\Footer.cshtml" />
-    <Content Include="Views\AngularTemplate\Header.cshtml" />
-    <Content Include="Views\AngularTemplate\PageHead.cshtml" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-router\angular-ui-router.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-resource.d.ts" />
@@ -4159,6 +4094,15 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Any CPU'">
     <TypeScriptTarget>ES5</TypeScriptTarget>
@@ -4183,7 +4127,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
+          <UseIIS>True</UseIIS>
           <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>30643</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

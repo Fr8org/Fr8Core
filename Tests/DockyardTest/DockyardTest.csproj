@@ -36,6 +36,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -317,7 +326,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\terminalFr8Core\terminalFr8Core.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
-      <Name>pluginDockyardCore</Name>
+      <Name>terminalFr8Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\pluginExcel\pluginExcel.csproj">
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>

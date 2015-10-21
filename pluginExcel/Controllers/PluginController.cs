@@ -3,6 +3,8 @@ using System.Web.Http.Description;
 using System.Web.Http;
 using Data.Entities;
 using Data.States;
+using Utilities.Configuration.Azure;
+using Utilities.Configuration.Azure;
 
 namespace pluginExcel.Controllers
 {
@@ -22,7 +24,7 @@ namespace pluginExcel.Controllers
 
             var plugin = new PluginDO
             {
-                Endpoint = "localhost:47011",
+                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 PluginStatus = PluginStatus.Active,
                 Name = "pluginExcel",
                 Version = "1"
