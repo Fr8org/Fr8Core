@@ -26,7 +26,7 @@ namespace terminalAzure.Tests.Controllers
         [Test]
         public async void HandleDockyardRequest_PluginTypeIsAzureSqlServer_ResponseInitialConfiguration()
         {
-            string curPlugin = "pluginAzureSqlServer";
+            string curPlugin = "terminalAzure";
             string curActionPath = "Configure";
 
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();

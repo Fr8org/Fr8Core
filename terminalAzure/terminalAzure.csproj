@@ -276,6 +276,13 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>if exist $(TargetDir)pluginAzureSqlServer.dll del /Q $(TargetDir)pluginAzureSqlServer.dll
+
+if exist $(TargetDir)pluginAzureSqlServer.dll.config del /Q $(TargetDir)pluginAzureSqlServer.dll.config
+
+if exist $(TargetDir)pluginAzureSqlServer.pdb del /Q $(TargetDir)pluginAzureSqlServer.pdb</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
