@@ -68,7 +68,7 @@ namespace Data.Migrations
 
             //AddPlugins(uow);
 
-            AddAuthorizationTokens(uow);
+            //AddAuthorizationTokens(uow);
             AddContainerDOForTestingApi(uow);
         }
 
