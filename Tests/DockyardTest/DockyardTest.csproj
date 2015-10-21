@@ -328,9 +328,9 @@
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
       <Name>terminalFr8Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\pluginExcel\pluginExcel.csproj">
+    <ProjectReference Include="..\..\terminalExcel\terminalExcel.csproj">
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
-      <Name>pluginExcel</Name>
+      <Name>terminalExcel</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Web.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>

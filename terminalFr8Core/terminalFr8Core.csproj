@@ -230,11 +230,7 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>if exist $(TargetDir)pluginDockyardCore.dll del /Q $(TargetDir)pluginDockyardCore.dll
-
-if exist $(TargetDir)pluginDockyardCore.dll.config del /Q $(TargetDir)pluginDockyardCore.dll.config
-
-if exist $(TargetDir)pluginDockyardCore.pdb del /Q $(TargetDir)pluginDockyardCore.pdb</PostBuildEvent>
+    <PostBuildEvent>if exist $(TargetDir)pluginDockyardCore.dll del /Q $(TargetDir)pluginDockyardCore.dll</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
