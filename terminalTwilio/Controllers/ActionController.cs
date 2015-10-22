@@ -3,12 +3,12 @@ using Data.Interfaces.DataTransferObjects;
 using PluginBase.BaseClasses;
 using System.Threading.Tasks;
 
-namespace pluginTwilio.Controllers
+namespace terminalTwilio.Controllers
 {    
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private const string curPlugin = "pluginTwilio";
+        private const string curPlugin = "terminalTwilio";
         private readonly BasePluginController _basePluginController = new BasePluginController();
 
         [HttpPost]

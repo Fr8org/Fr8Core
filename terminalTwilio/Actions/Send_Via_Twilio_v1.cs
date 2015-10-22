@@ -1,7 +1,7 @@
 ﻿using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using PluginBase.Infrastructure;
-using pluginTwilio.Services;
+using terminalTwilio.Services;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using Core.Interfaces;
 using Data.Infrastructure;
 using PluginBase.BaseClasses;
 
-namespace pluginTwilio.Actions
+namespace terminalTwilio.Actions
 {
     public class Send_Via_Twilio_v1 : BasePluginAction
     {

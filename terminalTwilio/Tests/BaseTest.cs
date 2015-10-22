@@ -11,7 +11,7 @@ using Data.Infrastructure.AutoMapper;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 
-namespace pluginTwilio.Tests
+namespace terminalTwilio.Tests
 {
     [TestFixture]
     public class BaseTest

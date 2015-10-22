@@ -5,7 +5,7 @@ using Data.States;
 using System.Web.Http.Description;
 using Utilities.Configuration.Azure;
 
-namespace pluginTwilio.Controllers
+namespace terminalTwilio.Controllers
 {    
     [RoutePrefix("plugins")]
     public class PluginController : ApiController
@@ -17,7 +17,7 @@ namespace pluginTwilio.Controllers
         {
             var plugin = new PluginDO()
             {
-                Name = "pluginTwilio",
+                Name = "terminalTwilio",
                 PluginStatus = PluginStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 Version = "1"

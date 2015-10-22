@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace pluginTwilio.Services
+namespace terminalTwilio.Services
 {
     public class Event : IEvent
     {

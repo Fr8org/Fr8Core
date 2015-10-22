@@ -93,7 +93,7 @@
     <SecondarySite Include="..\pluginSalesforce\pluginSalesforce.csproj" />
     <SecondarySite Include="..\terminalSendGrid\terminalSendGrid.csproj" />
     <SecondarySite Include="..\terminalSlack\terminalSlack.csproj" />
-    <SecondarySite Include="..\pluginTwilio\pluginTwilio.csproj" />
+    <SecondarySite Include="..\terminalTwilio\terminalTwilio.csproj" />
     <SecondarySite Include="..\terminalDocuSign\terminalDocuSign.csproj" />
   </ItemGroup>
   <Target Name="CleanSecondarySites">

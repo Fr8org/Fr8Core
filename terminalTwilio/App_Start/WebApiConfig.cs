@@ -1,7 +1,7 @@
 ﻿using System.Web.Http;
 using PluginBase.BaseClasses;
 
-namespace pluginTwilio
+namespace terminalTwilio
 {
     public static class WebApiConfig
     {

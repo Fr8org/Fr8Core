@@ -32,9 +32,9 @@
           <Binding name="Endpoint1" endpointName="terminalSendGrid" />
         </Bindings>
       </Site>
-      <Site name="pluginTwilio" physicalDirectory="..\..\..\pluginTwilio\azure.publish">
+      <Site name="terminalTwilio" physicalDirectory="..\..\..\terminalTwilio\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="pluginTwilio" />
+          <Binding name="Endpoint1" endpointName="terminalTwilio" />
         </Bindings>
       </Site>
       <Site name="terminalExcel" physicalDirectory="..\..\..\terminalExcel\azure.publish">
@@ -53,7 +53,7 @@
       <InputEndpoint name="pluginSalesforce" protocol="http" port="51234" />
       <InputEndpoint name="terminalFr8Core" protocol="http" port="50705" />
       <InputEndpoint name="terminalSendGrid" protocol="http" port="10601" />
-      <InputEndpoint name="pluginTwilio" protocol="http" port="30699" />
+      <InputEndpoint name="terminalTwilio" protocol="http" port="30699" />
       <InputEndpoint name="terminalExcel" protocol="http" port="47011" />
     </Endpoints>
     <Imports>

@@ -5,22 +5,22 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using pluginTwilio.Actions;
+using terminalTwilio.Actions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using pluginTwilio;
+using terminalTwilio;
 using StructureMap;
-using pluginTwilio.Services;
+using terminalTwilio.Services;
 using Core.Interfaces;
 using Moq;
-using pluginTwilio.Tests.Fixtures;
-using pluginTwilio.Tests;
+using terminalTwilio.Tests.Fixtures;
+using terminalTwilio.Tests;
 using Core.Managers;
 
-namespace PluginTwilio.Tests.Actions
+namespace terminalTwilio.Tests.Actions
 {
     [TestFixture]
     public class Send_Via_Twilio_v1Tests : BaseTest

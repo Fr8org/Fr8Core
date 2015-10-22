@@ -6,7 +6,7 @@ using Utilities.Configuration.Azure;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace pluginTwilio.Services
+namespace terminalTwilio.Services
 {
     public class TwilioService : ITwilioService
     {

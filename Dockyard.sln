@@ -46,7 +46,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalExcel", "terminalEx
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilitiesTesting", "Tests\UtilitiesTesting\UtilitiesTesting.csproj", "{6B855C3F-07A9-4787-9FDE-29FA567C43E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginTwilio", "pluginTwilio\pluginTwilio.csproj", "{14404298-4182-4D43-8098-5A199ED2FCAA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalTwilio", "terminalTwilio\terminalTwilio.csproj", "{14404298-4182-4D43-8098-5A199ED2FCAA}"
 EndProject
 Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "terminalCloudService", "terminalCloudService\terminalCloudService.ccproj", "{4E494560-EC62-4F1F-9CA6-18727759222B}"
 EndProject
