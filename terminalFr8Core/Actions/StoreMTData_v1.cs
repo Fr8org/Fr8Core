@@ -10,9 +10,9 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;
-using PluginBase.BaseClasses;
-using PluginBase.Infrastructure;
 using StructureMap;
+using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
