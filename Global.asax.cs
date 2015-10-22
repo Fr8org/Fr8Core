@@ -19,7 +19,6 @@ using Core.Services;
 using Core.Managers;
 using Core.StructureMap;
 using Web.App_Start;
-using Web.NotificationQueues;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Newtonsoft.Json;
@@ -86,8 +85,6 @@ namespace Web
             incidentReporter.SubscribeToAlerts();
 
             ModelBinders.Binders.Add(typeof (DateTimeOffset), new KwasantDateBinder());
-
-            SharedNotificationQueues.Begin();
 
             var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
