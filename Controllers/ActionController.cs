@@ -26,6 +26,7 @@ namespace Web.Controllers
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly ISubroute _subRoute;
+
         private readonly Authorization _authorization;
 
         public ActionController()

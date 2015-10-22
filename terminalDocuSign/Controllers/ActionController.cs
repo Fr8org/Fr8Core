@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 using terminalDocuSign.DataTransferObjects;
 using Utilities.Configuration.Azure;
 
