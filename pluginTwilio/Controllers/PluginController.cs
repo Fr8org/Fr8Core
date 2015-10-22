@@ -27,7 +27,6 @@ namespace pluginTwilio.Controllers
             {
                 Name = "Send_Via_Twilio",
                 Label = "Send Via Twilio",
-                Tags = "Notifier",
                 Category = ActivityCategory.Forwarders,
                 Version = "1",
                 Plugin = plugin
