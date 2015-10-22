@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Enums;
 using Newtonsoft.Json;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -258,50 +258,10 @@ namespace terminalDocuSign.Actions
                 }
             };
             
-            // var recipientSource = new RadioButtonGroupControlDefinitionDTO()
-            // {
-            //     Label = "Recipient",
-            //     GroupName = "Recipient",
-            //     Name = "Recipient",
-            //     Radios = new List<RadioButtonOption>()
-            //     {
-            //         new RadioButtonOption()
-            //         {
-            //             Selected = true,
-            //             Name = "specific",
-            //             Value ="This specific value"
-            //         },
-            //         new RadioButtonOption()
-            //         {
-            //             Selected = false,
-            //             Name = "crate",
-            //             Value ="A value from an Upstream Crate"
-            //         }
-            //     }
-            // };
-            // 
-            // recipientSource.Radios[0].Controls.Add(new TextBoxControlDefinitionDTO()
-            // {
-            //     Label = "",
-            //     Name = "Address"
-            // });
-            // 
-            // recipientSource.Radios[1].Controls.Add(new DropDownListControlDefinitionDTO()
-            // {
-            //     Label = "",
-            //     Name = "Select Upstream Crate",
-            //     Source = new FieldSourceDTO
-            //     {
-            //         Label = "Upstream Plugin-Provided Fields",
-            //         ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
-            //     }
-            // });
-            
-
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
-                CreateSpecificOrUpstreamValueChooser("Recipient", "Recipient", "Upstream Plugin-Provided Fields")
+                new TextSourceControlDefinitionDTO("Recipient", "Upstream Plugin-Provided Fields", "Recipient")
             };
 
             var controls = new StandardConfigurationControlsCM()

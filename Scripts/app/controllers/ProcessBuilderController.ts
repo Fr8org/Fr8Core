@@ -395,8 +395,7 @@ module dockyard.controllers {
                     parentRouteNodeId: 1,
                     activityTemplateId: 1,
                     id: 1,
-                    isTempId: false,
-                    actionListId: 0
+                    isTempId: false
                 };
 
             $httpBackend
