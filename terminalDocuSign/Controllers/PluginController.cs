@@ -69,12 +69,23 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 330
             };
 
+            var collectFormDataSolution = new ActivityTemplateDO
+            {
+                Name = "Collect_Form_Data_Solution",
+                Label = "Collect Form Data Solution",
+                Version = "1",
+                Category = ActivityCategory.Solution,
+                Plugin = plugin,
+                MinPaneWidth = 330
+            };
+
             var actionList = new List<ActivityTemplateDO>()
             {
                 waitForDocusignEventActionTemplate,
                 extractDataFromEnvelopeActionTemplate,
                 sendDocuSignEnvelopeActionTemplate,
-                recordDocuSignEvents
+                recordDocuSignEvents,
+                collectFormDataSolution
             };
 
             return Ok(actionList);

@@ -1,0 +1,34 @@
+﻿<PageDTO xmlns="http://fr8/dto" >
+    <DropDownListControlDefinitionDTO Label="Select DocuSign Template" Name="Selected_DocuSign_Template" Required="True">
+        <ControlDefinitionDTO.Source>
+            <FieldSourceDTO Label="Available Templates" ManifestType="Standard Design-Time Fields"/>
+        </ControlDefinitionDTO.Source>
+        <ControlDefinitionDTO.Events>
+            <ControlEvent Name="onChange" Handler="requestConfig"/>
+        </ControlDefinitionDTO.Events>
+    </DropDownListControlDefinitionDTO>
+
+    <CheckBoxControlDefinitionDTO Label="Envelope Sent" Name="Event_Envelope_Sent">
+        <ControlDefinitionDTO.Events>
+            <ControlEvent Name="onChange" Handler="requestConfig"/>
+        </ControlDefinitionDTO.Events>
+    </CheckBoxControlDefinitionDTO>
+
+    <CheckBoxControlDefinitionDTO Label="Envelope Received" Name="Event_Envelope_Received">
+        <ControlDefinitionDTO.Events>
+            <ControlEvent Name="onChange" Handler="requestConfig"/>
+        </ControlDefinitionDTO.Events>
+    </CheckBoxControlDefinitionDTO>
+
+    <CheckBoxControlDefinitionDTO Label="Recipient Signed" Name="Event_Recipient_Signed">
+        <ControlDefinitionDTO.Events>
+            <ControlEvent Name="onChange" Handler="requestConfig"/>
+        </ControlDefinitionDTO.Events>
+    </CheckBoxControlDefinitionDTO>
+
+    <CheckBoxControlDefinitionDTO Label="Recipient Sent" Name="Event_Recipient_Sent">
+        <ControlDefinitionDTO.Events>
+            <ControlEvent Name="onChange" Handler="requestConfig"/>
+        </ControlDefinitionDTO.Events>
+    </CheckBoxControlDefinitionDTO>
+</PageDTO>

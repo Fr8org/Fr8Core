@@ -3,10 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
+    [ContentProperty("Children")]
+    public class PageDTO
+    {
+        private readonly List<ControlDefinitionDTO>  _children = new List<ControlDefinitionDTO>();
+        
+        public List<ControlDefinitionDTO> Children
+        {
+            get { return _children; }
+        }
+    }
+
+
     /// <summary>
     /// This interface is applied to controls and control data items (e.g. radio buttons)
     /// that support nested controls.
@@ -263,6 +276,10 @@ namespace Data.Interfaces.DataTransferObjects
         {
             Name = name;
             Handler = handler;
+        }
+
+        public ControlEvent()
+        {
         }
     }
 
