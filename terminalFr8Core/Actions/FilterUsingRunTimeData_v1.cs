@@ -230,6 +230,15 @@ namespace terminalFr8Core.Actions
             return curActionDTO;
         }
 
+        protected override async Task<CrateDTO> ValidateAction(ActionDTO curActionDTO)
+        {
+            var queryableFields = curActionDTO.CrateStorage.CrateDTO
+                .First(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    && x.Label == "Queryable Criteria");
+
+            return await ValidateByStandartDesignTimeFields(curActionDTO, Crate.GetStandardDesignTimeFields(queryableFields));
+        }
+
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDataPackageDTO)
         {
             if (curActionDataPackageDTO.CrateStorage == null
@@ -248,6 +257,7 @@ namespace terminalFr8Core.Actions
 
             if (hasControlsCrate && hasQueryFieldsCrate)
             {
+                
                 return ConfigurationRequestType.Followup;
             }
             else

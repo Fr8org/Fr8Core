@@ -114,8 +114,6 @@ namespace TerminalBase.BaseClasses
             {
                 var content = await response.Content.ReadAsStringAsync();
                 var result = JsonConvert.DeserializeObject<List<FieldValidationResult>>(content);
-                //do something with result
-                //Crate.CreateDesignTimeFieldsCrate("ValidationErrors",)
                 var validationErrorList = new List<FieldDTO>();
                 //lets create necessary validationError crates
                 for (var i = 0; i < result.Count; i++)
@@ -123,22 +121,34 @@ namespace TerminalBase.BaseClasses
                     var fieldCheckResult = result[i];
                     if (fieldCheckResult == FieldValidationResult.NotExists)
                     {
-                        validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required"});
+                        validationErrorList.Add(new FieldDTO() { Key = requiredFieldList.ElementAt(i).FieldName, Value = "Required" });
                     }
                 }
 
                 if (validationErrorList.Any())
                 {
-                    return Crate.CreateDesignTimeFieldsCrate("ValidationErrors", validationErrorList.ToArray());
+                    return Crate.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
                 }
             }
 
             return null;
         }
 
+        protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(ActionDTO curActionDTO, StandardDesignTimeFieldsCM designTimeFields)
+        {
+            var fields = designTimeFields.Fields;
+            var validationList = fields.Select(f => new FieldValidationDTO(curActionDTO.Id, f.Key)).ToList();
+            return await ValidateFields(validationList);
+        }
+
+        //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
+        protected virtual async Task<CrateDTO> ValidateAction(ActionDTO curActionDTO)
+        {
+            return null;
+        }
+
         protected async Task<ActionDTO> ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
-            
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
             {
                 return await InitialConfigurationResponse(curActionDTO);
@@ -146,6 +156,13 @@ namespace TerminalBase.BaseClasses
 
             else if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Followup)
             {
+                var validationErrors = await ValidateAction(curActionDTO);
+                if (validationErrors != null)
+                {
+                    curActionDTO.CrateStorage.CrateDTO.Clear();
+                    curActionDTO.CrateStorage.CrateDTO.Add(validationErrors);
+                    return curActionDTO;
+                }
                 return await FollowupConfigurationResponse(curActionDTO);
             }
 

@@ -142,6 +142,8 @@ namespace Core.Services
                 //we should backup this action to see it's effect to downstream actions on deletion
                 //with asNoTracking we can keep a copy of curAction on memory
                 var curActionBackup = await uow.RouteNodeRepository.GetQuery().AsNoTracking().SingleAsync(a => a.Id == id);
+                //TODO refactor this code for a better way
+                
 
                 //to prevent one more call to db; attach object by it's id and delete it
                 var curAction = new ActionDO { Id = id };

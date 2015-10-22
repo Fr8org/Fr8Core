@@ -21,6 +21,11 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("currentActionId")]
         public int CurrentActionId { get; set; }
 
+        public FieldValidationDTO()
+        {
+
+        }
+
         public FieldValidationDTO(int currentActionId, string fieldName, ActivityDirection direction, string manifestType, string crateLabel)
         {
             FieldName = fieldName;
@@ -34,7 +39,7 @@ namespace Data.Interfaces.DataTransferObjects
         {
             FieldName = fieldName;
             CurrentActionId = currentActionId;
-            Direction = ActivityDirection.Both;
+            Direction = ActivityDirection.Up;
         }
     }
 }
