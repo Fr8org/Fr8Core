@@ -1,6 +1,6 @@
 ﻿using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using terminalTwilio.Services;
 using StructureMap;
 using System;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Core.Interfaces;
 using Data.Infrastructure;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 
 namespace terminalTwilio.Actions
 {

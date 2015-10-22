@@ -1,6 +1,6 @@
 ﻿using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -27,7 +27,7 @@ namespace terminalSalesforce.Controllers
         public async Task<string> ProcessIncomingNotification()
         {
             //_event.Process(await Request.Content.ReadAsStringAsync());
-            PluginBase.Infrastructure.BasePluginEvent.EventParser parser= new BasePluginEvent.EventParser(_event.ProcessEvent);
+            TerminalBase.Infrastructure.BasePluginEvent.EventParser parser = new BasePluginEvent.EventParser(_event.ProcessEvent);
             string eventPayLoadContent = Request.Content.ReadAsStringAsync().Result;
             await _basePluginEvent.Process(eventPayLoadContent, parser);
 

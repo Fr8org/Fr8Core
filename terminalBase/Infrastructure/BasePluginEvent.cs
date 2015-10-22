@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Utilities.Configuration.Azure;
 
-namespace PluginBase.Infrastructure
+namespace TerminalBase.Infrastructure
 {
     public class BasePluginEvent
     {

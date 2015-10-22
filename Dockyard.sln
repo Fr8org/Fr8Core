@@ -30,7 +30,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalAzure", "terminalAz
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalDocuSign", "terminalDocuSign\terminalDocuSign.csproj", "{4E04FEB2-B452-4739-8336-EA2CEFB18D87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginBase", "pluginBase\PluginBase.csproj", "{D6A0A493-E926-439A-9CE2-E093E75132CD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerminalBase", "terminalBase\TerminalBase.csproj", "{D6A0A493-E926-439A-9CE2-E093E75132CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalFr8Core", "terminalFr8Core\terminalFr8Core.csproj", "{AD226A7F-0641-4589-93EB-06E5EE7E767B}"
 EndProject
