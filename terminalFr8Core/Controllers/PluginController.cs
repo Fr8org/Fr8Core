@@ -48,7 +48,7 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
                 Version = "1",
-                MinPaneWidth = 330
+                MinPaneWidth = 380
             });
 
             result.Add(new ActivityTemplateDO

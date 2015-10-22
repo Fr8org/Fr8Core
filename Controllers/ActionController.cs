@@ -157,6 +157,8 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var resultActionDO = _action.SaveOrUpdateAction(uow, submittedActionDO);
+                var activityTemplateDO = uow.ActivityTemplateRepository.GetByKey(resultActionDO.ActivityTemplateId);
+                resultActionDO.ActivityTemplate = activityTemplateDO;
                
                 if (curActionDTO.IsTempId)
                 {

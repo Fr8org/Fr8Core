@@ -15,7 +15,7 @@
         <div ng-repeat="group in actionGroups" layout-action-group class="action-group">
             <div class="action-arrow-bottom"></div>
             <div>
-                <div class="action" ng-repeat-start="action in group.actions" ng-style="{'width' : action.minPaneWidth + 'px'}>
+                <div class="action" ng-repeat-start="action in group.actions" ng-style="{'width' : action.activityTemplate.minPaneWidth + 'px'}">
                     <div class="action-header" dropdown transfer-click-configure-pane>
                         <p class="action-name">
                             {{action.label}}

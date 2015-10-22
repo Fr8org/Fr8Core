@@ -37,7 +37,7 @@ namespace terminalExcel.Controllers
                 Version = "1",
                 Category = ActivityCategory.Receivers,
                 Plugin = plugin,
-                MinPaneWidth = 330
+                MinPaneWidth = 210
             };
 
            

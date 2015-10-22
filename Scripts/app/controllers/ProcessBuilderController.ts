@@ -389,16 +389,16 @@ module dockyard.controllers {
     app.run([
         "$httpBackend", "urlPrefix", ($httpBackend, urlPrefix) => {
             var actions: interfaces.IActionDTO =
-                {
-                    name: "test action type",
-                    configurationControls: new model.ControlsList(),
-                    crateStorage: new model.CrateStorage(),
-                    parentRouteNodeId: 1,
-                    activityTemplateId: 1,
-                    id: 1,
-                    isTempId: false,
-                    actionListId: 0
-                };
+            {
+                name: "test action type",
+                configurationControls: new model.ControlsList(),
+                crateStorage: new model.CrateStorage(),
+                parentRouteNodeId: 1,
+                activityTemplateId: 1,
+                id: 1,
+                isTempId: false,
+                actionListId: 0
+        };
 
             $httpBackend
                 .whenGET(urlPrefix + "/Action/1")
