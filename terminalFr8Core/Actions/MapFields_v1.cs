@@ -8,8 +8,8 @@ using Data.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase.Infrastructure;
-using PluginBase.BaseClasses;
+using TerminalBase.Infrastructure;
+using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Actions
 {

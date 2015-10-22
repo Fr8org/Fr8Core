@@ -1,6 +1,6 @@
 ﻿﻿using AutoMapper;
 using Data.Entities;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +9,12 @@ using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase;
+using TerminalBase;
 using DocuSign.Integrations.Client;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {

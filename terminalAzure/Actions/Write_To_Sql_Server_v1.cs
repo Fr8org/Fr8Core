@@ -9,12 +9,12 @@ using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using terminalAzure.Infrastructure;
 using terminalAzure.Services;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using StructureMap;
-using PluginBase;
+using TerminalBase;
 using Data.Interfaces;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 
 namespace terminalAzure.Actions
 {

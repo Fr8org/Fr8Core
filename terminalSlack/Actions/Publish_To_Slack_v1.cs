@@ -7,10 +7,10 @@ using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 
 namespace terminalSlack.Actions
 {

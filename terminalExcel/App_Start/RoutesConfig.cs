@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using Core.StructureMap;
 using StructureMap;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 
 namespace terminalExcel
 {

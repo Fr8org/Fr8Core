@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 using terminalSlack.Actions;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;

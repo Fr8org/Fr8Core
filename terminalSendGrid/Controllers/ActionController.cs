@@ -5,7 +5,7 @@ using AutoMapper;
 using Data.Entities;
 using Newtonsoft.Json;
 using System.Reflection;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
 
 namespace terminalSendGrid.Controllers
