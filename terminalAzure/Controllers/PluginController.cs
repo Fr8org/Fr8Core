@@ -27,7 +27,8 @@ namespace terminalAzure.Controllers
                 Name = "Write_To_Sql_Server",
                 Label = "Write to Azure Sql Server",
                 Category = ActivityCategory.Forwarders,
-                Version = "1"
+                Version = "1", 
+                MinPaneWidth = 330
             };
 
             var plugin = new PluginDO
