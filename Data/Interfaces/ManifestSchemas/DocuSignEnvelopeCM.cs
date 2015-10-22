@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.Interfaces.ManifestSchemas
 {
-    public class DocuSignEnvelopeCM : Manifest
+    public class DocuSignEnvelopeCM : MTManifest
     {
         public string Status { get; set; }
         public string CreateDate { get; set; }

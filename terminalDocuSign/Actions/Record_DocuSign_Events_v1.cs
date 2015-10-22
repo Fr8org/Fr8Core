@@ -4,8 +4,11 @@ using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
+using Newtonsoft.Json;
+using StructureMap;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
 using TerminalBase.BaseClasses;
@@ -48,7 +51,7 @@ namespace terminalDocuSign.Actions
                 Crate.CreateDesignTimeFieldsCrate("Available Run-Time Objects", new FieldDTO[]
                 {
                     new FieldDTO {Key = "DocuSign Envelope", Value = string.Empty},
-                    new FieldDTO {Key = "DocuSign Event"}
+                    new FieldDTO {Key = "DocuSign Event", Value = string.Empty}
                 });
 
             //update crate storage with standard event subscription crate
@@ -72,7 +75,7 @@ namespace terminalDocuSign.Actions
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
 
             if (curConnectProfile.configurations != null &&
-                !curConnectProfile.configurations.Any(config => config.name.Equals("MonitorAllDocuSignEvents")))
+                !curConnectProfile.configurations.Any(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")))
             {
                 var monitorConnectConfiguration = new DocuSign.Integrations.Client.Configuration
                 {
@@ -114,14 +117,48 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(actionDto.ProcessId);
+            var curProcessPayload = await GetProcessPayload(actionDto.ProcessId);
 
-            PayloadObjectDTO curPayload = new PayloadObjectDTO();
+            var curEventReport = JsonConvert.DeserializeObject<EventReportCM>(curProcessPayload.CrateStorageDTO().CrateDTO[0].Contents);
 
-            //TODO: Vas, Create DocuSign manifest objects on this execute method.
-            //Since the changes are with Sergey, I left this to-do with my name.
+            if (curEventReport.EventNames.Contains("Envelope"))
+            {
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    IList<KeyValuePair<string, string>> docuSignFields =
+                        Crate.GetContents<List<KeyValuePair<string, string>>>(curEventReport.EventPayload[0]);
 
-            return null;
+                    DocuSignEnvelopeCM envelope = new DocuSignEnvelopeCM
+                    {
+                        CompletedDate = docuSignFields.First(field => field.Key.Equals("CompletedDate")).Value,
+                        CreateDate = docuSignFields.First(field => field.Key.Equals("CreateDate")).Value,
+                        DeliveredDate = docuSignFields.First(field => field.Key.Equals("DeliveredDate")).Value,
+                        EnvelopeId = docuSignFields.First(field => field.Key.Equals("EnvelopeId")).Value,
+                        ExternalAccountId = docuSignFields.First(field => field.Key.Equals("Email")).Value,
+                        SentDate = docuSignFields.First(field => field.Key.Equals("SentDate")).Value,
+                        Status = docuSignFields.First(field => field.Key.Equals("Status")).Value,
+                        Fr8AccountId = uow.RouteRepository.GetByKey(actionDto.ProcessId).Fr8Account.Id
+                    };
+
+                    DocuSignEventCM events = new DocuSignEventCM
+                    {
+                        EnvelopeId = docuSignFields.First(field => field.Key.Equals("EnvelopeId")).Value,
+                        EventId = docuSignFields.First(field => field.Key.Equals("EventId")).Value,
+                        Object = docuSignFields.First(field => field.Key.Equals("Object")).Value,
+                        RecepientId = docuSignFields.First(field => field.Key.Equals("RecipientId")).Value,
+                        Status = docuSignFields.First(field => field.Key.Equals("Status")).Value,
+                        Fr8AccountId = uow.RouteRepository.GetByKey(actionDto.ProcessId).Fr8Account.Id
+                    };
+
+                    curProcessPayload.UpdateCrateStorageDTO(new List<CrateDTO>
+                    {
+                        Crate.Create("DocuSign Envelope Manifest", JsonConvert.SerializeObject(envelope), envelope.ManifestName, envelope.ManifestId),
+                        Crate.Create("DocuSign Event Manifest", JsonConvert.SerializeObject(events), events.ManifestName, events.ManifestId)
+                    });
+                }
+            }
+
+            return curProcessPayload;
         }
     }
 }

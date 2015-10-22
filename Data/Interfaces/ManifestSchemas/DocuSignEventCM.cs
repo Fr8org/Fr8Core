@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.Interfaces.ManifestSchemas
 {
-    public class DocuSignEventCM : Manifest
+    public class DocuSignEventCM : MTManifest
     {
 
         public string Object { get; set; }
@@ -14,7 +14,6 @@ namespace Data.Interfaces.ManifestSchemas
         public string EventId { get; set; }
         public string EnvelopeId { get; set; }
         public string RecepientId { get; set; }
-        public string ExternalAccountId { get; set; }
 
         public DocuSignEventCM()
               : base(Constants.MT.DocuSignEvent)
