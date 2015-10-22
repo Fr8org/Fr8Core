@@ -1,4 +1,4 @@
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -174,17 +174,8 @@ var dockyard;
                                 $scope.currentAction.crateStorage = res.crateStorage;
                                 $scope.processConfiguration();
                             })
-                                .catch(function (result) {
-                                var errorText = 'Something went wrong. Click to retry.';
-                                if (result.status && result.status >= 300) {
-                                    // Bad http response
-                                    errorText = 'Configuration loading error. Click to retry.';
-                                }
-                                else if (result.message) {
-                                    // Exception was thrown in the code
-                                    errorText = result.message;
-                                }
-                                var control = new dockyard.model.TextBlock('TextBlock', errorText, 'well well-lg alert-danger');
+                                .catch(function () {
+                                var control = new dockyard.model.TextBlock('TextBlock', 'Configuration loading error. Click to retry.', 'well well-lg alert-danger');
                                 $scope.currentAction.configurationControls = new dockyard.model.ControlsList();
                                 $scope.currentAction.configurationControls.fields = [control];
                             })

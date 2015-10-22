@@ -10,9 +10,9 @@ using System.Collections.Generic;
 using Data.States;
 using Utilities.Configuration.Azure;
 
-namespace pluginSalesforce.Controllers
+namespace terminalSalesforce.Controllers
 {
-    [RoutePrefix("plugins")]
+     [RoutePrefix("plugins")]
     public class PluginController : ApiController
     {
         [HttpGet]
@@ -21,7 +21,7 @@ namespace pluginSalesforce.Controllers
         {
             var plugin = new PluginDO()
             {
-                Name = "terminalSendGrid",
+                Name = "terminalSalesforce",
                 PluginStatus = PluginStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 Version = "1"
@@ -29,10 +29,9 @@ namespace pluginSalesforce.Controllers
 
             var action = new ActivityTemplateDO()
             {
-                Name = "SendEmailViaSendGrid",
-                Label = "Send Email Vie Send Grid",
                 Version = "1",
-                Tags = "Notifier",
+                Name = "Create_Lead",
+                Label = "Create Lead",
                 Plugin = plugin,
                 Category = ActivityCategory.Forwarders
             };
