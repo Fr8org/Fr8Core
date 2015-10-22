@@ -446,44 +446,42 @@
 						</li>
 					</ul>
 				</li>
-                @if (User.IsInRole("Admin")) { 
-				    <li class="menu-dropdown mega-menu-dropdown mega-menu-full ">
-					    <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">
-					    Admin <i class="fa fa-angle-down"></i>
-					    </a>
-					    <ul class="dropdown-menu">
-						    <li>
-							    <div class="mega-menu-content">
-								    <div class="row">
-									    <div class="col-md-3">
-										    <ul class="mega-menu-submenu">
-											    <!--<li>
-												    <h3>jQuery Integration</h3>
-											    </li>-->
-											    <li>
-												    <a href="#/form-tools">
-													    <i class="icon-puzzle"></i> Create Accounts
-												    </a>
-											    </li>
-											    @*<li>
-												    <a href="#/pickers">
-													    <i class="icon-calendar"></i> Find Object
-												    </a>
-											    </li>*@
-                                                <li>
-                                                    <a href="#/accounts">
-                                                        <i class="icon-calendar"></i> Manage Accounts
-                                                    </a>
-                                                </li>											
-										    </ul>
-									    </div>
+				<li class="menu-dropdown mega-menu-dropdown mega-menu-full ">
+					<a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">
+					Admin <i class="fa fa-angle-down"></i>
+					</a>
+					<ul class="dropdown-menu">
+						<li>
+							<div class="mega-menu-content">
+								<div class="row">
+									<div class="col-md-3">
+										<ul class="mega-menu-submenu">
+											<!--<li>
+												<h3>jQuery Integration</h3>
+											</li>-->
+											<li>
+												<a href="#/form-tools">
+													<i class="icon-puzzle"></i> Create Accounts
+												</a>
+											</li>
+											<li>
+												<a href="#/pickers">
+													<i class="icon-calendar"></i> Find Object
+												</a>
+											</li>
+                                            <li>
+                                                <a href="#/accounts">
+                                                    <i class="icon-calendar"></i> Manage Dockyard Accounts
+                                                </a>
+                                            </li>											
+										</ul>
+									</div>
 									
-								    </div>
-							    </div>
-						    </li>
-					    </ul>
-				    </li>
-                }
+								</div>
+							</div>
+						</li>
+					</ul>
+				</li>
                 <li class="menu-dropdown mega-menu-dropdown mega-menu-full ">
                     <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">
                         Reports <i class="fa fa-angle-down"></i>
@@ -536,11 +534,6 @@
                                             <li>
                                                 <a style="white-space: nowrap;" href="#/managefiles">
                                                     <i class="icon-puzzle"></i> Manage Files
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#/pickers">
-                                                    <i class="icon-calendar"></i> Find
                                                 </a>
                                             </li>
                                         </ul>
