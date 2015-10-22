@@ -12,7 +12,7 @@ using terminalAzure.Services;
 using PluginBase.Infrastructure;
 using StructureMap;
 using PluginBase;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Interfaces.ManifestSchemas;
 using PluginBase.BaseClasses;
 

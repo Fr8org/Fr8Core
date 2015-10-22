@@ -17,6 +17,7 @@ using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using PluginBase.BaseClasses;
+using Data.Interfaces;
 
 namespace terminalDocuSign.Actions
 {
@@ -191,14 +192,14 @@ namespace terminalDocuSign.Actions
             }
 
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
-            
+
             // Try to find Configuration_Controls.
             var stdCfgControlMS = Crate.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
             {
                 return curActionDTO;
             }
-            
+
             // Try to find DocuSignTemplate drop-down.
             var dropdownControlDTO = stdCfgControlMS.FindByName("target_docusign_template");
             if (dropdownControlDTO == null)
@@ -208,7 +209,7 @@ namespace terminalDocuSign.Actions
 
             // Get DocuSign Template Id
             var docusignTemplateId = dropdownControlDTO.Value;
-            
+
             // Get Template
             var docuSignEnvelope = new DocuSignEnvelope(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
             var envelopeDataDTO = docuSignEnvelope.GetEnvelopeDataByTemplate(docusignTemplateId).ToList();
@@ -223,12 +224,12 @@ namespace terminalDocuSign.Actions
             {
                 new FieldDTO() { Key = "recipient", Value = "recipient" }
             };
-            
+
             var crateUserDefinedDTO = Crate.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateUserDefinedFields",
                 userDefinedFields.ToArray()
             );
-            
+
             var crateStandardDTO = Crate.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateStandardFields",
                 standartFields.ToArray()
@@ -257,51 +258,11 @@ namespace terminalDocuSign.Actions
                     ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
                 }
             };
-            
-            // var recipientSource = new RadioButtonGroupControlDefinitionDTO()
-            // {
-            //     Label = "Recipient",
-            //     GroupName = "Recipient",
-            //     Name = "Recipient",
-            //     Radios = new List<RadioButtonOption>()
-            //     {
-            //         new RadioButtonOption()
-            //         {
-            //             Selected = true,
-            //             Name = "specific",
-            //             Value ="This specific value"
-            //         },
-            //         new RadioButtonOption()
-            //         {
-            //             Selected = false,
-            //             Name = "crate",
-            //             Value ="A value from an Upstream Crate"
-            //         }
-            //     }
-            // };
-            // 
-            // recipientSource.Radios[0].Controls.Add(new TextBoxControlDefinitionDTO()
-            // {
-            //     Label = "",
-            //     Name = "Address"
-            // });
-            // 
-            // recipientSource.Radios[1].Controls.Add(new DropDownListControlDefinitionDTO()
-            // {
-            //     Label = "",
-            //     Name = "Select Upstream Crate",
-            //     Source = new FieldSourceDTO
-            //     {
-            //         Label = "Upstream Plugin-Provided Fields",
-            //         ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
-            //     }
-            // });
-            
 
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
-                CreateSpecificOrUpstreamValueChooser("Recipient", "Recipient", "Upstream Plugin-Provided Fields")
+                new TextSourceControlDefinitionDTO("Recipient", "Upstream Plugin-Provided Fields", "Recipient")
             };
 
             var controls = new StandardConfigurationControlsCM()

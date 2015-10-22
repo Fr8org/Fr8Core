@@ -1,6 +1,20 @@
 ﻿@*TextBlock control main container*@
-<label for="pca__chk__{{field.$$hashKey}}">this specific value</label>
-<input type="radio" name="pca__chk__{{field.$$hashKey}}"/>
-
-<label for="pca__chk__{{field.$$hashKey}}">a value from an Upstream crate</label>
-<input type="radio" name="pca__chk__{{field.$$hashKey}}" />
+<div>
+    <label>{{field.name}}</label>
+    <div style="padding-left: 20px;">
+        <label for="pca__chk{{field.$$hashKey}}__value" stop-click-propagation>this specific value</label>
+        <input type="radio" ng-model="field.valueSource" id="pca__chk{{field.$$hashKey}}__value" value="specific" ng-click="field.value=''"/>
+        <div class="nested-controls">
+            <input type='text' ng-model='field.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
+                   ng-blur="onChange($event)" id='pca__txt{{field.$$hashKey}}__value'
+                   class='form-control form-control-focus' name='pca__txt{{field.$$hashKey}}__value' stop-click-propagation>
+        </div>
+    </div>
+    <div style="padding-left: 20px;">
+        <label for="pca__chk{{field.$$hashKey}}__crate" stop-click-propagation>a value from an Upstream crate</label>
+        <input type="radio" id="pca__chk{{field.$$hashKey}}__crate" value="upstream" ng-model="field.valueSource" ng-click="field.value=''"/>
+        <div class="nested-controls">
+            <drop-down-list-box field='field' change='onChange'></drop-down-list-box>
+        </div>
+    </div>
+</div>

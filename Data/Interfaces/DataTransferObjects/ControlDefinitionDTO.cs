@@ -159,7 +159,7 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
-    public class TextSourceControlDefinitionDTO : ControlDefinitionDTO
+    public class TextSourceControlDefinitionDTO : DropDownListControlDefinitionDTO
     {
         [JsonProperty("initialLabel")]
         public string InitialLabel;
@@ -167,9 +167,21 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("upstreamSourceLabel")]
         public string UpstreamSourceLabel;
 
-        public TextSourceControlDefinitionDTO()
+        [JsonProperty("valueSource")]
+        public string ValueSource;
+
+        public TextSourceControlDefinitionDTO() { }
+
+        public TextSourceControlDefinitionDTO(string initialLabel, string upstreamSourceLabel, string name)
         {
             Type = ControlTypes.TextSource;
+            this.InitialLabel = initialLabel;
+            this.Name = name;
+            Source = new FieldSourceDTO
+            {
+                Label = upstreamSourceLabel,
+                ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+            };
         }
     }
 

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
-using Core.Interfaces;
+using Data.Interfaces;
 using PluginBase;
 using Data.Interfaces.ManifestSchemas;
 using System.Threading.Tasks;

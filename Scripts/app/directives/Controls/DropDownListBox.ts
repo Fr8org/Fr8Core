@@ -15,7 +15,7 @@ module dockyard.directives.dropDownListBox {
                 $scope.field.value = item.Value;
                 $scope.selectedItem = item;
 
-                // Invoike onChange event handler
+                // Invoke onChange event handler
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field.name);
                 }

@@ -105,7 +105,7 @@ module dockyard.directives.paneConfigureAction {
     app.filter('validId', function () {
         return function (input) {
             if (input) {
-                return input.replace(/^[^a-zA-Z]/, 'a').replace(/[^\w\d\-_\.:]/g, '-');
+                return input.replace(/^[^a-zA-Z]/, 'a').replace(/[^\w\d\-_\.]/g, '-');
             }
         }
     });

@@ -123,7 +123,7 @@ namespace PluginBase.BaseClasses
                     var fieldCheckResult = result[i];
                     if (fieldCheckResult == FieldValidationResult.NotExists)
                     {
-                        validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required"});
+                        validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required" });
                     }
                 }
 
@@ -138,7 +138,7 @@ namespace PluginBase.BaseClasses
 
         protected async Task<ActionDTO> ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
-            
+
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
             {
                 return await InitialConfigurationResponse(curActionDTO);
@@ -441,14 +441,38 @@ namespace PluginBase.BaseClasses
                 c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
 
             var controls = Crate.GetStandardConfigurationControls(controlsCrate).Controls;
-            var radioButtonGroupControl = controls
-                .SingleOrDefault(c => c.Name == controlName) as RadioButtonGroupControlDefinitionDTO;
+            var control = controls
+                .SingleOrDefault(c => c.Name == controlName);
 
-            if (radioButtonGroupControl == null)
+            if (control as RadioButtonGroupControlDefinitionDTO != null)
             {
-                throw new ApplicationException("No Radio ButtonGroupControl found.");
+                // Get value from a combination of RadioButtonGroup, TextField and DDLB controls
+                // (old approach prior to TextSource) 
+                return ExtractSpecificOrUpstreamValueLegacy((RadioButtonGroupControlDefinitionDTO)control, runTimeCrateStorage);
             }
 
+            if (control as TextSourceControlDefinitionDTO == null)
+            {
+                throw new ApplicationException("TextSource control was expected but not found.");
+            }
+
+            TextSourceControlDefinitionDTO textSourceControl = (TextSourceControlDefinitionDTO)control;
+
+            switch (textSourceControl.ValueSource)
+            {
+                case "specific":
+                    return textSourceControl.Value;
+
+                case "upstream":
+                    return ExtractDesignTimeFieldValue(runTimeCrateStorage, textSourceControl.Value);
+
+                default:
+                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+            }
+        }
+
+        private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroupControlDefinitionDTO radioButtonGroupControl, CrateStorageDTO runTimeCrateStorage)
+        {
             var radioButton = radioButtonGroupControl
                 .Radios
                 .FirstOrDefault(x => x.Selected);
@@ -474,7 +498,6 @@ namespace PluginBase.BaseClasses
                 default:
                     throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
             }
-
             return returnValue;
         }
 
@@ -574,6 +597,6 @@ namespace PluginBase.BaseClasses
 
             return null;
 
-        }      
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Core.Interfaces;
+﻿using Data.Interfaces;
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
