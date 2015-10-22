@@ -6,6 +6,8 @@
         string Name { get; set; }
         int PluginStatus { get; set; }
         string Endpoint { get; set; }
-        bool RequiresAuthentication { get; set; }
+
+        // TODO: remove this, DO-1397
+        // bool RequiresAuthentication { get; set; }
     }
 }

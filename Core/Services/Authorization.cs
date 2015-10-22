@@ -113,7 +113,7 @@ namespace Core.Services
                 }
 
                 // Try to find AuthToken if plugin requires authentication.
-                if (activityTemplate.Plugin.RequiresAuthentication)
+                if (activityTemplate.AuthenticationType != AuthenticationType.None)
                 {
                     // Try to get owner's account for Action -> Route.
                     // Can't follow guideline to init services inside constructor. 
@@ -147,13 +147,18 @@ namespace Core.Services
             }
         }
 
-        public async Task AuthenticateInternal(Fr8AccountDO account, PluginDO plugin,
-         string username, string password)
+        public async Task AuthenticateInternal(
+            Fr8AccountDO account,
+            ActivityTemplateDO activityTemplate,
+            string username,
+            string password)
         {
-            if (!plugin.RequiresAuthentication)
+            if (activityTemplate.AuthenticationType == AuthenticationType.None)
             {
                 throw new ApplicationException("Plugin does not require authentication.");
             }
+
+            var plugin = activityTemplate.Plugin;
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
@@ -208,9 +213,16 @@ namespace Core.Services
             PluginDO plugin,
             ExternalAuthenticationDTO externalAuthDTO)
         {
-            if (!plugin.RequiresAuthentication)
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                throw new ApplicationException("Plugin does not require authentication.");
+                var hasAuthentication = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Any(x => x.Plugin.Id == plugin.Id);
+
+                if (!hasAuthentication)
+                {
+                    throw new ApplicationException("Plugin does not require authentication.");
+                }
             }
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
@@ -242,12 +254,15 @@ namespace Core.Services
 
 
         public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl(
-            Fr8AccountDO user, PluginDO plugin)
+            Fr8AccountDO user,
+            ActivityTemplateDO activityTemplate)
         {
-            if (!plugin.RequiresAuthentication)
+            if (activityTemplate.AuthenticationType == AuthenticationType.None)
             {
                 throw new ApplicationException("Plugin does not require authentication.");
             }
+
+            var plugin = activityTemplate.Plugin;
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 

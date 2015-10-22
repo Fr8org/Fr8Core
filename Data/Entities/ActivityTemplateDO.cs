@@ -1,12 +1,13 @@
-﻿using Data.Entities;
-using Data.Interfaces;
-using Data.States;
-using StructureMap;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Collections.Generic;
 using System.Linq;
-using System;
+using Data.Entities;
+using Data.Interfaces;
+using Data.States;
+using Data.States.Templates;
+using StructureMap;
 
 namespace Data.Entities
 {
@@ -14,9 +15,8 @@ namespace Data.Entities
     {
         public ActivityTemplateDO()
         {
-
+            this.AuthenticationType = States.AuthenticationType.None;
         }
-
 
         public ActivityTemplateDO(string name, string label, string version, int pluginId)
         {
@@ -61,7 +61,11 @@ namespace Data.Entities
 
         public string Version { get; set; }
 
-        public string AuthenticationType { get; set; }
+        [Required]
+        [ForeignKey("AuthenticationTypeTemplate")]
+        public int AuthenticationType { get; set; }
+
+        public virtual _AuthenticationTypeTemplate AuthenticationTypeTemplate { get; set; }
 
         public string ComponentActivities { get; set; }
 

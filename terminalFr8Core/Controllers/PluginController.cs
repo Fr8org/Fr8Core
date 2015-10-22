@@ -27,7 +27,6 @@ namespace terminalFr8Core.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 PluginStatus = PluginStatus.Active,
                 Name = "terminalFr8Core",
-                RequiresAuthentication = false,
                 Version = "1"
             };
 
@@ -37,6 +36,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Filter Using Runtime Data",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
+                AuthenticationType = AuthenticationType.None,
                 Version = "1"
             });
 
@@ -46,6 +46,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
+                AuthenticationType = AuthenticationType.None,
                 Version = "1"
             });
 
@@ -55,6 +56,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Add Payload Manually",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
+                AuthenticationType = AuthenticationType.None,
                 Version = "1"
             });
 

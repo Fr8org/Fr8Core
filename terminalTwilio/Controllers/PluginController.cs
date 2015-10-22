@@ -29,7 +29,8 @@ namespace terminalTwilio.Controllers
                 Label = "Send Via Twilio",
                 Category = ActivityCategory.Forwarders,
                 Version = "1",
-                Plugin = plugin
+                Plugin = plugin,
+                AuthenticationType = AuthenticationType.None
             };
 
             var actionList = new List<ActivityTemplateDO>

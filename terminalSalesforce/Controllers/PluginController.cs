@@ -33,6 +33,7 @@ namespace terminalSalesforce.Controllers
                 Name = "Create_Lead",
                 Label = "Create Lead",
                 Plugin = plugin,
+                AuthenticationType = AuthenticationType.None,
                 Category = ActivityCategory.Forwarders
             };
 

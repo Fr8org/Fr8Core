@@ -25,7 +25,6 @@ namespace terminalSlack.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 PluginStatus = PluginStatus.Active,
                 Name = "terminalSlack",
-                RequiresAuthentication = true,
                 Version = "1"
             };
 
@@ -35,6 +34,7 @@ namespace terminalSlack.Controllers
                 Label = "Monitor Channel",
                 Category = ActivityCategory.Monitors,
                 Plugin = plugin,
+                AuthenticationType = AuthenticationType.External,
                 Version = "1"
             };
 
@@ -44,6 +44,7 @@ namespace terminalSlack.Controllers
                 Label = "Publish To Slack",
                 Category = ActivityCategory.Forwarders,
                 Plugin = plugin,
+                AuthenticationType = AuthenticationType.External,
                 Version = "1"
             };
 

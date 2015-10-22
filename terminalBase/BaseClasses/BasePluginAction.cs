@@ -511,69 +511,71 @@ namespace TerminalBase.BaseClasses
         }
 
 
+        // TODO: remove this, DO-1397
         /// <summary>
         /// Retrieve authorization token
         /// </summary>
         /// <param name="curActionDO"></param>
         /// <returns></returns>
-        public string Authenticate(ActionDO curActionDO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                Fr8AccountDO curDockyardAccountDO = GetAccount(curActionDO);
-                var curPlugin = curActionDO.ActivityTemplate.Plugin;
-                string curToken = string.Empty;
+        // public string Authenticate(ActionDO curActionDO)
+        // {
+        //     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //     {
+        //         Fr8AccountDO curDockyardAccountDO = GetAccount(curActionDO);
+        //         var curPlugin = curActionDO.ActivityTemplate.Plugin;
+        //         string curToken = string.Empty;
+        // 
+        //         if (curDockyardAccountDO != null)
+        //         {
+        //             curToken = _authorizationToken.GetToken(curDockyardAccountDO.Id, curPlugin.Id);
+        // 
+        //             if (!string.IsNullOrEmpty(curToken))
+        //                 return curToken;
+        //         }
+        // 
+        //         curToken = _authorizationToken.GetPluginToken(curPlugin.Id);
+        //         if (!string.IsNullOrEmpty(curToken))
+        //             return curToken;
+        //         return _plugin.Authorize();
+        //     }
+        // }
 
-                if (curDockyardAccountDO != null)
-                {
-                    curToken = _authorizationToken.GetToken(curDockyardAccountDO.Id, curPlugin.Id);
+        // TODO: remove this, DO-1397
+        // public bool IsAuthenticated(Fr8AccountDO account, PluginDO plugin)
+        // {
+        //     if (!plugin.RequiresAuthentication)
+        //     {
+        //         return true;
+        //     }
+        // 
+        //     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //     {
+        //         var hasAuthToken = uow.AuthorizationTokenRepository
+        //             .GetQuery()
+        //             .Any(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
+        // 
+        //         return hasAuthToken;
+        //     }
+        // }
 
-                    if (!string.IsNullOrEmpty(curToken))
-                        return curToken;
-                }
-
-                curToken = _authorizationToken.GetPluginToken(curPlugin.Id);
-                if (!string.IsNullOrEmpty(curToken))
-                    return curToken;
-                return _plugin.Authorize();
-            }
-        }
-
-        public bool IsAuthenticated(Fr8AccountDO account, PluginDO plugin)
-        {
-            if (!plugin.RequiresAuthentication)
-            {
-                return true;
-            }
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var hasAuthToken = uow.AuthorizationTokenRepository
-                    .GetQuery()
-                    .Any(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
-
-                return hasAuthToken;
-            }
-        }
-
+        // TODO: remove this, DO-1397.
         /// <summary>
         /// Retrieve account
         /// </summary>
         /// <param name="curActionDO"></param>
         /// <returns></returns>
-        public Fr8AccountDO GetAccount(ActionDO curActionDO)
-        {
-            if (curActionDO.ParentRouteNode != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
-            {
-                // Can't follow guideline to init services inside constructor. 
-                // Current implementation of Route and Action services are not good and are depedant on each other.
-                // Initialization of services in constructor will cause stack overflow
-                var route = ObjectFactory.GetInstance<IRoute>().GetRoute(curActionDO);
-                return route != null ? route.Fr8Account : null;
-            }
-
-            return null;
-
-        }      
+        // public Fr8AccountDO GetAccount(ActionDO curActionDO)
+        // {
+        //     if (curActionDO.ParentRouteNode != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
+        //     {
+        //         // Can't follow guideline to init services inside constructor. 
+        //         // Current implementation of Route and Action services are not good and are depedant on each other.
+        //         // Initialization of services in constructor will cause stack overflow
+        //         var route = ObjectFactory.GetInstance<IRoute>().GetRoute(curActionDO);
+        //         return route != null ? route.Fr8Account : null;
+        //     }
+        // 
+        //     return null;
+        // }      
     }
 }
