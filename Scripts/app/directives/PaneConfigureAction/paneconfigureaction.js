@@ -1,4 +1,4 @@
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -164,7 +164,6 @@ var dockyard;
                         // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
                         // We parse its contents and put it into currentAction.configurationControls structure.
                         function loadConfiguration() {
-                            debugger;
                             // Block pane and show pane-level 'loading' spinner
                             $scope.processing = true;
                             if ($scope.configurationWatchUnregisterer) {
@@ -176,7 +175,9 @@ var dockyard;
                                 $scope.processConfiguration();
                             })
                                 .catch(function () {
-                                alert('Error while retrieving configuration.');
+                                var control = new dockyard.model.TextBlock('TextBlock', 'Configuration loading error. Click to retry.', 'well well-lg alert-danger');
+                                $scope.currentAction.configurationControls = new dockyard.model.ControlsList();
+                                $scope.currentAction.configurationControls.fields = [control];
                             })
                                 .finally(function () {
                                 // Unblock pane
