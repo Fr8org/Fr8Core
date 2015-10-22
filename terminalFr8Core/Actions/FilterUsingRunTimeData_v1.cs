@@ -9,8 +9,8 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
-using PluginBase.BaseClasses;
-using PluginBase.Infrastructure;
+using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using terminalFr8Core.Interfaces;
 
 namespace terminalFr8Core.Actions

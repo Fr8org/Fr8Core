@@ -5,9 +5,9 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using terminalSendGrid.Infrastructure;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 using Utilities;
 
 namespace terminalSendGrid.Actions
@@ -187,7 +187,7 @@ namespace terminalSendGrid.Actions
                     From = new EmailAddressDO
                     {
                         Address = fromAddress,
-                        Name = "fr8 Send Grid Plugin"
+                        Name = "Fr8 Operations"
                     },
 
                     Recipients = new List<RecipientDO>()
