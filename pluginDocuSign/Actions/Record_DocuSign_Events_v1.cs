@@ -143,7 +143,8 @@ namespace pluginDocuSign.Actions
                     EventId = docuSignFields.First(field => field.Key.Equals("EventId")).Value,
                     Object = docuSignFields.First(field => field.Key.Equals("Object")).Value,
                     RecepientId = docuSignFields.First(field => field.Key.Equals("RecipientId")).Value,
-                    Status = docuSignFields.First(field => field.Key.Equals("Status")).Value
+                    Status = docuSignFields.First(field => field.Key.Equals("Status")).Value,
+                    ExternalAccountId = docuSignFields.First(field => field.Key.Equals("Email")).Value
                 };
 
                 curProcessPayload.UpdateCrateStorageDTO(new List<CrateDTO>

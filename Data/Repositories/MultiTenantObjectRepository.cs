@@ -46,20 +46,29 @@ namespace Data.Repositories
             _uow.MTDataRepository.Add(data);
         }
 
-        public void AddOrUpdate<T>(IUnitOfWork _uow, T curManifest, Expression<Func<T, object>> keyProperty) where T : Manifest
+        public void AddOrUpdate<T>(IUnitOfWork _uow, T curManifest, Expression<Func<T, object>> keyProperty)
+            where T : Manifest
         {
-            var curManifestType = typeof(T);
+            var curManifestType = typeof (T);
             var coorespondingMTFieldType = _mtFieldType.GetOrCreateMT_FieldType(_uow, curManifestType);
-            var currentMTObject = _uow.MTObjectRepository.GetQuery().Where(a => a.ManifestId == curManifest.ManifestId && a.MT_FieldType == coorespondingMTFieldType).FirstOrDefault();
+            _uow.SaveChanges();
+            var currentMTObject =
+                _uow.MTObjectRepository.GetQuery().FirstOrDefault(a => a.ManifestId == curManifest.ManifestId &&
+                                                                       a.MT_FieldType != null &&
+                                                                       a.MT_FieldType.Id == coorespondingMTFieldType.Id);
             if (currentMTObject != null)
             {
                 var correspondingDTFields = _uow.MTFieldRepository.FindList(a => a.MT_ObjectId == currentMTObject.Id);
                 var keyPropertyInfo = GetPropertyInfo(keyProperty);
-                MT_Data correspondingMTData = FindMT_DataByKeyField(_uow, curManifest, currentMTObject, correspondingDTFields, keyPropertyInfo);
+                MT_Data correspondingMTData = FindMT_DataByKeyField(_uow, curManifest, currentMTObject,
+                    correspondingDTFields, keyPropertyInfo);
                 if (correspondingMTData != null)
                 {
                     correspondingMTData.UpdatedAt = DateTime.Now;
-                    var curDataProperties = curManifestType.GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();
+                    var curDataProperties =
+                        curManifestType.GetProperties(System.Reflection.BindingFlags.DeclaredOnly |
+                                                      System.Reflection.BindingFlags.Instance |
+                                                      System.Reflection.BindingFlags.Public).ToList();
                     MapManifestToMTData(curManifest, curDataProperties, correspondingMTData, currentMTObject);
                     return;
                 }

@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
+using StructureMap;
 
 namespace terminalFr8Core.Actions
 {
@@ -35,17 +37,42 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
-            if (IsEmptyAuthToken(actionDto))
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                throw new ApplicationException("No AuthToken provided.");
+                //get the process payload
+                var curProcessPayload = await GetProcessPayload(actionDto.ProcessId);
+
+                //get docu sign envelope crate from payload
+                var curDocuSignEnvelopeCrate =
+                    Crate.GetCratesByLabel("DocuSign Envelope Manifest", curProcessPayload.CrateStorageDTO()).Single();
+
+                if (curDocuSignEnvelopeCrate != null)
+                {
+                    DocuSignEnvelopeCM docuSignEnvelope =
+                        JsonConvert.DeserializeObject<DocuSignEnvelopeCM>(curDocuSignEnvelopeCrate.Contents);
+
+                    //store envelope in MT database
+                    uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEnvelopeCM>(uow, docuSignEnvelope,
+                        e => e.EnvelopeId);
+                    uow.SaveChanges();
+                }
+
+                //get docu sign event crate from payload
+                var curDocuSignEventCrate =
+                    Crate.GetCratesByLabel("DocuSign Event Manifest", curProcessPayload.CrateStorageDTO()).Single();
+
+                if (curDocuSignEventCrate != null)
+                {
+                    DocuSignEventCM docuSignEvent =
+                        JsonConvert.DeserializeObject<DocuSignEventCM>(curDocuSignEventCrate.Contents);
+
+                    //store event in MT database
+                    uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEventCM>(uow, docuSignEvent, e => e.EnvelopeId);
+                    uow.SaveChanges();
+                }
+
+                return curProcessPayload;
             }
-
-            var curProcessPayload = await GetProcessPayload(actionDto.ProcessId);
-
-            var curEventReport = JsonConvert.DeserializeObject<EventReportCM>(curProcessPayload.CrateStorageDTO().CrateDTO[0].Contents);
-
-
-            return null;
         }
 
         protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
