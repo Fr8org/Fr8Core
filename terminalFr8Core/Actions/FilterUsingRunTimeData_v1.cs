@@ -176,7 +176,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
+        public override async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
         }
