@@ -1,7 +1,7 @@
 ﻿using System.Web.Http;
-using PluginBase;
+using TerminalBase;
 
-namespace PluginBase.BaseClasses
+namespace TerminalBase.BaseClasses
 {
     public static class BasePluginWebApiConfig
     {

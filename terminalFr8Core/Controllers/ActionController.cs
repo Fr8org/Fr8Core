@@ -13,7 +13,7 @@ using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Controllers
 {

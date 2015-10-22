@@ -10,13 +10,13 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using DocuSign.Integrations.Client;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using Utilities;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {

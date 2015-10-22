@@ -11,8 +11,8 @@ using Microsoft.Owin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Owin;
-using PluginBase;
-using PluginBase.BaseClasses;
+using TerminalBase;
+using TerminalBase.BaseClasses;
 using StructureMap;
 
 [assembly: OwinStartup("PluginExcelConfiguration", typeof(terminalExcel.StartupPluginExcel))]

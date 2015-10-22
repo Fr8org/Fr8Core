@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Data.Interfaces.ManifestSchemas;
 using Salesforce.Common;
 using terminalSalesforce.Services;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using System.Collections.Generic;
 using Data.Entities;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 using System;
 
 namespace terminalSalesforce.Actions

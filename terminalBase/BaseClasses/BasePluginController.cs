@@ -2,11 +2,11 @@
 using System.Reflection;
 using Data.Interfaces.DataTransferObjects;
 using System.Web.Http;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using System.Threading.Tasks;
 using Utilities.Configuration.Azure;
 
-namespace PluginBase.BaseClasses
+namespace TerminalBase.BaseClasses
 {
 
     //this is a quasi base class. We can't use inheritance directly because it's across project boundaries, but

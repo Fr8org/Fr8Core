@@ -17,10 +17,10 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Utilities.Configuration.Azure;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using Data.Interfaces;
 
-namespace PluginBase.BaseClasses
+namespace TerminalBase.BaseClasses
 {
     //this method allows a specific Action to inject its own evaluation function into the 
     //standard ProcessConfigurationRequest

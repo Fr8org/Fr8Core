@@ -6,9 +6,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {

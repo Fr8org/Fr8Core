@@ -17,7 +17,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using Data.Interfaces.ManifestSchemas;
 using Core.StructureMap;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 
 namespace terminalSalesforce.Services
 {

@@ -5,8 +5,8 @@ using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
-using PluginBase;
-using PluginBase.BaseClasses;
+using TerminalBase;
+using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
 
 [assembly: OwinStartup(typeof(terminalSlack.Startup))]
