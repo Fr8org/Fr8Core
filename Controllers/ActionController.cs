@@ -27,12 +27,15 @@ namespace Web.Controllers
         private readonly IActivityTemplate _activityTemplate;
         private readonly ISubroute _subRoute;
 
+        private readonly Authorization _authorization;
+
         public ActionController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _subRoute = ObjectFactory.GetInstance<ISubroute>();
+            _authorization = new Authorization();
         }
 
         public ActionController(IAction service)
@@ -85,7 +88,7 @@ namespace Web.Controllers
                 account = _security.GetCurrentAccount(uow);
             }
 
-            var externalAuthUrlDTO = await _action.GetExternalAuthUrl(account, plugin);
+            var externalAuthUrlDTO = await _authorization.GetExternalAuthUrl(account, plugin);
             return Ok(new { Url = externalAuthUrlDTO.Url });
         }
 
@@ -111,7 +114,7 @@ namespace Web.Controllers
                 account = _security.GetCurrentAccount(uow);
             }
 
-            await _action.AuthenticateInternal(
+            await _authorization.AuthenticateInternal(
                 account,
                 plugin,
                 credentials.Username,

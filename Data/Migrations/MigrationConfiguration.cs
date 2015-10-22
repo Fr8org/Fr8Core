@@ -66,9 +66,9 @@ namespace Data.Migrations
             AddDockyardAccounts(uow);
             AddProfiles(uow);
 
-            AddPlugins(uow);
+            //AddPlugins(uow);
 
-            AddAuthorizationTokens(uow);
+            //AddAuthorizationTokens(uow);
             AddContainerDOForTestingApi(uow);
         }
 
@@ -155,7 +155,6 @@ namespace Data.Migrations
         private static void AddAuthorizationTokens(IUnitOfWork uow)
         {
             AddDocusignAuthToken(uow);
-            AddSalesforceAuthToken(uow);
         }
 
         private static void AddDocusignAuthToken(IUnitOfWork uow)
@@ -174,29 +173,6 @@ namespace Data.Migrations
                 var docuSignPlugin = uow.PluginRepository.FindOne(p => p.Name == "pluginDocuSign");
                 token.Plugin = docuSignPlugin;
                 token.PluginID = docuSignPlugin.Id;
-                token.ExpiresAt = DateTime.Now.AddDays(10);
-
-                uow.AuthorizationTokenRepository.Add(token);
-                uow.SaveChanges();
-
-            }
-        }
-
-        private static void AddSalesforceAuthToken(IUnitOfWork uow)
-        {
-            var salesforceAuthToken = uow.AuthorizationTokenRepository.GetQuery()
-             .Any(x => x.ExternalAccountId == "00561000000JECsAAO");
-
-            // Add new plugin and subscription to repository, if plugin doesn't exist.
-            if (!salesforceAuthToken)
-            {
-                var token = new AuthorizationTokenDO();
-                token.ExternalAccountId = "00561000000JECsAAO";
-                token.Token = "";
-                token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
-                var salesforcePlugin = uow.PluginRepository.FindOne(p => p.Name == "pluginSalesforce");
-                token.Plugin = salesforcePlugin;
-                token.PluginID = salesforcePlugin.Id;
                 token.ExpiresAt = DateTime.Now.AddDays(10);
 
                 uow.AuthorizationTokenRepository.Add(token);
@@ -466,7 +442,7 @@ namespace Data.Migrations
 
             AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1", true);
             AddPlugins(uow, "pluginExcel", "localhost:47011", "1", false);
-            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1", false);
+            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1", true);
             uow.SaveChanges();
         }
 

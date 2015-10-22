@@ -16,7 +16,7 @@ namespace Core.Managers.APIManagers.Authorizers.Docusign
     class DocuSignAuthFlow
     {
         private readonly string _userId;
-        private readonly AuthorizationToken _authorizationToken;
+        private readonly Authorization _authorizationToken;
 
         public string Endpoint { get; set; }
         public string IntegratorKey { get; set; }
@@ -24,7 +24,7 @@ namespace Core.Managers.APIManagers.Authorizers.Docusign
         public DocuSignAuthFlow(string userId)
         {
             _userId = userId;
-            _authorizationToken = new AuthorizationToken();
+            _authorizationToken = new Authorization();
         }
 
         private HttpClient CreateClient(string accessToken = null)

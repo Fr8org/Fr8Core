@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,8 +9,8 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
-using PluginBase.BaseClasses;
-using PluginBase.Infrastructure;
+using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using terminalFr8Core.Interfaces;
 
 namespace terminalFr8Core.Actions
@@ -163,7 +163,7 @@ namespace terminalFr8Core.Actions
             }
 
             var whereCallExpression = Expression.Call(
-                typeof (Queryable),
+                typeof(Queryable),
                 "Where",
                 new[] { curType },
                 queryableData.Expression,

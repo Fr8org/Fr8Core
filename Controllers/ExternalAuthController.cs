@@ -8,6 +8,7 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Core.Services;
 
 namespace Web.Controllers
 {
@@ -15,9 +16,12 @@ namespace Web.Controllers
     {
         private readonly IAction _action;
 
+        private readonly Authorization _authorization;
+
         public ExternalAuthController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
+            _authorization = new Authorization();
         }
 
         [HttpGet]
@@ -53,7 +57,7 @@ namespace Web.Controllers
                 RequestQueryString = requestQueryString
             };
 
-            await _action.AuthenticateExternal(plugin, externalAuthenticationDTO);
+            await _authorization.AuthenticateExternal(plugin, externalAuthenticationDTO);
 
             return View();
         }

@@ -8,7 +8,7 @@ using Core.Exceptions;
 using Core.Managers;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
-using PluginBase;
+using TerminalBase;
 using StructureMap;
 using Utilities;
 

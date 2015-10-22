@@ -4,12 +4,12 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using NUnit.Framework;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using StructureMap;
 using System;
 using System.Threading.Tasks;
 using Core.Enums;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

@@ -22,6 +22,7 @@ using System.Web.Helpers;
 
 using Newtonsoft.Json;
 using Data.Infrastructure;
+using TerminalBase.BaseClasses;
 
 namespace DockyardTest.Services
 {
@@ -36,7 +37,8 @@ namespace DockyardTest.Services
         private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
         private readonly IEnumerable<ActivityTemplateDO> _pr2Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "SQL Read", Version = "1.0" } };
         private bool _eventReceived;
-
+        private BasePluginAction _basePluginAction;
+        private IPlugin _plugin;
         private Mock<IPluginTransmitter> PluginTransmitterMock
         {
             get { return Mock.Get(ObjectFactory.GetInstance<IPluginTransmitter>()); }
@@ -51,6 +53,8 @@ namespace DockyardTest.Services
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
             _eventReceived = false;
+            _basePluginAction = new BasePluginAction();
+            _plugin = ObjectFactory.GetInstance<Plugin>();
         }
         
         // DO-1214
@@ -286,7 +290,7 @@ namespace DockyardTest.Services
                 uow.AuthorizationTokenRepository.Add(curAuthorizationTokenDO);
                 uow.SaveChanges();
             }
-            string result = _action.Authenticate(curActionDO);
+            string result = _basePluginAction.Authenticate(curActionDO);
             Assert.AreEqual("TestToken", result);
         }
 
@@ -303,7 +307,7 @@ namespace DockyardTest.Services
                 uow.AuthorizationTokenRepository.Add(curAuthorizationTokenDO);
                 uow.SaveChanges();
             }
-            string result = _action.Authenticate(curActionDO);
+            string result = _basePluginAction.Authenticate(curActionDO);
             Assert.AreEqual("AuthorizationToken", result);
         }
 
