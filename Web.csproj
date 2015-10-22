@@ -495,6 +495,10 @@
     <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\arrow_blue_ic_arrow_forward_48px-512.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
+    <Content Include="Content\img\site\docusign-dashboard-example.png" />
+    <Content Include="Content\img\site\docusign-workflow-example-1.png" />
+    <Content Include="Content\img\site\docusign-workflow-example-2.png" />
+    <Content Include="Content\img\site\docusign-workflow-example-3.png" />
     <Content Include="Content\img\site\email-header.png" />
     <Content Include="Content\img\site\How_it_works_diagram.png" />
     <Content Include="Content\img\site\kwasant-video-screen-logo.png" />
