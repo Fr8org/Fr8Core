@@ -42,6 +42,7 @@ namespace terminalSlack.Controllers
             {
                 Name = "Publish_To_Slack",
                 Label = "Publish To Slack",
+                Tags = "Notifier",
                 Category = ActivityCategory.Forwarders,
                 Plugin = plugin,
                 Version = "1"
