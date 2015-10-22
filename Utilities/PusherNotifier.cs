@@ -11,11 +11,12 @@ namespace Utilities
     {
         private Pusher _pusher { get; set; }
 
+        const string appId = "148580";
+        const string appKey = "123dd339500fed0ddd78";
+        const string appSecret = "598b1fdcdf903325d520";
+
         public PusherNotifier()
         {
-            const string appId = "148580";
-            const string appKey = "123dd339500fed0ddd78";
-            const string appSecret = "598b1fdcdf903325d520";
             _pusher = new Pusher(appId, appKey, appSecret, new PusherOptions() { Encrypted = true });
         }
 
