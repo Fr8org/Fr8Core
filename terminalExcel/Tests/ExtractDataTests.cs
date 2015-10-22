@@ -66,7 +66,7 @@ namespace terminalExcel.PluginExcelTests
 
             var result = new Extract_Data_v1().ConfigurationEvaluator(curActionDTO);
 
-            Assert.AreEqual(result, PluginBase.Infrastructure.ConfigurationRequestType.Initial);
+            Assert.AreEqual(result, TerminalBase.Infrastructure.ConfigurationRequestType.Initial);
         }
 
         //[Test]

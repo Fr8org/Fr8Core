@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using Core.StructureMap;
-using PluginBase;
+using TerminalBase;
 using terminalDocuSign.Infrastructure;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 using StructureMap;
 
 namespace terminalDocuSign

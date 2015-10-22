@@ -1,6 +1,6 @@
 ﻿using Core.Managers.APIManagers.Transmitters.Restful;
 using Moq;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 
 namespace pluginBaseTests.Infrastructure
 {

@@ -7,12 +7,12 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using System.IO;
 using System.Threading.Tasks;
 using terminalExcel.Infrastructure;
 using Core.Exceptions;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 using AutoMapper;
 
 namespace terminalExcel.Actions

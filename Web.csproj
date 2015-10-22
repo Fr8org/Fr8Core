@@ -16,7 +16,7 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>False</UseIISExpress>
+    <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort>44301</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
@@ -495,6 +495,10 @@
     <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\arrow_blue_ic_arrow_forward_48px-512.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
+    <Content Include="Content\img\site\docusign-dashboard-example.png" />
+    <Content Include="Content\img\site\docusign-workflow-example-1.png" />
+    <Content Include="Content\img\site\docusign-workflow-example-2.png" />
+    <Content Include="Content\img\site\docusign-workflow-example-3.png" />
     <Content Include="Content\img\site\email-header.png" />
     <Content Include="Content\img\site\How_it_works_diagram.png" />
     <Content Include="Content\img\site\kwasant-video-screen-logo.png" />
@@ -4076,9 +4080,9 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="pluginBase\PluginBase.csproj">
+    <ProjectReference Include="terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>PluginBase</Name>
+      <Name>TerminalBase</Name>
     </ProjectReference>
     <ProjectReference Include="Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
