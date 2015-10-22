@@ -6,8 +6,8 @@ using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
-using PluginBase;
-using PluginBase.BaseClasses;
+using TerminalBase;
+using TerminalBase.BaseClasses;
 
 [assembly: OwinStartup("SendGridStartup", typeof(terminalSendGrid.Startup))]
 namespace terminalSendGrid
