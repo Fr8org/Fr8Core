@@ -57,7 +57,7 @@ namespace Core.Services
 
 				// find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
 				var upstreamSiblings =
-				    parentActivity.RouteNodes.Where(a => a.Ordering < curActivityDO.Ordering);
+				    parentActivity.ChildNodes.Where(a => a.Ordering < curActivityDO.Ordering);
                         
                 //for each such sibling action, we want to add it to the list
                 //but some of those activities may be actionlists with childactivities of their own
@@ -94,7 +94,7 @@ namespace Core.Services
 	        var parentActivity = uow.RouteNodeRepository.GetByKey(curActivity.ParentRouteNodeId);
 
 	        // find all sibling actions that have a higher Ordering. These are the ones that are "below" or downstream of this action in the list
-	        var downstreamSiblings = parentActivity.RouteNodes.Where(a => a.Ordering > curActivity.Ordering);
+	        var downstreamSiblings = parentActivity.ChildNodes.Where(a => a.Ordering > curActivity.Ordering);
 
 	        //for each such sibling action, we want to add it to the list
 	        //but some of those activities may be actionlists with childactivities of their own
@@ -124,9 +124,9 @@ namespace Core.Services
         private RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, bool depthFirst, RouteNodeDO root)
 		    {
             // Move to the first child if current activity has nested ones
-            if (depthFirst && currentActivity.RouteNodes.Count != 0)
+            if (depthFirst && currentActivity.ChildNodes.Count != 0)
             {
-                return currentActivity.RouteNodes.OrderBy(x => x.Ordering).FirstOrDefault();
+                return currentActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault();
             }
 		   
             // Move to the next activity of the current activity's parent
@@ -137,7 +137,7 @@ namespace Core.Services
 		}
 
             var prev = currentActivity;
-            var nextCandidate = currentActivity.ParentRouteNode.RouteNodes
+            var nextCandidate = currentActivity.ParentRouteNode.ChildNodes
                 .OrderBy(x => x.Ordering)
                 .FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
             
@@ -188,7 +188,7 @@ namespace Core.Services
         private static void TraverseActivity(RouteNodeDO parent, Action<RouteNodeDO> visitAction)
         {
             visitAction(parent);
-            foreach (RouteNodeDO child in parent.RouteNodes)
+            foreach (RouteNodeDO child in parent.ChildNodes)
                 TraverseActivity(child, visitAction);
         }
 
