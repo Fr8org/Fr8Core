@@ -98,5 +98,12 @@
         <button ng-click="onClick($event)" data-field-name='{{::field.name}}' id='pca__btn__{{::field.name | validId}}' class="{{::field.class}}" name='pca__btn__{{::field.name | validId}}'>{{::field.label}}</button>
     </div>
 
+    @*
+    TextSource template
+    *@
+    <div ng-if='field.type == "@ControlTypes.TextSource"'>
+        <text-source change="onChange" data-field-name='{{::field.name}}' field="field"></text-source>
+    </div>
+
     @* Add more configuration field templates below *@
 </div>

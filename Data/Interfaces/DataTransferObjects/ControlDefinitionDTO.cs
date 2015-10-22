@@ -34,6 +34,7 @@ namespace Data.Interfaces.DataTransferObjects
         public const string Routing = "Routing";
         public const string FieldList = "FieldList";
         public const string Button = "Button";
+        public const string TextSource = "TextSource";
     }
 
     public class CheckBoxControlDefinitionDTO : ControlDefinitionDTO
@@ -155,6 +156,32 @@ namespace Data.Interfaces.DataTransferObjects
             {
                 Value = "[]";
             }
+        }
+    }
+
+    public class TextSourceControlDefinitionDTO : DropDownListControlDefinitionDTO
+    {
+        [JsonProperty("initialLabel")]
+        public string InitialLabel;
+
+        [JsonProperty("upstreamSourceLabel")]
+        public string UpstreamSourceLabel;
+
+        [JsonProperty("valueSource")]
+        public string ValueSource;
+
+        public TextSourceControlDefinitionDTO() { }
+
+        public TextSourceControlDefinitionDTO(string initialLabel, string upstreamSourceLabel, string name)
+        {
+            Type = ControlTypes.TextSource;
+            this.InitialLabel = initialLabel;
+            this.Name = name;
+            Source = new FieldSourceDTO
+            {
+                Label = upstreamSourceLabel,
+                ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+            };
         }
     }
 
