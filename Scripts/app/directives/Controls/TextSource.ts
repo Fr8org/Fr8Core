@@ -5,10 +5,17 @@ module dockyard.directives.textSource {
     export interface ITextSourceScope extends ng.IScope {
         field: model.TextSource;
         change: () => (fieldName: string) => void;
+        onChange: any;
+
     }
 
     export function TextSource(): ng.IDirective {
         var controller = ['$scope', function ($scope: ITextSourceScope) {
+            $scope.onChange = (fieldName: string) => {
+                if ($scope.change != null && angular.isFunction($scope.change)) {
+                    $scope.change()($scope.field.name);
+                }
+            }
         }];
 
         return {

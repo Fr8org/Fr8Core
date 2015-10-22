@@ -102,7 +102,7 @@
     TextSource template
     *@
     <div ng-if='field.type == "@ControlTypes.TextSource"'>
-        <text-source change="onChange" field="field"></text-source>
+        <text-source change="onChange" data-field-name='{{::field.name}}' field="field"></text-source>
     </div>
 
     @* Add more configuration field templates below *@
