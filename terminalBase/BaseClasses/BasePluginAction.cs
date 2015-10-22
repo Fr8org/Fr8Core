@@ -446,6 +446,7 @@ namespace TerminalBase.BaseClasses
             return control;
         }
 
+
         /// <summary>
         /// Extract value from RadioButtonGroup where specific value or upstream field was specified.
         /// </summary>
@@ -458,14 +459,38 @@ namespace TerminalBase.BaseClasses
                 c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
 
             var controls = Crate.GetStandardConfigurationControls(controlsCrate).Controls;
-            var radioButtonGroupControl = controls
-                .SingleOrDefault(c => c.Name == controlName) as RadioButtonGroupControlDefinitionDTO;
+            var control = controls
+                .SingleOrDefault(c => c.Name == controlName);
 
-            if (radioButtonGroupControl == null)
+            if (control as RadioButtonGroupControlDefinitionDTO != null)
             {
-                throw new ApplicationException("No Radio ButtonGroupControl found.");
+                // Get value from a combination of RadioButtonGroup, TextField and DDLB controls
+                // (old approach prior to TextSource) 
+                return ExtractSpecificOrUpstreamValueLegacy((RadioButtonGroupControlDefinitionDTO)control, runTimeCrateStorage);
             }
 
+            if (control as TextSourceControlDefinitionDTO == null)
+            {
+                throw new ApplicationException("TextSource control was expected but not found.");
+            }
+
+            TextSourceControlDefinitionDTO textSourceControl = (TextSourceControlDefinitionDTO)control;
+
+            switch (textSourceControl.ValueSource)
+            {
+                case "specific":
+                    return textSourceControl.Value;
+
+                case "upstream":
+                    return ExtractDesignTimeFieldValue(runTimeCrateStorage, textSourceControl.Value);
+
+                default:
+                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+            }
+            }
+
+        private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroupControlDefinitionDTO radioButtonGroupControl, CrateStorageDTO runTimeCrateStorage)
+        {
             var radioButton = radioButtonGroupControl
                 .Radios
                 .FirstOrDefault(x => x.Selected);
@@ -491,7 +516,6 @@ namespace TerminalBase.BaseClasses
                 default:
                     throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
             }
-
             return returnValue;
         }
 

@@ -35,7 +35,8 @@ namespace terminalSlack.Controllers
                 Label = "Monitor Channel",
                 Category = ActivityCategory.Monitors,
                 Plugin = plugin,
-                Version = "1"
+                Version = "1",
+                MinPaneWidth = 330
             };
 
             var publishToSlackAction = new ActivityTemplateDO
@@ -44,7 +45,8 @@ namespace terminalSlack.Controllers
                 Label = "Publish To Slack",
                 Category = ActivityCategory.Forwarders,
                 Plugin = plugin,
-                Version = "1"
+                Version = "1",
+                MinPaneWidth = 330
             };
 
             var result = new List<ActivityTemplateDO>()
