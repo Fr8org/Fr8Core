@@ -20,9 +20,9 @@ namespace Utilities
             _pusher = new Pusher(appId, appKey, appSecret, new PusherOptions() { Encrypted = true });
         }
 
-        public void Notify(object message)
+        public void Notify(string channelName, string eventName, object message)
         {
-            var result = _pusher.Trigger("test_channel", "my_event", message);
+            var result = _pusher.Trigger(channelName, eventName, message);
         }
     }
 }
