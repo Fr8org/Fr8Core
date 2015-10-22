@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using SendGrid;
 using Utilities;
 
-namespace pluginSendGrid.Services
+namespace terminalSendGrid.Services
 {
     class TransportFactory
     {

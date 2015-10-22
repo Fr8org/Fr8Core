@@ -59,8 +59,8 @@ namespace terminalExcel.Actions
                 }
             }
 
-            return Mapper.Map<ActionDTO>(curActionDO);
-
+           return Mapper.Map<ActionDTO>(curActionDO);
+            
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(int actionId, CrateStorageDTO curCrateStorageDTO)
@@ -146,11 +146,11 @@ namespace terminalExcel.Actions
             if (includeTextBlockControl)
             {
                 var textBlockControl = new TextBlockControlDefinitionDTO()
-                {
-                    Label = "",
-                    Value = "File successfully uploaded.",
-                    CssClass = "well well-lg"
-                };
+                    {
+                        Label = "",
+                        Value = "File successfully uploaded.",
+                        CssClass = "well well-lg"
+                    };
                 controlList.Add(textBlockControl);
             }
 
@@ -209,7 +209,7 @@ namespace terminalExcel.Actions
             // Creating configuration control crate with a file picker and textblock
             var configControlsCrateDTO = CreateConfigurationControlsCrate(true);
             curActionDTO.CrateStorage.CrateDTO.Add(configControlsCrateDTO);
-
+            
             var selectedFilePath = filePathsFromUserSelection[0];
 
             return await TransformExcelFileDataToStandardTableDataCrate(curActionDTO, selectedFilePath);

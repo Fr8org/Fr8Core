@@ -6,7 +6,7 @@ using System.Web.Http;
 using Newtonsoft.Json.Serialization;
 using PluginBase.BaseClasses;
 
-namespace pluginSendGrid
+namespace terminalSendGrid
 {
     public static class WebApiConfig
     {

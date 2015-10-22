@@ -62,13 +62,13 @@ namespace terminalExcel
         public class PluginControllerTypeResolver : IHttpControllerTypeResolver
         {
             public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-            {
-                return new Type[] {
+        {
+            return new Type[] {
                     typeof(Controllers.ActionController),
                     typeof(Controllers.EventController),
                     typeof(Controllers.PluginController)
                 };
-            }
+        }
         }
     }
 }

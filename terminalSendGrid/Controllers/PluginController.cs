@@ -21,7 +21,7 @@ namespace pluginSalesforce.Controllers
         {
             var plugin = new PluginDO()
             {
-                Name = "pluginSendGrid",
+                Name = "terminalSendGrid",
                 PluginStatus = PluginStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 Version = "1"
@@ -32,6 +32,7 @@ namespace pluginSalesforce.Controllers
                 Name = "SendEmailViaSendGrid",
                 Label = "Send Email Vie Send Grid",
                 Version = "1",
+                Tags = "Notifier",
                 Plugin = plugin,
                 Category = ActivityCategory.Forwarders
             };

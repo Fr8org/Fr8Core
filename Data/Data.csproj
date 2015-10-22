@@ -340,6 +340,10 @@
     <Compile Include="Migrations\201510202031291_NothingIgnoreChanages.Designer.cs">
       <DependentUpon>201510202031291_NothingIgnoreChanages.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510220531531_forcemerge.cs" />
+    <Compile Include="Migrations\201510220531531_forcemerge.Designer.cs">
+      <DependentUpon>201510220531531_forcemerge.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -591,6 +595,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510202031291_NothingIgnoreChanages.resx">
       <DependentUpon>201510202031291_NothingIgnoreChanages.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510220531531_forcemerge.resx">
+      <DependentUpon>201510220531531_forcemerge.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
