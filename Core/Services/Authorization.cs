@@ -3,19 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StructureMap;
+using Newtonsoft.Json;
+using Core.Interfaces;
+using Core.Managers;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Entities;
 using Data.Interfaces;
-using StructureMap;
-using Data.States;
-using Newtonsoft.Json;
 using Data.Interfaces.DataTransferObjects;
-using Core.Managers.APIManagers.Transmitters.Restful;
-using Core.Interfaces;
+using Data.Interfaces.ManifestSchemas;
+using Data.States;
 
 namespace Core.Services
 {
     public class Authorization
     {
+        private readonly ICrateManager _crate;
+
+
+        public Authorization()
+        {
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
+        }
+
         public string GetToken(string userId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -306,5 +316,80 @@ namespace Core.Services
             return externalAuthUrlDTO;
         }
 
+        private void AddAuthenticationCrate(
+            ActionDTO actionDTO, int authType)
+        {
+            if (actionDTO.CrateStorage == null)
+            {
+                actionDTO.CrateStorage = new CrateStorageDTO()
+                {
+                    CrateDTO = new List<CrateDTO>()
+                };
+            }
+
+            var mode = authType == AuthenticationType.Internal
+                ? AuthenticationMode.InternalMode
+                : AuthenticationMode.ExternalMode;
+
+            actionDTO.CrateStorage.CrateDTO.Add(
+                _crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
+            );
+        }
+
+        private void RemoveAuthenticationCrate(ActionDTO actionDTO)
+        {
+            if (actionDTO.CrateStorage != null
+                && actionDTO.CrateStorage.CrateDTO != null)
+            {
+                var authCrates = actionDTO.CrateStorage.CrateDTO
+                    .Where(x => x.ManifestType == CrateManifests.STANDARD_AUTHENTICATION_NAME)
+                    .ToList();
+
+                foreach (var authCrate in authCrates)
+                {
+                    actionDTO.CrateStorage.CrateDTO.Remove(authCrate);
+                }
+            }
+        }
+
+        public bool ValidateAuthenticationNeeded(string userId, ActionDTO curActionDTO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(curActionDTO.ActivityTemplateId);
+
+                if (activityTemplate == null)
+                {
+                    throw new ApplicationException("ActivityTemplate was not found.");
+                }
+
+                var account = uow.UserRepository.GetByKey(userId);
+
+                if (account == null)
+                {
+                    throw new ApplicationException("Current account was not found.");
+                }
+
+                if (activityTemplate.AuthenticationType != AuthenticationType.None)
+                {
+                    var authToken = uow.AuthorizationTokenRepository
+                        .FindOne(x => x.Plugin.Id == activityTemplate.Plugin.Id
+                            && x.UserDO.Id == account.Id);
+
+                    if (authToken == null)
+                    {
+                        AddAuthenticationCrate(curActionDTO, activityTemplate.AuthenticationType);
+                        return true;
+                    }
+                    else
+                    {
+                        RemoveAuthenticationCrate(curActionDTO);
+                    }
+                }
+            }
+
+            return false;
+        }
     }
 }
