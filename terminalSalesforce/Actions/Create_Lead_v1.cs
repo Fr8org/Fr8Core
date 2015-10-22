@@ -21,11 +21,17 @@ namespace terminalSalesforce.Actions
         {
             if (NeedsAuthentication(curActionDTO))
             {
-                FlaggedForAuthentication(curActionDTO);
-                return curActionDTO;
+                throw new ApplicationException("No AuthToken provided.");
             }
 
-            RemoveAuthenticationCrate(curActionDTO);
+            // TODO: remove this, DO-1397.
+            // if (NeedsAuthentication(curActionDTO))
+            // {
+            //     FlaggedForAuthentication(curActionDTO);
+            //     return curActionDTO;
+            // }
+            // 
+            // RemoveAuthenticationCrate(curActionDTO);
 
             return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }

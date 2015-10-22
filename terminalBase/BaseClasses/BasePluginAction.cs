@@ -54,41 +54,43 @@ namespace TerminalBase.BaseClasses
             {
                 return true;
             }
-
+        
             return false;
         }
 
-        protected void RemoveAuthenticationCrate(ActionDTO actionDTO)
-        {
-            if (actionDTO.CrateStorage != null
-                && actionDTO.CrateStorage.CrateDTO != null)
-            {
-                var authCrates = actionDTO.CrateStorage.CrateDTO
-                    .Where(x => x.ManifestType == CrateManifests.STANDARD_AUTHENTICATION_NAME)
-                    .ToList();
+        // TODO: remove this, DO-1397.
+        // protected void RemoveAuthenticationCrate(ActionDTO actionDTO)
+        // {
+        //     if (actionDTO.CrateStorage != null
+        //         && actionDTO.CrateStorage.CrateDTO != null)
+        //     {
+        //         var authCrates = actionDTO.CrateStorage.CrateDTO
+        //             .Where(x => x.ManifestType == CrateManifests.STANDARD_AUTHENTICATION_NAME)
+        //             .ToList();
+        // 
+        //         foreach (var authCrate in authCrates)
+        //         {
+        //             actionDTO.CrateStorage.CrateDTO.Remove(authCrate);
+        //         }
+        //     }
+        // }
 
-                foreach (var authCrate in authCrates)
-                {
-                    actionDTO.CrateStorage.CrateDTO.Remove(authCrate);
-                }
-            }
-        }
-
-        protected void AddAuthenticationCrate(
-            ActionDTO actionDTO, AuthenticationMode mode)
-        {
-            if (actionDTO.CrateStorage == null)
-            {
-                actionDTO.CrateStorage = new CrateStorageDTO()
-                {
-                    CrateDTO = new List<CrateDTO>()
-                };
-            }
-
-            actionDTO.CrateStorage.CrateDTO.Add(
-                Crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
-            );
-        }
+        // TODO: remove this, DO-1397.
+        // protected void AddAuthenticationCrate(
+        //     ActionDTO actionDTO, AuthenticationMode mode)
+        // {
+        //     if (actionDTO.CrateStorage == null)
+        //     {
+        //         actionDTO.CrateStorage = new CrateStorageDTO()
+        //         {
+        //             CrateDTO = new List<CrateDTO>()
+        //         };
+        //     }
+        // 
+        //     actionDTO.CrateStorage.CrateDTO.Add(
+        //         Crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
+        //     );
+        // }
 
         protected async Task<PayloadDTO> GetProcessPayload(int processId)
         {
@@ -152,19 +154,20 @@ namespace TerminalBase.BaseClasses
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
         }
 
-        protected bool ValidateAuthentication(ActionDTO curActionDTO, AuthenticationMode curAuthenticationMode)
-        {
-            if (NeedsAuthentication(curActionDTO))
-            {
-                AddAuthenticationCrate(
-                    curActionDTO,
-                    curAuthenticationMode);
-                return false;
-            }
-            else
-                RemoveAuthenticationCrate(curActionDTO);
-            return true;
-        }
+        // TODO: remove this, DO-1397
+        // protected bool ValidateAuthentication(ActionDTO curActionDTO, AuthenticationMode curAuthenticationMode)
+        // {
+        //     if (NeedsAuthentication(curActionDTO))
+        //     {
+        //         AddAuthenticationCrate(
+        //             curActionDTO,
+        //             curAuthenticationMode);
+        //         return false;
+        //     }
+        //     else
+        //         RemoveAuthenticationCrate(curActionDTO);
+        //     return true;
+        // }
 
         /// <summary>
         /// Configure infrastructure.
@@ -503,12 +506,13 @@ namespace TerminalBase.BaseClasses
             throw new ApplicationException("No field found with specified key.");
         }
 
-        public void FlaggedForAuthentication(ActionDTO curActionDTO)
-        {
-            AddAuthenticationCrate(
-                    curActionDTO,
-                    AuthenticationMode.ExternalMode);
-        }
+        // TODO: remove this, DO-1397.
+        // public void FlaggedForAuthentication(ActionDTO curActionDTO)
+        // {
+        //     AddAuthenticationCrate(
+        //             curActionDTO,
+        //             AuthenticationMode.ExternalMode);
+        // }
 
 
         // TODO: remove this, DO-1397

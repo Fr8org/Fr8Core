@@ -17,6 +17,8 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using Data.States;
 
 namespace Web.Controllers
 {
@@ -26,6 +28,7 @@ namespace Web.Controllers
         private readonly IAction _action;
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
+        private readonly ICrateManager _crate;
         private readonly ISubroute _subRoute;
         private readonly Authorization _authorization;
 
@@ -33,6 +36,7 @@ namespace Web.Controllers
         {
             _action = ObjectFactory.GetInstance<IAction>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _subRoute = ObjectFactory.GetInstance<ISubroute>();
             _authorization = new Authorization();
@@ -48,6 +52,41 @@ namespace Web.Controllers
             _subRoute = service;
         }
 
+        private void AddAuthenticationCrate(
+            ActionDTO actionDTO, int authType)
+        {
+            if (actionDTO.CrateStorage == null)
+            {
+                actionDTO.CrateStorage = new CrateStorageDTO()
+                {
+                    CrateDTO = new List<CrateDTO>()
+                };
+            }
+
+            var mode = authType == AuthenticationType.Internal
+                ? AuthenticationMode.InternalMode
+                : AuthenticationMode.ExternalMode;
+
+            actionDTO.CrateStorage.CrateDTO.Add(
+                _crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
+            );
+        }
+
+        protected void RemoveAuthenticationCrate(ActionDTO actionDTO)
+        {
+            if (actionDTO.CrateStorage != null
+                && actionDTO.CrateStorage.CrateDTO != null)
+            {
+                var authCrates = actionDTO.CrateStorage.CrateDTO
+                    .Where(x => x.ManifestType == CrateManifests.STANDARD_AUTHENTICATION_NAME)
+                    .ToList();
+
+                foreach (var authCrate in authCrates)
+                {
+                    actionDTO.CrateStorage.CrateDTO.Remove(authCrate);
+                }
+            }
+        }
 
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
 
@@ -57,6 +96,41 @@ namespace Web.Controllers
         //[ResponseType(typeof(CrateStorageDTO))]
         public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
         {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(curActionDesignDTO.ActivityTemplateId);
+
+                if (activityTemplate == null)
+                {
+                    throw new ApplicationException("ActivityTemplate was not found.");
+                }
+
+                var account = uow.UserRepository.GetByKey(User.Identity.GetUserId());
+
+                if (account == null)
+                {
+                    throw new ApplicationException("Current account was not found.");
+                }
+
+                if (activityTemplate.AuthenticationType != AuthenticationType.None)
+                {
+                    var authToken = uow.AuthorizationTokenRepository
+                        .FindOne(x => x.Plugin.Id == activityTemplate.Plugin.Id
+                            && x.UserDO.Id == account.Id);
+
+                    if (authToken == null)
+                    {
+                        AddAuthenticationCrate(curActionDesignDTO, activityTemplate.AuthenticationType);
+                        return Ok(curActionDesignDTO);
+                    }
+                    else
+                    {
+                        RemoveAuthenticationCrate(curActionDesignDTO);
+                    }
+                }
+            }
+
             curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
             ActionDTO actionDTO = await _action.Configure(curActionDO);

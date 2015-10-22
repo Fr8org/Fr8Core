@@ -84,9 +84,17 @@ namespace terminalSlack.Actions
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (ValidateAuthentication(curActionDTO, AuthenticationMode.ExternalMode))
-                return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
-            return curActionDTO;
+            if (NeedsAuthentication(curActionDTO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
+
+            // TODO: remove this, DO-1397.
+            // if (ValidateAuthentication(curActionDTO, AuthenticationMode.ExternalMode))
+            //     return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
+            // return curActionDTO;
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
