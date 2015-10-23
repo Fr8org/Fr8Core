@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using System.Xaml;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
@@ -64,51 +67,42 @@ namespace terminalDocuSign.Actions
 
             var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = PackCrate_TemplateNames(docuSignAuthDTO);
-            var eventFields = PackCrate_DocuSignEventFields();
 
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
             curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
-            curActionDTO.CrateStorage.CrateDTO.Add(eventFields);
-
-            var configurationFields = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
-
-            // Remove previously added crate of "Standard Event Subscriptions" schema
-
-            Crate.ReplaceCratesByManifestType(curActionDTO.CrateStorage.CrateDTO,
-                CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
-                new List<CrateDTO> { PackCrate_EventSubscriptions(configurationFields) });
+           
 
             return Task.FromResult(curActionDTO);
         }
 
         protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
+            var configurationFields = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
+
             return Task.FromResult(curActionDTO);
         }
 
-        private CrateDTO PackCrate_EventSubscriptions(StandardConfigurationControlsCM configurationFields)
+        private IEnumerable<ControlDefinitionDTO> LoadConfigurationControls(string resourceName)
         {
-            var subscriptions = new List<string>();
+            var assembly = Assembly.GetExecutingAssembly();
 
-            var eventCheckBoxes = configurationFields.Controls
-                .Where(x => x.Type == "CheckBox" && x.Name.StartsWith("Event_"));
-
-            foreach (var eventCheckBox in eventCheckBoxes)
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
             {
-                if (eventCheckBox.Selected)
-                {
-                    subscriptions.Add(eventCheckBox.Label);
-                }
+                return ((PageDTO) XamlServices.Load(stream)).Children;
             }
-
-            return Crate.CreateStandardEventSubscriptionsCrate(
-                "Standard Event Subscriptions",
-                subscriptions.ToArray()
-                );
         }
 
         private CrateDTO PackCrate_ConfigurationControls()
         {
+            /*
+
+            var textBlockControl = new TextBlockControlDefinitionDTO()
+            {
+                Label = "",
+                Value = "Fr8 Solutions for DocuSign",
+                CssClass = "well well-lg"
+            };
+            
             var fieldSelectDocusignTemplate = new DropDownListControlDefinitionDTO()
             {
                 Label = "Select DocuSign Template",
@@ -164,13 +158,9 @@ namespace terminalDocuSign.Actions
                     new ControlEvent("onChange", "requestConfig")
                 }
             };
+             */
 
-            return PackControlsCrate(
-                fieldSelectDocusignTemplate,
-                fieldEnvelopeSent,
-                fieldEnvelopeReceived,
-                fieldRecipientSigned,
-                fieldEventRecipientSent);
+            return PackControlsCrate(LoadConfigurationControls("terminalDocuSign.Actions.Collect_From_Data_Solution_v1.xaml").ToArray());
         }
 
         private CrateDTO PackCrate_TemplateNames(DocuSignAuthDTO authDTO)
@@ -181,13 +171,6 @@ namespace terminalDocuSign.Actions
             var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();
             var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate("Available Templates",fields);
             return createDesignTimeFields;
-        }
-
-        private CrateDTO PackCrate_DocuSignEventFields()
-        {
-            return Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields",
-                new FieldDTO { Key = "EnvelopeId", Value = string.Empty },
-                new FieldDTO { Key = "TemplateId", Value = string.Empty });
         }
     }
 }

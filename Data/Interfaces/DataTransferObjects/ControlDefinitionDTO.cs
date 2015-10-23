@@ -122,7 +122,11 @@ namespace Data.Interfaces.DataTransferObjects
     public class TextBlockControlDefinitionDTO : ControlDefinitionDTO
     {
         [JsonProperty("class")]
-        public string CssClass;
+        public string CssClass
+        {
+            get; 
+            set;
+        }
 
         public TextBlockControlDefinitionDTO()
         {

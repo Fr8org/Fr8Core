@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Configuration;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -30,6 +31,7 @@ using Logger = Utilities.Logging.Logger;
 using System.Web.Http;
 using FluentValidation.WebApi;
 using System.Net.Http.Formatting;
+using System.Reflection;
 using Newtonsoft.Json.Serialization;
 using Web.ExceptionHandling;
 
