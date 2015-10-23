@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class ActivityTemplate_AuthType_Migration : IMigrationMetadata
+    public sealed partial class forcemerge : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ActivityTemplate_AuthType_Migration));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(forcemerge));
         
         string IMigrationMetadata.Id
         {
-            get { return "201510221210362_ActivityTemplate_AuthType_Migration"; }
+            get { return "201510222222252_forcemerge"; }
         }
         
         string IMigrationMetadata.Source
