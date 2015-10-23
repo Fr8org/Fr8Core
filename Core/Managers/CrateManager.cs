@@ -292,7 +292,7 @@ namespace Core.Managers
             if (curCrateDTOLists == null)
                 throw new ArgumentNullException("CrateDTO is null");
             if (payload == null)
-                throw new ArgumentNullException("ActionDO is null");
+                throw new ArgumentNullException("PayloadDTO is null");
 
             if (curCrateDTOLists.Count > 0)
             {
