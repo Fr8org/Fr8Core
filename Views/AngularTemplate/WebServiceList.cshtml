@@ -1,0 +1,20 @@
+﻿<div ng-controller="WebServiceController">
+	<table datatable="ng" class="row-border hover">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Icon</th>
+				<th>Name</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="webService in ::webServices">
+				<td>{{:: webService.Id }}</td>
+				<td>
+					<img src="{{:: webService.Icon }}" />
+				</td>
+				<td>{{:: webService.Name }}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

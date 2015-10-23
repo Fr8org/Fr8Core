@@ -209,6 +209,7 @@
     <Compile Include="Entities\MT_Data.cs" />
     <Compile Include="Entities\MT_Field.cs" />
     <Compile Include="Entities\MT_Object.cs" />
+    <Compile Include="Entities\WebServiceDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
@@ -353,6 +354,10 @@
     <Compile Include="Migrations\201510230242497_FixUp_2_Migration.Designer.cs">
       <DependentUpon>201510230242497_FixUp_2_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510231214010_CreateWebServiceTable_Migration.cs" />
+    <Compile Include="Migrations\201510231214010_CreateWebServiceTable_Migration.Designer.cs">
+      <DependentUpon>201510231214010_CreateWebServiceTable_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -363,6 +368,7 @@
     <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
+    <Compile Include="Repositories\WebServiceRepository.cs" />
     <Compile Include="States\ActivityCategory.cs" />
     <Compile Include="States\AuthenticationType.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
@@ -615,6 +621,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510230242497_FixUp_2_Migration.resx">
       <DependentUpon>201510230242497_FixUp_2_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510231214010_CreateWebServiceTable_Migration.resx">
+      <DependentUpon>201510231214010_CreateWebServiceTable_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
