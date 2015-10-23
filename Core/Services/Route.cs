@@ -160,10 +160,10 @@ namespace Core.Services
                 }
             }
 
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                unitOfWork.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Active;
-                unitOfWork.SaveChanges();
+                uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Active;
+                uow.SaveChanges();
             }
 
             return result;
@@ -189,10 +189,10 @@ namespace Core.Services
                 }
             }
 
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                unitOfWork.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Inactive;
-                unitOfWork.SaveChanges();
+                uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Inactive;
+                uow.SaveChanges();
             }
 
             return result;
