@@ -54,7 +54,7 @@ namespace TerminalBase.BaseClasses
             {
                 return true;
             }
-
+        
             return false;
         }
 
@@ -487,6 +487,6 @@ namespace TerminalBase.BaseClasses
             //}
 
             throw new ApplicationException("No field found with specified key.");
-        }      
+        }
     }
 }
