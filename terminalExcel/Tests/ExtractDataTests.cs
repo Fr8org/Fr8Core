@@ -169,7 +169,7 @@ namespace terminalExcel.PluginExcelTests
             };
 
             var result = await new Extract_Data_v1().Run(curActionDTO);
-            var payloadCrates = _crate.GetCratesByManifestType(CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, result.CrateStorage);
+            var payloadCrates = _crate.GetCratesByManifestType(CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, result.CrateStorageDTO());
             var payloadDataMS = JsonConvert.DeserializeObject<StandardPayloadDataCM>(payloadCrates.First().Contents);
 
             Assert.IsNotNull(result.CrateStorage);

@@ -287,6 +287,24 @@ namespace Core.Managers
             AddCrate(curActionDO, new List<CrateDTO>() { curCrateDTO });
         }
 
+        public void AddCrate(PayloadDTO payload, List<CrateDTO> curCrateDTOLists)
+        {
+            if (curCrateDTOLists == null)
+                throw new ArgumentNullException("CrateDTO is null");
+            if (payload == null)
+                throw new ArgumentNullException("ActionDO is null");
+
+            if (curCrateDTOLists.Count > 0)
+            {
+                payload.UpdateCrateStorageDTO(curCrateDTOLists);
+            }
+        }
+
+        public void AddCrate(PayloadDTO payload, CrateDTO curCrateDTO)
+        {
+            AddCrate(payload, new List<CrateDTO>() { curCrateDTO });
+        }
+
         public void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO)
         {
             var existingCratesWithLabelInActionDO = GetCratesByLabel(label, curActionDO.CrateStorageDTO());
