@@ -4021,6 +4021,7 @@
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\Metronic.d.ts" />
     <TypeScriptCompile Include="Scripts\app\_all.ts" />
+    <TypeScriptCompile Include="Scripts\typings\pusher-js\pusher-js.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\tsd.d.ts" />
     <Content Include="Views\Home\ConditionalLogicBranching.cshtml" />
     <Content Include="Views\Home\DataExtractionIntoSalesforce.cshtml" />
