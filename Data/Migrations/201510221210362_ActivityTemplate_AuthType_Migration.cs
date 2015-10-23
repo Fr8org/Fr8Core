@@ -1,10 +1,12 @@
+using Data.States.Templates;
+
 namespace Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
     using Data.States;
-    
-    public partial class ActivityTemplate_AuthType_Migration : DbMigration
+
+    public partial class ActivityTemplate_AuthType_Migration : DockyardDbMigration
     {
         public override void Up()
         {
@@ -16,7 +18,8 @@ namespace Data.Migrations
                         Name = c.String(),
                     })
                 .PrimaryKey(t => t.Id);
-            
+            SeedConstants<AuthenticationType>("dbo._AuthenticationTypeTemplate");
+            Sql(string.Format("UPDATE dbo.ActivityTemplate SET AuthenticationType = {0} WHERE AuthenticationType IS NULL", AuthenticationType.None));
             AlterColumn("dbo.ActivityTemplate", "AuthenticationType", c => c.Int(nullable: false));
             CreateIndex("dbo.ActivityTemplate", "AuthenticationType");
             AddForeignKey("dbo.ActivityTemplate", "AuthenticationType", "dbo._AuthenticationTypeTemplate", "Id", cascadeDelete: true);
