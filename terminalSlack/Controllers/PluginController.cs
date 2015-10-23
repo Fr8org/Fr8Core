@@ -35,7 +35,8 @@ namespace terminalSlack.Controllers
                 Category = ActivityCategory.Monitors,
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.External,
-                Version = "1"
+                Version = "1",
+				MinPaneWidth = 330
             };
 
             var publishToSlackAction = new ActivityTemplateDO
@@ -45,7 +46,8 @@ namespace terminalSlack.Controllers
                 Category = ActivityCategory.Forwarders,
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.External,
-                Version = "1"
+                Version = "1",
+				MinPaneWidth = 330
             };
 
             var result = new List<ActivityTemplateDO>()

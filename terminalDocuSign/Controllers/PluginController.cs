@@ -35,7 +35,8 @@ namespace terminalDocuSign.Controllers
                 Label = "Monitor DocuSign",
                 Category = ActivityCategory.Monitors,
                 Plugin = plugin,
-                AuthenticationType = AuthenticationType.Internal
+                AuthenticationType = AuthenticationType.Internal,
+				MinPaneWidth = 330
             };
 
 			var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
@@ -45,7 +46,8 @@ namespace terminalDocuSign.Controllers
                 Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
 				Plugin = plugin,
-                AuthenticationType = AuthenticationType.Internal
+                AuthenticationType = AuthenticationType.Internal,
+				MinPaneWidth = 330
 			};
 
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
@@ -55,7 +57,8 @@ namespace terminalDocuSign.Controllers
                 Label = "Receive DocuSign Envelope",
                 Category = ActivityCategory.Receivers,
                 Plugin = plugin,
-                AuthenticationType = AuthenticationType.Internal
+                AuthenticationType = AuthenticationType.Internal,
+				MinPaneWidth = 330
             };
 
             var recordDocuSignEvents = new ActivityTemplateDO
@@ -65,7 +68,8 @@ namespace terminalDocuSign.Controllers
                 Version = "1",
                 Category = ActivityCategory.Forwarders,
                 Plugin = plugin,
-                AuthenticationType = AuthenticationType.Internal
+                AuthenticationType = AuthenticationType.Internal,
+				MinPaneWidth = 330
             };
 
             var actionList = new List<ActivityTemplateDO>()

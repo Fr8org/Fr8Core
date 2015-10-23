@@ -37,7 +37,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
-                Version = "1"
+                Version = "1",
+				MinPaneWidth = 330
             });
 
             result.Add(new ActivityTemplateDO
@@ -47,7 +48,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
-                Version = "1"
+                Version = "1",
+				MinPaneWidth = 380
             });
 
             result.Add(new ActivityTemplateDO
@@ -57,7 +59,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
-                Version = "1"
+                Version = "1",
+				MinPaneWidth = 330
             });
 
             return Json(result);    

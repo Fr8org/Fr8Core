@@ -29,6 +29,8 @@ namespace Web.Controllers
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly ISubroute _subRoute;
+        private readonly IRoute _route;
+
         private readonly Authorization _authorization;
 
         public ActionController()
@@ -37,6 +39,7 @@ namespace Web.Controllers
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _subRoute = ObjectFactory.GetInstance<ISubroute>();
+            _route = ObjectFactory.GetInstance<IRoute>();
             _authorization = new Authorization();
         }
 
@@ -48,6 +51,30 @@ namespace Web.Controllers
         public ActionController(ISubroute service)
         {
             _subRoute = service;
+        }
+
+
+        [HttpGet]
+        [Fr8ApiAuthorize]
+        [Route("create")]
+        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var result = await _action.CreateAndConfigure(uow, actionTemplateId, name, label, parentNodeId, createRoute);
+
+                if (result is ActionDO)
+                {
+                    return Ok(Mapper.Map<ActionDTO>(result));
+                }
+
+                if (result is RouteDO)
+                {
+                    return Ok(_route.MapRouteToDto(uow, (RouteDO)result));
+                }
+
+                throw new Exception("Unsupported type " + result.GetType());
+            }
         }
 
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
@@ -165,6 +192,8 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var resultActionDO = _action.SaveOrUpdateAction(uow, submittedActionDO);
+                var activityTemplateDO = uow.ActivityTemplateRepository.GetByKey(resultActionDO.ActivityTemplateId);
+                resultActionDO.ActivityTemplate = activityTemplateDO;
                
                 if (curActionDTO.IsTempId)
                 {
@@ -175,6 +204,23 @@ namespace Web.Controllers
 
                 return Ok(resultActionDTO);
             }
+        }
+
+        /// <summary>
+        /// POST : updates the given action
+        /// </summary>
+        [HttpPost]
+        [Route("update")]
+        public IHttpActionResult Update(ActionDTO curActionDTO)
+        {
+            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _action.Update(uow, submittedActionDO);
+            }
+
+            return Ok();
         }    
     }
 }

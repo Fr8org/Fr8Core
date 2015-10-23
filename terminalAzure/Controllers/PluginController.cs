@@ -28,7 +28,8 @@ namespace terminalAzure.Controllers
                 Label = "Write to Azure Sql Server",
                 Category = ActivityCategory.Forwarders,
                 AuthenticationType = AuthenticationType.None,
-                Version = "1"
+                Version = "1",
+				MinPaneWidth = 330
             };
 
             var plugin = new PluginDO

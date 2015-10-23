@@ -76,5 +76,7 @@ namespace Data.Entities
 
         [Required]
         public ActivityCategory Category { get; set; }
+
+        public int MinPaneWidth { get; set; }
     }
 }
