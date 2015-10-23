@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using TerminalBase;
@@ -20,15 +20,14 @@ namespace terminalDocuSign.Actions
 {
     public class Monitor_DocuSign_v1 : BasePluginAction
     {
-        // TODO: remove this as of DO-1064.
-        // IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
-        // IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
-
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
-                return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationEvaluator(actionDo));
-            return curActionDTO;
+            if (NeedsAuthentication(curActionDTO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }
 
         public ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)

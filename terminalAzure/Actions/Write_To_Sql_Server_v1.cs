@@ -12,7 +12,7 @@ using terminalAzure.Services;
 using TerminalBase.Infrastructure;
 using StructureMap;
 using TerminalBase;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Interfaces.ManifestSchemas;
 using TerminalBase.BaseClasses;
 

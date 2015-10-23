@@ -187,7 +187,7 @@ namespace terminalSendGrid.Actions
                     From = new EmailAddressDO
                     {
                         Address = fromAddress,
-                        Name = "fr8 Send Grid Plugin"
+                        Name = "Fr8 Operations"
                     },
 
                     Recipients = new List<RecipientDO>()

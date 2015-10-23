@@ -27,7 +27,9 @@ namespace terminalAzure.Controllers
                 Name = "Write_To_Sql_Server",
                 Label = "Write to Azure Sql Server",
                 Category = ActivityCategory.Forwarders,
-                Version = "1"
+                AuthenticationType = AuthenticationType.None,
+                Version = "1",
+				MinPaneWidth = 330
             };
 
             var plugin = new PluginDO
@@ -35,7 +37,6 @@ namespace terminalAzure.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 PluginStatus = PluginStatus.Active,
                 Name = "terminalAzure",
-                RequiresAuthentication = false,
                 Version = "1"
             };
             
