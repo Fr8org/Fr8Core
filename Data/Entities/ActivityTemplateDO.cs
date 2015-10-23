@@ -18,7 +18,7 @@ namespace Data.Entities
             this.AuthenticationType = States.AuthenticationType.None;
         }
 
-        public ActivityTemplateDO(string name, string label, string version, int pluginId)
+        public ActivityTemplateDO(string name, string label, string version, int pluginId) : this()
         {
             this.Name = name;
             this.Label = label;
@@ -37,7 +37,8 @@ namespace Data.Entities
         /// <param name="pluginName">Name of the new PluginDO</param>
         /*<param name="baseEndPoint">New PluginDO base end point</param>*/
         /// <param name="Endpoint">New PluginDO end point</param>
-        public ActivityTemplateDO(string name, string version, string pluginName, string endPoint, string label = "")
+        public ActivityTemplateDO(string name, string version,
+            string pluginName, string endPoint, string label = "") : this()
         {
 
             this.Name = name;

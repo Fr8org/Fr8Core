@@ -361,14 +361,14 @@ namespace Core.Services
 
                 if (activityTemplate == null)
                 {
-                    throw new ApplicationException("ActivityTemplate was not found.");
+                    throw new NullReferenceException("ActivityTemplate was not found.");
                 }
 
                 var account = uow.UserRepository.GetByKey(userId);
 
                 if (account == null)
                 {
-                    throw new ApplicationException("Current account was not found.");
+                    throw new NullReferenceException("Current account was not found.");
                 }
 
                 if (activityTemplate.AuthenticationType != AuthenticationType.None)
