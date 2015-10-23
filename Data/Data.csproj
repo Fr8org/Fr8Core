@@ -271,7 +271,6 @@
     <Compile Include="Interfaces\ManifestSchemas\DocuSignEnvelopeCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\DocuSignEventCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\Manifest.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\MTManifest.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardAuthenticationCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardRoutingDirectiveCM.cs" />

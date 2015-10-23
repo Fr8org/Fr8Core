@@ -136,8 +136,7 @@ namespace terminalDocuSign.Actions
                         EnvelopeId = docuSignFields.First(field => field.Key.Equals("EnvelopeId")).Value,
                         ExternalAccountId = docuSignFields.First(field => field.Key.Equals("Email")).Value,
                         SentDate = docuSignFields.First(field => field.Key.Equals("SentDate")).Value,
-                        Status = docuSignFields.First(field => field.Key.Equals("Status")).Value,
-                        Fr8AccountId = uow.RouteRepository.GetByKey(actionDto.ProcessId).Fr8Account.Id
+                        Status = docuSignFields.First(field => field.Key.Equals("Status")).Value
                     };
 
                     DocuSignEventCM events = new DocuSignEventCM
@@ -147,7 +146,7 @@ namespace terminalDocuSign.Actions
                         Object = docuSignFields.First(field => field.Key.Equals("Object")).Value,
                         RecepientId = docuSignFields.First(field => field.Key.Equals("RecipientId")).Value,
                         Status = docuSignFields.First(field => field.Key.Equals("Status")).Value,
-                        Fr8AccountId = uow.RouteRepository.GetByKey(actionDto.ProcessId).Fr8Account.Id
+                        ExternalAccountId = docuSignFields.First(field => field.Key.Equals("Email")).Value
                     };
 
                     curProcessPayload.UpdateCrateStorageDTO(new List<CrateDTO>

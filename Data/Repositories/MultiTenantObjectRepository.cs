@@ -29,7 +29,7 @@ namespace Data.Repositories
             this._mtFieldType = new Infrastructure.MultiTenant.MT_FieldType();
         }
 
-        public void Add(IUnitOfWork _uow, Manifest curManifest)
+        public void Add(IUnitOfWork _uow, Manifest curManifest, string curFr8AccountId)
         {
             var curDataType = curManifest.GetType();
             var curDataProperties = curDataType.GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();
@@ -41,12 +41,12 @@ namespace Data.Repositories
             }
 
             //create MTData, fill values, and add to repo
-            var data = _mtData.Create(curManifest, correspondingMTObject);
-            MapManifestToMTData(curManifest, curDataProperties, data, correspondingMTObject);
+            var data = _mtData.Create(curFr8AccountId, curManifest, correspondingMTObject);
+            MapManifestToMTData(curFr8AccountId, curManifest, curDataProperties, data, correspondingMTObject);
             _uow.MTDataRepository.Add(data);
         }
 
-        public void AddOrUpdate<T>(IUnitOfWork _uow, T curManifest, Expression<Func<T, object>> keyProperty)
+        public void AddOrUpdate<T>(IUnitOfWork _uow, string curFr8AccountId, T curManifest, Expression<Func<T, object>> keyProperty)
             where T : Manifest
         {
             var curManifestType = typeof (T);
@@ -60,7 +60,7 @@ namespace Data.Repositories
             {
                 var correspondingDTFields = _uow.MTFieldRepository.FindList(a => a.MT_ObjectId == currentMTObject.Id);
                 var keyPropertyInfo = GetPropertyInfo(keyProperty);
-                MT_Data correspondingMTData = FindMT_DataByKeyField(_uow, curManifest, currentMTObject,
+                MT_Data correspondingMTData = FindMT_DataByKeyField(_uow, curFr8AccountId, curManifest, currentMTObject,
                     correspondingDTFields, keyPropertyInfo);
                 if (correspondingMTData != null)
                 {
@@ -69,16 +69,16 @@ namespace Data.Repositories
                         curManifestType.GetProperties(System.Reflection.BindingFlags.DeclaredOnly |
                                                       System.Reflection.BindingFlags.Instance |
                                                       System.Reflection.BindingFlags.Public).ToList();
-                    MapManifestToMTData(curManifest, curDataProperties, correspondingMTData, currentMTObject);
+                    MapManifestToMTData(curFr8AccountId, curManifest, curDataProperties, correspondingMTData, currentMTObject);
                     return;
                 }
             }
 
             //MTObject or MTData is missing
-            Add(_uow, curManifest);
+            Add(_uow, curManifest, curFr8AccountId);
         }
 
-        public void Update<T>(IUnitOfWork _uow, T curManifest, Expression<Func<T, object>> keyProperty) where T : Manifest
+        public void Update<T>(IUnitOfWork _uow, string curFr8AccountId, T curManifest, Expression<Func<T, object>> keyProperty) where T : Manifest
         {
             var keyPropertyInfo = GetPropertyInfo(keyProperty);
             var curManifestType = typeof(T);
@@ -87,12 +87,12 @@ namespace Data.Repositories
             var correspondingDTObject = _uow.MTObjectRepository.FindOne(a => a.ManifestId == curManifest.ManifestId && a.MT_FieldType == curDTOObjectFieldType);
             var correspondingDTFields = _uow.MTFieldRepository.FindList(a => a.MT_ObjectId == correspondingDTObject.Id);
 
-            MT_Data correspondingMTData = FindMT_DataByKeyField(_uow, curManifest, correspondingDTObject, correspondingDTFields, keyPropertyInfo);
+            MT_Data correspondingMTData = FindMT_DataByKeyField(_uow, curFr8AccountId, curManifest, correspondingDTObject, correspondingDTFields, keyPropertyInfo);
             if (correspondingMTData == null) throw new Exception(String.Format("MT_Data wasn't found for {0} with {1} == {2}", curManifest.ManifestName, keyPropertyInfo.Name));
 
             correspondingMTData.UpdatedAt = DateTime.Now;
             var curDataProperties = curManifestType.GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();
-            MapManifestToMTData(curManifest, curDataProperties, correspondingMTData, correspondingDTObject);
+            MapManifestToMTData(curFr8AccountId, curManifest, curDataProperties, correspondingMTData, correspondingDTObject);
         }
 
         public void Remove<T>(IUnitOfWork _uow, Expression<Func<T, object>> conditionOnKeyProperty, int ManifestId = -1) where T : Manifest
@@ -136,11 +136,11 @@ namespace Data.Repositories
             return curMTData;
         }
 
-        private MT_Data FindMT_DataByKeyField<T>(IUnitOfWork _uow, T curManifest, MT_Object correspondingDTObject, IEnumerable<MT_Field> correspondingDTFields, PropertyInfo keyPropertyInfo) where T : Manifest
+        private MT_Data FindMT_DataByKeyField<T>(IUnitOfWork _uow, string curFr8AccountId, T curManifest, MT_Object correspondingDTObject, IEnumerable<MT_Field> correspondingDTFields, PropertyInfo keyPropertyInfo) where T : Manifest
         {
             MT_Data correspondingMTData = null;
             var keyValue = keyPropertyInfo.GetValue(curManifest);
-            var possibleDatas = _uow.MTDataRepository.FindList(a => a.MT_ObjectId == correspondingDTObject.Id && a.fr8AccountId == ObjectFactory.GetInstance<ISecurityServices>().GetUserName());
+            var possibleDatas = _uow.MTDataRepository.FindList(a => a.MT_ObjectId == correspondingDTObject.Id && a.fr8AccountId == curFr8AccountId);
             var keyMTField = correspondingDTFields.Where(a => a.Name == keyPropertyInfo.Name).FirstOrDefault();
             correspondingMTData = null;
             var corrMTDataProperty = typeof(MT_Data).GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
@@ -188,10 +188,10 @@ namespace Data.Repositories
         }
 
         //maps BaseMTO to MTData
-        private void MapManifestToMTData(Manifest curManifest, List<PropertyInfo> curDataProperties, MT_Data data, MT_Object correspondingDTObject)
+        private void MapManifestToMTData(string curFr8AccountId, Manifest curManifest, List<PropertyInfo> curDataProperties, MT_Data data, MT_Object correspondingDTObject)
         {
             var correspondingDTFields = correspondingDTObject.Fields;
-            data.fr8AccountId = ObjectFactory.GetInstance<ISecurityServices>().GetUserName();
+            data.fr8AccountId = curFr8AccountId;
             data.GUID = Guid.Empty;
             data.MT_ObjectId = correspondingDTObject.Id;
             var dataValueCells = data.GetType().GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();

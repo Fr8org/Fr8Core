@@ -46,14 +46,19 @@ namespace terminalFr8Core.Actions
                 var curDocuSignEnvelopeCrate =
                     Crate.GetCratesByLabel("DocuSign Envelope Manifest", curProcessPayload.CrateStorageDTO()).Single();
 
+                string curFr8AccountId = string.Empty;
                 if (curDocuSignEnvelopeCrate != null)
                 {
                     DocuSignEnvelopeCM docuSignEnvelope =
                         JsonConvert.DeserializeObject<DocuSignEnvelopeCM>(curDocuSignEnvelopeCrate.Contents);
 
+                    curFr8AccountId =
+                        uow.AuthorizationTokenRepository.GetQuery()
+                            .Single(auth => auth.ExternalAccountId.Equals(docuSignEnvelope.ExternalAccountId))
+                            .UserDO.Id;
+
                     //store envelope in MT database
-                    uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEnvelopeCM>(uow, docuSignEnvelope,
-                        e => e.EnvelopeId);
+                    uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEnvelopeCM>(uow, curFr8AccountId, docuSignEnvelope, e => e.EnvelopeId);
                     uow.SaveChanges();
                 }
 
@@ -66,8 +71,13 @@ namespace terminalFr8Core.Actions
                     DocuSignEventCM docuSignEvent =
                         JsonConvert.DeserializeObject<DocuSignEventCM>(curDocuSignEventCrate.Contents);
 
+                    curFr8AccountId =
+                        uow.AuthorizationTokenRepository.GetQuery()
+                            .Single(auth => auth.ExternalAccountId.Equals(docuSignEvent.ExternalAccountId))
+                            .UserDO.Id;
+
                     //store event in MT database
-                    uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEventCM>(uow, docuSignEvent, e => e.EnvelopeId);
+                    uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEventCM>(uow, curFr8AccountId, docuSignEvent, e => e.EnvelopeId);
                     uow.SaveChanges();
                 }
 
