@@ -11,29 +11,25 @@
                 <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
                     <thead>
                         <tr>
-                            <th>Activity</th>
                             <th>Created Date</th>
-                            <th>Customer Id	</th>
-                            <th>Data</th>
-                            <th>Last Updated</th>
-                            <th>Object Id	</th>
                             <th>Primary Category</th>
                             <th>Secondary Category</th>
-                            <th>Is High Priority</th>
+                            <th>Activity</th>
+                            <th>Data</th>
+                            <th>Customer Id	</th>
+                            <th>Object Id	</th>
                             <th>Priority</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="incident in incidentRecords">
-                            <td>{{ incident.activity}}</td>
                             <td>{{ incident.createDate}}</td>
-                            <td>{{ incident.customerId}}</td>
-                            <td>{{ incident.data}}</td>
-                            <td>{{ incident.lastUpdated}}</td>
-                            <td>{{ incident.objectId}}</td>
                             <td>{{ incident.primaryCategory}}</td>
                             <td>{{ incident.secondaryCategory}}</td>
-                            <td>{{ incident.isHighPriority}}</td>
+                            <td>{{ incident.activity}}</td>
+                            <td>{{ incident.data}}</td>
+                            <td>{{ incident.customerId}}</td>
+                            <td>{{ incident.objectId}}</td>
                             <td>{{ incident.priority}}</td>
                         </tr>
                     </tbody>
