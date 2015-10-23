@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using Data.States;
 
 namespace Web.Controllers
 {
@@ -51,7 +54,6 @@ namespace Web.Controllers
         }
 
 
-
         [HttpGet]
         [Fr8ApiAuthorize]
         [Route("create")]
@@ -83,6 +85,11 @@ namespace Web.Controllers
         //[ResponseType(typeof(CrateStorageDTO))]
         public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
         {
+            if (_authorization.ValidateAuthenticationNeeded(User.Identity.GetUserId(), curActionDesignDTO))
+            {
+                return Ok(curActionDesignDTO);
+            }
+
             curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
             ActionDTO actionDTO = await _action.Configure(curActionDO);
@@ -97,24 +104,24 @@ namespace Web.Controllers
             [FromUri(Name = "id")] int activityTemplateId)
         {
             Fr8AccountDO account;
-            PluginDO plugin;
+            ActivityTemplateDO activityTemplate;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(activityTemplateId);
+                activityTemplate = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Include(x => x.Plugin)
+                    .SingleOrDefault(x => x.Id == activityTemplateId);
 
                 if (activityTemplate == null)
                 {
                     throw new ApplicationException("ActivityTemplate was not found.");
                 }
 
-                plugin = activityTemplate.Plugin;
-
                 account = _security.GetCurrentAccount(uow);
             }
 
-            var externalAuthUrlDTO = await _authorization.GetExternalAuthUrl(account, plugin);
+            var externalAuthUrlDTO = await _authorization.GetExternalAuthUrl(account, activityTemplate);
             return Ok(new { Url = externalAuthUrlDTO.Url });
         }
 
@@ -124,25 +131,26 @@ namespace Web.Controllers
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
         {
             Fr8AccountDO account;
-            PluginDO plugin;
+            ActivityTemplateDO activityTemplate;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(credentials.ActivityTemplateId);
+                activityTemplate = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Include(x => x.Plugin)
+                    .SingleOrDefault(x => x.Id == credentials.ActivityTemplateId);
 
                 if (activityTemplate == null)
                 {
                     throw new ApplicationException("ActivityTemplate was not found.");
                 }
 
-                plugin = activityTemplate.Plugin;
                 account = _security.GetCurrentAccount(uow);
             }
 
             await _authorization.AuthenticateInternal(
                 account,
-                plugin,
+                activityTemplate,
                 credentials.Username,
                 credentials.Password);
 

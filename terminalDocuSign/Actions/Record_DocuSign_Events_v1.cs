@@ -21,9 +21,12 @@ namespace terminalDocuSign.Actions
         /// <returns></returns>
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
-                return await ProcessConfigurationRequest(curActionDTO, dto => ConfigurationRequestType.Initial);
-            return curActionDTO;
+            if (NeedsAuthentication(curActionDTO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }
 
         protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)

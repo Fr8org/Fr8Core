@@ -30,7 +30,8 @@ namespace terminalTwilio.Controllers
                 Category = ActivityCategory.Forwarders,
                 Version = "1",
                 Plugin = plugin,
-                MinPaneWidth = 330
+                AuthenticationType = AuthenticationType.None,
+				MinPaneWidth = 330
             };
 
             var actionList = new List<ActivityTemplateDO>

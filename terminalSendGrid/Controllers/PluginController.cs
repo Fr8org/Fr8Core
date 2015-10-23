@@ -33,8 +33,9 @@ namespace pluginSalesforce.Controllers
                 Label = "Send Email Vie Send Grid",
                 Version = "1",
                 Plugin = plugin,
+                AuthenticationType = AuthenticationType.None,
                 Category = ActivityCategory.Forwarders,
-                MinPaneWidth = 330
+				MinPaneWidth = 330
             };
 
             var actionList = new List<ActivityTemplateDO>()
