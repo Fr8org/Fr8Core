@@ -12,9 +12,9 @@
                     <thead>
                         <tr>
                             <th>Created Date</th>
-                            <th>Primary Category</th>
-                            <th>Secondary Category</th>
-                            <th>Activity</th>
+                            <th>Startup</th>
+                            <th>Terminal Registration</th>
+                            <th>Registration Failure</th>
                             <th>Data</th>
                             <th>Customer Id	</th>
                             <th>Object Id	</th>
@@ -27,7 +27,7 @@
                             <td>{{ incident.primaryCategory}}</td>
                             <td>{{ incident.secondaryCategory}}</td>
                             <td>{{ incident.activity}}</td>
-                            <td>{{ incident.data}}</td>
+                            <td><textarea>{{ incident.data}}</textarea></td>
                             <td>{{ incident.customerId}}</td>
                             <td>{{ incident.objectId}}</td>
                             <td>{{ incident.priority}}</td>
