@@ -312,7 +312,7 @@ namespace Data.Infrastructure
 
             modelBuilder.Entity<RouteNodeDO>()
                 .HasOptional(x => x.ParentRouteNode)
-                .WithMany(x => x.RouteNodes)
+                .WithMany(x => x.ChildNodes)
                 .HasForeignKey(x => x.ParentRouteNodeId)
                 .WillCascadeOnDelete(false);
             

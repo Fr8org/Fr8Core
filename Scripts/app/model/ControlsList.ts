@@ -72,6 +72,11 @@
         source: FieldSource;
     }
 
+    export class TextSource extends DropDownListControlDefinitionDTO {
+        initialLabel: string;
+        valueSource: string;
+    }
+
     export class TextBlockField extends ControlDefinitionDTO {
         public class: string;
     }

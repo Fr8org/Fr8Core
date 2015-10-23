@@ -45,42 +45,10 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var route = uow.RouteRepository.GetByKey(id);
-                var result = MapRouteToDTO(route, uow);
+                var result = _route.MapRouteToDto(uow, route);
 
                 return Ok(result);
             };
-        }
-
-        
-        // Manual mapping method to resolve DO-1164.
-        private RouteDTO MapRouteToDTO(RouteDO curRouteDO, IUnitOfWork uow)
-        {
-            var subrouteDTOList = uow.SubrouteRepository
-                .GetQuery()
-                .Include(x => x.RouteNodes)
-                .Where(x => x.ParentRouteNodeId == curRouteDO.Id)
-                .OrderBy(x => x.Id)
-                .ToList()
-                .Select((SubrouteDO x) =>
-                {
-                    var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
-
-                    pntDTO.Actions = Enumerable.ToList(x.RouteNodes.Select(Mapper.Map<ActionDTO>));
-
-                    return pntDTO;
-                }).ToList();
-
-            RouteDTO result = new RouteDTO()
-            {
-                Description = curRouteDO.Description,
-                Id = curRouteDO.Id,
-                Name = curRouteDO.Name,
-                RouteState = curRouteDO.RouteState,
-                StartingSubrouteId = curRouteDO.StartingSubrouteId,
-                Subroutes = subrouteDTOList
-            };
-
-            return result;
         }
 
         

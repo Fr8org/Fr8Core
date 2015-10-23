@@ -10,6 +10,7 @@
         activityTemplateId: number;
         activityTemplateName: string;
         currentView: string;
+        minPaneWidth: number;
 
         constructor(
             parentActivityId: number,

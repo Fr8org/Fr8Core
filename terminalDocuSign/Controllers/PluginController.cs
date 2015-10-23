@@ -25,7 +25,6 @@ namespace terminalDocuSign.Controllers
                 Name = "terminalDocuSign",
                 PluginStatus = PluginStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
-                RequiresAuthentication = true,
                 Version = "1"
             };
 
@@ -35,7 +34,9 @@ namespace terminalDocuSign.Controllers
                 Name = "Monitor_DocuSign",
                 Label = "Monitor DocuSign",
                 Category = ActivityCategory.Monitors,
-                Plugin = plugin
+                Plugin = plugin,
+                AuthenticationType = AuthenticationType.Internal,
+				MinPaneWidth = 330
             };
 
 			var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
@@ -44,7 +45,9 @@ namespace terminalDocuSign.Controllers
 				Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
-				Plugin = plugin
+				Plugin = plugin,
+                AuthenticationType = AuthenticationType.Internal,
+				MinPaneWidth = 330
 			};
 
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
@@ -53,7 +56,9 @@ namespace terminalDocuSign.Controllers
                 Name = "Receive_DocuSign_Envelope",
                 Label = "Receive DocuSign Envelope",
                 Category = ActivityCategory.Receivers,
-                Plugin = plugin
+                Plugin = plugin,
+                AuthenticationType = AuthenticationType.Internal,
+				MinPaneWidth = 330
             };
 
             var recordDocuSignEvents = new ActivityTemplateDO
@@ -62,7 +67,9 @@ namespace terminalDocuSign.Controllers
                 Label = "Record DocuSign Events",
                 Version = "1",
                 Category = ActivityCategory.Forwarders,
-                Plugin = plugin
+                Plugin = plugin,
+                AuthenticationType = AuthenticationType.Internal,
+				MinPaneWidth = 330
             };
 
             var actionList = new List<ActivityTemplateDO>()
