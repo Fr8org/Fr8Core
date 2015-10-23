@@ -197,8 +197,6 @@ module dockyard.controllers {
                     parentRouteNodeId: 1,
                     id: 1,
                     isTempId: false,
-                    actionListId: 0,
-                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", "", ""),
                     activityTemplateId: 1
                 };
 

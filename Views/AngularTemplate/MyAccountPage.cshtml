@@ -38,8 +38,8 @@
                                 </div>
                                 <div class="portlet-body">
                                     <div ng-show="ptvms.length == 0">You have no processes yet.</div>
-                                    <div class="table-scrollable table-scrollable-borderless">
-                                        <table class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                                    <div class="table-scrollable table-scrollable-borderless table-without-pagination">
+                                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
                                             <thead>
                                                 <tr>
                                                     <th>Name</th>
@@ -77,12 +77,13 @@
                                         <span class="caption-helper hide">weekly stats...</span>
                                     </div>
                                     <div class="actions">
+                                        <a href="#processes/add" class="btn green">Add New</a>
                                     </div>
                                 </div>
                                 <div class="portlet-body">
                                     <div ng-show="ptvms.length == 0">You have no processes yet.</div>
-                                    <div class="table-scrollable table-scrollable-borderless">
-                                        <table class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                                    <div class="table-scrollable table-scrollable-borderless table-without-pagination">
+                                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
                                             <thead>
                                                 <tr>
                                                     <th>Name</th>

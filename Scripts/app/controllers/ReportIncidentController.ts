@@ -41,7 +41,7 @@
 
         private getColumnDefs() {
             return [
-                this.DTColumnDefBuilder.newColumnDef(1)
+                this.DTColumnDefBuilder.newColumnDef(0)
                     .renderWith(function (data, type, full, meta) {
                         if (data != null || data != undefined) {
                             var dateValue = new Date(data);
@@ -49,14 +49,6 @@
                             return date;
                         }
                     }),
-                this.DTColumnDefBuilder.newColumnDef(4)
-                    .renderWith(function (data, type, full, meta) {
-                        if (data != null || data != undefined) {
-                            var dateValue = new Date(data);
-                            var date = dateValue.toLocaleDateString() + ' ' + dateValue.toLocaleTimeString();
-                            return date;
-                        }
-                    })
             ];
         }       
     }

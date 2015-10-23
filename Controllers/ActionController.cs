@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using Data.States;
 
 namespace Web.Controllers
 {
@@ -26,6 +29,7 @@ namespace Web.Controllers
         private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
         private readonly ISubroute _subRoute;
+        private readonly IRoute _route;
 
         private readonly Authorization _authorization;
 
@@ -35,6 +39,7 @@ namespace Web.Controllers
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _subRoute = ObjectFactory.GetInstance<ISubroute>();
+            _route = ObjectFactory.GetInstance<IRoute>();
             _authorization = new Authorization();
         }
 
@@ -49,6 +54,29 @@ namespace Web.Controllers
         }
 
 
+        [HttpGet]
+        [Fr8ApiAuthorize]
+        [Route("create")]
+        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var result = await _action.CreateAndConfigure(uow, actionTemplateId, name, label, parentNodeId, createRoute);
+
+                if (result is ActionDO)
+                {
+                    return Ok(Mapper.Map<ActionDTO>(result));
+                }
+
+                if (result is RouteDO)
+                {
+                    return Ok(_route.MapRouteToDto(uow, (RouteDO)result));
+                }
+
+                throw new Exception("Unsupported type " + result.GetType());
+            }
+        }
+
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
 
         [HttpPost]
@@ -57,6 +85,11 @@ namespace Web.Controllers
         //[ResponseType(typeof(CrateStorageDTO))]
         public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
         {
+            if (_authorization.ValidateAuthenticationNeeded(User.Identity.GetUserId(), curActionDesignDTO))
+            {
+                return Ok(curActionDesignDTO);
+            }
+
             curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
             ActionDTO actionDTO = await _action.Configure(curActionDO);
@@ -71,24 +104,24 @@ namespace Web.Controllers
             [FromUri(Name = "id")] int activityTemplateId)
         {
             Fr8AccountDO account;
-            PluginDO plugin;
+            ActivityTemplateDO activityTemplate;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(activityTemplateId);
+                activityTemplate = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Include(x => x.Plugin)
+                    .SingleOrDefault(x => x.Id == activityTemplateId);
 
                 if (activityTemplate == null)
                 {
                     throw new ApplicationException("ActivityTemplate was not found.");
                 }
 
-                plugin = activityTemplate.Plugin;
-
                 account = _security.GetCurrentAccount(uow);
             }
 
-            var externalAuthUrlDTO = await _authorization.GetExternalAuthUrl(account, plugin);
+            var externalAuthUrlDTO = await _authorization.GetExternalAuthUrl(account, activityTemplate);
             return Ok(new { Url = externalAuthUrlDTO.Url });
         }
 
@@ -98,25 +131,26 @@ namespace Web.Controllers
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
         {
             Fr8AccountDO account;
-            PluginDO plugin;
+            ActivityTemplateDO activityTemplate;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(credentials.ActivityTemplateId);
+                activityTemplate = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Include(x => x.Plugin)
+                    .SingleOrDefault(x => x.Id == credentials.ActivityTemplateId);
 
                 if (activityTemplate == null)
                 {
                     throw new ApplicationException("ActivityTemplate was not found.");
                 }
 
-                plugin = activityTemplate.Plugin;
                 account = _security.GetCurrentAccount(uow);
             }
 
             await _authorization.AuthenticateInternal(
                 account,
-                plugin,
+                activityTemplate,
                 credentials.Username,
                 credentials.Password);
 
@@ -158,6 +192,8 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var resultActionDO = _action.SaveOrUpdateAction(uow, submittedActionDO);
+                var activityTemplateDO = uow.ActivityTemplateRepository.GetByKey(resultActionDO.ActivityTemplateId);
+                resultActionDO.ActivityTemplate = activityTemplateDO;
                
                 if (curActionDTO.IsTempId)
                 {
@@ -168,6 +204,23 @@ namespace Web.Controllers
 
                 return Ok(resultActionDTO);
             }
+        }
+
+        /// <summary>
+        /// POST : updates the given action
+        /// </summary>
+        [HttpPost]
+        [Route("update")]
+        public IHttpActionResult Update(ActionDTO curActionDTO)
+        {
+            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _action.Update(uow, submittedActionDO);
+            }
+
+            return Ok();
         }    
     }
 }

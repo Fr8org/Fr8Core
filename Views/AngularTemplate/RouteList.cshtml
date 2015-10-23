@@ -25,8 +25,8 @@
                 
                 <div class="portlet-body">
                     <div ng-show="ptvms.length == 0">You have no routes yet.</div>
-                    <div class="table-scrollable table-scrollable-borderless">
-                        <table class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                    <div class="table-scrollable table-scrollable-borderless table-without-pagination">
+                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
                             <thead>
                                 <tr>
                                     <th>Name</th>
@@ -44,7 +44,7 @@
                                     </td>
                                     <td>
                                         <div>
-                                            
+
                                             <button type="button" class="btn btn-sm blue" ng-click="executeProcessTemplate(processTemplate.id);">Execute</button>
                                             <button type="button" class="btn btn-sm red" ng-click="deleteProcessTemplate(processTemplate.id, true);">Delete</button>
                                             <button type="button" class="btn btn-sm green" ng-click="goToProcessTemplatePage(processTemplate.id);">Edit</button>
@@ -75,8 +75,8 @@
 
                 <div class="portlet-body">
                     <div ng-show="ptvms.length == 0">You have no routes yet.</div>
-                    <div class="table-scrollable table-scrollable-borderless">
-                        <table class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                    <div class="table-scrollable table-scrollable-borderless table-without-pagination">
+                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
                             <thead>
                                 <tr>
                                     <th>Name</th>

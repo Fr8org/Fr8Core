@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using StructureMap;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
@@ -14,7 +14,7 @@ using terminalExcel.Infrastructure;
 using Core.Exceptions;
 using TerminalBase.BaseClasses;
 using AutoMapper;
-using Data.Interfaces;
+using Core.Interfaces;
 
 namespace terminalExcel.Actions
 {

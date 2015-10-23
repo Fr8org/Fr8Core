@@ -222,6 +222,7 @@
     <Compile Include="Infrastructure\MultiTenant\MT_Field.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_FieldType.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_Object.cs" />
+    <Compile Include="Interfaces\CrateManifests.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
@@ -340,9 +341,17 @@
     <Compile Include="Migrations\201510202031291_NothingIgnoreChanages.Designer.cs">
       <DependentUpon>201510202031291_NothingIgnoreChanages.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201510220531531_forcemerge.cs" />
-    <Compile Include="Migrations\201510220531531_forcemerge.Designer.cs">
-      <DependentUpon>201510220531531_forcemerge.cs</DependentUpon>
+    <Compile Include="Migrations\201510212105295_AddMinPaneWidth.cs" />
+    <Compile Include="Migrations\201510212105295_AddMinPaneWidth.Designer.cs">
+      <DependentUpon>201510212105295_AddMinPaneWidth.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510221210362_ActivityTemplate_AuthType_Migration.cs" />
+    <Compile Include="Migrations\201510221210362_ActivityTemplate_AuthType_Migration.Designer.cs">
+      <DependentUpon>201510221210362_ActivityTemplate_AuthType_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510230242497_FixUp_2_Migration.cs" />
+    <Compile Include="Migrations\201510230242497_FixUp_2_Migration.Designer.cs">
+      <DependentUpon>201510230242497_FixUp_2_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -355,6 +364,7 @@
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActivityCategory.cs" />
+    <Compile Include="States\AuthenticationType.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
@@ -429,6 +439,7 @@
     <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
+    <Compile Include="States\Templates\_AuthenticationTypeTemplate.cs" />
     <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
@@ -596,8 +607,14 @@
     <EmbeddedResource Include="Migrations\201510202031291_NothingIgnoreChanages.resx">
       <DependentUpon>201510202031291_NothingIgnoreChanages.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201510220531531_forcemerge.resx">
-      <DependentUpon>201510220531531_forcemerge.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201510212105295_AddMinPaneWidth.resx">
+      <DependentUpon>201510212105295_AddMinPaneWidth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510221210362_ActivityTemplate_AuthType_Migration.resx">
+      <DependentUpon>201510221210362_ActivityTemplate_AuthType_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510230242497_FixUp_2_Migration.resx">
+      <DependentUpon>201510230242497_FixUp_2_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
