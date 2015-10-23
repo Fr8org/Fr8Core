@@ -23,26 +23,33 @@ namespace terminalExcel.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<ActionDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
             return await CreateStandardPayloadDataFromStandardTableData(curActionDTO);
         }
 
-        private async Task<ActionDTO> CreateStandardPayloadDataFromStandardTableData(ActionDTO curActionDTO)
+        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDTO curActionDTO)
         {
+            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
-            StandardTableDataCM tableDataMS = await GetTargetTableData(curActionDO.Id, curActionDO.CrateStorageDTO());
+            var tableDataMS = await GetTargetTableData(
+                curActionDO.Id,
+                curActionDO.CrateStorageDTO()
+            );
+
             if (!tableDataMS.FirstRowHeaders)
+            {
                 throw new Exception("No headers found in the Standard Table Data Manifest.");
+            }
 
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
             var payloadDataCrate = Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
-            Crate.AddCrate(curActionDO, payloadDataCrate);
-
-           return Mapper.Map<ActionDTO>(curActionDO);
+            Crate.AddCrate(processPayload, payloadDataCrate);
             
+            return processPayload;            
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(int actionId, CrateStorageDTO curCrateStorageDTO)

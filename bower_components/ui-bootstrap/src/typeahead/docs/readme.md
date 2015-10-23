@@ -60,6 +60,10 @@ The typeahead directives provide several attributes:
    :
    Set custom item template
 
+* `typeahead-popup-template-url`
+   _(Defaults: `template/typeahead/typeahead-popup.html`)_ :
+   Set custom popup template
+
 * `typeahead-wait-ms` <i class="glyphicon glyphicon-eye-open"></i>
    _(Defaults: 0)_ :
    Minimal wait time after last character typed before typeahead kicks-in
@@ -67,3 +71,7 @@ The typeahead directives provide several attributes:
 * `typeahead-select-on-blur`
    _(Defaults: false)_ :
    On blur, select the currently highlighted match
+
+* `typeahead-focus-on-select`
+   _(Defaults: true) :
+   On selection, focus the input element the typeahead directive is associated with

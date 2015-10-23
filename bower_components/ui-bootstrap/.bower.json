@@ -1,12 +1,12 @@
 {
   "name": "ui-bootstrap",
   "homepage": "https://github.com/angular-ui/bootstrap",
-  "version": "0.13.3",
-  "_release": "0.13.3",
+  "version": "0.13.4",
+  "_release": "0.13.4",
   "_resolution": {
     "type": "version",
-    "tag": "0.13.3",
-    "commit": "4a69d00815c257e09bab33d7798539708c3dca0d"
+    "tag": "0.13.4",
+    "commit": "eec160855fd7df720851c921681fddb5982d32ae"
   },
   "_source": "git://github.com/angular-ui/bootstrap.git",
   "_target": "~0.13.0",

@@ -86,7 +86,7 @@ All settings can be provided as attributes in the `datepicker` or globally confi
   An option to disable or enable shortcut's event propagation.
 
  * `template-url`
-  _(Default: 'template/datepicker/datepicker.html') :
+  _(Default: 'template/datepicker/datepicker.html')_ :
   Allows overriding of default template of the datepicker
 
 
@@ -120,11 +120,11 @@ Specific settings for the `datepicker-popup`, that can globally configured throu
  	Whether to close calendar when a date is chosen.
 
  * `datepicker-popup-template-url`
-  _(Default: 'template/datepicker/popup.html') :
+  _(Default: 'template/datepicker/popup.html')_ :
   Allows overriding of default template of the popup
 
  * `datepicker-template-url`
-  _(Default: 'template/datepicker/popup.html') :
+  _(Default: 'template/datepicker/datepicker.html')_ :
   Allows overriding of default template of the datepicker used in popup
 
  * `datepicker-append-to-body`
@@ -141,7 +141,7 @@ Specific settings for the `datepicker-popup`, that can globally configured throu
 
 ### Keyboard Support ###
 
-Depending on datepicker's current mode, the date may reffer either to day, month or year. Accordingly, the term view reffers either to a month, year or year range.
+Depending on datepicker's current mode, the date may refer either to day, month or year. Accordingly, the term view refers either to a month, year or year range.
 
  * `Left`: Move focus to the previous date. Will move to the last date of the previous view, if the current date is the first date of a view.
  * `Right`: Move focus to the next date. Will move to the first date of the following view, if the current date is the last date of a view.

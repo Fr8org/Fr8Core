@@ -1,12 +1,13 @@
-describe('timepicker directive', function () {
-  var $rootScope, $compile, element;
+describe('timepicker directive', function() {
+  var $rootScope, $compile, $templateCache, element;
 
   beforeEach(module('ui.bootstrap.timepicker'));
   beforeEach(module('template/timepicker/timepicker.html'));
-  beforeEach(inject(function(_$compile_, _$rootScope_) {
+  beforeEach(inject(function(_$compile_, _$rootScope_, _$templateCache_) {
     $compile = _$compile_;
     $rootScope = _$rootScope_;
     $rootScope.time = newTime(14, 40);
+    $templateCache = _$templateCache_;
 
     element = $compile('<timepicker ng-model="time"></timepicker>')($rootScope);
     $rootScope.$digest();
@@ -25,8 +26,8 @@ describe('timepicker directive', function () {
     for (var i = 0; i < 2; i ++) {
       state.push(inputs.eq(i).val());
     }
-    if ( withoutMeridian !== true ) {
-      state.push( getMeridianButton().text() );
+    if (withoutMeridian !== true) {
+      state.push(getMeridianButton().text());
     }
     return state;
   }
@@ -36,7 +37,7 @@ describe('timepicker directive', function () {
   }
 
   function getArrow(isUp, tdIndex) {
-    return element.find('tr').eq( (isUp) ? 0 : 2 ).find('td').eq( tdIndex ).find('a').eq(0);
+    return element.find('tr').eq(isUp ? 0 : 2).find('td').eq(tdIndex).find('a').eq(0);
   }
 
   function getHoursButton(isUp) {
@@ -462,7 +463,7 @@ describe('timepicker directive', function () {
     expect(getModelState()).toEqual([14, 40]);
   });
 
-  describe('attributes', function () {
+  describe('attributes', function() {
     beforeEach(function() {
       $rootScope.hstep = 2;
       $rootScope.mstep = 30;
@@ -626,7 +627,7 @@ describe('timepicker directive', function () {
 
   });
 
-  describe('12 / 24 hour mode', function () {
+  describe('12 / 24 hour mode', function() {
     beforeEach(function() {
       $rootScope.meridian = false;
       $rootScope.time = newTime(14, 10);
@@ -676,11 +677,11 @@ describe('timepicker directive', function () {
       $rootScope.$digest();
     }));
 
-    it('displays correctly', function () {
+    it('displays correctly', function() {
       expect(getTimeState()[2]).toBe('pm');
     });
 
-    it('toggles correctly', function () {
+    it('toggles correctly', function() {
       $rootScope.time = newTime(2, 40);
       $rootScope.$digest();
       expect(getTimeState()[2]).toBe('am');
@@ -694,7 +695,7 @@ describe('timepicker directive', function () {
       $rootScope.$digest();
     }));
 
-    it('should make inputs readonly', function () {
+    it('should make inputs readonly', function() {
       var inputs = element.find('input');
       expect(inputs.eq(0).attr('readonly')).toBe('readonly');
       expect(inputs.eq(1).attr('readonly')).toBe('readonly');
@@ -762,12 +763,12 @@ describe('timepicker directive', function () {
       angular.extend(timepickerConfig, originalConfig);
     }));
 
-    it('displays correctly', function () {
+    it('displays correctly', function() {
       expect(getTimeState()).toEqual(['02', '40', 'μ.μ.']);
       expect(getModelState()).toEqual([14, 40]);
     });
 
-    it('toggles correctly', function () {
+    it('toggles correctly', function() {
       $rootScope.time = newTime(2, 40);
       $rootScope.$digest();
 
@@ -776,28 +777,28 @@ describe('timepicker directive', function () {
     });
   });
 
-  describe('$formatter', function () {
+  describe('$formatter', function() {
     var ngModel,
       date;
 
-    beforeEach(function () {
+    beforeEach(function() {
       ngModel = element.controller('ngModel');
       date = new Date('Mon Mar 23 2015 14:40:11 GMT-0700 (PDT)');
     });
 
-    it('should have one formatter', function () {
+    it('should have one formatter', function() {
       expect(ngModel.$formatters.length).toBe(1);
     });
 
-    it('should convert a date to a new reference representing the same date', function () {
+    it('should convert a date to a new reference representing the same date', function() {
       expect(ngModel.$formatters[0](date)).toEqual(date);
     });
 
-    it('should convert a valid date string to a date object', function () {
+    it('should convert a valid date string to a date object', function() {
       expect(ngModel.$formatters[0]('Mon Mar 23 2015 14:40:11 GMT-0700 (PDT)')).toEqual(date);
     });
 
-    it('should set falsy values as null', function () {
+    it('should set falsy values as null', function() {
       expect(ngModel.$formatters[0](undefined)).toBe(null);
       expect(ngModel.$formatters[0](null)).toBe(null);
       expect(ngModel.$formatters[0]('')).toBe(null);
@@ -806,11 +807,11 @@ describe('timepicker directive', function () {
     });
   });
 
-  describe('user input validation', function () {
+  describe('user input validation', function() {
     var changeInputValueTo;
 
     beforeEach(inject(function($sniffer) {
-      changeInputValueTo = function (inputEl, value) {
+      changeInputValueTo = function(inputEl, value) {
         inputEl.val(value);
         inputEl.trigger($sniffer.hasEvent('input') ? 'input' : 'change');
         $rootScope.$digest();
@@ -884,6 +885,38 @@ describe('timepicker directive', function () {
       expect(getModelState()).toEqual([14, 22]);
       expect(el.parent().hasClass('has-error')).toBe(false);
       expect(element.hasClass('ng-invalid-time')).toBe(false);
+    });
+
+    it('leaves view alone when hours are invalid and minutes are updated', function() {
+      var hoursEl = getHoursInputEl(),
+        minutesEl = getMinutesInputEl();
+
+      changeInputValueTo(hoursEl, '25');
+      hoursEl.blur();
+      $rootScope.$digest();
+      expect(getTimeState()).toEqual(['25', '40', 'PM']);
+
+      changeInputValueTo(minutesEl, '2');
+      minutesEl.blur();
+      $rootScope.$digest();
+      expect(getTimeState()).toEqual(['25', '2', 'PM']);
+    });
+
+    it('leaves view alone when minutes are invalid and hours are updated', function() {
+      var hoursEl = getHoursInputEl(),
+        minutesEl = getMinutesInputEl();
+
+      changeInputValueTo(minutesEl, '61');
+      minutesEl.blur();
+      $rootScope.$digest();
+      expect($rootScope.time).toBe(null);
+      expect(getTimeState()).toEqual(['02', '61', 'PM']);
+
+      changeInputValueTo(hoursEl, '2');
+      hoursEl.blur();
+      $rootScope.$digest();
+      expect($rootScope.time).toBe(null);
+      expect(getTimeState()).toEqual(['2', '61', 'PM']);
     });
 
     it('handles 12/24H mode change', function() {
@@ -1660,5 +1693,30 @@ describe('timepicker directive', function () {
       expect(element.hasClass('ng-invalid-time')).toBe(false);
     });
   });
-});
 
+  describe('custom template and controllerAs', function() {
+    it('should allow custom templates', function() {
+      $templateCache.put('foo/bar.html', '<div>baz</div>');
+
+      element = $compile('<timepicker ng-model="time" template-url="foo/bar.html"></timepicker>')($rootScope);
+      $rootScope.$digest();
+      expect(element[0].tagName.toLowerCase()).toBe('div');
+      expect(element.html()).toBe('baz');
+    });
+
+    it('should expose the controller on the view', function() {
+      $templateCache.put('template/timepicker/timepicker.html', '<div><div>{{timepicker.text}}</div></div>');
+
+      element = $compile('<timepicker ng-model="time"></timepicker>')($rootScope);
+      $rootScope.$digest();
+
+      var ctrl = element.controller('timepicker');
+      expect(ctrl).toBeDefined();
+
+      ctrl.text = 'foo';
+      $rootScope.$digest();
+
+      expect(element.html()).toBe('<div class="ng-binding">foo</div>');
+    });
+  });
+});

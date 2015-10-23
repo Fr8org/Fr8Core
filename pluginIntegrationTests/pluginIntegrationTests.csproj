@@ -145,6 +145,7 @@
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="PluginIntegrationTests_SendDocuSignEnvelopeV1.cs" />
     <Compile Include="PluginIntegrationTests.cs" />
+    <Compile Include="PluginIntegrationTests_TerminalExcel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
