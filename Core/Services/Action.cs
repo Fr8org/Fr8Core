@@ -113,13 +113,146 @@ namespace Core.Services
             }
         }
 
+        /// <summary>
+        /// Update properties and structure of the actions and all descendats.
+        /// </summary>
+        /// <param name="uow"></param>
+        /// <param name="submittedActionData"></param>
+        /// <returns></returns>
+        public ActionDO Update(IUnitOfWork uow, ActionDO submittedActionData)
+        {
+            // Update properties and structure recisurively
+            var existingAction = UpdateRecursive(uow, submittedActionData);
+
+            // Change parent it it is necessary
+            existingAction.ParentRouteNode = submittedActionData.ParentRouteNode;
+            existingAction.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
+
+            return existingAction;
+        }
+
+        private ActionDO UpdateRecursive(IUnitOfWork uow, ActionDO action)
+        {
+            var existingAction = uow.ActionRepository.GetByKey(action.Id);
+
+            if (existingAction == null)
+            {
+                throw new Exception("Action was not found");
+            }
+
+            // Update properties
+            existingAction.ActivityTemplateId = action.ActivityTemplateId;
+            existingAction.Name = action.Name;
+            existingAction.Label = action.Label;
+            existingAction.CrateStorage = action.CrateStorage;
+
+            // If existing actions has children their structure and properties
+            if (action.ChildNodes != null)
+            {
+                // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
+                // desired set of children. 
+                var newChildren = action.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
+                // current set of children
+                var currentChildren = existingAction.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
+
+                // Now we must find what child must be added to existingAction
+                // Chilren to be added are difference between set newChildren and currentChildren (those elements that exist in newChildren but do not exist in currentChildren).
+                foreach (var newAction in newChildren.Where(x => !currentChildren.ContainsKey(x.Key)).ToArray())
+                {
+                    var newChild = Update(uow, newAction.Value);
+                    existingAction.ChildNodes.Add(newChild);
+                }
+
+                // Now we must find what child must be removed from existingAction
+                // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
+                foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
+                {
+                    existingAction.ChildNodes.Remove(actionToRemove.Value);
+                }
+
+                // We just update those children that haven't changed (exists both in newChildren and currentChildren)
+                foreach (var actionToUpdate in newChildren.Where(x => currentChildren.ContainsKey(x.Key)))
+                {
+                    Update(uow, actionToUpdate.Value);
+                }
+            }
+
+            return existingAction;
+        }
+
+
         public ActionDO GetById(IUnitOfWork uow, int id)
         {
             return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).FirstOrDefault(i => i.Id == id);
         }
 
+        public ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode)
+        {
+            var template = uow.ActivityTemplateRepository.GetByKey(actionTemplateId);
+
+            if (template == null)
+            {
+                throw new ApplicationException("Could not find ActivityTemplate.");
+            }
+
+            var action = new ActionDO
+            {
+                ActivityTemplate = template,
+                Name = name,
+                Label = label
+            };
+
+            uow.ActionRepository.Add(action);
+
+            parentNode.ChildNodes.Add(action);
+
+            return action;
+        }
+
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
+        {
+            if (parentNodeId != null && createRoute)
+            {
+                throw new ArgumentException("Parent node id can't be set together with create route flag");
+            }
+
+            if (parentNodeId == null && !createRoute)
+            {
+                throw new ArgumentException("Either Parent node id or create route flag must be set");
+            }
+
+            RouteNodeDO parentNode;
+            RouteDO route = null;
+
+            if (createRoute)
+            {
+                route = ObjectFactory.GetInstance<IRoute>().Create(uow, name);
+                parentNode = ObjectFactory.GetInstance<ISubroute>().Create(uow, route, name + " #1");
+            }
+            else
+            {
+                parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId.Value);
+            }
+
+            var action = Create(uow, actionTemplateId, name, label, parentNode);
+
+            uow.SaveChanges();
+
+            await Configure(action);
+
+            if (createRoute)
+            {
+                return route;
+            }
+
+            return action;
+        }
+
+
         public async Task<ActionDTO> Configure(ActionDO curActionDO)
         {
+            if (curActionDO == null)
+                throw new ArgumentNullException("curActionDO");
             ActionDTO tempActionDTO;
             try
             {
@@ -132,7 +265,10 @@ namespace Core.Services
             }
             catch (Exception e)
             {
-                EventManager.PluginConfigureFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO), e.Message);
+                var pluginUrl = curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null
+                    ? curActionDO.ActivityTemplate.Plugin.Endpoint
+                    : "<no plugin url>";
+                EventManager.PluginConfigureFailed(pluginUrl, JsonConvert.SerializeObject(curActionDO), e.Message);
                 throw;
             }
 
