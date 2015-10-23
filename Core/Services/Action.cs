@@ -251,6 +251,8 @@ namespace Core.Services
 
         public async Task<ActionDTO> Configure(ActionDO curActionDO)
         {
+            if (curActionDO == null)
+                throw new ArgumentNullException("curActionDO");
             ActionDTO tempActionDTO;
             try
             {
@@ -263,7 +265,10 @@ namespace Core.Services
             }
             catch (Exception e)
             {
-                EventManager.PluginConfigureFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO), e.Message);
+                var pluginUrl = curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null
+                    ? curActionDO.ActivityTemplate.Plugin.Endpoint
+                    : "<no plugin url>";
+                EventManager.PluginConfigureFailed(pluginUrl, JsonConvert.SerializeObject(curActionDO), e.Message);
                 throw;
             }
 
