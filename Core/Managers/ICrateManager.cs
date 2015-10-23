@@ -42,6 +42,8 @@ namespace Core.Managers
 
         void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
         void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO);
+        void AddCrate(PayloadDTO payload, List<CrateDTO> curCrateDTO);
+        void AddCrate(PayloadDTO payload, CrateDTO curCrateDTO);
         void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO);
         StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO);
         List<CrateDTO> GetCrates(ActionDO curActionDO);

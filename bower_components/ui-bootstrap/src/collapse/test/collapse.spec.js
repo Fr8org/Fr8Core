@@ -1,5 +1,4 @@
-describe('collapse directive', function () {
-
+describe('collapse directive', function() {
   var scope, $compile, $animate;
   var element;
 
@@ -83,7 +82,6 @@ describe('collapse directive', function () {
   });
 
   describe('dynamic content', function() {
-
     var element;
 
     beforeEach(function() {
@@ -100,23 +98,21 @@ describe('collapse directive', function () {
       scope.exp = false;
       scope.isCollapsed = false;
       scope.$digest();
-      $animate.triggerCallbacks();
       var collapseHeight = element.height();
       scope.exp = true;
       scope.$digest();
-      expect(element.height()).toBeGreaterThan(collapseHeight);
+      expect(element.height()).toBe(collapseHeight);
     });
 
     it('should shrink accordingly when content size inside collapse decreases', function() {
       scope.exp = true;
       scope.isCollapsed = false;
       scope.$digest();
-      $animate.triggerCallbacks();
+      $animate.flush();
       var collapseHeight = element.height();
       scope.exp = false;
       scope.$digest();
       expect(element.height()).toBeLessThan(collapseHeight);
     });
-
   });
 });

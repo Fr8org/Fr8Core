@@ -62,7 +62,7 @@ Settings can be provided as attributes in the `<pagination>` or globally configu
  	Text for Last button.
 
  * `template-url`
-  _(Default: 'template/pagination/pagination.html') :
+  _(Default: 'template/pagination/pagination.html')_ :
   Override the template for the component with a custom provided template
 
 ### Pager Settings ###
@@ -81,3 +81,11 @@ For `ng-model`, `total-items`, `items-per-page` and `num-pages` see pagination s
  * `next-text`
  	_(Default: 'Next »')_ :
  	Text for Next button.
+
+ * `template-url`
+  _(Default: 'template/pagination/pager.html') :
+  Override the template for the component with a custom provided template
+
+ * `ng-disabled` <i class="glyphicon glyphicon-eye-open"></i>
+  :
+  Used to disable the pager component
