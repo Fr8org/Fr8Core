@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -176,7 +176,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
+        public override async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
         }
