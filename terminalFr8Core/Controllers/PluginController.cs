@@ -37,7 +37,8 @@ namespace terminalFr8Core.Controllers
                 Label = "Filter Using Runtime Data",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
-                Version = "1"
+                Version = "1",
+                MinPaneWidth = 330
             });
 
             result.Add(new ActivityTemplateDO
@@ -46,7 +47,8 @@ namespace terminalFr8Core.Controllers
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
-                Version = "1"
+                Version = "1",
+                MinPaneWidth = 380
             });
 
             result.Add(new ActivityTemplateDO
@@ -55,7 +57,8 @@ namespace terminalFr8Core.Controllers
                 Label = "Add Payload Manually",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
-                Version = "1"
+                Version = "1",
+                MinPaneWidth = 330
             });
 
             return Json(result);    
