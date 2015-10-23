@@ -35,7 +35,7 @@ namespace DockyardTest.Infrastructure
                 //test "Update()"
                 manifest.Status = "newstatus";
                 uow.MultiTenantObjectRepository.Update(uow, userDO.Id, manifest, keyProperty: b => b.EnvelopeId);
-                var manifest_from_MTO = uow.MultiTenantObjectRepository.Get<DocuSignEnvelopeCM>(uow, a => a.EnvelopeId == manifest.EnvelopeId);
+                var manifest_from_MTO = uow.MultiTenantObjectRepository.Get<DocuSignEnvelopeCM>(uow, userDO.Id, a => a.EnvelopeId == manifest.EnvelopeId);
                 XmlSerializer xmlSerializer = new XmlSerializer();
                 var str_obj1 = xmlSerializer.Serialize(manifest);
                 var str_obj2 = xmlSerializer.Serialize(manifest_from_MTO);
@@ -45,7 +45,7 @@ namespace DockyardTest.Infrastructure
                 //test "AddOrUPDATE"
                 manifest.Status = "foo";
                 uow.MultiTenantObjectRepository.AddOrUpdate(uow, userDO.Id, manifest, a => a.EnvelopeId);
-                manifest_from_MTO = uow.MultiTenantObjectRepository.Get<DocuSignEnvelopeCM>(uow, a => a.EnvelopeId == manifest.EnvelopeId);
+                manifest_from_MTO = uow.MultiTenantObjectRepository.Get<DocuSignEnvelopeCM>(uow, userDO.Id, a => a.EnvelopeId == manifest.EnvelopeId);
                 xmlSerializer = new XmlSerializer();
                 str_obj1 = xmlSerializer.Serialize(manifest);
                 str_obj2 = xmlSerializer.Serialize(manifest_from_MTO);
@@ -57,7 +57,7 @@ namespace DockyardTest.Infrastructure
                 uow.MultiTenantObjectRepository.AddOrUpdate(uow, userDO.Id, manifest2, keyProperty: b => b.EnvelopeId);
                 uow.SaveChanges();
 
-                var manifest_from_MTO2 = uow.MultiTenantObjectRepository.Get<DocuSignEnvelopeCM>(uow, a => a.EnvelopeId == "2");
+                var manifest_from_MTO2 = uow.MultiTenantObjectRepository.Get<DocuSignEnvelopeCM>(uow, userDO.Id, a => a.EnvelopeId == "2");
                 xmlSerializer = new XmlSerializer();
                 str_obj1 = xmlSerializer.Serialize(manifest2);
                 str_obj2 = xmlSerializer.Serialize(manifest_from_MTO2);
@@ -66,8 +66,8 @@ namespace DockyardTest.Infrastructure
 
                 manifest_from_MTO = null;
                 //Delete test
-                uow.MultiTenantObjectRepository.Remove<DocuSignEnvelopeCM>(uow, a => a.EnvelopeId == manifest.EnvelopeId);
-                manifest_from_MTO = uow.MultiTenantObjectRepository.Get<DocuSignEnvelopeCM>(uow, a => a.EnvelopeId == manifest.EnvelopeId);
+                uow.MultiTenantObjectRepository.Remove<DocuSignEnvelopeCM>(uow, userDO.Id, a => a.EnvelopeId == manifest.EnvelopeId);
+                manifest_from_MTO = uow.MultiTenantObjectRepository.Get<DocuSignEnvelopeCM>(uow, userDO.Id, a => a.EnvelopeId == manifest.EnvelopeId);
 
 
                 uow.SaveChanges();

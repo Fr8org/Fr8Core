@@ -95,35 +95,35 @@ namespace Data.Repositories
             MapManifestToMTData(curFr8AccountId, curManifest, curDataProperties, correspondingMTData, correspondingDTObject);
         }
 
-        public void Remove<T>(IUnitOfWork _uow, Expression<Func<T, object>> conditionOnKeyProperty, int ManifestId = -1) where T : Manifest
+        public void Remove<T>(IUnitOfWork _uow, string curFr8AccountId, Expression<Func<T, object>> conditionOnKeyProperty, int ManifestId = -1) where T : Manifest
         {
             PropertyInfo leftOperand;
             object rightOperand;
             MethodInfo equalMethod;
             MT_Object curMTObject = FindMT_ObjectByExpression(_uow, conditionOnKeyProperty, ManifestId, out leftOperand, out rightOperand, out equalMethod);
-            MT_Data curMTData = FindMT_DataByExpression(_uow, leftOperand, rightOperand, equalMethod, curMTObject);
+            MT_Data curMTData = FindMT_DataByExpression(_uow, curFr8AccountId, leftOperand, rightOperand, equalMethod, curMTObject);
             if (curMTData != null)
                 curMTData.IsDeleted = true;
         }
 
-        public T Get<T>(IUnitOfWork _uow, Expression<Func<T, object>> conditionOnKeyProperty, int ManifestId = -1) where T : Manifest
+        public T Get<T>(IUnitOfWork _uow, string curFr8AccountId, Expression<Func<T, object>> conditionOnKeyProperty, int ManifestId = -1) where T : Manifest
         {
             PropertyInfo leftOperand;
             object rightOperand;
             MethodInfo equalMethod;
             MT_Object curMTObject = FindMT_ObjectByExpression(_uow, conditionOnKeyProperty, ManifestId, out leftOperand, out rightOperand, out equalMethod);
-            MT_Data curMTData = FindMT_DataByExpression(_uow, leftOperand, rightOperand, equalMethod, curMTObject);
+            MT_Data curMTData = FindMT_DataByExpression(_uow, curFr8AccountId, leftOperand, rightOperand, equalMethod, curMTObject);
             return (curMTData == null) ? null : MapMTDataToManifest<T>(curMTData, curMTObject);
         }
 
-        private MT_Data FindMT_DataByExpression(IUnitOfWork _uow, PropertyInfo leftOperand, object rightOperand, MethodInfo equalMethod, MT_Object curMTObject)
+        private MT_Data FindMT_DataByExpression(IUnitOfWork _uow, string curFr8AccountId, PropertyInfo leftOperand, object rightOperand, MethodInfo equalMethod, MT_Object curMTObject)
         {
             var correspondingDTFields = _uow.MTFieldRepository.FindList(a => a.MT_ObjectId == curMTObject.Id);
             var keyMTField = correspondingDTFields.Where(a => a.Name == leftOperand.Name).FirstOrDefault();
             var corrMTDataProperty = typeof(MT_Data).GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
                 .Where(a => a.Name == "Value" + keyMTField.FieldColumnOffset).FirstOrDefault();
 
-            var possibleDatas = _uow.MTDataRepository.FindList(a => a.MT_ObjectId == curMTObject.Id && a.fr8AccountId == ObjectFactory.GetInstance<ISecurityServices>().GetUserName());
+            var possibleDatas = _uow.MTDataRepository.FindList(a => a.MT_ObjectId == curMTObject.Id && a.fr8AccountId == curFr8AccountId);
             MT_Data curMTData = null;
             foreach (var data in possibleDatas)
             {
