@@ -90,11 +90,6 @@ namespace terminalSlack.Actions
             }
 
             return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
-
-            // TODO: remove this, DO-1397.
-            // if (ValidateAuthentication(curActionDTO, AuthenticationMode.ExternalMode))
-            //     return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
-            // return curActionDTO;
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)

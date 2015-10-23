@@ -58,40 +58,6 @@ namespace TerminalBase.BaseClasses
             return false;
         }
 
-        // TODO: remove this, DO-1397.
-        // protected void RemoveAuthenticationCrate(ActionDTO actionDTO)
-        // {
-        //     if (actionDTO.CrateStorage != null
-        //         && actionDTO.CrateStorage.CrateDTO != null)
-        //     {
-        //         var authCrates = actionDTO.CrateStorage.CrateDTO
-        //             .Where(x => x.ManifestType == CrateManifests.STANDARD_AUTHENTICATION_NAME)
-        //             .ToList();
-        // 
-        //         foreach (var authCrate in authCrates)
-        //         {
-        //             actionDTO.CrateStorage.CrateDTO.Remove(authCrate);
-        //         }
-        //     }
-        // }
-
-        // TODO: remove this, DO-1397.
-        // protected void AddAuthenticationCrate(
-        //     ActionDTO actionDTO, AuthenticationMode mode)
-        // {
-        //     if (actionDTO.CrateStorage == null)
-        //     {
-        //         actionDTO.CrateStorage = new CrateStorageDTO()
-        //         {
-        //             CrateDTO = new List<CrateDTO>()
-        //         };
-        //     }
-        // 
-        //     actionDTO.CrateStorage.CrateDTO.Add(
-        //         Crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
-        //     );
-        // }
-
         protected async Task<PayloadDTO> GetProcessPayload(int processId)
         {
             var httpClient = new HttpClient();
@@ -153,21 +119,6 @@ namespace TerminalBase.BaseClasses
 
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
         }
-
-        // TODO: remove this, DO-1397
-        // protected bool ValidateAuthentication(ActionDTO curActionDTO, AuthenticationMode curAuthenticationMode)
-        // {
-        //     if (NeedsAuthentication(curActionDTO))
-        //     {
-        //         AddAuthenticationCrate(
-        //             curActionDTO,
-        //             curAuthenticationMode);
-        //         return false;
-        //     }
-        //     else
-        //         RemoveAuthenticationCrate(curActionDTO);
-        //     return true;
-        // }
 
         /// <summary>
         /// Configure infrastructure.
@@ -505,81 +456,5 @@ namespace TerminalBase.BaseClasses
 
             throw new ApplicationException("No field found with specified key.");
         }
-
-        // TODO: remove this, DO-1397.
-        // public void FlaggedForAuthentication(ActionDTO curActionDTO)
-        // {
-        //     AddAuthenticationCrate(
-        //             curActionDTO,
-        //             AuthenticationMode.ExternalMode);
-        // }
-
-
-        // TODO: remove this, DO-1397
-        /// <summary>
-        /// Retrieve authorization token
-        /// </summary>
-        /// <param name="curActionDO"></param>
-        /// <returns></returns>
-        // public string Authenticate(ActionDO curActionDO)
-        // {
-        //     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //     {
-        //         Fr8AccountDO curDockyardAccountDO = GetAccount(curActionDO);
-        //         var curPlugin = curActionDO.ActivityTemplate.Plugin;
-        //         string curToken = string.Empty;
-        // 
-        //         if (curDockyardAccountDO != null)
-        //         {
-        //             curToken = _authorizationToken.GetToken(curDockyardAccountDO.Id, curPlugin.Id);
-        // 
-        //             if (!string.IsNullOrEmpty(curToken))
-        //                 return curToken;
-        //         }
-        // 
-        //         curToken = _authorizationToken.GetPluginToken(curPlugin.Id);
-        //         if (!string.IsNullOrEmpty(curToken))
-        //             return curToken;
-        //         return _plugin.Authorize();
-        //     }
-        // }
-
-        // TODO: remove this, DO-1397
-        // public bool IsAuthenticated(Fr8AccountDO account, PluginDO plugin)
-        // {
-        //     if (!plugin.RequiresAuthentication)
-        //     {
-        //         return true;
-        //     }
-        // 
-        //     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //     {
-        //         var hasAuthToken = uow.AuthorizationTokenRepository
-        //             .GetQuery()
-        //             .Any(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
-        // 
-        //         return hasAuthToken;
-        //     }
-        // }
-
-        // TODO: remove this, DO-1397.
-        /// <summary>
-        /// Retrieve account
-        /// </summary>
-        /// <param name="curActionDO"></param>
-        /// <returns></returns>
-        // public Fr8AccountDO GetAccount(ActionDO curActionDO)
-        // {
-        //     if (curActionDO.ParentRouteNode != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
-        //     {
-        //         // Can't follow guideline to init services inside constructor. 
-        //         // Current implementation of Route and Action services are not good and are depedant on each other.
-        //         // Initialization of services in constructor will cause stack overflow
-        //         var route = ObjectFactory.GetInstance<IRoute>().GetRoute(curActionDO);
-        //         return route != null ? route.Fr8Account : null;
-        //     }
-        // 
-        //     return null;
-        // }      
     }
 }

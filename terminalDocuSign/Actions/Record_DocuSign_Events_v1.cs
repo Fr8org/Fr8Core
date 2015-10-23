@@ -27,11 +27,6 @@ namespace terminalDocuSign.Actions
             }
 
             return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
-
-            // TODO: remove this, DO-1397.
-            // if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
-            //     return await ProcessConfigurationRequest(curActionDTO, dto => ConfigurationRequestType.Initial);
-            // return curActionDTO;
         }
 
         protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)

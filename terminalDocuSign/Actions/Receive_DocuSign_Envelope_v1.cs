@@ -21,13 +21,8 @@ namespace terminalDocuSign.Actions
 {
     public class Receive_DocuSign_Envelope_v1 : BasePluginAction
     {
-        // TODO: remove this as of DO-1064
-        // IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
-
         public Receive_DocuSign_Envelope_v1()
         {
-            // TODO: remove this as of DO-1064
-            // _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
         }
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
@@ -38,11 +33,6 @@ namespace terminalDocuSign.Actions
             }
 
             return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
-
-            // TODO: remove this, DO-1397.
-            // if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
-            //     return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial);
-            // return curActionDTO;
         }
 
         public void Activate(ActionDTO curActionDTO)
