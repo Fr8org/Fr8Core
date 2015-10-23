@@ -71,7 +71,7 @@ namespace DockyardTest.Services
         {
             seq.Add(root);
 
-            foreach (var activityDo in root.RouteNodes.OrderBy(x=>x.Ordering))
+            foreach (var activityDo in root.ChildNodes.OrderBy(x=>x.Ordering))
             {
                 TraverseActivities(activityDo, seq);
             }
