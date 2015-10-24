@@ -14,6 +14,7 @@ namespace Data.Interfaces.ManifestSchemas
         public string EventId { get; set; }
         public string EnvelopeId { get; set; }
         public string RecepientId { get; set; }
+        public string ExternalAccountId { get; set; }
 
         public DocuSignEventCM()
               : base(Constants.MT.DocuSignEvent)

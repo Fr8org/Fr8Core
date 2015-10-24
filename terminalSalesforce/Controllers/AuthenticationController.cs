@@ -1,0 +1,28 @@
+﻿using System.Threading.Tasks;
+using System.Web.Http;
+using Data.Interfaces.DataTransferObjects;
+using terminalSalesforce.Infrastructure;
+
+namespace terminalSalesforce.Controllers
+{
+    [RoutePrefix("authentication")]
+    public class AuthenticationController : ApiController
+    {
+        private Authentication _authentication = new Authentication();
+
+        [HttpPost]
+        [Route("initial_url")]
+        public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
+        {
+            return _authentication.GetExternalAuthUrl();
+        }
+
+        [HttpPost]
+        [Route("token")]
+        public Task<AuthTokenDTO> GenerateOAuthToken(
+            ExternalAuthenticationDTO externalAuthDTO)
+        {
+            return Task.FromResult(_authentication.Authenticate(externalAuthDTO));
+        }
+    }
+}

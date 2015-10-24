@@ -96,67 +96,6 @@ namespace Web.Controllers
             return Ok(actionDTO);
         }
 
-
-        [HttpGet]
-        [Fr8ApiAuthorize]
-        [Route("auth_url")]
-        public async Task<IHttpActionResult> GetExternalAuthUrl(
-            [FromUri(Name = "id")] int activityTemplateId)
-        {
-            Fr8AccountDO account;
-            ActivityTemplateDO activityTemplate;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                activityTemplate = uow.ActivityTemplateRepository
-                    .GetQuery()
-                    .Include(x => x.Plugin)
-                    .SingleOrDefault(x => x.Id == activityTemplateId);
-
-                if (activityTemplate == null)
-                {
-                    throw new ApplicationException("ActivityTemplate was not found.");
-                }
-
-                account = _security.GetCurrentAccount(uow);
-            }
-
-            var externalAuthUrlDTO = await _authorization.GetExternalAuthUrl(account, activityTemplate);
-            return Ok(new { Url = externalAuthUrlDTO.Url });
-        }
-
-        [HttpPost]
-        [Fr8ApiAuthorize]
-        [Route("authenticate")]
-        public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
-        {
-            Fr8AccountDO account;
-            ActivityTemplateDO activityTemplate;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                activityTemplate = uow.ActivityTemplateRepository
-                    .GetQuery()
-                    .Include(x => x.Plugin)
-                    .SingleOrDefault(x => x.Id == credentials.ActivityTemplateId);
-
-                if (activityTemplate == null)
-                {
-                    throw new ApplicationException("ActivityTemplate was not found.");
-                }
-
-                account = _security.GetCurrentAccount(uow);
-            }
-
-            await _authorization.AuthenticateInternal(
-                account,
-                activityTemplate,
-                credentials.Username,
-                credentials.Password);
-
-            return Ok();
-        }
-
         /// <summary>
         /// GET : Returns an action with the specified id
         /// </summary>
