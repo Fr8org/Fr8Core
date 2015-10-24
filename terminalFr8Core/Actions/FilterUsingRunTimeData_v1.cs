@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -31,7 +31,7 @@ namespace terminalFr8Core.Actions
 
             ActionDO curAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             var controlsMS = Action.GetControlsManifest(curAction);
-            
+
             ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane);
             if (filterPaneControl == null)
             {
@@ -61,7 +61,7 @@ namespace terminalFr8Core.Actions
         }
 
         private bool Evaluate(string criteria, int processId, IEnumerable<FieldDTO> values)
-            {
+        {
             if (criteria == null)
                 throw new ArgumentNullException("criteria");
             if (criteria == string.Empty)
@@ -176,7 +176,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
+        public override async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
         }
@@ -214,7 +214,7 @@ namespace terminalFr8Core.Actions
                 //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
                 CrateDTO queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
                     "Queryable Criteria", curUpstreamFields);
-                    
+
                 //build a controls crate to render the pane
                 CrateDTO configurationControlsCrate = CreateControlsCrate();
 

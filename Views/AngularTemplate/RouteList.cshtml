@@ -1,127 +1,27 @@
 <!-- BEGIN PAGE BREADCRUMB -->
 <ul class="page-breadcrumb breadcrumb hide">
-    <li>
-        <a href="#">Home</a><i class="fa fa-circle"></i>
-    </li>
-    <li class="active">
-        Dashboard
-    </li>
+	<li>
+		<a href="#">Home</a><i class="fa fa-circle"></i>
+	</li>
+	<li class="active">
+		Dashboard
+	</li>
 </ul>
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
 
 <div ng-controller="RouteListController" class="margin-top-10">
-    <div class="row">
-        <div class="col-md-12 col-sm-12">
-            <!-- BEGIN PORTLET WITH ACTIVE PROCESS TEMPLATES-->
-            <div class="portlet light ">
-                <div class="portlet-title">
-                    <div class="caption caption-md">
-                        <i class="icon-bar-chart font-green-haze hide"></i>
-                        <span class="caption-subject font-green-haze bold uppercase">Active Routes</span>
-                        <span class="caption-helper hide">weekly stats...</span>
-                    </div>
-                </div>
-                
-                <div class="portlet-body">
-                    <div ng-show="ptvms.length == 0">You have no routes yet.</div>
-                    <div class="table-scrollable table-scrollable-borderless table-without-pagination">
-                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Status</th>
-                                    <th style="text-align:right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="processTemplate in activeProcessTemplates | filter: {routeState:2}">
-                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.name }}</td>
-                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.description }}</td>
-                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">
-                                        <span class="bold font-green-haze">{{processTemplate.routeState == 2 ? 'Active' : 'Inactive' }}</span>
-                                    </td>
-                                    <td>
-                                        <div>
+	<div class="row">
+		<div class="col-md-12 col-sm-12">
+			<h3 class="pull-left">My Routes</h3>
+			<div class="actions pull-right" style="margin-top: 14px;">
+				<a href="#processes/add" class="btn green">Add New</a>
+			</div>
+		</div>
+	</div>
 
-                                            <button type="button" class="btn btn-sm blue" ng-click="executeProcessTemplate(processTemplate.id);">Execute</button>
-                                            <button type="button" class="btn btn-sm red" ng-click="deleteProcessTemplate(processTemplate.id, true);">Delete</button>
-                                            <button type="button" class="btn btn-sm green" ng-click="goToProcessTemplatePage(processTemplate.id);">Edit</button>
-                                            <button type="button" class="btn btn-sm red" ng-click="deactivateProcessTemplate(processTemplate);">Deactivate</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+	@Html.Partial("_RouteList")
 
-            <!-- END PORTLET WITH ACTIVE PROCESS TEMPLATES-->
-            
-            <!-- BEGIN PORTLET  WITH INACTIVE PROCESS TEMPLATES-->
-            <div class="portlet light ">
-                <div class="portlet-title">
-                    <div class="caption caption-md">
-                        <i class="icon-bar-chart font-green-haze hide"></i>
-                        <span class="caption-subject font-green-haze bold uppercase">Inactive Routes</span>
-                        <span class="caption-helper hide">weekly stats...</span>
-                    </div>
-                    <div class="actions">
-                        <a href="#processes/add" class="btn green">Add New</a>
-                    </div>
-                </div>
-
-                <div class="portlet-body">
-                    <div ng-show="ptvms.length == 0">You have no routes yet.</div>
-                    <div class="table-scrollable table-scrollable-borderless table-without-pagination">
-                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Status</th>
-                                    <th style="text-align:right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="processTemplate in inActiveProcessTemplates | filter: {routeState:1}">
-                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.name }}</td>
-                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.description }}</td>
-                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">
-                                        <span class="bold font-green-haze">{{processTemplate.routeState == 2 ? 'Active' : 'Inactive' }}</span>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <button type="button" class="btn btn-sm blue" ng-click="executeProcessTemplate(processTemplate.id);">Execute</button>
-                                            <button type="button" class="btn btn-sm red" ng-click="deleteProcessTemplate(processTemplate.id, false);">Delete</button>
-                                            <button type="button" class="btn btn-sm green" ng-click="goToProcessTemplatePage(processTemplate.id);">Edit</button>
-                                            <button type="button" class="btn btn-sm green" ng-click="activateProcessTemplate(processTemplate);">Activate</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <!-- END PORTLET WITH INACTIVE PROCESS TEMPLATES-->
-        </div>
-    </div>
-
-    <script type="text/ng-template" id="modalDeleteConfirmation">
-        <div class="modal-header">
-            <h3 class="modal-title">Delete Confirmation</h3>
-        </div>
-        <div class="modal-body">
-            Are you sure that you wish to delete this Route?
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-primary" ng-click="ok()">OK</button>
-            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-        </div>
-    </script>
-    
+	@Html.Partial("_DeleteRouteModal")
 </div>
 <!-- END MAIN CONTENT -->
