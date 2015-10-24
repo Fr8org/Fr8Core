@@ -87,17 +87,12 @@ namespace Web.Controllers
 			}
 		}
 
-        [Fr8ApiAuthorize]
         [Route("available")]
-        [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
+        [ResponseType(typeof (IEnumerable<ActivityTemplateCategoryDTO>))]
         public IHttpActionResult GetAvailableActivities()
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curDockyardAccount = _security.GetCurrentAccount(uow);
-                var categoriesWithActivities = _activity.GetAvailableActivitiyGroups(curDockyardAccount);
-                return Ok(categoriesWithActivities);
-            }
+            var categoriesWithActivities = _activity.GetAvailableActivitiyGroups();
+            return Ok(categoriesWithActivities);
         }
 	}
 }

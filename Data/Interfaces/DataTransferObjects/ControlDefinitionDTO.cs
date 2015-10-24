@@ -69,6 +69,7 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
+    [ContentProperty("Radios")]
     public class RadioButtonGroupControlDefinitionDTO : ControlDefinitionDTO
     {
         [JsonProperty("groupName")]
@@ -92,6 +93,7 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
+    [ContentProperty("Fields")]
     public class FilterPaneControlDefinitionDTO : ControlDefinitionDTO
     {
         [JsonProperty("fields")]
@@ -260,6 +262,18 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
+
+    public class FieldSourceDTOExtension : MarkupExtension
+    {
+        public string ManifestType { get; set; }
+        public string Label { get; set; }
+
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return new FieldSourceDTO {ManifestType = ManifestType, Label = Label};
+        }
+    }
+
     public class FieldSourceDTO
     {
         [JsonProperty("manifestType")]
@@ -287,6 +301,43 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
+    public class ControlEventExtension : MarkupExtension
+    {
+        public string Events
+        {
+            get;
+            set;
+        }
+
+        public ControlEventExtension(string events)
+        {
+            Events = events;
+        }
+
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            var events = Events.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries);
+            List<ControlEvent> controlEvents = new List<ControlEvent>();
+            
+            foreach (var @event in events)
+            {
+                var splitter = @event.IndexOf(":", StringComparison.InvariantCultureIgnoreCase);
+                if (splitter <= 0 || splitter+1 >= @event.Length)
+                {
+                    continue;
+                }
+                
+                var name = @event.Substring(0, splitter).Trim();
+                var handler = @event.Substring(splitter + 1).Trim();
+
+                controlEvents.Add(new ControlEvent(name, handler));
+            }
+
+            return controlEvents;
+        }
+    }
+
+    [ContentProperty("Controls")]
     public class RadioButtonOption : ISupportsNestedFields
     {
         public RadioButtonOption()

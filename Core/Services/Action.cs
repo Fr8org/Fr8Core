@@ -199,7 +199,8 @@ namespace Core.Services
             {
                 ActivityTemplate = template,
                 Name = name,
-                Label = label
+                Label = label,
+                CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO())
             };
 
             uow.ActionRepository.Add(action);
@@ -263,7 +264,16 @@ namespace Core.Services
             }
             catch (Exception e)
             {
-                EventManager.PluginConfigureFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO), e.Message);
+                // curActionDO can be created by Automapper, so It is unlikely that curActionDO will have Plugin property set.
+                if (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null)
+                {
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        PreserveReferencesHandling = PreserveReferencesHandling.Objects
+                    };
+
+                    EventManager.PluginConfigureFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
+                }
                 throw;
             }
 

@@ -56,7 +56,7 @@ namespace Core.Services
         {
             var subroute = new SubrouteDO();
 
-            uow.SubrouteRepository.Add(subroute);
+           // uow.SubrouteRepository.Add(subroute);
 
             if (route != null)
             {
@@ -65,8 +65,6 @@ namespace Core.Services
                     route.StartingSubroute = subroute;
                     subroute.StartingSubroute = true;
                 }
-
-                route.ChildNodes.Add(subroute);
             }
 
             subroute.Name = name;

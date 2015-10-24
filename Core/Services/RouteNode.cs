@@ -242,9 +242,8 @@ namespace Core.Services
             return curActivityTemplates;
         }
 
-	    public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IFr8AccountDO curAccount)
+	    public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups()
 	    {
-            //TODO make this function use curAccount !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             List<ActivityTemplateCategoryDTO> curActivityTemplates;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
