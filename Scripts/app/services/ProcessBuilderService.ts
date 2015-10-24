@@ -60,7 +60,7 @@ module dockyard.services {
     */
 
     app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
-        <IRouteService>$resource('/routes/:id', { id: '@id', status: '@status'},
+        <IRouteService>$resource('/routes/:id', { id: '@id'},
             {
                 'getFull': {
                     method: 'GET',
@@ -75,10 +75,8 @@ module dockyard.services {
                     isArray: true,
                     url: '/routes/status?status=:status',
                     params: {
-                        id: '@id',
                         status: '@status'
                     }
-
                 },
                
                 'execute': {

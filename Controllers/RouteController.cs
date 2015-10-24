@@ -96,7 +96,7 @@ namespace Web.Controllers
             return Ok();
         }
 
-        
+        [Route("~/routes")]
         public IHttpActionResult Post(RouteOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
