@@ -129,14 +129,15 @@ namespace Web
         public async Task RegisterPluginActions()
         {
             var alertReporter = ObjectFactory.GetInstance<EventReporter>();
-            
+
             var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
             int count = 0;
+            var uri=string.Empty;
             foreach (string url in activityTemplateHosts)
             {
                 try
                 {
-                    var uri = url.StartsWith("http") ? url : "http://" + url;
+                    uri = url.StartsWith("http") ? url : "http://" + url;
                     uri += "/plugins/discover";
 
                     var pluginService = new Plugin();
@@ -147,21 +148,34 @@ namespace Web
                     //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
 
 
-                    foreach (var curItem in activityTemplateList)
+                    foreach (var curActivityTemplateDO in activityTemplateList)
                     {
-                        new ActivityTemplate().Register(curItem);
-                        count++;
+                        try
+                        {
+                            new ActivityTemplate().Register(curActivityTemplateDO);
+                            count++;
+                        }
+                        catch (Exception ex)
+                        {
+                            alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                            alertReporter.ActivityTemplatePluginRegistrationError(
+                                string.Format("Failed to register {0} plugin. Error Message: {1}", curActivityTemplateDO.Plugin.Name, ex.Message),
+                                ex.GetType().Name);
+                        }
+
                     }
                 }
                 catch (Exception ex)
                 {
                     alertReporter = ObjectFactory.GetInstance<EventReporter>();
-                    alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
+                    alertReporter.ActivityTemplatePluginRegistrationError(
+                        string.Format("Failed plugin service: {0}. Error Message: {1} ", uri, ex.Message), 
+                        ex.GetType().Name);
 
                 }
-             }
-                
-             alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
+            }
+
+            alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
         }
 
         public bool CheckForActivityTemplate(string templateName)
