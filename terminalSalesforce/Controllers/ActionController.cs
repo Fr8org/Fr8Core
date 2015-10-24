@@ -19,7 +19,6 @@ namespace terminalSalesforce.Controllers
         private const string curPlugin = "terminalSalesforce";
         private BasePluginController _basePluginController = new BasePluginController();
         private ISalesforceIntegration _salesforceIntegration = new SalesforceIntegration();
-        private Authentication _authentication = new Authentication();
 
         [HttpPost]
         [Route("configure")]
@@ -27,21 +26,6 @@ namespace terminalSalesforce.Controllers
         {
             return await (Task<ActionDTO>)_basePluginController
                 .HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
-        }
-
-        [HttpPost]
-        [Route("auth_url")]
-        public ExternalAuthUrlDTO GetExternalAuthUrl()
-        {
-           return _authentication.GetExternalAuthUrl();
-        }
-
-        [HttpPost]
-        [Route("authenticate_external")]
-        public Task<AuthTokenDTO> GenerateOAuthToken(
-            ExternalAuthenticationDTO externalAuthDTO)
-        {
-            return Task.FromResult(_authentication.Authenticate(externalAuthDTO));
         }
 
         [HttpPost]

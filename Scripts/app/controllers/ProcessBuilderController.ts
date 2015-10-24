@@ -364,7 +364,7 @@ module dockyard.controllers {
             };
 
             this.$http
-                .get('/actions/auth_url?id=' + eventArgs.activityTemplateId)
+                .get('/authentication/initial_url?id=' + eventArgs.activityTemplateId)
                 .then(function (res) {
                     var url = (<any>res.data).url;
 
