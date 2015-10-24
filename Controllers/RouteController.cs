@@ -50,7 +50,7 @@ namespace Web.Controllers
                 return Ok(result);
             };
         }
-        
+
         
         [Route("getactive")]
         [HttpGet]

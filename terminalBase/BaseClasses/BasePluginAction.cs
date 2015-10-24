@@ -65,7 +65,7 @@ namespace TerminalBase.BaseClasses
                 + "api/containers/"
                 + processId.ToString();
 
-            using (var response = await httpClient.GetAsync(url))
+            using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
             {
                 var content = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<PayloadDTO>(content);

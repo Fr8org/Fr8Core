@@ -92,7 +92,7 @@ namespace Core.Services
             route.RouteState = RouteState.Inactive;
 
             uow.RouteRepository.Add(route);
-
+        
             return route;
         }
 
@@ -126,7 +126,7 @@ namespace Core.Services
 
                     return pntDTO;
                 }).ToList();
-
+        
             RouteDTO result = new RouteDTO()
             {
                 Description = curRouteDO.Description,

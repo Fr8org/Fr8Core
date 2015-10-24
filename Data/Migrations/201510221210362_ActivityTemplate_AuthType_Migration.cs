@@ -5,7 +5,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     using Data.States;
-
+    
     public partial class ActivityTemplate_AuthType_Migration : DockyardDbMigration
     {
         public override void Up()
