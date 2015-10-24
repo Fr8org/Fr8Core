@@ -148,18 +148,18 @@ namespace Web
                     //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
 
 
-                    foreach (var curActivityTemplateDO in activityTemplateList)
+                    foreach (var curItem in activityTemplateList)
                     {
                         try
                         {
-                            new ActivityTemplate().Register(curActivityTemplateDO);
+                            new ActivityTemplate().Register(curItem);
                             count++;
                         }
                         catch (Exception ex)
                         {
                             alertReporter = ObjectFactory.GetInstance<EventReporter>();
                             alertReporter.ActivityTemplatePluginRegistrationError(
-                                string.Format("Failed to register {0} plugin. Error Message: {1}", curActivityTemplateDO.Plugin.Name, ex.Message),
+                                string.Format("Failed to register {0} plugin. Error Message: {1}", curItem.Plugin.Name, ex.Message),
                                 ex.GetType().Name);
                         }
 
