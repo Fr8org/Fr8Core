@@ -60,21 +60,27 @@ module dockyard.services {
     */
 
     app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
-        <IRouteService>$resource('/api/route/:id', { id: '@id' },
+        <IRouteService>$resource('/routes/:id', { id: '@id', status: '@status'},
             {
-                'getbystatus': {
-                    method: 'GET',
-                    isArray: true,
-                    url: '/api/route/getactive'
-                },
                 'getFull': {
                     method: 'GET',
                     isArray: false,
-                    url: '/api/route/full/:id',
+                    url: '/routes/full/:id',
                     params: {
                         id: '@id'
                     }
                 },
+                'getbystatus': {
+                    method: 'GET',
+                    isArray: true,
+                    url: '/routes/status?status=:status',
+                    params: {
+                        id: '@id',
+                        status: '@status'
+                    }
+
+                },
+               
                 'execute': {
                     method: 'POST',
                     isArray: false,
@@ -85,13 +91,13 @@ module dockyard.services {
                 },
                 'activate': {
                     method: 'POST',
-                    url: '/api/route/activate/',
+                    url: '/routes/activate/',
                     params: {
                     }
                 },
                 'deactivate': {
                     method: 'POST',
-                    url: '/api/route/deactivate/',
+                    url: '/routes/deactivate/',
                     params: {
                     }
                 }
@@ -109,7 +115,7 @@ module dockyard.services {
         DocuSignExternalEventDTO CRUD service.
     */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
-        <IDocuSignTriggerService>$resource('/api/route/triggersettings')
+        <IDocuSignTriggerService>$resource('/route/triggersettings')
     ]);
 
     /* 
