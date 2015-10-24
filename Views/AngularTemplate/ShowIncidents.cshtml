@@ -1,4 +1,4 @@
-﻿<div class="row" ng-controller="ReportIncidentController">
+﻿﻿<div class="row" ng-controller="ReportIncidentController">
     <div class="col-md-12 col-sm-12">
         <div class="portlet light ">
             <div class="portlet-title">
@@ -12,9 +12,9 @@
                     <thead>
                         <tr>
                             <th>Created Date</th>
-                            <th>Startup</th>
-                            <th>Terminal Registration</th>
-                            <th>Registration Failure</th>
+                            <th>Primary Category</th>
+                            <th>Secondary Category</th>
+                            <th>Activity</th>
                             <th>Data</th>
                             <th>Customer Id	</th>
                             <th>Object Id	</th>
@@ -27,7 +27,7 @@
                             <td>{{ incident.primaryCategory}}</td>
                             <td>{{ incident.secondaryCategory}}</td>
                             <td>{{ incident.activity}}</td>
-                            <td><textarea>{{ incident.data}}</textarea></td>
+                            <td>{{ incident.data}}</td>
                             <td>{{ incident.customerId}}</td>
                             <td>{{ incident.objectId}}</td>
                             <td>{{ incident.priority}}</td>
@@ -38,5 +38,3 @@
         </div>
     </div>
 </div>
-
-
