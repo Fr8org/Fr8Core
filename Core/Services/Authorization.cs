@@ -219,7 +219,7 @@ namespace Core.Services
             }
         }
 
-        public async Task AuthenticateExternal(
+        public async Task GetOAuthToken(
             PluginDO plugin,
             ExternalAuthenticationDTO externalAuthDTO)
         {

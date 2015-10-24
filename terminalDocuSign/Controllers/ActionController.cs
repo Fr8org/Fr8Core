@@ -48,7 +48,7 @@ namespace terminalDocuSign.Controllers
 
         [HttpPost]
         [Route("authenticate_internal")]
-        public async Task<AuthTokenDTO> Authenticate(CredentialsDTO curCredentials)
+        public async Task<AuthTokenDTO> GenerateOAuthToken(CredentialsDTO curCredentials)
         {
             // Auth sequence according to https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#OAuth2/OAuth2%20Token%20Request.htm
             var oauthToken = await ObtainOAuthToken(curCredentials, CloudConfigurationManager.GetSetting("endpoint"));

@@ -57,7 +57,7 @@ namespace Web.Controllers
                 RequestQueryString = requestQueryString
             };
 
-            await _authorization.AuthenticateExternal(plugin, externalAuthenticationDTO);
+            await _authorization.GetOAuthToken(plugin, externalAuthenticationDTO);
 
             return View();
         }

@@ -76,7 +76,7 @@ namespace terminalSlack.Controllers
 
         [HttpPost]
         [Route("authenticate_external")]
-        public async Task<AuthTokenDTO> Authenticate(
+        public async Task<AuthTokenDTO> GenerateOAuthToken(
             ExternalAuthenticationDTO externalAuthDTO)
         {
             string code;

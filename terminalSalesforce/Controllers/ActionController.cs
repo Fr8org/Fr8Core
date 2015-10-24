@@ -38,10 +38,10 @@ namespace terminalSalesforce.Controllers
 
         [HttpPost]
         [Route("authenticate_external")]
-        public async Task<AuthTokenDTO> Authenticate(
+        public Task<AuthTokenDTO> GenerateOAuthToken(
             ExternalAuthenticationDTO externalAuthDTO)
         {
-            return _authentication.Authenticate(externalAuthDTO);
+            return Task.FromResult(_authentication.Authenticate(externalAuthDTO));
         }
 
         [HttpPost]
