@@ -54,7 +54,7 @@ namespace Web.Controllers
         }
 
 
-        [HttpGet]
+        [HttpPost]
         [Fr8ApiAuthorize]
         [Route("create")]
         public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)

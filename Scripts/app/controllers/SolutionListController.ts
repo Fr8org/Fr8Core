@@ -3,29 +3,32 @@
 module dockyard.controllers {
     'use strict';
 
-    export interface ISolutionListScope extends ng.IScope {
-        user: interfaces.IUserDTO;
+    export interface ISelectActionScope extends ng.IScope {
+        activityCategories: ng.resource.IResource<interfaces.IActivityCategoryDTO[]>;
+        onSolutionSelected: (solution: interfaces.IActivityCategoryDTO) => void;
     }
 
-    class SolutionListController {
-        // $inject annotation.
-        // It provides $injector with information about dependencies to be injected into constructor
-        // it is better to have it close to the constructor, because the parameters must match in count and type.
-        // See http://docs.angularjs.org/guide/di
+    export class SolutionListController {
+
         public static $inject = [
             '$scope',
-            'UserService',
+            'ActivityTemplateService',
             '$state'
         ];
-
         constructor(
-            private $scope: IAccountDetailsScope,
-            private UserService: services.IUserService,
-            private $state: ng.ui.IState) {
+            private $scope: ISelectActionScope,
+            private ActivityTemplateService: services.IActivityTemplateService,
+            private ActionService: services.IActionService,
+            private $state: ng.ui.IStateService) {
 
-            UserService.get({ id: $state.params.id }).$promise.then(function (data) {
-                $scope.user = data;
-            });
+            $scope.onSolutionSelected = <(solution: interfaces.IActivityCategoryDTO) => void>
+                angular.bind(this, this.onSolutionSelected);
+
+            $scope.activityCategories = ActivityTemplateService.getAvailableActivities();
+        }
+
+        private onSolutionSelected(solution: interfaces.IActivityTemplateVM) {
+            this.$state.go('configureSolution', { id: solution.id });
         }
     }
 
