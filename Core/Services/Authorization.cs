@@ -179,7 +179,7 @@ namespace Core.Services
             };
 
             var response = await restClient.PostAsync<CredentialsDTO>(
-                new Uri("http://" + plugin.Endpoint + "/actions/authenticate_internal"),
+                new Uri("http://" + plugin.Endpoint + "/authentication/internal"),
                 credentialsDTO
             );
 
@@ -219,7 +219,7 @@ namespace Core.Services
             }
         }
 
-        public async Task AuthenticateExternal(
+        public async Task GetOAuthToken(
             PluginDO plugin,
             ExternalAuthenticationDTO externalAuthDTO)
         {
@@ -238,7 +238,7 @@ namespace Core.Services
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             var response = await restClient.PostAsync<ExternalAuthenticationDTO>(
-                new Uri("http://" + plugin.Endpoint + "/actions/authenticate_external"),
+                new Uri("http://" + plugin.Endpoint + "/authentication/token"),
                 externalAuthDTO
             );
 
@@ -263,7 +263,7 @@ namespace Core.Services
         }
 
 
-        public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl(
+        public async Task<ExternalAuthUrlDTO> GetOAuthInitiationURL(
             Fr8AccountDO user,
             ActivityTemplateDO activityTemplate)
         {
@@ -277,7 +277,7 @@ namespace Core.Services
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             var response = await restClient.PostAsync(
-                new Uri("http://" + plugin.Endpoint + "/actions/auth_url")
+                new Uri("http://" + plugin.Endpoint + "/authentication/initial_url")
             );
 
             var externalAuthUrlDTO = JsonConvert.DeserializeObject<ExternalAuthUrlDTO>(response);

@@ -12,20 +12,20 @@ using Core.Services;
 
 namespace Web.Controllers
 {
-    public class ExternalAuthController : Controller
+    public class AuthenticationCallbackController : Controller
     {
         private readonly IAction _action;
 
         private readonly Authorization _authorization;
 
-        public ExternalAuthController()
+        public AuthenticationCallbackController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
             _authorization = new Authorization();
         }
 
         [HttpGet]
-        public async Task<ActionResult> AuthSuccess(
+        public async Task<ActionResult> ProcessSuccessfulOAuthResponse(
             [Bind(Prefix="dockyard_plugin")] string pluginName,
             [Bind(Prefix = "version")] string pluginVersion)
         {
@@ -57,7 +57,7 @@ namespace Web.Controllers
                 RequestQueryString = requestQueryString
             };
 
-            await _authorization.AuthenticateExternal(plugin, externalAuthenticationDTO);
+            await _authorization.GetOAuthToken(plugin, externalAuthenticationDTO);
 
             return View();
         }
