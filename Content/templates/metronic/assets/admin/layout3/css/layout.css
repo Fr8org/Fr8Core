@@ -553,7 +553,20 @@ Page Header
       float: left;
       display: block;
       width: 255px;
-      height: 75px; }
+      height: 75px; 
+    }
+
+    /* Header Sticker */
+    .page-header .page-header-top .page-logo .page-sticker {
+        display: inline-block;
+    }
+    .page-header .page-header-top .page-logo .page-sticker p {
+        color:red;
+        font-size: 1.7em;
+        position:absolute; 
+        bottom:0;
+    }
+
       .page-header .page-header-top .page-logo .logo-default {
         margin: 10px 0 0 0; }
     .page-header .page-header-top .top-menu {
