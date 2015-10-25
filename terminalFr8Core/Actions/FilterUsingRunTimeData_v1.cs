@@ -265,7 +265,7 @@ namespace terminalFr8Core.Actions
                 .Any(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
                     && x.Label == "Queryable Criteria");
 
-            if (hasControlsCrate && hasQueryFieldsCrate)
+            if (hasControlsCrate && hasQueryFieldsCrate && IsValidConfigured(curActionDataPackageDTO))
             {
                 return ConfigurationRequestType.Followup;
             }
@@ -273,6 +273,38 @@ namespace terminalFr8Core.Actions
             {
                 return ConfigurationRequestType.Initial;
             }
+        }
+
+        /// <summary>
+        ///  Returns true, if at least one row has been fully configured.
+        /// </summary>
+        /// <param name="curActionDataPackageDTO"></param>
+        /// <returns></returns>
+        private bool IsValidConfigured(ActionDTO curActionDataPackageDTO)
+        {
+            CrateDTO crateDTO = curActionDataPackageDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+                    && x.Label == "Configuration_Controls");
+            if (crateDTO != null && !string.IsNullOrEmpty(crateDTO.Contents))
+            {
+                RadioButtonOption radioButtonOption = JsonConvert.DeserializeObject<RadioButtonOption>(crateDTO.Contents);
+                if (radioButtonOption != null)
+                {
+                    foreach (ControlDefinitionDTO controlDefinitionDTO in radioButtonOption.Controls)
+                    {
+                        if (!string.IsNullOrEmpty(controlDefinitionDTO.Value))
+                        {
+                            FilterDataDTO filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(controlDefinitionDTO.Value);
+                            return filterDataDTO.Conditions.Any(x =>
+                                  x.Field != null && x.Field != "" &&
+                                  x.Operator != null && x.Operator != "" &&
+                                  x.Value != null && x.Value != "");
+                        }
+                    }
+                }
+
+            }
+            return false;
         }
     }
 }
