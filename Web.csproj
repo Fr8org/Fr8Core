@@ -770,6 +770,7 @@
     <TypeScriptCompile Include="Scripts\app\services\CrateHelper.ts" />
     <TypeScriptCompile Include="Scripts\app\services\LayoutService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManageFileService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\PusherNotifierService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ReportService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UIHelperService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UserService.ts" />

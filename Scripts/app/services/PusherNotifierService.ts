@@ -7,25 +7,41 @@ module dockyard.services {
         bindEventToAllChannels(event: string, callback: Function): void;
         unbindEvent(channel: string, event: string): void;
         unbindAllEvents(event: string): void;
+        disconnect(): void;
     }
 
-    app.factory('PusherNotifierService', ['$pusher', ($pusher): IPusherNotifierService => {
-            var client = new Pusher('123dd339500fed0ddd78', { encrypted: true });
-            var pusher = $pusher(client);
-            return {
-                bindEventToChannel(channel: string, event: string, callback: Function): void {
-                    pusher.bind(channel, event, callback);
-                },
-                bindEventToAllChannels(event: string, callback: Function): void {
-                    pusher.bind(event, callback);
-                },
-                unbindEvent(channel: string, event: string): void {
-                    pusher.unbind(channel, event);
-                },
-                unbindAllEvents(event: string) {
-                    pusher.unbindAll(event);
-                }
-            };
+    class PusherNotifierService implements IPusherNotifierService {
+        private client: pusherjs.pusher.Pusher;
+        private pusher: any;
+        private appKey: string = '123dd339500fed0ddd78';
+
+        constructor(private $pusher: any) {
+            this.client = new Pusher(this.appKey, { encrypted: true });
+            this.pusher = $pusher(this.client);
+        }        
+
+        public bindEventToChannel(channel: string, event: string, callback: Function): void {
+            this.pusher.bind(channel, event, callback);
         }
+
+        public bindEventToAllChannels(event: string, callback: Function): void {
+            this.pusher.bind(event, callback);
+        }
+
+        public unbindEvent(channel: string, event: string): void {
+            this.pusher.unbind(channel, event);
+        }
+
+        public unbindAllEvents(event: string) {
+            this.pusher.unbindAll(event);
+        }
+
+        public disconnect(): void {
+            this.pusher.disconnect();
+        }
+    }
+
+    app.factory('PusherNotifierService', ['$pusher', ($pusher: any): IPusherNotifierService =>
+        new PusherNotifierService($pusher)
     ]);
 }  
