@@ -808,5 +808,32 @@ namespace Core.Managers
             Error,
             Warning
         }
+        private void AlertContainerCreated()
+        {
+        
+        }
+        private void AlertContainerSent() {
+            ContainerDO containerInExecution;
+            FactDO fact;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                containerInExecution = uow.ContainerRepository.GetByKey(processNode.ParentContainerId);
+
+                fact = new FactDO
+                {
+                    //CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
+                    //Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
+                    //ObjectId = processNode.Id.ToStr(),
+                    //PrimaryCategory = "Container Execution",
+                    //SecondaryCategory = "Process Node",
+                    //Activity = "Created"
+                };
+            }
+
+            SaveAndLogFact(fact);
+        }
+        private void AlertContainerReceived() { }
+        private void AlertContainerStateChanged() { }
     }
 }

@@ -10,6 +10,7 @@ using Data.States;
 using StructureMap;
 
 using Data.Interfaces.DataTransferObjects;
+using Core.Managers;
 
 
 namespace Core.Services
@@ -18,8 +19,8 @@ namespace Core.Services
     {
         
         // Declarations
-        
 
+        private readonly EventReporter _alertReporter;
         private readonly IProcessNode _processNode;
         private readonly IRouteNode _activity;
         private readonly IRoute _route;
@@ -29,6 +30,7 @@ namespace Core.Services
 
         public Container()
         {
+            _alertReporter = ObjectFactory.GetInstance<EventReporter>();
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
             _activity = ObjectFactory.GetInstance<IRouteNode>();
             _route = ObjectFactory.GetInstance<IRoute>();
