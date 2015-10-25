@@ -195,7 +195,7 @@ module dockyard.directives.paneConfigureAction {
                             loadConfiguration();
                         }
                     }
-                }
+                } 
 
                 // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
                 // We parse its contents and put it into currentAction.configurationControls structure.
@@ -209,7 +209,7 @@ module dockyard.directives.paneConfigureAction {
 
                     ActionService.configure($scope.currentAction).$promise
                         .then((res: interfaces.IActionVM) => {
-                            if (true) {
+                            if (res.childrenActions || res.childrenActions.length > 0) {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
                                 // and redirect user to the ProcessBuilder once if is received.
