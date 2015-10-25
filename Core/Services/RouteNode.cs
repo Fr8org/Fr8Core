@@ -162,7 +162,7 @@ namespace Core.Services
             return nextCandidate;
         }
 
-        public void Delete (IUnitOfWork uow, RouteNodeDO activity)
+        public void Delete(IUnitOfWork uow, RouteNodeDO activity)
         {
             var activities = new List<RouteNodeDO>();
 
@@ -218,7 +218,7 @@ namespace Core.Services
                 if (curActivityDO is ActionDO)
                 {
                     IAction _action = ObjectFactory.GetInstance<IAction>();
-                    await _action.PrepareToExecute((ActionDO) curActivityDO, curContainerDO, uow);
+                    await _action.PrepareToExecute((ActionDO)curActivityDO, curContainerDO, uow);
             }
         }
         }
@@ -229,6 +229,23 @@ namespace Core.Services
 
                 curActivityTemplates = uow.ActivityTemplateRepository.GetAll().OrderBy(t => t.Category).ToList();
         
+
+            //we're currently bypassing the subscription logic until we need it
+            //we're bypassing the pluginregistration logic here because it's going away in V2
+
+            //var plugins = _subscription.GetAuthorizedPlugins(curAccount);
+            //var plugins = _plugin.GetAll();
+            // var curActionTemplates = plugins
+            //    .SelectMany(p => p.AvailableActions)
+            //    .OrderBy(s => s.ActionType);
+
+            return curActivityTemplates;
+        }
+
+        public IEnumerable<ActivityTemplateDO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount)
+        {
+            List<ActivityTemplateDO> curActivityTemplates;
+            curActivityTemplates = uow.ActivityTemplateRepository.GetAll().Where(at => at.Category == Data.States.ActivityCategory.Solution).OrderBy(t => t.Category).ToList();
 
             //we're currently bypassing the subscription logic until we need it
             //we're bypassing the pluginregistration logic here because it's going away in V2

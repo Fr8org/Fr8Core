@@ -11,6 +11,7 @@
         activityTemplateName: string;
         currentView: string;
         minPaneWidth: number;
+        childrenActions: Array<interfaces.IActionDTO>;
 
         constructor(
             parentActivityId: number,
@@ -20,6 +21,7 @@
             this.parentRouteNodeId = parentActivityId;
             this.id = id;
             this.isTempId = isTempId;
+            this.activityTemplateId = 0;
             this.configurationControls = new ControlsList();
         }
 

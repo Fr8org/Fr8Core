@@ -6,6 +6,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace Core.Interfaces
 {

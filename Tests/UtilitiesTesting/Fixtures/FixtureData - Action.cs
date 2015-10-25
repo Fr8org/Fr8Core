@@ -387,7 +387,7 @@ namespace UtilitiesTesting.Fixtures
                 //ActionType = "Write to Sql Server",
                 //ParentPluginRegistration = "pluginAzureSqlServer",
                 Version = "v1",
-                AuthenticationType = "OAuth",
+                AuthenticationType = AuthenticationType.None,
                 Plugin = curPluginDO,
                 PluginID = 1,
             };

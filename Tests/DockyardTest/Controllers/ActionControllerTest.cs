@@ -356,8 +356,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        // TODO: we shoul design some special exception type for 'Action not found'. 
-        [ExpectedException(ExpectedException = typeof(ApplicationException))]
+        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public async void ActionController_GetConfigurationSettings_IdIsMissing()
         {
             var controller = new ActionController();
@@ -372,8 +371,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        // TODO: we shoul design some special exception type for 'ActivityTemplate not found'. 
-        [ExpectedException(ExpectedException = typeof(ApplicationException))]
+        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public async void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
         {
             var controller = new ActionController();

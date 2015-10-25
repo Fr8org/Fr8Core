@@ -6,6 +6,13 @@
     float: right;
 }
 
+.table-without-pagination .dataTables_length,
+.table-without-pagination .dataTables_filter,
+.table-without-pagination .dataTables_info,
+.table-without-pagination .dataTables_paginate{
+    display:none;
+}
+
 /* 
     This one is for Angular Bootstrap.
     More info: https://angular-ui.github.io/bootstrap/
@@ -313,11 +320,11 @@ form.internal-authenticate-form {
     margin-left: 20px;
 }
 
-input[type=radio] + div.nested-controls {
+input[type=radio] ~ div.nested-controls {
     display: none;
 } 
 
-input[type=radio]:checked + div.nested-controls {
+input[type=radio]:checked ~ div.nested-controls {
     display: block;
 } 
 

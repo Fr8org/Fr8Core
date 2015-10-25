@@ -79,7 +79,8 @@ module dockyard.tests.controller {
                     parentRouteNodeId: 1,
                     activityTemplateId: 1,
                     isTempId: false,
-                    id: 0
+                    id: 0,
+                    childrenActions: null
                 };
 
             postInvoker(done, actions);
@@ -102,7 +103,8 @@ module dockyard.tests.controller {
                         parentRouteNodeId: 1,
                         activityTemplateId: 1,
                         isTempId: false,
-                        id: 1
+                        id: 1,
+                        childrenActions: null
                 };
 
             beforeAll(function () {

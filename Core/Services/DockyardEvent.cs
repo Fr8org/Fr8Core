@@ -20,13 +20,13 @@ namespace Core.Services
     public class DockyardEvent : IDockyardEvent
     {
         private readonly IRoute _route;
-        private readonly InternalInterfaces.IContainer _process;
+        private readonly InternalInterfaces.IContainer _container;
         private readonly ICrateManager _crate;
 
         public DockyardEvent()
         {
             _route = ObjectFactory.GetInstance<IRoute>();
-            _process = ObjectFactory.GetInstance<InternalInterfaces.IContainer>();
+            _container = ObjectFactory.GetInstance<InternalInterfaces.IContainer>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
@@ -106,7 +106,7 @@ namespace Core.Services
 
             if (curRoute.RouteState != RouteState.Inactive)
             {
-                await _process.Launch(curRoute, curEventData);
+                await _container.Launch(curRoute, curEventData);
             }
         }
     }

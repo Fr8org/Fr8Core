@@ -6,7 +6,6 @@ namespace Core.Services
     public interface IPlugin
     {
         IEnumerable<PluginDO> GetAll();
-        string Authorize();
 
         /// <summary>
         /// Parses the required plugin service URL for the given action by Plugin Name and its version

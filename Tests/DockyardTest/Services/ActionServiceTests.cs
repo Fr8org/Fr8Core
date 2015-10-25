@@ -464,40 +464,6 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void Authenticate_AuthorizationTokenIsActive_ReturnsAuthorizationToken()
-        {
-            var curActionDO = FixtureData.TestActionAuthenticate1();
-
-            AuthorizationTokenDO curAuthorizationTokenDO = FixtureData.TestActionAuthenticate2();
-            curAuthorizationTokenDO.Plugin = curActionDO.ActivityTemplate.Plugin;
-            curAuthorizationTokenDO.UserDO = ((SubrouteDO)(curActionDO.ParentRouteNode)).Route.Fr8Account;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.AuthorizationTokenRepository.Add(curAuthorizationTokenDO);
-                uow.SaveChanges();
-            }
-            string result = _basePluginAction.Authenticate(curActionDO);
-            Assert.AreEqual("TestToken", result);
-        }
-
-        [Test]
-        public void Authenticate_AuthorizationTokenIsRevoke_RedirectsToPluginAuthenticate()
-        {
-            var curActionDO = FixtureData.TestActionAuthenticate1();
-
-            AuthorizationTokenDO curAuthorizationTokenDO = FixtureData.TestActionAuthenticate3();
-            curAuthorizationTokenDO.Plugin = curActionDO.ActivityTemplate.Plugin;
-            curAuthorizationTokenDO.UserDO = ((SubrouteDO)(curActionDO.ParentRouteNode)).Route.Fr8Account;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.AuthorizationTokenRepository.Add(curAuthorizationTokenDO);
-                uow.SaveChanges();
-            }
-            string result = _basePluginAction.Authenticate(curActionDO);
-            Assert.AreEqual("AuthorizationToken", result);
-        }
-
-        [Test]
         public void AddCrate_AddCratesDTO_UpdatesActionCratesStorage()
         {
             ActionDO actionDO = FixtureData.TestAction23();

@@ -28,9 +28,12 @@ namespace terminalDocuSign.Actions
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
-                return await ProcessConfigurationRequest(curActionDTO, actionDTO => ConfigurationEvaluator(actionDTO));
-            return curActionDTO;
+            if (NeedsAuthentication(curActionDTO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }
 
         public object Activate(ActionDTO curActionDTO)
@@ -191,14 +194,14 @@ namespace terminalDocuSign.Actions
             }
 
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
-            
+
             // Try to find Configuration_Controls.
             var stdCfgControlMS = Crate.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
             {
                 return curActionDTO;
             }
-            
+
             // Try to find DocuSignTemplate drop-down.
             var dropdownControlDTO = stdCfgControlMS.FindByName("target_docusign_template");
             if (dropdownControlDTO == null)
@@ -208,7 +211,7 @@ namespace terminalDocuSign.Actions
 
             // Get DocuSign Template Id
             var docusignTemplateId = dropdownControlDTO.Value;
-            
+
             // Get Template
             var docuSignEnvelope = new DocuSignEnvelope(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
             var envelopeDataDTO = docuSignEnvelope.GetEnvelopeDataByTemplate(docusignTemplateId).ToList();
@@ -223,12 +226,12 @@ namespace terminalDocuSign.Actions
             {
                 new FieldDTO() { Key = "recipient", Value = "recipient" }
             };
-            
+
             var crateUserDefinedDTO = Crate.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateUserDefinedFields",
                 userDefinedFields.ToArray()
             );
-            
+
             var crateStandardDTO = Crate.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateStandardFields",
                 standartFields.ToArray()
@@ -257,11 +260,11 @@ namespace terminalDocuSign.Actions
                     ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
                 }
             };
-            
+
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
-                new TextSourceControlDefinitionDTO("Recipient", "Upstream Plugin-Provided Fields", "Recipient")
+                new TextSourceControlDefinitionDTO("For the Email Address Use", "Upstream Plugin-Provided Fields", "Recipient")
             };
 
             var controls = new StandardConfigurationControlsCM()

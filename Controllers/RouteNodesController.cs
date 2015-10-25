@@ -94,5 +94,5 @@ namespace Web.Controllers
             var categoriesWithActivities = _activity.GetAvailableActivitiyGroups();
             return Ok(categoriesWithActivities);
         }
-	}
+    }
 }

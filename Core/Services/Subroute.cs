@@ -56,7 +56,7 @@ namespace Core.Services
         {
             var subroute = new SubrouteDO();
 
-           // uow.SubrouteRepository.Add(subroute);
+            uow.SubrouteRepository.Add(subroute);
 
             if (route != null)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using Data.States;
 
 namespace Web.Controllers
 {
@@ -52,7 +55,7 @@ namespace Web.Controllers
 
 
 
-        [HttpGet]
+        [HttpPost]
         //[Fr8ApiAuthorize]
         [Route("create")]
         public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
@@ -75,6 +78,26 @@ namespace Web.Controllers
             }
         }
 
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        [Route("create")]
+        public async Task<IHttpActionResult> Create(string solutionName)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                int actionTemplateId = uow.ActivityTemplateRepository.GetAll().
+                    Where(at => at.Name == solutionName).Select(at => at.Id).FirstOrDefault();
+                if (actionTemplateId == 0)
+                {
+                    throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
+                }
+
+                var result = await _action.CreateAndConfigure(uow, actionTemplateId, "Solution", null, null, true);
+                return Ok(_route.MapRouteToDto(uow, (RouteDO)result));
+            }
+        }
+
+
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
 
         [HttpPost]
@@ -82,71 +105,16 @@ namespace Web.Controllers
         [Route("configure")]
         //[ResponseType(typeof(CrateStorageDTO))]
         public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
-        {
+            {
+            if (_authorization.ValidateAuthenticationNeeded(User.Identity.GetUserId(), curActionDesignDTO))
+                {
+                return Ok(curActionDesignDTO);
+            }
+
             curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
             ActionDTO actionDTO = await _action.Configure(curActionDO);
             return Ok(actionDTO);
-        }
-
-
-        [HttpGet]
-        [Fr8ApiAuthorize]
-        [Route("auth_url")]
-        public async Task<IHttpActionResult> GetExternalAuthUrl(
-            [FromUri(Name = "id")] int activityTemplateId)
-        {
-            Fr8AccountDO account;
-            PluginDO plugin;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(activityTemplateId);
-
-                if (activityTemplate == null)
-                {
-                    throw new ApplicationException("ActivityTemplate was not found.");
-                }
-
-                plugin = activityTemplate.Plugin;
-
-                account = _security.GetCurrentAccount(uow);
-            }
-
-            var externalAuthUrlDTO = await _authorization.GetExternalAuthUrl(account, plugin);
-            return Ok(new { Url = externalAuthUrlDTO.Url });
-        }
-
-        [HttpPost]
-        [Fr8ApiAuthorize]
-        [Route("authenticate")]
-        public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
-        {
-            Fr8AccountDO account;
-            PluginDO plugin;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var activityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(credentials.ActivityTemplateId);
-
-                if (activityTemplate == null)
-                {
-                    throw new ApplicationException("ActivityTemplate was not found.");
-                }
-
-                plugin = activityTemplate.Plugin;
-                account = _security.GetCurrentAccount(uow);
-            }
-
-            await _authorization.AuthenticateInternal(
-                account,
-                plugin,
-                credentials.Username,
-                credentials.Password);
-
-            return Ok();
         }
 
         /// <summary>

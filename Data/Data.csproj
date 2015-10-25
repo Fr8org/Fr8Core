@@ -346,6 +346,14 @@
     <Compile Include="Migrations\201510212105295_AddMinPaneWidth.Designer.cs">
       <DependentUpon>201510212105295_AddMinPaneWidth.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510221210362_ActivityTemplate_AuthType_Migration.cs" />
+    <Compile Include="Migrations\201510221210362_ActivityTemplate_AuthType_Migration.Designer.cs">
+      <DependentUpon>201510221210362_ActivityTemplate_AuthType_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510230242497_FixUp_2_Migration.cs" />
+    <Compile Include="Migrations\201510230242497_FixUp_2_Migration.Designer.cs">
+      <DependentUpon>201510230242497_FixUp_2_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -357,6 +365,7 @@
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActivityCategory.cs" />
+    <Compile Include="States\AuthenticationType.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
@@ -431,6 +440,7 @@
     <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
+    <Compile Include="States\Templates\_AuthenticationTypeTemplate.cs" />
     <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
@@ -600,6 +610,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510212105295_AddMinPaneWidth.resx">
       <DependentUpon>201510212105295_AddMinPaneWidth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510221210362_ActivityTemplate_AuthType_Migration.resx">
+      <DependentUpon>201510221210362_ActivityTemplate_AuthType_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510230242497_FixUp_2_Migration.resx">
+      <DependentUpon>201510230242497_FixUp_2_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

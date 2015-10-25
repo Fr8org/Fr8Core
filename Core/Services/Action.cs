@@ -1,28 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web.UI;
-using AutoMapper;
-using Core.Enums;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using StructureMap;
+﻿using AutoMapper;
 using Core.Enums;
 using Core.Interfaces;
 using Core.Managers;
 using Core.Managers.APIManagers.Transmitters.Plugin;
-using Core.Managers.APIManagers.Transmitters.Restful;
-using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using Data.States;
-using Utilities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using StructureMap;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Core.Services
 {
@@ -60,14 +53,14 @@ namespace Core.Services
         public ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO submittedActionData)
         {
             var action = SaveUpdateAndConfigureRecursive(uow, submittedActionData, new List<ActionDO>());
-            
+
             action.ParentRouteNode = submittedActionData.ParentRouteNode;
             action.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
 
             uow.SaveChanges();
 
             return uow.ActionRepository.GetByKey(submittedActionData.Id);
-        }
+            }
 
         public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
         {
@@ -140,7 +133,7 @@ namespace Core.Services
             if (submittedAction.ActivityTemplateId == 0)
             {
                 submittedAction.ActivityTemplateId = null;
-            }
+        }
 
             if (submittedAction.IsTempId)
             {
@@ -154,7 +147,7 @@ namespace Core.Services
                 pendingConfiguration.Add(submittedAction);
 
                 foreach (var newAction in submittedAction.ChildNodes.OfType<ActionDO>())
-                {
+        {
                     var newChild = SaveUpdateAndConfigureRecursive(uow, newAction, pendingConfiguration);
                     existingAction.ChildNodes.Add(newChild);
                 }
@@ -163,42 +156,42 @@ namespace Core.Services
             {
                 existingAction = uow.ActionRepository.GetByKey(submittedAction.Id);
 
-                if (existingAction == null)
-                {
-                    throw new Exception("Action was not found");
-                }
+            if (existingAction == null)
+            {
+                throw new Exception("Action was not found");
+            }
 
-                // Update properties
+            // Update properties
                 UpdateActionProperties(existingAction, submittedAction);
 
                 // Sync nested action structure
                 if (submittedAction.ChildNodes != null)
-                {
-                    // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
-                    // desired set of children. 
+            {
+                // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
+                // desired set of children. 
                     var newChildren = submittedAction.ChildNodes.OfType<ActionDO>().Where(x => !x.IsTempId).ToDictionary(x => x.Id, y => y);
-                    // current set of children
-                    var currentChildren = existingAction.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
+                // current set of children
+                var currentChildren = existingAction.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
 
-                    // Now we must find what child must be added to existingAction
-                    // Chilren to be added are difference between set newChildren and currentChildren (those elements that exist in newChildren but do not exist in currentChildren).
+                // Now we must find what child must be added to existingAction
+                // Chilren to be added are difference between set newChildren and currentChildren (those elements that exist in newChildren but do not exist in currentChildren).
                     foreach (var newAction in submittedAction.ChildNodes.OfType<ActionDO>().Where(x => x.IsTempId || !currentChildren.ContainsKey(x.Id)).ToArray())
-                    {
+                {
                         var newChild = SaveUpdateAndConfigureRecursive(uow, newAction, pendingConfiguration);
-                        existingAction.ChildNodes.Add(newChild);
-                    }
-                    
-                    // Now we must find what child must be removed from existingAction
-                    // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
-                    foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
-                    {
-                        existingAction.ChildNodes.Remove(actionToRemove.Value);
-                        // TODO: delete actions from repository
-                    }
+                    existingAction.ChildNodes.Add(newChild);
+                }
 
-                    // We just update those children that haven't changed (exists both in newChildren and currentChildren)
+                // Now we must find what child must be removed from existingAction
+                // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
+                foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
+                {
+                    existingAction.ChildNodes.Remove(actionToRemove.Value);
+                        // TODO: delete actions from repository
+                }
+
+                // We just update those children that haven't changed (exists both in newChildren and currentChildren)
                     foreach (var actionToUpdate in newChildren.Where(x => !x.Value.IsTempId && currentChildren.ContainsKey(x.Key)))
-                    {
+                {
                         SaveUpdateAndConfigureRecursive(uow, actionToUpdate.Value, pendingConfiguration);
                     }
                 }
@@ -311,6 +304,8 @@ namespace Core.Services
 
         public async Task<ActionDTO> Configure(ActionDO curActionDO)
         {
+            if (curActionDO == null)
+                throw new ArgumentNullException("curActionDO");
             ActionDTO tempActionDTO;
             try
             {

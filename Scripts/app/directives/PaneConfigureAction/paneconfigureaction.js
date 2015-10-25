@@ -18,6 +18,8 @@ var dockyard;
                 MessageType[MessageType["PaneConfigureAction_InternalAuthentication"] = 2] = "PaneConfigureAction_InternalAuthentication";
                 MessageType[MessageType["PaneConfigureAction_ExternalAuthentication"] = 3] = "PaneConfigureAction_ExternalAuthentication";
                 MessageType[MessageType["PaneConfigureAction_Reconfigure"] = 4] = "PaneConfigureAction_Reconfigure";
+                MessageType[MessageType["PaneConfigureAction_RenderConfiguration"] = 5] = "PaneConfigureAction_RenderConfiguration";
+                MessageType[MessageType["PaneConfigureAction_ChildActionsDetected"] = 6] = "PaneConfigureAction_ChildActionsDetected";
             })(paneConfigureAction.MessageType || (paneConfigureAction.MessageType = {}));
             var MessageType = paneConfigureAction.MessageType;
             var ActionUpdatedEventArgs = (function (_super) {
@@ -100,6 +102,10 @@ var dockyard;
                         $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], function () {
                             loadConfiguration();
                         });
+                        $scope.$on(MessageType[MessageType.PaneConfigureAction_RenderConfiguration], 
+                        //Allow some time for parent and current action instance to sync
+                        //Allow some time for parent and current action instance to sync
+                        function () { return $timeout(function () { return processConfiguration(); }, 300); });
                         // Get configuration settings template from the server if the current action does not contain those             
                         if ($scope.currentAction.activityTemplateId > 0) {
                             if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
@@ -171,12 +177,19 @@ var dockyard;
                             }
                             ActionService.configure($scope.currentAction).$promise
                                 .then(function (res) {
+                                if (res.childrenActions || res.childrenActions.length > 0) {
+                                    // If the directive is used for configuring solutions,
+                                    // the SolutionController would listen to this event 
+                                    // and redirect user to the ProcessBuilder once if is received.
+                                    // It means that solution configuration is complete. 
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
+                                }
                                 $scope.currentAction.crateStorage = res.crateStorage;
                                 $scope.processConfiguration();
                             })
                                 .catch(function (result) {
                                 var errorText = 'Something went wrong. Click to retry.';
-                                if (result.status && result.status >= 300) {
+                                if (result.status && result.status >= 400) {
                                     // Bad http response
                                     errorText = 'Configuration loading error. Click to retry.';
                                 }
@@ -184,7 +197,7 @@ var dockyard;
                                     // Exception was thrown in the code
                                     errorText = result.message;
                                 }
-                                var control = new dockyard.model.TextBlock('TextBlock', errorText, 'well well-lg alert-danger');
+                                var control = new dockyard.model.TextBlock(errorText, 'well well-lg alert-danger');
                                 $scope.currentAction.configurationControls = new dockyard.model.ControlsList();
                                 $scope.currentAction.configurationControls.fields = [control];
                             })

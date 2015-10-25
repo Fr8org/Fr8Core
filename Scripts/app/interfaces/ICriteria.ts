@@ -20,6 +20,7 @@ module dockyard.interfaces {
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
         activityTemplateId: number;
+        childrenActions: Array<IActionDTO>;
     }
 
     export interface IActivityCategoryDTO {

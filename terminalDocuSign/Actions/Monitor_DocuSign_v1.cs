@@ -1,4 +1,4 @@
-﻿﻿using AutoMapper;
+﻿using AutoMapper;
 using Data.Entities;
 using TerminalBase.Infrastructure;
 using System;
@@ -20,15 +20,14 @@ namespace terminalDocuSign.Actions
 {
     public class Monitor_DocuSign_v1 : BasePluginAction
     {
-        // TODO: remove this as of DO-1064.
-        // IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
-        // IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
-
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
-                return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationEvaluator(actionDo));
-            return curActionDTO;
+            if (NeedsAuthentication(curActionDTO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }
 
         public ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
@@ -199,9 +198,35 @@ namespace terminalDocuSign.Actions
                     {
                         Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", curEventFields.Fields.ToArray())
                     });
+
+                UpdateSelectedEvents(curActionDTO);
             }
 
             return Task.FromResult(curActionDTO);
+        }
+
+        /// <summary>
+        /// Updates event subscriptions list by user checked check boxes.
+        /// </summary>
+        /// <remarks>The configuration controls include check boxes used to get the selected DocuSign event subscriptions</remarks>
+        private void UpdateSelectedEvents(ActionDTO curActionDTO)
+        {
+            //get the config controls manifest
+            var curConfigControlsCrate = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
+
+            //get selected check boxes (i.e. user wanted to subscribe these DocuSign events to monitor for)
+            var curSelectedDocuSignEvents =
+                curConfigControlsCrate.Controls
+                    .Where(configControl => configControl.Type.Equals(ControlTypes.CheckBox) && configControl.Selected)
+                    .Select(checkBox => checkBox.Label.Replace(" ", ""));
+
+            //create standard event subscription crate with user selected DocuSign events
+            var curEventSubscriptionCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions",
+                curSelectedDocuSignEvents.ToArray());
+
+            //replace the existing crate with new event subscription crate
+            Crate.ReplaceCratesByManifestType(curActionDTO.CrateStorage.CrateDTO,
+                CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME, new List<CrateDTO> {curEventSubscriptionCrate});
         }
 
         private CrateDTO PackCrate_EventSubscriptions(

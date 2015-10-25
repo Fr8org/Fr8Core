@@ -31,7 +31,7 @@
                     Password: $scope.formData.password
                 };
 
-                $http.post('/actions/authenticate', data)
+                $http.post('/authentication/token', data)
                     .then(function () {
                         $scope.$close();
                     })
