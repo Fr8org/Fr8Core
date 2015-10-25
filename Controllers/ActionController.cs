@@ -54,7 +54,7 @@ namespace Web.Controllers
         }
 
 
-        [HttpGet]
+        [HttpPost]
         [Fr8ApiAuthorize]
         [Route("create")]
         public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
@@ -77,6 +77,26 @@ namespace Web.Controllers
             }
         }
 
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        [Route("create")]
+        public async Task<IHttpActionResult> Create(string solutionName)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                int actionTemplateId = uow.ActivityTemplateRepository.GetAll().
+                    Where(at => at.Name == solutionName).Select(at => at.Id).FirstOrDefault();
+                if (actionTemplateId == 0)
+                {
+                    throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
+                }
+
+                var result = await _action.CreateAndConfigure(uow, actionTemplateId, "Solution", null, null, true);
+                return Ok(_route.MapRouteToDto(uow, (RouteDO)result));
+            }
+        }
+
+
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
 
         [HttpPost]
@@ -92,7 +112,7 @@ namespace Web.Controllers
 
             curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            ActionDTO actionDTO = await _action.Configure(curActionDO);
+            ActionDTO actionDTO = (await _action.Configure(curActionDO)).Item1;
             return Ok(actionDTO);
         }
 

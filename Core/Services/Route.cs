@@ -20,14 +20,15 @@ namespace Core.Services
 {
     public class Route : IRoute
     {
-        
-        
+
+
         // private readonly IProcess _process;
         private readonly ISubroute _subroute;
         private readonly Fr8Account _dockyardAccount;
         private readonly IAction _action;
         private readonly IRouteNode _activity;
         private readonly ICrateManager _crate;
+        private readonly ISecurityServices _security;
 
         public Route()
         {
@@ -36,26 +37,27 @@ namespace Core.Services
             _action = ObjectFactory.GetInstance<IAction>();
             _activity = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
         public IList<RouteDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, int? id = null, int? status = null)
-            {
+        {
             var queryableRepo = unitOfWork.RouteRepository.GetQuery().Include(pt => pt.ChildContainers); // whe have to include Activities as it is a real navigational property. Not Routes
 
-                if (isAdmin)
-                {
-                    queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
-                    return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
-                }
+            if (isAdmin)
+            {
+                queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
+                return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
+            }
 
-                queryableRepo = (id == null
-                    ? queryableRepo.Where(pt => pt.Fr8Account.Id == account.Id)
-                    : queryableRepo.Where(pt => pt.Id == id && pt.Fr8Account.Id == account.Id));
-                return (status == null
-                    ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
+            queryableRepo = (id == null
+                ? queryableRepo.Where(pt => pt.Fr8Account.Id == account.Id)
+                : queryableRepo.Where(pt => pt.Id == id && pt.Fr8Account.Id == account.Id));
+            return (status == null
+                ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
 
         }
-        
+
         public void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool updateChildEntities)
         {
             var creating = ptdo.Id == 0;
@@ -89,10 +91,14 @@ namespace Core.Services
                 Name = name
             };
 
-            route.RouteState = RouteState.Inactive;
+            if (route.Fr8Account == null)
+            {
+                route.Fr8Account = _security.GetCurrentAccount(uow);
+            }
 
+            route.RouteState = RouteState.Inactive;
             uow.RouteRepository.Add(route);
-        
+
             return route;
         }
 
@@ -126,7 +132,7 @@ namespace Core.Services
 
                     return pntDTO;
                 }).ToList();
-        
+
             RouteDTO result = new RouteDTO()
             {
                 Description = curRouteDO.Description,
@@ -139,7 +145,7 @@ namespace Core.Services
 
             return result;
         }
-        
+
 
         public IList<SubrouteDO> GetSubroutes(RouteDO curRouteDO)
         {
@@ -154,7 +160,7 @@ namespace Core.Services
             }
         }
 
-        
+
 
         private IEnumerable<TActivity> EnumerateActivities<TActivity>(RouteDO curRoute, bool allowOnlyOneNoteTemplate = true)
         {
@@ -179,7 +185,7 @@ namespace Core.Services
             }
         }
 
-        
+
 
         public string Activate(RouteDO curRoute)
         {
@@ -195,7 +201,7 @@ namespace Core.Services
                 try
                 {
                     _action.Activate(curActionDO).Wait();
-                    
+
                     result = "success";
                 }
                 catch (Exception ex)
@@ -213,7 +219,7 @@ namespace Core.Services
             return result;
         }
 
-        
+
 
         public string Deactivate(RouteDO curRoute)
         {
@@ -224,7 +230,7 @@ namespace Core.Services
                 try
                 {
                     _action.Deactivate(curActionDO).Wait();
-                    
+
                     result = "success";
                 }
                 catch (Exception ex)
@@ -242,38 +248,38 @@ namespace Core.Services
             return result;
         }
 
-        
+
         // TODO: like some other methods, this assumes that there is only 1 action list in use. This is dangerous 
         //because the database allows N Activities.
         //we're waiting to reconcile this until we get some visibility into how the product is used by users
-//        public ActionListDO GetActionList(IUnitOfWork uow, int id)
-//        {
-//            // Get action list by process template first 
+        //        public ActionListDO GetActionList(IUnitOfWork uow, int id)
+        //        {
+        //            // Get action list by process template first 
         //            var currentRoute = uow.RouteRepository.GetQuery().Where(pt => pt.Id == id).ToArray();
-//
+        //
         //            if (currentRoute.Length == 0)
-//            {
-//                return null;
-//            }
-//
+        //            {
+        //                return null;
+        //            }
+        //
         //            if (currentRoute.Length > 1)
-//            {
-//                throw new Exception(string.Format("More than one action list exists in processtemplate {0}", id));
-//            }
-//
+        //            {
+        //                throw new Exception(string.Format("More than one action list exists in processtemplate {0}", id));
+        //            }
+        //
         //            var startingRoute = currentRoute[0].StartingSubroute;
         //            if (startingRoute == null)
-//            {
-//                return null;
-//            }
-//
+        //            {
+        //                return null;
+        //            }
+        //
         //            // Get Activities related to the Route
         //            var curActionList = startingRoute.Activities.SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
-//            return curActionList;
-//
-//        }
+        //            return curActionList;
+        //
+        //        }
 
-        
+
         /// <summary>
         /// Returns all actions created within a Process Template.
         /// </summary>
@@ -292,7 +298,7 @@ namespace Core.Services
             }
         }
 
-        
+
 
         public IList<RouteDO> GetMatchingRoutes(string userId, EventReportCM curEventReport)
         {
@@ -313,7 +319,7 @@ namespace Core.Services
 
         }
 
-        
+
 
         public List<RouteDO> MatchEvents(List<RouteDO> curRoutes,
             EventReportCM curEventReport)
@@ -354,7 +360,7 @@ namespace Core.Services
 
         }
 
-        
+
 
         public RouteNodeDO GetFirstActivity(int curRouteId)
         {
@@ -364,7 +370,7 @@ namespace Core.Services
             }
         }
 
-        
+
 
         public RouteNodeDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute)
         {

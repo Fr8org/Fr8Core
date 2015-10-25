@@ -7,14 +7,16 @@ module dockyard.services {
     export interface IRouteService extends ng.resource.IResourceClass<interfaces.IRouteVM> {
         getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IRouteVM>;
         getFull: (id: Object) => interfaces.IRouteVM;
-        execute: (id: {id: number}) => void;
+        execute: (id: { id: number }) => void;
         activate: (processTemplate: model.RouteDTO) => void;
         deactivate: (processTemplate: model.RouteDTO) => void;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
+        configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IActionVM>;
         getByProcessTemplate: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
+        create: (args: { actionTemplateId: number, name: string, label: string, parentNideId: number, createRoute: boolean }) => ng.resource.IResource<model.RouteDTO | model.ActionDTO>;
+        createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.RouteDTO>;
         //TODO make resource class do this operation
         deleteById: (id: { id: number }) => ng.resource.IResource<void>;
         
@@ -157,6 +159,17 @@ module dockyard.services {
                 'deleteById': {
                     method: 'DELETE'
                 },
+                'create': {
+                    method: 'POST',
+                    url: '/actions/create'
+                },
+                'createSolution': {
+                    method: 'POST',
+                    url: '/actions/create',
+                    params: {
+                        solutionName: '@solutionName'
+                    }
+                },
                 'params': {
                     id: 'id'
                 }
@@ -202,14 +215,14 @@ module dockyard.services {
     ]);
 
     app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
-        <IActivityTemplateService>$resource('/api/activityTemplates/:id', { id: '@id' }, 
-        {
-            'getAvailableActivities': {
-                method: 'GET',
-                url: '/route_nodes/available/',
-                isArray: true
-            }
-        })
+        <IActivityTemplateService>$resource('/api/activityTemplates/:id', { id: '@id' },
+            {
+                'getAvailableActivities': {
+                    method: 'GET',
+                    url: '/route_nodes/available/',
+                    isArray: true
+                }
+            })
     ]);
 
     /*
@@ -236,61 +249,61 @@ module dockyard.services {
 
             // TODO: bypass save for unchanged entities
               
-                // Save processNodeTemplate if not null
-                if (currentState.subroute) {
-                    this.CriteriaServiceWrapper.addOrUpdate(currentState.subroute).promise
-                        .then((result: interfaces.ISubrouteVM) => {
-                            //new model.CriteriaDTO(result.criteria.id, false, result.criteria.id, model.CriteriaExecutionType.NoSet);
-                            newState.subroute = result;
+            // Save processNodeTemplate if not null
+            if (currentState.subroute) {
+                this.CriteriaServiceWrapper.addOrUpdate(currentState.subroute).promise
+                    .then((result: interfaces.ISubrouteVM) => {
+                        //new model.CriteriaDTO(result.criteria.id, false, result.criteria.id, model.CriteriaExecutionType.NoSet);
+                        newState.subroute = result;
 
-                            this.crateHelper.mergeControlListCrate(
-                                currentState.action.configurationControls,
-                                currentState.action.crateStorage
-                            );
+                        this.crateHelper.mergeControlListCrate(
+                            currentState.action.configurationControls,
+                            currentState.action.crateStorage
+                        );
 
-                            // If an Action is selected, save it
-                            if (currentState.action) {
-                                return this.ActionService.save({ id: currentState.action.id },
-                                    currentState.action, null, null);
-                            }
-                            else {
-                                return deferred.resolve(newState);
-                            }
-                        })
-                        .then((result: interfaces.IActionVM) => {
-                            newState.action = result;
+                        // If an Action is selected, save it
+                        if (currentState.action) {
+                            return this.ActionService.save({ id: currentState.action.id },
+                                currentState.action, null, null);
+                        }
+                        else {
                             return deferred.resolve(newState);
-                        })
-                        .catch((reason: any) => {
-                            return deferred.reject(reason);
-                        });
-                }
+                        }
+                    })
+                    .then((result: interfaces.IActionVM) => {
+                        newState.action = result;
+                        return deferred.resolve(newState);
+                    })
+                    .catch((reason: any) => {
+                        return deferred.reject(reason);
+                    });
+            }
 
-                //Save Action only
-                else if (currentState.action) {
-                    this.crateHelper.mergeControlListCrate(
-                        currentState.action.configurationControls,
-                        currentState.action.crateStorage
-                    );
+            //Save Action only
+            else if (currentState.action) {
+                this.crateHelper.mergeControlListCrate(
+                    currentState.action.configurationControls,
+                    currentState.action.crateStorage
+                );
 
-                    var promise = this.ActionService.save(
-                        { id: currentState.action.id },
-                        currentState.action,
-                        null,
-                        null).$promise;
-                    promise
-                        .then((result: interfaces.IActionVM) => {
-                            newState.action = result;
-                            return deferred.resolve(newState);
-                        })
-                        .catch((reason: any) => {
-                            return deferred.reject(reason);
-                        });
-                }
-                else {
-                    //Nothing to save
-                    deferred.resolve(newState);
-                }
+                var promise = this.ActionService.save(
+                    { id: currentState.action.id },
+                    currentState.action,
+                    null,
+                    null).$promise;
+                promise
+                    .then((result: interfaces.IActionVM) => {
+                        newState.action = result;
+                        return deferred.resolve(newState);
+                    })
+                    .catch((reason: any) => {
+                        return deferred.reject(reason);
+                    });
+            }
+            else {
+                //Nothing to save
+                deferred.resolve(newState);
+            }
             return deferred.promise;
         }
     }
@@ -450,5 +463,5 @@ module dockyard.services {
             return new CriteriaServiceWrapper(CriteriaService, SubrouteService, $q)
         }]);
 
-   
+
 }
