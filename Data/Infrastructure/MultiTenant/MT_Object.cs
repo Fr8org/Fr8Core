@@ -1,6 +1,6 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.MultiTenantObjects;
+using Data.Interfaces.ManifestSchemas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,15 +20,15 @@ namespace Data.Infrastructure.MultiTenant
             this._mtFieldType = new MT_FieldType();
         }
 
-        public Data.Entities.MT_Object GetOrCreateMT_Object(IUnitOfWork _uow, BaseMultiTenantObject curMTO, Type curDataType, Dictionary<Type, Data.Entities.MT_FieldType> typesDict)
+        public Data.Entities.MT_Object GetOrCreateMT_Object(IUnitOfWork _uow, Manifest curManifest, Type curDataType)
         {
-            var correspondingMTObject = _uow.MTObjectRepository.FindOne(a => a.MT_OrganizationId == curMTO.fr8AccountId && a.Name == curMTO.Name);
+            var corFieldType = _mtFieldType.GetOrCreateMT_FieldType(_uow, curDataType);
+            _uow.SaveChanges();
+
+            var correspondingMTObject = _uow.MTObjectRepository.FindOne(a => a.ManifestId == curManifest.ManifestId && a.MT_FieldType != null && a.MT_FieldType.Id == corFieldType.Id);
             if (correspondingMTObject == null)
             {
-                correspondingMTObject = new Data.Entities.MT_Object() { MT_OrganizationId = curMTO.fr8AccountId, Name = curMTO.Name };
-                var correspongdintDTOrganization = _uow.MTOrganizationRepository.GetByKey(curMTO.fr8AccountId);
-                correspondingMTObject.MT_Organization = correspongdintDTOrganization;
-                correspondingMTObject.MT_FieldType = _mtFieldType.GetOrCreateMT_FieldType(_uow, curDataType, typesDict);
+                correspondingMTObject = new Data.Entities.MT_Object() { Name = curManifest.ManifestName, MT_FieldType = corFieldType, ManifestId = curManifest.ManifestId };
                 _uow.MTObjectRepository.Add(correspondingMTObject);
             }
             return correspondingMTObject;

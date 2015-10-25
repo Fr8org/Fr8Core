@@ -13,7 +13,7 @@ namespace Core.Interfaces
 
         List<RouteNodeDO> GetDownstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO);
 
-        Task Process(int curActivityId, ContainerDO curProcessDO);
+        Task Process(int curActivityId, ContainerDO curContainerDO);
 
         IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount);
 
@@ -24,5 +24,7 @@ namespace Core.Interfaces
         IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IFr8AccountDO curAccount);
 
 	    Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction);
-	}
+
+        IEnumerable<ActivityTemplateDO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount);
+    }
 }

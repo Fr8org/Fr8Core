@@ -8,19 +8,20 @@ module dockyard.controllers {
     'use strict';
 
     export interface IProcessBuilderScope extends ng.IScope {
-        processTemplateId: number;
-        processNodeTemplates: Array<model.ProcessNodeTemplateDTO>;
+        routeId: number;
+        subroutes: Array<model.SubrouteDTO>;
         fields: Array<model.Field>;
-        currentSubroute: model.ProcessNodeTemplateDTO;
+        currentSubroute: model.SubrouteDTO;
 
         // Identity of currently edited processNodeTemplate.
         //curNodeId: number;
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
         current: model.ProcessBuilderState;
-        actions: Array<model.ActionDTO>
+        actionGroups: model.ActionGroup[]
 
         addAction(): void;
+        deleteAction: (action: model.ActionDTO) => void;
         selectAction(action): void;
     }
 
@@ -42,13 +43,15 @@ module dockyard.controllers {
             '$state',
             'ActionService',
             '$http',
-            'ProcessTemplateService',
+            'RouteService',
             '$timeout',
             'ProcessBuilderService',
             'CrateHelper',
             '$filter',
             '$modal',
-            '$window'
+            '$window',
+            'UIHelperService',
+            'LayoutService'
         ];
 
         constructor(
@@ -57,17 +60,20 @@ module dockyard.controllers {
             private $state: ng.ui.IState,
             private ActionService: services.IActionService,
             private $http: ng.IHttpService,
-            private ProcessTemplateService: services.IProcessTemplateService,
+            private RouteService: services.IRouteService,
             private $timeout: ng.ITimeoutService,
             private ProcessBuilderService: services.IProcessBuilderService,
             private CrateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
             private $modal,
-            private $window: ng.IWindowService
+            private $window: ng.IWindowService,
+            private uiHelperService: services.IUIHelperService,
+            private LayoutService: services.ILayoutService
             ) {
-            this.$scope.processTemplateId = $state.params.id;
+
+            this.$scope.routeId = $state.params.id;
             this.$scope.current = new model.ProcessBuilderState();
-            this.$scope.actions = [];
+            this.$scope.actionGroups = [];
 
             this.setupMessageProcessing();
             $timeout(() => this.loadProcessTemplate(), 500, true);
@@ -75,6 +81,8 @@ module dockyard.controllers {
             this.$scope.addAction = () => {
                 this.addAction();
             }
+
+            $scope.deleteAction = <() => void> angular.bind(this, this.deleteAction);
 
             this.$scope.selectAction = (action: model.ActionDTO) => {
                 if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
@@ -112,25 +120,26 @@ module dockyard.controllers {
         }
 
         private loadProcessTemplate() {
-            var processTemplatePromise = this.ProcessTemplateService.getFull({ id: this.$scope.processTemplateId });
-
-            processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IProcessTemplateVM) => {
-                debugger;
-
-                this.$scope.current.processTemplate = curProcessTemplate;
+            var processTemplatePromise = this.RouteService.getFull({ id: this.$scope.routeId });
+            var self = this;
+            processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IRouteVM) => {
+                this.$scope.current.route = curProcessTemplate;
                 this.$scope.currentSubroute = curProcessTemplate.subroutes[0];
                 this.renderProcessTemplate(curProcessTemplate);
             });
         }
 
-        private renderProcessTemplate(curProcessTemplate: interfaces.IProcessTemplateVM) {
+        private renderProcessTemplate(curProcessTemplate: interfaces.IRouteVM) {
             if (curProcessTemplate.subroutes.length == 0) return;
 
-            for (var curProcessNodeTemplate of curProcessTemplate.subroutes) {
-                for (var curAction of curProcessNodeTemplate.actions) {
-                    this.$scope.actions.push(curAction);
+            var actions = [];
+            for (var subroute of curProcessTemplate.subroutes) {
+                for (var action of subroute.actions) {
+                    actions.push(action);
                 }
             }
+
+            this.$scope.actionGroups = this.LayoutService.placeActions(actions, curProcessTemplate.startingSubrouteId);  
         }
 
         // If action updated, notify interested parties and update $scope.current.action
@@ -170,6 +179,24 @@ module dockyard.controllers {
             });
         }
 
+        private deleteAction(action: model.ActionDTO) {
+            //TODO -> should we generate an event for delete event?
+            var self = this;
+            this.uiHelperService
+                .openConfirmationModal('Are you sure you want to delete this Action? You will have to reconfigure all downstream Actions.')
+                .then(() => {
+
+                self.ActionService.deleteById({ id: action.id }).$promise.then(() => {
+                    //lets reload process template
+                    self.$scope.actionGroups = [];
+                    self.$scope.current = new model.ProcessBuilderState();
+                    self.loadProcessTemplate();
+                });
+
+            });
+            
+        }
+
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
 
             var activityTemplate = eventArgs.activityTemplate;
@@ -179,11 +206,12 @@ module dockyard.controllers {
             // Create new action object.
             var action = new model.ActionDTO(this.$scope.currentSubroute.id, id, true);
             action.name = activityTemplate.name;
-
+            action.label = activityTemplate.label;
+            action.minPaneWidth = activityTemplate.minPaneWidth;
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();
             this.$scope.current.action.activityTemplateId = activityTemplate.id;
-            this.$scope.actions.push(action);
+            this.$scope.actionGroups[0].actions.push(action);
 
             this.selectAction(action);
         }
@@ -240,7 +268,8 @@ module dockyard.controllers {
                 }
                 if (canBypassActionLoading) {
                     this.$scope.current.action = result.action;
-                    this.$scope.actions[this.$scope.actions.length - 1] = result.action;
+                    var actions = this.$scope.actionGroups[0].actions
+                    actions[actions.length - 1] = result.action;
                 }
                 else {
                     this.ActionService.get({ id: actionId }).$promise.then(action => {
@@ -313,8 +342,9 @@ module dockyard.controllers {
             })
             .result
             .then(function () {
-                var pcaEventArgs = new pca.RenderEventArgs(self.$scope.current.action);
-               // self.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+                self.$scope.$broadcast(
+                    pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]
+                );
             });
         }
 
@@ -323,25 +353,35 @@ module dockyard.controllers {
 
             var self = this;
 
+            var messageListener = function (event) {
+                debugger;
+
+                if (!self.$scope || !event.data || event.data != 'external-auth-success') {
+                    return;
+                }
+
+                self.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);
+            };
+
             this.$http
-                .get('/actions/auth_url?id=' + eventArgs.activityTemplateId)
+                .get('/authentication/initial_url?id=' + eventArgs.activityTemplateId)
                 .then(function (res) {
                     var url = (<any>res.data).url;
 
                     var childWindow = self.$window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
 
-                    // TODO: fix that later (DO-1211).
-                    // var isClosedHandler = function () {
-                    //     if (childWindow.closed) {
-                    //         var pcaEventArgs = new pca.RenderEventArgs(self._scope.current.action);
-                    //         self._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
-                    //     }
-                    //     else {
-                    //         setTimeout(isClosedHandler, 500);
-                    //     }
-                    // };
-                    // 
-                    // setTimeout(isClosedHandler, 500);
+                    window.addEventListener('message', messageListener);
+
+                    var isClosedHandler = function () {
+                        if (childWindow.closed) {
+                            window.removeEventListener('message', messageListener);
+                        }
+                        else {
+                            setTimeout(isClosedHandler, 500);
+                        }
+                    };
+                    
+                    setTimeout(isClosedHandler, 500);
                 });
         }
     }
@@ -353,11 +393,11 @@ module dockyard.controllers {
                     name: "test action type",
                     configurationControls: new model.ControlsList(),
                     crateStorage: new model.CrateStorage(),
-                    parentActivityId: 1,
+                    parentRouteNodeId: 1,
                     activityTemplateId: 1,
                     id: 1,
                     isTempId: false,
-                    actionListId: 0
+                    childrenActions: null
                 };
 
             $httpBackend

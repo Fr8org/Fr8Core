@@ -1,6 +1,5 @@
-﻿using Core.Interfaces;
-using Data.Entities;
-using Data.Interfaces;
+﻿// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
+using InternalInterfaces = Core.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 using System;
@@ -8,23 +7,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Interfaces;
+using Core.Managers;
+using Data.Entities;
 using Data.Exceptions;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
+using Data.Interfaces;
 
 namespace Core.Services
 {
     public class DockyardEvent : IDockyardEvent
     {
         private readonly IRoute _route;
-        private readonly Core.Interfaces.IContainerService _process;
-        private readonly ICrate _crate;
+        private readonly InternalInterfaces.IContainer _container;
+        private readonly ICrateManager _crate;
 
         public DockyardEvent()
         {
             _route = ObjectFactory.GetInstance<IRoute>();
-            _process = ObjectFactory.GetInstance<Core.Interfaces.IContainerService>();
-            _crate = ObjectFactory.GetInstance<ICrate>();
+            _container = ObjectFactory.GetInstance<InternalInterfaces.IContainer>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         //public void ProcessInbound(string userID, EventReportMS curEventReport)
@@ -103,7 +106,7 @@ namespace Core.Services
 
             if (curRoute.RouteState != RouteState.Inactive)
             {
-                await _process.Launch(curRoute, curEventData);
+                await _container.Launch(curRoute, curEventData);
             }
         }
     }

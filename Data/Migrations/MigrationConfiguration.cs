@@ -6,7 +6,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Web;
-using Data.Interfaces.MultiTenantObjects;
 using Data.Repositories;
 using Data.States;
 using Data.States.Templates;
@@ -65,13 +64,12 @@ namespace Data.Migrations
             AddRoles(uow);
             AddAdmins(uow);
             AddDockyardAccounts(uow);
-            AddProfiles(uow); 
-            
-             AddPlugins(uow);                     
-            SeedMultiTenantTables(uow);
-             
-             AddAuthorizationTokens(uow);
-            AddProcessDOForTestingApi(uow);
+            AddProfiles(uow);
+
+            //AddPlugins(uow);
+
+            //AddAuthorizationTokens(uow);
+            AddContainerDOForTestingApi(uow);
         }
 
         //Method to let us seed into memory as well
@@ -101,17 +99,17 @@ namespace Data.Migrations
                 CreateTime = DateTime.Now,
                 ManifestType = string.Empty,
                 Contents = JsonConvert.SerializeObject(new object[]{
-                new 
+                new
                 {
                     Key="EnvelopeId",
                     Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"
                 },
-                new 
+                new
                 {
                     Key="ExternalEventType",
                     Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"
                 },
-                new 
+                new
                 {
                     Key="RecipientId",
                     Value="279a1173-04cc-4902-8039-68b1992639e9"
@@ -133,7 +131,7 @@ namespace Data.Migrations
             return eventPayload;
         }
 
-        private static void AddProcessDOForTestingApi(IUnitOfWork uow)
+        private static void AddContainerDOForTestingApi(IUnitOfWork uow)
         {
             new RouteBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}").AddCrate(GenerateInitialEventCrate()).Store(uow);
             new RouteBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}")
@@ -157,7 +155,6 @@ namespace Data.Migrations
         private static void AddAuthorizationTokens(IUnitOfWork uow)
         {
             AddDocusignAuthToken(uow);
-            AddSalesforceAuthToken(uow);
         }
 
         private static void AddDocusignAuthToken(IUnitOfWork uow)
@@ -184,34 +181,11 @@ namespace Data.Migrations
             }
         }
 
-        private static void AddSalesforceAuthToken(IUnitOfWork uow)
-        {
-            var salesforceAuthToken = uow.AuthorizationTokenRepository.GetQuery()
-             .Any(x => x.ExternalAccountId == "00561000000JECsAAO");
-
-            // Add new plugin and subscription to repository, if plugin doesn't exist.
-            if (!salesforceAuthToken)
-            {
-                var token = new AuthorizationTokenDO();
-                token.ExternalAccountId = "00561000000JECsAAO";
-                token.Token = "";
-                token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
-                var salesforcePlugin = uow.PluginRepository.FindOne(p => p.Name == "pluginSalesforce");
-                token.Plugin = salesforcePlugin;
-                token.PluginID = salesforcePlugin.Id;
-                token.ExpiresAt = DateTime.Now.AddDays(10);
-
-                uow.AuthorizationTokenRepository.Add(token);
-                uow.SaveChanges();
-
-            }
-        }
-
-    //This method will automatically seed any constants file
-    //It looks for rows which implement IConstantRow<>
-    //For example, BookingRequestStateRow implements IConstantRow<BookingRequestState>
-    //The below method will then generate a new row for each constant found in BookingRequestState.
-    private static void SeedConstants(IUnitOfWork context)
+        //This method will automatically seed any constants file
+        //It looks for rows which implement IConstantRow<>
+        //For example, BookingRequestStateRow implements IConstantRow<BookingRequestState>
+        //The below method will then generate a new row for each constant found in BookingRequestState.
+        private static void SeedConstants(IUnitOfWork context)
         {
             var constantsToSeed =
                 typeof(MigrationConfiguration).Assembly.GetTypes()
@@ -231,7 +205,7 @@ namespace Data.Migrations
                     .FirstOrDefault(m => m.Name == "SeedConstants" && m.IsGenericMethod);
             if (seedMethod == null)
                 throw new Exception("Unable to find SeedConstants method.");
-            
+
             foreach (var constantToSeed in constantsToSeed)
             {
                 var rowType = constantToSeed.RowType;
@@ -290,8 +264,8 @@ namespace Data.Migrations
         {
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
             var instructionsToAdd = (from constant in constants
-                let name = constant.Name
-                let value = constant.GetValue(null)
+                                     let name = constant.Name
+                                     let value = constant.GetValue(null)
                                      select creatorFunc((int)value, name)).ToList();
 
             //First, we find rows in the DB that don't exist in our seeding. We delete those.
@@ -353,9 +327,9 @@ namespace Data.Migrations
             };
             FieldInfo[] constants = typeof(Roles).GetFields();
             var rolesToAdd = (from constant in constants
-                                     let name = constant.Name
-                                     let value = constant.GetValue(null)
-                                     select creatorFunc((string)value, name)).ToList();
+                              let name = constant.Name
+                              let value = constant.GetValue(null)
+                              select creatorFunc((string)value, name)).ToList();
 
             var repo = new GenericRepository<AspNetRolesDO>(uow);
             var existingRows = new GenericRepository<AspNetRolesDO>(uow).GetAll().ToList();
@@ -364,7 +338,7 @@ namespace Data.Migrations
                 if (!rolesToAdd.Select(i => i.Name).Contains(row.Name))
                 {
                     repo.Remove(row);
-            }
+                }
             }
             foreach (var row in rolesToAdd)
             {
@@ -466,14 +440,21 @@ namespace Data.Migrations
             // Create test DockYard account for plugin subscription.
             // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
 
-            AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1", true);
-            AddPlugins(uow, "pluginExcel", "localhost:47011", "1", false);
-            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1", false);
+            // TODO: remove this, DO-1397
+            // AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1", true);
+            // AddPlugins(uow, "pluginExcel", "localhost:47011", "1", false);
+            // AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1", true);
+            AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1");
+            AddPlugins(uow, "pluginExcel", "localhost:47011", "1");
+            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1");
             uow.SaveChanges();
         }
 
+        // TODO: remove this, DO-1397
+        // private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint,
+        //     string version, bool requiresAuthentication)
         private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint,
-            string version, bool requiresAuthentication)
+            string version)
         {
             // Check that plugin does not exist yet.
             var pluginExists = uow.PluginRepository.GetQuery().Any(x => x.Name == pluginName);
@@ -488,7 +469,8 @@ namespace Data.Migrations
                     PluginStatus = PluginStatus.Active,
                     Endpoint = endPoint,
                     Version = version,
-                    RequiresAuthentication = requiresAuthentication
+                    // TODO: remove this, DO-1397
+                    // RequiresAuthentication = requiresAuthentication
                 };
 
                 uow.PluginRepository.Add(pluginDO);
@@ -517,109 +499,16 @@ namespace Data.Migrations
             var curActivityTemplateDO = new ActivityTemplateDO(
                 name, version, endPoint, endPoint);
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
-            }       
-
-        private void SeedMultiTenantTables(UnitOfWork uow)
-        {
-            
-            AddMultiTenantOrganizations(uow);   
-            //    AddMultiTenantObjects(uow);
-
-            //add field for DocuSignEnvelopeStatusReport Object in DocuSign organization
-            //int docuSignEnvelopeStatusReportObjectId = GetMultiTenantObjectID(uow, "DocuSign",
-            //    "DocuSignEnvelopeStatusReport");
-            
-            //AddMultiTenantFields(uow, docuSignEnvelopeStatusReportObjectId, new DocuSignEnvelopeStatusReportMTO());
-
-            ////add field for DocuSignRecipientStatusReportMTO Object in DocuSign organization
-            //int docuSignRecipientStatusReportObjectId = GetMultiTenantObjectID(uow, "DocuSign",
-            //    "DocuSignRecipientStatusReport");
-
-            //AddMultiTenantFields(uow, docuSignRecipientStatusReportObjectId, new DocuSignRecipientStatusReportMTO());
         }
 
-        private void AddMultiTenantOrganizations(UnitOfWork uow)
-        {
-            uow.MTOrganizationRepository.Add(new MT_Organization { Name = "Dockyard" });
-            uow.MTOrganizationRepository.Add(new MT_Organization { Name = "DocuSign" });
 
-            uow.SaveChanges();
-        }
-
-        private void AddMultiTenantObjects(UnitOfWork uow)
-        {
-            //get organizations
-            var orgDockyard = uow.MTOrganizationRepository.GetQuery().First(org => org.Name.Equals("Dockyard"));
-            var orgDocuSign = uow.MTOrganizationRepository.GetQuery().First(org => org.Name.Equals("DocuSign"));
-
-            //add MT object for Dockyard
-            uow.MTObjectRepository.Add(new MT_Object { Name = "DockyardEvent", MT_OrganizationId = orgDockyard.Id });
-            uow.MTObjectRepository.Add(new MT_Object { Name = "DockyardIncident", MT_OrganizationId = orgDockyard.Id });
-
-            //add MT object for DocuSign
-            uow.MTObjectRepository.Add(new MT_Object { Name = "DocuSignEnvelopeStatusReport", MT_OrganizationId = orgDocuSign.Id });
-            uow.MTObjectRepository.Add(new MT_Object { Name = "DocuSignRecipientStatusReport", MT_OrganizationId = orgDocuSign.Id });
-
-            uow.SaveChanges();
-        }
-
-        //private int GetMultiTenantObjectID(IUnitOfWork uow, string curMtOrganizationName, string curMtObjectName)
-        //{
-        //    return
-        //        uow.MTObjectRepository.FindOne(
-        //            obj => obj.MT_Organization.Name.Equals(curMtOrganizationName) && obj.Name.Equals(curMtObjectName))
-        //            .Id;
-        //}
-
-        //private void AddMultiTenantFields(IUnitOfWork uow, int curObjectId, BaseMultiTenantObject curMto)
-        //{
-        //    var _mtField = new MT_FieldService();
-
-        //    var typeMap = new Dictionary<Type, MT_FieldType>()
-        //    {
-        //        {typeof (string), MT_FieldType.String},
-        //        {typeof (int), MT_FieldType.Int},
-        //        {typeof (bool), MT_FieldType.Boolean}
-        //    };
-
-        //    //get the current MTO fields
-        //    Type curMtoType = curMto.GetType();
-        //    var curMtoProperties = curMtoType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
-
-        //    //for each field
-        //    foreach (PropertyInfo propertyInfo in curMtoProperties)
-        //    {
-
-        //        MT_Field curMtField = new MT_Field();
-
-        //        //set property name, type and Object ID
-        //        curMtField.Name = propertyInfo.Name;
-        //        curMtField.Type = typeMap[propertyInfo.PropertyType];
-        //        curMtField.MT_ObjectId = curObjectId;
-
-        //        curMtField.FieldColumnOffset =
-        //            _mtField.GetFieldColumnOffset(uow, curMtField.Name, curMtField.MT_ObjectId) ??
-        //            _mtField.GenerateFieldColumnOffset(uow, curMtField.MT_ObjectId);
-
-        //        if (curMtField.FieldColumnOffset > 50)
-        //        {
-        //            throw new InvalidOperationException(
-        //                "MTO fields are limited to only 50 Columns. Check your MTO to keep its number of Properties to be less than or equal to 50.");
-        //        }
-
-        //        _mtField.Add(uow, curMtField);
-        //    }
-
-        //    uow.SaveChanges();
-        //}
-        
         //Getting random working time within next 3 days
         private static DateTimeOffset GetRandomEventStartTime()
         {
             TimeSpan timeSpan = DateTime.Now.AddDays(3) - DateTime.Now;
             var randomTest = new Random();
             TimeSpan newSpan = new TimeSpan(0, randomTest.Next(0, (int)timeSpan.TotalMinutes), 0);
-            DateTime newDate = DateTime.Now; 
+            DateTime newDate = DateTime.Now;
             while (newDate.TimeOfDay.Hours < 9)
             {
                 newDate = newDate.Add(new TimeSpan(1, 0, 0));

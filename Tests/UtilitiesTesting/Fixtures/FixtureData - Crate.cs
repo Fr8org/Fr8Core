@@ -1,4 +1,4 @@
-﻿using Core.Interfaces;
+﻿using Data.Interfaces;
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -39,7 +39,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var fieldSelectDocusignTemplateDTO = new DropDownListControlDefinitionDTO()
             {
-                Label = "target_docusign_template",
+                Label = "Use DocuSign Template",
                 Name = "target_docusign_template",
                 Required = true,
                 Events = new List<ControlEvent>() {
@@ -104,7 +104,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var fieldSelectDocusignTemplateDTO = new DropDownListControlDefinitionDTO()
             {
-                Label = "target_docusign_template",
+                Label = "Use DocuSign Template",
                 Name = "target_docusign_template",
                 Required = true,
                 Events = new List<ControlEvent>() {
@@ -188,7 +188,7 @@ namespace UtilitiesTesting.Fixtures
                 CssClass = "well well-lg"
             };
 
-            var filepickerControl = new FilePickerControlDefinisionDTO()
+            var filepickerControl = new FilePickerControlDefinitionDTO()
             {
                 Label = "Select a File"
             };

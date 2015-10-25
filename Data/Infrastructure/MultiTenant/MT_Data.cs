@@ -5,9 +5,11 @@ using System.IO;
 using System.Linq;
 using Data.Interfaces;
 using Data.Entities;
-using Data.Interfaces.MultiTenantObjects;
 using System.Collections.Generic;
 using System.Reflection;
+using Data.Interfaces.ManifestSchemas;
+using StructureMap;
+using Data.Infrastructure.StructureMap;
 
 namespace Data.Infrastructure.MultiTenant
 {
@@ -20,10 +22,10 @@ namespace Data.Infrastructure.MultiTenant
             this._mtField = new MT_Field();
         }
 
-        public Data.Entities.MT_Data Create(BaseMultiTenantObject curMTO, Data.Entities.MT_Object correspondingMTObject)
+        public Data.Entities.MT_Data Create(string curFr8AccountId, Manifest curManifest, Data.Entities.MT_Object correspondingMTObject)
         {
             var data = new Data.Entities.MT_Data();
-            data.Name = curMTO.Name;
+            data.fr8AccountId = curFr8AccountId;
             data.CreatedAt = DateTime.Now;
             data.UpdatedAt = DateTime.Now;
             data.MT_Object = correspondingMTObject;

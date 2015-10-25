@@ -5,13 +5,14 @@ using System.IO;
 using System.Linq;
 using Data.Interfaces;
 using Data.Entities;
-using Data.Interfaces.MultiTenantObjects;
 using System.Collections.Generic;
 using System.Reflection;
+using Data.Interfaces.ManifestSchemas;
+
 namespace Data.Infrastructure.MultiTenant
 {
     public interface IMT_Data
     {
-        Data.Entities.MT_Data Create(BaseMultiTenantObject curMTO, Data.Entities.MT_Object correspondingMTObject);
+        Data.Entities.MT_Data Create(string curFr8AccountId, Manifest curManifest, Data.Entities.MT_Object correspondingMTObject);
     }
 }

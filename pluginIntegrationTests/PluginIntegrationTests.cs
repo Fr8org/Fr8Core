@@ -13,15 +13,15 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using pluginAzureSqlServer;
+using terminalAzure;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using UtilitiesTesting;
-using pluginDocuSign;
+using terminalDocuSign;
 
 using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
-using pluginDocuSign.Infrastructure.StructureMap;
-using pluginDocuSign.Infrastructure.AutoMapper;
+using terminalDocuSign.Infrastructure.StructureMap;
+using terminalDocuSign.Infrastructure.AutoMapper;
 
 namespace pluginIntegrationTests
 {
@@ -105,16 +105,16 @@ namespace pluginIntegrationTests
                 uow.SaveChanges();
             }
 
-            _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
+            _coreServer = pluginIntegrationTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
 
             var docuSignServerUrl = "http://" + FixtureData.TestPlugin_DocuSign_EndPoint + "/";
-            _docuSignServer = pluginDocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
+            _docuSignServer = terminalDocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
 
             var dockyardCoreServerUrl = "http://" + FixtureData.TestPlugin_Core_EndPoint + "/";
-            _dockyardCoreServer = pluginDockyardCore.SelfHostFactory.CreateServer(dockyardCoreServerUrl);
+            _dockyardCoreServer = terminalFr8Core.SelfHostFactory.CreateServer(dockyardCoreServerUrl);
 
             var azureSqlServerServerUrl = "http://" + FixtureData.TestPlugin_AzureSqlServer_EndPoint + "/";
-            _azureSqlServerServer = pluginAzureSqlServer.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
+            _azureSqlServerServer = terminalAzure.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
 
 
         }
@@ -190,10 +190,10 @@ namespace pluginIntegrationTests
             var curActionController = CreateActionController();
             var curActionDO = FixtureData.TestAction_Blank();
 
-            if (_subrouteDO.RouteNodes == null)
+            if (_subrouteDO.ChildNodes == null)
             {
-                _subrouteDO.RouteNodes = new List<RouteNodeDO>();
-                _subrouteDO.RouteNodes.Add(curActionDO);
+                _subrouteDO.ChildNodes = new List<RouteNodeDO>();
+                _subrouteDO.ChildNodes.Add(curActionDO);
             }
 
             if (activityTemplate != null)
@@ -252,7 +252,7 @@ namespace pluginIntegrationTests
             Assert.NotNull(actionDTO);
             Assert.NotNull(actionDTO.Content);
             Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
-            Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 3);
+            Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 4);
             Assert.True((actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME)));
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO

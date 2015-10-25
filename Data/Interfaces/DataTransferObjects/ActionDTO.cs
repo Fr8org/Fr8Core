@@ -10,20 +10,20 @@ namespace Data.Interfaces.DataTransferObjects
             CrateStorage = new CrateStorageDTO();
         }
 
-        public int? ParentActivityId { get; set; }
+        public int? ParentRouteNodeId { get; set; }
 
         public CrateStorageDTO CrateStorage { get; set; }
 
         public int? ActivityTemplateId { get; set; }
+
+
+        public string Label { get; set; }
 
         [JsonProperty("activityTemplate")]
         public ActivityTemplateDTO ActivityTemplate { get; set; }
 
         [JsonProperty("isTempId")]
         public bool IsTempId { get; set; }
-
-        [JsonProperty("action_name")]
-        public string ActionName { get; set; }
 
         [JsonProperty("action_version")]
         public string ActionVersion { get; set; }
@@ -33,5 +33,7 @@ namespace Data.Interfaces.DataTransferObjects
         public int ProcessId { get; set; }
 
         public AuthTokenDTO AuthToken { get; set; }
+
+        public ActionDTO[] ChildrenActions { get; set; }
     }
 }

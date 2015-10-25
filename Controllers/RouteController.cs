@@ -4,8 +4,10 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using Core.Exceptions;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
@@ -14,22 +16,24 @@ using StructureMap;
 
 namespace Web.Controllers
 {
-    [Authorize]
-    [RoutePrefix("api/processTemplate")]
-    public class ProcessTemplateController : ApiController
+    [Fr8ApiAuthorize]
+    [RoutePrefix("routes")]
+    public class RouteController : ApiController
     {
         private readonly IRoute _route;
+        private readonly ISecurityServices _security;
         
-        public ProcessTemplateController()
+        public RouteController()
             : this(ObjectFactory.GetInstance<IRoute>())
         {
         }
 
         
 
-        public ProcessTemplateController(IRoute route)
+        public RouteController(IRoute route)
         {
             _route = route;
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
         
@@ -41,54 +45,25 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var route = uow.RouteRepository.GetByKey(id);
-                var result = MapRouteToDTO(route, uow);
+                var result = _route.MapRouteToDto(uow, route);
 
                 return Ok(result);
             };
         }
 
         
-        // Manual mapping method to resolve DO-1164.
-        private RouteDTO MapRouteToDTO(RouteDO curRouteDO, IUnitOfWork uow)
-        {
-            var subrouteDTOList = uow.SubrouteRepository
-                .GetQuery()
-                .Include(x => x.RouteNodes)
-                .Where(x => x.ParentRouteNodeId == curRouteDO.Id)
-                .OrderBy(x => x.Id)
-                .ToList()
-                .Select((SubrouteDO x) =>
-                {
-                    var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
-
-                    pntDTO.Actions = Enumerable.ToList(x.RouteNodes.Select(Mapper.Map<ActionDTO>));
-
-                    return pntDTO;
-                }).ToList();
-
-            RouteDTO result = new RouteDTO()
-            {
-                Description = curRouteDO.Description,
-                Id = curRouteDO.Id,
-                Name = curRouteDO.Name,
-                RouteState = curRouteDO.RouteState,
-                StartingSubrouteId = curRouteDO.StartingSubrouteId,
-                Subroutes = subrouteDTOList
-            };
-
-            return result;
-        }
-
-        
-        [Route("getactive")]
+        [Route("status")]
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
         {
-            var curRoutes = _route.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id,status);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id, status);
 
             if (curRoutes.Any())
             {               
-                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>));
+                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>).ToArray());
+            }
             }
 
             return Ok();
@@ -99,7 +74,9 @@ namespace Web.Controllers
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
-            var curRoutes = _route.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id);
 
             if (curRoutes.Any())
             {
@@ -111,15 +88,15 @@ namespace Web.Controllers
                 }
 
                 // Return JSON array of objects, in case no id parameter was provided.
-                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>));
+                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>).ToArray());
+            }
             }
 
             //DO-840 Return empty view as having empty process templates are valid use case.
             return Ok();
         }
 
-        
-        
+        [Route("~/routes")]
         public IHttpActionResult Post(RouteOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -135,11 +112,7 @@ namespace Web.Controllers
                 }
 
                 var curRouteDO = Mapper.Map<RouteOnlyDTO, RouteDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
-                var curUserId = User.Identity.GetUserId();
-                curRouteDO.Fr8Account = uow.UserRepository
-                    .GetQuery()
-                    .Single(x => x.Id == curUserId);
-
+                curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
 
                 //this will return 0 on create operation because of not saved changes
                 _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);
@@ -183,14 +156,14 @@ namespace Web.Controllers
             return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
         }
 
-        
+        [HttpPost]
         [Route("activate")]
         public IHttpActionResult Activate(RouteDO curRoute)
         {
             return Ok(_route.Activate(curRoute));
         }
 
-        
+        [HttpPost]
         [Route("deactivate")]
         public IHttpActionResult Deactivate(RouteDO curRoute)
         {

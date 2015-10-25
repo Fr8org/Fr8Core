@@ -149,3 +149,24 @@ app.directive('container', ['$state', function ($state: ng.ui.IStateService) {
         }
     };
 }]);
+
+app.directive('stopClickPropagation', () => {
+    return {
+        link: (scope: ng.IScope, elem: ng.IAugmentedJQuery) => {
+            elem.bind('click', (event) => {
+                event.stopPropagation();
+            });
+        }
+    };
+});
+
+// temporary solution to reload configuration when action header is clicked.
+app.directive('transferClickConfigurePane', () => {
+    return {
+        link: (scope: ng.IScope, elem: ng.IAugmentedJQuery) => {
+            elem.bind('click', (event) => {
+                elem.parent().find('.pane-configure-action').click();
+            });
+        }
+    };
+});

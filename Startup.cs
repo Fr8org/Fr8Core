@@ -1,25 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 using Owin;
 using StructureMap;
-using fr8.Microsoft.Azure;
-using Configuration;
-using Daemons;
+using Utilities.Configuration.Azure;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
 using Utilities;
 using Utilities.Logging;
-using Utilities.Serializers.Json;
 using Core.Services;
 using Core.Managers;
 using Microsoft.Owin.Hosting;
@@ -82,7 +75,7 @@ namespace Web
 
 
 
-            if (curConfigureCommunicationConfigs.Find(config => config.ToAddress == fr8.Microsoft.Azure.CloudConfigurationManager.GetSetting("MainSMSAlertNumber")) == null)
+            if (curConfigureCommunicationConfigs.Find(config => config.ToAddress == CloudConfigurationManager.GetSetting("MainSMSAlertNumber")) == null)
             // it is not true that there is at least one commConfig that has the Main alert number
             {
                 CommunicationConfigurationDO curCommConfig = new CommunicationConfigurationDO();
@@ -136,14 +129,15 @@ namespace Web
         public async Task RegisterPluginActions()
         {
             var alertReporter = ObjectFactory.GetInstance<EventReporter>();
-            
+
             var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
             int count = 0;
+            var uri=string.Empty;
             foreach (string url in activityTemplateHosts)
             {
                 try
                 {
-                    var uri = url.StartsWith("http") ? url : "http://" + url;
+                    uri = url.StartsWith("http") ? url : "http://" + url;
                     uri += "/plugins/discover";
 
                     var pluginService = new Plugin();
@@ -156,19 +150,32 @@ namespace Web
 
                     foreach (var curItem in activityTemplateList)
                     {
-                        new ActivityTemplate().Register(curItem);
-                        count++;
+                        try
+                        {
+                            new ActivityTemplate().Register(curItem);
+                            count++;
+                        }
+                        catch (Exception ex)
+                        {
+                            alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                            alertReporter.ActivityTemplatePluginRegistrationError(
+                                string.Format("Failed to register {0} plugin. Error Message: {1}", curItem.Plugin.Name, ex.Message),
+                                ex.GetType().Name);
+                        }
+
                     }
                 }
                 catch (Exception ex)
                 {
                     alertReporter = ObjectFactory.GetInstance<EventReporter>();
-                    alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
+                    alertReporter.ActivityTemplatePluginRegistrationError(
+                        string.Format("Failed plugin service: {0}. Error Message: {1} ", uri, ex.Message), 
+                        ex.GetType().Name);
 
                 }
-             }
-                
-             alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
+            }
+
+            alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
         }
 
         public bool CheckForActivityTemplate(string templateName)

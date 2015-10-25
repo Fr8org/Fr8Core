@@ -9,7 +9,7 @@ module dockyard.controllers {
 
     export interface ISandboxScope extends ng.IScope {
         processTemplateId: number;
-        processNodeTemplates: Array<model.ProcessNodeTemplateDTO>,
+        processNodeTemplates: Array<model.SubrouteDTO>,
         fields: Array<model.Field>;
 
         // Identity of currently edited processNodeTemplate.
@@ -48,7 +48,7 @@ module dockyard.controllers {
             '$q',
             '$http',
             'urlPrefix',
-            'ProcessTemplateService',
+            'RouteService',
             '$timeout',
             'CriteriaServiceWrapper',
             'ProcessBuilderService',
@@ -69,7 +69,7 @@ module dockyard.controllers {
             private $q: ng.IQService,
             private $http: ng.IHttpService,
             private urlPrefix: string,
-            private ProcessTemplateService: services.IProcessTemplateService,
+            private RouteService: services.IRouteService,
             private $timeout: ng.ITimeoutService,
             private CriteriaServiceWrapper: services.ICriteriaServiceWrapper,
             private ProcessBuilderService: services.IProcessBuilderService,
@@ -194,12 +194,11 @@ module dockyard.controllers {
                     name: "test action type",
                     configurationControls: new model.ControlsList(),
                     crateStorage: new model.CrateStorage(),
-                    parentActivityId: 1,
+                    parentRouteNodeId: 1,
                     id: 1,
                     isTempId: false,
-                    actionListId: 0,
-                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", "", ""),
-                    activityTemplateId: 1
+                    activityTemplateId: 1,
+                    childrenActions: null
                 };
 
             $httpBackend

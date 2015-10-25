@@ -3,20 +3,33 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using Core.Interfaces;
+using Core.Managers;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Newtonsoft.Json;
 using StructureMap;
 
 namespace Core.Services
 {
     public class Subroute : ISubroute
     {
+
+        private readonly ICrateManager _crate;
+        private readonly IRouteNode _routeNode;
+
+        public Subroute()
+        {
+            _routeNode = ObjectFactory.GetInstance<IRouteNode>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
+        }
+
         /// <summary>
         /// Create Subroute entity with required children criteria entity.
         /// </summary>
-        public void Create(IUnitOfWork uow, SubrouteDO subroute )
+        public void Store(IUnitOfWork uow, SubrouteDO subroute )
         {
             if (subroute == null)
             {
@@ -34,6 +47,33 @@ namespace Core.Services
             uow.CriteriaRepository.Add(criteria);
             
             //we don't want to save changes here, to enable upstream transactions
+        }
+
+        // <summary>
+        /// Creates noew Subroute entity and add it to RouteDO. If RouteDO has no child subroute created route becomes starting subroute.
+        /// </summary>
+        public SubrouteDO Create(IUnitOfWork uow, RouteDO route, string name)
+        {
+            var subroute = new SubrouteDO();
+
+            uow.SubrouteRepository.Add(subroute);
+
+            if (route != null)
+            {
+                if (!route.Subroutes.Any())
+                {
+                    route.StartingSubroute = subroute;
+                    subroute.StartingSubroute = true;
+                }
+
+                //route.ChildNodes.Add(subroute);
+            }
+
+            subroute.Name = name;
+
+
+
+            return subroute;
         }
 
         /// <summary>
@@ -104,11 +144,53 @@ namespace Core.Services
                 throw new Exception(string.Format("Unable to find Subroute by id = {0}", curActionDO.ParentRouteNodeId));
             }
 
-            curActionDO.Ordering = subroute.RouteNodes.Count > 0 ? subroute.RouteNodes.Max(x => x.Ordering) + 1 : 1;
+            curActionDO.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
 
-            subroute.RouteNodes.Add(curActionDO);
+            subroute.ChildNodes.Add(curActionDO);
 
             uow.SaveChanges();
+        }
+
+        public void DeleteAction(int id)
+        {
+            //we are using Kludge solution for now
+            //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+
+                var curAction = uow.RouteNodeRepository.GetQuery().FirstOrDefault(al => al.Id == id);
+                if (curAction == null)
+                {
+                    throw new InvalidOperationException("Unknown RouteNode with id: " + id);
+                }
+
+                var downStreamActivities = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
+                //we should clear values of configuration controls
+
+                foreach (var downStreamActivity in downStreamActivities)
+                {
+                    var crateStorage = downStreamActivity.CrateStorageDTO();
+                    var cratesToReset = _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, crateStorage).ToList();
+                    foreach (var crateDTO in cratesToReset)
+                    {
+                        var configurationControls = _crate.GetStandardConfigurationControls(crateDTO);
+                        foreach (var controlDefinitionDTO in configurationControls.Controls)
+                        {
+                            (controlDefinitionDTO as IResettable).Reset();
+                        }
+                        crateDTO.Contents = JsonConvert.SerializeObject(configurationControls);
+                    }
+
+                    if (cratesToReset.Any())
+                    {
+                        downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
+                    }
+                }
+                uow.RouteNodeRepository.Remove(curAction);
+                uow.SaveChanges();
+            }
+
         }
     }
 }

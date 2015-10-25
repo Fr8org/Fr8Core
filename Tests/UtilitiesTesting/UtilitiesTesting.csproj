@@ -37,7 +37,20 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="DocuSign.Integration.Client">
       <HintPath>..\..\Utilities\DocuSign.Integration.Client.dll</HintPath>
     </Reference>
@@ -61,6 +74,7 @@
       <HintPath>..\..\packages\Microsoft.Azure.KeyVault.Core.1.0.0\lib\net40\Microsoft.Azure.KeyVault.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Data.Edm, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Data.Edm.5.6.4\lib\net40\Microsoft.Data.Edm.dll</HintPath>
       <Private>True</Private>
@@ -89,8 +103,8 @@
       <HintPath>..\..\packages\WindowsAzure.Storage.5.0.2\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
@@ -154,7 +168,6 @@
     <Compile Include="Fixtures\FixtureData - Activity.cs" />
     <Compile Include="Fixtures\FixtureData - ActivityTemplateDTO.cs" />
     <Compile Include="Fixtures\FixtureData - ConfigurationSettingsDTO.cs" />
-    <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="Fixtures\FixtureData - Crate.cs" />
     <Compile Include="Fixtures\FixtureData - CrateDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Criteria.cs" />
@@ -176,20 +189,21 @@
     <Compile Include="Fixtures\FixtureData - PluginIntegration.cs" />
     <Compile Include="Fixtures\FixtureData - Container.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNode.cs" />
+    <Compile Include="Fixtures\FixtureData - SQLTable.cs" />
     <Compile Include="Fixtures\FixtureData - SubrouteDO.cs" />
     <Compile Include="Fixtures\FixtureData - Route.cs" />
     <Compile Include="Fixtures\FixtureData - RouteDTO.cs" />
     <Compile Include="Fixtures\FixtureData - RestSettings.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />
     <Compile Include="Fixtures\FixtureData - SQLScript.cs" />
-    <Compile Include="Fixtures\FixtureData - SQLTable.cs" />
     <Compile Include="Fixtures\FixtureData - StandardEventReport.cs" />
     <Compile Include="Fixtures\FixtureData - Tab.cs" />
     <Compile Include="Fixtures\FixtureData - TestFiles.cs" />
     <Compile Include="Fixtures\FixtureData - User.cs" />
     <Compile Include="Fixtures\FixtureData -Configuration.cs" />
-    <Compile Include="Fixtures\FixtureData-MTOobjects.cs" />
+    <Compile Include="ManageUserVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserVM.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -234,17 +248,13 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\pluginBase\PluginBase.csproj">
+    <ProjectReference Include="..\..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>PluginBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Web.csproj">
-      <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
-      <Name>Web</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

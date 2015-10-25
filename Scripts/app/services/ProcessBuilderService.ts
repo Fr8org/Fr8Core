@@ -4,15 +4,22 @@
     The service enables operations with Process Templates
 */
 module dockyard.services {
-    export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> {
-        getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IProcessTemplateVM>;
-        getFull: (id: Object) => interfaces.IProcessTemplateVM;
-        execute: (id: {id: number}) => void;
+    export interface IRouteService extends ng.resource.IResourceClass<interfaces.IRouteVM> {
+        getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IRouteVM>;
+        getFull: (id: Object) => interfaces.IRouteVM;
+        execute: (id: { id: number }) => void;
+        activate: (processTemplate: model.RouteDTO) => void;
+        deactivate: (processTemplate: model.RouteDTO) => void;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
+        configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IActionVM>;
         getByProcessTemplate: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
+        create: (args: { actionTemplateId: number, name: string, label: string, parentNideId: number, createRoute: boolean }) => ng.resource.IResource<model.RouteDTO | model.ActionDTO>;
+        createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.RouteDTO>;
+        //TODO make resource class do this operation
+        deleteById: (id: { id: number }) => ng.resource.IResource<void>;
+        
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
 
@@ -20,9 +27,9 @@ module dockyard.services {
 
     export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
 
-    interface __IProcessNodeTemplateService extends ng.resource.IResourceClass<interfaces.IProcessNodeTemplateVM> {
-        add: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => interfaces.IProcessNodeTemplateVM;
-        update: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => interfaces.IProcessNodeTemplateVM;
+    interface __ISubrouteService extends ng.resource.IResourceClass<interfaces.ISubrouteVM> {
+        add: (curProcessNodeTemplate: model.SubrouteDTO) => interfaces.ISubrouteVM;
+        update: (curProcessNodeTemplate: model.SubrouteDTO) => interfaces.ISubrouteVM;
     }
 
     interface __ICriteriaService extends ng.resource.IResourceClass<interfaces.ICriteriaVM> {
@@ -31,12 +38,12 @@ module dockyard.services {
     }
 
     export interface ICriteriaServiceWrapper {
-        load: (id: number) => ng.IPromise<model.ProcessNodeTemplateDTO>;
-        add: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => ng.IPromise<model.ProcessNodeTemplateDTO>;
-        update: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => ng.IPromise<model.ProcessNodeTemplateDTO>;
-        addOrUpdate(curProcessNodeTemplate: model.ProcessNodeTemplateDTO): {
+        load: (id: number) => ng.IPromise<model.SubrouteDTO>;
+        add: (curProcessNodeTemplate: model.SubrouteDTO) => ng.IPromise<model.SubrouteDTO>;
+        update: (curProcessNodeTemplate: model.SubrouteDTO) => ng.IPromise<model.SubrouteDTO>;
+        addOrUpdate(curProcessNodeTemplate: model.SubrouteDTO): {
             actionType: ActionTypeEnum,
-            promise: ng.IPromise<model.ProcessNodeTemplateDTO>
+            promise: ng.IPromise<model.SubrouteDTO>
         }
     }
 
@@ -48,33 +55,50 @@ module dockyard.services {
         getAvailableActivities: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
     }
 
+  
+
     /*
         ProcessTemplateDTO CRUD service.
     */
 
-
-    app.factory('ProcessTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IProcessTemplateService =>
-        <IProcessTemplateService>$resource('/api/processTemplate/:id', { id: '@id' },
+    app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
+        <IRouteService>$resource('/routes/:id', { id: '@id'},
             {
-                'getbystatus': {
-                    method: 'GET',
-                    isArray: true,
-                    url: '/api/processTemplate/getactive'
-                },
                 'getFull': {
                     method: 'GET',
                     isArray: false,
-                    url: '/api/processTemplate/full/:id',
+                    url: '/routes/full/:id',
                     params: {
                         id: '@id'
                     }
                 },
+                'getbystatus': {
+                    method: 'GET',
+                    isArray: true,
+                    url: '/routes/status?status=:status',
+                    params: {
+                        status: '@status'
+                    }
+                },
+               
                 'execute': {
                     method: 'POST',
                     isArray: false,
-                    url: '/api/processes/launch?processTemplateId=:id',
+                    url: '/api/containers/launch?routeId=:id',
                     params: {
                         id: '@id'
+                    }
+                },
+                'activate': {
+                    method: 'POST',
+                    url: '/routes/activate/',
+                    params: {
+                    }
+                },
+                'deactivate': {
+                    method: 'POST',
+                    url: '/routes/deactivate/',
+                    params: {
                     }
                 }
             })
@@ -91,7 +115,7 @@ module dockyard.services {
         DocuSignExternalEventDTO CRUD service.
     */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
-        <IDocuSignTriggerService>$resource('/api/processtemplate/triggersettings')
+        <IDocuSignTriggerService>$resource('/route/triggersettings')
     ]);
 
     /* 
@@ -132,6 +156,20 @@ module dockyard.services {
                     url: '/actions/bypt',
                     isArray: true
                 },
+                'deleteById': {
+                    method: 'DELETE'
+                },
+                'create': {
+                    method: 'POST',
+                    url: '/actions/create'
+                },
+                'createSolution': {
+                    method: 'POST',
+                    url: '/actions/create',
+                    params: {
+                        solutionName: '@solutionName'
+                    }
+                },
                 'params': {
                     id: 'id'
                 }
@@ -164,8 +202,8 @@ module dockyard.services {
         This service is not intended to be used by anything except CriteriaServiceWrapper,
         that's why its name starts with underscores. 
     */
-    app.factory('__ProcessNodeTemplateService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService): __IProcessNodeTemplateService =>
-        <__IProcessNodeTemplateService>$resource('/api/processnodetemplate', null,
+    app.factory('__SubrouteService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService): __ISubrouteService =>
+        <__ISubrouteService>$resource('/api/processnodetemplate', null,
             {
                 'add': {
                     method: 'POST'
@@ -177,14 +215,14 @@ module dockyard.services {
     ]);
 
     app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
-        <IActivityTemplateService>$resource('/api/activityTemplates/:id', { id: '@id' }, 
-        {
-            'getAvailableActivities': {
-                method: 'GET',
-                url: '/activities/available/',
-                isArray: true
-            }
-        })
+        <IActivityTemplateService>$resource('/api/activityTemplates/:id', { id: '@id' },
+            {
+                'getAvailableActivities': {
+                    method: 'GET',
+                    url: '/route_nodes/available/',
+                    isArray: true
+                }
+            })
     ]);
 
     /*
@@ -211,61 +249,61 @@ module dockyard.services {
 
             // TODO: bypass save for unchanged entities
               
-                // Save processNodeTemplate if not null
-                if (currentState.processNodeTemplate) {
-                    this.CriteriaServiceWrapper.addOrUpdate(currentState.processNodeTemplate).promise
-                        .then((result: interfaces.IProcessNodeTemplateVM) => {
-                            //new model.CriteriaDTO(result.criteria.id, false, result.criteria.id, model.CriteriaExecutionType.NoSet);
-                            newState.processNodeTemplate = result;
+            // Save processNodeTemplate if not null
+            if (currentState.subroute) {
+                this.CriteriaServiceWrapper.addOrUpdate(currentState.subroute).promise
+                    .then((result: interfaces.ISubrouteVM) => {
+                        //new model.CriteriaDTO(result.criteria.id, false, result.criteria.id, model.CriteriaExecutionType.NoSet);
+                        newState.subroute = result;
 
-                            this.crateHelper.mergeControlListCrate(
-                                currentState.action.configurationControls,
-                                currentState.action.crateStorage
-                            );
+                        this.crateHelper.mergeControlListCrate(
+                            currentState.action.configurationControls,
+                            currentState.action.crateStorage
+                        );
 
-                            // If an Action is selected, save it
-                            if (currentState.action) {
-                                return this.ActionService.save({ id: currentState.action.id },
-                                    currentState.action, null, null);
-                            }
-                            else {
-                                return deferred.resolve(newState);
-                            }
-                        })
-                        .then((result: interfaces.IActionVM) => {
-                            newState.action = result;
+                        // If an Action is selected, save it
+                        if (currentState.action) {
+                            return this.ActionService.save({ id: currentState.action.id },
+                                currentState.action, null, null);
+                        }
+                        else {
                             return deferred.resolve(newState);
-                        })
-                        .catch((reason: any) => {
-                            return deferred.reject(reason);
-                        });
-                }
+                        }
+                    })
+                    .then((result: interfaces.IActionVM) => {
+                        newState.action = result;
+                        return deferred.resolve(newState);
+                    })
+                    .catch((reason: any) => {
+                        return deferred.reject(reason);
+                    });
+            }
 
-                //Save Action only
-                else if (currentState.action) {
-                    this.crateHelper.mergeControlListCrate(
-                        currentState.action.configurationControls,
-                        currentState.action.crateStorage
-                    );
+            //Save Action only
+            else if (currentState.action) {
+                this.crateHelper.mergeControlListCrate(
+                    currentState.action.configurationControls,
+                    currentState.action.crateStorage
+                );
 
-                    var promise = this.ActionService.save(
-                        { id: currentState.action.id },
-                        currentState.action,
-                        null,
-                        null).$promise;
-                    promise
-                        .then((result: interfaces.IActionVM) => {
-                            newState.action = result;
-                            return deferred.resolve(newState);
-                        })
-                        .catch((reason: any) => {
-                            return deferred.reject(reason);
-                        });
-                }
-                else {
-                    //Nothing to save
-                    deferred.resolve(newState);
-                }
+                var promise = this.ActionService.save(
+                    { id: currentState.action.id },
+                    currentState.action,
+                    null,
+                    null).$promise;
+                promise
+                    .then((result: interfaces.IActionVM) => {
+                        newState.action = result;
+                        return deferred.resolve(newState);
+                    })
+                    .catch((reason: any) => {
+                        return deferred.reject(reason);
+                    });
+            }
+            else {
+                //Nothing to save
+                deferred.resolve(newState);
+            }
             return deferred.promise;
         }
     }
@@ -273,7 +311,7 @@ module dockyard.services {
     /*
         Register ProcessBuilderService with AngularJS
     */
-    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', 'CrateHelper', (
+    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', 'CrateHelper', 'UIHelperService', (
         $q: ng.IQService,
         CriteriaServiceWrapper: ICriteriaServiceWrapper,
         ActionService: IActionService,
@@ -291,19 +329,19 @@ module dockyard.services {
     class CriteriaServiceWrapper implements ICriteriaServiceWrapper {
         public constructor(
             private CriteriaService: __ICriteriaService,
-            private ProcessNodeTemplateService: __IProcessNodeTemplateService,
+            private SubrouteService: __ISubrouteService,
             private $q: ng.IQService) {
         }
 
-        public add(curProcessNodeTemplate: model.ProcessNodeTemplateDTO): ng.IPromise<model.ProcessNodeTemplateDTO> {
-            var deferred = this.$q.defer<interfaces.IProcessNodeTemplateVM>();
+        public add(curProcessNodeTemplate: model.SubrouteDTO): ng.IPromise<model.SubrouteDTO> {
+            var deferred = this.$q.defer<interfaces.ISubrouteVM>();
 
             // Save ProcessNodeTemplate object to server.
             // Server automatically creates empty criteria node.
-            var addDeferred = this.ProcessNodeTemplateService.add(curProcessNodeTemplate);
+            var addDeferred = this.SubrouteService.add(curProcessNodeTemplate);
 
             addDeferred.$promise
-                .then((addResult: interfaces.IProcessNodeTemplateVM) => {
+                .then((addResult: interfaces.ISubrouteVM) => {
                     curProcessNodeTemplate.isTempId = false;
                     curProcessNodeTemplate.id = addResult.id;    
                     // Fetch criteria object from server by ProcessNodeTemplate global ID.
@@ -325,15 +363,15 @@ module dockyard.services {
             return deferred.promise;
         }
 
-        public update(curProcessNodeTemplate: model.ProcessNodeTemplateDTO): ng.IPromise<model.ProcessNodeTemplateDTO> {
-            var deferred = this.$q.defer<interfaces.IProcessNodeTemplateVM>();
+        public update(curProcessNodeTemplate: model.SubrouteDTO): ng.IPromise<model.SubrouteDTO> {
+            var deferred = this.$q.defer<interfaces.ISubrouteVM>();
 
             // Save ProcessNodeTemplate object to server.
             // Server automatically creates empty criteria node.
-            var updateDeferred = this.ProcessNodeTemplateService.update(curProcessNodeTemplate);
+            var updateDeferred = this.SubrouteService.update(curProcessNodeTemplate);
 
             updateDeferred.$promise
-                .then((updateResult: interfaces.IProcessNodeTemplateVM) => {   
+                .then((updateResult: interfaces.ISubrouteVM) => {   
                     // Call REST api to update Criteria entity on server.
                     return this.CriteriaService.update(curProcessNodeTemplate.criteria).$promise;
                 })
@@ -347,12 +385,12 @@ module dockyard.services {
             return deferred.promise;
         }
 
-        public load(id: number): ng.IPromise<model.ProcessNodeTemplateDTO> {
-            var deferred = this.$q.defer<interfaces.IProcessNodeTemplateVM>();
+        public load(id: number): ng.IPromise<model.SubrouteDTO> {
+            var deferred = this.$q.defer<interfaces.ISubrouteVM>();
 
             // Save ProcessNodeTemplate object to server.
             // Server automatically creates empty criteria node.
-            var getPntDeferred = this.ProcessNodeTemplateService.get({ id: id }),
+            var getPntDeferred = this.SubrouteService.get({ id: id }),
                 getCriteriaDeferred = this.CriteriaService.byProcessNodeTemplate({ id: id });
 
             this.$q.all([getPntDeferred.$promise, getCriteriaDeferred.$promise])
@@ -379,14 +417,14 @@ module dockyard.services {
             This method does adding or updating depending on whether 
             ProcessNodeTemplate has been saved or not.
         */
-        public addOrUpdate(curProcessNodeTemplate: model.ProcessNodeTemplateDTO): {
+        public addOrUpdate(curProcessNodeTemplate: model.SubrouteDTO): {
             actionType: ActionTypeEnum,
-            promise: ng.IPromise<model.ProcessNodeTemplateDTO>
+            promise: ng.IPromise<model.SubrouteDTO>
         } {
             // Don't save anything if there is no criteria selected, 
             // just return a null-valued resolved promise
             if (!curProcessNodeTemplate) {
-                var deferred = this.$q.defer<model.ProcessNodeTemplateDTO>();
+                var deferred = this.$q.defer<model.SubrouteDTO>();
                 deferred.resolve(null);
                 return {
                     actionType: ActionTypeEnum.None,
@@ -420,8 +458,10 @@ module dockyard.services {
     /*
         Register CriteriaServiceWrapper with AngularJS.
     */
-    app.factory('CriteriaServiceWrapper', ['__CriteriaService', '__ProcessNodeTemplateService', '$q',
-        (CriteriaService, ProcessNodeTemplateService, $q) => {
-            return new CriteriaServiceWrapper(CriteriaService, ProcessNodeTemplateService, $q)
+    app.factory('CriteriaServiceWrapper', ['__CriteriaService', '__SubrouteService', '$q',
+        (CriteriaService, SubrouteService, $q) => {
+            return new CriteriaServiceWrapper(CriteriaService, SubrouteService, $q)
         }]);
+
+
 }

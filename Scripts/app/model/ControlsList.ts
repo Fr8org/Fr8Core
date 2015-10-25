@@ -42,6 +42,17 @@
         radios: Array<RadioButtonOption>;
     }
 
+    export class TextBlock extends ControlDefinitionDTO {
+        class: string;
+
+        constructor(value: string, _class: string) {
+            super();
+            this.type = 'TextBlock';
+            this.value = value;
+            this.class = _class;
+        }
+    }
+
     export class FieldDTO {
         public Key: string;
         public Value: string;
@@ -59,6 +70,11 @@
     export class DropDownListControlDefinitionDTO extends ControlDefinitionDTO {
         listItems: Array<DropDownListItem>;
         source: FieldSource;
+    }
+
+    export class TextSource extends DropDownListControlDefinitionDTO {
+        initialLabel: string;
+        valueSource: string;
     }
 
     export class TextBlockField extends ControlDefinitionDTO {

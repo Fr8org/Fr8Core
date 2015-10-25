@@ -1,13 +1,15 @@
-﻿using Core.Interfaces;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Core.Interfaces;
+using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 using Data.States;
 using StructureMap;
-using System.Collections.Generic;
-using System.Linq;
-using Data.Interfaces.ManifestSchemas;
 using Utilities.Serializers.Json;
+
 namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
@@ -20,7 +22,6 @@ namespace UtilitiesTesting.Fixtures
                 Description = "descr 1",
                 Name = "template1",
                 RouteState = RouteState.Active,
-
               
                 
             };
@@ -37,7 +38,7 @@ namespace UtilitiesTesting.Fixtures
                 RouteState = RouteState.Active,
 
                 //UserId = "testUser1"
-                //DockyardAccount = FixtureData.TestDockyardAccount1()
+                //Fr8Account = FixtureData.TestDockyardAccount1()
             };
             return route;
         }
@@ -72,7 +73,7 @@ namespace UtilitiesTesting.Fixtures
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curRouteDO,
                 };
-                curRouteDO.RouteNodes.Add(curSubrouteDO);
+                curRouteDO.ChildNodes.Add(curSubrouteDO);
             }
 
             return curRouteDO;
@@ -98,14 +99,14 @@ namespace UtilitiesTesting.Fixtures
 
                 var actionTemplate = ActionTemplate();
 
-                var processDo = new ContainerDO()
+                var containerDO = new ContainerDO()
                 {
                     Id = 1,
                     CrateStorage = EnvelopeIdCrateJson(),
                     RouteId = processTemplateDO.Id,
                     ContainerState = 1
                 };
-                uow.ContainerRepository.Add(processDo);
+                uow.ContainerRepository.Add(containerDO);
 
 
 
@@ -115,7 +116,7 @@ namespace UtilitiesTesting.Fixtures
                     StartingSubroute = true
                 };
                 uow.SubrouteRepository.Add(subrouteDO);
-                processTemplateDO.RouteNodes = new List<RouteNodeDO> {subrouteDO};
+                processTemplateDO.ChildNodes = new List<RouteNodeDO> {subrouteDO};
                 processTemplateDO.StartingSubroute = subrouteDO;
 
 
@@ -130,7 +131,8 @@ namespace UtilitiesTesting.Fixtures
                     ActivityTemplate = actionTemplate,
                     Ordering = 1
                 };
-                ICrate crate = ObjectFactory.GetInstance<ICrate>();
+
+                ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
 
                 var serializer = new JsonSerializer();
                 EventSubscriptionCM eventSubscriptionMS = new EventSubscriptionCM();
@@ -144,7 +146,7 @@ namespace UtilitiesTesting.Fixtures
                 actionDo.UpdateCrateStorageDTO(new List<CrateDTO>() { crateDTO });
 
                 uow.ActionRepository.Add(actionDo);
-                subrouteDO.RouteNodes.Add(actionDo);
+                subrouteDO.ChildNodes.Add(actionDo);
 
                 uow.SaveChanges();
             }
@@ -169,9 +171,9 @@ namespace UtilitiesTesting.Fixtures
                     Id = i,
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curRouteDO,
-                    RouteNodes = FixtureData.TestActionList1(),
+                    ChildNodes = FixtureData.TestActionList1(),
                 };
-                curRouteDO.RouteNodes.Add(curSubrouteDO);
+                curRouteDO.ChildNodes.Add(curSubrouteDO);
             }
 
             return curRouteDO;
@@ -194,9 +196,9 @@ namespace UtilitiesTesting.Fixtures
                     Id = i,
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curRouteDO,
-                    RouteNodes = FixtureData.TestActionListParentActivityID12()
+                    ChildNodes = FixtureData.TestActionListParentActivityID12()
                 };
-                curRouteDO.RouteNodes.Add(curSubrouteDO);
+                curRouteDO.ChildNodes.Add(curSubrouteDO);
             }
 
             return curRouteDO;
@@ -219,7 +221,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentRouteNode = curRouteDO,
                 StartingSubroute = true
             };
-            curRouteDO.RouteNodes.Add(curSubrouteDO);
+            curRouteDO.ChildNodes.Add(curSubrouteDO);
 
             //FixtureData.TestActionList1 .TestActionList_ImmediateActions();
     
@@ -244,11 +246,11 @@ namespace UtilitiesTesting.Fixtures
                 ParentRouteNode = curRouteDO,
                 StartingSubroute = true
             };
-            curRouteDO.RouteNodes.Add(curSubrouteDO);
+            curRouteDO.ChildNodes.Add(curSubrouteDO);
 
             var curImmediateActionList = FixtureData.TestActionList_ImmediateActions();
             
-            curSubrouteDO.RouteNodes.AddRange(curImmediateActionList);
+            curSubrouteDO.ChildNodes.AddRange(curImmediateActionList);
 
             return curRouteDO;
         }
@@ -269,7 +271,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentRouteNode = curRouteDO,
                 StartingSubroute = true
             };
-            curRouteDO.RouteNodes.Add(curSubrouteDO);
+            curRouteDO.ChildNodes.Add(curSubrouteDO);
 
 
             return curRouteDO;
@@ -285,6 +287,32 @@ namespace UtilitiesTesting.Fixtures
                 //Subroutes = new List<SubrouteDO>(),
             };
             return curRouteDO;
+        }
+
+        public static RouteDO TestRoute4()
+        {
+            var route = new RouteDO
+            {
+                Id = 30,
+                Description = "Description 4",
+                Name = "Route 4",
+                RouteState = RouteState.Active,
+                Fr8Account = FixtureData.TestDockyardAccount5()
+            };
+            return route;
+        }
+
+        public static RouteDO TestRoute5()
+        {
+            var route = new RouteDO
+            {
+                Id = 40,
+                Description = "Description 5",
+                Name = "Route 5",
+                RouteState = RouteState.Active,
+                Fr8Account = FixtureData.TestDockyardAccount5()
+            };
+            return route;
         }
     }
 }

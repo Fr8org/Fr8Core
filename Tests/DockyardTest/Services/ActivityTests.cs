@@ -71,7 +71,7 @@ namespace DockyardTest.Services
         {
             seq.Add(root);
 
-            foreach (var activityDo in root.RouteNodes.OrderBy(x=>x.Ordering))
+            foreach (var activityDo in root.ChildNodes.OrderBy(x=>x.Ordering))
             {
                 TraverseActivities(activityDo, seq);
             }
@@ -158,8 +158,8 @@ namespace DockyardTest.Services
         public void Process_curActivityDOIsNull()
         {
             _activity = ObjectFactory.GetInstance<IRouteNode>();
-            var processDo = FixtureData.TestContainer1();
-            Task result = _activity.Process(It.IsAny<int>(), processDo);
+            var containerDO = FixtureData.TestContainer1();
+            Task result = _activity.Process(It.IsAny<int>(), containerDO);
             Assert.AreEqual(result.Exception.InnerException.Message, "Cannot find Activity with the supplied curActivityId");
         }
 
@@ -181,9 +181,9 @@ namespace DockyardTest.Services
                 uow.RouteNodeRepository.Add(obj);
                 uow.SaveChanges();
 
-                ContainerDO processDo = FixtureData.TestContainer1();
+                ContainerDO containerDO = FixtureData.TestContainer1();
                 _activity = ObjectFactory.GetInstance<IRouteNode>();
-                _activity.Process(1, processDo);
+                _activity.Process(1, containerDO);
             }
         }
 

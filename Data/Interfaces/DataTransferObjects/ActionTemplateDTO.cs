@@ -11,6 +11,9 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("name")]
         public string Name { get; set; }
 
+        [JsonProperty("label")]
+        public string Label { get; set; }
+
         [JsonProperty("version")]
         public string Version { get; set; }
 
@@ -20,5 +23,8 @@ namespace Data.Interfaces.DataTransferObjects
         public string ComponentActivities { get; set; }
 
         public string Category { get; set; }
+
+        [JsonProperty("minPaneWidth")]
+        public int MinPaneWidth { get; set; }
     }
 }

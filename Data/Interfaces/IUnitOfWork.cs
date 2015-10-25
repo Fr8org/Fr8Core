@@ -60,8 +60,6 @@ namespace Data.Interfaces
 
         IMTObjectRepository MTObjectRepository { get; }
 
-        IMTOrganizationRepository MTOrganizationRepository { get; }
-
         IMTFieldTypeRepository MTFieldTypeRepository { get; }
 
         IMTDataRepository MTDataRepository { get; }

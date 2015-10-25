@@ -57,8 +57,7 @@ namespace UtilitiesTesting.Fixtures
                 Name = "pluginDocuSign",
                 PluginStatus = PluginStatus.Active,
                 Endpoint = TestPlugin_DocuSign_EndPoint,
-                Version = "1",
-                RequiresAuthentication = true
+                Version = "1"
             };
         }
 
@@ -107,8 +106,10 @@ namespace UtilitiesTesting.Fixtures
             return new ActivityTemplateDO()
             {
                 Name = "Monitor_DocuSign",
+                Label = "Monitor DocuSign",
                 Version = "1",
-                Plugin = TestPlugin_DocuSign()
+                Plugin = TestPlugin_DocuSign(),
+                AuthenticationType = AuthenticationType.Internal
             };
         }
 
@@ -118,7 +119,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "FilterUsingRunTimeData",
                 Version = "1",
-                Plugin = TestPlugin_Core()
+                Plugin = TestPlugin_Core(),
+                AuthenticationType = AuthenticationType.None
             };
         }
 
@@ -128,7 +130,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "Write_To_Sql_Server",
                 Version = "1",
-                Plugin = TestPlugin_AzureSqlServer()
+                Plugin = TestPlugin_AzureSqlServer(),
+                AuthenticationType = AuthenticationType.None
             };
         }
 		  public static ActivityTemplateDO TestActivityTemplateDO_SendDocuSignEnvelope()
@@ -137,7 +140,8 @@ namespace UtilitiesTesting.Fixtures
 			  {
 				  Name = "Send_DocuSign_Envelope",
 				  Version = "1",
-				  Plugin = TestPlugin_DocuSign()
+				  Plugin = TestPlugin_DocuSign(),
+                  AuthenticationType = AuthenticationType.Internal
 			  };
 		  }
 
@@ -147,7 +151,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "ExtractData",
                 Version = "1",
-                Plugin = TestPlugin_ExtractData()
+                Plugin = TestPlugin_ExtractData(),
+                AuthenticationType = AuthenticationType.None
             };
         }
 

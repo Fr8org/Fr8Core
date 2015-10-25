@@ -37,7 +37,7 @@ module dockyard.tests.controller {
         var executeInvoker = function (done, dataToSave) {
             $.ajax({
                 type: "POST",
-                url: "http://localhost:53234/plugin_docusign/actions/execute",
+                url: "http://localhost:53234/plugin_docusign/actions/run",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(dataToSave),
                 dataType: "json"
@@ -75,13 +75,11 @@ module dockyard.tests.controller {
                     name: "test action type",
                     configurationControls: utils.fixtures.ActionDesignDTO.configurationControls,
                     crateStorage: null,
-                    parentActivityId: 1,
+                    parentRouteNodeId: 1,
                     activityTemplateId: 1,
                     isTempId: false,
                     id: 0,
-                    // ActionListId is set to null, since there is no ActionsLists on a blank db.
-                    actionListId: null,
-                    activityTemplate: utils.fixtures.ActivityTemplate.activityTemplateDO
+                    childrenActions: null
                 };
 
             postInvoker(done, actions);

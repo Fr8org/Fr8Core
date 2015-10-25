@@ -6,8 +6,7 @@
         }
 
         public throwError(errorText: string) {
-            alert(errorText);
-            throw errorText;
+            throw new Error(errorText);
         }
 
         public hasCrateOfManifestType(crateStorage: model.CrateStorage, manifestType: string): boolean {
@@ -141,7 +140,7 @@
             //now we should look for crates with manifestType Standard Design Time Fields
             //to set or override our DropdownListBox items
             for (var i = 0; i < fields.length; i++) {
-                if (fields[i].type == 'DropDownList') {
+                if (fields[i].type == 'DropDownList' || fields[i].type == 'TextSource') {
                     var dropdownListField = <model.DropDownListControlDefinitionDTO> fields[i];
                     if (!dropdownListField.source) {
                         continue;

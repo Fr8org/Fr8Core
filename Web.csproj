@@ -16,15 +16,11 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort>
-    </IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>
-    </IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>
-    </IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>
-    </IISExpressUseClassicPipelineMode>
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort>44301</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
@@ -205,8 +201,8 @@
       <HintPath>packages\NewRelic.Azure.WebSites.2.25.208.0\lib\NewRelic.Api.Agent.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.6.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -319,14 +315,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AuthenticationController.cs" />
+    <Compile Include="Controllers\FieldController.cs" />
     <Compile Include="Controllers\ActionListController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Controllers\ActivityTemplatesController.cs" />
     <Compile Include="Controllers\CriteriaController.cs" />
     <Compile Include="Controllers\DockyardEventController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
-    <Compile Include="Controllers\ActivitiesController.cs" />
-    <Compile Include="Controllers\ExternalAuthController.cs" />
+    <Compile Include="Controllers\RouteNodesController.cs" />
+    <Compile Include="Controllers\AuthenticationCallbackController.cs" />
     <Compile Include="Controllers\FilesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
     <Compile Include="Controllers\SubrouteController.cs" />
@@ -342,6 +340,10 @@
     <Compile Include="DependencyResolution\IoC.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
+    <Compile Include="ExceptionHandling\ExeceptionHandler.cs" />
+    <Compile Include="ExceptionHandling\Fr8ExceptionHandler.ErrorResult.cs" />
+    <Compile Include="Fr8ApiAuthorizeAttribute.cs" />
+    <Compile Include="ExceptionHandling\Fr8ExceptionHandler.cs" />
     <Compile Include="NotificationQueues\UserNotificationData.cs" />
     <Compile Include="NotificationQueues\UserNotificationQueue.cs" />
     <Compile Include="NotificationQueues\NotificationQueue.cs" />
@@ -385,7 +387,7 @@
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
-    <Compile Include="MvcHandleErrorAttribute.cs" />
+    <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
@@ -410,7 +412,7 @@
     <Compile Include="ViewModels\UserProfilesVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
     <Compile Include="ViewModels\Validators\ProcessTemplateDTO.cs" />
-    <Compile Include="WebApiExceptionFilterAttribute.cs" />
+    <Compile Include="ExceptionHandling\WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
@@ -487,87 +489,22 @@
     <Content Include="Content\img\ProcessBuilder\circle-selected.png" />
     <Content Include="Content\img\ProcessBuilder\circle.png" />
     <Content Include="Content\img\ProcessBuilder\criteria-node-bg.png" />
+    <Content Include="Content\img\ProcessBuilder\delete-icon.png" />
     <Content Include="Content\img\ProcessBuilder\right-arrow.png" />
     <Content Include="Content\img\ProcessBuilder\start-node-bg.png" />
     <Content Include="Content\img\select-info.png" />
     <Content Include="Content\img\site\alex-photo.png" />
+    <Content Include="Content\img\site\arrow_blue_ic_arrow_forward_48px-512.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
+    <Content Include="Content\img\site\docusign-dashboard-example.png" />
+    <Content Include="Content\img\site\docusign-workflow-example-1.png" />
+    <Content Include="Content\img\site\docusign-workflow-example-2.png" />
+    <Content Include="Content\img\site\docusign-workflow-example-3.png" />
     <Content Include="Content\img\site\email-header.png" />
     <Content Include="Content\img\site\How_it_works_diagram.png" />
     <Content Include="Content\img\site\kwasant-video-screen-logo.png" />
     <Content Include="Content\img\site\kwasant-video-screen.png" />
     <Content Include="Content\img\site\site-logo.png" />
-    <Content Include="Content\img\temp\background-test9.jpg" />
-    <Content Include="Content\img\temp\homepage89.png" />
-    <Content Include="Content\img\temp\homepagesecond.jpg" />
-    <Content Include="Content\img\temp\kwasant-video-screen.png" />
-    <Content Include="Content\img\temp\kwasant_header.png" />
-    <Content Include="Content\img\temp\old\background-match.jpg" />
-    <Content Include="Content\img\temp\old\background-test5.jpg" />
-    <Content Include="Content\img\temp\old\background-test6.jpg" />
-    <Content Include="Content\img\temp\old\background-test7.jpg" />
-    <Content Include="Content\img\temp\old\bg1.jpg" />
-    <Content Include="Content\img\temp\old\bg2.jpg" />
-    <Content Include="Content\img\temp\old\bg3.jpg" />
-    <Content Include="Content\img\temp\old\bg4.jpg" />
-    <Content Include="Content\img\temp\old\bg5.jpg" />
-    <Content Include="Content\img\temp\old\bg6.jpg" />
-    <Content Include="Content\img\temp\old\bg7.jpg" />
-    <Content Include="Content\img\temp\old\bg8.jpg" />
-    <Content Include="Content\img\temp\old\bg9.jpg" />
-    <Content Include="Content\img\temp\old\blue_tag.psd" />
-    <Content Include="Content\img\temp\old\Booking Details.png" />
-    <Content Include="Content\img\temp\old\calendar5.jpg" />
-    <Content Include="Content\img\temp\old\client-1.png" />
-    <Content Include="Content\img\temp\old\client-2.png" />
-    <Content Include="Content\img\temp\old\client-3.png" />
-    <Content Include="Content\img\temp\old\client-4.png" />
-    <Content Include="Content\img\temp\old\client-5.png" />
-    <Content Include="Content\img\temp\old\client-6.png" />
-    <Content Include="Content\img\temp\old\Database layout.pdf" />
-    <Content Include="Content\img\temp\old\Email thread .docx" />
-    <Content Include="Content\img\temp\old\homepage1.jpg" />
-    <Content Include="Content\img\temp\old\homepage2.jpg" />
-    <Content Include="Content\img\temp\old\homepage3.jpg" />
-    <Content Include="Content\img\temp\old\homepage4.jpg" />
-    <Content Include="Content\img\temp\old\homepagefirst.jpg" />
-    <Content Include="Content\img\temp\old\homepagelower3.jpg" />
-    <Content Include="Content\img\temp\old\image_1.jpg" />
-    <Content Include="Content\img\temp\old\image_2.jpg" />
-    <Content Include="Content\img\temp\old\image_3.jpg" />
-    <Content Include="Content\img\temp\old\image_4.jpg" />
-    <Content Include="Content\img\temp\old\image_5.jpg" />
-    <Content Include="Content\img\temp\old\image_6.jpg" />
-    <Content Include="Content\img\temp\old\image_7.jpg" />
-    <Content Include="Content\img\temp\old\kwasant-logo.png" />
-    <Content Include="Content\img\temp\old\largehome.jpg" />
-    <Content Include="Content\img\temp\old\largehome1.jpg" />
-    <Content Include="Content\img\temp\old\logo11.png" />
-    <Content Include="Content\img\temp\old\logo2.png" />
-    <Content Include="Content\img\temp\old\logo5.png" />
-    <Content Include="Content\img\temp\old\logo6.png" />
-    <Content Include="Content\img\temp\old\logo7.png" />
-    <Content Include="Content\img\temp\old\logo9.png" />
-    <Content Include="Content\img\temp\old\love.jpg" />
-    <Content Include="Content\img\temp\old\older-calendar.jpg" />
-    <Content Include="Content\img\temp\old\scheduler1.jpg" />
-    <Content Include="Content\img\temp\old\screen.jpg" />
-    <Content Include="Content\img\temp\old\second-home.jpg" />
-    <Content Include="Content\img\temp\old\step1.png" />
-    <Content Include="Content\img\temp\old\step1a.png" />
-    <Content Include="Content\img\temp\old\step1b.png" />
-    <Content Include="Content\img\temp\old\step1c.png" />
-    <Content Include="Content\img\temp\old\stock-photo-17850747-businessman-writing-in-a-planner.jpg" />
-    <Content Include="Content\img\temp\old\stock-photo-18215604-daily-planner.jpg" />
-    <Content Include="Content\img\temp\old\stock-photo-4316947-schedule.jpg" />
-    <Content Include="Content\img\temp\old\stone-calendar.jpg" />
-    <Content Include="Content\img\temp\old\test-background.jpg" />
-    <Content Include="Content\img\temp\old\test-background2.jpg" />
-    <Content Include="Content\img\temp\old\test-background3.jpg" />
-    <Content Include="Content\img\temp\old\test-background4.jpg" />
-    <Content Include="Content\img\temp\old\Workflow.vsdx" />
-    <Content Include="Content\img\temp\old\Workflowv2.png" />
-    <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
     <Content Include="fr8terminals.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />
@@ -749,22 +686,64 @@
     <Content Include="newrelic\NewRelic.Profiler.dll" />
     <Content Include="Scripts\lib\jpattern.js" />
     <Content Include="Scripts\tests\integration\PluginActionExecuteTest.js" />
-    <Content Include="Views\ExternalAuth\AuthSuccess.cshtml" />
-    <Content Include="Views\AngularTemplate\TextArea.cshtml" />
+    <Content Include="Scripts\tests\integration\ContainerControllerTests.js" />
+    <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
+    <Content Include="Views\AngularTemplate\AccountList.cshtml" />
+    <Content Include="Views\AngularTemplate\ConfigurationControl.cshtml" />
+    <Content Include="Views\AngularTemplate\ConfirmationModal.cshtml" />
+    <Content Include="Views\AngularTemplate\ContainerDetails.cshtml" />
+    <Content Include="Views\AngularTemplate\ContainerList.cshtml" />
+    <Content Include="Views\AngularTemplate\DesignerHeader.cshtml" />
+    <Content Include="Views\AngularTemplate\DropDownListBox.cshtml" />
     <Content Include="Views\AngularTemplate\FieldList.cshtml" />
-    <Content Include="RunFrontEndTests-VSO.ps1" />
+    <Content Include="Views\AngularTemplate\FilePicker.cshtml" />
+    <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
+    <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
+    <Content Include="Views\AngularTemplate\Footer.cshtml" />
+    <Content Include="Views\AngularTemplate\Header.cshtml" />
+    <Content Include="Views\AngularTemplate\InternalAuthentication.cshtml" />
+    <Content Include="Views\AngularTemplate\ManageFileList.cshtml" />
+    <Content Include="Views\AngularTemplate\MappingPane.cshtml" />
+    <Content Include="Views\AngularTemplate\MyAccountPage.cshtml" />
+    <Content Include="Views\AngularTemplate\PageHead.cshtml" />
+    <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
+    <Content Include="Views\AngularTemplate\PaneSelectActionModal.cshtml" />
+    <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
+    <Content Include="Views\AngularTemplate\QueryBuilderWidget.cshtml" />
+    <Content Include="Views\AngularTemplate\RadioButtonOption.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteDetails.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteForm.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteList.cshtml" />
+    <Content Include="Views\AngularTemplate\RoutingControl.cshtml" />
+    <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
+    <Content Include="Views\AngularTemplate\ShowIncidents.cshtml" />
+    <Content Include="Views\AngularTemplate\TextArea.cshtml" />
+    <Content Include="Views\AngularTemplate\TextBlock.cshtml" />
+    <Content Include="Views\AuthenticationCallback\ProcessSuccessfulOAuthResponse.cshtml" />
+    <Content Include="_PowerShellScripts\RunFrontEndTests-VSO.ps1" />
     <Content Include="Views\DockyardAccount\_HeaderPartial.cshtml" />
-    <None Include="Views\Home\DocuSign.cshtml" />
+    <None Include="Properties\PublishProfiles\dockyard - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\dockyard - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\fr8 - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\fr8 - Web Deploy.pubxml" />
+    <Content Include="Views\Home\DocuSign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
+    <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageFileListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ContainerListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ContainerDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SelectActionController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateDetailsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\RouteDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ReportFactController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ReportIncidentController.ts" />
     <Content Include="Scripts\lib\jquery.blockui.min.js" />
     <Content Include="Views\Sandbox\Index.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\SolutionController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\SolutionListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\TextSource.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FieldList.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RoutingControl.ts" />
@@ -772,15 +751,19 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextBlock.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AccountDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AccountListController.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\DesignerHeader\DesignerHeader.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\layout.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ActionNameFormatter.ts" />
-    <TypeScriptCompile Include="Scripts\app\filters\ProcessTemplateState.ts" />
+    <TypeScriptCompile Include="Scripts\app\filters\ContainerState.ts" />
+    <TypeScriptCompile Include="Scripts\app\filters\RouteState.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IUser.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ActionGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActivityCategoryDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\CrateStorage.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FactDTO.ts" />
@@ -795,13 +778,17 @@
     <TypeScriptCompile Include="Scripts\app\model\ActivityTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FieldMappingSettings.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncidentDTO.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\ProcessTemplate.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\Subroute.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ContainerDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\Route.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessBuilderState.ts" />
     <TypeScriptCompile Include="Scripts\app\model\User.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ContainerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\CrateHelper.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\LayoutService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManageFileService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ReportService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\UIHelperService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UserService.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\respond.js" />
@@ -812,29 +799,28 @@
     <TypeScriptCompile Include="Scripts\tests\integration\PluginDocuSignTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ProcessTemplateControllerTests.ts" />
     <Content Include="Scripts\tests\.gitignore" />
-    <Content Include="Views\AngularTemplate\ManageFileList.cshtml" />
-    <Content Include="Views\AngularTemplate\InternalAuthentication.cshtml" />
-    <None Include="Views\AngularTemplate\MappingPane.cshtml" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\ContainerControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\PaneConfigurationActionTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDesignDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionTemplate.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_ContainerDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\mocks.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ProcessBuilder.ts" />
     <Content Include="Scripts\_legacy\about-page.js" />
     <TypeScriptCompile Include="Scripts\app\app.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessBuilderController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\RouteListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilterPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\PaneWorkflowDesigner.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\QueryBuilderWidget.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateFormController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\RouteFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\directives.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
@@ -3957,25 +3943,11 @@
     <Content Include="Themes\scheduler_white\tree_nochildren.png" />
     <Content Include="UnauthorizedRequest.html" />
     <Compile Include="ViewModels\EventWindowVM.cs" />
-    <Content Include="Views\AngularTemplate\ProcessTemplateForm.cshtml" />
-    <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
     <Content Include="tsd.json" />
-    <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
-    <Content Include="Views\AngularTemplate\PaneSelectActionModal.cshtml" />
-    <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
     <Content Include="Scripts\tests\Chutzpah.json" />
-    <Content Include="RunFrontEndTests - With Web Server.ps1" />
-    <Content Include="RunFrontEndTests.ps1" />
+    <Content Include="_PowerShellScripts\RunFrontEndTests - With Web Server.ps1" />
+    <Content Include="_PowerShellScripts\RunFrontEndTests.ps1" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
-    <Content Include="Views\AngularTemplate\ConfigurationControl.cshtml" />
-    <Content Include="Views\AngularTemplate\FilePicker.cshtml" />
-    <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
-    <Content Include="Views\AngularTemplate\RadioButtonOption.cshtml" />
-    <Content Include="Views\AngularTemplate\TextBlock.cshtml" />
-    <Content Include="Views\AngularTemplate\ProcessTemplateDetails.cshtml" />
-    <Content Include="Views\AngularTemplate\AccountList.cshtml" />
-    <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -4035,14 +4007,6 @@
     <Content Include="Views\User\ShowUserCreationSettings.cshtml" />
     <Content Include="Views\User\ShowUserDetails.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
-    <Content Include="Views\AngularTemplate\QueryBuilderWidget.cshtml" />
-    <Content Include="Views\AngularTemplate\DropDownListBox.cshtml" />
-    <Content Include="Views\AngularTemplate\ShowIncidents.cshtml" />
-    <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
-    <Content Include="Views\AngularTemplate\RoutingControl.cshtml" />
-    <Content Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
-    <Content Include="Views\AngularTemplate\MyAccountPage.cshtml" />
-    <None Include="Views\Dashboard\Index.cshtml.bak" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\Email\Show.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
@@ -4066,10 +4030,12 @@
     <Content Include="Views\User\RemoteServices.cshtml" />
     <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />
     <Content Include="Views\Shared\403.cshtml" />
+    <Content Include="Views\AngularTemplate\TextSource.cshtml" />
+    <Content Include="Views\AngularTemplate\_RouteList.cshtml" />
+    <Content Include="Views\AngularTemplate\SolutionList.cshtml" />
+    <Content Include="Views\AngularTemplate\_DeleteRouteModal.cshtml" />
+    <Content Include="Views\AngularTemplate\Solution.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
-    <Content Include="Views\AngularTemplate\Footer.cshtml" />
-    <Content Include="Views\AngularTemplate\Header.cshtml" />
-    <Content Include="Views\AngularTemplate\PageHead.cshtml" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-router\angular-ui-router.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-resource.d.ts" />
@@ -4111,10 +4077,6 @@
     <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Configuration\Configuration.csproj">
-      <Project>{d8f7f734-21ce-4277-a14f-ebdde71dff0c}</Project>
-      <Name>Configuration</Name>
-    </ProjectReference>
     <ProjectReference Include="Core\Core.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Core</Name>
@@ -4127,7 +4089,7 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="pluginBase\PluginBase.csproj">
+    <ProjectReference Include="terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>PluginBase</Name>
     </ProjectReference>
@@ -4140,6 +4102,15 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'alexlocal|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -4172,9 +4143,9 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS> 
-          <AutoAssignPort>False</AutoAssignPort>
-          <DevelopmentServerPort>30643</DevelopmentServerPort>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:30643/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

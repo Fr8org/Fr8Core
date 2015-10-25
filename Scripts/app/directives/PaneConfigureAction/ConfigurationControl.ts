@@ -10,6 +10,7 @@ module dockyard.directives.paneConfigureAction {
         dropdownlistField,
         textBlockField,
         routing,
+        button
     }
 
     export class ChangeEventArgs {
@@ -23,6 +24,7 @@ module dockyard.directives.paneConfigureAction {
     export interface IConfigurationControlScope extends ng.IScope {
         field: model.ControlDefinitionDTO;
         onChange: (radio: model.ControlDefinitionDTO) => void;
+        onClick: (event: any) => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -64,6 +66,24 @@ module dockyard.directives.paneConfigureAction {
 
                     $scope.$emit("onChange", new ChangeEventArgs(fieldName));
                 };
+
+
+                $scope.onClick = (event: any) => {
+                    var fieldName: string;
+
+                    if (!!event.target === true) {
+                        // If called by DOM event (for standard fields), get field name
+                        // Get name of field that received the event
+                        fieldName = event.target.attributes.getNamedItem('data-field-name').value;
+                    }
+                    else {
+                        // If called by custom field, it is assumed that field name is suppied as the argument
+                        fieldName = event;
+                    }
+
+                    $scope.$emit("onClick", new ChangeEventArgs(fieldName));
+                };
+
             };
         }
 
@@ -85,7 +105,7 @@ module dockyard.directives.paneConfigureAction {
     app.filter('validId', function () {
         return function (input) {
             if (input) {
-                return input.replace(/^[^a-zA-Z]/, 'a').replace(/[^\w\d\-_\.:]/g, '-');
+                return input.replace(/^[^a-zA-Z]/, 'a').replace(/[^\w\d\-_\.]/g, '-');
             }
         }
     });
