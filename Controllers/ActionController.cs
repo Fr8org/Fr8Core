@@ -184,35 +184,27 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var resultActionDO = _action.SaveOrUpdateAction(uow, submittedActionDO);
-                var activityTemplateDO = uow.ActivityTemplateRepository.GetByKey(resultActionDO.ActivityTemplateId);
-                resultActionDO.ActivityTemplate = activityTemplateDO;
-               
-                if (curActionDTO.IsTempId)
-                {
-                    ObjectFactory.GetInstance<ISubroute>().AddAction(uow, resultActionDO); // append action to the Subroute
-                }
-
                 var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
 
                 return Ok(resultActionDTO);
             }
         }
 
-        /// <summary>
-        /// POST : updates the given action
-        /// </summary>
-        [HttpPost]
-        [Route("update")]
-        public IHttpActionResult Update(ActionDTO curActionDTO)
-        {
-            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                _action.Update(uow, submittedActionDO);
-            }
-
-            return Ok();
-        }    
+//        /// <summary>
+//        /// POST : updates the given action
+//        /// </summary>
+//        [HttpPost]
+//        [Route("update")]
+//        public IHttpActionResult Update(ActionDTO curActionDTO)
+//        {
+//            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
+//
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
+//            }
+//
+//            return Ok();
+//        }    
     }
 }

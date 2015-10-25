@@ -206,6 +206,8 @@ namespace pluginIntegrationTests
             curActionDO.ParentRouteNodeId = _subrouteDO.Id;
 
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            
+            curActionDTO.IsTempId = true;
 
             var result = curActionController.Save(curActionDTO)
                 as OkNegotiatedContentResult<ActionDTO>;

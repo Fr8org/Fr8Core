@@ -78,13 +78,15 @@ namespace terminalDocuSign.Actions
         {
             var configurationFields = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
 
+            //configurationFields.FindByName("");
+
             return Task.FromResult(curActionDTO);
         }
 
         private async Task<IEnumerable<CrateDTO>> PackSources()
         {
             var sources = new List<CrateDTO>();
-            
+
             sources.Add(Crate.CreateDesignTimeFieldsCrate("AvailableForms", new FieldDTO("key", "value")));
 
             var hubUrl = ConfigurationManager.AppSettings["CoreWebServerUrl"].TrimEnd('/') + "/route_nodes/available";

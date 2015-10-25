@@ -3,17 +3,17 @@
     <TextBlockControlDefinitionDTO Label="" Value="Fr8 Solutions for DocuSign"/>
     <TextBlockControlDefinitionDTO Label="" Value="Use DocuSign to collect information"/>
 
-    <RadioButtonGroupControlDefinitionDTO Label="1. Collect What Kind of Form Data?:"  Events="{ControlEvent onChange:requestConfig}">
-        <RadioButtonOption Name="Option1" Value="Use standard form:">
-            <DropDownListControlDefinitionDTO Name="SelectForm" 
+    <RadioButtonGroupControlDefinitionDTO Label="1. Collect What Kind of Form Data?"  Events="{ControlEvent onChange:requestConfig}">
+        <RadioButtonOption Name="UseStandardForm" Value="Use standard form:">
+            <DropDownListControlDefinitionDTO Name="StandardFormsList" 
                                               Source="{FieldSourceDTO Label='AvailableForms', ManifestType='Standard Design-Time Fields'}"  
                                               Events="{ControlEvent onChange:requestConfig}"/>
         </RadioButtonOption>
-        <RadioButtonOption Name="Option2" Value="I want to use a template on my DocuSign account"/>
-        <RadioButtonOption Name="Option3" Value="I want to upload my own form"/>
+        <RadioButtonOption Name="UseTemplate" Value="I want to use a template on my DocuSign account"/>
+        <RadioButtonOption Name="UseUploadedForm" Value="I want to upload my own form"/>
     </RadioButtonGroupControlDefinitionDTO>
 
-    <DropDownListControlDefinitionDTO Name="SelectFinalAction" Required="True"
+    <DropDownListControlDefinitionDTO Name="FinalActionsList" Required="True"
                                       Label="2:  After the forms are completed, where do you want to collect the data?"  
                                       Source="{FieldSourceDTO Label='AvailableActions', ManifestType='Standard Design-Time Fields'}"  
                                       Events="{ControlEvent onChange:requestConfig}"/>

@@ -48,7 +48,9 @@ namespace DockyardTest.Controllers
 
                 //Act
                 var actualAction = CreateActionWithId(1);
-
+                
+                actualAction.IsTempId = true;
+                
                 var controller = new ActionController();
                 controller.Save(actualAction);
 
@@ -70,12 +72,13 @@ namespace DockyardTest.Controllers
                 //Arrange
                 //Add one test action
                 var action = FixtureData.TestAction1();
+                
                 uow.ActionRepository.Add(action);
                 uow.SaveChanges();
 
                 //Act
                 var actualAction = CreateActionWithId(2);
-
+                actualAction.IsTempId = true;
                 var controller = new ActionController();
                 controller.Save(actualAction);
 
@@ -353,7 +356,8 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
+        // TODO: we shoul design some special exception type for 'Action not found'. 
+        [ExpectedException(ExpectedException = typeof(ApplicationException))]
         public async void ActionController_GetConfigurationSettings_IdIsMissing()
         {
             var controller = new ActionController();
@@ -368,7 +372,8 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
+        // TODO: we shoul design some special exception type for 'ActivityTemplate not found'. 
+        [ExpectedException(ExpectedException = typeof(ApplicationException))]
         public async void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
         {
             var controller = new ActionController();
