@@ -7,7 +7,9 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ActionRemoved,
         PaneConfigureAction_InternalAuthentication,
         PaneConfigureAction_ExternalAuthentication,
-        PaneConfigureAction_Reconfigure
+        PaneConfigureAction_Reconfigure,
+        PaneConfigureAction_RenderConfiguration,
+        PaneConfigureAction_ChildActionsDetected
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
@@ -113,6 +115,11 @@ module dockyard.directives.paneConfigureAction {
                     loadConfiguration();
                 });
 
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_RenderConfiguration],
+                    //Allow some time for parent and current action instance to sync
+                    () => $timeout(() => processConfiguration(), 300)
+                );
+
                 // Get configuration settings template from the server if the current action does not contain those             
                 if ($scope.currentAction.activityTemplateId > 0) {
                     if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
@@ -190,11 +197,9 @@ module dockyard.directives.paneConfigureAction {
                     }
                 }
 
-
                 // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
                 // We parse its contents and put it into currentAction.configurationControls structure.
                 function loadConfiguration() {
-
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;
 
@@ -203,20 +208,27 @@ module dockyard.directives.paneConfigureAction {
                     }
 
                     ActionService.configure($scope.currentAction).$promise
-                        .then((res: any) => {
+                        .then((res: interfaces.IActionVM) => {
+                            if (true) {
+                                // If the directive is used for configuring solutions,
+                                // the SolutionController would listen to this event 
+                                // and redirect user to the ProcessBuilder once if is received.
+                                // It means that solution configuration is complete. 
+                                $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
+                            }
                             $scope.currentAction.crateStorage = res.crateStorage;
                             $scope.processConfiguration();
                         })
                         .catch((result) => {
                             var errorText = 'Something went wrong. Click to retry.';
-                            if (result.status && result.status >= 300) {
+                            if (result.status && result.status >= 400) {
                                 // Bad http response
                                 errorText = 'Configuration loading error. Click to retry.';
                             } else if (result.message) {
                                 // Exception was thrown in the code
                                 errorText = result.message;
                             }
-                            var control = new model.TextBlock('TextBlock', errorText, 'well well-lg alert-danger');
+                            var control = new model.TextBlock(errorText, 'well well-lg alert-danger');
                             $scope.currentAction.configurationControls = new model.ControlsList();
                             $scope.currentAction.configurationControls.fields = [control];
                         })

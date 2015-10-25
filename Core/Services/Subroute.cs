@@ -66,7 +66,7 @@ namespace Core.Services
                     subroute.StartingSubroute = true;
                 }
 
-                route.ChildNodes.Add(subroute);
+                //route.ChildNodes.Add(subroute);
             }
 
             subroute.Name = name;

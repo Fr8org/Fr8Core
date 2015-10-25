@@ -13,17 +13,14 @@ module dockyard.services {
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
+        configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IActionVM>;
         getByProcessTemplate: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
         create: (args: { actionTemplateId: number, name: string, label: string, parentNideId: number, createRoute: boolean }) => ng.resource.IResource<model.RouteDTO | model.ActionDTO>;
+        createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.RouteDTO>;
         //TODO make resource class do this operation
         deleteById: (id: { id: number }) => ng.resource.IResource<void>;
         
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
-    }
-
-    export interface ISolutionService extends ng.resource.IResourceClass<interfaces.IRouteVM> {
-        create: (args: { solutionName: string }) => ng.resource.IResource<model.RouteDTO>;
     }
 
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
@@ -118,23 +115,6 @@ module dockyard.services {
     ]);
 
     /* 
-    Solution CRUD service.
-    */
-    app.factory('SolutionService', ['$resource', ($resource: ng.resource.IResourceService): ISolutionService =>
-        <ISolutionService>$resource('/solutions/', null,
-            {
-                'create': {
-                    method: 'POST',
-                    url: '/solutions/create',
-                    params: {
-                        solutionName: '@solutionName'
-                    }
-                }
-            })
-    ]);
-
-
-    /* 
         ActionDTO CRUD service.
     */
     app.factory('ActionService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
@@ -178,6 +158,13 @@ module dockyard.services {
                 'create': {
                     method: 'POST',
                     url: '/actions/create'
+                },
+                'createSolution': {
+                    method: 'POST',
+                    url: '/actions/create',
+                    params: {
+                        solutionName: '@solutionName'
+                    }
                 },
                 'params': {
                     id: 'id'
