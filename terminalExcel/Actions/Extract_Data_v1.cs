@@ -177,7 +177,28 @@ namespace terminalExcel.Actions
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
         {
-            return ReturnInitialUnlessExistsField(curActionDTO, "select_file", new Manifest(Data.Constants.MT.StandardConfigurationControls));
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+
+            var filePathsFromUserSelection = Action.FindKeysByCrateManifestType(
+                    curActionDO,
+                    new Manifest(Data.Constants.MT.StandardConfigurationControls),
+                    "select_file"
+                )
+                .Result
+                .Select(e => (string)e["value"])
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToArray();
+
+            var hasDesignTimeFields = curActionDTO.CrateStorage.CrateDTO
+                .Any(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    && x.Label == "Spreadsheet Column Headers");
+
+            if (filePathsFromUserSelection.Length == 1 || hasDesignTimeFields)
+            {
+                return ConfigurationRequestType.Followup;
+            }
+
+            return ConfigurationRequestType.Initial;
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
@@ -198,10 +219,16 @@ namespace terminalExcel.Actions
             // Creating configuration control crate with a file picker and textblock
             var configControlsCrateDTO = CreateConfigurationControlsCrate(true);
             curActionDTO.CrateStorage.CrateDTO.Add(configControlsCrateDTO);
-            
-            var selectedFilePath = filePathsFromUserSelection[0];
 
-            return await TransformExcelFileDataToStandardTableDataCrate(curActionDTO, selectedFilePath);
+            if (filePathsFromUserSelection.Length > 0)
+            {
+                var selectedFilePath = filePathsFromUserSelection[0];
+                return await TransformExcelFileDataToStandardTableDataCrate(curActionDTO, selectedFilePath);
+            }
+            else
+            {
+                return curActionDTO;
+            }
         }
 
         private async Task<ActionDTO> TransformExcelFileDataToStandardTableDataCrate(ActionDTO curActionDTO, string selectedFilePath)

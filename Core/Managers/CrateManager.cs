@@ -129,7 +129,7 @@ namespace Core.Managers
                 var results = curCrateJSON.Descendants()
                     .OfType<JObject>()
                     // where (object has a key field) && (key field value equals to key argument)
-                    .Where(x => x[keyFieldName] != null && x[keyFieldName].Value<TKey>().Equals(key));
+                    .Where(x => x[keyFieldName] != null && Object.Equals(x[keyFieldName].Value<TKey>(), key));
                 resultsObjects.AddRange(results);
             }
             return resultsObjects;
