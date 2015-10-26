@@ -3,10 +3,13 @@
 module dockyard.services {
 
     export interface IPusherNotifierService {
-        bindEventToChannel(channel: string, event: string, callback: Function): void;
-        bindEventToAllChannels(event: string, callback: Function): void;
-        unbindEvent(channel: string, event: string, callback: Function): void;
-        unbindAllEvents(event: string, callback: Function): void;
+        bindEventToChannel(channel: string, event: string, callback: Function, context?: any): void;
+        bindEventToClient(event: string, callback: Function, context?: any): void;
+        removeEvent(channel: string, event: string): void;
+        removeEventHandler(channel: string, event: string, handler: Function): void;
+        removeAllHandlersForContext(channel: string, context: any);
+        removeHandlerForAllEvents(channel: string, handler: Function): void;
+        removeAllEvents(channel: string): void;
         disconnect(): void;
     }
 
@@ -20,24 +23,48 @@ module dockyard.services {
             this.pusher = $pusher(this.client);
         }        
 
-        public bindEventToChannel(channel: string, event: string, callback: Function): void {
+        public bindEventToChannel(channel: string, event: string, callback: Function, context?: any): void {
             var channelInstance = this.pusher.subscribe(channel);
-            channelInstance.bind(event, callback);
+            channelInstance.bind(event, callback, context);
         }
 
-        public bindEventToAllChannels(event: string, callback: Function): void {
-            this.pusher.bind(event, callback);
+        public bindEventToClient(event: string, callback: Function, context?: any): void {
+            this.pusher.bind(event, callback, context);
         }
 
-        public unbindEvent(channel: string, event: string, callback: Function): void {
+        public removeEvent(channel: string, event: string): void {
             var channelInstance = this.pusher.channel(channel);
             if (channelInstance != undefined) {
-                channelInstance.unbind(event, callback);
+                channelInstance.unbind(event);
             }
         }
 
-        public unbindAllEvents(event: string, callback: Function) {
-            this.pusher.unbind(event, callback);
+        public removeEventHandler(channel: string, event: string, handler: Function): void {
+            var channelInstance = this.pusher.channel(channel);
+            if (channelInstance != undefined) {
+                channelInstance.unbind(event, handler);
+            }
+        }
+
+        public removeAllHandlersForContext(channel: string, context: any) {
+            var channelInstance = this.pusher.channel(channel);
+            if (channelInstance != undefined) {
+                channelInstance.unbind(null, null, context);
+            }
+        }
+
+        public removeHandlerForAllEvents(channel: string, handler: Function) {
+            var channelInstance = this.pusher.channel(channel);
+            if (channelInstance != undefined) {
+                channelInstance.unbind(null, handler);
+            }
+        }
+
+        public removeAllEvents(channel: string): void {
+            var channelInstance = this.pusher.channel(channel);
+            if (channelInstance != undefined) {
+                channelInstance.unbind();
+            }
         }
 
         public disconnect(): void {
