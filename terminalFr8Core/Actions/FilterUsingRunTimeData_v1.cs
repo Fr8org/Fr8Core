@@ -257,13 +257,9 @@ namespace terminalFr8Core.Actions
                 return ConfigurationRequestType.Initial;
             }
 
-            var hasControlsCrate = curActionDataPackageDTO.CrateStorage.CrateDTO
-                .Any(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
-                    && x.Label == "Configuration_Controls");
+            var hasControlsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME) != null;
 
-            var hasQueryFieldsCrate = curActionDataPackageDTO.CrateStorage.CrateDTO
-                .Any(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
-                    && x.Label == "Queryable Criteria");
+            var hasQueryFieldsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) != null;
 
             if (hasControlsCrate && hasQueryFieldsCrate && HasValidConfiguration(curActionDataPackageDTO))
             {
