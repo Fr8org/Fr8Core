@@ -5,27 +5,28 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Core.Interfaces;
+using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Core.Services;
+using Web.ViewModels;
 
 namespace Web.Controllers
 {
-    public class ExternalAuthController : Controller
+    public class AuthenticationCallbackController : Controller
     {
         private readonly IAction _action;
 
         private readonly Authorization _authorization;
 
-        public ExternalAuthController()
+        public AuthenticationCallbackController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
             _authorization = new Authorization();
         }
 
         [HttpGet]
-        public async Task<ActionResult> AuthSuccess(
+        public async Task<ActionResult> ProcessSuccessfulOAuthResponse(
             [Bind(Prefix="dockyard_plugin")] string pluginName,
             [Bind(Prefix = "version")] string pluginVersion)
         {
@@ -57,9 +58,19 @@ namespace Web.Controllers
                 RequestQueryString = requestQueryString
             };
 
-            await _authorization.AuthenticateExternal(plugin, externalAuthenticationDTO);
+            var error = await _authorization.GetOAuthToken(plugin, externalAuthenticationDTO);
 
-            return View();
+            if (string.IsNullOrEmpty(error))
+            {
+                return View();
+            }
+            else
+            {
+                return View("Error", new AuthenticationErrorVM()
+                {
+                    Error = error
+                });
+            }
         }
     }
 }

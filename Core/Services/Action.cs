@@ -1,28 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web.UI;
-using AutoMapper;
-using Core.Enums;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using StructureMap;
+﻿using AutoMapper;
 using Core.Enums;
 using Core.Interfaces;
 using Core.Managers;
 using Core.Managers.APIManagers.Transmitters.Plugin;
-using Core.Managers.APIManagers.Transmitters.Restful;
-using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using Data.States;
-using Utilities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using StructureMap;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Core.Services
 {
@@ -199,7 +192,8 @@ namespace Core.Services
             {
                 ActivityTemplate = template,
                 Name = name,
-                Label = label
+                Label = label,
+                CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO())
             };
 
             uow.ActionRepository.Add(action);
@@ -238,7 +232,11 @@ namespace Core.Services
 
             uow.SaveChanges();
 
-            await Configure(action);
+            var actionConfigured = (await Configure(action)).Item2;
+
+            // Update crates on the initial action instance with those we received 
+            // as a result of calling configure method. 
+            action.CrateStorage = actionConfigured.CrateStorage;
 
             if (createRoute)
             {
@@ -249,7 +247,7 @@ namespace Core.Services
         }
 
 
-        public async Task<ActionDTO> Configure(ActionDO curActionDO)
+        public async Task<Tuple<ActionDTO, ActionDO>> Configure(ActionDO curActionDO)
         {
             if (curActionDO == null)
                 throw new ArgumentNullException("curActionDO");
@@ -278,8 +276,8 @@ namespace Core.Services
             //save the received action as quickly as possible
             SaveOrUpdateAction(curActionDO);
 
-            //Returning ActionDTO
-            return tempActionDTO;
+            //Returning ActionDTO and ActionDO
+            return new Tuple<ActionDTO, ActionDO>(tempActionDTO, curActionDO);
         }
 
         public ActionDO MapFromDTO(ActionDTO curActionDTO)
