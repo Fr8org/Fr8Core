@@ -27,6 +27,7 @@ namespace terminalTwilio.Controllers
             {
                 Name = "Send_Via_Twilio",
                 Label = "Send Via Twilio",
+                Tags = "Twillio",
                 Category = ActivityCategory.Forwarders,
                 Version = "1",
                 Plugin = plugin,

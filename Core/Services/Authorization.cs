@@ -157,7 +157,7 @@ namespace Core.Services
             }
         }
 
-        public async Task AuthenticateInternal(
+        public async Task<string> AuthenticateInternal(
             Fr8AccountDO account,
             ActivityTemplateDO activityTemplate,
             string username,
@@ -184,6 +184,10 @@ namespace Core.Services
             );
 
             var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
+            if (!string.IsNullOrEmpty(authTokenDTO.Error))
+            {
+                return authTokenDTO.Error;
+            }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -217,9 +221,11 @@ namespace Core.Services
                     uow.SaveChanges();
                 }
             }
+
+            return null;
         }
 
-        public async Task GetOAuthToken(
+        public async Task<string> GetOAuthToken(
             PluginDO plugin,
             ExternalAuthenticationDTO externalAuthDTO)
         {
@@ -243,6 +249,10 @@ namespace Core.Services
             );
 
             var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
+            if (!string.IsNullOrEmpty(authTokenDTO.Error))
+            {
+                return authTokenDTO.Error;
+            }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -260,6 +270,8 @@ namespace Core.Services
                 authToken.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
                 uow.SaveChanges();
             }
+
+            return null;
         }
 
 

@@ -48,13 +48,13 @@ namespace Web.Controllers
                 account = _security.GetCurrentAccount(uow);
             }
 
-            await _authorization.AuthenticateInternal(
+            var error = await _authorization.AuthenticateInternal(
                 account,
                 activityTemplate,
                 credentials.Username,
                 credentials.Password);
 
-            return Ok();
+            return Ok(new { Error = error });
         }
 
         [HttpGet]
