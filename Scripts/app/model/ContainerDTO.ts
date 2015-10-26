@@ -11,7 +11,7 @@
     export enum ContainerState {
         Unstarted = 1,
         Executing = 2,
-        WaitingForPlugin = 3,
+        WaitingForTerminal = 3,
         Completed = 4,
         Failed = 5
     }

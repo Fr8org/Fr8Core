@@ -11,6 +11,7 @@ using StructureMap;
 
 using Data.Interfaces.DataTransferObjects;
 using Core.Managers;
+using Data.Infrastructure;
 
 
 namespace Core.Services
@@ -73,8 +74,10 @@ namespace Core.Services
 
                var curProcessNode = _processNode.Create(uow, containerDO.Id, subrouteId, "process node");
                containerDO.ProcessNodes.Add(curProcessNode);
+               EventManager.ContainerCreated(containerDO);
+               uow.SaveChanges();
 
-                uow.SaveChanges();
+                
 
             return containerDO;
         }

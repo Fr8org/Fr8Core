@@ -258,6 +258,20 @@ namespace DockyardTest.Services
                 await _container.Execute(uow, FixtureData.TestContainerCurrentActivityNULL());
         }
         }
+
+        [Test]
+        public void Create_LogsData() 
+        {
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
+            var curRoute = FixtureData.TestRouteWithStartingSubroute();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.RouteRepository.Add(curRoute);
+                _container.Create(uow, curRoute.Id, FixtureData.CrateDTO3());
+                var count = uow.FactRepository.GetAll().Count();
+            }
+
+        }
 //
 //        [Test]
 //        [ExpectedException(typeof(ArgumentNullException))]

@@ -58,6 +58,7 @@ namespace Core.Managers
             EventManager.PluginEventReported += LogPluginEvent;
             EventManager.PluginActionActivated  += PluginActionActivated;
             EventManager.EventProcessRequestReceived += EventManagerOnEventProcessRequestReceived;
+            EventManager.EventContainerCreated += LogEventContainerCreated;
         }
 
 
@@ -94,6 +95,7 @@ namespace Core.Managers
             EventManager.EventActionDispatched -= LogEventActionDispatched;
             EventManager.PluginEventReported -= LogPluginEvent;
             EventManager.PluginActionActivated -= PluginActionActivated;
+            EventManager.EventContainerCreated -= LogEventContainerCreated;
         }
 
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
@@ -808,32 +810,25 @@ namespace Core.Managers
             Error,
             Warning
         }
-        private void AlertContainerCreated()
+        private void LogEventContainerCreated(ContainerDO containerDO)
         {
-        
-        }
-        private void AlertContainerSent() {
-            ContainerDO containerInExecution;
-            FactDO fact;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            var curFact = new FactDO
             {
-                containerInExecution = uow.ContainerRepository.GetByKey(processNode.ParentContainerId);
+                CustomerId = containerDO.Route.Fr8Account.Id,
+                Data = "",
+                ObjectId = containerDO.Id.ToStr(),
+                PrimaryCategory = "Containers",
+                SecondaryCategory = "Operations",
+                Activity = "Created"
+            };
 
-                fact = new FactDO
-                {
-                    //CustomerId = containerInExecution != null ? containerInExecution.Route.Fr8Account.Id : "unknown",
-                    //Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
-                    //ObjectId = processNode.Id.ToStr(),
-                    //PrimaryCategory = "Container Execution",
-                    //SecondaryCategory = "Process Node",
-                    //Activity = "Created"
-                };
-            }
-
-            SaveAndLogFact(fact);
+            SaveAndLogFact(curFact);
         }
-        private void AlertContainerReceived() { }
-        private void AlertContainerStateChanged() { }
+        private void LogEventContainerSent(ContainerDO containerDO)
+        {
+            
+        }
+        private void LogEventContainerReceived() { }
+        private void LogEventContainerStateChanged() { }
     }
 }

@@ -89,6 +89,18 @@ namespace Data.Infrastructure
         public delegate void EventContainerLaunchedHandler(ContainerDO launchedContainer);
         public static event EventContainerLaunchedHandler EventContainerLaunched;
 
+        public delegate void EventContainerCreatedHandler(ContainerDO containerDO);
+        public static event EventContainerCreatedHandler EventContainerCreated;
+
+        public delegate void EventContainerSentHandler(ContainerDO containerDO);
+        public static event EventContainerSentHandler EventContainerSent;
+
+        public delegate void EventContainerReceivedHandler(ContainerDO containerDO);
+        public static event EventContainerReceivedHandler EventContainerReceived;
+
+        public delegate void EventContainerStateChangedHandler(ContainerDO containerDO);
+        public static event EventContainerStateChangedHandler EventContainerStateChanged;
+
         public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
         public static event EventProcessNodeCreatedHandler EventProcessNodeCreated;
 
@@ -121,6 +133,10 @@ namespace Data.Infrastructure
 
         public delegate void IncidentTwilioSMSSendFailureHandler(string number, string message, string errorMsg);
         public static event IncidentTwilioSMSSendFailureHandler IncidentTwilioSMSSendFailure;
+
+
+
+        
         #region Method
 
 
@@ -420,6 +436,31 @@ namespace Data.Infrastructure
         {
             var handler = IncidentTwilioSMSSendFailure;
             if (handler != null) handler(number, message, errorMsg);
+        }
+
+
+        public static void ContainerCreated(ContainerDO containerDO)
+        {
+            var handler = EventContainerCreated;
+            if (handler != null) handler(containerDO);
+        }
+
+        public static void ContainerSent(ContainerDO containerDO)
+        {
+            var handler = EventContainerSent;
+            if (handler != null) handler(containerDO);
+        }
+
+        public static void ContainerReceived(ContainerDO containerDO)
+        {
+            var handler = EventContainerReceived;
+            if (handler != null) handler(containerDO);
+        }
+
+        public static void ContainerStateChanged(ContainerDO containerDO)
+        {
+            var handler = EventContainerStateChanged;
+            if (handler != null) handler(containerDO);
         }
         #endregion
 
