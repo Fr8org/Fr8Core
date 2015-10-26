@@ -18,7 +18,7 @@ using Core.Interfaces;
 
 namespace terminalExcel.Actions
 {
-    public class Extract_Data_v1 : BasePluginAction
+    public class Load_Table_Data_v1 : BasePluginAction
     {
         /// <summary>
         /// Action processing infrastructure.
@@ -261,4 +261,7 @@ namespace terminalExcel.Actions
             }
         }
     }
+
+    // For backward compatibility
+    public class Extract_Data_v1 : Load_Table_Data_v1 { }
 }

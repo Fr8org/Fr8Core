@@ -4,6 +4,7 @@ using Core.Enums;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using System;
 
 namespace Core.Interfaces
 {
@@ -16,6 +17,7 @@ namespace Core.Interfaces
         Task Process(int curActivityId, ContainerDO curContainerDO);
 
         IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount);
+        IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount, Func<ActivityTemplateDO, bool> predicate);
 
         RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, RouteNodeDO root);
 

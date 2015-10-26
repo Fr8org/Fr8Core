@@ -32,8 +32,8 @@ namespace terminalExcel.Controllers
 
             var template = new ActivityTemplateDO
             {
-                Name = "Extract_Data",
-                Label = "Extract Data",
+                Name = "Load_Table_Data",
+                Label = "Load Table Data",
                 Version = "1",
                 Category = ActivityCategory.Receivers,
                 Plugin = plugin,

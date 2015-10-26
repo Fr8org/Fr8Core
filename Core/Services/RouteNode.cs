@@ -242,6 +242,14 @@ namespace Core.Services
             return curActivityTemplates;
         }
 
+        /// <summary>
+        /// Returns ActivityTemplates while filtering them by the supplied predicate
+        /// </summary>
+        public IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount, Func<ActivityTemplateDO, bool>predicate)
+        {
+            return uow.ActivityTemplateRepository.GetAll().Where(predicate).OrderBy(t => t.Category).ToList();
+        }
+
         public IEnumerable<ActivityTemplateDO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount)
         {
             List<ActivityTemplateDO> curActivityTemplates;

@@ -74,7 +74,7 @@ namespace pluginIntegrationTests
                 },
             };
 
-            var result = await new Extract_Data_v1().Run(curActionDTO);
+            var result = await new Load_Table_Data_v1().Run(curActionDTO);
             var payloadCrates = crate.GetCratesByManifestType(CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, result.CrateStorageDTO());
             var payloadDataMS = JsonConvert.DeserializeObject<StandardPayloadDataCM>(payloadCrates.First().Contents);
 

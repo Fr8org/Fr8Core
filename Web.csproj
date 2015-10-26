@@ -319,7 +319,6 @@
     <Compile Include="Controllers\FieldController.cs" />
     <Compile Include="Controllers\ActionListController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
-    <Compile Include="Controllers\ActivityTemplatesController.cs" />
     <Compile Include="Controllers\CriteriaController.cs" />
     <Compile Include="Controllers\DockyardEventController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
