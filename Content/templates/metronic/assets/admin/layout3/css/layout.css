@@ -561,10 +561,13 @@ Page Header
         display: inline-block;
     }
     .page-header .page-header-top .page-logo .page-sticker p {
-        color:red;
-        font-size: 1.7em;
+        color:#58b8a9;
+        font-family:Arial;
+        font-weight:900;
+        font-size: 4em;
         position:absolute; 
-        bottom:0;
+        bottom:-20px;
+        margin-left: -15px;
     }
 
       .page-header .page-header-top .page-logo .logo-default {
