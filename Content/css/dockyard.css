@@ -57,7 +57,6 @@
 .processActionStep {
     background-image: URL("/Content/img/ProcessBuilder/circle.png");
     display: inline-flex;
-    ;
     width: 80px;
     height: 50px;
     background-repeat: no-repeat;
@@ -112,17 +111,37 @@
 }
 
 .process-builder-container {
+    height: 800px;
     overflow-y: auto;
+    position: relative;
     white-space: nowrap;
 }
 
-.action-arrow {
+.action-arrow-right {
     background-image: url('/Content/img/site/arrow_blue_ic_arrow_forward_48px-512.png');
     background-size: contain;
     display: inline-block;
     height: 50px;
-    margin-top: 120px;
+    margin: 125px 10px 0 7px;
     width: 50px;
+}
+
+.action-arrow-bottom {
+    background-color: #58B8A9;
+    margin-left: 160px;
+    position: absolute;
+    width: 16px;
+}
+
+.action-arrow-bottom::after {
+    content: '';
+    border-right: 14px solid transparent;
+    border-left: 14px solid transparent;
+    border-top: 20px solid #58B8A9;
+    display: block;
+    bottom: -13px;
+    left: -6px;
+    position: absolute;
 }
 
 .action {
@@ -132,19 +151,14 @@
                 rgba(0, 0, 0, 0.117647) 0px 2px 1px -1px;
     display: inline-block;
     height: 300px;
-    margin: 10px;
     
     vertical-align: top;
     width: 330px;
 }
 
-.action-name {
-    
+.action-name {    
     text-align: center;
-
 }
-
-
 
 .action-menu {
     bottom: 5px;
@@ -176,6 +190,7 @@
 .action-to-add {
     cursor: pointer;
     opacity: 0.5;
+    margin-left: -3px;
 }
 
 .action-to-add:hover {
@@ -188,6 +203,11 @@
     height: 250px;
     display: block;
     width: 100%;
+}
+
+.action-group {
+    display: inline-block;
+    position: absolute;
 }
 
 /* Select Action */

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
-using PluginBase;
-using PluginBase.BaseClasses;
+using TerminalBase;
+using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core
 {

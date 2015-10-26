@@ -2,7 +2,7 @@
 using System.Web.Http;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Controllers
 {

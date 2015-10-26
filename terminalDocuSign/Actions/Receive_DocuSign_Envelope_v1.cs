@@ -2,20 +2,20 @@
 using Data.Constants;
 using Data.Entities;
 using Newtonsoft.Json.Linq;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Core.Interfaces;
-using PluginBase;
+using TerminalBase;
 using Data.Interfaces.ManifestSchemas;
 using System.Threading.Tasks;
 using Core.Enums;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {

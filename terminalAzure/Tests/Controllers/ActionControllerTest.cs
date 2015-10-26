@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using NUnit.Framework;
 using Data.Interfaces.DataTransferObjects;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;

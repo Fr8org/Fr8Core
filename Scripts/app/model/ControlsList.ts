@@ -42,6 +42,17 @@
         radios: Array<RadioButtonOption>;
     }
 
+    export class TextBlock extends ControlDefinitionDTO {
+        class: string;
+
+        constructor(type: string, value: string, _class: string) {
+            super();
+            this.type = type;
+            this.value = value;
+            this.class = _class;
+        }
+    }
+
     export class FieldDTO {
         public Key: string;
         public Value: string;
