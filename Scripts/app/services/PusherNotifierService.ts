@@ -5,8 +5,8 @@ module dockyard.services {
     export interface IPusherNotifierService {
         bindEventToChannel(channel: string, event: string, callback: Function): void;
         bindEventToAllChannels(event: string, callback: Function): void;
-        unbindEvent(channel: string, event: string): void;
-        unbindAllEvents(event: string): void;
+        unbindEvent(channel: string, event: string, callback: Function): void;
+        unbindAllEvents(event: string, callback: Function): void;
         disconnect(): void;
     }
 
@@ -21,19 +21,23 @@ module dockyard.services {
         }        
 
         public bindEventToChannel(channel: string, event: string, callback: Function): void {
-            this.pusher.bind(channel, event, callback);
+            var channelInstance = this.pusher.subscribe(channel);
+            channelInstance.bind(event, callback);
         }
 
         public bindEventToAllChannels(event: string, callback: Function): void {
             this.pusher.bind(event, callback);
         }
 
-        public unbindEvent(channel: string, event: string): void {
-            this.pusher.unbind(channel, event);
+        public unbindEvent(channel: string, event: string, callback: Function): void {
+            var channelInstance = this.pusher.channel(channel);
+            if (channelInstance != undefined) {
+                channelInstance.unbind(event, callback);
+            }
         }
 
-        public unbindAllEvents(event: string) {
-            this.pusher.unbindAll(event);
+        public unbindAllEvents(event: string, callback: Function) {
+            this.pusher.unbind(event, callback);
         }
 
         public disconnect(): void {

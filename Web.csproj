@@ -726,6 +726,7 @@
     <Content Include="Scripts\lib\jquery.blockui.min.js" />
     <Content Include="Views\Sandbox\Index.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\TestNotifyController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FieldList.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
