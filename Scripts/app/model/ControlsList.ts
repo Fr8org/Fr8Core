@@ -45,9 +45,9 @@
     export class TextBlock extends ControlDefinitionDTO {
         class: string;
 
-        constructor(type: string, value: string, _class: string) {
+        constructor(value: string, _class: string) {
             super();
-            this.type = type;
+            this.type = 'TextBlock';
             this.value = value;
             this.class = _class;
         }
@@ -70,6 +70,11 @@
     export class DropDownListControlDefinitionDTO extends ControlDefinitionDTO {
         listItems: Array<DropDownListItem>;
         source: FieldSource;
+    }
+
+    export class TextSource extends DropDownListControlDefinitionDTO {
+        initialLabel: string;
+        valueSource: string;
     }
 
     export class TextBlockField extends ControlDefinitionDTO {

@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Infrastructure;
 using TerminalBase.BaseClasses;
 

@@ -32,8 +32,11 @@ namespace pluginSalesforce.Controllers
                 Name = "SendEmailViaSendGrid",
                 Label = "Send Email Vie Send Grid",
                 Version = "1",
+                Tags="Notifier",
                 Plugin = plugin,
-                Category = ActivityCategory.Forwarders
+                AuthenticationType = AuthenticationType.None,
+                Category = ActivityCategory.Forwarders,
+				MinPaneWidth = 330
             };
 
             var actionList = new List<ActivityTemplateDO>()

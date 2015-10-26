@@ -207,6 +207,7 @@ module dockyard.controllers {
             var action = new model.ActionDTO(this.$scope.currentSubroute.id, id, true);
             action.name = activityTemplate.name;
             action.label = activityTemplate.label;
+            action.minPaneWidth = activityTemplate.minPaneWidth;
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();
             this.$scope.current.action.activityTemplateId = activityTemplate.id;
@@ -363,7 +364,7 @@ module dockyard.controllers {
             };
 
             this.$http
-                .get('/actions/auth_url?id=' + eventArgs.activityTemplateId)
+                .get('/authentication/initial_url?id=' + eventArgs.activityTemplateId)
                 .then(function (res) {
                     var url = (<any>res.data).url;
 
@@ -396,7 +397,7 @@ module dockyard.controllers {
                     activityTemplateId: 1,
                     id: 1,
                     isTempId: false,
-                    actionListId: 0
+                    childrenActions: null
                 };
 
             $httpBackend

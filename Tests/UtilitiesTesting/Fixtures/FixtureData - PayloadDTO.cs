@@ -1,4 +1,4 @@
-﻿﻿using Core.Interfaces;
+﻿﻿using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;

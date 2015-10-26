@@ -181,6 +181,7 @@
     <Compile Include="Actions\Send_DocuSign_Envelope_v1.cs" />
     <Compile Include="Actions\Monitor_DocuSign_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\PluginController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
@@ -250,7 +251,7 @@
     </ProjectReference>
     <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>TerminalBase</Name>
+      <Name>PluginBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
@@ -290,14 +291,15 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>51532</DevelopmentServerPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:53234/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>http://test.dockyard.com:81</CustomServerUrl>
+          <CustomServerUrl>
+          </CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
-          <servers defaultServer="SelfHostServer">
+          <servers defaultServer="">
             <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:48024/" workingDir="" />
           </servers>
         </WebProjectProperties>

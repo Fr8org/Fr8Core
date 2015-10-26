@@ -3,19 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StructureMap;
+using Newtonsoft.Json;
+using Core.Interfaces;
+using Core.Managers;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Entities;
 using Data.Interfaces;
-using StructureMap;
-using Data.States;
-using Newtonsoft.Json;
 using Data.Interfaces.DataTransferObjects;
-using Core.Managers.APIManagers.Transmitters.Restful;
-using Core.Interfaces;
+using Data.Interfaces.ManifestSchemas;
+using Data.States;
 
 namespace Core.Services
 {
     public class Authorization
     {
+        private readonly ICrateManager _crate;
+
+
+        public Authorization()
+        {
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
+        }
+
         public string GetToken(string userId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -113,7 +123,7 @@ namespace Core.Services
                 }
 
                 // Try to find AuthToken if plugin requires authentication.
-                if (activityTemplate.Plugin.RequiresAuthentication)
+                if (activityTemplate.AuthenticationType != AuthenticationType.None)
                 {
                     // Try to get owner's account for Action -> Route.
                     // Can't follow guideline to init services inside constructor. 
@@ -147,13 +157,18 @@ namespace Core.Services
             }
         }
 
-        public async Task AuthenticateInternal(Fr8AccountDO account, PluginDO plugin,
-         string username, string password)
+        public async Task<string> AuthenticateInternal(
+            Fr8AccountDO account,
+            ActivityTemplateDO activityTemplate,
+            string username,
+            string password)
         {
-            if (!plugin.RequiresAuthentication)
+            if (activityTemplate.AuthenticationType == AuthenticationType.None)
             {
                 throw new ApplicationException("Plugin does not require authentication.");
             }
+
+            var plugin = activityTemplate.Plugin;
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
@@ -164,11 +179,15 @@ namespace Core.Services
             };
 
             var response = await restClient.PostAsync<CredentialsDTO>(
-                new Uri("http://" + plugin.Endpoint + "/actions/authenticate_internal"),
+                new Uri("http://" + plugin.Endpoint + "/authentication/internal"),
                 credentialsDTO
             );
 
             var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
+            if (!string.IsNullOrEmpty(authTokenDTO.Error))
+            {
+                return authTokenDTO.Error;
+            }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -202,25 +221,38 @@ namespace Core.Services
                     uow.SaveChanges();
                 }
             }
+
+            return null;
         }
 
-        public async Task AuthenticateExternal(
+        public async Task<string> GetOAuthToken(
             PluginDO plugin,
             ExternalAuthenticationDTO externalAuthDTO)
         {
-            if (!plugin.RequiresAuthentication)
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                throw new ApplicationException("Plugin does not require authentication.");
+                var hasAuthentication = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Any(x => x.Plugin.Id == plugin.Id);
+
+                if (!hasAuthentication)
+                {
+                    throw new ApplicationException("Plugin does not require authentication.");
+                }
             }
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             var response = await restClient.PostAsync<ExternalAuthenticationDTO>(
-                new Uri("http://" + plugin.Endpoint + "/actions/authenticate_external"),
+                new Uri("http://" + plugin.Endpoint + "/authentication/token"),
                 externalAuthDTO
             );
 
             var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
+            if (!string.IsNullOrEmpty(authTokenDTO.Error))
+            {
+                return authTokenDTO.Error;
+            }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -238,21 +270,26 @@ namespace Core.Services
                 authToken.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
                 uow.SaveChanges();
             }
+
+            return null;
         }
 
 
-        public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl(
-            Fr8AccountDO user, PluginDO plugin)
+        public async Task<ExternalAuthUrlDTO> GetOAuthInitiationURL(
+            Fr8AccountDO user,
+            ActivityTemplateDO activityTemplate)
         {
-            if (!plugin.RequiresAuthentication)
+            if (activityTemplate.AuthenticationType == AuthenticationType.None)
             {
                 throw new ApplicationException("Plugin does not require authentication.");
             }
 
+            var plugin = activityTemplate.Plugin;
+
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             var response = await restClient.PostAsync(
-                new Uri("http://" + plugin.Endpoint + "/actions/auth_url")
+                new Uri("http://" + plugin.Endpoint + "/authentication/initial_url")
             );
 
             var externalAuthUrlDTO = JsonConvert.DeserializeObject<ExternalAuthUrlDTO>(response);
@@ -291,5 +328,80 @@ namespace Core.Services
             return externalAuthUrlDTO;
         }
 
+        private void AddAuthenticationCrate(
+            ActionDTO actionDTO, int authType)
+        {
+            if (actionDTO.CrateStorage == null)
+            {
+                actionDTO.CrateStorage = new CrateStorageDTO()
+                {
+                    CrateDTO = new List<CrateDTO>()
+                };
+            }
+
+            var mode = authType == AuthenticationType.Internal
+                ? AuthenticationMode.InternalMode
+                : AuthenticationMode.ExternalMode;
+
+            actionDTO.CrateStorage.CrateDTO.Add(
+                _crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
+            );
+        }
+
+        private void RemoveAuthenticationCrate(ActionDTO actionDTO)
+        {
+            if (actionDTO.CrateStorage != null
+                && actionDTO.CrateStorage.CrateDTO != null)
+            {
+                var authCrates = actionDTO.CrateStorage.CrateDTO
+                    .Where(x => x.ManifestType == CrateManifests.STANDARD_AUTHENTICATION_NAME)
+                    .ToList();
+
+                foreach (var authCrate in authCrates)
+                {
+                    actionDTO.CrateStorage.CrateDTO.Remove(authCrate);
+                }
+            }
+        }
+
+        public bool ValidateAuthenticationNeeded(string userId, ActionDTO curActionDTO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(curActionDTO.ActivityTemplateId);
+
+                if (activityTemplate == null)
+                {
+                    throw new NullReferenceException("ActivityTemplate was not found.");
+                }
+
+                var account = uow.UserRepository.GetByKey(userId);
+
+                if (account == null)
+                {
+                    throw new NullReferenceException("Current account was not found.");
+                }
+
+                if (activityTemplate.AuthenticationType != AuthenticationType.None)
+                {
+                    var authToken = uow.AuthorizationTokenRepository
+                        .FindOne(x => x.Plugin.Id == activityTemplate.Plugin.Id
+                            && x.UserDO.Id == account.Id);
+
+                    if (authToken == null)
+                    {
+                        AddAuthenticationCrate(curActionDTO, activityTemplate.AuthenticationType);
+                        return true;
+                    }
+                    else
+                    {
+                        RemoveAuthenticationCrate(curActionDTO);
+                    }
+                }
+            }
+
+            return false;
+        }
     }
 }

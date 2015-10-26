@@ -57,7 +57,7 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var subroute = Mapper.Map<SubrouteDO>(dto);
-                _subroute.Create(uow, subroute);
+                _subroute.Store(uow, subroute);
 
                 uow.SaveChanges();
 

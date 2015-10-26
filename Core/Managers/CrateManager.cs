@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -129,7 +129,7 @@ namespace Core.Managers
                 var results = curCrateJSON.Descendants()
                     .OfType<JObject>()
                     // where (object has a key field) && (key field value equals to key argument)
-                    .Where(x => x[keyFieldName] != null && x[keyFieldName].Value<TKey>().Equals(key));
+                    .Where(x => x[keyFieldName] != null && Object.Equals(x[keyFieldName].Value<TKey>(), key));
                 resultsObjects.AddRange(results);
             }
             return resultsObjects;
@@ -285,6 +285,24 @@ namespace Core.Managers
         public void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO)
         {
             AddCrate(curActionDO, new List<CrateDTO>() { curCrateDTO });
+        }
+
+        public void AddCrate(PayloadDTO payload, List<CrateDTO> curCrateDTOLists)
+        {
+            if (curCrateDTOLists == null)
+                throw new ArgumentNullException("CrateDTO is null");
+            if (payload == null)
+                throw new ArgumentNullException("PayloadDTO is null");
+
+            if (curCrateDTOLists.Count > 0)
+            {
+                payload.UpdateCrateStorageDTO(curCrateDTOLists);
+            }
+        }
+
+        public void AddCrate(PayloadDTO payload, CrateDTO curCrateDTO)
+        {
+            AddCrate(payload, new List<CrateDTO>() { curCrateDTO });
         }
 
         public void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO)

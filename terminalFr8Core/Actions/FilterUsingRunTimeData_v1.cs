@@ -1,11 +1,11 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Core.Enums;
 using Newtonsoft.Json;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
@@ -116,9 +116,10 @@ namespace terminalFr8Core.Actions
                 var nameRightExpr = Expression.Constant(condition.Field);
                 var nameExpression = Expression.Equal(nameLeftExpr, nameRightExpr);
 
-                var valueLeftExpr = Expression.Property(pe, valuePropInfo);
-                var valueRightExpr = Expression.Constant(condition.Value);
-
+                var valueLeftExpr = Expression.Invoke(TryMakeDecimalExpression.Value, Expression.Property(pe, valuePropInfo));
+                var valueRightExpr = Expression.Invoke(TryMakeDecimalExpression.Value, Expression.Constant(condition.Value));
+                var comparisionExpr = Expression.Call(valueLeftExpr, "CompareTo", null, valueRightExpr);
+                var zero = Expression.Constant(0);
 
                 var op = condition.Operator;
                 Expression criterionExpression;
@@ -126,22 +127,22 @@ namespace terminalFr8Core.Actions
                 switch (op)
                 {
                     case "eq":
-                        criterionExpression = Expression.Equal(valueLeftExpr, valueRightExpr);
+                        criterionExpression = Expression.Equal(comparisionExpr, zero);
                         break;
                     case "neq":
-                        criterionExpression = Expression.NotEqual(valueLeftExpr, valueRightExpr);
+                        criterionExpression = Expression.NotEqual(comparisionExpr, zero);
                         break;
                     case "gt":
-                        criterionExpression = Expression.GreaterThan(valueLeftExpr, valueRightExpr);
+                        criterionExpression = Expression.GreaterThan(comparisionExpr, zero);
                         break;
                     case "gte":
-                        criterionExpression = Expression.GreaterThanOrEqual(valueLeftExpr, valueRightExpr);
+                        criterionExpression = Expression.GreaterThanOrEqual(comparisionExpr, zero);
                         break;
                     case "lt":
-                        criterionExpression = Expression.LessThan(valueLeftExpr, valueRightExpr);
+                        criterionExpression = Expression.LessThan(comparisionExpr, zero);
                         break;
                     case "lte":
-                        criterionExpression = Expression.LessThanOrEqual(valueLeftExpr, valueRightExpr);
+                        criterionExpression = Expression.LessThanOrEqual(comparisionExpr, zero);
                         break;
                     default:
                         throw new NotSupportedException(string.Format("Not supported operator: {0}", op));
@@ -173,10 +174,28 @@ namespace terminalFr8Core.Actions
             return whereCallExpression;
         }
 
+        private static readonly Lazy<Expression<Func<string, IComparable>>> TryMakeDecimalExpression =
+            new Lazy<Expression<Func<string, IComparable>>>(() =>
+            {
+                var value = Expression.Parameter(typeof(string), "value");
+                var returnValue = Expression.Variable(typeof(IComparable), "result");
+                var decimalValue = Expression.Variable(typeof(decimal), "decimalResult");
+                var ifExpression = Expression.IfThenElse(
+                    Expression.Call(typeof(decimal), "TryParse", null,
+                            Expression.TypeAs(value, typeof(string)), decimalValue),
+                    Expression.Assign(returnValue, Expression.TypeAs(decimalValue, typeof (IComparable))),
+                    Expression.Assign(returnValue, Expression.TypeAs(value, typeof (IComparable))));
+                var func = Expression.Block(
+                    new[] {returnValue, decimalValue},
+                    ifExpression,
+                    returnValue);
+                return Expression.Lambda<Func<string, IComparable>>(func, "TryMakeDecimal", new[] { value });
+            });
+
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
+        public override async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
         }

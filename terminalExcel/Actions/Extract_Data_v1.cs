@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using StructureMap;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
@@ -14,6 +14,7 @@ using terminalExcel.Infrastructure;
 using Core.Exceptions;
 using TerminalBase.BaseClasses;
 using AutoMapper;
+using Core.Interfaces;
 
 namespace terminalExcel.Actions
 {
@@ -22,26 +23,33 @@ namespace terminalExcel.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<ActionDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
             return await CreateStandardPayloadDataFromStandardTableData(curActionDTO);
         }
 
-        private async Task<ActionDTO> CreateStandardPayloadDataFromStandardTableData(ActionDTO curActionDTO)
+        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDTO curActionDTO)
         {
+            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
-            StandardTableDataCM tableDataMS = await GetTargetTableData(curActionDO.Id, curActionDO.CrateStorageDTO());
+            var tableDataMS = await GetTargetTableData(
+                curActionDO.Id,
+                curActionDO.CrateStorageDTO()
+            );
+
             if (!tableDataMS.FirstRowHeaders)
+            {
                 throw new Exception("No headers found in the Standard Table Data Manifest.");
+            }
 
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
             var payloadDataCrate = Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
-            Crate.AddCrate(curActionDO, payloadDataCrate);
-
-           return Mapper.Map<ActionDTO>(curActionDO);
+            Crate.AddCrate(processPayload, payloadDataCrate);
             
+            return processPayload;            
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(int actionId, CrateStorageDTO curCrateStorageDTO)
@@ -109,7 +117,7 @@ namespace terminalExcel.Actions
 
             var filePickerControl = new ControlDefinitionDTO(ControlTypes.FilePicker)
             {
-                Label = "Select Excel File",
+                Label = "Select an Excel file",
                 Name = "select_file",
                 Required = true,
                 Events = new List<ControlEvent>()
@@ -118,11 +126,19 @@ namespace terminalExcel.Actions
                 },
                 Source = new FieldSourceDTO
                 {
-                    Label = "Select Excel File",
+                    Label = "Select an Excel file",
                     ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
                 },
             };
             controlList.Add(filePickerControl);
+
+            var textBlockControlField = new TextBlockControlDefinitionDTO()
+            {
+                Label = "",
+                Value = "This Action will try to extract a table of rows from the first spreadsheet in the file. The rows should have a header row.",
+                CssClass = "well well-lg TextBlockClass"
+            };
+            controlList.Add(textBlockControlField);
 
             if (includeTextBlockControl)
             {
@@ -169,7 +185,28 @@ namespace terminalExcel.Actions
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
         {
-            return ReturnInitialUnlessExistsField(curActionDTO, "select_file", new Manifest(Data.Constants.MT.StandardConfigurationControls));
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+
+            var filePathsFromUserSelection = Action.FindKeysByCrateManifestType(
+                    curActionDO,
+                    new Manifest(Data.Constants.MT.StandardConfigurationControls),
+                    "select_file"
+                )
+                .Result
+                .Select(e => (string)e["value"])
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToArray();
+
+            var hasDesignTimeFields = curActionDTO.CrateStorage.CrateDTO
+                .Any(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    && x.Label == "Spreadsheet Column Headers");
+
+            if (filePathsFromUserSelection.Length == 1 || hasDesignTimeFields)
+            {
+                return ConfigurationRequestType.Followup;
+            }
+
+            return ConfigurationRequestType.Initial;
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
@@ -190,10 +227,16 @@ namespace terminalExcel.Actions
             // Creating configuration control crate with a file picker and textblock
             var configControlsCrateDTO = CreateConfigurationControlsCrate(true);
             curActionDTO.CrateStorage.CrateDTO.Add(configControlsCrateDTO);
-            
-            var selectedFilePath = filePathsFromUserSelection[0];
 
-            return await TransformExcelFileDataToStandardTableDataCrate(curActionDTO, selectedFilePath);
+            if (filePathsFromUserSelection.Length > 0)
+            {
+                var selectedFilePath = filePathsFromUserSelection[0];
+                return await TransformExcelFileDataToStandardTableDataCrate(curActionDTO, selectedFilePath);
+            }
+            else
+            {
+                return curActionDTO;
+            }
         }
 
         private async Task<ActionDTO> TransformExcelFileDataToStandardTableDataCrate(ActionDTO curActionDTO, string selectedFilePath)

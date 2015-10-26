@@ -29,7 +29,7 @@ namespace Core.Services
         /// <summary>
         /// Create Subroute entity with required children criteria entity.
         /// </summary>
-        public void Create(IUnitOfWork uow, SubrouteDO subroute )
+        public void Store(IUnitOfWork uow, SubrouteDO subroute )
         {
             if (subroute == null)
             {
@@ -47,6 +47,33 @@ namespace Core.Services
             uow.CriteriaRepository.Add(criteria);
             
             //we don't want to save changes here, to enable upstream transactions
+        }
+
+        // <summary>
+        /// Creates noew Subroute entity and add it to RouteDO. If RouteDO has no child subroute created route becomes starting subroute.
+        /// </summary>
+        public SubrouteDO Create(IUnitOfWork uow, RouteDO route, string name)
+        {
+            var subroute = new SubrouteDO();
+
+            uow.SubrouteRepository.Add(subroute);
+
+            if (route != null)
+            {
+                if (!route.Subroutes.Any())
+                {
+                    route.StartingSubroute = subroute;
+                    subroute.StartingSubroute = true;
+                }
+
+                //route.ChildNodes.Add(subroute);
+            }
+
+            subroute.Name = name;
+
+
+
+            return subroute;
         }
 
         /// <summary>
@@ -117,9 +144,9 @@ namespace Core.Services
                 throw new Exception(string.Format("Unable to find Subroute by id = {0}", curActionDO.ParentRouteNodeId));
             }
 
-            curActionDO.Ordering = subroute.RouteNodes.Count > 0 ? subroute.RouteNodes.Max(x => x.Ordering) + 1 : 1;
+            curActionDO.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
 
-            subroute.RouteNodes.Add(curActionDO);
+            subroute.ChildNodes.Add(curActionDO);
 
             uow.SaveChanges();
         }

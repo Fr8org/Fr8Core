@@ -19,7 +19,8 @@ namespace pluginIntegrationTests.Fixtures
             public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
             {
                 return new Type[] {
-                    typeof(Web.Controllers.RouteNodesController)
+                    typeof(Web.Controllers.RouteNodesController),
+                    typeof(Web.Controllers.ContainerController)
                 };
             }
         }

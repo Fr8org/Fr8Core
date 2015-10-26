@@ -33,7 +33,9 @@ namespace terminalSalesforce.Controllers
                 Name = "Create_Lead",
                 Label = "Create Lead",
                 Plugin = plugin,
-                Category = ActivityCategory.Forwarders
+                AuthenticationType = AuthenticationType.None,
+                Category = ActivityCategory.Forwarders,
+				MinPaneWidth = 330
             };
 
             var actionList = new List<ActivityTemplateDO>()

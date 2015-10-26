@@ -24,5 +24,7 @@ namespace Core.Interfaces
         IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IFr8AccountDO curAccount);
 
 	    Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction);
-	}
+
+        IEnumerable<ActivityTemplateDO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount);
+    }
 }

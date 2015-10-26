@@ -54,40 +54,8 @@ namespace TerminalBase.BaseClasses
             {
                 return true;
             }
-
+        
             return false;
-        }
-
-        protected void RemoveAuthenticationCrate(ActionDTO actionDTO)
-        {
-            if (actionDTO.CrateStorage != null
-                && actionDTO.CrateStorage.CrateDTO != null)
-            {
-                var authCrates = actionDTO.CrateStorage.CrateDTO
-                    .Where(x => x.ManifestType == CrateManifests.STANDARD_AUTHENTICATION_NAME)
-                    .ToList();
-
-                foreach (var authCrate in authCrates)
-                {
-                    actionDTO.CrateStorage.CrateDTO.Remove(authCrate);
-                }
-            }
-        }
-
-        protected void AddAuthenticationCrate(
-            ActionDTO actionDTO, AuthenticationMode mode)
-        {
-            if (actionDTO.CrateStorage == null)
-            {
-                actionDTO.CrateStorage = new CrateStorageDTO()
-                {
-                    CrateDTO = new List<CrateDTO>()
-                };
-            }
-
-            actionDTO.CrateStorage.CrateDTO.Add(
-                Crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
-            );
         }
 
         protected async Task<PayloadDTO> GetProcessPayload(int processId)
@@ -97,7 +65,7 @@ namespace TerminalBase.BaseClasses
                 + "api/containers/"
                 + processId.ToString();
 
-            using (var response = await httpClient.GetAsync(url))
+            using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
             {
                 var content = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<PayloadDTO>(content);
@@ -150,20 +118,6 @@ namespace TerminalBase.BaseClasses
             }
 
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
-        }
-
-        protected bool ValidateAuthentication(ActionDTO curActionDTO, AuthenticationMode curAuthenticationMode)
-        {
-            if (NeedsAuthentication(curActionDTO))
-            {
-                AddAuthenticationCrate(
-                    curActionDTO,
-                    curAuthenticationMode);
-                return false;
-            }
-            else
-                RemoveAuthenticationCrate(curActionDTO);
-            return true;
         }
 
         /// <summary>
@@ -429,6 +383,7 @@ namespace TerminalBase.BaseClasses
             return control;
         }
 
+
         /// <summary>
         /// Extract value from RadioButtonGroup where specific value or upstream field was specified.
         /// </summary>
@@ -441,14 +396,38 @@ namespace TerminalBase.BaseClasses
                 c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
 
             var controls = Crate.GetStandardConfigurationControls(controlsCrate).Controls;
-            var radioButtonGroupControl = controls
-                .SingleOrDefault(c => c.Name == controlName) as RadioButtonGroupControlDefinitionDTO;
+            var control = controls
+                .SingleOrDefault(c => c.Name == controlName);
 
-            if (radioButtonGroupControl == null)
+            if (control as RadioButtonGroupControlDefinitionDTO != null)
             {
-                throw new ApplicationException("No Radio ButtonGroupControl found.");
+                // Get value from a combination of RadioButtonGroup, TextField and DDLB controls
+                // (old approach prior to TextSource) 
+                return ExtractSpecificOrUpstreamValueLegacy((RadioButtonGroupControlDefinitionDTO)control, runTimeCrateStorage);
             }
 
+            if (control as TextSourceControlDefinitionDTO == null)
+            {
+                throw new ApplicationException("TextSource control was expected but not found.");
+            }
+
+            TextSourceControlDefinitionDTO textSourceControl = (TextSourceControlDefinitionDTO)control;
+
+            switch (textSourceControl.ValueSource)
+            {
+                case "specific":
+                    return textSourceControl.Value;
+
+                case "upstream":
+                    return ExtractDesignTimeFieldValue(runTimeCrateStorage, textSourceControl.Value);
+
+                default:
+                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+            }
+        }
+
+        private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroupControlDefinitionDTO radioButtonGroupControl, CrateStorageDTO runTimeCrateStorage)
+        {
             var radioButton = radioButtonGroupControl
                 .Radios
                 .FirstOrDefault(x => x.Selected);
@@ -474,7 +453,6 @@ namespace TerminalBase.BaseClasses
                 default:
                     throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
             }
-
             return returnValue;
         }
 
@@ -489,91 +467,26 @@ namespace TerminalBase.BaseClasses
             var crates = Crate.GetCratesByManifestType(
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, crateStorage);
 
-            foreach (var crate in crates)
-            {
-                var allFields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
-                var searchField = allFields.FirstOrDefault(x => x.Key == fieldKey);
+            var fieldValues = Crate.GetElementByKey(crates, key: fieldKey, keyFieldName: "Key")
+                .Select(e => (string)e["Value"])
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToArray();
 
-                if (searchField != null)
-                {
-                    return searchField.Value;
-                }
-            }
+            if (fieldValues.Length > 0)
+                return fieldValues[0];
+
+            //foreach (var crate in crates)
+            //{
+            //    var allFields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
+            //    var searchField = allFields.FirstOrDefault(x => x.Key == fieldKey);
+
+            //    if (searchField != null)
+            //    {
+            //        return searchField.Value;
+            //    }
+            //}
 
             throw new ApplicationException("No field found with specified key.");
         }
-
-        public void FlaggedForAuthentication(ActionDTO curActionDTO)
-        {
-            AddAuthenticationCrate(
-                    curActionDTO,
-                    AuthenticationMode.ExternalMode);
-        }
-
-
-        /// <summary>
-        /// Retrieve authorization token
-        /// </summary>
-        /// <param name="curActionDO"></param>
-        /// <returns></returns>
-        public string Authenticate(ActionDO curActionDO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                Fr8AccountDO curDockyardAccountDO = GetAccount(curActionDO);
-                var curPlugin = curActionDO.ActivityTemplate.Plugin;
-                string curToken = string.Empty;
-
-                if (curDockyardAccountDO != null)
-                {
-                    curToken = _authorizationToken.GetToken(curDockyardAccountDO.Id, curPlugin.Id);
-
-                    if (!string.IsNullOrEmpty(curToken))
-                        return curToken;
-                }
-
-                curToken = _authorizationToken.GetPluginToken(curPlugin.Id);
-                if (!string.IsNullOrEmpty(curToken))
-                    return curToken;
-                return _plugin.Authorize();
-            }
-        }
-
-        public bool IsAuthenticated(Fr8AccountDO account, PluginDO plugin)
-        {
-            if (!plugin.RequiresAuthentication)
-            {
-                return true;
-            }
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var hasAuthToken = uow.AuthorizationTokenRepository
-                    .GetQuery()
-                    .Any(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
-
-                return hasAuthToken;
-            }
-        }
-
-        /// <summary>
-        /// Retrieve account
-        /// </summary>
-        /// <param name="curActionDO"></param>
-        /// <returns></returns>
-        public Fr8AccountDO GetAccount(ActionDO curActionDO)
-        {
-            if (curActionDO.ParentRouteNode != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
-            {
-                // Can't follow guideline to init services inside constructor. 
-                // Current implementation of Route and Action services are not good and are depedant on each other.
-                // Initialization of services in constructor will cause stack overflow
-                var route = ObjectFactory.GetInstance<IRoute>().GetRoute(curActionDO);
-                return route != null ? route.Fr8Account : null;
-            }
-
-            return null;
-
-        }      
     }
 }

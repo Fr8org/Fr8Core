@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
-using Core.Interfaces;
+using Data.Interfaces;
 using TerminalBase;
 using Data.Interfaces.ManifestSchemas;
 using System.Threading.Tasks;
@@ -21,20 +21,18 @@ namespace terminalDocuSign.Actions
 {
     public class Receive_DocuSign_Envelope_v1 : BasePluginAction
     {
-        // TODO: remove this as of DO-1064
-        // IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
-
         public Receive_DocuSign_Envelope_v1()
         {
-            // TODO: remove this as of DO-1064
-            // _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
         }
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
-                return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial);
-            return curActionDTO;
+            if (NeedsAuthentication(curActionDTO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            return await ProcessConfigurationRequest(curActionDTO, dto => ConfigurationRequestType.Initial);
         }
 
         public void Activate(ActionDTO curActionDTO)

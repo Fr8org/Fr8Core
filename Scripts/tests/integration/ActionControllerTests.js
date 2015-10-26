@@ -76,8 +76,7 @@ var dockyard;
                             activityTemplateId: 1,
                             isTempId: false,
                             id: 0,
-                            actionListId: 1,
-                            activityTemplate: null
+                            childrenActions: null
                         };
                         postInvoker(done, actions);
                     });
@@ -95,9 +94,7 @@ var dockyard;
                         activityTemplateId: 1,
                         isTempId: false,
                         id: 1,
-                        // ActionListId is set to null, since there is no ActionsLists on a blank db.
-                        actionListId: null,
-                        activityTemplate: fx.ActivityTemplate.activityTemplateDO
+                        childrenActions: null
                     };
                     beforeAll(function () {
                         $(document).ajaxError(errorHandler);

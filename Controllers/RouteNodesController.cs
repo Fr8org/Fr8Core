@@ -99,5 +99,5 @@ namespace Web.Controllers
                 return Ok(categoriesWithActivities);
             }
         }
-	}
+    }
 }

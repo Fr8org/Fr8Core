@@ -6,7 +6,7 @@ using System.Web.Http.Description;
 using Utilities.Configuration.Azure;
 
 namespace terminalTwilio.Controllers
-{    
+{
     [RoutePrefix("plugins")]
     public class PluginController : ApiController
     {
@@ -27,9 +27,12 @@ namespace terminalTwilio.Controllers
             {
                 Name = "Send_Via_Twilio",
                 Label = "Send Via Twilio",
+                Tags = "Twillio",
                 Category = ActivityCategory.Forwarders,
                 Version = "1",
-                Plugin = plugin
+                Plugin = plugin,
+                AuthenticationType = AuthenticationType.None,
+                MinPaneWidth = 330
             };
 
             var actionList = new List<ActivityTemplateDO>
@@ -37,7 +40,7 @@ namespace terminalTwilio.Controllers
                 sendViaTwilioTemplate
             };
 
-            return Json(actionList);   
+            return Json(actionList);
         }
     }
 }
