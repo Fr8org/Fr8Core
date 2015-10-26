@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using terminalSalesforce.Infrastructure;
@@ -22,7 +23,19 @@ namespace terminalSalesforce.Controllers
         public Task<AuthTokenDTO> GenerateOAuthToken(
             ExternalAuthenticationDTO externalAuthDTO)
         {
-            return Task.FromResult(_authentication.Authenticate(externalAuthDTO));
+            try
+            {
+                return Task.FromResult(_authentication.Authenticate(externalAuthDTO));
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(
+                    new AuthTokenDTO()
+                    {
+                        Error = "An error occured while trying to authenticate, please try again later."
+                    }
+                );
+            }
         }
     }
 }

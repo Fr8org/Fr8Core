@@ -17,25 +17,38 @@ namespace terminalDocuSign.Controllers
         [Route("internal")]
         public async Task<AuthTokenDTO> GenerateInternalOAuthToken(CredentialsDTO curCredentials)
         {
-            // Auth sequence according to https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#OAuth2/OAuth2%20Token%20Request.htm
-            var oauthToken = await ObtainOAuthToken(curCredentials, CloudConfigurationManager.GetSetting("endpoint"));
-
-            if (string.IsNullOrEmpty(oauthToken))
+            try
             {
-                return null;
+                // Auth sequence according to https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#OAuth2/OAuth2%20Token%20Request.htm
+                var oauthToken = await ObtainOAuthToken(curCredentials, CloudConfigurationManager.GetSetting("endpoint"));
+
+                if (string.IsNullOrEmpty(oauthToken))
+                {
+                    return new AuthTokenDTO()
+                    {
+                        Error = "Unable to authenticate in DocuSign service, invalid login name or password."
+                    };
+                }
+
+                var docuSignAuthDTO = new DocuSignAuthDTO()
+                {
+                    Email = curCredentials.Username,
+                    ApiPassword = oauthToken
+                };
+
+                return new AuthTokenDTO()
+                {
+                    Token = JsonConvert.SerializeObject(docuSignAuthDTO),
+                    ExternalAccountId = curCredentials.Username
+                };
             }
-
-            var docuSignAuthDTO = new DocuSignAuthDTO()
+            catch (Exception ex)
             {
-                Email = curCredentials.Username,
-                ApiPassword = oauthToken
-            };
-
-            return new AuthTokenDTO()
-            {
-                Token = JsonConvert.SerializeObject(docuSignAuthDTO),
-                ExternalAccountId = curCredentials.Username
-            };
+                return new AuthTokenDTO()
+                {
+                    Error = "An error occured while trying to authenticate, please try again later."
+                };
+            }
         }
 
         private async Task<string> ObtainOAuthToken(CredentialsDTO curCredentials, string baseUrl)
