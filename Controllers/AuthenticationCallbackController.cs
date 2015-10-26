@@ -27,9 +27,10 @@ namespace Web.Controllers
 
         [HttpGet]
         public async Task<ActionResult> ProcessSuccessfulOAuthResponse(
-            [Bind(Prefix="dockyard_plugin")] string pluginName,
-            [Bind(Prefix = "version")] string pluginVersion)
+            string pluginName,
+            string pluginVersion)
         {
+            
             if (string.IsNullOrEmpty(pluginName) || string.IsNullOrEmpty(pluginVersion))
             {
                 throw new ApplicationException("PluginName or PluginVersion is not specified.");
