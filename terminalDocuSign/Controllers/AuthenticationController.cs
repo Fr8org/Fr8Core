@@ -5,14 +5,18 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Data.Interfaces.DataTransferObjects;
+using TerminalBase.BaseClasses;
 using Utilities.Configuration.Azure;
 using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : ApiController
+    public class AuthenticationController : BasePluginController
     {
+        private const string curPlugin = "terminalDocuSign";
+
+
         [HttpPost]
         [Route("internal")]
         public async Task<AuthTokenDTO> GenerateInternalOAuthToken(CredentialsDTO curCredentials)
@@ -44,6 +48,8 @@ namespace terminalDocuSign.Controllers
             }
             catch (Exception ex)
             {
+                ReportPluginError(curPlugin, ex);
+
                 return new AuthTokenDTO()
                 {
                     Error = "An error occured while trying to authenticate, please try again later."

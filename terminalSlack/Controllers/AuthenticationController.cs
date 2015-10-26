@@ -2,14 +2,17 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
+using TerminalBase.BaseClasses;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 
 namespace terminalSlack.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : ApiController
+    public class AuthenticationController : BasePluginController
     {
+        private const string curPlugin = "terminalSlack";
+
         private readonly ISlackIntegration _slackIntegration;
 
 
@@ -63,6 +66,8 @@ namespace terminalSlack.Controllers
             }
             catch (Exception ex)
             {
+                ReportPluginError(curPlugin, ex);
+
                 return new AuthTokenDTO()
                 {
                     Error = "An error occured while trying to authenticate, please try again later."

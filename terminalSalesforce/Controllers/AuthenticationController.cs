@@ -2,14 +2,18 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
+using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
 
 namespace terminalSalesforce.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : ApiController
+    public class AuthenticationController : BasePluginController
     {
+        private const string curPlugin = "terminalSalesforce";
+        
         private Authentication _authentication = new Authentication();
+
 
         [HttpPost]
         [Route("initial_url")]
@@ -29,6 +33,8 @@ namespace terminalSalesforce.Controllers
             }
             catch (Exception ex)
             {
+                ReportPluginError(curPlugin, ex);
+
                 return Task.FromResult(
                     new AuthTokenDTO()
                     {
