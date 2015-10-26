@@ -264,6 +264,7 @@
     <Compile Include="Interfaces\DataTransferObjects\RouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\WebServiceDTO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\IMTDataRepository.cs" />
     <Compile Include="Interfaces\IMTFieldRepository.cs" />
@@ -354,9 +355,9 @@
     <Compile Include="Migrations\201510230242497_FixUp_2_Migration.Designer.cs">
       <DependentUpon>201510230242497_FixUp_2_Migration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201510231214010_CreateWebServiceTable_Migration.cs" />
-    <Compile Include="Migrations\201510231214010_CreateWebServiceTable_Migration.Designer.cs">
-      <DependentUpon>201510231214010_CreateWebServiceTable_Migration.cs</DependentUpon>
+    <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.cs" />
+    <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.Designer.cs">
+      <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -622,8 +623,8 @@
     <EmbeddedResource Include="Migrations\201510230242497_FixUp_2_Migration.resx">
       <DependentUpon>201510230242497_FixUp_2_Migration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201510231214010_CreateWebServiceTable_Migration.resx">
-      <DependentUpon>201510231214010_CreateWebServiceTable_Migration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201510261339053_CreateWebServicesTable_Migration.resx">
+      <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

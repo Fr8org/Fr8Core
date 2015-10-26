@@ -151,7 +151,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             .state('webservices', {
             url: "/webservices",
             templateUrl: "/AngularTemplate/WebServiceList",
-            data: { pageTitle: 'WebServices', pageSubTitle: '' }
+            data: { pageTitle: 'Web Services', pageSubTitle: '' }
         });
     }]);
 /* Init global settings and run the app */

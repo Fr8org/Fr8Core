@@ -8,12 +8,12 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="webService in ::webServices">
-				<td>{{:: webService.Id }}</td>
+			<tr ng-repeat="webService in webServices">
+				<td>{{webService.id}}</td>
 				<td>
-					<img src="{{:: webService.Icon }}" />
+					<img src="{{webService.iconPath}}" width="32" height="32" />
 				</td>
-				<td>{{:: webService.Name }}</td>
+				<td>{{webService.name}}</td>
 			</tr>
 		</tbody>
 	</table>

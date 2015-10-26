@@ -510,7 +510,7 @@ namespace Data.Migrations
 			AddWebService(uow, "DocuSign", "/Content/icons/docusign-icon-64x64.png");
 	    }
 
-	    private void AddWebService(IUnitOfWork uow, string name, string icon)
+	    private void AddWebService(IUnitOfWork uow, string name, string iconPath)
 	    {
 		    var isWsExists = uow.WebServiceRepository.GetQuery().Any(x => x.Name == name);
 
@@ -519,7 +519,7 @@ namespace Data.Migrations
 				var webServiceDO = new WebServiceDO
 				{
 					Name = name,
-					Icon = icon
+					IconPath = iconPath
 				};
 
 				uow.WebServiceRepository.Add(webServiceDO);

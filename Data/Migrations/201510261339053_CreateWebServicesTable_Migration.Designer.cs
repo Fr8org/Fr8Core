@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class CreateWebServiceTable_Migration : IMigrationMetadata
+    public sealed partial class CreateWebServicesTable_Migration : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(CreateWebServiceTable_Migration));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(CreateWebServicesTable_Migration));
         
         string IMigrationMetadata.Id
         {
-            get { return "201510231214010_CreateWebServiceTable_Migration"; }
+            get { return "201510261339053_CreateWebServicesTable_Migration"; }
         }
         
         string IMigrationMetadata.Source

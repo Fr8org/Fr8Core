@@ -44,6 +44,8 @@ namespace Web.App_Start
             Mapper.CreateMap<Fr8AccountDO, UserDTO>()
                 .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))
                 .ForMember(dto => dto.Status, opts => opts.ResolveUsing(e => e.State.Value));
+
+	        Mapper.CreateMap<WebServiceDO, WebServiceDTO>();
         }
     }
 }
