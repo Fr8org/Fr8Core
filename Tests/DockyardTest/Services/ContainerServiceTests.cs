@@ -27,7 +27,7 @@ namespace DockyardTest.Services
     [Category("ContainerService")]
     public class ContainerServiceTests : BaseTest
     {
-
+        
         private InternalInterface.IContainer _container;
         //private IDocuSignNotification _docuSignNotificationService;
         private EventReporter _eventReporter;
@@ -94,70 +94,70 @@ namespace DockyardTest.Services
             }
         }
 
-        /*
-                //get this working again once 1124 is merged
-                [Test,Ignore]
-                public void Process_CanAccessProcessNodes()
-                {
-                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                    {
-                        //Arrange
-                        var envelope = FixtureData.TestEnvelope1();
-                        var route = FixtureData.TestRouteWithStartingSubroutes();
+/*
+        //get this working again once 1124 is merged
+        [Test,Ignore]
+        public void Process_CanAccessProcessNodes()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Arrange
+                var envelope = FixtureData.TestEnvelope1();
+                var route = FixtureData.TestRouteWithStartingSubroutes();
 
-                        uow.EnvelopeRepository.Add(envelope);
-                        uow.RouteRepository.Add(route);
-                        uow.SaveChanges();
+                uow.EnvelopeRepository.Add(envelope);
+                uow.RouteRepository.Add(route);
+                uow.SaveChanges();
 
-                        //Act
-                        ProcessDO curProcess = _processService.Create(route.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
+                //Act
+                ProcessDO curProcess = _processService.Create(route.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
 
-                        //Assert
-                        int expectedProcessNodeCount = uow.ProcessNodeRepository.GetAll().Count();
-                        int actualprocessNodeCount = curProcess.ProcessNodes.Count;
-                        Assert.AreEqual(expectedProcessNodeCount, actualprocessNodeCount);
-                    }
-                }
+                //Assert
+                int expectedProcessNodeCount = uow.ProcessNodeRepository.GetAll().Count();
+                int actualprocessNodeCount = curProcess.ProcessNodes.Count;
+                Assert.AreEqual(expectedProcessNodeCount, actualprocessNodeCount);
+            }
+        }
 
-                public void ProcessNode_CanAccessParentProcess()
-                {
-                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                    {
-                        //Arrange
-                        var envelope = FixtureData.TestEnvelope1();
-                        var route = FixtureData.TestRoute1();
+        public void ProcessNode_CanAccessParentProcess()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Arrange
+                var envelope = FixtureData.TestEnvelope1();
+                var route = FixtureData.TestRoute1();
 
-                        uow.EnvelopeRepository.Add(envelope);
-                        uow.RouteRepository.Add(route);
-                        uow.SaveChanges();
+                uow.EnvelopeRepository.Add(envelope);
+                uow.RouteRepository.Add(route);
+                uow.SaveChanges();
 
-                        //Act
-                        ProcessDO curProcess = _processService.Create(route.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
+                //Act
+                ProcessDO curProcess = _processService.Create(route.Id, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
 
-                        //Assert
-                        int expectedProcessId = curProcess.ProcessNodes.First().ParentProcessId;
-                        int actualprocessId = uow.ProcessNodeRepository.GetByKey(curProcess.ProcessNodes.First().Id).Id;
-                        Assert.AreEqual(expectedProcessId, actualprocessId);
-                    }
-                }
+                //Assert
+                int expectedProcessId = curProcess.ProcessNodes.First().ParentProcessId;
+                int actualprocessId = uow.ProcessNodeRepository.GetByKey(curProcess.ProcessNodes.First().Id).Id;
+                Assert.AreEqual(expectedProcessId, actualprocessId);
+            }
+        }
 
 
-                [Test]
-                [ExpectedException(typeof(ArgumentNullException))]
-                public void ProcessService_CanNot_CreateProcessWithIncorrectRoute()
-                {
-                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                    {
-                        const int incorrectRouteId = 2;
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ProcessService_CanNot_CreateProcessWithIncorrectRoute()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                const int incorrectRouteId = 2;
 
-                        var envelope = FixtureData.TestEnvelope1();
+                var envelope = FixtureData.TestEnvelope1();
 
-                        uow.EnvelopeRepository.Add(envelope);
-                        uow.SaveChanges();
-                        _processService.Create(incorrectRouteId, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
-                    }
-                }
-        */
+                uow.EnvelopeRepository.Add(envelope);
+                uow.SaveChanges();
+                _processService.Create(incorrectRouteId, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
+            }
+        }
+*/
 
         [Test]
         public void ContainerService_Can_LaunchWithoutExceptions()
@@ -183,7 +183,7 @@ namespace DockyardTest.Services
                 activityMock.Verify(activity => activity.Process(1, It.IsAny<ContainerDO>()), Times.Exactly(1));
             }
         }
-
+     
 
         [Test]
         public async void Execute_MoveToNextActivity_ProcessCurrentAndNextActivity()
@@ -201,56 +201,56 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 await _container.Execute(uow, containerDO);
-            }
+        }
 
             Assert.AreNotEqual(originalCurrentActivity, containerDO.CurrentRouteNode);
             Assert.IsNull(containerDO.CurrentRouteNode);
             _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ContainerDO>()));
         }
 
-        //        [Test]
-        //        public async void Execute_ProcessUntil3rdActivities_ProcessAllActivities()
-        //        {
-        //            var _activity = new Mock<IActivity>();
-        //            _activity
-        //                .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()))
-        //                .Returns(Task.Delay(100))
-        //                .Verifiable();
-        //            //Setup 3rd ActivityDO
-        //            _activity.Setup(c => c.GetNextActivities(It.IsAny<ActivityDO>())).Returns(new List<ActivityDO>() { FixtureData.TestAction9() });
-        //            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
-        //            _processService = ObjectFactory.GetInstance<IProcess>();
-        //            ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
-        //            ActivityDO originalCurrentActivity = processDO.CurrentActivity;
-        //            ActivityDO originalNextActivity = processDO.NextActivity;
-        //
-        //            await _processService.Execute(processDO);
-        //
-        //            Assert.AreNotEqual(originalCurrentActivity, processDO.CurrentActivity);
-        //            Assert.AreNotEqual(originalNextActivity, processDO.NextActivity);
-        //            Assert.IsNull(processDO.CurrentActivity);
-        //            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
-        //        }
+//        [Test]
+//        public async void Execute_ProcessUntil3rdActivities_ProcessAllActivities()
+//        {
+//            var _activity = new Mock<IActivity>();
+//            _activity
+//                .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()))
+//                .Returns(Task.Delay(100))
+//                .Verifiable();
+//            //Setup 3rd ActivityDO
+//            _activity.Setup(c => c.GetNextActivities(It.IsAny<ActivityDO>())).Returns(new List<ActivityDO>() { FixtureData.TestAction9() });
+//            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
+//            _processService = ObjectFactory.GetInstance<IProcess>();
+//            ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
+//            ActivityDO originalCurrentActivity = processDO.CurrentActivity;
+//            ActivityDO originalNextActivity = processDO.NextActivity;
+//
+//            await _processService.Execute(processDO);
+//
+//            Assert.AreNotEqual(originalCurrentActivity, processDO.CurrentActivity);
+//            Assert.AreNotEqual(originalNextActivity, processDO.NextActivity);
+//            Assert.IsNull(processDO.CurrentActivity);
+//            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
+//        }
 
-        //        [Test]
-        //        public async void Execute_SetNextActivityNull_ProcessCurrentActivity()
-        //        {
-        //            var _activity = new Mock<IActivity>();
-        //            _activity
-        //                .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()))
-        //                .Returns(Task.Delay(100))
-        //                .Verifiable();
-        //            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
-        //            _processService = ObjectFactory.GetInstance<IProcess>();
-        //            ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
-        //            processDO.NextActivity = null;
-        //
-        //            await _processService.Execute(processDO);
-        //
-        //            Assert.IsNull(processDO.CurrentActivity);
-        //            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
-        //        }
-        //
+//        [Test]
+//        public async void Execute_SetNextActivityNull_ProcessCurrentActivity()
+//        {
+//            var _activity = new Mock<IActivity>();
+//            _activity
+//                .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()))
+//                .Returns(Task.Delay(100))
+//                .Verifiable();
+//            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
+//            _processService = ObjectFactory.GetInstance<IProcess>();
+//            ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
+//            processDO.NextActivity = null;
+//
+//            await _processService.Execute(processDO);
+//
+//            Assert.IsNull(processDO.CurrentActivity);
+//            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
+//        }
+//
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public async void Execute_SetCurrentActivityNull_ThrowsException()
@@ -258,18 +258,18 @@ namespace DockyardTest.Services
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
+        {
                 await _container.Execute(uow, FixtureData.TestContainerCurrentActivityNULL());
-            }
+        }
         }
 
         [Test]
-        public void Create_LogsDataToFactRepository()
+        public void Create_LogsDataToFactRepository() 
         {
-            var curProcessNode = FixtureData.TestProcessNode();
+            var curProcessNode =  FixtureData.TestProcessNode();
             var _processNode = new Mock<IProcessNode>();
             _processNode.Setup(c => c.Create(It.IsAny<IUnitOfWork>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<String>()))
-                    .Returns(curProcessNode);
+                    .Returns(curProcessNode); 
             ObjectFactory.Configure(cfg => cfg.For<IProcessNode>().Use(_processNode.Object));
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -280,147 +280,147 @@ namespace DockyardTest.Services
                 var curRoute = FixtureData.TestRouteWithStartingSubroute();
                 uow.RouteRepository.Add(curRoute);
 
-
-
+                
+                
 
                 _container.Create(uow, curRoute.Id, FixtureData.CrateDTO3());
-
+                
                 uow.SaveChanges();
-                Assert.IsFalse(uow.HistoryRepository.GetAll().Count() == 0);
+                Assert.IsFalse(uow.HistoryRepository.GetAll().Count()==0);
                 _eventReporter.UnsubscribeFromAlerts();
             }
 
         }
-        //
-        //        [Test]
-        //        [ExpectedException(typeof(ArgumentNullException))]
-        //        public void SetProcessNextActivity_ProcessDOIsNull_ThorwArgumentNullException()
-        //        {
-        //            _processService = ObjectFactory.GetInstance<IProcess>();
-        //
-        //            _processService.SetProcessNextActivity(null);
-        //        }
-        //
-        //        [Test]
-        //        public void SetProcessNextActivity_ProcessDOCurrentActivityIsNull_NextActivityIsNull()
-        //        {
-        //            _processService = ObjectFactory.GetInstance<IProcess>();
-        //            ProcessDO process = FixtureData.TestProcessCurrentActivityNULL();
-        //            process.NextActivity = FixtureData.TestAction2();
-        //
-        //            _processService.SetProcessNextActivity(process);
-        //
-        //            Assert.IsNull(process.CurrentActivity);
-        //            Assert.IsNull(process.NextActivity);
-        //        }
-        //
-        //        [Test]
-        //        public void SetProcessNextActivity_ProcessDONextActivitySameAsCurrentActivity_NextActivityIsNull()
-        //        {
-        //            _processService = ObjectFactory.GetInstance<IProcess>();
-        //            ProcessDO process = FixtureData.TestProcesswithCurrentActivityAndNextActivityTheSame();
-        //
-        //            _processService.SetProcessNextActivity(process);
-        //
-        //            Assert.IsNull(process.NextActivity);
-        //        }
-        //
-        //        [Test]
-        //        public void SetProcessNextActivity_ProcessDOGetNextActivity_NewNextActivity()
-        //        {
-        //            var _activity = new Mock<IActivity>();
-        //            _activity
-        //                .Setup(c => c.GetNextActivities(It.IsAny<ActivityDO>()))
-        //                .Returns(new List<ActivityDO>() { FixtureData.TestAction8() });
-        //            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
-        //            _processService = ObjectFactory.GetInstance<IProcess>();
-        //            ProcessDO process = FixtureData.TestProcessSetNextActivity();
-        //
-        //            _processService.SetProcessNextActivity(process);
-        //
-        //            Assert.IsNotNull(process.NextActivity);
-        //            Assert.AreEqual(process.NextActivity.Id, FixtureData.TestAction8().Id);
-        //        }
-        //
-        //        [Test]
-        //        public void UpdateProcessNextActivity_ProcessDOCurrentActivityIsNull_NextActivityIsNull() 
-        //        {
-        //            //Arrange
-        //            _processService = ObjectFactory.GetInstance<IProcess>();
-        //            //Make use of PrivateObject class to reach the private method
-        //            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
-        //
-        //            //process with current activity being null
-        //            ProcessDO curProcess = FixtureData.TestProcessCurrentActivityNULL();
-        //            //and next activity being not null
-        //            curProcess.NextActivity = FixtureData.TestAction2();
-        //
-        //            var nextActivity = curProcess.NextActivity;
-        //            //Act
-        //            //Call private method to move next to current activity
-        //            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { curProcess });
-        //
-        //            //Assert
-        //            Assert.IsNotNull(curProcess.CurrentActivity);
-        //            Assert.IsNull(curProcess.NextActivity);
-        //            Assert.AreEqual(nextActivity.Id, curProcess.CurrentActivity.Id);
-        //        }
-        //
-        //        [Test]
-        //        public void UpdateNextActivity_ActivityListIsNull_ProcessDONextActivitySameAsCurrentActivity_NextActivityIsNull()
-        //        {
-        //            //Arrange
-        //            _processService = ObjectFactory.GetInstance<IProcess>();
-        //            //Make use of PrivateObject class to reach the private method
-        //            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
-        //
-        //            //process with current activity being equal to the next activity
-        //            ProcessDO curProcess = FixtureData.TestProcesswithCurrentActivityAndNextActivityTheSame();
-        //
-        //            //Act
-        //            //Call private method to move next to current activity
-        //            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { curProcess });
-        //
-        //            //Assert
-        //            Assert.IsNull(curProcess.NextActivity);
-        //        }
-        //
-        //        [Test]
-        //        [ExpectedException(typeof(ArgumentNullException))]
-        //        public void UpdateNextActivity_ProcessDOIsNull_ThorwArgumentNullException()
-        //        {
-        //            _processService = ObjectFactory.GetInstance<IProcess>();
-        //            //Make use of PrivateObject class to reach the private method
-        //            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
-        //
-        //            //Call private method to move next to current activity
-        //            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { null });
-        //        }
-        //
-        //        [Test]
-        //        public void UpdateNextActivity_ProcessDOCurrentActivitySameAsFirstOfGetNextActivity_NextActivityIsNull()
-        //        {
-        //            var curTestActivity = FixtureData.TestAction8();
-        //            //mock object that returns predefined value of TestAction8
-        //            var _activity = new Mock<IActivity>();
-        //            _activity
-        //                .Setup(c => c.GetNextActivities(It.IsAny<ActivityDO>()))
-        //                .Returns(new List<ActivityDO>() { curTestActivity });
-        //            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
-        //
-        //            //Make use of PrivateObject class to reach the private method
-        //            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
-        //
-        //            //process with current activity being equal to the next activity
-        //            ProcessDO curProcess = FixtureData.TestProcessUpdateNextActivity();
-        //
-        //            //Act
-        //            //Call private method to move next to current activity
-        //            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { curProcess });
-        //
-        //            //Assert
-        //            Assert.IsNull(curProcess.CurrentActivity);
-        //            Assert.IsNull(curProcess.NextActivity);
-        //        }
+//
+//        [Test]
+//        [ExpectedException(typeof(ArgumentNullException))]
+//        public void SetProcessNextActivity_ProcessDOIsNull_ThorwArgumentNullException()
+//        {
+//            _processService = ObjectFactory.GetInstance<IProcess>();
+//
+//            _processService.SetProcessNextActivity(null);
+//        }
+//
+//        [Test]
+//        public void SetProcessNextActivity_ProcessDOCurrentActivityIsNull_NextActivityIsNull()
+//        {
+//            _processService = ObjectFactory.GetInstance<IProcess>();
+//            ProcessDO process = FixtureData.TestProcessCurrentActivityNULL();
+//            process.NextActivity = FixtureData.TestAction2();
+//
+//            _processService.SetProcessNextActivity(process);
+//
+//            Assert.IsNull(process.CurrentActivity);
+//            Assert.IsNull(process.NextActivity);
+//        }
+//
+//        [Test]
+//        public void SetProcessNextActivity_ProcessDONextActivitySameAsCurrentActivity_NextActivityIsNull()
+//        {
+//            _processService = ObjectFactory.GetInstance<IProcess>();
+//            ProcessDO process = FixtureData.TestProcesswithCurrentActivityAndNextActivityTheSame();
+//
+//            _processService.SetProcessNextActivity(process);
+//
+//            Assert.IsNull(process.NextActivity);
+//        }
+//
+//        [Test]
+//        public void SetProcessNextActivity_ProcessDOGetNextActivity_NewNextActivity()
+//        {
+//            var _activity = new Mock<IActivity>();
+//            _activity
+//                .Setup(c => c.GetNextActivities(It.IsAny<ActivityDO>()))
+//                .Returns(new List<ActivityDO>() { FixtureData.TestAction8() });
+//            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
+//            _processService = ObjectFactory.GetInstance<IProcess>();
+//            ProcessDO process = FixtureData.TestProcessSetNextActivity();
+//
+//            _processService.SetProcessNextActivity(process);
+//
+//            Assert.IsNotNull(process.NextActivity);
+//            Assert.AreEqual(process.NextActivity.Id, FixtureData.TestAction8().Id);
+//        }
+//
+//        [Test]
+//        public void UpdateProcessNextActivity_ProcessDOCurrentActivityIsNull_NextActivityIsNull() 
+//        {
+//            //Arrange
+//            _processService = ObjectFactory.GetInstance<IProcess>();
+//            //Make use of PrivateObject class to reach the private method
+//            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
+//
+//            //process with current activity being null
+//            ProcessDO curProcess = FixtureData.TestProcessCurrentActivityNULL();
+//            //and next activity being not null
+//            curProcess.NextActivity = FixtureData.TestAction2();
+//
+//            var nextActivity = curProcess.NextActivity;
+//            //Act
+//            //Call private method to move next to current activity
+//            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { curProcess });
+//
+//            //Assert
+//            Assert.IsNotNull(curProcess.CurrentActivity);
+//            Assert.IsNull(curProcess.NextActivity);
+//            Assert.AreEqual(nextActivity.Id, curProcess.CurrentActivity.Id);
+//        }
+//
+//        [Test]
+//        public void UpdateNextActivity_ActivityListIsNull_ProcessDONextActivitySameAsCurrentActivity_NextActivityIsNull()
+//        {
+//            //Arrange
+//            _processService = ObjectFactory.GetInstance<IProcess>();
+//            //Make use of PrivateObject class to reach the private method
+//            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
+//
+//            //process with current activity being equal to the next activity
+//            ProcessDO curProcess = FixtureData.TestProcesswithCurrentActivityAndNextActivityTheSame();
+//
+//            //Act
+//            //Call private method to move next to current activity
+//            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { curProcess });
+//
+//            //Assert
+//            Assert.IsNull(curProcess.NextActivity);
+//        }
+//
+//        [Test]
+//        [ExpectedException(typeof(ArgumentNullException))]
+//        public void UpdateNextActivity_ProcessDOIsNull_ThorwArgumentNullException()
+//        {
+//            _processService = ObjectFactory.GetInstance<IProcess>();
+//            //Make use of PrivateObject class to reach the private method
+//            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
+//
+//            //Call private method to move next to current activity
+//            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { null });
+//        }
+//
+//        [Test]
+//        public void UpdateNextActivity_ProcessDOCurrentActivitySameAsFirstOfGetNextActivity_NextActivityIsNull()
+//        {
+//            var curTestActivity = FixtureData.TestAction8();
+//            //mock object that returns predefined value of TestAction8
+//            var _activity = new Mock<IActivity>();
+//            _activity
+//                .Setup(c => c.GetNextActivities(It.IsAny<ActivityDO>()))
+//                .Returns(new List<ActivityDO>() { curTestActivity });
+//            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
+//
+//            //Make use of PrivateObject class to reach the private method
+//            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
+//
+//            //process with current activity being equal to the next activity
+//            ProcessDO curProcess = FixtureData.TestProcessUpdateNextActivity();
+//
+//            //Act
+//            //Call private method to move next to current activity
+//            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { curProcess });
+//
+//            //Assert
+//            Assert.IsNull(curProcess.CurrentActivity);
+//            Assert.IsNull(curProcess.NextActivity);
+//        }
     }
 }
