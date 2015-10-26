@@ -74,7 +74,9 @@ namespace Core.Services
 
                var curProcessNode = _processNode.Create(uow, containerDO.Id, subrouteId, "process node");
                containerDO.ProcessNodes.Add(curProcessNode);
+
                EventManager.ContainerCreated(containerDO);
+
                uow.SaveChanges();
 
                 

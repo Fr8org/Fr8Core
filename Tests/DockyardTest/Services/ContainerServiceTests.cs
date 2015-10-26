@@ -18,6 +18,7 @@ using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
 using Moq;
 using Newtonsoft.Json;
+using Core.Managers;
 
 
 namespace DockyardTest.Services
@@ -26,8 +27,10 @@ namespace DockyardTest.Services
     [Category("ContainerService")]
     public class ContainerServiceTests : BaseTest
     {
+        
         private InternalInterface.IContainer _container;
         //private IDocuSignNotification _docuSignNotificationService;
+        private EventReporter _eventReporter;
         private Fr8Account _userService;
         private string _testUserId = "testuser";
         private string xmlPayloadFullPath;
@@ -40,6 +43,7 @@ namespace DockyardTest.Services
             base.SetUp();
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _userService = ObjectFactory.GetInstance<Fr8Account>();
+            _eventReporter = new EventReporter();
             //_docuSignNotificationService = ObjectFactory.GetInstance<IDocuSignNotification>();
 
             xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
@@ -260,15 +264,30 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void Create_LogsData() 
+        public void Create_LogsDataToFactRepository() 
         {
-            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
-            var curRoute = FixtureData.TestRouteWithStartingSubroute();
+            var curProcessNode =  FixtureData.TestProcessNode();
+            var _processNode = new Mock<IProcessNode>();
+            _processNode.Setup(c => c.Create(It.IsAny<IUnitOfWork>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<String>()))
+                    .Returns(curProcessNode); 
+            ObjectFactory.Configure(cfg => cfg.For<IProcessNode>().Use(_processNode.Object));
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                _eventReporter.SubscribeToAlerts();
+                _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
+
+                var curRoute = FixtureData.TestRouteWithStartingSubroute();
                 uow.RouteRepository.Add(curRoute);
+
+                
+                
+
                 _container.Create(uow, curRoute.Id, FixtureData.CrateDTO3());
-                var count = uow.FactRepository.GetAll().Count();
+                
+                uow.SaveChanges();
+                Assert.IsFalse(uow.HistoryRepository.GetAll().Count()==0);
+                _eventReporter.UnsubscribeFromAlerts();
             }
 
         }
