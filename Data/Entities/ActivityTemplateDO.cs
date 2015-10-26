@@ -60,6 +60,8 @@ namespace Data.Entities
 
         public string Label { get; set; }
 
+        public string Tags { get; set; }
+
         public string Version { get; set; }
 
         [Required]

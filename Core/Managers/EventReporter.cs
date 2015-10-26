@@ -533,9 +533,9 @@ namespace Core.Managers
         {
             var incidentDO = new IncidentDO
             {
-                PrimaryCategory = "Error",
-                SecondaryCategory = exceptionType,
-                Activity = "ActivityTemplatePluginRegistration",
+                PrimaryCategory = "Startup",
+                SecondaryCategory = "Terminal Registration",
+                Activity = "Registration Failure",
                 Data = message
             };
 
