@@ -5,10 +5,11 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Core.Interfaces;
+using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Core.Services;
+using Web.ViewModels;
 
 namespace Web.Controllers
 {
@@ -57,9 +58,19 @@ namespace Web.Controllers
                 RequestQueryString = requestQueryString
             };
 
-            await _authorization.GetOAuthToken(plugin, externalAuthenticationDTO);
+            var error = await _authorization.GetOAuthToken(plugin, externalAuthenticationDTO);
 
-            return View();
+            if (string.IsNullOrEmpty(error))
+            {
+                return View();
+            }
+            else
+            {
+                return View("Error", new AuthenticationErrorVM()
+                {
+                    Error = error
+                });
+            }
         }
     }
 }
