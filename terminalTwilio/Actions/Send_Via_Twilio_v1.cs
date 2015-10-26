@@ -62,7 +62,7 @@ namespace terminalTwilio.Actions
             {
                 Selected = true,
                 Name = "SMSNumberOption",
-                Controls = new List<ControlDefinitionDTO>() { smsNumberTextbox }
+                Controls = new ControlDefinitionCollection { smsNumberTextbox }
             };
 
 
@@ -86,7 +86,7 @@ namespace terminalTwilio.Actions
             {
                 Selected = false,
                 Name = "SMSNumberOption",
-                Controls = new List<ControlDefinitionDTO>() { fieldSMSNumberLists }
+                Controls = new ControlDefinitionCollection { fieldSMSNumberLists }
             };
 
             RadioButtonGroupControlDefinitionDTO radioGroup = new RadioButtonGroupControlDefinitionDTO()

@@ -1,21 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows.Markup;
+using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
+    public class ControlDefinitionCollection : List<ControlDefinitionDTO>
+    {
+    }
+
     [ContentProperty("Children")]
     public class PageDTO
     {
-        private readonly List<ControlDefinitionDTO>  _children = new List<ControlDefinitionDTO>();
-        
-        public List<ControlDefinitionDTO> Children
+        private readonly ControlDefinitionCollection _children = new ControlDefinitionCollection();
+
+        public ControlDefinitionCollection Children
         {
             get { return _children; }
+        }
+
+        public void Load(StandardConfigurationControlsCM configurationControls)
+        {
+            var fields = GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic).ToArray();
+
+            foreach (var field in fields)
+            {
+                var control = configurationControls.FindByNameNested<object>(field.Name);
+                if (control != null)
+                {
+                    ClonePrimitiveProperties(field.GetValue(this), control);
+                }
+            }
+        }
+
+        private static void ClonePrimitiveProperties(object target, object source)
+        {
+            var properties = target.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => (x.PropertyType.IsValueType || x.PropertyType == typeof(string)) && x.CanWrite);
+            var sourceTypeProp = source.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => (x.PropertyType.IsValueType || x.PropertyType == typeof(string)) && x.CanRead).ToDictionary(x => x.Name, x => x);
+
+            foreach (var prop in properties)
+            {
+                PropertyInfo sourceProp;
+
+                if (sourceTypeProp.TryGetValue(prop.Name, out sourceProp) && prop.PropertyType.IsAssignableFrom(sourceProp.PropertyType))
+                {
+                    try
+                    {
+                        prop.SetMethod.Invoke(target, new[] { sourceProp.GetMethod.Invoke(source, null) });
+                    }
+                    catch
+                    { }
+                }
+            }
         }
     }
 
@@ -26,7 +65,7 @@ namespace Data.Interfaces.DataTransferObjects
     /// </summary>
     public interface ISupportsNestedFields
     {
-        IList<ControlDefinitionDTO> Controls { get; }
+        ControlDefinitionCollection Controls { get; }
     }
 
     public interface IResettable
@@ -218,6 +257,7 @@ namespace Data.Interfaces.DataTransferObjects
 
     // TODO It will be good to change setter property 'Type' to protected to disallow change the type. We have all needed classes(RadioButtonGroupFieldDefinitionDTO, DropdownListFieldDefinitionDTO and etc).
     // But Wait_For_DocuSign_Event_v1.FollowupConfigurationResponse() directly write to this property !
+    [RuntimeNameProperty("Name")]
     public class ControlDefinitionDTO : IResettable
     {
         public ControlDefinitionDTO() { }
@@ -336,13 +376,14 @@ namespace Data.Interfaces.DataTransferObjects
             return controlEvents;
         }
     }
-
+    
     [ContentProperty("Controls")]
+    [RuntimeNameProperty("Name")]
     public class RadioButtonOption : ISupportsNestedFields
     {
         public RadioButtonOption()
         {
-            Controls = new List<ControlDefinitionDTO>();
+            Controls = new ControlDefinitionCollection();
         }
 
         [JsonProperty("selected")]
@@ -355,7 +396,9 @@ namespace Data.Interfaces.DataTransferObjects
         public string Value { get; set; }
 
         [JsonProperty("controls")]
-        public IList<ControlDefinitionDTO> Controls { get; set; }
+        public ControlDefinitionCollection Controls { get; set; }
+
+        
     }
 
     public class FilterPaneField

@@ -1,19 +1,19 @@
-﻿<PageDTO xmlns="http://fr8/dto" >
+﻿<PageDTO xmlns="http://fr8/dto" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="terminalDocuSign.Actions.CollectFromDataSolutionUi_v1">
 
     <TextBlockControlDefinitionDTO Label="" Value="Fr8 Solutions for DocuSign"/>
     <TextBlockControlDefinitionDTO Label="" Value="Use DocuSign to collect information"/>
 
     <RadioButtonGroupControlDefinitionDTO Label="1. Collect What Kind of Form Data?"  Events="{ControlEvent onChange:requestConfig}">
-        <RadioButtonOption Name="UseStandardForm" Value="Use standard form:">
-            <DropDownListControlDefinitionDTO Name="StandardFormsList" 
+        <RadioButtonOption x:Name="UseStandardForm" Value="Use standard form:">
+            <DropDownListControlDefinitionDTO x:Name="StandardFormsList" 
                                               Source="{FieldSourceDTO Label='AvailableForms', ManifestType='Standard Design-Time Fields'}"  
                                               Events="{ControlEvent onChange:requestConfig}"/>
         </RadioButtonOption>
-        <RadioButtonOption Name="UseTemplate" Value="I want to use a template on my DocuSign account"/>
-        <RadioButtonOption Name="UseUploadedForm" Value="I want to upload my own form"/>
+        <RadioButtonOption x:Name="UseTemplate" Value="I want to use a template on my DocuSign account"/>
+        <RadioButtonOption x:Name="UseUploadedForm" Value="I want to upload my own form"/>
     </RadioButtonGroupControlDefinitionDTO>
 
-    <DropDownListControlDefinitionDTO Name="FinalActionsList" Required="True"
+    <DropDownListControlDefinitionDTO x:Name="FinalActionsList" Required="True"
                                       Label="2:  After the forms are completed, where do you want to collect the data?"  
                                       Source="{FieldSourceDTO Label='AvailableActions', ManifestType='Standard Design-Time Fields'}"  
                                       Events="{ControlEvent onChange:requestConfig}"/>

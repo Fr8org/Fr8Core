@@ -22,9 +22,6 @@ namespace Core.Services
     public class Action : IAction
     {
         private readonly ICrateManager _crate;
-        //private Task curAction;
-        private readonly IPlugin _plugin;
-        //private IRoute _route;
         private readonly Authorization _authorizationToken;
 
         private readonly IRouteNode _routeNode;
@@ -32,14 +29,8 @@ namespace Core.Services
         public Action()
         {
             _authorizationToken = new Authorization();
-            _plugin = ObjectFactory.GetInstance<IPlugin>();
-
-            
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
-
-          //  _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
             _crate= ObjectFactory.GetInstance<ICrateManager>();
-          //  _route = ObjectFactory.GetInstance<IRoute>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -122,10 +113,9 @@ namespace Core.Services
             existingAction.ActivityTemplateId = submittedAction.ActivityTemplateId;
             existingAction.Name = submittedAction.Name;
             existingAction.Label = submittedAction.Label;
-            existingAction.ActivityTemplateId = submittedAction.ActivityTemplateId;
             existingAction.CrateStorage = submittedAction.CrateStorage;
         }
-        
+
         private ActionDO SaveUpdateAndConfigureRecursive(IUnitOfWork uow, ActionDO submittedAction, List<ActionDO> pendingConfiguration)
         {
             ActionDO existingAction;
@@ -133,21 +123,28 @@ namespace Core.Services
             if (submittedAction.ActivityTemplateId == 0)
             {
                 submittedAction.ActivityTemplateId = null;
-        }
+            }
 
             if (submittedAction.IsTempId)
             {
                 submittedAction.Id = 0;
                 existingAction = submittedAction;
                 submittedAction.IsTempId = false;
+                
+                if (submittedAction.ActivityTemplateId != null)
+                {
+                    submittedAction.ActivityTemplate = ObjectFactory.GetInstance<IActivityTemplate>().GetByKey(submittedAction.ActivityTemplateId.Value);
+                }
 
                 uow.ActionRepository.Add(submittedAction);
-                
+
                 // If we have created new action add it to pending configuration list.
                 pendingConfiguration.Add(submittedAction);
 
                 foreach (var newAction in submittedAction.ChildNodes.OfType<ActionDO>())
-        {
+                {
+                    newAction.ParentRouteNodeId = null;
+                    newAction.ParentRouteNode = null;
                     var newChild = SaveUpdateAndConfigureRecursive(uow, newAction, pendingConfiguration);
                     existingAction.ChildNodes.Add(newChild);
                 }
@@ -156,42 +153,44 @@ namespace Core.Services
             {
                 existingAction = uow.ActionRepository.GetByKey(submittedAction.Id);
 
-            if (existingAction == null)
-            {
-                throw new Exception("Action was not found");
-            }
+                if (existingAction == null)
+                {
+                    throw new Exception("Action was not found");
+                }
 
-            // Update properties
+                // Update properties
                 UpdateActionProperties(existingAction, submittedAction);
 
                 // Sync nested action structure
                 if (submittedAction.ChildNodes != null)
-            {
-                // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
-                // desired set of children. 
+                {
+                    // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
+                    // desired set of children. 
                     var newChildren = submittedAction.ChildNodes.OfType<ActionDO>().Where(x => !x.IsTempId).ToDictionary(x => x.Id, y => y);
-                // current set of children
-                var currentChildren = existingAction.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
+                    // current set of children
+                    var currentChildren = existingAction.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
 
-                // Now we must find what child must be added to existingAction
-                // Chilren to be added are difference between set newChildren and currentChildren (those elements that exist in newChildren but do not exist in currentChildren).
+                    // Now we must find what child must be added to existingAction
+                    // Chilren to be added are difference between set newChildren and currentChildren (those elements that exist in newChildren but do not exist in currentChildren).
                     foreach (var newAction in submittedAction.ChildNodes.OfType<ActionDO>().Where(x => x.IsTempId || !currentChildren.ContainsKey(x.Id)).ToArray())
-                {
+                    {
+                        newAction.ParentRouteNodeId = null;
+                        newAction.ParentRouteNode = null;
                         var newChild = SaveUpdateAndConfigureRecursive(uow, newAction, pendingConfiguration);
-                    existingAction.ChildNodes.Add(newChild);
-                }
+                        existingAction.ChildNodes.Add(newChild);
+                    }
 
-                // Now we must find what child must be removed from existingAction
-                // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
-                foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
-                {
-                    existingAction.ChildNodes.Remove(actionToRemove.Value);
-                        // TODO: delete actions from repository
-                }
+                    // Now we must find what child must be removed from existingAction
+                    // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
+                    foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
+                    {
+                        existingAction.ChildNodes.Remove(actionToRemove.Value);
+                        _routeNode.Delete(uow, actionToRemove.Value);
+                    }
 
-                // We just update those children that haven't changed (exists both in newChildren and currentChildren)
+                    // We just update those children that haven't changed (exists both in newChildren and currentChildren)
                     foreach (var actionToUpdate in newChildren.Where(x => !x.Value.IsTempId && currentChildren.ContainsKey(x.Key)))
-                {
+                    {
                         SaveUpdateAndConfigureRecursive(uow, actionToUpdate.Value, pendingConfiguration);
                     }
                 }
@@ -268,11 +267,16 @@ namespace Core.Services
 
             return action;
         }
-
-
-        private async Task<ActionDO> ConfigureSingleAction(IUnitOfWork uow, ActionDO curActionDO)
+        
+        private async Task<ActionDO> CallActionConfigure(ActionDO curActionDO)
         {
+            if (curActionDO == null)
+            {
+                throw new ArgumentNullException("curActionDO");
+            }
+
             ActionDTO tempActionDTO;
+
             try
             {
                 tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
@@ -284,55 +288,31 @@ namespace Core.Services
             }
             catch (Exception e)
             {
-                // curActionDO can be created by Automapper, so It is unlikely that curActionDO will have Plugin property set.
-                if (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null)
+                JsonSerializerSettings settings = new JsonSerializerSettings
                 {
-                    JsonSerializerSettings settings = new JsonSerializerSettings
-                    {
-                        PreserveReferencesHandling = PreserveReferencesHandling.Objects
-                    };
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects
+                };
 
-                    EventManager.PluginConfigureFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
-                }
+                var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null && curActionDO.ActivityTemplate.Plugin.Endpoint != null) ? curActionDO.ActivityTemplate.Plugin.Endpoint : "<no plugin url>";
+                EventManager.PluginConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
                 throw;
             }
-
-            UpdateActionProperties(uow, curActionDO);
 
             return Mapper.Map<ActionDO>(tempActionDTO);
         }
 
+        private async Task<ActionDO> ConfigureSingleAction(IUnitOfWork uow, ActionDO curActionDO)
+        {
+            curActionDO = await CallActionConfigure(curActionDO);
+
+            UpdateActionProperties(uow, curActionDO);
+
+            return curActionDO;
+        }
+        
         public async Task<ActionDTO> Configure(ActionDO curActionDO)
         {
-            if (curActionDO == null)
-                throw new ArgumentNullException("curActionDO");
-            ActionDTO tempActionDTO;
-            try
-            {
-                tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
-            }
-            catch (ArgumentException e)
-            {
-                EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO), e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                // curActionDO can be created by Automapper, so It is unlikely that curActionDO will have Plugin property set.
-                if (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null)
-                {
-                    JsonSerializerSettings settings = new JsonSerializerSettings
-                    {
-                        PreserveReferencesHandling = PreserveReferencesHandling.Objects
-                    };
-
-                    EventManager.PluginConfigureFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
-                }
-                throw;
-            }
-
-            //Plugin Configure Action Return ActionDTO
-            curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
+            curActionDO = await CallActionConfigure(curActionDO);
 
             //save the received action as quickly as possible
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -352,14 +332,14 @@ namespace Core.Services
         {
             //we are using Kludge solution for now
             //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
-            
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
 
                 var curAction = uow.RouteNodeRepository.GetQuery().FirstOrDefault(al => al.Id == id);
                 if (curAction == null)
                 {
-                    throw new InvalidOperationException("Unknown RouteNode with id: "+ id);
+                    throw new InvalidOperationException("Unknown RouteNode with id: " + id);
                 }
 
                 var downStreamActivities = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
@@ -380,14 +360,15 @@ namespace Core.Services
                     }
 
                     if (cratesToReset.Any())
-                {
+                    {
                         downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
-                    }                    
+                    }
                 }
-                uow.RouteNodeRepository.Remove(curAction);
+
+                _routeNode.Delete(uow, curAction);
+
                 uow.SaveChanges();
             }
-
         }
 
         /// <summary>

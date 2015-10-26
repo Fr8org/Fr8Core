@@ -185,7 +185,8 @@ namespace Core.Services
                         downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
                     }
                 }
-                uow.RouteNodeRepository.Remove(curAction);
+
+                _routeNode.Delete(uow, curAction);
                 uow.SaveChanges();
             }
 

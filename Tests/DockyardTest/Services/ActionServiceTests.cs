@@ -133,6 +133,9 @@ namespace DockyardTest.Services
                 
                 origActionDO.IsTempId = true;
                 
+                uow.ActivityTemplateRepository.Add(origActionDO.ActivityTemplate);
+                uow.SaveChanges();
+
                 //Add
                 action.SaveOrUpdateAction(origActionDO);
 

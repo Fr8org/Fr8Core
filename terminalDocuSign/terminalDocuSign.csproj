@@ -224,6 +224,14 @@
     <Compile Include="Tests\Infrastructure\DocuSignTemplateTests.cs" />
     <Compile Include="Tests\Fixtures\PluginFixtureData - DocusignAccount.cs" />
     <Compile Include="Tests\Services\EnvelopeServiceTests.cs" />
+    <XamlAppDef Include="Actions\CollectFromDataSolutionUi_v1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </XamlAppDef>
+    <Compile Include="Actions\CollectFromDataSolutionUi_v1.xaml.cs">
+      <Generator>MSBuild:Compile</Generator>
+      <DependentUpon>CollectFromDataSolutionUi_v1.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
@@ -266,11 +274,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Actions\Collect_From_Data_Solution_v1.xaml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

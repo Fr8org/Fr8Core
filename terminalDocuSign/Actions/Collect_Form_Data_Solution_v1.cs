@@ -1,22 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Xaml;
 using AutoMapper;
-using AutoMapper.Mappers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
 using Data.States;
 using Newtonsoft.Json;
-using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
@@ -31,7 +24,7 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
+            return await ProcessConfigurationRequest(curActionDTO, ConfigurationEvaluator);
         }
 
         public ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
@@ -61,28 +54,91 @@ namespace terminalDocuSign.Actions
             return await GetProcessPayload(actionDto.ProcessId);
         }
 
-       protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             if (curActionDTO.CrateStorage == null)
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
 
-           curActionDTO.CrateStorage.CrateDTO.Add(PackControlsCrate(LoadConfigurationControls("terminalDocuSign.Actions.Collect_From_Data_Solution_v1.xaml").ToArray()));
-           curActionDTO.CrateStorage.CrateDTO.AddRange(await PackSources());
-           
+            curActionDTO.CrateStorage.CrateDTO.Add(PackPage(new CollectFromDataSolutionUi_v1()));
+            curActionDTO.CrateStorage.CrateDTO.AddRange(await PackSources());
+
             return curActionDTO;
         }
 
-        protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            var configurationFields = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
+            var controls = new CollectFromDataSolutionUi_v1();
+            
+            controls.Load(Crate.GetStandardConfigurationControls(curActionDTO.CrateStorage.CrateDTO.First(x => x.ManifestId == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID)));
 
-            //configurationFields.FindByName("");
+            /*
+            var form = controls.StandardFormsList.Value;
+                        
+            if (controls.UseStandardForm.Selected)
+            {
+            }
 
-            return Task.FromResult(curActionDTO);
+            if (controls.UseTemplate.Selected)
+            {
+            }
+
+            if (controls.UseUploadedForm.Selected)
+            {
+            }
+            */
+
+            var finalActionTemplateId = controls.FinalActionsList.Value;
+            var action = Mapper.Map<ActionDO>(curActionDTO);
+
+            action.ChildNodes = new List<RouteNodeDO>();
+            
+            const string firstTemplateName = "Monitor_DocuSign";
+            var firstActionTemplate = (await FindTemplates(x => x.Name == "Monitor_DocuSign")).FirstOrDefault();
+
+            if (firstActionTemplate == null)
+            {
+                throw new Exception(string.Format("ActivityTemplate {0} was not found", firstTemplateName));
+            }
+
+            var firstAction = new ActionDO
+            {
+                IsTempId = true,
+                ActivityTemplateId = firstActionTemplate.Id,
+                CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
+                CreateDate = DateTime.Now,
+                Ordering = 1,
+                Name = "First action"
+            };
+
+            var finalAction = new ActionDO
+            {
+                ActivityTemplateId = int.Parse(finalActionTemplateId),
+                IsTempId = true,
+                CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
+                CreateDate = DateTime.Now,
+                Ordering = 2,
+                Name = "Final action"
+            };
+
+            action.ChildNodes.Add(firstAction);
+            action.ChildNodes.Add(finalAction);
+
+            return Mapper.Map<ActionDTO>(action);
         }
+        
+        private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(Predicate<ActivityTemplateDO> query)
+        {
+            var hubUrl = ConfigurationManager.AppSettings["CoreWebServerUrl"].TrimEnd('/') + "/route_nodes/available";
+            var httpClient = new HttpClient();
 
+            return Enumerable.Where(JsonConvert
+                    .DeserializeObject<IEnumerable<ActivityTemplateCategoryDTO>>(await httpClient.GetStringAsync(hubUrl))
+                    .SelectMany(x => x.Activities)
+                    .Select(Mapper.Map<ActivityTemplateDO>), x => query(x));
+        }
+        
         private async Task<IEnumerable<CrateDTO>> PackSources()
         {
             var sources = new List<CrateDTO>();
@@ -90,10 +146,7 @@ namespace terminalDocuSign.Actions
             sources.Add(Crate.CreateDesignTimeFieldsCrate("AvailableForms", new FieldDTO("key", "value")));
 
             var hubUrl = ConfigurationManager.AppSettings["CoreWebServerUrl"].TrimEnd('/') + "/route_nodes/available";
-            var httpClient = new HttpClient()
-            {
-                
-            };
+            var httpClient = new HttpClient();
 
             var catagories = JsonConvert.DeserializeObject<IEnumerable<ActivityTemplateCategoryDTO>>(await httpClient.GetStringAsync(hubUrl)).FirstOrDefault(x =>
             {
@@ -107,17 +160,6 @@ namespace terminalDocuSign.Actions
             sources.Add(Crate.CreateDesignTimeFieldsCrate("AvailableActions", templates.Select(x => new FieldDTO(x.Name, x.Id.ToString())).ToArray()));
 
             return sources;
-        }
-
-
-        private IEnumerable<ControlDefinitionDTO> LoadConfigurationControls(string resourceName)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            {
-                return ((PageDTO)XamlServices.Load(stream)).Children;
-            }
         }
     }
 }

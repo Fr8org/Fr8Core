@@ -121,27 +121,27 @@ namespace Core.Services
 	        return GetNextActivity(currentActivity, true, root);
 	    }
 
-        private RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, bool depthFirst, RouteNodeDO root)
-		    {
-            // Move to the first child if current activity has nested ones
-            if (depthFirst && currentActivity.ChildNodes.Count != 0)
-            {
-                return currentActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault();
-            }
-		   
-            // Move to the next activity of the current activity's parent
-            if (currentActivity.ParentRouteNode == null)
-            {
-                // We are at the root of activity tree. Next activity can be only among children.
-                return null;
-		}
+	    private RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, bool depthFirst, RouteNodeDO root)
+	    {
+	        // Move to the first child if current activity has nested ones
+	        if (depthFirst && currentActivity.ChildNodes.Count != 0)
+	        {
+	            return currentActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault();
+	        }
 
-            var prev = currentActivity;
-            var nextCandidate = currentActivity.ParentRouteNode.ChildNodes
-                .OrderBy(x => x.Ordering)
-                .FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
-            
-            /* No more activities in the current branch
+	        // Move to the next activity of the current activity's parent
+	        if (currentActivity.ParentRouteNode == null)
+	        {
+	            // We are at the root of activity tree. Next activity can be only among children.
+	            return null;
+	        }
+
+	        var prev = currentActivity;
+	        var nextCandidate = currentActivity.ParentRouteNode.ChildNodes
+	            .OrderBy(x => x.Ordering)
+	            .FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
+
+	        /* No more activities in the current branch
                 *          a
                 *       b     c 
                 *     d   E  f  g  
@@ -149,43 +149,45 @@ namespace Core.Services
                 * We are at E. Get next activity as if current activity is b. (move to c)
                 */
 
-            if (nextCandidate == null)
-        {
-                // Someone doesn't want us to go higher this node
-                if (prev == root)
-            {
-                    return null;
-                }
-                nextCandidate = GetNextActivity(prev.ParentRouteNode, false, root); 
-            }
+	        if (nextCandidate == null)
+	        {
+	            // Someone doesn't want us to go higher this node
+	            if (prev == root)
+	            {
+	                return null;
+	            }
+	            nextCandidate = GetNextActivity(prev.ParentRouteNode, false, root);
+	        }
 
-            return nextCandidate;
-        }
+	        return nextCandidate;
+	    }
 
-        public void Delete(IUnitOfWork uow, RouteNodeDO activity)
-        {
-            var activities = new List<RouteNodeDO>();
+	    public void Delete(IUnitOfWork uow, RouteNodeDO activity)
+	    {
+	        var activities = new List<RouteNodeDO>();
 
-            TraverseActivity(activity, activities.Add);
+	        TraverseActivity(activity, activities.Add);
 
-            activities.ForEach(x =>
-            {
-                // TODO: it is not very smart solution. Activity service should not knon about anything except Activities
-                // But we have to support correct deletion of any activity types and any level of hierarchy
-                // May be other services should register some kind of callback to get notifed when activity is being deleted.
-                if (x is SubrouteDO)
-                {
-                    foreach (var criteria in uow.CriteriaRepository.GetQuery().Where(y => y.SubrouteId == x.Id).ToArray())
-                {
-                        uow.CriteriaRepository.Remove(criteria);
-                }
-                }
+	        activities.Reverse();
 
-                uow.RouteNodeRepository.Remove(x);
-            });
-            }
+	        activities.ForEach(x =>
+	        {
+	            // TODO: it is not very smart solution. Activity service should not knon about anything except Activities
+	            // But we have to support correct deletion of any activity types and any level of hierarchy
+	            // May be other services should register some kind of callback to get notifed when activity is being deleted.
+	            if (x is SubrouteDO)
+	            {
+	                foreach (var criteria in uow.CriteriaRepository.GetQuery().Where(y => y.SubrouteId == x.Id).ToArray())
+	                {
+	                    uow.CriteriaRepository.Remove(criteria);
+	                }
+	            }
 
-        private static void TraverseActivity(RouteNodeDO parent, Action<RouteNodeDO> visitAction)
+	            uow.RouteNodeRepository.Remove(x);
+	        });
+	    }
+
+	    private static void TraverseActivity(RouteNodeDO parent, Action<RouteNodeDO> visitAction)
         {
             visitAction(parent);
             foreach (RouteNodeDO child in parent.ChildNodes)
