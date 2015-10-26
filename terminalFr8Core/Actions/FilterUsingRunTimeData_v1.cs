@@ -183,10 +183,10 @@ namespace terminalFr8Core.Actions
                 var ifExpression = Expression.IfThenElse(
                     Expression.Call(typeof(decimal), "TryParse", null,
                             Expression.TypeAs(value, typeof(string)), decimalValue),
-                    Expression.Assign(returnValue, Expression.TypeAs(decimalValue, typeof (IComparable))),
-                    Expression.Assign(returnValue, Expression.TypeAs(value, typeof (IComparable))));
+                    Expression.Assign(returnValue, Expression.TypeAs(decimalValue, typeof(IComparable))),
+                    Expression.Assign(returnValue, Expression.TypeAs(value, typeof(IComparable))));
                 var func = Expression.Block(
-                    new[] {returnValue, decimalValue},
+                    new[] { returnValue, decimalValue },
                     ifExpression,
                     returnValue);
                 return Expression.Lambda<Func<string, IComparable>>(func, "TryMakeDecimal", new[] { value });
@@ -265,7 +265,7 @@ namespace terminalFr8Core.Actions
                 .Any(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
                     && x.Label == "Queryable Criteria");
 
-            if (hasControlsCrate && hasQueryFieldsCrate && IsValidConfigured(curActionDataPackageDTO))
+            if (hasControlsCrate && hasQueryFieldsCrate && HasValidConfiguration(curActionDataPackageDTO))
             {
                 return ConfigurationRequestType.Followup;
             }
@@ -275,16 +275,17 @@ namespace terminalFr8Core.Actions
             }
         }
 
+
+
         /// <summary>
         ///  Returns true, if at least one row has been fully configured.
         /// </summary>
         /// <param name="curActionDataPackageDTO"></param>
         /// <returns></returns>
-        private bool IsValidConfigured(ActionDTO curActionDataPackageDTO)
+        private bool HasValidConfiguration(ActionDTO curActionDataPackageDTO)
         {
-            CrateDTO crateDTO = curActionDataPackageDTO.CrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
-                    && x.Label == "Configuration_Controls");
+            CrateDTO crateDTO = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+
             if (crateDTO != null && !string.IsNullOrEmpty(crateDTO.Contents))
             {
                 RadioButtonOption radioButtonOption = JsonConvert.DeserializeObject<RadioButtonOption>(crateDTO.Contents);
@@ -305,6 +306,25 @@ namespace terminalFr8Core.Actions
 
             }
             return false;
+        }
+
+        private CrateDTO GetCratesByManifestType(ActionDTO curActionDataPackageDTO, string curManifestType)
+        {
+            string curLabel = string.Empty;
+            switch (curManifestType)
+            {
+                case CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME:
+                    curLabel = "Configuration_Controls";
+                    break;
+                case CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME:
+                    curLabel = "Queryable Criteria";
+                    break;
+            }
+
+            return curActionDataPackageDTO.CrateStorage.CrateDTO.FirstOrDefault(x =>
+                x.ManifestType == curManifestType
+                && x.Label == curLabel);
+
         }
     }
 }
