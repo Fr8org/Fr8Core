@@ -561,12 +561,12 @@ Page Header
         display: inline-block;
     }
     .page-header .page-header-top .page-logo .page-sticker p {
-        color:#58b8a9;
-        font-family:Arial;
-        font-weight:900;
-        font-size: 4em;
+        color:#171717;
+        font-family:'Berlin Sans FB';
+        font-weight:600;
+        font-size: 2.3em;
         position:absolute; 
-        bottom:-20px;
+        bottom:-0.1em;
         margin-left: -15px;
     }
 
