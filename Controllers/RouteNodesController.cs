@@ -123,7 +123,7 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curDockyardAccount = _security.GetCurrentAccount(uow);
-                Func<ActivityTemplateDO, bool> predicate = (at) => true; //TODO: Add filtering by tag
+                Func<ActivityTemplateDO, bool> predicate = (at) => at.Tags.Split(new char[] { ',' }).Any(c => string.Equals(c.Trim(), tag, StringComparison.InvariantCultureIgnoreCase));
                 var categoriesWithActivities = _activity.GetAvailableActivities(uow, curDockyardAccount, predicate);
                 return Ok(categoriesWithActivities);
             }

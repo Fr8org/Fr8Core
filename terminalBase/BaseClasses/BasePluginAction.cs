@@ -8,7 +8,6 @@ using AutoMapper;
 using Core.Services;
 using Data.Constants;
 using Newtonsoft.Json;
-
 using StructureMap;
 using Core.Enums;
 using Core.Interfaces;
@@ -54,7 +53,7 @@ namespace TerminalBase.BaseClasses
             {
                 return true;
             }
-        
+
             return false;
         }
 
@@ -91,7 +90,7 @@ namespace TerminalBase.BaseClasses
                     var fieldCheckResult = result[i];
                     if (fieldCheckResult == FieldValidationResult.NotExists)
                     {
-                        validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required"});
+                        validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required" });
                     }
                 }
 
@@ -106,7 +105,7 @@ namespace TerminalBase.BaseClasses
 
         protected async Task<ActionDTO> ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
-            
+
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
             {
                 return await InitialConfigurationResponse(curActionDTO);
@@ -383,6 +382,10 @@ namespace TerminalBase.BaseClasses
             return control;
         }
 
+        public IList<ControlDefinitionDTO> AddDocuSignTemplatePicker()
+        {
+
+        }
 
         /// <summary>
         /// Extract value from RadioButtonGroup where specific value or upstream field was specified.

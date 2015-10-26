@@ -30,19 +30,27 @@ namespace terminalExcel.Controllers
                 Version = "1"
             };
 
-            var template = new ActivityTemplateDO
+            result.Add(new ActivityTemplateDO
             {
                 Name = "Load_Table_Data",
                 Label = "Load Table Data",
                 Version = "1",
                 Category = ActivityCategory.Receivers,
                 Plugin = plugin,
+                Tags = "Table Data Generator",
                 MinPaneWidth = 210
-            };
+            });
 
-           
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "Mail Merge Into DocuSign",
+                Label = "Mail_Merge_Into_DocuSign",
+                Version = "1",
+                Category = ActivityCategory.Solution,
+                Plugin = plugin,
+                MinPaneWidth = 330
+            });          
 
-            result.Add(template);
 
             return Json(result);    
         }

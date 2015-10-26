@@ -14,7 +14,7 @@
     <RootNamespace>terminalDocuSign</RootNamespace>
     <AssemblyName>terminalDocuSign</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -176,6 +176,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\Mail_Merge_Into_DocuSign_v1.cs" />
     <Compile Include="Actions\Receive_DocuSign_Envelope_v1.cs" />
     <Compile Include="Actions\Record_DocuSign_Events_v1.cs" />
     <Compile Include="Actions\Send_DocuSign_Envelope_v1.cs" />
@@ -202,6 +203,7 @@
     <Compile Include="Infrastructure\Signer.cs" />
     <Compile Include="Infrastructure\Tab.cs" />
     <Compile Include="Interfaces\IDocuSignEnvelope.cs" />
+    <Compile Include="Services\DocuSign.cs" />
     <Compile Include="Services\DocuSignEnvelope.cs" />
     <Compile Include="Services\DocuSignTemplate.cs" />
     <Compile Include="Services\Event.cs" />

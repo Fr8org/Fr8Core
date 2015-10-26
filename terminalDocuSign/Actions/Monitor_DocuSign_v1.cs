@@ -42,6 +42,18 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
+        protected CrateDTO PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
+        {
+            var template = new DocuSignTemplate();
+
+            var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
+            var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();
+            var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
+                "Available Templates",
+                fields);
+            return createDesignTimeFields;
+        }
+
         private string GetSelectedTemplateId(ActionDTO curActionDTO)
         {
             var controlsCrates = Crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
@@ -251,9 +263,9 @@ namespace terminalDocuSign.Actions
                 );
         }
 
-        private CrateDTO PackCrate_ConfigurationControls()
+        protected DropDownListControlDefinitionDTO CreateDocuSignTemplatePicker()
         {
-            var fieldSelectDocusignTemplate = new DropDownListControlDefinitionDTO()
+            return new DropDownListControlDefinitionDTO()
             {
                 Label = "Select DocuSign Template",
                 Name = "Selected_DocuSign_Template",
@@ -268,7 +280,11 @@ namespace terminalDocuSign.Actions
                     ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
                 }
             };
+        }
 
+        private CrateDTO PackCrate_ConfigurationControls()
+        {
+            var fieldSelectDocusignTemplate = AddDocuSignTemplatePicker();
             var fieldEnvelopeSent = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Envelope Sent",
