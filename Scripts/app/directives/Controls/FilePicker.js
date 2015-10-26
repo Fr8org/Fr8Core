@@ -155,4 +155,3 @@ var dockyard;
         })(filePicker = directives.filePicker || (directives.filePicker = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=FilePicker.js.map

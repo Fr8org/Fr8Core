@@ -40,7 +40,7 @@ module dockyard.controllers {
                 Metronic.initAjax();
             });
 
-            $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withDisplayLength(10);   
+            $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withOption('order', [[3, 'desc']]).withPaginationType('full_numbers').withDisplayLength(10);   
             $scope.dtColumnDefs = this.getColumnDefs(); 
             $scope.currentAccountContainers = ContainerService.getAll({ id: null });
             $scope.goToContainerDetailsPage = <(container: interfaces.IContainerVM) => void> angular.bind(this, this.goToContainerDetailsPage);
@@ -56,7 +56,8 @@ module dockyard.controllers {
                 this.DTColumnDefBuilder.newColumnDef(1),
                 this.DTColumnDefBuilder.newColumnDef(2),
                 this.DTColumnDefBuilder.newColumnDef(3),
-                this.DTColumnDefBuilder.newColumnDef(4).notSortable()
+                this.DTColumnDefBuilder.newColumnDef(4),
+                this.DTColumnDefBuilder.newColumnDef(5)
             ];
         }
 
