@@ -2,14 +2,17 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
+using TerminalBase.BaseClasses;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 
 namespace terminalSlack.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : ApiController
+    public class AuthenticationController : BasePluginController
     {
+        private const string curPlugin = "terminalSlack";
+
         private readonly ISlackIntegration _slackIntegration;
 
 
@@ -39,25 +42,37 @@ namespace terminalSlack.Controllers
         public async Task<AuthTokenDTO> GenerateOAuthToken(
             ExternalAuthenticationDTO externalAuthDTO)
         {
-            string code;
-            string state;
-
-            ParseCodeAndState(externalAuthDTO.RequestQueryString, out code, out state);
-
-            if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(state))
+            try
             {
-                throw new ApplicationException("Code or State is empty.");
+                string code;
+                string state;
+
+                ParseCodeAndState(externalAuthDTO.RequestQueryString, out code, out state);
+
+                if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(state))
+                {
+                    throw new ApplicationException("Code or State is empty.");
+                }
+
+                var oauthToken = await _slackIntegration.GetOAuthToken(code);
+                var userId = await _slackIntegration.GetUserId(oauthToken);
+
+                return new AuthTokenDTO()
+                {
+                    Token = oauthToken,
+                    ExternalAccountId = userId,
+                    ExternalStateToken = state
+                };
             }
-
-            var oauthToken = await _slackIntegration.GetOAuthToken(code);
-            var userId = await _slackIntegration.GetUserId(oauthToken);
-
-            return new AuthTokenDTO()
+            catch (Exception ex)
             {
-                Token = oauthToken,
-                ExternalAccountId = userId,
-                ExternalStateToken = state
-            };
+                ReportPluginError(curPlugin, ex);
+
+                return new AuthTokenDTO()
+                {
+                    Error = "An error occured while trying to authenticate, please try again later."
+                };
+            }
         }
 
         private void ParseCodeAndState(string queryString, out string code, out string state)
