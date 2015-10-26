@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System;
 using Data.Infrastructure;
 
+
 namespace Data.Entities
 {
     public class ContainerDO : BaseDO
@@ -31,11 +32,11 @@ namespace Data.Entities
         public virtual RouteDO Route { get; set; }
 
         public virtual ICollection<ProcessNodeDO> ProcessNodes { get; set; }
-            
+
         [Required]
         [ForeignKey("ContainerStateTemplate")]
         public int ContainerState { get; set; }
-              
+
         public virtual _ContainerStateTemplate ContainerStateTemplate { get; set; }
 
         [ForeignKey("CurrentRouteNode")]
@@ -78,7 +79,7 @@ namespace Data.Entities
         public override void OnModify(System.Data.Entity.Infrastructure.DbPropertyValues originalValues, System.Data.Entity.Infrastructure.DbPropertyValues currentValues)
         {
             base.OnModify(originalValues, currentValues);
-            
+
         }
     }
 }

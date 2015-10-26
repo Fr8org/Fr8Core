@@ -30,11 +30,11 @@ namespace Data.Infrastructure
 
         public delegate void PluginActionActivatedHandler(ActionDO action);
         public static event PluginActionActivatedHandler PluginActionActivated;
-         
+
 
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
-   
+
         public delegate void CustomerCreatedHandler(Fr8AccountDO user);
         public static event CustomerCreatedHandler AlertCustomerCreated;
 
@@ -92,10 +92,10 @@ namespace Data.Infrastructure
         public delegate void EventContainerCreatedHandler(ContainerDO containerDO);
         public static event EventContainerCreatedHandler EventContainerCreated;
 
-        public delegate void EventContainerSentHandler(ContainerDO containerDO);
+        public delegate void EventContainerSentHandler(ContainerDO containerDO, ActionDO actionDO);
         public static event EventContainerSentHandler EventContainerSent;
 
-        public delegate void EventContainerReceivedHandler(ContainerDO containerDO);
+        public delegate void EventContainerReceivedHandler(ContainerDO containerDO, ActionDO actionDO);
         public static event EventContainerReceivedHandler EventContainerReceived;
 
         public delegate void EventContainerStateChangedHandler(ContainerDO containerDO);
@@ -136,7 +136,7 @@ namespace Data.Infrastructure
 
 
 
-        
+
         #region Method
 
 
@@ -464,7 +464,7 @@ namespace Data.Infrastructure
         }
         #endregion
 
-        
+
     }
 
 }

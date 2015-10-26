@@ -315,7 +315,7 @@ namespace Data.Infrastructure
                 .WithMany(x => x.ChildNodes)
                 .HasForeignKey(x => x.ParentRouteNodeId)
                 .WillCascadeOnDelete(false);
-            
+
             modelBuilder.Entity<TrackingStatusDO>()
                 .HasKey(ts => new
                 {
@@ -325,12 +325,12 @@ namespace Data.Infrastructure
 
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
-            
-//            modelBuilder.Entity<SubrouteDO>()
-//               .HasMany<CriteriaDO>(c => c.Criteria)
-//               .WithOptional(x => x.Subroute)
-//               .WillCascadeOnDelete(true);
-            
+
+            //            modelBuilder.Entity<SubrouteDO>()
+            //               .HasMany<CriteriaDO>(c => c.Criteria)
+            //               .WithOptional(x => x.Subroute)
+            //               .WillCascadeOnDelete(true);
+
             modelBuilder.Entity<AuthorizationTokenDO>()
              .HasRequired(x => x.Plugin)
              .WithMany()
