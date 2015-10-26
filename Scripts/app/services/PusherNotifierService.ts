@@ -21,7 +21,7 @@ module dockyard.services {
         constructor(private $pusher: any) {
             this.client = new Pusher(this.appKey, { encrypted: true });
             this.pusher = $pusher(this.client);
-        }        
+        }
 
         public bindEventToChannel(channel: string, event: string, callback: Function, context?: any): void {
             var channelInstance = this.pusher.subscribe(channel);
