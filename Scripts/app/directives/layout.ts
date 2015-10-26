@@ -26,7 +26,7 @@ module dockyard.directives {
                 scope.$watch(() => {
                     var lastChild = elem.children().last();
                     if (lastChild.length) {
-                        return lastChild.position().top + elem.scrollTop() + LayoutService.ACTION_HEIGHT + 30;
+                        return lastChild.position().top + elem.scrollTop() + lastChild.height() + 30;
                     }
                     return 0;
                 }, (newValue) => {

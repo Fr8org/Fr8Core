@@ -163,6 +163,8 @@
     vertical-align: top;
     width: 330px;
     white-space: initial;
+    min-width: 200px;
+    max-width: 450px;
 }
 
 .action-name {    
@@ -200,6 +202,7 @@
     cursor: pointer;
     opacity: 0.5;
     margin-left: -3px;
+    height: 300px;
 }
 
 .action-to-add:hover {
@@ -210,7 +213,7 @@
 .action .pane-configure-action {    
     padding: 5px;
     height: auto;
-    min-height: 250px;
+    min-height: 224px;
     display: block;
     width: 100%;
 }
@@ -350,7 +353,7 @@ input[type=radio]:checked ~ div.nested-controls {
     padding-top: 3px; 
     padding-bottom: 3px;
 }
- 
+
 
 /*Class to display the text block properly*/
 .TextBlockClass
