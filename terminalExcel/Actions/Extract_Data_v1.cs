@@ -117,7 +117,7 @@ namespace terminalExcel.Actions
 
             var filePickerControl = new ControlDefinitionDTO(ControlTypes.FilePicker)
             {
-                Label = "Select Excel File",
+                Label = "Select an Excel file",
                 Name = "select_file",
                 Required = true,
                 Events = new List<ControlEvent>()
@@ -126,11 +126,19 @@ namespace terminalExcel.Actions
                 },
                 Source = new FieldSourceDTO
                 {
-                    Label = "Select Excel File",
+                    Label = "Select an Excel file",
                     ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
                 },
             };
             controlList.Add(filePickerControl);
+
+            var textBlockControlField = new TextBlockControlDefinitionDTO()
+            {
+                Label = "",
+                Value = "This Action will try to extract a table of rows from the first spreadsheet in the file. The rows should have a header row.",
+                CssClass = "well well-lg TextBlockClass"
+            };
+            controlList.Add(textBlockControlField);
 
             if (includeTextBlockControl)
             {
