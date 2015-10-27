@@ -51,7 +51,7 @@ namespace Core.Services
             uow.SaveChanges();
 
             return uow.ActionRepository.GetByKey(submittedActionData.Id);
-            }
+        }
 
         public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
         {
@@ -75,25 +75,25 @@ namespace Core.Services
         /// <param name="uow"></param>
         /// <param name="submittedActionData"></param>
         /// <returns></returns>
-        public async Task<ActionDO> SaveUpdateAndConfigure(IUnitOfWork uow, ActionDO submittedActionData)
-        {
-            var pendingConfigurations = new List<ActionDO>();
-            // Update properties and structure recisurively
-            var existingAction = SaveAndUpdateRecursive(uow, submittedActionData, pendingConfigurations);
-
-            // Change parent if it is necessary
-            existingAction.ParentRouteNode = submittedActionData.ParentRouteNode;
-            existingAction.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
-
-            uow.SaveChanges();
-
+//        public async Task<ActionDO> SaveUpdateAndConfigure(IUnitOfWork uow, ActionDO submittedActionData)
+//        {
+//            var pendingConfigurations = new List<ActionDO>();
+//            // Update properties and structure recisurively
+//            var existingAction = SaveAndUpdateRecursive(uow, submittedActionData, pendingConfigurations);
+//
+//            // Change parent if it is necessary
+//            existingAction.ParentRouteNode = submittedActionData.ParentRouteNode;
+//            existingAction.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
+//
+//            uow.SaveChanges();
+//
 //            foreach (var pendingConfiguration in pendingConfigurations)
 //            {
 //                await ConfigureSingleAction(uow, pendingConfiguration);
 //            }
-
-            return uow.ActionRepository.GetByKey(existingAction.Id);
-        }
+//
+//            return uow.ActionRepository.GetByKey(existingAction.Id);
+//        }
 
         private void UpdateActionProperties(IUnitOfWork uow, ActionDO submittedAction)
         {
@@ -133,7 +133,7 @@ namespace Core.Services
                 
                 if (submittedAction.ActivityTemplateId != null)
                 {
-                    submittedAction.ActivityTemplate = ObjectFactory.GetInstance<IActivityTemplate>().GetByKey(submittedAction.ActivityTemplateId.Value);
+                    submittedAction.ActivityTemplate = uow.ActivityTemplateRepository.GetByKey(submittedAction.ActivityTemplateId.Value);
                 }
 
                 uow.ActionRepository.Add(submittedAction);
@@ -198,8 +198,7 @@ namespace Core.Services
 
             return existingAction;
         }
-
-
+        
         public ActionDO GetById(IUnitOfWork uow, int id)
         {
             return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).FirstOrDefault(i => i.Id == id);
@@ -317,7 +316,7 @@ namespace Core.Services
             //save the received action as quickly as possible
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curActionDO = await SaveUpdateAndConfigure(uow, curActionDO);
+                curActionDO = SaveOrUpdateAction(uow, curActionDO);
                 return Mapper.Map<ActionDTO>(curActionDO);
             }
         }
@@ -410,7 +409,7 @@ namespace Core.Services
 
                 uow.ActionRepository.Attach(curAction);
                 uow.SaveChanges();
-            }
+        }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
         public async Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO)

@@ -18,7 +18,7 @@ namespace terminalDocuSign.Actions
 {
     public class Collect_Form_Data_Solution_v1 : BasePluginAction
     {
-        class ActionUi : StandardConfigurationControlsCM
+        private class ActionUi : StandardConfigurationControlsCM
         {
             public DropDownListControlDefinitionDTO FinalActionsList { get; set; }
             public RadioButtonOption UseTemplate { get; set; }
@@ -29,10 +29,10 @@ namespace terminalDocuSign.Actions
             public ActionUi()
             {
                 Controls = new List<ControlDefinitionDTO>();
-                Controls.Add(new TextBlockControlDefinitionDTO
+                Controls.Add(new ControlDefinitionDTO("TextArea")
                 {
                     Label = "",
-                    Value = "Fr8 Solutions for DocuSign"
+                    Value = "<h2>Fr8 Solutions for DocuSign</h2>"
                 });
 
                 Controls.Add(new TextBlockControlDefinitionDTO
@@ -44,38 +44,38 @@ namespace terminalDocuSign.Actions
                 Controls.Add(new RadioButtonGroupControlDefinitionDTO
                 {
                     Label = "1. Collect What Kind of Form Data?",
-                    Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") },
+                    Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")},
                     Radios = new List<RadioButtonOption>
-                {
-                    (UseStandardForm = new RadioButtonOption
                     {
-                        Name = "UseStandardForm",
-                        Value = "Use standard form:",
-                        Controls = new List<ControlDefinitionDTO>
+                        (UseStandardForm = new RadioButtonOption
                         {
-                            (StandardFormsList = new DropDownListControlDefinitionDTO
+                            Name = "UseStandardForm",
+                            Value = "Use standard form:",
+                            Controls = new List<ControlDefinitionDTO>
                             {
-                                Name = "StandardFormsList",
-                                Source = new FieldSourceDTO
+                                (StandardFormsList = new DropDownListControlDefinitionDTO
                                 {
-                                    Label = "AvailableForms",
-                                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
-                                },
-                                Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
-                            })
-                        }
-                    }),
-                    (UseTemplate = new RadioButtonOption
-                    {
-                        Name = "UseTemplate",
-                        Value = "I want to use a template on my DocuSign account"
-                    }),
-                    (UseUploadedForm = new RadioButtonOption
-                    {
-                        Name = "UseUploadedForm",
-                        Value = "I want to upload my own form"
-                    })
-                }
+                                    Name = "StandardFormsList",
+                                    Source = new FieldSourceDTO
+                                    {
+                                        Label = "AvailableForms",
+                                        ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                                    },
+                                    Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
+                                })
+                            }
+                        }),
+                        (UseTemplate = new RadioButtonOption
+                        {
+                            Name = "UseTemplate",
+                            Value = "I want to use a template on my DocuSign account"
+                        }),
+                        (UseUploadedForm = new RadioButtonOption
+                        {
+                            Name = "UseUploadedForm",
+                            Value = "I want to upload my own form"
+                        })
+                    }
                 });
 
                 Controls.Add((FinalActionsList = new DropDownListControlDefinitionDTO
@@ -88,7 +88,7 @@ namespace terminalDocuSign.Actions
                         Label = "AvailableActions",
                         ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
                     },
-                    Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
+                    Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
                 }));
             }
         }
@@ -149,7 +149,7 @@ namespace terminalDocuSign.Actions
 
             action.ChildNodes = new List<RouteNodeDO>();
 
-            //if (controls.UseTemplate.Selected)
+            if (controls.UseTemplate.Selected)
             {
                 const string firstTemplateName = "Monitor_DocuSign";
                 var firstActionTemplate = (await FindTemplates(x => x.Name == "Monitor_DocuSign")).FirstOrDefault();
@@ -171,7 +171,7 @@ namespace terminalDocuSign.Actions
 
                 action.ChildNodes.Add(firstAction);
             }
-
+          
             var finalAction = new ActionDO
             {
                 ActivityTemplateId = int.Parse(finalActionTemplateId),

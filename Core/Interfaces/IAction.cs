@@ -16,7 +16,7 @@ namespace Core.Interfaces
         ActionDO SaveOrUpdateAction(ActionDO currentActionDo);
         ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO currentActionDo);
         Task<ActionDTO> Configure(ActionDO curActionDO);
-        Task<ActionDO> SaveUpdateAndConfigure(IUnitOfWork uow, ActionDO submittedActionDo);
+        //Task<ActionDO> SaveUpdateAndConfigure(IUnitOfWork uow, ActionDO submittedActionDo);
         ActionDO GetById(int id);
         ActionDO GetById(IUnitOfWork uow, int id);
         //void Delete(int id); -> Delete is moved to ProcessNodeTemplate
