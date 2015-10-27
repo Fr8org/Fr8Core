@@ -508,6 +508,8 @@ namespace Data.Migrations
 			AddWebService(uow, "AWS", "/Content/icons/aws-icon-64x64.png");
 			AddWebService(uow, "Slack", "/Content/icons/slack-icon-64x64.png");
 			AddWebService(uow, "DocuSign", "/Content/icons/docusign-icon-64x64.png");
+
+			uow.SaveChanges();
 	    }
 
 	    private void AddWebService(IUnitOfWork uow, string name, string iconPath)

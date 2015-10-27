@@ -344,6 +344,12 @@ namespace Data.Infrastructure
                 .HasForeignKey(x => x.PluginID)
                 .WillCascadeOnDelete(false);
 
+			modelBuilder.Entity<ActivityTemplateDO>()
+				.HasRequired(x => x.WebService)
+				.WithMany()
+				.HasForeignKey(x => x.WebServiceId)
+				.WillCascadeOnDelete(false);
+
 
             base.OnModelCreating(modelBuilder);
         }

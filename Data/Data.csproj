@@ -359,7 +359,12 @@
     <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.Designer.cs">
       <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs" />
+    <Compile Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.Designer.cs">
+      <DependentUpon>201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
+    <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -625,6 +630,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510261339053_CreateWebServicesTable_Migration.resx">
       <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.resx">
+      <DependentUpon>201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
