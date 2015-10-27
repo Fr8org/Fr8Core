@@ -4,7 +4,7 @@ using Google.Apis.Auth.OAuth2.Mvc.Controllers;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Authorizers.Google;
 
-namespace Web.Controllers.External.Google
+namespace HubWeb.Controllers.External.Google
 {
     [DockyardAuthorize]
     public class GoogleAuthCallbackController : AuthCallbackController

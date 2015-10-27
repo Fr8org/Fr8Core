@@ -11,7 +11,7 @@ using Data.Validations;
 using Hub.Services;
 using Utilities;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     public class DataController : Controller
     {

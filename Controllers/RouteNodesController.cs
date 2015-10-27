@@ -13,7 +13,7 @@ using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Managers;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [RoutePrefix("route_nodes")]
 	public class RouteNodesController : ApiController

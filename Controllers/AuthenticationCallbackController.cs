@@ -9,9 +9,9 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Services;
-using Web.ViewModels;
+using HubWeb.ViewModels;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     public class AuthenticationCallbackController : Controller
     {

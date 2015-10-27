@@ -17,9 +17,9 @@ using Utilities;
 using Utilities.Configuration.Azure;
 using Utilities.Logging;
 
-[assembly: OwinStartup(typeof(Web.Startup))]
+[assembly: OwinStartup(typeof(HubWeb.Startup))]
 
-namespace Web
+namespace HubWeb
 {
     public partial class Startup
     {

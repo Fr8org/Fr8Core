@@ -1,9 +1,9 @@
 ﻿using System.Web.Mvc;
+using StructureMap;
 using Data.Infrastructure.StructureMap;
 using Hub.Security;
-using StructureMap;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     public static class ControllerExtensions
     {

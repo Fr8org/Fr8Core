@@ -12,7 +12,7 @@ using Data.Interfaces;
 using Hub.Interfaces;
 using Hub.Services;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     public class TokenAuthController : Controller
     {

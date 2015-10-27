@@ -18,7 +18,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Services;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [RoutePrefix("field")]
     public class FieldController : ApiController

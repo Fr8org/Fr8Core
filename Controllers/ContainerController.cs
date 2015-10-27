@@ -23,7 +23,7 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Services;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     // commented out by yakov.gnusin.
     // Please DO NOT put [Fr8ApiAuthorize] on class, this breaks process execution!

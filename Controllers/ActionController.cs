@@ -20,7 +20,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Services;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [RoutePrefix("actions")]
     public class ActionController : ApiController

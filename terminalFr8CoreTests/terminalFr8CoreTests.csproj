@@ -167,9 +167,9 @@
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Web.csproj">
+    <ProjectReference Include="..\HubWeb.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
-      <Name>Web</Name>
+      <Name>HubWeb</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

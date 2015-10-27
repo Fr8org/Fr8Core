@@ -11,11 +11,11 @@ using Data.Interfaces;
 using Hub.ExternalServices;
 using Hub.Managers;
 using Hub.Services;
-using Web.ViewModels;
+using HubWeb.ViewModels;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
 	[ DockyardAuthorize( Roles = "Booker" ) ]
     public class DiagnosticsController : Controller

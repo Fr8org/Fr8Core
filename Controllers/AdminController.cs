@@ -5,9 +5,9 @@ using System.Web.Mvc;
 using Daemons;
 using Hub.ExternalServices;
 using Hub.Managers;
-using Web.ViewModels;
+using HubWeb.ViewModels;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [Authorize]
     public class AdminController : Controller

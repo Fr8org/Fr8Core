@@ -5,9 +5,9 @@ using System.Web.Mvc;
 using StructureMap;
 using Data.Interfaces;
 using Hub.Managers;
-using Web.NotificationQueues;
+using HubWeb.NotificationQueues;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [DockyardAuthorize]
     public class AlertingController : Controller

@@ -27,13 +27,13 @@ using Hub.ModelBinders;
 using Hub.Security;
 using Hub.Services;
 using Hub.StructureMap;
-using Web.App_Start;
-using Web.ExceptionHandling;
-using Web.NotificationQueues;
+using HubWeb.App_Start;
+using HubWeb.ExceptionHandling;
+using HubWeb.NotificationQueues;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
 
-namespace Web
+namespace HubWeb
 {
     public class MvcApplication : System.Web.HttpApplication
     {

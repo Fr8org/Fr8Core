@@ -4,13 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using StructureMap;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Authorizers;
 using Hub.Managers.APIManagers.Authorizers.Docusign;
-using StructureMap;
-using Web.ViewModels;
+using HubWeb.ViewModels;
 
-namespace Web.Controllers.External.DocuSign
+namespace HubWeb.Controllers.External.DocuSign
 {
     [DockyardAuthorize]
     public class DocusignAuthCallbackController : Controller

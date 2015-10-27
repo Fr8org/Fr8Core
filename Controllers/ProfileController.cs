@@ -6,9 +6,9 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Hub.Managers;
-using Web.ViewModels;
+using HubWeb.ViewModels;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     public class ProfileController : Controller
     {

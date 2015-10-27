@@ -5,7 +5,7 @@ using Data.Interfaces;
 using Hub.Services;
 using Utilities;
 
-namespace Web.NotificationQueues
+namespace HubWeb.NotificationQueues
 {
     public class BookingRequestReservedForUserQueue : SharedNotificationQueue<NewBookingRequestForUserQueueData>
     {

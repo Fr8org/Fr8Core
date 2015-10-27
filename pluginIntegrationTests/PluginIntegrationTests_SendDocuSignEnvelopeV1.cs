@@ -13,10 +13,10 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Hub.Interfaces;
+using HubWeb.Controllers;
 using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Web.Controllers;
 using terminalAzure;
 
 namespace pluginIntegrationTests

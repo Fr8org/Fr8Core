@@ -14,7 +14,7 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Services;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
     [RoutePrefix("api/manageFile")]

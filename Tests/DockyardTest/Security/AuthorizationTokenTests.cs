@@ -6,8 +6,8 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Hub.Services;
+using HubWeb.Controllers;
 using UtilitiesTesting;
-using Web.Controllers;
 
 namespace DockyardTest.Security
 {

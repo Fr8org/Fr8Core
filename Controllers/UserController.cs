@@ -16,11 +16,11 @@ using Data.States;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Authorizers;
 using Hub.Services;
+using HubWeb.ViewModels;
 using Utilities;
 using Utilities.Logging;
-using Web.ViewModels;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [DockyardAuthorize]
     public class UserController : ApiController

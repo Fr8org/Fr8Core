@@ -14,7 +14,7 @@ using Data.States;
 using Hub.Exceptions;
 using Hub.Interfaces;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
     [RoutePrefix("routes")]

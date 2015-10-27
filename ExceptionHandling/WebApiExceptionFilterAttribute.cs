@@ -12,7 +12,7 @@ using Hub.Managers;
 using TerminalBase;
 using Utilities;
 
-namespace Web.ExceptionHandling
+namespace HubWeb.ExceptionHandling
 {
     /// <summary>
     /// This exception filter handles any non-handled exception. Usually for such 

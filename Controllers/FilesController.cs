@@ -16,7 +16,7 @@ using Data.Interfaces;
 using Hub.Interfaces;
 
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
     public class FilesController : ApiController

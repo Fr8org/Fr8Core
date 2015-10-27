@@ -11,9 +11,9 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
-using Web.ViewModels;
+using HubWeb.ViewModels;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     /// <summary>
     /// Subroute web api controller to handle CRUD operations from frontend.

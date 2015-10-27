@@ -1,6 +1,6 @@
 ﻿using Data.Infrastructure;
 
-namespace Web.NotificationQueues
+namespace HubWeb.NotificationQueues
 {
     public class BookingRequestUpdatedQueue : PersonalNotificationQueue<BookingRequestUpdatedData>
     {

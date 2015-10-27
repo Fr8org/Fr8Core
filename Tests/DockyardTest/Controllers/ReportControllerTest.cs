@@ -7,10 +7,10 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Hub.Managers;
+using HubWeb.Controllers;
 using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Web.Controllers;
 
 namespace DockyardTest.Controllers
 {

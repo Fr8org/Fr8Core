@@ -14,9 +14,9 @@ using Hub.Managers;
 using Hub.Services;
 using Utilities;
 using Utilities.Logging;
-using Web.ViewModels;
+using HubWeb.ViewModels;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     /// <summary>
     /// Email service

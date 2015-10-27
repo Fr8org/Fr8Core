@@ -12,10 +12,10 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Hub.Managers.APIManagers.Authorizers;
-using Web.Controllers;
+using HubWeb.Controllers;
+using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Utilities;
 
 namespace DockyardTest.Managers
 {

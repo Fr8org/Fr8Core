@@ -8,9 +8,9 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using Hub.Managers;
-using Web.ViewModels;
+using HubWeb.ViewModels;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [DockyardAuthorize]
     public class DashboardController : Controller

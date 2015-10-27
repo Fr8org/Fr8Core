@@ -14,10 +14,10 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Hub.Interfaces;
 using Hub.Services;
+using HubWeb.Controllers;
+using HubWeb.ViewModels;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Web.Controllers;
-using Web.ViewModels;
 
 namespace DockyardTest.Controllers
 {

@@ -10,7 +10,7 @@ using Hub.Services;
 using Utilities;
 using Utilities.Logging;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {    
     public class ReportController : ApiController
     {

@@ -1,8 +1,8 @@
 ﻿using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
-using Web.ExceptionHandling;
+using HubWeb.ExceptionHandling;
 
-namespace Web
+namespace HubWeb
 {
 	public static class WebApiConfig
 	{

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.Mvc;
 
-namespace Web.ViewModels
+namespace HubWeb.ViewModels
 {
     public class EventVM
     {

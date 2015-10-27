@@ -14,7 +14,7 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     /// <summary>
     /// Central logging Events controller

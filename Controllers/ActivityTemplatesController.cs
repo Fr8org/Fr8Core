@@ -6,7 +6,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [RoutePrefix("activityTemplates")]
     public class ActivityTemplatesController : ApiController

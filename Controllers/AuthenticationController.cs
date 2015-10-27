@@ -10,7 +10,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Infrastructure.StructureMap;
 using Hub.Services;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [RoutePrefix("authentication")]
     public class AuthenticationController : ApiController

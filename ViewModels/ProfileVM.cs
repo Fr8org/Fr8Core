@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 
-namespace Web.ViewModels
+namespace HubWeb.ViewModels
 {
     public class ProfileVM
     {
