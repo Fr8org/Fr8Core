@@ -29,10 +29,10 @@ namespace terminalDocuSign.Actions
             public ActionUi()
             {
                 Controls = new List<ControlDefinitionDTO>();
-                Controls.Add(new ControlDefinitionDTO("TextArea")
+                Controls.Add(new TextBlockControlDefinitionDTO
                 {
                     Label = "",
-                    Value = "<h2>Fr8 Solutions for DocuSign</h2>"
+                    Value = "Fr8 Solutions for DocuSign"
                 });
 
                 Controls.Add(new TextBlockControlDefinitionDTO

@@ -33,7 +33,7 @@ namespace terminalSalesforce.Controllers
                 Name = "Create_Lead",
                 Label = "Create Lead",
                 Plugin = plugin,
-                AuthenticationType = AuthenticationType.None,
+                AuthenticationType = AuthenticationType.External,
                 Category = ActivityCategory.Forwarders,
 				MinPaneWidth = 330
             };

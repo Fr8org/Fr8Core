@@ -81,5 +81,9 @@ namespace Data.Entities
         public ActivityCategory Category { get; set; }
 
         public int MinPaneWidth { get; set; }
+
+		public int WebServiceId { get; set; }
+
+		public virtual WebServiceDO WebService { get; set; }
     }
 }
