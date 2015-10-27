@@ -27,21 +27,19 @@ module dockyard.controllers {
 
 			$scope.showAddWebServiceModal = <() => void> angular.bind(this, this.showAddWebServiceModal);
 
-			WebServiceService.query().$promise.then(function (data) {
+			WebServiceService.query().$promise.then(data => {
 				$scope.webServices = data;
 			});
 		}
 
 		private showAddWebServiceModal() {
-			var me = this;
-
 			this.$modal.open({
 				animation: true,
 				templateUrl: 'webServiceFormModal',
 				controller: 'WebServiceFormController'
 			})
-			.result.then(function (webService) {
-				me.$scope.webServices.push(webService);
+			.result.then(webService => {
+				this.$scope.webServices.push(webService);
 			});
 		}
 	}

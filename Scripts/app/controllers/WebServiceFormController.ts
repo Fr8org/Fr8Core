@@ -31,10 +31,8 @@ module dockyard.controllers {
 		}
 
 		private sumbitForm() {
-			var me = this;
-
-			me.WebServiceService.save(me.$scope.webService).$promise.then(function (webService) {
-				me.$modalInstance.close(webService);
+			this.WebServiceService.save(this.$scope.webService).$promise.then(webService => {
+				this.$modalInstance.close(webService);
 			});
 		}
 
