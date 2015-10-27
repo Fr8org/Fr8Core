@@ -320,11 +320,11 @@ form.internal-authenticate-form {
     margin-left: 20px;
 }
 
-input[type=radio] + div.nested-controls {
+input[type=radio] ~ div.nested-controls {
     display: none;
 } 
 
-input[type=radio]:checked + div.nested-controls {
+input[type=radio]:checked ~ div.nested-controls {
     display: block;
 } 
 
@@ -346,4 +346,16 @@ input[type=radio]:checked + div.nested-controls {
     height: 26px;
     padding-top: 3px; 
     padding-bottom: 3px;
+}
+
+
+/*Class to display the text block properly*/
+.TextBlockClass
+{
+    display: block;
+    width: 100%;
+    height: auto;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: normal;
 }

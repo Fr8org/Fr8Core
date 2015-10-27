@@ -17,7 +17,7 @@ using StructureMap;
 namespace Web.Controllers
 {
     [Fr8ApiAuthorize]
-    [RoutePrefix("api/route")]
+    [RoutePrefix("routes")]
     public class RouteController : ApiController
     {
         private readonly IRoute _route;
@@ -50,9 +50,9 @@ namespace Web.Controllers
                 return Ok(result);
             };
         }
+
         
-        
-        [Route("getactive")]
+        [Route("status")]
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
         {
@@ -96,7 +96,7 @@ namespace Web.Controllers
             return Ok();
         }
 
-        
+        [Route("~/routes")]
         public IHttpActionResult Post(RouteOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

@@ -364,7 +364,7 @@ module dockyard.controllers {
             };
 
             this.$http
-                .get('/actions/auth_url?id=' + eventArgs.activityTemplateId)
+                .get('/authentication/initial_url?id=' + eventArgs.activityTemplateId)
                 .then(function (res) {
                     var url = (<any>res.data).url;
 
@@ -396,7 +396,8 @@ module dockyard.controllers {
                     parentRouteNodeId: 1,
                     activityTemplateId: 1,
                     id: 1,
-                    isTempId: false
+                    isTempId: false,
+                    childrenActions: null
                 };
 
             $httpBackend

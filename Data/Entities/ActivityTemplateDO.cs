@@ -60,6 +60,8 @@ namespace Data.Entities
 
         public string Label { get; set; }
 
+        public string Tags { get; set; }
+
         public string Version { get; set; }
 
         [Required]
@@ -79,5 +81,9 @@ namespace Data.Entities
         public ActivityCategory Category { get; set; }
 
         public int MinPaneWidth { get; set; }
+
+		public int WebServiceId { get; set; }
+
+		public virtual WebServiceDO WebService { get; set; }
     }
 }

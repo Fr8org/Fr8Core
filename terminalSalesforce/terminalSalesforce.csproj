@@ -209,6 +209,7 @@
     <Compile Include="Actions\Create_Lead_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
+    <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\PluginController.cs" />
     <Compile Include="Global.asax.cs">
