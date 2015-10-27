@@ -1,19 +1,20 @@
-﻿using Core.Interfaces;
-using Data.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
 using StructureMap;
-using System.Threading.Tasks;
-using System.Net.Http.Headers;
+using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Hub.Interfaces;
+
 
 namespace Web.Controllers
 {

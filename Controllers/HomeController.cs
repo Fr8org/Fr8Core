@@ -1,16 +1,16 @@
+using System;
+using System.Net.Mail;
 using System.Web.Mvc;
-using Data.Validations;
 using FluentValidation;
-using Data.Entities;
-using Data.Interfaces;
-using Web.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;
-using Core.Services;
-using System.Net.Mail;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Validations;
+using Hub.Services;
 using Utilities;
 using Utilities.Logging;
-using System;
+using Web.ViewModels;
 
 namespace Web.Controllers
 {

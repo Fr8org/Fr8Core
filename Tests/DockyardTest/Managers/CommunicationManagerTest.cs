@@ -1,5 +1,5 @@
-﻿using Core.StructureMap;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using Hub.StructureMap;
 using UtilitiesTesting;
 
 namespace DockyardTest.Managers

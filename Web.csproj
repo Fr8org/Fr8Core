@@ -4083,9 +4083,9 @@
     <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Core\Core.csproj">
+    <ProjectReference Include="Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
-      <Name>Core</Name>
+      <Name>Hub</Name>
     </ProjectReference>
     <ProjectReference Include="Daemons\Daemons.csproj">
       <Project>{b15ea73e-e0d0-4604-bcfc-ddafb67f872d}</Project>
@@ -4097,7 +4097,7 @@
     </ProjectReference>
     <ProjectReference Include="terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>PluginBase</Name>
+      <Name>TerminalBase</Name>
     </ProjectReference>
     <ProjectReference Include="Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

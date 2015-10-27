@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Web.Http;
 using StructureMap;
-using Core.Interfaces;
-using Core.Managers;
-using Core.Managers.APIManagers.Transmitters.Restful;
-using Core.Services;
 using Data.Crates.Helpers;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using Hub.Services;
 
 namespace Web.Controllers
 {

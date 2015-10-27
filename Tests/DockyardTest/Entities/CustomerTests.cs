@@ -1,12 +1,12 @@
 ﻿using System.Linq;
+using NUnit.Framework;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Core.Managers;
-using Core.StructureMap;
-using NUnit.Framework;
+using Hub.Managers;
+using Hub.StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using StructureMap;
 
 namespace DockyardTest.Models
 {

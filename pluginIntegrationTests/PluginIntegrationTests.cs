@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http.Results;
 using AutoMapper;
-using Core.Interfaces;
-using Core.Managers.APIManagers.Transmitters.Plugin;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using StructureMap;
@@ -13,13 +11,15 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using terminalAzure;
+using Hub.Interfaces;
+using Hub.Managers.APIManagers.Transmitters.Plugin;
+using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
-using UtilitiesTesting;
+using terminalAzure;
 using terminalDocuSign;
 
-using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
+using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Infrastructure.AutoMapper;
 

@@ -1,10 +1,10 @@
 ﻿using System.Web.Http;
 using System.Web.Http.Description;
-using StructureMap;
 using AutoMapper;
-using Core.Interfaces;
+using StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
 
 namespace Web.Controllers
 {

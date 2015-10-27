@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
-using Data.Interfaces;
-using Core.Managers;
-using Web.NotificationQueues;
 using StructureMap;
+using Data.Interfaces;
+using Hub.Managers;
+using Web.NotificationQueues;
 
 namespace Web.Controllers
 {

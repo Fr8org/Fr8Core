@@ -1,11 +1,11 @@
-﻿using Core.Services;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNet.Identity.EntityFramework;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Microsoft.AspNet.Identity.EntityFramework;
-using StructureMap;
-using System.Collections.Generic;
-using System.Linq;
+using Hub.Services;
 
 namespace UtilitiesTesting.Fixtures
 {

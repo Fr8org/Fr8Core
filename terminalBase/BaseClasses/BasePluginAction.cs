@@ -5,20 +5,19 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
-using Core.Services;
-using Data.Constants;
 using Newtonsoft.Json;
-
 using StructureMap;
-using Core.Enums;
-using Core.Interfaces;
-using Core.Managers;
+using Data.Constants;
 using Data.Entities;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
+using Hub.Enums;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Services;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
-using Data.Interfaces;
 
 namespace TerminalBase.BaseClasses
 {

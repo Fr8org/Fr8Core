@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Daemons;
-using Core.ExternalServices;
-using Core.Managers;
+using Hub.ExternalServices;
+using Hub.Managers;
 using Web.ViewModels;
 
 namespace Web.Controllers

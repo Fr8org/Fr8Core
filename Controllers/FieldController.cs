@@ -10,13 +10,13 @@ using Data.Constants;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using StructureMap;
-using Core.Interfaces;
-using Core.Managers;
-using Core.Services;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Services;
 
 namespace Web.Controllers
 {

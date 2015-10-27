@@ -10,18 +10,18 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using Microsoft.AspNet.Identity;
 using StructureMap;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
-using InternalInterface = Core.Interfaces;
-using Core.Interfaces;
-using Core.Services;
+using InternalInterface = Hub.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Microsoft.AspNet.Identity;
-using Data.Infrastructure.StructureMap;
+using Hub.Interfaces;
+using Hub.Services;
 
 namespace Web.Controllers
 {

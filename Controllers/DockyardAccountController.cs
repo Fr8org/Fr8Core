@@ -5,16 +5,16 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Core.Managers;
-using Core.Services;
-using Web.ViewModels;
-using Microsoft.AspNet.Identity;
-using StructureMap;
+using Hub.Managers;
+using Hub.Services;
 using Utilities;
 using Utilities.Logging;
+using Web.ViewModels;
 
 namespace Web.Controllers
 {

@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
-using Core.Services;
+using NUnit.Framework;
+using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using NUnit.Framework;
-using StructureMap;
+using Hub.Services;
 using UtilitiesTesting;
 using Web.Controllers;
 

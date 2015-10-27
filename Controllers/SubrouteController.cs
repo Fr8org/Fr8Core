@@ -5,12 +5,12 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using Core.Interfaces;
+using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using StructureMap;
+using Hub.Interfaces;
 using Web.ViewModels;
 
 namespace Web.Controllers

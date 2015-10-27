@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Core.Managers;
-using Core.Managers.APIManagers.Authorizers;
-using Core.Managers.APIManagers.Authorizers.Docusign;
+using Hub.Managers;
+using Hub.Managers.APIManagers.Authorizers;
+using Hub.Managers.APIManagers.Authorizers.Docusign;
 using StructureMap;
 using Web.ViewModels;
 

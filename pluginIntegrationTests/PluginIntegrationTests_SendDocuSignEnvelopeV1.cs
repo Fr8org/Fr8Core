@@ -1,23 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http.Results;
 using AutoMapper;
-using Core.Interfaces;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using StructureMap;
+using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using terminalAzure;
+using Hub.Interfaces;
+using Utilities;
+using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
-using UtilitiesTesting;
-using Data.Constants;
-using Utilities;
-using System.Threading.Tasks;
+using terminalAzure;
 
 namespace pluginIntegrationTests
 {

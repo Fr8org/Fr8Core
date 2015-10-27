@@ -1,17 +1,17 @@
-﻿using AutoMapper;
-using Core.Interfaces;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
-using Core.Managers;
-using Data.Infrastructure.StructureMap;
+using AutoMapper;
 using Microsoft.AspNet.Identity;
+using StructureMap;
+using Data.Infrastructure.StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using Hub.Managers;
 
 namespace Web.Controllers
 {

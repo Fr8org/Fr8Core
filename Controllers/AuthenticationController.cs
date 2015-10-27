@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using StructureMap;
-using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Infrastructure.StructureMap;
+using Hub.Services;
 
 namespace Web.Controllers
 {

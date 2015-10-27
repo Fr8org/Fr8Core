@@ -2,11 +2,11 @@
 using System.Web.Http;
 using Microsoft.Owin.Hosting;
 using Owin;
-using StructureMap.Configuration.DSL;
 using StructureMap;
-using Core.Interfaces;
-using Core.Managers;
-using Core.Services;
+using StructureMap.Configuration.DSL;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Services;
 
 namespace terminalExcel
 {
@@ -16,7 +16,7 @@ namespace terminalExcel
         {
             public LiveMode()
             {
-                For<IAction>().Use<Core.Services.Action>();
+                For<IAction>().Use<Hub.Services.Action>();
                 For<IPlugin>().Use<Plugin>();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IRouteNode>().Use<RouteNode>();

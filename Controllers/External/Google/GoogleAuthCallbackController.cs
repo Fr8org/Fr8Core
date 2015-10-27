@@ -1,8 +1,8 @@
 using System.Web.Mvc;
-using Core.Managers;
-using Core.Managers.APIManagers.Authorizers.Google;
 using Google.Apis.Auth.OAuth2.Mvc;
 using Google.Apis.Auth.OAuth2.Mvc.Controllers;
+using Hub.Managers;
+using Hub.Managers.APIManagers.Authorizers.Google;
 
 namespace Web.Controllers.External.Google
 {

@@ -5,8 +5,8 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Security;
 using System.Web.SessionState;
-using Core.StructureMap;
 using Data.Infrastructure.AutoMapper;
+using Hub.StructureMap;
 
 namespace terminalFr8Core
 {

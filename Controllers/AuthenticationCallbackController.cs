@@ -4,11 +4,11 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using StructureMap;
-using Core.Interfaces;
-using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using Hub.Services;
 using Web.ViewModels;
 
 namespace Web.Controllers

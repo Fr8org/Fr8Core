@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Core.Managers;
+using Hub.Managers;
 using Web.ViewModels;
-using StructureMap;
 
 namespace Web.Controllers
 {

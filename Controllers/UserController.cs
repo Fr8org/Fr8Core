@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
 using AutoMapper.Internal;
-using Core.Managers;
-using Core.Managers.APIManagers.Authorizers;
-using Core.Services;
-using Data.Entities;
-using Data.Interfaces;
-using Data.States;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using Hub.Managers;
+using Hub.Managers.APIManagers.Authorizers;
+using Hub.Services;
 using Utilities;
 using Utilities.Logging;
 using Web.ViewModels;
-using Data.Interfaces.DataTransferObjects;
 
 namespace Web.Controllers
 {
