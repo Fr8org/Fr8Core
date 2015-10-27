@@ -25,11 +25,6 @@ namespace Core.Services
             }
         }
 
-        public string Authorize()
-        {
-            return "AuthorizationToken";
-        }
-
         public async Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
         //    public IList<ActivityTemplateDO> GetAvailableActions(string uri)
         {

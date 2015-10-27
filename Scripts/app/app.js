@@ -96,12 +96,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             .state('routeList', {
             url: "/processes",
             templateUrl: "/AngularTemplate/RouteList",
-            data: { pageTitle: 'Routes', pageSubTitle: 'This page displays all process templates' }
+            data: { pageTitle: 'Routes', pageSubTitle: 'This page displays all Routes' }
         })
             .state('routeForm', {
             url: "/processes/{id}",
             templateUrl: "/AngularTemplate/RouteForm",
-            data: { pageTitle: 'Route', pageSubTitle: 'Add a new Process Template' },
+            data: { pageTitle: 'Route', pageSubTitle: 'Add a new Route' },
         })
             .state('processBuilder', {
             url: "/processes/{id}/builder",
@@ -142,6 +142,11 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: "/container/{id}/details",
             templateUrl: "/AngularTemplate/containerDetails",
             data: { pageTitle: 'Container  Details', pageSubTitle: '' }
+        })
+            .state('solution', {
+            url: "/solution/{solutionName}",
+            templateUrl: "/AngularTemplate/Solution",
+            data: { pageTitle: 'Create a Solution', pageSubTitle: '' }
         })
             .state('containers', {
             url: "/containers",
