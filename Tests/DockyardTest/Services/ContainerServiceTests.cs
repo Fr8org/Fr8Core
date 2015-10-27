@@ -263,33 +263,6 @@ namespace DockyardTest.Services
         }
         }
 
-        [Test]
-        public void Create_LogsDataToFactRepository() 
-        {
-            var curProcessNode =  FixtureData.TestProcessNode();
-            var _processNode = new Mock<IProcessNode>();
-            _processNode.Setup(c => c.Create(It.IsAny<IUnitOfWork>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<String>()))
-                    .Returns(curProcessNode); 
-            ObjectFactory.Configure(cfg => cfg.For<IProcessNode>().Use(_processNode.Object));
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                _eventReporter.SubscribeToAlerts();
-                _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
-
-                var curRoute = FixtureData.TestRouteWithStartingSubroute();
-                uow.RouteRepository.Add(curRoute);
-
-                
-                
-
-                _container.Create(uow, curRoute.Id, FixtureData.CrateDTO3());
-                
-                uow.SaveChanges();
-                Assert.IsFalse(uow.HistoryRepository.GetAll().Count()==0);
-                _eventReporter.UnsubscribeFromAlerts();
-            }
-
         }
 //
 //        [Test]
@@ -423,4 +396,3 @@ namespace DockyardTest.Services
 //            Assert.IsNull(curProcess.NextActivity);
 //        }
     }
-}
