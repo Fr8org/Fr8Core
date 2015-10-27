@@ -30,6 +30,17 @@ module dockyard.services {
 
             return processedGroups;
         }
+
+        recalculateTop(actionGroups: model.ActionGroup[]) {
+            var processedGroups: model.ActionGroup[] = [actionGroups[0]];
+            for (var i = 1; i < actionGroups.length; i++) {
+                var curGroup = actionGroups[i];
+                curGroup.offsetTop = this.calculateOffsetTop(actionGroups[i - 1]);
+
+                var parentGroup = this.findParentGroup(actionGroups, curGroup.actions[0].parentRouteNodeId);
+                curGroup.arrowLength = this.calculateArrowLength(curGroup, parentGroup);
+            }
+        }
         
         // Depth first search on the ActionGroup tree going from last sibling to first.
         private processGroup(actionGroups: model.ActionDTO[][], group: model.ActionGroup, processedGroups: model.ActionGroup[]) {
@@ -49,16 +60,25 @@ module dockyard.services {
                 return action.id === group.actions[0].parentRouteNodeId;
             });
             group.offsetLeft = parentGroup.offsetLeft + parentActionIdx * (this.ACTION_WIDTH + this.ACTION_PADDING);
-
-            var offsetTop = parentGroup.offsetTop + this.ACTION_HEIGHT + this.ACTION_PADDING;
-            for (var processedGroup of processedGroups) {
-                if (offsetTop <= processedGroup.offsetTop) {
-                    offsetTop = processedGroup.offsetTop + this.ACTION_HEIGHT + this.ACTION_PADDING;
-                }
-            }
-            group.offsetTop = offsetTop;
-            group.arrowLength = offsetTop - parentGroup.offsetTop - this.ACTION_HEIGHT - this.ACTION_PADDING;
+            group.offsetTop = this.calculateOffsetTop(processedGroups[processedGroups.length - 1]);
+            group.arrowLength = this.calculateArrowLength(group, parentGroup);
         }
+
+        private calculateOffsetTop(prevGroup: model.ActionGroup) {
+            return prevGroup.offsetTop + prevGroup.height + this.ACTION_PADDING;
+        }
+
+        private calculateArrowLength(group: model.ActionGroup, parentGroup: model.ActionGroup) {
+            return group.offsetTop - parentGroup.offsetTop - parentGroup.height - this.ACTION_PADDING;
+        }
+
+        private findParentGroup(actionGroups: model.ActionGroup[], parentId: number) {
+            return _.find(actionGroups, (group: model.ActionGroup) => {
+                return group.actions.some((action: model.ActionDTO) => {
+                    return action.id === parentId;
+                });
+            });
+        }        
 
         private findChildGroup(actionGroups: model.ActionDTO[][], parentId: number) {
             return _.find(actionGroups, (group: model.ActionDTO[]) => {

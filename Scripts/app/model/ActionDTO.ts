@@ -12,6 +12,7 @@
         currentView: string;
         minPaneWidth: number;
         childrenActions: Array<interfaces.IActionDTO>;
+        height: number = 300;
 
         constructor(
             parentActivityId: number,

@@ -2,18 +2,28 @@
 
 module dockyard.directives {
 
-    app.directive('layoutActionGroup', () => {
+    app.directive('layoutAction', (LayoutService: services.LayoutService) => {
         return {
             restrict: 'A',
             link: (scope: any, elem: ng.IAugmentedJQuery) => {
-                elem.css('left', scope.group.offsetLeft);
-                elem.css('top', scope.group.offsetTop);
-                var arrow = angular.element(elem.children()[0]);
+                scope.$watch(() => elem.height(), (newValue) => {
+                    scope.action.height = newValue;
+                    if (newValue > scope.group.height)
+                        scope.group.height = newValue;
+                    LayoutService.recalculateTop(scope.actionGroups);
+                });
+            }
+        };
+    });
 
-                if (arrow.hasClass('action-arrow-bottom')) {
-                    arrow.css('top', -scope.group.arrowLength - 60);
-                    arrow.css('height', scope.group.arrowLength + 35);
-                }
+    app.directive('layoutActionGroup', (LayoutService: services.LayoutService) => {
+        return {
+            restrict: 'A',
+            link: (scope: any, elem: ng.IAugmentedJQuery) => {
+                //scope.$watch(() => elem.height(), (newValue) => {
+                //    scope.group.height = newValue;
+                //    LayoutService.recalculateTop(scope.actionGroups);
+                //});
             }
         };
     });
