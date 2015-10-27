@@ -39,17 +39,7 @@ namespace terminalExcel.Controllers
                 Plugin = plugin,
                 Tags = "Table Data Generator",
                 MinPaneWidth = 210
-            });
-
-            result.Add(new ActivityTemplateDO
-            {
-                Name = "Mail Merge Into DocuSign",
-                Label = "Mail_Merge_Into_DocuSign",
-                Version = "1",
-                Category = ActivityCategory.Solution,
-                Plugin = plugin,
-                MinPaneWidth = 330
-            });          
+            }); 
 
 
             return Json(result);    

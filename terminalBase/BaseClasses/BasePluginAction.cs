@@ -382,11 +382,6 @@ namespace TerminalBase.BaseClasses
             return control;
         }
 
-        public IList<ControlDefinitionDTO> AddDocuSignTemplatePicker()
-        {
-
-        }
-
         /// <summary>
         /// Extract value from RadioButtonGroup where specific value or upstream field was specified.
         /// </summary>

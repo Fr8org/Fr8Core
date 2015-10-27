@@ -72,12 +72,24 @@ namespace terminalDocuSign.Controllers
 				MinPaneWidth = 330
             };
 
+            var mailMergeActionTemplate = new ActivityTemplateDO
+            {
+                Name = "Mail_Merge_Into_DocuSign",
+                Label = "Mail Merge Into DocuSign",
+                Version = "1",
+                AuthenticationType = AuthenticationType.Internal,
+                Category = ActivityCategory.Solution,
+                Plugin = plugin,
+                MinPaneWidth = 500
+            };
+
             var actionList = new List<ActivityTemplateDO>()
             {
                 waitForDocusignEventActionTemplate,
                 extractDataFromEnvelopeActionTemplate,
                 sendDocuSignEnvelopeActionTemplate,
-                recordDocuSignEvents
+                recordDocuSignEvents,
+                mailMergeActionTemplate
             };
 
             return Ok(actionList);

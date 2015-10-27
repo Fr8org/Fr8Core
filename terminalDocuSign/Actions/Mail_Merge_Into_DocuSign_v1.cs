@@ -9,12 +9,21 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Services;
 using Utilities.Configuration.Azure;
 
-namespace terminalExcel.Actions
+namespace terminalDocuSign.Actions
 {
     public class Mail_Merge_Into_DocuSign_v1 : BasePluginAction
     {
+        readonly DocuSignManager _docuSignManager;
+
+        public Mail_Merge_Into_DocuSign_v1() : base()
+        {
+            _docuSignManager = new DocuSignManager();
+        }
+
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
@@ -22,9 +31,6 @@ namespace terminalExcel.Actions
         {
             return null;
         }
-
-
-
 
         /// <summary>
         /// Create configuration controls crate.
@@ -39,10 +45,11 @@ namespace terminalExcel.Actions
                 ListItems = await GetDataSourceListItems("Table Data Generator")
             });
 
-            controlList.Add(new DropDownListControlDefinitionDTO()
+            controlList.Add(_docuSignManager.CreateDocuSignTemplatePicker(false, "2. Use which DocuSign Template?"));
+            controlList.Add(new ButtonControlDefinisionDTO()
             {
-                Label = "2. Use which DocuSign Template?",
-
+                Label = "Continue",
+                Name = "Continue"
             });
 
             return PackControlsCrate(controlList.ToArray());
@@ -67,14 +74,29 @@ namespace terminalExcel.Actions
         /// </summary>
         protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
+            CrateStorageDTO crateStrorageDTO;
+            if (curActionDTO.CrateStorage == null)
+            {
+                curActionDTO.CrateStorage = new CrateStorageDTO();
+            }
+
             if (curActionDTO.Id > 0)
             {
-                ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+                if (curActionDTO.AuthToken == null || curActionDTO.AuthToken.Token == null)
+                {
+                    CrateDTO configurationControlsCrate = await CreateNoAuthCrate();
+                    crateStrorageDTO = AssembleCrateStorage(configurationControlsCrate);
+                }
+                else
+                {
+                    var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
+                    ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
-                //build a controls crate to render the pane
-                CrateDTO configurationControlsCrate = await CreateConfigurationControlsCrate();
-
-                var crateStrorageDTO = AssembleCrateStorage(upstreamFieldsCrate, configurationControlsCrate);
+                    //build a controls crate to render the pane
+                    CrateDTO configurationControlsCrate = await CreateConfigurationControlsCrate();
+                    CrateDTO templatesFieldCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
+                    crateStrorageDTO = AssembleCrateStorage(templatesFieldCrate, configurationControlsCrate);
+                }
                 curActionDTO.CrateStorage = crateStrorageDTO;
             }
             else
@@ -85,13 +107,24 @@ namespace terminalExcel.Actions
             return curActionDTO;
         }
 
+        private Task<CrateDTO> CreateNoAuthCrate()
+        {
+            var controlList = new List<ControlDefinitionDTO>();
+
+            controlList.Add(new TextBlockControlDefinitionDTO()
+            {
+                Value = "This action requires authentication. Please authenticate."
+            });
+            return Task.FromResult(PackControlsCrate(controlList.ToArray()));
+        }
+
         /// <summary>
         /// If there's a value in select_file field of the crate, then it is a followup call.
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
         {
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
-            
+
             return ConfigurationRequestType.Initial;
         }
 

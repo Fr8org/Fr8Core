@@ -10,35 +10,44 @@ using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Services
 {
-    public class DocuSign
+    public class DocuSignManager
     {
         protected ICrateManager Crate;
 
-        public DocuSign()
+        public DocuSignManager()
         {
             Crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        protected DropDownListControlDefinitionDTO CreateDocuSignTemplatePicker()
+        public DropDownListControlDefinitionDTO CreateDocuSignTemplatePicker(
+            bool addOnChangeEvent, 
+            string name = "Selected_DocuSign_Template", 
+            string label = "Select DocuSign Template")
         {
-            return new DropDownListControlDefinitionDTO()
+            var control = new DropDownListControlDefinitionDTO()
             {
-                Label = "Select DocuSign Template",
-                Name = "Selected_DocuSign_Template",
+                Label = label,
+                Name = name,
                 Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Templates",
                     ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
                 }
             };
+
+            if (addOnChangeEvent)
+            {
+                control.Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onChange", "requestConfig")
+                };
+            }
+
+            return control;
         }
 
-        protected CrateDTO PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
+        public CrateDTO PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
         {
             var template = new DocuSignTemplate();
 

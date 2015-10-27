@@ -20,6 +20,8 @@ namespace terminalDocuSign.Actions
 {
     public class Monitor_DocuSign_v1 : BasePluginAction
     {
+        DocuSignManager _docuSignManager = new DocuSignManager();
+
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
             if (NeedsAuthentication(curActionDTO))
@@ -166,7 +168,7 @@ namespace terminalDocuSign.Actions
             }
 
             var crateControls = PackCrate_ConfigurationControls();
-            var crateDesignTimeFields = PackCrate_TemplateNames(docuSignAuthDTO);
+            var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             var eventFields = PackCrate_DocuSignEventFields();
 
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
@@ -263,28 +265,8 @@ namespace terminalDocuSign.Actions
                 );
         }
 
-        protected DropDownListControlDefinitionDTO CreateDocuSignTemplatePicker()
-        {
-            return new DropDownListControlDefinitionDTO()
-            {
-                Label = "Select DocuSign Template",
-                Name = "Selected_DocuSign_Template",
-                Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Templates",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
-                }
-            };
-        }
-
         private CrateDTO PackCrate_ConfigurationControls()
         {
-            var fieldSelectDocusignTemplate = AddDocuSignTemplatePicker();
             var fieldEnvelopeSent = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Envelope Sent",
@@ -326,7 +308,7 @@ namespace terminalDocuSign.Actions
             };
 
             return PackControlsCrate(
-                fieldSelectDocusignTemplate,
+                _docuSignManager.CreateDocuSignTemplatePicker(true),
                 fieldEnvelopeSent,
                 fieldEnvelopeReceived,
                 fieldRecipientSigned,
