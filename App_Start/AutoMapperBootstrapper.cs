@@ -46,6 +46,7 @@ namespace Web.App_Start
                 .ForMember(dto => dto.Status, opts => opts.ResolveUsing(e => e.State.Value));
 
 	        Mapper.CreateMap<WebServiceDO, WebServiceDTO>();
+	        Mapper.CreateMap<WebServiceDTO, WebServiceDO>();
         }
     }
 }

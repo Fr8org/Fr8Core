@@ -6,13 +6,13 @@ using AutoMapper;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using StructureMap;
+using Data.Entities;
 
 namespace Web.Controllers
 {
 	[RoutePrefix("webservices")]
 	public class WebServicesController : ApiController
 	{
-		[HttpGet]
 		[ResponseType(typeof(IEnumerable<WebServiceDTO>))]
 		public IHttpActionResult Get()
 		{
@@ -26,10 +26,21 @@ namespace Web.Controllers
 			}
 		}
 
-		[HttpPost]
-		public IHttpActionResult Post(string name, string icon)
+		[ResponseType(typeof(WebServiceDTO))]
+		public IHttpActionResult Post(WebServiceDTO webService)
 		{
-			return Ok();
+			WebServiceDO entity = Mapper.Map<WebServiceDO>(webService);
+
+			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			{
+				uow.WebServiceRepository.Add(entity);
+
+				uow.SaveChanges();
+			}
+
+			var model = Mapper.Map<WebServiceDTO>(entity);
+
+			return Ok(model);
 		}
 	}
 }
