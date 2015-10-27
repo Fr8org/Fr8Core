@@ -8,6 +8,7 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 using Data.States;
 using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
@@ -17,6 +18,81 @@ namespace terminalDocuSign.Actions
 {
     public class Collect_Form_Data_Solution_v1 : BasePluginAction
     {
+        class ActionUi : StandardConfigurationControlsCM
+        {
+            public DropDownListControlDefinitionDTO FinalActionsList { get; set; }
+            public RadioButtonOption UseTemplate { get; set; }
+            public RadioButtonOption UseStandardForm { get; set; }
+            public RadioButtonOption UseUploadedForm { get; set; }
+            public DropDownListControlDefinitionDTO StandardFormsList { get; set; }
+
+            public ActionUi()
+            {
+                Controls = new List<ControlDefinitionDTO>();
+                Controls.Add(new TextBlockControlDefinitionDTO
+                {
+                    Label = "",
+                    Value = "Fr8 Solutions for DocuSign"
+                });
+
+                Controls.Add(new TextBlockControlDefinitionDTO
+                {
+                    Label = "",
+                    Value = "Use DocuSign to collect information"
+                });
+
+                Controls.Add(new RadioButtonGroupControlDefinitionDTO
+                {
+                    Label = "1. Collect What Kind of Form Data?",
+                    Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") },
+                    Radios = new List<RadioButtonOption>
+                {
+                    (UseStandardForm = new RadioButtonOption
+                    {
+                        Name = "UseStandardForm",
+                        Value = "Use standard form:",
+                        Controls = new List<ControlDefinitionDTO>
+                        {
+                            (StandardFormsList = new DropDownListControlDefinitionDTO
+                            {
+                                Name = "StandardFormsList",
+                                Source = new FieldSourceDTO
+                                {
+                                    Label = "AvailableForms",
+                                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                                },
+                                Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
+                            })
+                        }
+                    }),
+                    (UseTemplate = new RadioButtonOption
+                    {
+                        Name = "UseTemplate",
+                        Value = "I want to use a template on my DocuSign account"
+                    }),
+                    (UseUploadedForm = new RadioButtonOption
+                    {
+                        Name = "UseUploadedForm",
+                        Value = "I want to upload my own form"
+                    })
+                }
+                });
+
+                Controls.Add((FinalActionsList = new DropDownListControlDefinitionDTO
+                {
+                    Name = "FinalActionsList",
+                    Required = true,
+                    Label = "2:  After the forms are completed, where do you want to collect the data?",
+                    Source = new FieldSourceDTO
+                    {
+                        Label = "AvailableActions",
+                        ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    },
+                    Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
+                }));
+            }
+        }
+
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
             return await ProcessConfigurationRequest(curActionDTO, ConfigurationEvaluator);
@@ -56,7 +132,7 @@ namespace terminalDocuSign.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
 
-            curActionDTO.CrateStorage.CrateDTO.Add(PackPage(new CollectFromDataSolutionUi_v1()));
+            curActionDTO.CrateStorage.CrateDTO.Add(PackControls(new ActionUi()));
             curActionDTO.CrateStorage.CrateDTO.AddRange(await PackSources());
 
             return curActionDTO;
@@ -64,9 +140,9 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            var controls = new CollectFromDataSolutionUi_v1();
+            var controls = new ActionUi();
             
-            controls.Load(Crate.GetStandardConfigurationControls(curActionDTO.CrateStorage.CrateDTO.First(x => x.ManifestId == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID)));
+            controls.ClonePropertiesFrom(Crate.GetStandardConfigurationControls(curActionDTO.CrateStorage.CrateDTO.First(x => x.ManifestId == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID)));
             
             var finalActionTemplateId = controls.FinalActionsList.Value;
             var action = Mapper.Map<ActionDO>(curActionDTO);

@@ -34,4 +34,3 @@ using System.Windows.Markup;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: XmlnsDefinition("http://fr8/dto", "terminalDocuSign.Actions")]

@@ -160,7 +160,6 @@
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -224,14 +223,6 @@
     <Compile Include="Tests\Infrastructure\DocuSignTemplateTests.cs" />
     <Compile Include="Tests\Fixtures\PluginFixtureData - DocusignAccount.cs" />
     <Compile Include="Tests\Services\EnvelopeServiceTests.cs" />
-    <XamlAppDef Include="Actions\CollectFromDataSolutionUi_v1.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </XamlAppDef>
-    <Compile Include="Actions\CollectFromDataSolutionUi_v1.xaml.cs">
-      <Generator>MSBuild:Compile</Generator>
-      <DependentUpon>CollectFromDataSolutionUi_v1.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

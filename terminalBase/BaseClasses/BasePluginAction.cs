@@ -200,9 +200,9 @@ namespace TerminalBase.BaseClasses
             };
         }
 
-        protected CrateDTO PackPage(PageDTO page)
+        protected CrateDTO PackControls(StandardConfigurationControlsCM page)
         {
-            return PackControlsCrate(page.Children.ToArray());
+            return PackControlsCrate(page.Controls.ToArray());
         }
         
         protected CrateDTO PackControlsCrate(params ControlDefinitionDTO[] controlsList)
@@ -353,7 +353,7 @@ namespace TerminalBase.BaseClasses
                         Selected = true,
                         Name = "specific",
                         Value = "this specific value",
-                        Controls = new ControlDefinitionCollection
+                        Controls = new List<ControlDefinitionDTO>
                         {
                             new TextBoxControlDefinitionDTO()
                             {
@@ -368,7 +368,7 @@ namespace TerminalBase.BaseClasses
                         Selected = false,
                         Name = "upstream",
                         Value = "a value from an Upstream Crate",
-                        Controls = new ControlDefinitionCollection
+                        Controls = new List<ControlDefinitionDTO>
                         {
                             new DropDownListControlDefinitionDTO()
                             {
