@@ -209,6 +209,7 @@
     <Compile Include="Entities\MT_Data.cs" />
     <Compile Include="Entities\MT_Field.cs" />
     <Compile Include="Entities\MT_Object.cs" />
+    <Compile Include="Entities\WebServiceDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
@@ -263,6 +264,7 @@
     <Compile Include="Interfaces\DataTransferObjects\RouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\WebServiceDTO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\IMTDataRepository.cs" />
     <Compile Include="Interfaces\IMTFieldRepository.cs" />
@@ -353,11 +355,24 @@
     <Compile Include="Migrations\201510230242497_FixUp_2_Migration.Designer.cs">
       <DependentUpon>201510230242497_FixUp_2_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.cs" />
+    <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.Designer.cs">
+      <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs" />
+    <Compile Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.Designer.cs">
+      <DependentUpon>201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201510252034017_AddTagsToActivityTemplateDO.cs" />
     <Compile Include="Migrations\201510252034017_AddTagsToActivityTemplateDO.Designer.cs">
       <DependentUpon>201510252034017_AddTagsToActivityTemplateDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510271826316_MERGE_Migration.cs" />
+    <Compile Include="Migrations\201510271826316_MERGE_Migration.Designer.cs">
+      <DependentUpon>201510271826316_MERGE_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
+    <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -367,6 +382,7 @@
     <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
+    <Compile Include="Repositories\WebServiceRepository.cs" />
     <Compile Include="States\ActivityCategory.cs" />
     <Compile Include="States\AuthenticationType.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
@@ -620,8 +636,17 @@
     <EmbeddedResource Include="Migrations\201510230242497_FixUp_2_Migration.resx">
       <DependentUpon>201510230242497_FixUp_2_Migration.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510261339053_CreateWebServicesTable_Migration.resx">
+      <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.resx">
+      <DependentUpon>201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510252034017_AddTagsToActivityTemplateDO.resx">
       <DependentUpon>201510252034017_AddTagsToActivityTemplateDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510271826316_MERGE_Migration.resx">
+      <DependentUpon>201510271826316_MERGE_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

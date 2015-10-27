@@ -272,6 +272,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<MT_Field>().ToTable("MT_Fields");
             modelBuilder.Entity<MT_Object>().ToTable("MT_Objects");
             modelBuilder.Entity<MT_Data>().ToTable("MT_Data");
+	        modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)
@@ -315,7 +316,7 @@ namespace Data.Infrastructure
                 .WithMany(x => x.ChildNodes)
                 .HasForeignKey(x => x.ParentRouteNodeId)
                 .WillCascadeOnDelete(false);
-
+            
             modelBuilder.Entity<TrackingStatusDO>()
                 .HasKey(ts => new
                 {
@@ -325,12 +326,12 @@ namespace Data.Infrastructure
 
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
-
-            //            modelBuilder.Entity<SubrouteDO>()
-            //               .HasMany<CriteriaDO>(c => c.Criteria)
-            //               .WithOptional(x => x.Subroute)
-            //               .WillCascadeOnDelete(true);
-
+            
+//            modelBuilder.Entity<SubrouteDO>()
+//               .HasMany<CriteriaDO>(c => c.Criteria)
+//               .WithOptional(x => x.Subroute)
+//               .WillCascadeOnDelete(true);
+            
             modelBuilder.Entity<AuthorizationTokenDO>()
              .HasRequired(x => x.Plugin)
              .WithMany()
@@ -342,6 +343,12 @@ namespace Data.Infrastructure
                 .WithMany()
                 .HasForeignKey(x => x.PluginID)
                 .WillCascadeOnDelete(false);
+
+			modelBuilder.Entity<ActivityTemplateDO>()
+				.HasRequired(x => x.WebService)
+				.WithMany()
+				.HasForeignKey(x => x.WebServiceId)
+				.WillCascadeOnDelete(false);
 
 
             base.OnModelCreating(modelBuilder);
