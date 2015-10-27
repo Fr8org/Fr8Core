@@ -19,11 +19,6 @@ namespace terminalDocuSign.Actions
     {
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (NeedsAuthentication(curActionDTO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
-
             return await ProcessConfigurationRequest(curActionDTO, ConfigurationEvaluator);
         }
 
@@ -72,45 +67,34 @@ namespace terminalDocuSign.Actions
             var controls = new CollectFromDataSolutionUi_v1();
             
             controls.Load(Crate.GetStandardConfigurationControls(curActionDTO.CrateStorage.CrateDTO.First(x => x.ManifestId == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID)));
-
-            /*
-            var form = controls.StandardFormsList.Value;
-                        
-            if (controls.UseStandardForm.Selected)
-            {
-            }
-
-            if (controls.UseTemplate.Selected)
-            {
-            }
-
-            if (controls.UseUploadedForm.Selected)
-            {
-            }
-            */
-
+            
             var finalActionTemplateId = controls.FinalActionsList.Value;
             var action = Mapper.Map<ActionDO>(curActionDTO);
 
             action.ChildNodes = new List<RouteNodeDO>();
-            
-            const string firstTemplateName = "Monitor_DocuSign";
-            var firstActionTemplate = (await FindTemplates(x => x.Name == "Monitor_DocuSign")).FirstOrDefault();
 
-            if (firstActionTemplate == null)
+            //if (controls.UseTemplate.Selected)
             {
-                throw new Exception(string.Format("ActivityTemplate {0} was not found", firstTemplateName));
+                const string firstTemplateName = "Monitor_DocuSign";
+                var firstActionTemplate = (await FindTemplates(x => x.Name == "Monitor_DocuSign")).FirstOrDefault();
+
+                if (firstActionTemplate == null)
+                {
+                    throw new Exception(string.Format("ActivityTemplate {0} was not found", firstTemplateName));
+                }
+
+                var firstAction = new ActionDO
+                {
+                    IsTempId = true,
+                    ActivityTemplateId = firstActionTemplate.Id,
+                    CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
+                    CreateDate = DateTime.Now,
+                    Ordering = 1,
+                    Name = "First action"
+                };
+
+                action.ChildNodes.Add(firstAction);
             }
-
-            var firstAction = new ActionDO
-            {
-                IsTempId = true,
-                ActivityTemplateId = firstActionTemplate.Id,
-                CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
-                CreateDate = DateTime.Now,
-                Ordering = 1,
-                Name = "First action"
-            };
 
             var finalAction = new ActionDO
             {
@@ -121,8 +105,7 @@ namespace terminalDocuSign.Actions
                 Ordering = 2,
                 Name = "Final action"
             };
-
-            action.ChildNodes.Add(firstAction);
+            
             action.ChildNodes.Add(finalAction);
 
             return Mapper.Map<ActionDTO>(action);
@@ -133,10 +116,9 @@ namespace terminalDocuSign.Actions
             var hubUrl = ConfigurationManager.AppSettings["CoreWebServerUrl"].TrimEnd('/') + "/route_nodes/available";
             var httpClient = new HttpClient();
 
-            return Enumerable.Where(JsonConvert
-                    .DeserializeObject<IEnumerable<ActivityTemplateCategoryDTO>>(await httpClient.GetStringAsync(hubUrl))
-                    .SelectMany(x => x.Activities)
-                    .Select(Mapper.Map<ActivityTemplateDO>), x => query(x));
+            return JsonConvert.DeserializeObject<IEnumerable<ActivityTemplateCategoryDTO>>(await httpClient.GetStringAsync(hubUrl))
+                .SelectMany(x => x.Activities)
+                .Select(Mapper.Map<ActivityTemplateDO>).Where(x => query(x));
         }
         
         private async Task<IEnumerable<CrateDTO>> PackSources()

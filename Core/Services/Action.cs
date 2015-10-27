@@ -43,7 +43,7 @@ namespace Core.Services
 
         public ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO submittedActionData)
         {
-            var action = SaveUpdateAndConfigureRecursive(uow, submittedActionData, new List<ActionDO>());
+            var action = SaveAndUpdateRecursive(uow, submittedActionData, new List<ActionDO>());
 
             action.ParentRouteNode = submittedActionData.ParentRouteNode;
             action.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
@@ -79,7 +79,7 @@ namespace Core.Services
         {
             var pendingConfigurations = new List<ActionDO>();
             // Update properties and structure recisurively
-            var existingAction = SaveUpdateAndConfigureRecursive(uow, submittedActionData, pendingConfigurations);
+            var existingAction = SaveAndUpdateRecursive(uow, submittedActionData, pendingConfigurations);
 
             // Change parent if it is necessary
             existingAction.ParentRouteNode = submittedActionData.ParentRouteNode;
@@ -87,10 +87,10 @@ namespace Core.Services
 
             uow.SaveChanges();
 
-            foreach (var pendingConfiguration in pendingConfigurations)
-            {
-                await ConfigureSingleAction(uow, pendingConfiguration);
-            }
+//            foreach (var pendingConfiguration in pendingConfigurations)
+//            {
+//                await ConfigureSingleAction(uow, pendingConfiguration);
+//            }
 
             return uow.ActionRepository.GetByKey(existingAction.Id);
         }
@@ -116,7 +116,7 @@ namespace Core.Services
             existingAction.CrateStorage = submittedAction.CrateStorage;
         }
 
-        private ActionDO SaveUpdateAndConfigureRecursive(IUnitOfWork uow, ActionDO submittedAction, List<ActionDO> pendingConfiguration)
+        private ActionDO SaveAndUpdateRecursive(IUnitOfWork uow, ActionDO submittedAction, List<ActionDO> pendingConfiguration)
         {
             ActionDO existingAction;
 
@@ -145,7 +145,7 @@ namespace Core.Services
                 {
                     newAction.ParentRouteNodeId = null;
                     newAction.ParentRouteNode = null;
-                    var newChild = SaveUpdateAndConfigureRecursive(uow, newAction, pendingConfiguration);
+                    var newChild = SaveAndUpdateRecursive(uow, newAction, pendingConfiguration);
                     existingAction.ChildNodes.Add(newChild);
                 }
             }
@@ -176,7 +176,7 @@ namespace Core.Services
                     {
                         newAction.ParentRouteNodeId = null;
                         newAction.ParentRouteNode = null;
-                        var newChild = SaveUpdateAndConfigureRecursive(uow, newAction, pendingConfiguration);
+                        var newChild = SaveAndUpdateRecursive(uow, newAction, pendingConfiguration);
                         existingAction.ChildNodes.Add(newChild);
                     }
 
@@ -191,7 +191,7 @@ namespace Core.Services
                     // We just update those children that haven't changed (exists both in newChildren and currentChildren)
                     foreach (var actionToUpdate in newChildren.Where(x => !x.Value.IsTempId && currentChildren.ContainsKey(x.Key)))
                     {
-                        SaveUpdateAndConfigureRecursive(uow, actionToUpdate.Value, pendingConfiguration);
+                        SaveAndUpdateRecursive(uow, actionToUpdate.Value, pendingConfiguration);
                     }
                 }
             }
