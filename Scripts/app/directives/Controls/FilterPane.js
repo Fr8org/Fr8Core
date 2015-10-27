@@ -45,7 +45,7 @@ var dockyard;
                                 $scope.conditions = [
                                     new dockyard.model.Condition(null, $scope.defaultOperator, null)
                                 ];
-                                $scope.executionType = 1;
+                                $scope.executionType = 2;
                             }
                         });
                         var updateFieldValue = function () {
