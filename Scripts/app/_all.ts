@@ -30,7 +30,7 @@
 /// <reference path="services/localidentitygenerator.ts" />
 /// <reference path="services/processbuilderservice.ts" />
 /// <reference path="services/stringservice.ts" />
-/// <reference path="services/PusherNotifierService.ts" />
+/// <reference path="services/pushernotifierservice.ts" />
 
 /*
     FILTERS AND COMPONENTS
