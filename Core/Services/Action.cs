@@ -354,18 +354,20 @@ namespace Core.Services
 //            return curAction;
 //        }
 
-        public async Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow)
+        public async Task PrepareToExecute(ActionDO curActionDO, ContainerDO curContainerDO, IUnitOfWork uow)
         {
-                EventManager.ActionStarted(curAction);
+                EventManager.ActionStarted(curActionDO);
+                EventManager.ContainerReceived(curContainerDO, curActionDO);                
 
-                var payload = await Run(curAction, curContainerDO);
+
+                var payload = await Run(curActionDO, curContainerDO);
 
                 if (payload != null)
                 {
                     curContainerDO.CrateStorage = payload.CrateStorage;
                 }
 
-                uow.ActionRepository.Attach(curAction);
+                uow.ActionRepository.Attach(curActionDO);
                 uow.SaveChanges();
             }
 
@@ -381,6 +383,8 @@ namespace Core.Services
             
             // Temporarily commented out by yakov.gnusin.
             EventManager.ActionDispatched(curActionDO, curContainerDO.Id);
+
+            EventManager.ContainerSent(curContainerDO, curActionDO);
 
             return payloadDTO;
         }

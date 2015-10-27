@@ -4,6 +4,7 @@ using System;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using System.Data.Entity.Infrastructure;
 
 namespace Data.Infrastructure
 {
@@ -98,7 +99,7 @@ namespace Data.Infrastructure
         public delegate void EventContainerReceivedHandler(ContainerDO containerDO, ActionDO actionDO);
         public static event EventContainerReceivedHandler EventContainerReceived;
 
-        public delegate void EventContainerStateChangedHandler(ContainerDO containerDO);
+        public delegate void EventContainerStateChangedHandler(DbPropertyValues currentValues);
         public static event EventContainerStateChangedHandler EventContainerStateChanged;
 
         public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
@@ -438,33 +439,30 @@ namespace Data.Infrastructure
             if (handler != null) handler(number, message, errorMsg);
         }
 
-
         public static void ContainerCreated(ContainerDO containerDO)
         {
             var handler = EventContainerCreated;
             if (handler != null) handler(containerDO);
         }
 
-        public static void ContainerSent(ContainerDO containerDO)
+        public static void ContainerSent(ContainerDO containerDO, ActionDO actionDO)
         {
             var handler = EventContainerSent;
-            if (handler != null) handler(containerDO);
+            if (handler != null) handler(containerDO, actionDO);
         }
 
-        public static void ContainerReceived(ContainerDO containerDO)
+        public static void ContainerReceived(ContainerDO containerDO, ActionDO actionDO)
         {
             var handler = EventContainerReceived;
-            if (handler != null) handler(containerDO);
+            if (handler != null) handler(containerDO, actionDO);
         }
-
-        public static void ContainerStateChanged(ContainerDO containerDO)
+        internal static void ContainerStateChanged(DbPropertyValues currentValues)
         {
             var handler = EventContainerStateChanged;
-            if (handler != null) handler(containerDO);
+            if (handler != null) handler(currentValues);
         }
+
         #endregion
-
-
     }
 
 }

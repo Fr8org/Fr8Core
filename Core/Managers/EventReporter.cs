@@ -15,6 +15,7 @@ using Utilities;
 using Utilities.Logging;
 using Data.Interfaces.DataTransferObjects;
 using System.Linq;
+using System.Data.Entity.Infrastructure;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
 
@@ -874,18 +875,27 @@ namespace Core.Managers
                 uow.SaveChanges();
             }
         }
-        private void LogEventContainerStateChanged(ContainerDO containerDO)
+        private void LogEventContainerStateChanged(DbPropertyValues currentValues)
         {
-            var curFact = new FactDO
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                CustomerId = containerDO.Route.Fr8Account.Id,
-                Data = containerDO.ContainerState.ToString(),
-                ObjectId = containerDO.Id.ToStr(),
-                PrimaryCategory = "Containers",
-                SecondaryCategory = "Operations",
-                Activity = "State Change"
-            };
+                //In the GetByKey I make use of dictionary datatype: https://msdn.microsoft.com/en-us/data/jj592677.aspx
+                var curContainerDO = uow.ContainerRepository.GetByKey(currentValues[currentValues.PropertyNames.First()]);
 
+                var curFact = new FactDO
+                {
+                    CustomerId = curContainerDO.Route.Fr8Account.Id,
+                    Data = curContainerDO.ContainerState.ToString(),
+                    ObjectId = curContainerDO.Id.ToStr(),
+                    PrimaryCategory = "Containers",
+                    SecondaryCategory = "Operations",
+                    Activity = "State Change"
+                };
+
+                LogFactInformation(curFact, curFact.Data);
+                uow.FactRepository.Add(curFact);
+                uow.SaveChanges();
+            }
 
         }
     }
