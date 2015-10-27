@@ -57,7 +57,6 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
-    [ContentProperty("Radios")]
     public class RadioButtonGroupControlDefinitionDTO : ControlDefinitionDTO
     {
         [JsonProperty("groupName")]
@@ -81,7 +80,6 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
-    [ContentProperty("Fields")]
     public class FilterPaneControlDefinitionDTO : ControlDefinitionDTO
     {
         [JsonProperty("fields")]
