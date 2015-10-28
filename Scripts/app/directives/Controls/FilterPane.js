@@ -68,3 +68,4 @@ var dockyard;
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
 app.directive('filterPane', dockyard.directives.FilterPane);
+//# sourceMappingURL=FilterPane.js.map

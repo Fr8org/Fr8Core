@@ -158,3 +158,4 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
 app.run(["$rootScope", "settings", "$state", function ($rootScope, settings, $state) {
         $rootScope.$state = $state; // state to be accessed from view
     }]);
+//# sourceMappingURL=app.js.map

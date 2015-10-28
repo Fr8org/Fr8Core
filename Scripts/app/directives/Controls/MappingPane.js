@@ -71,3 +71,4 @@ var dockyard;
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
 app.directive('mappingPane', dockyard.directives.MappingPane);
+//# sourceMappingURL=MappingPane.js.map

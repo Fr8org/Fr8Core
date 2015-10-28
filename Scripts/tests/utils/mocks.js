@@ -87,3 +87,4 @@ var dockyard;
         })(utils = tests.utils || (tests.utils = {}));
     })(tests = dockyard.tests || (dockyard.tests = {}));
 })(dockyard || (dockyard = {}));
+//# sourceMappingURL=mocks.js.map

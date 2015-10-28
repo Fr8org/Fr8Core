@@ -44,3 +44,4 @@ var dockyard;
         })(paneConfigureAction = directives.paneConfigureAction || (directives.paneConfigureAction = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
+//# sourceMappingURL=RoutingControl.js.map
