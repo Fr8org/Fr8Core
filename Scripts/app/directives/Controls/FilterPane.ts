@@ -58,7 +58,7 @@ module dockyard.directives {
                                     $scope.defaultOperator,
                                     null)
                             ];
-                            $scope.executionType = 1;
+                            $scope.executionType = 2;
                         }
                     });
 
