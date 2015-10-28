@@ -27,7 +27,22 @@ namespace Web.Controllers
             _security = ObjectFactory.GetInstance<ISecurityServices>();
 		}
 
-		[Route("upstream")]
+        [HttpGet]
+        [ResponseType(typeof(ActivityTemplateDTO))]
+        public IHttpActionResult Get(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curActivityTemplateDO = uow.ActivityTemplateRepository.GetByKey(id);
+
+                var curActivityTemplateDTO =
+                    Mapper.Map<ActivityTemplateDTO>(curActivityTemplateDO);
+
+                return Ok(curActivityTemplateDTO);
+            }
+        }
+
+        [Route("upstream")]
 		[ResponseType(typeof(List<RouteNodeDO>))]
 		public IHttpActionResult GetUpstreamActivities(int id)
 		{
@@ -96,6 +111,20 @@ namespace Web.Controllers
             {
                 var curDockyardAccount = _security.GetCurrentAccount(uow);
                 var categoriesWithActivities = _activity.GetAvailableActivitiyGroups(curDockyardAccount);
+                return Ok(categoriesWithActivities);
+            }
+        }
+
+        [Route("available")]
+        [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
+        public IHttpActionResult GetAvailableActivities(string tag)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Func<ActivityTemplateDO, bool> predicate = (at) => 
+                    string.IsNullOrEmpty(at.Tags) ? false : 
+                    at.Tags.Split(new char[] { ',' }).Any(c => string.Equals(c.Trim(), tag, StringComparison.InvariantCultureIgnoreCase));
+                var categoriesWithActivities = _activity.GetAvailableActivities(uow, predicate);
                 return Ok(categoriesWithActivities);
             }
         }

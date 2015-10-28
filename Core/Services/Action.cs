@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
 
 namespace Core.Services
 {
@@ -33,13 +34,10 @@ namespace Core.Services
         {
             _authorizationToken = new Authorization();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
-
-            
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
-
-          //  _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
-            _crate= ObjectFactory.GetInstance<ICrateManager>();
-          //  _route = ObjectFactory.GetInstance<IRoute>();
+            //  _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
+            //  _route = ObjectFactory.GetInstance<IRoute>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -205,6 +203,8 @@ namespace Core.Services
 
         public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
         {
+            ActionDTO curActionDTO;
+
             if (parentNodeId != null && createRoute)
             {
                 throw new ArgumentException("Parent node id can't be set together with create route flag");
@@ -232,11 +232,12 @@ namespace Core.Services
 
             uow.SaveChanges();
 
-            var actionConfigured = (await Configure(action)).Item2;
+            var actionConfiguredData = await Configure(action);
+            curActionDTO = actionConfiguredData.Item1;
 
             // Update crates on the initial action instance with those we received 
             // as a result of calling configure method. 
-            action.CrateStorage = actionConfigured.CrateStorage;
+            action.CrateStorage = actionConfiguredData.Item2.CrateStorage;
 
             if (createRoute)
             {
@@ -251,33 +252,42 @@ namespace Core.Services
         {
             if (curActionDO == null)
                 throw new ArgumentNullException("curActionDO");
-            ActionDTO tempActionDTO;
-            try
+            ActionDTO tempActionDTO, curActionDTO;
+            ActionDO tempActionDO;
+
+            tempActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+
+            if (!_authorizationToken.ValidateAuthenticationNeeded(
+                System.Threading.Thread.CurrentPrincipal.Identity.Name,
+                tempActionDTO))
             {
-                tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
-            }
-            catch (ArgumentException e)
-            {
-                EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO), e.Message);
-                throw;
-            }
-            catch (Exception e)
-            {
-                var pluginUrl = curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null
-                    ? curActionDO.ActivityTemplate.Plugin.Endpoint
-                    : "<no plugin url>";
-                EventManager.PluginConfigureFailed(pluginUrl, JsonConvert.SerializeObject(curActionDO), e.Message);
-                throw;
+                try
+                {
+                    tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
+                }
+                catch (ArgumentException e)
+                {
+                    EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO), e.Message);
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    var pluginUrl = curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null
+                        ? curActionDO.ActivityTemplate.Plugin.Endpoint
+                        : "<no plugin url>";
+                    EventManager.PluginConfigureFailed(pluginUrl, JsonConvert.SerializeObject(curActionDO), e.Message);
+                    throw;
+                }
             }
 
             //Plugin Configure Action Return ActionDTO
-            curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
+            tempActionDO = Mapper.Map<ActionDO>(tempActionDTO);
 
             //save the received action as quickly as possible
-            SaveOrUpdateAction(curActionDO);
+            SaveOrUpdateAction(tempActionDO);
 
             //Returning ActionDTO and ActionDO
-            return new Tuple<ActionDTO, ActionDO>(tempActionDTO, curActionDO);
+            return new Tuple<ActionDTO, ActionDO>(tempActionDTO, tempActionDO);
         }
 
         public ActionDO MapFromDTO(ActionDTO curActionDTO)
@@ -290,14 +300,14 @@ namespace Core.Services
         {
             //we are using Kludge solution for now
             //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
-            
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
 
                 var curAction = uow.RouteNodeRepository.GetQuery().FirstOrDefault(al => al.Id == id);
                 if (curAction == null)
                 {
-                    throw new InvalidOperationException("Unknown RouteNode with id: "+ id);
+                    throw new InvalidOperationException("Unknown RouteNode with id: " + id);
                 }
 
                 var downStreamActivities = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
@@ -318,9 +328,9 @@ namespace Core.Services
                     }
 
                     if (cratesToReset.Any())
-                {
+                    {
                         downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
-                    }                    
+                    }
                 }
                 uow.RouteNodeRepository.Remove(curAction);
                 uow.SaveChanges();
@@ -335,39 +345,39 @@ namespace Core.Services
         /// <param name="curActionId">Action Id</param>
         /// <param name="uow">Unit of Work</param>
         /// <returns>Returns the current action (if found) or null if not.</returns>
-//        public ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow)
-//        {
-//            // Find an ActionList for which the action is set as CurrentActivity
-//            // Also, get the whole list of actions for this Action List 
-//            var curActionList = uow.ActionRepository.GetQuery().Where(al => al.Id == curActionId).Include(al => al.Activities).SingleOrDefault();
-//            if (curActionList == null) return null;
-//
-//            // Get current Action
-//            var curAction = curActionList.Activities.SingleOrDefault(a => a.Id == curActionId);
-//            if (curAction == null) return null; // Well, who knows...
-//
-//            // Get ordered list of next Activities 
-//            var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
-//            
-//            curActionList.CurrentActivity = activities.FirstOrDefault();
-//
-//            return curAction;
-//        }
+        //        public ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow)
+        //        {
+        //            // Find an ActionList for which the action is set as CurrentActivity
+        //            // Also, get the whole list of actions for this Action List 
+        //            var curActionList = uow.ActionRepository.GetQuery().Where(al => al.Id == curActionId).Include(al => al.Activities).SingleOrDefault();
+        //            if (curActionList == null) return null;
+        //
+        //            // Get current Action
+        //            var curAction = curActionList.Activities.SingleOrDefault(a => a.Id == curActionId);
+        //            if (curAction == null) return null; // Well, who knows...
+        //
+        //            // Get ordered list of next Activities 
+        //            var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
+        //            
+        //            curActionList.CurrentActivity = activities.FirstOrDefault();
+        //
+        //            return curAction;
+        //        }
 
         public async Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow)
         {
-                EventManager.ActionStarted(curAction);
+            EventManager.ActionStarted(curAction);
 
-                var payload = await Run(curAction, curContainerDO);
+            var payload = await Run(curAction, curContainerDO);
 
-                if (payload != null)
-                {
-                    curContainerDO.CrateStorage = payload.CrateStorage;
-                }
-
-                uow.ActionRepository.Attach(curAction);
-                uow.SaveChanges();
+            if (payload != null)
+            {
+                curContainerDO.CrateStorage = payload.CrateStorage;
             }
+
+            uow.ActionRepository.Attach(curAction);
+            uow.SaveChanges();
+        }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
         public async Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO)
@@ -378,7 +388,7 @@ namespace Core.Services
             }
 
             var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Run", curActionDO, curContainerDO.Id);
-            
+
             // Temporarily commented out by yakov.gnusin.
             EventManager.ActionDispatched(curActionDO, curContainerDO.Id);
 
@@ -434,7 +444,7 @@ namespace Core.Services
         {
             if (actionName == null) throw new ArgumentNullException("actionName");
             if (curActionDO == null) throw new ArgumentNullException("curActionDO");
-            
+
             var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
             dto.ProcessId = processId;
             _authorizationToken.PrepareAuthToken(dto);
@@ -451,7 +461,7 @@ namespace Core.Services
             var controlsCrates = _crate.GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO()).ToList();
 
             if (direction != GetCrateDirection.None)
-        {
+            {
                 var upstreamCrates = await ObjectFactory.GetInstance<IRouteNode>()
                     .GetCratesByDirection(curActionDO.Id, curSchema.ManifestName, direction).ConfigureAwait(false);
 
@@ -459,7 +469,7 @@ namespace Core.Services
             }
 
             var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: fieldName);
-           return keys;
+            return keys;
         }
     }
 }

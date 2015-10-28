@@ -223,11 +223,11 @@ namespace Core.Services
             }
         }
 
-        public IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount)
+        public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount)
         {
-            List<ActivityTemplateDO> curActivityTemplates;
+            IEnumerable<ActivityTemplateDTO> curActivityTemplates;
 
-            curActivityTemplates = uow.ActivityTemplateRepository.GetAll().OrderBy(t => t.Category).ToList();
+            curActivityTemplates = uow.ActivityTemplateRepository.GetAll().OrderBy(t => t.Category).ToList().Select(Mapper.Map<ActivityTemplateDTO>);
 
 
             //we're currently bypassing the subscription logic until we need it
@@ -242,10 +242,19 @@ namespace Core.Services
             return curActivityTemplates;
         }
 
-        public IEnumerable<ActivityTemplateDO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount)
+        /// <summary>
+        /// Returns ActivityTemplates while filtering them by the supplied predicate
+        /// </summary>
+        public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, Func<ActivityTemplateDO, bool>predicate)
         {
-            List<ActivityTemplateDO> curActivityTemplates;
-            curActivityTemplates = uow.ActivityTemplateRepository.GetAll().Where(at => at.Category == Data.States.ActivityCategory.Solution).OrderBy(t => t.Category).ToList();
+            return uow.ActivityTemplateRepository.GetAll().Where(predicate).OrderBy(t => t.Category).ToList().Select(Mapper.Map<ActivityTemplateDTO>);
+        }
+
+        public IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount)
+        {
+            IEnumerable<ActivityTemplateDTO> curActivityTemplates;
+            curActivityTemplates = uow.ActivityTemplateRepository.GetAll().
+                Where(at => at.Category == Data.States.ActivityCategory.Solution).OrderBy(t => t.Category).ToList().Select(Mapper.Map<ActivityTemplateDTO>);
 
             //we're currently bypassing the subscription logic until we need it
             //we're bypassing the pluginregistration logic here because it's going away in V2

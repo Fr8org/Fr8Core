@@ -20,6 +20,8 @@ namespace terminalDocuSign.Actions
 {
     public class Monitor_DocuSign_v1 : BasePluginAction
     {
+        DocuSignManager _docuSignManager = new DocuSignManager();
+
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
             if (NeedsAuthentication(curActionDTO))
@@ -40,6 +42,18 @@ namespace terminalDocuSign.Actions
             }
 
             return ConfigurationRequestType.Followup;
+        }
+
+        protected CrateDTO PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
+        {
+            var template = new DocuSignTemplate();
+
+            var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
+            var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();
+            var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
+                "Available Templates",
+                fields);
+            return createDesignTimeFields;
         }
 
         private string GetSelectedTemplateId(ActionDTO curActionDTO)
@@ -154,7 +168,7 @@ namespace terminalDocuSign.Actions
             }
 
             var crateControls = PackCrate_ConfigurationControls();
-            var crateDesignTimeFields = PackCrate_TemplateNames(docuSignAuthDTO);
+            var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             var eventFields = PackCrate_DocuSignEventFields();
 
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
@@ -253,22 +267,6 @@ namespace terminalDocuSign.Actions
 
         private CrateDTO PackCrate_ConfigurationControls()
         {
-            var fieldSelectDocusignTemplate = new DropDownListControlDefinitionDTO()
-            {
-                Label = "Select DocuSign Template",
-                Name = "Selected_DocuSign_Template",
-                Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Templates",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
-                }
-            };
-
             var fieldEnvelopeSent = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Envelope Sent",
@@ -310,7 +308,7 @@ namespace terminalDocuSign.Actions
             };
 
             return PackControlsCrate(
-                fieldSelectDocusignTemplate,
+                _docuSignManager.CreateDocuSignTemplatePicker(true),
                 fieldEnvelopeSent,
                 fieldEnvelopeReceived,
                 fieldRecipientSigned,
