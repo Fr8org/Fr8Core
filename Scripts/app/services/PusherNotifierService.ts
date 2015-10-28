@@ -16,10 +16,9 @@ module dockyard.services {
     class PusherNotifierService implements IPusherNotifierService {
         private client: pusherjs.pusher.Pusher;
         private pusher: any;
-        private appKey: string = '123dd339500fed0ddd78';
 
         constructor(private $pusher: any) {
-            this.client = new Pusher(this.appKey, { encrypted: true });
+            this.client = new Pusher(appKey, { encrypted: true });
             this.pusher = $pusher(this.client);
         }
 

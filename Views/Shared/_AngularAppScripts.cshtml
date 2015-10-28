@@ -61,6 +61,9 @@
 <script src="~/Scripts/app/services/ContainerService.js"></script>
 <script src="~/Scripts/app/services/UIHelperService.js"></script>
 <script src="~/Scripts/app/services/LayoutService.js"></script>
+<script>
+    var appKey = "@Utilities.Configuration.Azure.CloudConfigurationManager.GetSetting("pusherAppKey")";
+</script>
 <script src="~/Scripts/app/services/PusherNotifierService.js"></script>
 
 <script src="~/Scripts/app/services/UserService.js"></script>

@@ -4,16 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities.Configuration.Azure;
 
 namespace Utilities
 {
     public class PusherNotifier
     {
         private Pusher _pusher { get; set; }
-
-        const string defaultAppId = "148580";
-        const string defaultAppKey = "123dd339500fed0ddd78";
-        const string defaultAppSecret = "598b1fdcdf903325d520";
 
         public PusherNotifier(string appId = null, string appKey = null, string appSecret = null)
         {
@@ -23,7 +20,12 @@ namespace Utilities
             }
             else
             {
-                _pusher = new Pusher(defaultAppId, defaultAppKey, defaultAppSecret, new PusherOptions() { Encrypted = true });
+                _pusher = new Pusher(
+                    CloudConfigurationManager.AppSettings.GetSetting("pusherAppId"),
+                    CloudConfigurationManager.AppSettings.GetSetting("pusherAppKey"),
+                    CloudConfigurationManager.AppSettings.GetSetting("pusherAppSecret"), 
+                    new PusherOptions() { Encrypted = true }
+                );
             }
         }
 

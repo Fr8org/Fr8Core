@@ -5,10 +5,6 @@
 
 declare var Pusher: pusherjs.pusher.PusherStatic;
 
-declare module "pusher-js" {
-    export = pusherjs;
-}
-
 declare module pusherjs {
 
     namespace pusher {
