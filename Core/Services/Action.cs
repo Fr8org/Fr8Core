@@ -258,7 +258,7 @@ namespace Core.Services
             tempActionDTO = Mapper.Map<ActionDTO>(curActionDO);
 
             if (!_authorizationToken.ValidateAuthenticationNeeded(
-                System.Threading.Thread.CurrentPrincipal.Identity.GetUserId(),
+                System.Threading.Thread.CurrentPrincipal.Identity.Name,
                 tempActionDTO))
             {
                 try
