@@ -55,6 +55,9 @@ namespace Web
             settings.Formatting = Formatting.Indented;
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
+            // Disable XML serialization
+            formatters.Remove(formatters.XmlFormatter);
+
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
 
