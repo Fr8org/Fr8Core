@@ -18,7 +18,9 @@
 
 using StructureMap;
 using StructureMap.Graph;
-namespace Web.DependencyResolution {
+
+namespace HubWeb.DependencyResolution
+{
     public static class IoC {
         public static IContainer Initialize() {
             ObjectFactory.Initialize(x =>

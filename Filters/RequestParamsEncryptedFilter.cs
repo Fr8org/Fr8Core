@@ -3,7 +3,7 @@ using System.Net;
 using System.Web.Mvc;
 using Utilities;
 
-namespace Web.Filters
+namespace HubWeb.Filters
 {
     public class RequestParamsEncryptedFilter : ActionFilterAttribute, IActionFilter
     {

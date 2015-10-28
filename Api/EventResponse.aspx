@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EventResponse.aspx.cs" Inherits="Web.Api.EventResponse" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EventResponse.aspx.cs" Inherits="HubWeb.Api.EventResponse" %> 
 
 <!DOCTYPE html>
 

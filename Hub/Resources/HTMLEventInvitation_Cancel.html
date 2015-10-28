@@ -1,0 +1,82 @@
+﻿@{
+
+var serverURL = Utilities.Server.ServerUrl;
+
+var linkTo = Model.AuthTokenURL;
+var imageURL = serverURL + "Content/img/EmailLogo.png";
+if(Utilities.Server.IsDevMode)
+{
+imageURL = "kwasant.com/Content/img/EmailLogo.png";
+}
+
+var time = Model.IsAllDay
+? "All day - " + Model.StartDate.ToString("ddd d MMM")
+: Model.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " + Model.EndDate.ToString("hh:mm tt");
+
+var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
+}
+<div style="border-style:solid; border-color:rgb(170,170,170); border-width:1px; max-width:758px;">
+    <div style="color: #D85E17;">
+        <a style="color: #D85E17; font-family: 'Open Sans', Helvetica, Helvetica Nue, Arial, sans-serif; font-size: 20px; text-decoration: none;" href="@linkTo">
+            <img src="@imageURL" style="width:100%;" />
+        </a>
+    </div>
+
+    <div style="padding:15px;margin-top:-5px; font-family: Arial, sans-serif; max-width: 726px; width: 100%;">
+        <div style="padding: 15px;">
+            <h3 style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; margin: 0px; padding-bottom: 6px;">@Model.Summary</h3>
+            <table>
+                <tbody>
+                    <tr>
+                        <td style="color: rgb(136, 136, 136); font-family: Arial, sans-serif; font-size: 13px; padding: 0px 1em 10px 0px; white-space: nowrap" valign="top">
+                            <div><i style="font-style: normal">Description</i></div>
+                        </td>
+                        <td style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 13px; padding-bottom: 10px;" valign="top">
+                            @Model.Description
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="color: rgb(136, 136, 136); font-family: Arial, sans-serif; font-size: 13px; padding: 0px 1em 10px 0px; white-space: nowrap" valign="top">
+                            <div><i style="font-style: normal">When</i></div>
+                        </td>
+                        <td style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 13px; padding-bottom: 10px;" valign="top">
+                            @time <span style="color: rgb(136, 136, 136)">UTC+@timeZone</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="color: rgb(136, 136, 136); font-family: Arial, sans-serif; font-size: 13px; padding: 0px 1em 10px 0px; white-space: nowrap" valign="top">
+                            <div><i style="font-style: normal">Where</i></div>
+                        </td>
+                        <td style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 13px; padding-bottom: 10px;" valign="top">
+                            @Model.Location
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="color: rgb(136, 136, 136); font-family: Arial, sans-serif; font-size: 13px; padding: 0px 1em 10px 0px; white-space: nowrap" valign="top">
+                            <div><i style="font-style: normal">Who</i></div>
+                        </td>
+                        <td style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 13px; padding-bottom: 10px;" valign="top">
+                            <span class="HOEnZb"><font color="#888888"></font></span><span class="HOEnZb"><font color="#888888"></font></span>
+                            <table cellspacing="0" cellpadding="0">
+                                <tbody>
+                                    @{
+                                    foreach(var attendee in @Model.Attendees)
+                                    {
+                                    <tr>
+                                        <td style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 13px; padding-right: 10px;">
+                                            <div>
+                                                <div style="margin: 0px 0px 0.3em"><a href="mailto:@attendee.EmailAddress">@(String.IsNullOrEmpty(attendee.Name) ? attendee.EmailAddress : attendee.Name)</a></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    }
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

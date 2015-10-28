@@ -5,16 +5,16 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Core.Managers;
+using Newtonsoft.Json;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
-using Newtonsoft.Json;
-using terminalDocuSign.Infrastructure;
-using StructureMap;
-using Core.Interfaces;
+using Hub.Interfaces;
+using Hub.Managers;
 using Utilities.Configuration.Azure;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Services
 {

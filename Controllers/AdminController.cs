@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Daemons;
-using Core.ExternalServices;
-using Core.Managers;
-using Web.ViewModels;
+using Hub.ExternalServices;
+using Hub.Managers;
+using HubWeb.ViewModels;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [Authorize]
     public class AdminController : Controller

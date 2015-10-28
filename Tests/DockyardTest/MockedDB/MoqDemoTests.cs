@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Net.Mail;
-using Core.Interfaces;
-using Data.Entities;
-using Data.Interfaces;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Hub.Interfaces;
 using Utilities;
 using UtilitiesTesting;
 

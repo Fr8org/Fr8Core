@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
-using Core.Interfaces;
-using Core.StructureMap;
-using Data.Entities;
-using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Hub.Interfaces;
+using Hub.StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

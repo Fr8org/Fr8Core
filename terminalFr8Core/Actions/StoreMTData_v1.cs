@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Core.Interfaces;
+using Newtonsoft.Json;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using Newtonsoft.Json;
-using StructureMap;
+using Hub.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 

@@ -4,9 +4,9 @@ using Microsoft.Owin.Hosting;
 using Owin;
 using StructureMap;
 using StructureMap.Configuration.DSL;
-using Core.Interfaces;
-using Core.Managers;
-using Core.Services;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Services;
 using terminalAzure.Infrastructure;
 
 namespace terminalAzure
@@ -17,7 +17,7 @@ namespace terminalAzure
         {
             public LiveMode()
             {
-                For<IAction>().Use<Core.Services.Action>();
+                For<IAction>().Use<Hub.Services.Action>();
                 For<IPlugin>().Use<Plugin>();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IDbProvider>().Use<SqlClientDbProvider>();

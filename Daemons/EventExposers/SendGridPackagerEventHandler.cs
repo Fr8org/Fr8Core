@@ -1,5 +1,5 @@
-﻿using Core.Managers.APIManagers.Packagers;
-using Core.Managers.APIManagers.Packagers.SendGrid;
+﻿using Hub.Managers.APIManagers.Packagers;
+using Hub.Managers.APIManagers.Packagers.SendGrid;
 
 namespace Daemons.EventExposers
 {

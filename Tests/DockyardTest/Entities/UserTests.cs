@@ -1,10 +1,10 @@
 ﻿using System.Linq;
-using Core.Services;
+using NUnit.Framework;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using NUnit.Framework;
-using StructureMap;
+using Hub.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

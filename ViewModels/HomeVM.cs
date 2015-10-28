@@ -1,4 +1,4 @@
-﻿namespace Web.ViewModels
+﻿namespace HubWeb.ViewModels
 {
     public class HomeVM
     {

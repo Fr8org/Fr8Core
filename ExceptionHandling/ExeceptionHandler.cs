@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http.ExceptionHandling;
 
-namespace Web.ExceptionHandling
+namespace HubWeb.ExceptionHandling
 {
     public class ExeceptionHandler : IExceptionHandler
     {

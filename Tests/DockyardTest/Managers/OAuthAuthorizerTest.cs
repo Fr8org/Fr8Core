@@ -6,16 +6,16 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using NUnit.Framework;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Core.Managers.APIManagers.Authorizers;
-using Web.Controllers;
-using NUnit.Framework;
-using StructureMap;
+using Hub.Managers.APIManagers.Authorizers;
+using HubWeb.Controllers;
+using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Utilities;
 
 namespace DockyardTest.Managers
 {

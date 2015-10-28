@@ -19,7 +19,7 @@ namespace pluginBaseTests.Fixtures
             public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
             {
                 return new Type[] {
-                    typeof(Web.Controllers.RouteNodesController)
+                    typeof(HubWeb.Controllers.RouteNodesController)
                 };
             }
         }

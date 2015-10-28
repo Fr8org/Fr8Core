@@ -1,11 +1,11 @@
-﻿using Core.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Newtonsoft.Json;
-using StructureMap;
-using System.Collections.Generic;
-using System;
+using Hub.Interfaces;
 
 namespace UtilitiesTesting.Fixtures
 {

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Core.Interfaces;
-using Core.Managers;
-using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using Hub.Managers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
