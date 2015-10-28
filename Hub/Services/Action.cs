@@ -402,7 +402,7 @@ namespace Hub.Services
         public async Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow)
         {
             EventManager.ActionStarted(curAction);
-
+            EventManager.ContainerReceived(curContainerDO, curAction);
             var payload = await Run(curAction, curContainerDO);
 
             if (payload != null)
@@ -417,16 +417,18 @@ namespace Hub.Services
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
         public async Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO)
         {
+            
             if (curActionDO == null)
             {
                 throw new ArgumentNullException("curActionDO");
             }
 
+            EventManager.ContainerSent(curContainerDO, curActionDO);
             var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Run", curActionDO, curContainerDO.Id);
 
             // Temporarily commented out by yakov.gnusin.
             EventManager.ActionDispatched(curActionDO, curContainerDO.Id);
-
+            
             return payloadDTO;
         }
 

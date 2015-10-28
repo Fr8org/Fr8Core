@@ -18,7 +18,7 @@ using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
 using Moq;
 using Newtonsoft.Json;
-using Core.Managers;
+using Hub.Managers;
 
 
 namespace DockyardTest.Services

@@ -15,6 +15,7 @@ using Hub.Managers.APIManagers.Packagers;
 using Hub.Services;
 using Utilities;
 using Utilities.Logging;
+using System.Data.Entity.Infrastructure;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
 
@@ -58,6 +59,11 @@ namespace Hub.Managers
             EventManager.PluginEventReported += LogPluginEvent;
             EventManager.PluginActionActivated  += PluginActionActivated;
             EventManager.EventProcessRequestReceived += EventManagerOnEventProcessRequestReceived;
+            EventManager.EventContainerCreated += LogEventContainerCreated;
+            EventManager.EventContainerSent += LogEventContainerSent;
+            EventManager.EventContainerReceived += LogEventContainerReceived;
+            EventManager.EventContainerStateChanged += LogEventContainerStateChanged;
+
         }
 
 
@@ -94,6 +100,10 @@ namespace Hub.Managers
             EventManager.EventActionDispatched -= LogEventActionDispatched;
             EventManager.PluginEventReported -= LogPluginEvent;
             EventManager.PluginActionActivated -= PluginActionActivated;
+            EventManager.EventContainerCreated -= LogEventContainerCreated;
+            EventManager.EventContainerSent -= LogEventContainerSent;
+            EventManager.EventContainerReceived -= LogEventContainerReceived;
+            EventManager.EventContainerStateChanged -= LogEventContainerStateChanged;
         }
 
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
@@ -800,6 +810,88 @@ namespace Hub.Managers
 //            };
 //
 //            SaveAndLogFact(fact);
+        }
+
+        private void LogEventContainerCreated(ContainerDO containerDO)
+        {
+            var curFact = new FactDO
+            {
+                CustomerId = containerDO.Route.Fr8Account.Id,
+                Data = "",
+                ObjectId = containerDO.Id.ToStr(),
+                PrimaryCategory = "Containers",
+                SecondaryCategory = "Operations",
+                Activity = "Created"
+            };
+
+            SaveAndLogFact(curFact);
+        }
+        private void LogEventContainerSent(ContainerDO containerDO, ActionDO actionDO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var terminalName = actionDO.ActivityTemplate.Plugin.Name;
+
+                var curFact = new FactDO
+                {
+                    CustomerId = containerDO.Route.Fr8Account.Id,
+                    Data = string.Format("Terminal: {0} - Action: {1}.", terminalName, actionDO.Name),
+                    ObjectId = containerDO.Id.ToStr(),
+                    PrimaryCategory = "Containers",
+                    SecondaryCategory = "Operations",
+                    Activity = "Sent To Terminal"
+                };
+
+                LogFactInformation(curFact, curFact.Data);
+
+                uow.FactRepository.Add(curFact);
+                uow.SaveChanges();
+            }
+        }
+        private void LogEventContainerReceived(ContainerDO containerDO, ActionDO actionDO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var terminalName = actionDO.ActivityTemplate.Plugin.Name;
+
+                var curFact = new FactDO
+                {
+                    CustomerId = containerDO.Route.Fr8Account.Id,
+                    Data = string.Format("Terminal: {0} - Action: {1}.", terminalName, actionDO.Name),
+                    ObjectId = containerDO.Id.ToStr(),
+                    PrimaryCategory = "Containers",
+                    SecondaryCategory = "Operations",
+                    Activity = "Received From Terminal"
+                };
+
+                LogFactInformation(curFact, curFact.Data);
+
+                uow.FactRepository.Add(curFact);
+                uow.SaveChanges();
+            }
+        }
+        private void LogEventContainerStateChanged(DbPropertyValues currentValues)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //In the GetByKey I make use of dictionary datatype: https://msdn.microsoft.com/en-us/data/jj592677.aspx
+                var curContainerDO = uow.ContainerRepository.GetByKey(currentValues[currentValues.PropertyNames.First()]);
+
+                var curFact = new FactDO
+                {
+                    CustomerId = curContainerDO.Route.Fr8Account.Id,
+                    Data = curContainerDO.ContainerState.ToString(),
+                    ObjectId = curContainerDO.Id.ToStr(),
+                    PrimaryCategory = "Containers",
+                    SecondaryCategory = "Operations",
+                    Activity = "State Change"
+                };
+
+                LogFactInformation(curFact, curFact.Data);
+                uow.FactRepository.Add(curFact);
+                uow.SaveChanges();
+            }
+
         }
 
         public enum EventType
