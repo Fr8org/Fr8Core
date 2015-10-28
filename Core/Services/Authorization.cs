@@ -11,7 +11,7 @@ using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Data.States;
 
 namespace Core.Services

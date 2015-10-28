@@ -9,7 +9,7 @@ using Data.Interfaces.DataTransferObjects;
 using Moq;
 using Data.Entities;
 using System.Collections.Generic;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 
 namespace DockyardTest.Services
 {

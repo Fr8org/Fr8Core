@@ -12,7 +12,7 @@ using Core.Interfaces;
 using Core.Managers;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 
 namespace terminalExcel.Infrastructure
 {

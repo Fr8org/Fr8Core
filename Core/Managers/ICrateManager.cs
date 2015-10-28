@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Newtonsoft.Json.Linq;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 
 namespace Core.Managers
 {

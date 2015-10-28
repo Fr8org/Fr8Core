@@ -10,7 +10,7 @@ using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using terminalExcel.Actions;
 using Core.Interfaces;
 using Newtonsoft.Json;

@@ -6,7 +6,7 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Core.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Web.Controllers;
 
 namespace DockyardTest.Entities

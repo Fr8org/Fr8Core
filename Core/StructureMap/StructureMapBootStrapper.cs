@@ -118,6 +118,7 @@ namespace Core.StructureMap
                 For<ICrateManager>().Use<CrateManager>();
                 For<IDockyardEvent>().Use<DockyardEvent>();
                 For<IReport>().Use<Report>();
+                For<IManifest>().Use<Manifest>();
             }
         }
 
@@ -173,6 +174,7 @@ namespace Core.StructureMap
                 For<IPlugin>().Use<Plugin>();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IDockyardEvent>().Use<DockyardEvent>();
+                For<IManifest>().Use<Manifest>();
             }
         }
 

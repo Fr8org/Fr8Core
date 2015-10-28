@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using StructureMap;
 using System.Collections.Generic;
 using System;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Utilities.Serializers.Json;
 
 namespace UtilitiesTesting.Fixtures

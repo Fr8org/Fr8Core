@@ -2,7 +2,7 @@
 using StructureMap;
 using terminalSalesforce.Infrastructure;
 using System.Threading.Tasks;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Salesforce.Common;
 using terminalSalesforce.Services;
 using TerminalBase.Infrastructure;

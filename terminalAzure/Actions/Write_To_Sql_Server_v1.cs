@@ -13,7 +13,7 @@ using TerminalBase.Infrastructure;
 using StructureMap;
 using TerminalBase;
 using Data.Interfaces;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using TerminalBase.BaseClasses;
 
 namespace terminalAzure.Actions

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Entities;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 
 namespace Core.Interfaces
 {

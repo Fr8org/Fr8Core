@@ -2,7 +2,7 @@
 using DocuSign.Integrations.Client;
 using System.IO;
 using Utilities;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Core.Interfaces;
 using System.Collections.Generic;
 using terminalExcel.Infrastructure;

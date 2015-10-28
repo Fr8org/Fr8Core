@@ -10,7 +10,7 @@ using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using TerminalBase;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using System.Threading.Tasks;
 using Core.Enums;
 using terminalDocuSign.DataTransferObjects;

@@ -10,7 +10,7 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using RestSharp.Serializers;
 using Data.Infrastructure.StructureMap;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using System;
 
 namespace DockyardTest.Infrastructure

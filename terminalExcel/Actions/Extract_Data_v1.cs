@@ -6,7 +6,7 @@ using StructureMap;
 using Data.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using TerminalBase.Infrastructure;
 using System.IO;
 using System.Threading.Tasks;

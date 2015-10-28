@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Data.Interfaces.DataTransferObjects;
 
-namespace Data.Interfaces.ManifestSchemas
+namespace Data.Interfaces.Manifests
 {
     public class StandardDesignTimeFieldsCM : Manifest
     {

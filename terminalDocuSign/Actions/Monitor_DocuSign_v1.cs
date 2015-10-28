@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using TerminalBase;
 using DocuSign.Integrations.Client;
 using terminalDocuSign.DataTransferObjects;

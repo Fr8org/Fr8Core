@@ -6,7 +6,7 @@ using Core.Enums;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;

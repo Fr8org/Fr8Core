@@ -1,5 +1,5 @@
 ﻿using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using System.Xml;
 using System.Xml.Linq;
 namespace terminalSalesforce.Infrastructure

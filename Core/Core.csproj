@@ -204,6 +204,7 @@
     <Compile Include="Exceptions\AuthenticationExeception.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
+    <Compile Include="Interfaces\IManifest.cs" />
     <Compile Include="Interfaces\IField.cs" />
     <Compile Include="Interfaces\IRouteNode.cs" />
     <Compile Include="Interfaces\IActivityTemplate.cs" />
@@ -280,6 +281,7 @@
     <Compile Include="Security\DockyardUserStore.cs" />
     <Compile Include="Security\SecurityServices.cs" />
     <Compile Include="Services\Field.cs" />
+    <Compile Include="Services\Manifest.cs" />
     <Compile Include="Services\RouteNode.cs" />
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\ActivityTemplate.cs" />

@@ -10,7 +10,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using terminalAzure;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;

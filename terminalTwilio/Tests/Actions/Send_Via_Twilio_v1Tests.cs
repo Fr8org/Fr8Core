@@ -2,7 +2,7 @@
 using Core.StructureMap;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using terminalTwilio.Actions;

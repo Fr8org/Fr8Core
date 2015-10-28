@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;

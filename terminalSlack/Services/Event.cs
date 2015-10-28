@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using StructureMap;
 using Core.Managers;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Utilities.Configuration.Azure;
 using terminalSlack.Interfaces;
 

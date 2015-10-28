@@ -4,7 +4,7 @@ using Data.Constants;
 using Utilities;
 using System.Linq;
 
-namespace Data.Interfaces.ManifestSchemas
+namespace Data.Interfaces.Manifests
 {
     public class StandardConfigurationControlsCM : Manifest
     {

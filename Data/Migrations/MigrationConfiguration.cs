@@ -13,7 +13,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using StructureMap;
 using MT_Field = Data.Entities.MT_Field;

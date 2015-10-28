@@ -17,7 +17,7 @@ using System;
 using System.Threading.Tasks;
 using Core.Interfaces;
 using AutoMapper;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 
 namespace DockyardTest.Controllers
 {

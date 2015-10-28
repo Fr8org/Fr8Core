@@ -2,7 +2,7 @@
 using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Crates.Helpers;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using StructureMap;
 using System;

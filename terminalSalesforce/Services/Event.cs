@@ -15,7 +15,7 @@ using System.Xml.Linq;
 using System.Configuration;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Core.StructureMap;
 using TerminalBase.BaseClasses;
 

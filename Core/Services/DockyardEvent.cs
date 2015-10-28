@@ -11,7 +11,7 @@ using Core.Interfaces;
 using Core.Managers;
 using Data.Entities;
 using Data.Exceptions;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Data.States;
 using Data.Interfaces;
 

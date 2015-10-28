@@ -6,7 +6,7 @@ using Core.Managers;
 using Core.Services;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 
 namespace UtilitiesTesting.Fixtures
 {
