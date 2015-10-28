@@ -131,6 +131,11 @@ namespace DockyardTest.Services
                 IAction action = new Action();
                 var origActionDO = new FixtureData(uow).TestAction3();
 
+                origActionDO.IsTempId = true;
+                
+                uow.ActivityTemplateRepository.Add(origActionDO.ActivityTemplate);
+                uow.SaveChanges();
+
                 //Add
                 action.SaveOrUpdateAction(origActionDO);
 
@@ -159,7 +164,7 @@ namespace DockyardTest.Services
                 Visit(tree, x => uow.ActionRepository.Add(x));
                 Visit(updatedTree, x => x.Name = string.Format("We were here {0}", x.Id));
 
-                _action.Update(uow, updatedTree);
+                _action.SaveOrUpdateAction(uow, updatedTree);
 
                 var result = uow.ActionRepository.GetByKey(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
@@ -195,7 +200,7 @@ namespace DockyardTest.Services
                     removeCounter++;
                 });
 
-                _action.Update(uow, updatedTree);
+                _action.SaveOrUpdateAction(uow, updatedTree);
 
                 var result = uow.ActionRepository.GetByKey(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
@@ -260,7 +265,7 @@ namespace DockyardTest.Services
                     });
                 }
 
-                _action.Update(uow, updatedTree);
+                _action.SaveOrUpdateAction(uow, updatedTree);
 
                 var result = uow.ActionRepository.GetByKey(tree.Id);
                 Compare(updatedTree, result, (r, a) =>

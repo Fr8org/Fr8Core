@@ -65,8 +65,6 @@ namespace Hub.Services
                     route.StartingSubroute = subroute;
                     subroute.StartingSubroute = true;
                 }
-
-                //route.ChildNodes.Add(subroute);
             }
 
             subroute.Name = name;
@@ -187,7 +185,8 @@ namespace Hub.Services
                         downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
                     }
                 }
-                uow.RouteNodeRepository.Remove(curAction);
+
+                _routeNode.Delete(uow, curAction);
                 uow.SaveChanges();
             }
 

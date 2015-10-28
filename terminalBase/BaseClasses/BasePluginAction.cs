@@ -53,7 +53,7 @@ namespace TerminalBase.BaseClasses
             {
                 return true;
             }
-
+        
             return false;
         }
 
@@ -105,7 +105,7 @@ namespace TerminalBase.BaseClasses
 
         protected async Task<ActionDTO> ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
-
+            
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
             {
                 return await InitialConfigurationResponse(curActionDTO);
@@ -199,6 +199,11 @@ namespace TerminalBase.BaseClasses
             };
         }
 
+        protected CrateDTO PackControls(StandardConfigurationControlsCM page)
+        {
+            return PackControlsCrate(page.Controls.ToArray());
+        }
+        
         protected CrateDTO PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
             var controlsCrate = Crate.CreateStandardConfigurationControlsCrate(
@@ -347,7 +352,7 @@ namespace TerminalBase.BaseClasses
                         Selected = true,
                         Name = "specific",
                         Value = "this specific value",
-                        Controls = new List<ControlDefinitionDTO>()
+                        Controls = new List<ControlDefinitionDTO>
                         {
                             new TextBoxControlDefinitionDTO()
                             {
@@ -362,7 +367,7 @@ namespace TerminalBase.BaseClasses
                         Selected = false,
                         Name = "upstream",
                         Value = "a value from an Upstream Crate",
-                        Controls = new List<ControlDefinitionDTO>()
+                        Controls = new List<ControlDefinitionDTO>
                         {
                             new DropDownListControlDefinitionDTO()
                             {

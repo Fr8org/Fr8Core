@@ -23,7 +23,7 @@ namespace Hub.Interfaces
 
 	    void Delete(IUnitOfWork uow, RouteNodeDO activity);
 
-        IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IFr8AccountDO curAccount);
+        IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups();
 
 	    Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction);
 

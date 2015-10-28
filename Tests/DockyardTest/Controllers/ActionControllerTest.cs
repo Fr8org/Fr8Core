@@ -49,6 +49,8 @@ namespace DockyardTest.Controllers
                 //Act
                 var actualAction = CreateActionWithId(1);
 
+                actualAction.IsTempId = true;
+                
                 var controller = new ActionController();
                 controller.Save(actualAction);
 
@@ -70,12 +72,13 @@ namespace DockyardTest.Controllers
                 //Arrange
                 //Add one test action
                 var action = FixtureData.TestAction1();
+                
                 uow.ActionRepository.Add(action);
                 uow.SaveChanges();
 
                 //Act
                 var actualAction = CreateActionWithId(2);
-
+                actualAction.IsTempId = true;
                 var controller = new ActionController();
                 controller.Save(actualAction);
 
