@@ -367,10 +367,6 @@
     <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.Designer.cs">
       <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201510280339057_EmptyMigr2.cs" />
-    <Compile Include="Migrations\201510280339057_EmptyMigr2.Designer.cs">
-      <DependentUpon>201510280339057_EmptyMigr2.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -644,9 +640,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510261339053_CreateWebServicesTable_Migration.resx">
       <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201510280339057_EmptyMigr2.resx">
-      <DependentUpon>201510280339057_EmptyMigr2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
