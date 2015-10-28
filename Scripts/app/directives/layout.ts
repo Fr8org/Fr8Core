@@ -20,10 +20,6 @@ module dockyard.directives {
         return {
             restrict: 'A',
             link: (scope: any, elem: ng.IAugmentedJQuery) => {
-                //scope.$watch(() => elem.height(), (newValue) => {
-                //    scope.group.height = newValue;
-                //    LayoutService.recalculateTop(scope.actionGroups);
-                //});
             }
         };
     });
