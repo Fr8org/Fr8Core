@@ -5,6 +5,9 @@ module dockyard.directives.textBlock {
     export interface ITextAreaScope extends ng.IScope {
         field: model.TextAreaControlDefinitionDTO;
         buttonSet: Array<Array<String>>;
+        style:string;
+        isDisabled: boolean;
+        toolbars:string;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -32,6 +35,7 @@ module dockyard.directives.textBlock {
                 attrs: ng.IAttributes) => {
 
                 //Link function goes here
+               
             };
 
             TextArea.prototype.controller = (
@@ -42,6 +46,9 @@ module dockyard.directives.textBlock {
                 this._$scope = $scope;
 
                 this._$scope.buttonSet = this._buttonSet;
+                this._$scope.style = this._$scope.field.isReadOnly ? "readOnlyTextArea" : null;
+                this._$scope.isDisabled = this._$scope.field.isReadOnly;
+                this._$scope.toolbars = this._$scope.field.isReadOnly ? "[]" : null;
 
             };
         }

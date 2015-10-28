@@ -24,8 +24,7 @@ namespace Data.Entities
 
         public Fr8AccountDO(EmailAddressDO curEmailAddress) : base()
         {
-            EmailAddress = curEmailAddress;
-           
+            EmailAddress = curEmailAddress;           
         }
 
         public String FirstName { get; set; }

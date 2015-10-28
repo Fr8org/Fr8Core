@@ -1,14 +1,14 @@
 using System;
-using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using AutoMapper;
-using Data.Entities;
-using Newtonsoft.Json;
-using System.Reflection;
-using TerminalBase.BaseClasses;
 using System.Collections.Generic;
-using Core.Services;
+using System.Reflection;
+using System.Web.Http;
+using AutoMapper;
+using Newtonsoft.Json;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Hub.Services;
+using TerminalBase.BaseClasses;
 using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Controllers
@@ -72,12 +72,35 @@ namespace terminalDocuSign.Controllers
 				MinPaneWidth = 330
             };
 
+            var mailMergeActionTemplate = new ActivityTemplateDO
+            {
+                Name = "Mail_Merge_Into_DocuSign",
+                Label = "Mail Merge Into DocuSign",
+                Version = "1",
+                AuthenticationType = AuthenticationType.Internal,
+                Category = ActivityCategory.Solution,
+                Plugin = plugin,
+                MinPaneWidth = 500
+            };
+
+            var collectFormDataSolution = new ActivityTemplateDO
+            {
+                Name = "Collect_Form_Data_Solution",
+                Label = "Collect Form Data Solution",
+                Version = "1",
+                Category = ActivityCategory.Solution,
+                Plugin = plugin,
+                MinPaneWidth = 380
+            };
+
             var actionList = new List<ActivityTemplateDO>()
             {
                 waitForDocusignEventActionTemplate,
                 extractDataFromEnvelopeActionTemplate,
                 sendDocuSignEnvelopeActionTemplate,
-                recordDocuSignEvents
+                recordDocuSignEvents,
+                mailMergeActionTemplate,
+                collectFormDataSolution
             };
 
             return Ok(actionList);

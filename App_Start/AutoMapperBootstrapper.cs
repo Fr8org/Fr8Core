@@ -4,12 +4,12 @@ using System.Linq;
 using AutoMapper;
 using Newtonsoft.Json.Linq;
 using Data.Entities;
-using Web.ViewModels;
-using Web.ViewModels.JsonConverters;
-using Utilities.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
+using HubWeb.ViewModels;
+using HubWeb.ViewModels.JsonConverters;
+using Utilities.AutoMapper;
 
-namespace Web.App_Start
+namespace HubWeb.App_Start
 {
     public class AutoMapperBootStrapper
     {
@@ -44,6 +44,9 @@ namespace Web.App_Start
             Mapper.CreateMap<Fr8AccountDO, UserDTO>()
                 .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))
                 .ForMember(dto => dto.Status, opts => opts.ResolveUsing(e => e.State.Value));
+
+	        Mapper.CreateMap<WebServiceDO, WebServiceDTO>();
+	        Mapper.CreateMap<WebServiceDTO, WebServiceDO>();
         }
     }
 }

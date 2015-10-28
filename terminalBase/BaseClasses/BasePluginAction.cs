@@ -5,20 +5,19 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
-using Core.Services;
-using Data.Constants;
 using Newtonsoft.Json;
-
 using StructureMap;
-using Core.Enums;
-using Core.Interfaces;
-using Core.Managers;
+using Data.Constants;
 using Data.Entities;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
+using Hub.Enums;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Services;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
-using Data.Interfaces;
 
 namespace TerminalBase.BaseClasses
 {
@@ -91,7 +90,7 @@ namespace TerminalBase.BaseClasses
                     var fieldCheckResult = result[i];
                     if (fieldCheckResult == FieldValidationResult.NotExists)
                     {
-                        validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required"});
+                        validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required" });
                     }
                 }
 
@@ -200,6 +199,11 @@ namespace TerminalBase.BaseClasses
             };
         }
 
+        protected CrateDTO PackControls(StandardConfigurationControlsCM page)
+        {
+            return PackControlsCrate(page.Controls.ToArray());
+        }
+        
         protected CrateDTO PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
             var controlsCrate = Crate.CreateStandardConfigurationControlsCrate(
@@ -348,7 +352,7 @@ namespace TerminalBase.BaseClasses
                         Selected = true,
                         Name = "specific",
                         Value = "this specific value",
-                        Controls = new List<ControlDefinitionDTO>()
+                        Controls = new List<ControlDefinitionDTO>
                         {
                             new TextBoxControlDefinitionDTO()
                             {
@@ -363,7 +367,7 @@ namespace TerminalBase.BaseClasses
                         Selected = false,
                         Name = "upstream",
                         Value = "a value from an Upstream Crate",
-                        Controls = new List<ControlDefinitionDTO>()
+                        Controls = new List<ControlDefinitionDTO>
                         {
                             new DropDownListControlDefinitionDTO()
                             {
@@ -382,7 +386,6 @@ namespace TerminalBase.BaseClasses
 
             return control;
         }
-
 
         /// <summary>
         /// Extract value from RadioButtonGroup where specific value or upstream field was specified.
@@ -467,8 +470,8 @@ namespace TerminalBase.BaseClasses
             var crates = Crate.GetCratesByManifestType(
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, crateStorage);
 
-            var fieldValues = Crate.GetElementByKey(crates, key: fieldKey, keyFieldName: "Key")
-                .Select(e => (string)e["Value"])
+            var fieldValues = Crate.GetElementByKey(crates, key: fieldKey, keyFieldName: "key")
+                .Select(e => (string)e["value"])
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
 

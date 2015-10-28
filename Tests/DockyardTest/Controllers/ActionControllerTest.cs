@@ -1,20 +1,20 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Results;
-using Core.Services;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using AutoMapper;
+using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using Hub.Services;
+using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Web.Controllers;
-using Moq;
-using System;
-using Core.Interfaces;
-using AutoMapper;
 
 namespace DockyardTest.Controllers
 {
@@ -49,6 +49,8 @@ namespace DockyardTest.Controllers
                 //Act
                 var actualAction = CreateActionWithId(1);
 
+                actualAction.IsTempId = true;
+                
                 var controller = new ActionController();
                 controller.Save(actualAction);
 
@@ -70,12 +72,13 @@ namespace DockyardTest.Controllers
                 //Arrange
                 //Add one test action
                 var action = FixtureData.TestAction1();
+                
                 uow.ActionRepository.Add(action);
                 uow.SaveChanges();
 
                 //Act
                 var actualAction = CreateActionWithId(2);
-
+                actualAction.IsTempId = true;
                 var controller = new ActionController();
                 controller.Save(actualAction);
 

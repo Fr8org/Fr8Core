@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Web.ViewModels
+namespace HubWeb.ViewModels
 {
     public class ManageUserVM
     {

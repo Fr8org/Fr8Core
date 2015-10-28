@@ -1,40 +1,33 @@
 ﻿using System;
-using System.Configuration;
 using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using System.Web;
+using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
-using Data.States;
-using Core.ModelBinders;
-using Core.Security;
-using Core.Services;
-using Core.Managers;
-using Core.StructureMap;
-using Web.App_Start;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
+using FluentValidation.WebApi;
+using Hub.Managers;
+using Hub.ModelBinders;
+using Hub.StructureMap;
+using HubWeb.App_Start;
+using HubWeb.ExceptionHandling;
+using HubWeb.NotificationQueues;
+using LogentriesCore.Net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Segment;
 using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
-using System.Web.Http;
-using FluentValidation.WebApi;
-using System.Net.Http.Formatting;
-using Newtonsoft.Json.Serialization;
-using Web.ExceptionHandling;
 
-namespace Web
+namespace HubWeb
 {
-    public class MvcApplication : System.Web.HttpApplication
+    public class MvcApplication : HttpApplication
     {
         private static bool _IsInitialised;
 
@@ -53,6 +46,9 @@ namespace Web
             var settings = jsonFormatter.SerializerSettings;
             settings.Formatting = Formatting.Indented;
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+            // Disable XML serialization
+            formatters.Remove(formatters.XmlFormatter);
 
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
@@ -195,7 +191,7 @@ namespace Web
 
             // This will give LE background thread some time to finish sending messages to Logentries.
             var numWaits = 3;
-            while (!LogentriesCore.Net.AsyncLogger.AreAllQueuesEmpty(TimeSpan.FromSeconds(5)) && numWaits > 0)
+            while (!AsyncLogger.AreAllQueuesEmpty(TimeSpan.FromSeconds(5)) && numWaits > 0)
                 numWaits--;
         }
 
