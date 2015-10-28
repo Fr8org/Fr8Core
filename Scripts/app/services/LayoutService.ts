@@ -47,9 +47,9 @@ module dockyard.services {
         private processGroup(actionGroups: model.ActionDTO[][], group: model.ActionGroup, processedGroups: model.ActionGroup[]) {
             processedGroups.push(group);
             for (var i = group.actions.length - 1; i > -1; i--) {
-                var childGroup = this.findChildGroup(actionGroups, group.actions[i].id);
-                if (childGroup) {
-                    var newGroup = new model.ActionGroup(childGroup) 
+                //var childGroup = this.findChildGroup(actionGroups, group.actions[i].id);
+                if (group.actions[i].childrenActions.length) {
+                    var newGroup = new model.ActionGroup(group.actions[i].childrenActions) 
                     this.calculateGroupPosition(newGroup, group, processedGroups);
                     this.processGroup(actionGroups, newGroup, processedGroups);
                 }
@@ -67,10 +67,10 @@ module dockyard.services {
             var i = 0,
                 offsetLeft = parentGroup.offsetLeft;
             while (parentGroup.actions[i].id != action.parentRouteNodeId) {
-                offsetLeft += (parentGroup.actions[i].minPaneWidth || this.ACTION_WIDTH) + this.ACTION_PADDING;
+                offsetLeft += (parentGroup.actions[i].activityTemplate.minPaneWidth || this.ACTION_WIDTH) + this.ACTION_PADDING;
                 i++;
             }
-            offsetLeft += ((parentGroup.actions[i].minPaneWidth || this.ACTION_WIDTH) - (action.minPaneWidth || this.ACTION_WIDTH)) / 2;
+            offsetLeft += ((parentGroup.actions[i].activityTemplate.minPaneWidth || this.ACTION_WIDTH) - (action.activityTemplate.minPaneWidth || this.ACTION_WIDTH)) / 2;
 
             return offsetLeft;
         }
@@ -85,7 +85,7 @@ module dockyard.services {
         }
 
         private calculateArrowOffsetLeft(group: model.ActionGroup): number {
-            return ((group.actions[0].minPaneWidth || this.ACTION_WIDTH) - this.ARROW_WIDTH) / 2;
+            return ((group.actions[0].activityTemplate.minPaneWidth || this.ACTION_WIDTH) - this.ARROW_WIDTH) / 2;
         }
 
         private findParentAction(group: model.ActionGroup, parentGroup: model.ActionGroup): model.ActionDTO {
