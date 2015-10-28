@@ -465,8 +465,8 @@ namespace TerminalBase.BaseClasses
             var crates = Crate.GetCratesByManifestType(
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, crateStorage);
 
-            var fieldValues = Crate.GetElementByKey(crates, key: fieldKey, keyFieldName: "Key")
-                .Select(e => (string)e["Value"])
+            var fieldValues = Crate.GetElementByKey(crates, key: fieldKey, keyFieldName: "key")
+                .Select(e => (string)e["value"])
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
 

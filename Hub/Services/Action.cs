@@ -201,7 +201,10 @@ namespace Hub.Services
             return action;
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
+        public async Task<RouteNodeDO> CreateAndConfigure(
+            IUnitOfWork uow, string userId,
+            int actionTemplateId, string name, string label = null,
+            int? parentNodeId = null, bool createRoute = false)
         {
             ActionDTO curActionDTO;
 
@@ -232,7 +235,7 @@ namespace Hub.Services
 
             uow.SaveChanges();
 
-            var actionConfiguredData = await Configure(action);
+            var actionConfiguredData = await Configure(userId, action);
             curActionDTO = actionConfiguredData.Item1;
 
             // Update crates on the initial action instance with those we received 
@@ -248,7 +251,7 @@ namespace Hub.Services
         }
 
 
-        public async Task<Tuple<ActionDTO, ActionDO>> Configure(ActionDO curActionDO)
+        public async Task<Tuple<ActionDTO, ActionDO>> Configure(string userId, ActionDO curActionDO)
         {
             if (curActionDO == null)
                 throw new ArgumentNullException("curActionDO");
@@ -257,9 +260,7 @@ namespace Hub.Services
 
             tempActionDTO = Mapper.Map<ActionDTO>(curActionDO);
 
-            if (!_authorizationToken.ValidateAuthenticationNeeded(
-                System.Threading.Thread.CurrentPrincipal.Identity.Name,
-                tempActionDTO))
+            if (!_authorizationToken.ValidateAuthenticationNeeded(userId, tempActionDTO))
             {
                 try
                 {

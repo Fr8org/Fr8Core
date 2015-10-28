@@ -120,7 +120,7 @@ namespace DockyardTest.Services
         public async void Action_Configure_WithNullActionTemplate_ThrowsArgumentNullException()
         {
             var _service = new Action();
-            await _service.Configure(null);
+            await _service.Configure(null, null);
         }
 
         [Test]

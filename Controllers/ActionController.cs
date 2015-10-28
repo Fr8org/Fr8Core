@@ -61,7 +61,10 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var result = await _action.CreateAndConfigure(uow, actionTemplateId, name, label, parentNodeId, createRoute);
+                var userId = User.Identity.GetUserId();
+
+                var result = await _action.CreateAndConfigure(uow, userId,
+                    actionTemplateId, name, label, parentNodeId, createRoute);
 
                 if (result is ActionDO)
                 {
@@ -82,6 +85,8 @@ namespace HubWeb.Controllers
         [Route("create")]
         public async Task<IHttpActionResult> Create(string solutionName)
         {
+            var userId = User.Identity.GetUserId();
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 int actionTemplateId = uow.ActivityTemplateRepository.GetAll().
@@ -91,7 +96,8 @@ namespace HubWeb.Controllers
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
                 }
 
-                var result = await _action.CreateAndConfigure(uow, actionTemplateId, "Solution", null, null, true);
+                var result = await _action.CreateAndConfigure(uow, userId,
+                    actionTemplateId, "Solution", null, null, true);
                 return Ok(_route.MapRouteToDto(uow, (RouteDO)result));
             }
         }
@@ -110,9 +116,11 @@ namespace HubWeb.Controllers
                 return Ok(curActionDesignDTO);
             }
 
+            var userId = User.Identity.GetUserId();
+
             curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            ActionDTO actionDTO = (await _action.Configure(curActionDO)).Item1;
+            ActionDTO actionDTO = (await _action.Configure(userId, curActionDO)).Item1;
             return Ok(actionDTO);
         }
 
