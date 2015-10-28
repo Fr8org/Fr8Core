@@ -1,10 +1,10 @@
 ﻿using System.Web.Http;
-using Core.StructureMap;
 using Data.Infrastructure.AutoMapper;
+using Hub.StructureMap;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Infrastructure.StructureMap;
 
-using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
+using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
 
 namespace terminalDocuSign
 {

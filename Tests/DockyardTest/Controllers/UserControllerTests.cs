@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Http.Results;
 using System.Web.Mvc;
-using Data.Entities;
-using Data.Interfaces;
-using Data.States;
-using Core.Services;
-using Web.Controllers;
-using Web.ViewModels;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
+using Data.Entities;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using DockyardTest.Controllers.Api;
+using Data.States;
+using Hub.Services;
+using HubWeb.Controllers;
+using HubWeb.ViewModels;
+using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using System.Web.Http.Results;
+using DockyardTest.Controllers.Api;
 
 namespace DockyardTest.Controllers
 {

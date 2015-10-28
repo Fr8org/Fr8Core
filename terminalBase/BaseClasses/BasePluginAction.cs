@@ -5,19 +5,19 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
-using Core.Services;
-using Data.Constants;
 using Newtonsoft.Json;
 using StructureMap;
-using Core.Enums;
-using Core.Interfaces;
-using Core.Managers;
+using Data.Constants;
 using Data.Entities;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
+using Hub.Enums;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Services;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
-using Data.Interfaces;
 
 namespace TerminalBase.BaseClasses
 {
@@ -465,8 +465,8 @@ namespace TerminalBase.BaseClasses
             var crates = Crate.GetCratesByManifestType(
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, crateStorage);
 
-            var fieldValues = Crate.GetElementByKey(crates, key: fieldKey, keyFieldName: "Key")
-                .Select(e => (string)e["Value"])
+            var fieldValues = Crate.GetElementByKey(crates, key: fieldKey, keyFieldName: "key")
+                .Select(e => (string)e["value"])
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
 

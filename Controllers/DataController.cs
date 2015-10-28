@@ -1,17 +1,17 @@
-﻿using Data.Entities;
-using Data.Interfaces;
-using Data.Validations;
-using Core.Services;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Validations;
+using Hub.Services;
 using Utilities;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     public class DataController : Controller
     {

@@ -1,8 +1,8 @@
-﻿using Core.Interfaces;
-using Core.Managers.APIManagers.Packagers;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using StructureMap;
+using Hub.Interfaces;
+using Hub.Managers.APIManagers.Packagers;
 using UtilitiesTesting;
 
 namespace DockyardTest.Services

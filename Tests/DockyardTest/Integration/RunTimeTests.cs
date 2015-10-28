@@ -1,14 +1,16 @@
 ﻿using System;
-﻿using Core.Managers.APIManagers.Transmitters.Plugin;
-﻿using Core.Services;
-﻿using Data.Entities;
-﻿using Data.Interfaces;
-﻿using Newtonsoft.Json;
+﻿﻿using Newtonsoft.Json;
 ﻿using NUnit.Framework;
 ﻿using StructureMap;
-﻿using UtilitiesTesting;
+﻿using Data.Entities;
+﻿using Data.Interfaces;
+﻿using Hub.Managers.APIManagers.Transmitters.Plugin;
+﻿using Hub.Services;
+using UtilitiesTesting;
 ﻿using UtilitiesTesting.Fixtures;
-﻿using File = System.IO.File;
+﻿
+using File = System.IO.File;
+
 
 namespace DockyardTest.Integration
 {

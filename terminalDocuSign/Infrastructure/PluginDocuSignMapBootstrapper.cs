@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Web.Http;
+using DocuSign.Integrations.Client;
 using Microsoft.Owin.Hosting;
 using Owin;
-using StructureMap.Configuration.DSL;
-using terminalDocuSign.Infrastructure;
-using Core.Interfaces;
-using Core.Services;
 using StructureMap;
+using StructureMap.Configuration.DSL;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using DocuSign.Integrations.Client;
+using Hub.Interfaces;
+using Hub.Services;
+using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 
-using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
+using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
 
 namespace terminalDocuSign.Infrastructure.StructureMap
 {

@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using TerminalBase.Infrastructure;
-using System.IO;
-using System.Threading.Tasks;
-using terminalExcel.Infrastructure;
-using Core.Exceptions;
+using Hub.Exceptions;
+using Hub.Interfaces;
 using TerminalBase.BaseClasses;
-using AutoMapper;
-using Core.Interfaces;
+using TerminalBase.Infrastructure;
+using terminalExcel.Infrastructure;
 
 namespace terminalExcel.Actions
 {

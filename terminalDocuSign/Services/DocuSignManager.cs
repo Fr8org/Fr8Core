@@ -1,11 +1,11 @@
-﻿using Core.Managers;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using StructureMap;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Services

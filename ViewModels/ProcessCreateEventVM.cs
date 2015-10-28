@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ViewModel.Models
+namespace HubWeb.ViewModels
 {
     public class ProcessCreateEventVM
     {

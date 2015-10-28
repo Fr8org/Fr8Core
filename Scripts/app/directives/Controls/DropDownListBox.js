@@ -9,7 +9,7 @@ var dockyard;
             function DropDownListBox() {
                 var controller = ['$scope', function ($scope) {
                         $scope.setSelectedItem = function (item) {
-                            $scope.field.value = item.Value;
+                            $scope.field.value = item.value || item.Value;
                             $scope.selectedItem = item;
                             // Invoke onChange event handler
                             if ($scope.change != null && angular.isFunction($scope.change)) {
@@ -18,7 +18,7 @@ var dockyard;
                         };
                         var findAndSetSelectedItem = function () {
                             for (var i = 0; i < $scope.field.listItems.length; i++) {
-                                if ($scope.field.value == $scope.field.listItems[i].Value) {
+                                if ($scope.field.value == $scope.field.listItems[i].value || $scope.field.listItems[i].Value) {
                                     $scope.selectedItem = $scope.field.listItems[i];
                                     break;
                                 }

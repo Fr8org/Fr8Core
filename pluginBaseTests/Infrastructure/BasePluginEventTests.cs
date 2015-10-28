@@ -1,8 +1,8 @@
 ﻿using System;
-using Core.Managers.APIManagers.Transmitters.Restful;
-using Data.Interfaces.DataTransferObjects;
 using Moq;
 using NUnit.Framework;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using UtilitiesTesting;
 using Utilities.Configuration.Azure;
 

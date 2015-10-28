@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
-using Core.ExternalServices;
-using Twilio;
-using Utilities.Configuration.Azure;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using Twilio;
+using Hub.ExternalServices;
+using Utilities.Configuration.Azure;
 
 namespace terminalTwilio.Services
 {

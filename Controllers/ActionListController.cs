@@ -5,14 +5,14 @@ using System.Web.Http.Description;
 using System.Web.Http.Results;
 using AutoMapper;
 using StructureMap;
-using Core.Interfaces;
-using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Web.ViewModels;
+using Hub.Interfaces;
+using Hub.Services;
+using HubWeb.ViewModels;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [RoutePrefix("api/actionList")]
 	public class ActionListController: ApiController

@@ -1,14 +1,14 @@
 using System;
-using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using AutoMapper;
-using Data.Entities;
-using Newtonsoft.Json;
-using System.Reflection;
-using TerminalBase.BaseClasses;
 using System.Collections.Generic;
-using Core.Services;
+using System.Reflection;
+using System.Web.Http;
+using AutoMapper;
+using Newtonsoft.Json;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Hub.Services;
+using TerminalBase.BaseClasses;
 using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Controllers

@@ -1,10 +1,12 @@
 ﻿using System;
-using Core.Services;
 using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
-using Account = DocuSign.Integrations.Client.Account;
+using Hub.Services;
 using terminalDocuSign.Services;
 using terminalDocuSign.Infrastructure;
+
+using Account = DocuSign.Integrations.Client.Account;
+
 
 namespace terminalDocuSign.Tests
 {

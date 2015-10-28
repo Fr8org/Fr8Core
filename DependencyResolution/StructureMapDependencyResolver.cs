@@ -18,7 +18,7 @@
 using System.Web.Http.Dependencies;
 using StructureMap;
 
-namespace Web.DependencyResolution
+namespace HubWeb.DependencyResolution
 {
     /// <summary>
     /// The structure map dependency resolver.

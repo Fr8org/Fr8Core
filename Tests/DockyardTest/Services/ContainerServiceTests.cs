@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
-using InternalInterface = Core.Interfaces;
-using Core.Interfaces;
+using InternalInterface = Hub.Interfaces;
+using Hub.Interfaces;
 // This alias is used to avoid ambiguity between StructureMap.Container and Core.Services.Container
-using InternalClass = Core.Services;
-using Core.Services;
+using InternalClass = Hub.Services;
+using Hub.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
