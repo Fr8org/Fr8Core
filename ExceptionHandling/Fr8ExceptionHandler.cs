@@ -2,7 +2,7 @@
 using System.Web.Http.ExceptionHandling;
 using Data.Interfaces.DataTransferObjects;
 
-namespace Web.ExceptionHandling
+namespace HubWeb.ExceptionHandling
 {
     public partial class Fr8ExceptionHandler : ExeceptionHandler
     {

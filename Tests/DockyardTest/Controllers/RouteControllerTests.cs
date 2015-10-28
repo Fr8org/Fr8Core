@@ -8,14 +8,14 @@ using System.Web.Http.Results;
 using NUnit.Framework;
 using StructureMap;
 using StructureMap.AutoMocking;
-using Core.Interfaces;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Web.Controllers;
 
 namespace DockyardTest.Controllers
 {

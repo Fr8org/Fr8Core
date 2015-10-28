@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using Daemons.EventExposers;
-using Core.ExternalServices;
+using Hub.ExternalServices;
 using Utilities.Logging;
 
 namespace Daemons

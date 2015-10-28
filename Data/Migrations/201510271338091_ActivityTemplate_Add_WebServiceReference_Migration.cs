@@ -6,8 +6,7 @@ namespace Data.Migrations
 	{
 		public override void Up()
 		{
-			AddColumn("dbo.ActivityTemplate", "WebServiceId", c => c.Int(nullable: false));
-			Sql(SqlHelper.DropDefaultConstraint(table: "dbo.ActivityTemplate", column: "WebServiceId"));
+			AddColumn("dbo.ActivityTemplate", "WebServiceId", c => c.Int(nullable: true));
 			CreateIndex("dbo.ActivityTemplate", "WebServiceId");
 			AddForeignKey("dbo.ActivityTemplate", "WebServiceId", "dbo.WebServices", "Id");
 		}

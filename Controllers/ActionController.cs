@@ -10,17 +10,17 @@ using AutoMapper;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using StructureMap;
-using Core.Interfaces;
-using Core.Managers;
-using Core.Services;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Services;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [RoutePrefix("actions")]
     public class ActionController : ApiController
@@ -54,14 +54,17 @@ namespace Web.Controllers
         }
 
 
+
         [HttpPost]
-        [Fr8ApiAuthorize]
+        //[Fr8ApiAuthorize]
         [Route("create")]
         public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var result = await _action.CreateAndConfigure(uow, actionTemplateId, name, label, parentNodeId, createRoute);
+                var userId = User.Identity.GetUserId();
+
+                var result = await _action.CreateAndConfigure(uow, userId, actionTemplateId, name, label, parentNodeId, createRoute);
 
                 if (result is ActionDO)
                 {
@@ -82,6 +85,8 @@ namespace Web.Controllers
         [Route("create")]
         public async Task<IHttpActionResult> Create(string solutionName)
         {
+            var userId = User.Identity.GetUserId();
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 int actionTemplateId = uow.ActivityTemplateRepository.GetAll().
@@ -91,7 +96,8 @@ namespace Web.Controllers
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
                 }
 
-                var result = await _action.CreateAndConfigure(uow, actionTemplateId, "Solution", null, null, true);
+                var result = await _action.CreateAndConfigure(uow, userId,
+                    actionTemplateId, "Solution", null, null, true);
                 return Ok(_route.MapRouteToDto(uow, (RouteDO)result));
             }
         }
@@ -105,14 +111,9 @@ namespace Web.Controllers
         //[ResponseType(typeof(CrateStorageDTO))]
         public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
         {
-            if (_authorization.ValidateAuthenticationNeeded(User.Identity.GetUserId(), curActionDesignDTO))
-            {
-                return Ok(curActionDesignDTO);
-            }
-
             curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            ActionDTO actionDTO = (await _action.Configure(curActionDO)).Item1;
+            ActionDTO actionDTO = await _action.Configure(User.Identity.GetUserId(), curActionDO);
             return Ok(actionDTO);
         }
 
@@ -151,35 +152,27 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var resultActionDO = _action.SaveOrUpdateAction(uow, submittedActionDO);
-                var activityTemplateDO = uow.ActivityTemplateRepository.GetByKey(resultActionDO.ActivityTemplateId);
-                resultActionDO.ActivityTemplate = activityTemplateDO;
-               
-                if (curActionDTO.IsTempId)
-                {
-                    ObjectFactory.GetInstance<ISubroute>().AddAction(uow, resultActionDO); // append action to the Subroute
-                }
-
                 var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
 
                 return Ok(resultActionDTO);
             }
         }
 
-        /// <summary>
-        /// POST : updates the given action
-        /// </summary>
-        [HttpPost]
-        [Route("update")]
-        public IHttpActionResult Update(ActionDTO curActionDTO)
-        {
-            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                _action.Update(uow, submittedActionDO);
-            }
-
-            return Ok();
-        }    
+//        /// <summary>
+//        /// POST : updates the given action
+//        /// </summary>
+//        [HttpPost]
+//        [Route("update")]
+//        public IHttpActionResult Update(ActionDTO curActionDTO)
+//        {
+//            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
+//
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                await _action.SaveUpdateAndConfigure(uow, submittedActionDO);
+//            }
+//
+//            return Ok();
+//        }    
     }
 }

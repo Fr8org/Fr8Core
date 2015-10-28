@@ -23,7 +23,7 @@ namespace terminalDocuSign.Tests.Actions
         public Monitor_DocuSignTests()
         {
             base.SetUp();
-            PluginDocuSignMapBootstrapper.ConfigureDependencies(Core.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
+            PluginDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
             PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
 

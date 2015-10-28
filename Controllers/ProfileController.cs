@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Core.Managers;
-using Web.ViewModels;
-using StructureMap;
+using Hub.Managers;
+using HubWeb.ViewModels;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     public class ProfileController : Controller
     {

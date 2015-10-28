@@ -1,16 +1,16 @@
-﻿using Data.Interfaces;
-using Core.Managers;
-using Core.Services;
-using StructureMap;
-using Utilities;
-using Data.Entities;
+﻿using System;
 using System.Collections.Generic;
-using System;
-using Utilities.Logging;
 using System.Web.Http;
-using Core.Interfaces;
+using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Services;
+using Utilities;
+using Utilities.Logging;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {    
     public class ReportController : ApiController
     {

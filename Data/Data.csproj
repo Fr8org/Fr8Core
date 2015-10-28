@@ -355,21 +355,21 @@
     <Compile Include="Migrations\201510230242497_FixUp_2_Migration.Designer.cs">
       <DependentUpon>201510230242497_FixUp_2_Migration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.cs" />
-    <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.Designer.cs">
-      <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
+    <Compile Include="Migrations\201510252034017_AddTagsToActivityTemplateDO.cs" />
+    <Compile Include="Migrations\201510252034017_AddTagsToActivityTemplateDO.Designer.cs">
+      <DependentUpon>201510252034017_AddTagsToActivityTemplateDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs" />
     <Compile Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.Designer.cs">
       <DependentUpon>201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201510252034017_AddTagsToActivityTemplateDO.cs" />
-    <Compile Include="Migrations\201510252034017_AddTagsToActivityTemplateDO.Designer.cs">
-      <DependentUpon>201510252034017_AddTagsToActivityTemplateDO.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201510271826316_MERGE_Migration.cs" />
     <Compile Include="Migrations\201510271826316_MERGE_Migration.Designer.cs">
       <DependentUpon>201510271826316_MERGE_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.cs" />
+    <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.Designer.cs">
+      <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -636,17 +636,17 @@
     <EmbeddedResource Include="Migrations\201510230242497_FixUp_2_Migration.resx">
       <DependentUpon>201510230242497_FixUp_2_Migration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201510261339053_CreateWebServicesTable_Migration.resx">
-      <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201510252034017_AddTagsToActivityTemplateDO.resx">
+      <DependentUpon>201510252034017_AddTagsToActivityTemplateDO.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.resx">
       <DependentUpon>201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201510252034017_AddTagsToActivityTemplateDO.resx">
-      <DependentUpon>201510252034017_AddTagsToActivityTemplateDO.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510271826316_MERGE_Migration.resx">
       <DependentUpon>201510271826316_MERGE_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510261339053_CreateWebServicesTable_Migration.resx">
+      <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
