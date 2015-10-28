@@ -11,7 +11,7 @@ module dockyard.directives.radioButtonGroup {
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class RadioButtonGroup implements ng.IDirective {
         public link: (scope: IRadioButtonGroupScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public template = '<div ng-repeat="radio in field.radios"><radio-button-option group-name="{{field.groupName}}" change-selection="changeSelection(radio)" currentAction="currentAction" field="radio"></radio-button-option></div>';
+        public template = '<div ng-repeat="radio in field.radios"><div class="radio-button-group-content"> <radio-button-option group-name="{{field.groupName}}" change-selection="changeSelection(radio)" currentAction="currentAction" field="radio"></radio-button-option></div></div>';
         public controller: ($scope: IRadioButtonGroupScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
             currentAction: '=',

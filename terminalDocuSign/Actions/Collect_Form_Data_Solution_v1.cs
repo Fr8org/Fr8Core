@@ -29,16 +29,11 @@ namespace terminalDocuSign.Actions
             public ActionUi()
             {
                 Controls = new List<ControlDefinitionDTO>();
-                Controls.Add(new TextBlockControlDefinitionDTO
+                Controls.Add(new TextAreaDefinitionDTO
                 {
+                    IsReadOnly = true,
                     Label = "",
-                    Value = "Fr8 Solutions for DocuSign"
-                });
-
-                Controls.Add(new TextBlockControlDefinitionDTO
-                {
-                    Label = "",
-                    Value = "Use DocuSign to collect information"
+                    Value = "<h4><b>Fr8 Solutions for DocuSign</b><img height=\"30px\" src=\"/Content/icons/web_services/DocuSign-Logo.png\" align=\"right\"></h4><p>Use DocuSign to collect information</p>"
                 });
 
                 Controls.Add(new RadioButtonGroupControlDefinitionDTO
@@ -144,7 +139,6 @@ namespace terminalDocuSign.Actions
             
             controls.ClonePropertiesFrom(Crate.GetStandardConfigurationControls(curActionDTO.CrateStorage.CrateDTO.First(x => x.ManifestId == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID)));
             
-            var finalActionTemplateId = controls.FinalActionsList.Value;
             var action = Mapper.Map<ActionDO>(curActionDTO);
 
             action.ChildNodes = new List<RouteNodeDO>();
@@ -171,19 +165,24 @@ namespace terminalDocuSign.Actions
 
                 action.ChildNodes.Add(firstAction);
             }
-          
-            var finalAction = new ActionDO
-            {
-                ActivityTemplateId = int.Parse(finalActionTemplateId),
-                IsTempId = true,
-                CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
-                CreateDate = DateTime.Now,
-                Ordering = 2,
-                Name = "Final action"
-            };
-            
-            action.ChildNodes.Add(finalAction);
 
+            int finalActionTemplateId;
+
+            if (int.TryParse(controls.FinalActionsList.Value, out finalActionTemplateId))
+            {
+                var finalAction = new ActionDO
+                {
+                    ActivityTemplateId = finalActionTemplateId,
+                    IsTempId = true,
+                    CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
+                    CreateDate = DateTime.Now,
+                    Ordering = 2,
+                    Name = "Final action"
+                };
+
+                action.ChildNodes.Add(finalAction);
+            }
+            
             return Mapper.Map<ActionDTO>(action);
         }
         

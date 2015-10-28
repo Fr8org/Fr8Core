@@ -82,6 +82,7 @@
     }
 
     export class TextAreaControlDefinitionDTO extends ControlDefinitionDTO {
+        isReadOnly:boolean;
     }
 
     export class MappingPaneControlDefinitionDTO extends ControlDefinitionDTO {

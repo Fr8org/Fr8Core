@@ -36,6 +36,7 @@ namespace Data.Interfaces.DataTransferObjects
         public const string FieldList = "FieldList";
         public const string Button = "Button";
         public const string TextSource = "TextSource";
+        public const string TextArea = "TextArea";
     }
 
     public class CheckBoxControlDefinitionDTO : ControlDefinitionDTO
@@ -104,6 +105,17 @@ namespace Data.Interfaces.DataTransferObjects
         public GenericControlDefinitionDTO()
         {
             Type = ControlTypes.TextBox; // Yes, default to TextBox
+        }
+    }
+
+    public class TextAreaDefinitionDTO : ControlDefinitionDTO
+    {
+        [JsonProperty("isReadOnly")]
+        public bool IsReadOnly { get; set; }
+
+        public TextAreaDefinitionDTO () : 
+            base(ControlTypes.TextArea)
+        {
         }
     }
 

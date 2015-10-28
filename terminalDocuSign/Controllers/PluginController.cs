@@ -79,7 +79,7 @@ namespace terminalDocuSign.Controllers
                 Version = "1",
                 Category = ActivityCategory.Solution,
                 Plugin = plugin,
-                MinPaneWidth = 330
+                MinPaneWidth = 380
             };
 
             var actionList = new List<ActivityTemplateDO>()
