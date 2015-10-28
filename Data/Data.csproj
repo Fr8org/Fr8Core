@@ -359,6 +359,10 @@
     <Compile Include="Migrations\201510252034017_AddTagsToActivityTemplateDO.Designer.cs">
       <DependentUpon>201510252034017_AddTagsToActivityTemplateDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs" />
+    <Compile Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.Designer.cs">
+      <DependentUpon>201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201510271826316_MERGE_Migration.cs" />
     <Compile Include="Migrations\201510271826316_MERGE_Migration.Designer.cs">
       <DependentUpon>201510271826316_MERGE_Migration.cs</DependentUpon>
@@ -634,6 +638,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510252034017_AddTagsToActivityTemplateDO.resx">
       <DependentUpon>201510252034017_AddTagsToActivityTemplateDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.resx">
+      <DependentUpon>201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510271826316_MERGE_Migration.resx">
       <DependentUpon>201510271826316_MERGE_Migration.cs</DependentUpon>
