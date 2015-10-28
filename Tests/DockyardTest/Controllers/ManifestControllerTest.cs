@@ -1,4 +1,4 @@
-﻿using Core.Interfaces;
+﻿using Hub.Interfaces;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
@@ -103,7 +103,7 @@ namespace DockyardTest.Controllers
             var manifestController = CreateManifestController();
 
             //Act
-            int id = 20;
+            int id = 21;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
 
             var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
@@ -257,7 +257,7 @@ namespace DockyardTest.Controllers
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Status")), "Status Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Object")), "Object Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EventId")), "DeliveredDate Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("RecipientId")), "CompletedDate Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("RecepientId")), "RecepientId Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EnvelopeId")), "EnvelopeId Not Found");
         }
 

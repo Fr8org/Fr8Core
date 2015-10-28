@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
-using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
+using Hub.Managers;
 using terminalExcel.Actions;
 using terminalExcel.Fixtures;
 using terminalExcel.Infrastructure;
@@ -74,7 +74,7 @@ namespace pluginIntegrationTests
                 },
             };
 
-            var result = await new Extract_Data_v1().Run(curActionDTO);
+            var result = await new Load_Table_Data_v1().Run(curActionDTO);
             var payloadCrates = crate.GetCratesByManifestType(CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, result.CrateStorageDTO());
             var payloadDataMS = JsonConvert.DeserializeObject<StandardPayloadDataCM>(payloadCrates.First().Contents);
 

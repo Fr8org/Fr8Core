@@ -4,22 +4,22 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Owin;
+using Microsoft.Owin.Hosting;
 using Owin;
 using StructureMap;
-using Utilities.Configuration.Azure;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using Hub.Managers;
+using Hub.Services;
 using Utilities;
+using Utilities.Configuration.Azure;
 using Utilities.Logging;
-using Core.Services;
-using Core.Managers;
-using Microsoft.Owin.Hosting;
 
-[assembly: OwinStartup(typeof(Web.Startup))]
+[assembly: OwinStartup(typeof(HubWeb.Startup))]
 
-namespace Web
+namespace HubWeb
 {
     public partial class Startup
     {

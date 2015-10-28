@@ -4,14 +4,14 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using StructureMap;
-using Core.Interfaces;
-using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Web.ViewModels;
+using Hub.Interfaces;
+using Hub.Services;
+using HubWeb.ViewModels;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     public class AuthenticationCallbackController : Controller
     {

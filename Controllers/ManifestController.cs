@@ -1,5 +1,5 @@
-﻿using Core;
-using Core.Interfaces;
+﻿using Hub;
+using Hub.Interfaces;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -14,11 +14,11 @@ namespace Web.Controllers
     [RoutePrefix("manifest")]
     public class ManifestController : ApiController
     {
-        private Core.Interfaces.IManifest _manifest;
+        private IManifest _manifest;
 
         public ManifestController()
         {
-            _manifest = ObjectFactory.GetInstance<Core.Interfaces.IManifest>();
+            _manifest = ObjectFactory.GetInstance<IManifest>();
 
         }
 

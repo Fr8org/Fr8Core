@@ -1,5 +1,5 @@
-﻿using Core.Managers.APIManagers.Transmitters.Restful;
-using Moq;
+﻿using Moq;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using TerminalBase.Infrastructure;
 
 namespace pluginBaseTests.Infrastructure

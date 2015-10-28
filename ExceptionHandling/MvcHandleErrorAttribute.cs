@@ -2,12 +2,12 @@
 using System.IO;
 using System.Web;
 using System.Web.Mvc;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using StructureMap;
 using Utilities.Logging;
 
-namespace Web.ExceptionHandling
+namespace HubWeb.ExceptionHandling
 {
     public class MvcHandleErrorAttribute : HandleErrorAttribute
     {

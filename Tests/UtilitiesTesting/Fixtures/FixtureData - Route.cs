@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Core.Interfaces;
-using Core.Managers;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
-using StructureMap;
+using Hub.Interfaces;
+using Hub.Managers;
 using Utilities.Serializers.Json;
 
 namespace UtilitiesTesting.Fixtures

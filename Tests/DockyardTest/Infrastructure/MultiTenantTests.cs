@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
-using Core.Interfaces;
-using Core.StructureMap;
-using Data.Entities;
-using Data.Interfaces;
+using RestSharp.Serializers;
 using NUnit.Framework;
 using StructureMap;
+using Data.Entities;
+using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
+using Hub.Interfaces;
+using Hub.StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using RestSharp.Serializers;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces.Manifests;
-using System;
 
 namespace DockyardTest.Infrastructure
 {

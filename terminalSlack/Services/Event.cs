@@ -7,9 +7,9 @@ using System.Text.RegularExpressions;
 using System.Web;
 using Newtonsoft.Json;
 using StructureMap;
-using Core.Managers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Hub.Managers;
 using Utilities.Configuration.Azure;
 using terminalSlack.Interfaces;
 

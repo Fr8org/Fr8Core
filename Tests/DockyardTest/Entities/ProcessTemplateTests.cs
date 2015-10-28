@@ -1,11 +1,12 @@
 ﻿using System.Linq;
-using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Core.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Web.Controllers;
 

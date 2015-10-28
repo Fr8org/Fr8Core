@@ -1,21 +1,21 @@
-﻿using AutoMapper;
-using Data.Constants;
-using Data.Entities;
-using Newtonsoft.Json.Linq;
-using TerminalBase.Infrastructure;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Interfaces.DataTransferObjects;
+using System.Threading.Tasks;
+using AutoMapper;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Data.Constants;
+using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Enums;
 using TerminalBase;
 using Data.Interfaces.Manifests;
-using System.Threading.Tasks;
-using Core.Enums;
+using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
-using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {

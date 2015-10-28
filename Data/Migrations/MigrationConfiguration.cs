@@ -70,6 +70,8 @@ namespace Data.Migrations
 
             //AddAuthorizationTokens(uow);
             AddContainerDOForTestingApi(uow);
+
+	        AddWebServices(uow);
         }
 
         //Method to let us seed into memory as well
@@ -500,6 +502,31 @@ namespace Data.Migrations
                 name, version, endPoint, endPoint);
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
         }
+
+	    private void AddWebServices(IUnitOfWork uow)
+	    {
+			AddWebService(uow, "AWS", "/Content/icons/web_services/aws-icon-64x64.png");
+			AddWebService(uow, "Slack", "/Content/icons/web_services/slack-icon-64x64.png");
+			AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
+
+			uow.SaveChanges();
+	    }
+
+	    private void AddWebService(IUnitOfWork uow, string name, string iconPath)
+	    {
+		    var isWsExists = uow.WebServiceRepository.GetQuery().Any(x => x.Name == name);
+
+		    if (!isWsExists)
+		    {
+				var webServiceDO = new WebServiceDO
+				{
+					Name = name,
+					IconPath = iconPath
+				};
+
+				uow.WebServiceRepository.Add(webServiceDO);
+		    }
+	    }
 
 
         //Getting random working time within next 3 days

@@ -5,11 +5,11 @@ using System.Security.Principal;
 using System.Web.Http;
 using NUnit.Framework;
 using StructureMap;
-using Core.Managers;
-using Core.StructureMap;
 using Data.Infrastructure.AutoMapper;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Hub.Managers;
+using Hub.StructureMap;
 
 namespace terminalTwilio.Tests
 {

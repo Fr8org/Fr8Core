@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Configuration;
 using System.Diagnostics;
-using Core.Managers.APIManagers.Transmitters.Restful;
-using Data.Interfaces;
-using NUnit.Framework;
-using terminalAzure;
 using StructureMap;
+using Data.Interfaces;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using NUnit.Framework;
 using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Utilities.Configuration.Azure;
+using terminalAzure;
 
 namespace terminalAzure.Tests
 {

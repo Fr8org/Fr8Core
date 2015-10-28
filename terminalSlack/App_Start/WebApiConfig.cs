@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using Core.StructureMap;
+using StructureMap;
+using Hub.StructureMap;
 using TerminalBase;
 using TerminalBase.BaseClasses;
-using StructureMap;
 
 namespace terminalSlack
 {

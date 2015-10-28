@@ -1,6 +1,4 @@
-﻿using Core.Interfaces;
-using Core.Managers.APIManagers.Transmitters.Restful;
-using Data.Crates.Helpers;
+﻿using Data.Crates.Helpers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
@@ -10,6 +8,8 @@ using System.Configuration;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Hub.Interfaces;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities.Configuration.Azure;
 
 namespace TerminalBase.Infrastructure

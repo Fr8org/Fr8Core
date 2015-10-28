@@ -4,17 +4,17 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using Core.Exceptions;
-using Core.Interfaces;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Microsoft.AspNet.Identity;
-using StructureMap;
+using Hub.Exceptions;
+using Hub.Interfaces;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
     [RoutePrefix("routes")]
