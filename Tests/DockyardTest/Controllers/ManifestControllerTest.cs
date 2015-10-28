@@ -256,7 +256,7 @@ namespace DockyardTest.Controllers
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Status")), "Status Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Object")), "Object Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EventId")), "DeliveredDate Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EventId")), "EventId Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("RecepientId")), "RecepientId Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EnvelopeId")), "EnvelopeId Not Found");
         }
@@ -292,23 +292,7 @@ namespace DockyardTest.Controllers
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Subscriptions")), "Subscriptions Not Found");
         }
 
-        [Test,Ignore]
-        public void Check_StandardAuthenticationCM()
-        {
-            //Arrange
-            var manifestController = CreateManifestController();
-
-            //Act
-            int id = 12;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
-            ////Assert
-            Assert.NotNull(fieldsList);
-        }
-
-        //Not defined
-
-        [Test, Ignore]
+        [Test]
         public void Check_StandardConfigurationControlsCM()
         {
             //Arrange
@@ -323,21 +307,6 @@ namespace DockyardTest.Controllers
            
         }
 
-        [Test, Ignore]
-        public void Check_StandardDesignTimeFieldsCM()
-        {
-            //Arrange
-            var manifestController = CreateManifestController();
-
-            //Act
-            int id = 1;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
-            ////Assert
-            Assert.NotNull(fieldsList);
-        }
-
-     
         [Test]
         public void Check_StandardFileHandleMS()
         {

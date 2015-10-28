@@ -25,6 +25,8 @@ namespace Hub.Services
             _curManifestDictionary = CrateManifests.MANIFEST_CLASS_MAPPING_DICTIONARY;
         }
 
+        // Use the reflection and get the properties of manifest class. 
+        // Create the designTime fields from fetched properties and send it to client.
         public CrateDTO GetById(int id)
         {
             CrateDTO crateDTO = null;
@@ -36,7 +38,6 @@ namespace Hub.Services
             {
                 var curAssemblyName = "Data";
                 string fullyQualifiedName = string.Format("{0}.Interfaces.Manifests.{1}", curAssemblyName, manifestAssemblyName);
-
                 Assembly assembly = Assembly.Load(curAssemblyName);
                 Type cuAssemblyType = assembly.GetType(fullyQualifiedName);
 
@@ -48,6 +49,7 @@ namespace Hub.Services
 
                 Type curReturnType = curMethodName.ReturnType;
 
+                // use reflection and Invoke base class method of manifest.
                 if (curReturnType == typeof(List<FieldDTO>))
                 {
                     List<FieldDTO> curFieldDTO = (List<FieldDTO>)curMethodName.Invoke(curObject, new Object[] { cuAssemblyType });

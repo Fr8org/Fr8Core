@@ -37,13 +37,26 @@ namespace Data.Interfaces.Manifests
             var curProperties = curType.GetProperties();
             var curPropertiesList = new List<FieldDTO>();
 
-            foreach (var item in curProperties)
+            foreach (var property in curProperties)
             {
-                curPropertiesList.Add(new FieldDTO()
+                if (property.PropertyType.IsGenericType)
                 {
-                    Key = item.Name,
-                    Value = item.PropertyType.Name,
-                });
+                    curPropertiesList.Add(new FieldDTO()
+                    {
+                        Key = property.Name,
+                        Value = property.PropertyType.FullName
+                    });
+                }
+                else
+                {
+                    curPropertiesList.Add(new FieldDTO()
+
+                    {
+                        Key = property.Name,
+                        Value = property.PropertyType.Name,
+                    });
+                }
+                
             }
             return curPropertiesList;
         }
