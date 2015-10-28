@@ -48,7 +48,7 @@
     *@
     <div ng-if='field.type == "@ControlTypes.DropDownList"'>
         <label class='control-label'>{{::field.label}}</label>
-        <drop-down-list-box field='field' change='onChange'></drop-down-list-box>
+        <drop-down-list-box field='field' change='onChange' data-field-name='{{::field.name}}'></drop-down-list-box>
     </div>  
     
     @*

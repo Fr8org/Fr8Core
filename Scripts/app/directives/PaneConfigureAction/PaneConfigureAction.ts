@@ -261,7 +261,6 @@ module dockyard.directives.paneConfigureAction {
                         return;
                     }
 
-                    debugger;
                     $scope.currentAction.configurationControls =
                     crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
 
