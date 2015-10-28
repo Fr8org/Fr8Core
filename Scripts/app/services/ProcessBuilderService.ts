@@ -62,7 +62,7 @@ module dockyard.services {
     */
 
     app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
-        <IRouteService>$resource('/routes/:id', { id: '@id'},
+        <IRouteService>$resource('/routes/:id', { id: '@id' },
             {
                 'getFull': {
                     method: 'GET',
@@ -80,7 +80,7 @@ module dockyard.services {
                         status: '@status'
                     }
                 },
-               
+
                 'execute': {
                     method: 'POST',
                     isArray: false,
@@ -116,6 +116,20 @@ module dockyard.services {
     */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
         <IDocuSignTriggerService>$resource('/route/triggersettings')
+    ]);
+
+    app.factory('ActionTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
+        <IActionService>$resource('/actiontemplates/', null,
+            {
+                'available': {
+                    method: 'GET',
+                    isArray: true,
+                    url: '/route_nodes/available',
+                    params: {
+                        tag: '@tag'
+                    }
+                }
+            })
     ]);
 
     /* 

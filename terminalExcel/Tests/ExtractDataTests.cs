@@ -63,7 +63,7 @@ namespace terminalExcel.PluginExcelTests
                 },
             };
 
-            var result = new Extract_Data_v1().ConfigurationEvaluator(curActionDTO);
+            var result = new Load_Table_Data_v1().ConfigurationEvaluator(curActionDTO);
 
             Assert.AreEqual(result, TerminalBase.Infrastructure.ConfigurationRequestType.Initial);
         }

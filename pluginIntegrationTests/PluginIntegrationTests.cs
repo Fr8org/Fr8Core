@@ -22,6 +22,7 @@ using terminalDocuSign;
 using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Infrastructure.AutoMapper;
+using System.Security.Principal;
 
 namespace pluginIntegrationTests
 {
@@ -62,6 +63,7 @@ namespace pluginIntegrationTests
 
             _processTemplateDO = FixtureData.Route_PluginIntegration();
             _processTemplateDO.Fr8Account = _testUserAccount;
+            System.Threading.Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(_testUserAccount.Id), new string[] { "User" });
 
             _subrouteDO = FixtureData.Subroute_PluginIntegration();
             _subrouteDO.ParentRouteNode = _processTemplateDO;

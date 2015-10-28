@@ -83,7 +83,6 @@ namespace pluginBaseTests.BaseClasses
             //Arrange
             object[] parameters = new object[] { FixtureData.FieldDefinitionDTO1() };
 
-            ;
             //Act
             var result = (CrateDTO)ClassMethod.Invoke(typeof(BasePluginAction), "PackControlsCrate", parameters);
 

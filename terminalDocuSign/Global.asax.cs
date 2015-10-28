@@ -12,6 +12,9 @@ namespace terminalDocuSign
     {
         protected void Application_Start()
         {
+            var formatters = GlobalConfiguration.Configuration.Formatters;
+            formatters.Remove(formatters.XmlFormatter);
+
             GlobalConfiguration.Configure(WebApiConfig.Register);
 				DataAutoMapperBootStrapper.ConfigureAutoMapper();
 				PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
