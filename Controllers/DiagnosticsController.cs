@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Web.Mvc;
+using Segment;
+using StructureMap;
 using Daemons;
 using Data.Entities;
 using Data.Interfaces;
-using Core.ExternalServices;
-using Core.Managers;
-using Core.Services;
-using Web.ViewModels;
-using Segment;
-using StructureMap;
+using Hub.ExternalServices;
+using Hub.Managers;
+using Hub.Services;
+using HubWeb.ViewModels;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
 	[ DockyardAuthorize( Roles = "Booker" ) ]
     public class DiagnosticsController : Controller

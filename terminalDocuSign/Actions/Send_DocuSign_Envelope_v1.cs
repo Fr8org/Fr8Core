@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Enums;
+using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using DocuSign.Integrations.Client;
+using Hub.Enums;
 using TerminalBase.Infrastructure;
 using Utilities;
 using terminalDocuSign.DataTransferObjects;
@@ -194,14 +194,14 @@ namespace terminalDocuSign.Actions
             }
 
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
-
+            
             // Try to find Configuration_Controls.
             var stdCfgControlMS = Crate.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
             {
                 return curActionDTO;
             }
-
+            
             // Try to find DocuSignTemplate drop-down.
             var dropdownControlDTO = stdCfgControlMS.FindByName("target_docusign_template");
             if (dropdownControlDTO == null)
@@ -211,7 +211,7 @@ namespace terminalDocuSign.Actions
 
             // Get DocuSign Template Id
             var docusignTemplateId = dropdownControlDTO.Value;
-
+            
             // Get Template
             var docuSignEnvelope = new DocuSignEnvelope(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
             var envelopeDataDTO = docuSignEnvelope.GetEnvelopeDataByTemplate(docusignTemplateId).ToList();
@@ -226,12 +226,12 @@ namespace terminalDocuSign.Actions
             {
                 new FieldDTO() { Key = "recipient", Value = "recipient" }
             };
-
+            
             var crateUserDefinedDTO = Crate.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateUserDefinedFields",
                 userDefinedFields.ToArray()
             );
-
+            
             var crateStandardDTO = Crate.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateStandardFields",
                 standartFields.ToArray()
@@ -260,7 +260,7 @@ namespace terminalDocuSign.Actions
                     ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
                 }
             };
-
+            
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,

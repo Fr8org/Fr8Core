@@ -1,7 +1,7 @@
 ﻿using Data.Infrastructure;
 using Data.States;
 
-namespace Web.NotificationQueues
+namespace HubWeb.NotificationQueues
 {
     public class HighPriorityIncidentsQueue : SharedNotificationQueue<HighPriorityIncidentData>
     {

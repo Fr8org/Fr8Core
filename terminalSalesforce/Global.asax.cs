@@ -1,5 +1,5 @@
-﻿using Data.Infrastructure.AutoMapper;
-using System.Web.Http;
+﻿using System.Web.Http;
+using Data.Infrastructure.AutoMapper;
 
 namespace terminalSalesforce
 {
@@ -10,7 +10,7 @@ namespace terminalSalesforce
             GlobalConfiguration.Configure(WebApiConfig.Register);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             // StructureMap Dependencies configuration
-            Core.StructureMap.StructureMapBootStrapper.ConfigureDependencies(Core.StructureMap.StructureMapBootStrapper.DependencyType.LIVE);
+            Hub.StructureMap.StructureMapBootStrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.LIVE);
         }
     }
 }

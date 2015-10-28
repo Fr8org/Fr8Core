@@ -1,11 +1,11 @@
 ﻿using System;
+using StructureMap;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Core.Services;
-using StructureMap;
+using Hub.Services;
 using Utilities;
 
-namespace Web.NotificationQueues
+namespace HubWeb.NotificationQueues
 {
     public class BookingRequestReservedForUserQueue : SharedNotificationQueue<NewBookingRequestForUserQueueData>
     {

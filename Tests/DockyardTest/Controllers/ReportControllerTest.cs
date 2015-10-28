@@ -1,17 +1,16 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http.Results;
-using Core.Managers;
-using Data.Interfaces;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Hub.Managers;
+using HubWeb.Controllers;
+using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Web.Controllers;
-using Data.Entities;
-using System.Collections.Generic;
-using Utilities;
-using Newtonsoft.Json;
-
 
 namespace DockyardTest.Controllers
 {

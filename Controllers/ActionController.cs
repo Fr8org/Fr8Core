@@ -10,17 +10,17 @@ using AutoMapper;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using StructureMap;
-using Core.Interfaces;
-using Core.Managers;
-using Core.Services;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Services;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [RoutePrefix("actions")]
     public class ActionController : ApiController
@@ -62,7 +62,9 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var result = await _action.CreateAndConfigure(uow, actionTemplateId, name, label, parentNodeId, createRoute);
+                var userId = User.Identity.GetUserId();
+
+                var result = await _action.CreateAndConfigure(uow, userId, actionTemplateId, name, label, parentNodeId, createRoute);
 
                 if (result is ActionDO)
                 {
@@ -83,6 +85,8 @@ namespace Web.Controllers
         [Route("create")]
         public async Task<IHttpActionResult> Create(string solutionName)
         {
+            var userId = User.Identity.GetUserId();
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 int actionTemplateId = uow.ActivityTemplateRepository.GetAll().
@@ -92,7 +96,8 @@ namespace Web.Controllers
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
                 }
 
-                var result = await _action.CreateAndConfigure(uow, actionTemplateId, "Solution", null, null, true);
+                var result = await _action.CreateAndConfigure(uow, userId,
+                    actionTemplateId, "Solution", null, null, true);
                 return Ok(_route.MapRouteToDto(uow, (RouteDO)result));
             }
         }
@@ -105,15 +110,10 @@ namespace Web.Controllers
         [Route("configure")]
         //[ResponseType(typeof(CrateStorageDTO))]
         public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
-            {
-            if (_authorization.ValidateAuthenticationNeeded(User.Identity.GetUserId(), curActionDesignDTO))
-                {
-                return Ok(curActionDesignDTO);
-            }
-
+        {
             curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            ActionDTO actionDTO = await _action.Configure(curActionDO);
+            ActionDTO actionDTO = await _action.Configure(User.Identity.GetUserId(), curActionDO);
             return Ok(actionDTO);
         }
 

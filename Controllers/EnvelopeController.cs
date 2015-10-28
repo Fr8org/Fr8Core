@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     public class EnvelopeController : Controller
     {

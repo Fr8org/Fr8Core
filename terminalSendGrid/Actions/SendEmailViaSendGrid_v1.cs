@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Core.Enums;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Hub.Enums;
 using TerminalBase.Infrastructure;
-using terminalSendGrid.Infrastructure;
 using TerminalBase.BaseClasses;
 using Utilities;
+using terminalSendGrid.Infrastructure;
 
 namespace terminalSendGrid.Actions
 {
