@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Web.Http;
-using Core.Interfaces;
-using Core.Services;
-using StructureMap.Configuration.DSL;
+using SendGrid;
 using StructureMap;
-using Core.StructureMap;
+using StructureMap.Configuration.DSL;
+using Hub.Interfaces;
+using Hub.Services;
+using Hub.StructureMap;
+using Utilities;
 using terminalSendGrid.Infrastructure;
 using terminalSendGrid.Services;
-using SendGrid;
-using Utilities;
 
 namespace terminalSendGrid
 {

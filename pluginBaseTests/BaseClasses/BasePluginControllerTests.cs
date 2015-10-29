@@ -1,7 +1,7 @@
 ﻿﻿using System;
 using UtilitiesTesting;
 using NUnit.Framework;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 using Data.Interfaces.DataTransferObjects;
 using UtilitiesTesting.Fixtures;
 using System.Threading.Tasks;

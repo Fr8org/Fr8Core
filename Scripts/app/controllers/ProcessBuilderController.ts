@@ -48,8 +48,6 @@ module dockyard.controllers {
             'ProcessBuilderService',
             'CrateHelper',
             '$filter',
-            '$modal',
-            '$window',
             'UIHelperService',
             'LayoutService'
         ];
@@ -65,8 +63,6 @@ module dockyard.controllers {
             private ProcessBuilderService: services.IProcessBuilderService,
             private CrateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
-            private $modal,
-            private $window: ng.IWindowService,
             private uiHelperService: services.IUIHelperService,
             private LayoutService: services.ILayoutService
             ) {
@@ -99,10 +95,6 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionRemoved],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
-            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_InternalAuthentication],
-                (event: ng.IAngularEvent, eventArgs: pca.InternalAuthenticationArgs) => this.PaneConfigureAction_InternalAuthentication(eventArgs));
-            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExternalAuthentication],
-                (event: ng.IAngularEvent, eventArgs: pca.InternalAuthenticationArgs) => this.PaneConfigureAction_ExternalAuthentication(eventArgs));
 
             //Process Select Action Pane events
             this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActivityTypeSelected],
@@ -207,6 +199,7 @@ module dockyard.controllers {
             var action = new model.ActionDTO(this.$scope.currentSubroute.id, id, true);
             action.name = activityTemplate.name;
             action.label = activityTemplate.label;
+            action.minPaneWidth = activityTemplate.minPaneWidth;
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();
             this.$scope.current.action.activityTemplateId = activityTemplate.id;
@@ -327,62 +320,6 @@ module dockyard.controllers {
                 );
         }
 
-        private PaneConfigureAction_InternalAuthentication(eventArgs: pca.InternalAuthenticationArgs) {
-            var self = this;
-
-            var modalScope = <any>this.$scope.$new(true);
-            modalScope.activityTemplateId = eventArgs.activityTemplateId;
-
-            this.$modal.open({
-                animation: true,
-                templateUrl: 'AngularTemplate/InternalAuthentication',
-                controller: 'InternalAuthenticationController',
-                scope: modalScope
-            })
-            .result
-            .then(function () {
-                self.$scope.$broadcast(
-                    pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]
-                );
-            });
-        }
-
-        private PaneConfigureAction_ExternalAuthentication(
-            eventArgs: pca.ExternalAuthenticationArgs) {
-
-            var self = this;
-
-            var messageListener = function (event) {
-                debugger;
-
-                if (!self.$scope || !event.data || event.data != 'external-auth-success') {
-                    return;
-                }
-
-                self.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);
-            };
-
-            this.$http
-                .get('/actions/auth_url?id=' + eventArgs.activityTemplateId)
-                .then(function (res) {
-                    var url = (<any>res.data).url;
-
-                    var childWindow = self.$window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
-
-                    window.addEventListener('message', messageListener);
-
-                    var isClosedHandler = function () {
-                        if (childWindow.closed) {
-                            window.removeEventListener('message', messageListener);
-                        }
-                        else {
-                            setTimeout(isClosedHandler, 500);
-                        }
-                    };
-                    
-                    setTimeout(isClosedHandler, 500);
-                });
-        }
     }
 
     app.run([
@@ -396,7 +333,7 @@ module dockyard.controllers {
                     activityTemplateId: 1,
                     id: 1,
                     isTempId: false,
-                    actionListId: 0
+                    childrenActions: null
                 };
 
             $httpBackend

@@ -15,7 +15,7 @@
         <div ng-repeat="group in actionGroups" layout-action-group class="action-group">
             <div class="action-arrow-bottom"></div>
             <div>
-                <div class="action" ng-repeat-start="action in group.actions">
+                <div class="action" ng-repeat-start="action in group.actions" ng-style="{'width' : action.activityTemplate.minPaneWidth || 330 + 'px'}">
                     <div class="action-header" dropdown transfer-click-configure-pane>
                         <p class="action-name">
                             {{action.label}}
@@ -32,7 +32,6 @@
                             </li>
                         </ul>
                     </div>
-
                     <pane-configure-action id="paneConfigureAction" current-action="action"></pane-configure-action>
                 </div>
                 <div class="action-arrow-right" ng-repeat-end></div>
@@ -46,14 +45,4 @@
     <!-- END MAIN CONTENT -->
 
     <pane-select-action></pane-select-action>
-
-    <!-- BEGIN SCRIPT REQUIREMENTS -->
-    <script type="text/javascript" src="@Url.Content("~/bower_components/fabric/dist/fabric.min.js")"></script>
-    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/core.js")"></script>
-    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-consts.js")"></script>
-    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-interfaces.js")"></script>
-    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-fabricjs-img.js")"></script>
-    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-resources.js")"></script>
-    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-widget.js")"></script>
-    <!-- END SCRIPT REQUIREMENTS -->
 </div>

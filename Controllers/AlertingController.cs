@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
-using Data.Interfaces;
-using Core.Managers;
-using Web.NotificationQueues;
 using StructureMap;
+using Data.Interfaces;
+using Hub.Managers;
+using HubWeb.NotificationQueues;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [DockyardAuthorize]
     public class AlertingController : Controller

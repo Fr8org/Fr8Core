@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Web.ViewModels
+namespace HubWeb.ViewModels
 {
     public class UserProfilesVM
     {

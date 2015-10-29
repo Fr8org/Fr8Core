@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Web.UI;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using StructureMap;
 
-namespace Web.Api
+namespace HubWeb.Api
 {
     public partial class GetEmailHTML : Page
     {

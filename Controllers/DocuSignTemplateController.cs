@@ -7,7 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
 	 //[Authorize]
 	 //public class DocuSignTemplateController : ApiController

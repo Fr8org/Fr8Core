@@ -18,10 +18,15 @@ angular.module('ui.bootstrap.tabs', [])
       if (tab.active && tab !== selectedTab) {
         tab.active = false;
         tab.onDeselect();
+        selectedTab.selectCalled = false;
       }
     });
     selectedTab.active = true;
-    selectedTab.onSelect();
+    // only call select if it has not already been called
+    if (!selectedTab.selectCalled) {
+      selectedTab.onSelect();
+      selectedTab.selectCalled = true;
+    }
   };
 
   ctrl.addTab = function addTab(tab) {
@@ -32,8 +37,7 @@ angular.module('ui.bootstrap.tabs', [])
       tab.active = true;
     } else if (tab.active) {
       ctrl.select(tab);
-    }
-    else {
+    } else {
       tab.active = false;
     }
   };
@@ -207,7 +211,7 @@ angular.module('ui.bootstrap.tabs', [])
       });
 
       scope.disabled = false;
-      if ( attrs.disable ) {
+      if (attrs.disable) {
         scope.$parent.$watch($parse(attrs.disable), function(value) {
           scope.disabled = !! value;
         });
@@ -217,7 +221,7 @@ angular.module('ui.bootstrap.tabs', [])
       // fix(tab): IE9 disabled attr renders grey text on enabled tab #2677
       // This code is duplicated from the lines above to make it easy to remove once
       // the feature has been completely deprecated
-      if ( attrs.disabled ) {
+      if (attrs.disabled) {
         $log.warn('Use of "disabled" attribute has been deprecated, please use "disable"');
         scope.$parent.$watch($parse(attrs.disabled), function(value) {
           scope.disabled = !! value;
@@ -225,7 +229,7 @@ angular.module('ui.bootstrap.tabs', [])
       }
 
       scope.select = function() {
-        if ( !scope.disabled ) {
+        if (!scope.disabled) {
           scope.active = true;
         }
       };
@@ -242,7 +246,7 @@ angular.module('ui.bootstrap.tabs', [])
   };
 }])
 
-.directive('tabHeadingTransclude', [function() {
+.directive('tabHeadingTransclude', function() {
   return {
     restrict: 'A',
     require: '^tab',
@@ -255,7 +259,7 @@ angular.module('ui.bootstrap.tabs', [])
       });
     }
   };
-}])
+})
 
 .directive('tabContentTransclude', function() {
   return {
@@ -278,14 +282,15 @@ angular.module('ui.bootstrap.tabs', [])
       });
     }
   };
+
   function isTabHeading(node) {
-    return node.tagName &&  (
+    return node.tagName && (
       node.hasAttribute('tab-heading') ||
       node.hasAttribute('data-tab-heading') ||
+      node.hasAttribute('x-tab-heading') ||
       node.tagName.toLowerCase() === 'tab-heading' ||
-      node.tagName.toLowerCase() === 'data-tab-heading'
+      node.tagName.toLowerCase() === 'data-tab-heading' ||
+      node.tagName.toLowerCase() === 'x-tab-heading'
     );
   }
-})
-
-;
+});

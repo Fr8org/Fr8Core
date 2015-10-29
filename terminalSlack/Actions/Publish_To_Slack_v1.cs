@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Enums;
 using Newtonsoft.Json;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase.Infrastructure;
+using Hub.Enums;
+using TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 
 namespace terminalSlack.Actions
 {
@@ -84,9 +84,12 @@ namespace terminalSlack.Actions
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (ValidateAuthentication(curActionDTO, AuthenticationMode.ExternalMode))
-                return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
-            return curActionDTO;
+            if (NeedsAuthentication(curActionDTO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)

@@ -304,15 +304,15 @@
       <Project>{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}</Project>
       <Name>Daemons</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\Core.csproj">
+    <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
-      <Name>Core</Name>
+      <Name>Hub</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\Core.csproj">
+    <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Core</Name>
     </ProjectReference>
@@ -320,9 +320,9 @@
       <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>
       <Name>terminalAzure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\pluginBase\PluginBase.csproj">
+    <ProjectReference Include="..\..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>PluginBase</Name>
+      <Name>TerminalBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\terminalFr8Core\terminalFr8Core.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
@@ -332,9 +332,9 @@
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
       <Name>terminalExcel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Web.csproj">
+    <ProjectReference Include="..\..\HubWeb.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
-      <Name>Web</Name>
+      <Name>HubWeb</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

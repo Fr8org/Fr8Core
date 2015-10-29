@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Core.Enums;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using PluginBase.Infrastructure;
-using terminalSendGrid.Infrastructure;
-using PluginBase.BaseClasses;
+using Hub.Enums;
+using TerminalBase.Infrastructure;
+using TerminalBase.BaseClasses;
 using Utilities;
+using terminalSendGrid.Infrastructure;
 
 namespace terminalSendGrid.Actions
 {
@@ -187,7 +187,7 @@ namespace terminalSendGrid.Actions
                     From = new EmailAddressDO
                     {
                         Address = fromAddress,
-                        Name = "fr8 Send Grid Plugin"
+                        Name = "Fr8 Operations"
                     },
 
                     Recipients = new List<RecipientDO>()

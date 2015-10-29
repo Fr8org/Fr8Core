@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using Data.Infrastructure;
 
-namespace Web.NotificationQueues
+namespace HubWeb.NotificationQueues
 {
     public class UserNotificationQueue : SharedNotificationQueue<UserNotificationData>
     {

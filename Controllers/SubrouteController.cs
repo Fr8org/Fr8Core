@@ -5,15 +5,15 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using Core.Interfaces;
+using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using StructureMap;
-using Web.ViewModels;
+using Hub.Interfaces;
+using HubWeb.ViewModels;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     /// <summary>
     /// Subroute web api controller to handle CRUD operations from frontend.
@@ -57,7 +57,7 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var subroute = Mapper.Map<SubrouteDO>(dto);
-                _subroute.Create(uow, subroute);
+                _subroute.Store(uow, subroute);
 
                 uow.SaveChanges();
 

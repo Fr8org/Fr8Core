@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -21,12 +22,12 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActionDO, ActionDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
-                .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(ad.CrateStorage)))
+                .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => ad.CrateStorage == null ? null : JsonConvert.DeserializeObject<CrateStorageDTO>(ad.CrateStorage)))
                 .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
                 .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
-                // commented out by yakov.gnusin, this breaks design-time process.
+                .ForMember(a => a.ChildrenActions, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActionDO>()))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate));
-                //.ForMember(a => a.ActivityTemplate, opts => opts.Ignore());
+                
 
             Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
@@ -35,7 +36,9 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                 .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
                 .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
+                .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActions(ad.ChildrenActions)))
                 .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId));
+
 
             Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
@@ -85,6 +88,21 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<FileDO, FileDTO>();
 
             Mapper.CreateMap<ContainerDO, ContainerDTO>();
+        }
+
+        private static List<RouteNodeDO> MapActions(IEnumerable<ActionDTO> actions)
+        {
+            var list = new List<RouteNodeDO>();
+
+            if (actions != null)
+            {
+                foreach (var actionDto in actions)
+                {
+                    list.Add(Mapper.Map<ActionDO>(actionDto));
+                }
+            }
+
+            return list;
         }
     }   
 }

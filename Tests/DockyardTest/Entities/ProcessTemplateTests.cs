@@ -1,13 +1,13 @@
 ﻿using System.Linq;
-using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using Web.Controllers;
+using Hub.Interfaces;
+using HubWeb.Controllers;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Entities
 {

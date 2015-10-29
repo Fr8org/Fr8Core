@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StructureMap;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using Core.Interfaces;
-using Core.Managers;
-using Core.Services;
-using StructureMap;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Services;
 using Utilities;
 
 namespace Daemons

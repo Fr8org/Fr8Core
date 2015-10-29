@@ -79,9 +79,7 @@ module dockyard.tests.controller {
                     activityTemplateId: 1,
                     isTempId: false,
                     id: 0,
-                    // ActionListId is set to null, since there is no ActionsLists on a blank db.
-                    actionListId: null,
-                    activityTemplate: utils.fixtures.ActivityTemplate.activityTemplateDO
+                    childrenActions: null
                 };
 
             postInvoker(done, actions);

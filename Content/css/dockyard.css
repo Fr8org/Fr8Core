@@ -6,6 +6,13 @@
     float: right;
 }
 
+.table-without-pagination .dataTables_length,
+.table-without-pagination .dataTables_filter,
+.table-without-pagination .dataTables_info,
+.table-without-pagination .dataTables_paginate{
+    display:none;
+}
+
 /* 
     This one is for Angular Bootstrap.
     More info: https://angular-ui.github.io/bootstrap/
@@ -150,10 +157,12 @@
                 rgba(0, 0, 0, 0.137255) 0px 1px 1px 0px,
                 rgba(0, 0, 0, 0.117647) 0px 2px 1px -1px;
     display: inline-block;
-    height: 300px;
-    
+    height: auto;
+    min-height: 330px;
+    margin-bottom: 5px;
     vertical-align: top;
     width: 330px;
+    white-space: initial;
 }
 
 .action-name {    
@@ -200,7 +209,8 @@
 
 .action .pane-configure-action {    
     padding: 5px;
-    height: 250px;
+    height: auto;
+    min-height: 250px;
     display: block;
     width: 100%;
 }
@@ -313,11 +323,11 @@ form.internal-authenticate-form {
     margin-left: 20px;
 }
 
-input[type=radio] + div.nested-controls {
+input[type=radio] ~ div.nested-controls {
     display: none;
 } 
 
-input[type=radio]:checked + div.nested-controls {
+input[type=radio]:checked ~ div.nested-controls {
     display: block;
 } 
 
@@ -340,3 +350,32 @@ input[type=radio]:checked + div.nested-controls {
     padding-top: 3px; 
     padding-bottom: 3px;
 }
+ 
+
+/*Class to display the text block properly*/
+.TextBlockClass
+{
+    display: block;
+    width: 100%;
+    height: auto;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+.readOnlyTextArea div.ta-editor {
+    min-height: initial;
+    border-style:none;
+    height: auto;
+    overflow: auto;
+    padding: initial;
+    box-shadow:none;
+ }
+
+.radio-button-group-content {
+    margin-left: 20px;
+}
+
+.readOnlyTextArea .ta-scroll-window.form-control { height: auto; min-height: initial !important; padding:initial !important }
+.readOnlyTextArea .ta-editor.ta-html { min-height: initial !important; }
+.readOnlyTextArea .ta-scroll-window > .ta-bind { min-height: initial !important; padding:initial !important  }

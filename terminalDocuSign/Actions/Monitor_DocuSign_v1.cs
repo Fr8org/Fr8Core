@@ -1,34 +1,35 @@
-﻿﻿using AutoMapper;
+﻿using AutoMapper;
 using Data.Entities;
-using PluginBase.Infrastructure;
+using TerminalBase.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase;
+using TerminalBase;
 using DocuSign.Integrations.Client;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {
     public class Monitor_DocuSign_v1 : BasePluginAction
     {
-        // TODO: remove this as of DO-1064.
-        // IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
-        // IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
+        DocuSignManager _docuSignManager = new DocuSignManager();
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
-                return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationEvaluator(actionDo));
-            return curActionDTO;
+            if (NeedsAuthentication(curActionDTO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }
 
         public ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
@@ -41,6 +42,18 @@ namespace terminalDocuSign.Actions
             }
 
             return ConfigurationRequestType.Followup;
+        }
+
+        protected CrateDTO PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
+        {
+            var template = new DocuSignTemplate();
+
+            var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
+            var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();
+            var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
+                "Available Templates",
+                fields);
+            return createDesignTimeFields;
         }
 
         private string GetSelectedTemplateId(ActionDTO curActionDTO)
@@ -155,7 +168,7 @@ namespace terminalDocuSign.Actions
             }
 
             var crateControls = PackCrate_ConfigurationControls();
-            var crateDesignTimeFields = PackCrate_TemplateNames(docuSignAuthDTO);
+            var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             var eventFields = PackCrate_DocuSignEventFields();
 
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
@@ -199,9 +212,35 @@ namespace terminalDocuSign.Actions
                     {
                         Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", curEventFields.Fields.ToArray())
                     });
+
+                UpdateSelectedEvents(curActionDTO);
             }
 
             return Task.FromResult(curActionDTO);
+        }
+
+        /// <summary>
+        /// Updates event subscriptions list by user checked check boxes.
+        /// </summary>
+        /// <remarks>The configuration controls include check boxes used to get the selected DocuSign event subscriptions</remarks>
+        private void UpdateSelectedEvents(ActionDTO curActionDTO)
+        {
+            //get the config controls manifest
+            var curConfigControlsCrate = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
+
+            //get selected check boxes (i.e. user wanted to subscribe these DocuSign events to monitor for)
+            var curSelectedDocuSignEvents =
+                curConfigControlsCrate.Controls
+                    .Where(configControl => configControl.Type.Equals(ControlTypes.CheckBox) && configControl.Selected)
+                    .Select(checkBox => checkBox.Label.Replace(" ", ""));
+
+            //create standard event subscription crate with user selected DocuSign events
+            var curEventSubscriptionCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions",
+                curSelectedDocuSignEvents.ToArray());
+
+            //replace the existing crate with new event subscription crate
+            Crate.ReplaceCratesByManifestType(curActionDTO.CrateStorage.CrateDTO,
+                CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME, new List<CrateDTO> {curEventSubscriptionCrate});
         }
 
         private CrateDTO PackCrate_EventSubscriptions(
@@ -228,22 +267,6 @@ namespace terminalDocuSign.Actions
 
         private CrateDTO PackCrate_ConfigurationControls()
         {
-            var fieldSelectDocusignTemplate = new DropDownListControlDefinitionDTO()
-            {
-                Label = "Select DocuSign Template",
-                Name = "Selected_DocuSign_Template",
-                Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Templates",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
-                }
-            };
-
             var fieldEnvelopeSent = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Envelope Sent",
@@ -285,7 +308,7 @@ namespace terminalDocuSign.Actions
             };
 
             return PackControlsCrate(
-                fieldSelectDocusignTemplate,
+                _docuSignManager.CreateDocuSignTemplatePicker(true),
                 fieldEnvelopeSent,
                 fieldEnvelopeReceived,
                 fieldRecipientSigned,

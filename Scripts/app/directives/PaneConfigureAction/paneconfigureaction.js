@@ -15,9 +15,9 @@ var dockyard;
             (function (MessageType) {
                 MessageType[MessageType["PaneConfigureAction_ActionUpdated"] = 0] = "PaneConfigureAction_ActionUpdated";
                 MessageType[MessageType["PaneConfigureAction_ActionRemoved"] = 1] = "PaneConfigureAction_ActionRemoved";
-                MessageType[MessageType["PaneConfigureAction_InternalAuthentication"] = 2] = "PaneConfigureAction_InternalAuthentication";
-                MessageType[MessageType["PaneConfigureAction_ExternalAuthentication"] = 3] = "PaneConfigureAction_ExternalAuthentication";
-                MessageType[MessageType["PaneConfigureAction_Reconfigure"] = 4] = "PaneConfigureAction_Reconfigure";
+                MessageType[MessageType["PaneConfigureAction_Reconfigure"] = 2] = "PaneConfigureAction_Reconfigure";
+                MessageType[MessageType["PaneConfigureAction_RenderConfiguration"] = 3] = "PaneConfigureAction_RenderConfiguration";
+                MessageType[MessageType["PaneConfigureAction_ChildActionsDetected"] = 4] = "PaneConfigureAction_ChildActionsDetected";
             })(paneConfigureAction.MessageType || (paneConfigureAction.MessageType = {}));
             var MessageType = paneConfigureAction.MessageType;
             var ActionUpdatedEventArgs = (function (_super) {
@@ -76,11 +76,14 @@ var dockyard;
             //More detail on creating directives in TypeScript: 
             //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
             var PaneConfigureAction = (function () {
-                function PaneConfigureAction(ActionService, crateHelper, $filter, $timeout) {
+                function PaneConfigureAction(ActionService, crateHelper, $filter, $timeout, $modal, $window, $http) {
                     this.ActionService = ActionService;
                     this.crateHelper = crateHelper;
                     this.$filter = $filter;
                     this.$timeout = $timeout;
+                    this.$modal = $modal;
+                    this.$window = $window;
+                    this.$http = $http;
                     this.templateUrl = '/AngularTemplate/PaneConfigureAction';
                     this.scope = {
                         currentAction: '='
@@ -100,6 +103,10 @@ var dockyard;
                         $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], function () {
                             loadConfiguration();
                         });
+                        $scope.$on(MessageType[MessageType.PaneConfigureAction_RenderConfiguration], 
+                        //Allow some time for parent and current action instance to sync
+                        //Allow some time for parent and current action instance to sync
+                        function () { return $timeout(function () { return processConfiguration(); }, 300); });
                         // Get configuration settings template from the server if the current action does not contain those             
                         if ($scope.currentAction.activityTemplateId > 0) {
                             if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
@@ -164,7 +171,6 @@ var dockyard;
                         // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
                         // We parse its contents and put it into currentAction.configurationControls structure.
                         function loadConfiguration() {
-                            debugger;
                             // Block pane and show pane-level 'loading' spinner
                             $scope.processing = true;
                             if ($scope.configurationWatchUnregisterer) {
@@ -172,11 +178,29 @@ var dockyard;
                             }
                             ActionService.configure($scope.currentAction).$promise
                                 .then(function (res) {
+                                if (res.childrenActions && res.childrenActions.length > 0) {
+                                    // If the directive is used for configuring solutions,
+                                    // the SolutionController would listen to this event 
+                                    // and redirect user to the ProcessBuilder once if is received.
+                                    // It means that solution configuration is complete. 
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
+                                }
                                 $scope.currentAction.crateStorage = res.crateStorage;
                                 $scope.processConfiguration();
                             })
-                                .catch(function () {
-                                alert('Error while retrieving configuration.');
+                                .catch(function (result) {
+                                var errorText = 'Something went wrong. Click to retry.';
+                                if (result.status && result.status >= 400) {
+                                    // Bad http response
+                                    errorText = 'Configuration loading error. Click to retry.';
+                                }
+                                else if (result.message) {
+                                    // Exception was thrown in the code
+                                    errorText = result.message;
+                                }
+                                var control = new dockyard.model.TextBlock(errorText, 'well well-lg alert-danger');
+                                $scope.currentAction.configurationControls = new dockyard.model.ControlsList();
+                                $scope.currentAction.configurationControls.fields = [control];
                             })
                                 .finally(function () {
                                 // Unblock pane
@@ -192,11 +216,11 @@ var dockyard;
                                 var authMS = angular.fromJson(authCrate.contents);
                                 // Dockyard auth mode.
                                 if (authMS.Mode == 1) {
-                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_InternalAuthentication], new InternalAuthenticationArgs($scope.currentAction.activityTemplateId));
+                                    StartInternalAuthentication($scope.currentAction.activityTemplateId);
                                 }
                                 else {
                                     // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ExternalAuthentication], new ExternalAuthenticationArgs($scope.currentAction.activityTemplateId));
+                                    StartExternalAuthentication($scope.currentAction.activityTemplateId);
                                 }
                                 return;
                             }
@@ -206,14 +230,51 @@ var dockyard;
                                 $scope.configurationWatchUnregisterer = $scope.$watch(function (scope) { return $scope.currentAction.configurationControls; }, $scope.onConfigurationChanged, true);
                             }, 1000);
                         }
+                        function StartInternalAuthentication(activityTemplateId) {
+                            var self = this;
+                            var modalScope = $scope.$new(true);
+                            modalScope.activityTemplateId = activityTemplateId;
+                            $modal.open({
+                                animation: true,
+                                templateUrl: 'AngularTemplate/InternalAuthentication',
+                                controller: 'InternalAuthenticationController',
+                                scope: modalScope
+                            })
+                                .result.then(function () { return loadConfiguration(); });
+                        }
+                        function StartExternalAuthentication(activityTemplateId) {
+                            var self = this;
+                            var messageListener = function (event) {
+                                if (!self.$scope || !event.data || event.data != 'external-auth-success') {
+                                    return;
+                                }
+                                loadConfiguration();
+                            };
+                            $http
+                                .get('/authentication/initial_url?id=' + activityTemplateId)
+                                .then(function (res) {
+                                var url = res.data.url;
+                                var childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
+                                window.addEventListener('message', messageListener);
+                                var isClosedHandler = function () {
+                                    if (childWindow.closed) {
+                                        window.removeEventListener('message', messageListener);
+                                    }
+                                    else {
+                                        setTimeout(isClosedHandler, 500);
+                                    }
+                                };
+                                setTimeout(isClosedHandler, 500);
+                            });
+                        }
                     };
                 }
                 //The factory function returns Directive object as per Angular requirements
                 PaneConfigureAction.Factory = function () {
-                    var directive = function (ActionService, crateHelper, $filter, $timeout) {
-                        return new PaneConfigureAction(ActionService, crateHelper, $filter, $timeout);
+                    var directive = function (ActionService, crateHelper, $filter, $timeout, $modal, $window, $http) {
+                        return new PaneConfigureAction(ActionService, crateHelper, $filter, $timeout, $modal, $window, $http);
                     };
-                    directive['$inject'] = ['ActionService', 'CrateHelper', '$filter', '$timeout'];
+                    directive['$inject'] = ['ActionService', 'CrateHelper', '$filter', '$timeout', '$modal', '$window', '$http'];
                     return directive;
                 };
                 return PaneConfigureAction;
