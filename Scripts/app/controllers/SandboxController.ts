@@ -197,7 +197,7 @@ module dockyard.controllers {
                     parentRouteNodeId: 1,
                     id: 1,
                     isTempId: false,
-                    activityTemplateId: 1,
+                    activityTemplate: null,
                     childrenActions: null
                 };
 
