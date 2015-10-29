@@ -65,7 +65,7 @@ namespace DockyardTest.Controllers
             int id = 19;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
 
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("CreateDate")), "CreateDate Not found");
@@ -87,7 +87,7 @@ namespace DockyardTest.Controllers
             int id = 20;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
 
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("CreatedDate")) ,"CreatedDate Not found");
@@ -106,7 +106,7 @@ namespace DockyardTest.Controllers
             int id = 21;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
 
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("CreatedDate")), "CreatedDate Not found");
@@ -124,7 +124,7 @@ namespace DockyardTest.Controllers
             //Act
             int id = 22;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("StartDate")), "StartDate Not Found");
@@ -137,7 +137,7 @@ namespace DockyardTest.Controllers
 
         
         [Test]
-        public void Check_Fr8TerminalCM()
+        public void Check_StandardFr8TerminalCM()
         {
             //Arrange
             var manifestController = CreateManifestController();
@@ -145,7 +145,7 @@ namespace DockyardTest.Controllers
             //Act
             int id = 23;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Definition")), "Definition Not Found");
@@ -162,7 +162,7 @@ namespace DockyardTest.Controllers
             //Act
             int id = 17;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Queries")), "Queries Not Found");
@@ -178,7 +178,7 @@ namespace DockyardTest.Controllers
             //Act
             int id = 18;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("MessageID")), "MessageID Not Found");
@@ -201,7 +201,7 @@ namespace DockyardTest.Controllers
             //Act
             int id = 13;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Item")), "Item Not Found");
@@ -215,7 +215,7 @@ namespace DockyardTest.Controllers
             //Act
             int id = 16;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("AuthenticateAs")), "AuthenticateAs Not Found");
@@ -230,7 +230,7 @@ namespace DockyardTest.Controllers
             //Act
             int id = 14;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Status")), "Status Not Found");
@@ -251,7 +251,7 @@ namespace DockyardTest.Controllers
             //Act
             int id = 15;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Status")), "Status Not Found");
@@ -270,7 +270,7 @@ namespace DockyardTest.Controllers
             //Act
             int id = 7;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EventNames")), "EventNames Not Found");
@@ -286,7 +286,7 @@ namespace DockyardTest.Controllers
             //Act
             int id = 8;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Subscriptions")), "Subscriptions Not Found");
@@ -301,7 +301,7 @@ namespace DockyardTest.Controllers
             //Act
             int id = 6;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
            
@@ -316,7 +316,7 @@ namespace DockyardTest.Controllers
             //Act
             int id = 10;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("DockyardStorageUrl")), "DockyardStorageUrl Not Found");
@@ -333,7 +333,7 @@ namespace DockyardTest.Controllers
             //Act
             int id = 5;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("PayloadObjects")), "PayloadObjects Not Found");
@@ -349,7 +349,7 @@ namespace DockyardTest.Controllers
             //Act
             int id = 11;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Directive")), "Directive Not Found");
@@ -367,13 +367,17 @@ namespace DockyardTest.Controllers
             //Act
             int id = 9;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
-            var fieldsList = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Table")), "Table Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("FirstRowHeaders")), "FirstRowHeaders Not Found");
         }
 
+        private static StandardDesignTimeFieldsCM Deserialize(OkNegotiatedContentResult<CrateDTO> actionResult)
+        {
+            return JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+        }
 
         private static ManifestController CreateManifestController()
         {

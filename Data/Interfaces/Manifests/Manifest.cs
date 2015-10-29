@@ -30,36 +30,5 @@ namespace Data.Interfaces.Manifests
         {
             ManifestType = manifestType;
         }
-
-        // Using reflection fetching the names of property.
-        public List<FieldDTO> GetProperties(Type curType)
-        {
-            var curProperties = curType.GetProperties();
-            var curPropertiesList = new List<FieldDTO>();
-
-            foreach (var property in curProperties)
-            {
-                if (property.PropertyType.IsGenericType)
-                {
-                    curPropertiesList.Add(new FieldDTO()
-                    {
-                        Key = property.Name,
-                        Value = property.PropertyType.FullName
-                    });
-                }
-                else
-                {
-                    curPropertiesList.Add(new FieldDTO()
-
-                    {
-                        Key = property.Name,
-                        Value = property.PropertyType.Name,
-                    });
-                }
-                
-            }
-            return curPropertiesList;
-        }
-
     }
 }

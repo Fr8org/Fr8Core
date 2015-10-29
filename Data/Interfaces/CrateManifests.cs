@@ -146,7 +146,7 @@ namespace Data.Interfaces
             },
             {
                 23, 
-                "Fr8TerminalCM"
+                "StandardFr8TerminalCM"
             },
             {
                 24, 

@@ -277,7 +277,7 @@
     <Compile Include="Interfaces\Manifests\StandardFr8RoutesCM .cs" />
     <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignEventCM.cs" />
-    <Compile Include="Interfaces\Manifests\Fr8TerminalCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardFr8TerminalCM.cs" />
     <Compile Include="Interfaces\Manifests\Manifest.cs" />
     <Compile Include="Interfaces\Manifests\StandardAuthenticationCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardConfigurationControlsCM.cs" />

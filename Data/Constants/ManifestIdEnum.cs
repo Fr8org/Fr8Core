@@ -69,8 +69,8 @@ namespace Data.Constants
         [Display(Name = "Standard Parsing Record")]
         StandardParsingRecord = 22,
 
-        [Display(Name = "Fr8 Terminal")]
-        Fr8Terminal = 23,
+        [Display(Name = "Standard Fr8 Terminal")]
+        StandardFr8Terminal = 23,
 
         [Display(Name = "Standard File List")]
         StandardFileList = 24

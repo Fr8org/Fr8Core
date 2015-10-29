@@ -11,17 +11,18 @@ using System.Reflection;
 using Hub.Interfaces;
 using Newtonsoft.Json;
 using StructureMap;
+using Utilities;
 
 namespace Hub.Services
 {
     public class Manifest : IManifest
     {
-        private readonly ICrateManager _curCrate;
+        private readonly ICrateManager _curCrateManager;
         private readonly Dictionary<int, string> _curManifestDictionary;
 
         public Manifest()
         {
-            _curCrate = ObjectFactory.GetInstance<ICrateManager>();
+            _curCrateManager = ObjectFactory.GetInstance<ICrateManager>();
             _curManifestDictionary = CrateManifests.MANIFEST_CLASS_MAPPING_DICTIONARY;
         }
 
@@ -44,20 +45,41 @@ namespace Hub.Services
                 if (cuAssemblyType == null)
                     throw new ArgumentException(manifestAssemblyName);
 
-                MethodInfo curMethodName = cuAssemblyType.GetMethod("GetProperties");
-                var curObject = Activator.CreateInstance(cuAssemblyType);
+                PropertyInfo[] propertyInfo = ReflectionHelper.GetProperties(cuAssemblyType);
+                List<FieldDTO> curFieldDTO = convertPropertyToFields(propertyInfo);
 
-                Type curReturnType = curMethodName.ReturnType;
-
-                // use reflection and Invoke base class method of manifest.
-                if (curReturnType == typeof(List<FieldDTO>))
-                {
-                    List<FieldDTO> curFieldDTO = (List<FieldDTO>)curMethodName.Invoke(curObject, new Object[] { cuAssemblyType });
-                    crateDTO = _curCrate.CreateDesignTimeFieldsCrate(manifestAssemblyName, curFieldDTO.ToArray());
-                }
+                crateDTO = _curCrateManager.CreateDesignTimeFieldsCrate(manifestAssemblyName, curFieldDTO.ToArray());
             }
 
             return crateDTO;
+        }
+
+        // Convert all properties to FieldDTO
+        public List<FieldDTO> convertPropertyToFields( PropertyInfo[]  curProperties)
+        {
+            var curPropertiesList = new List<FieldDTO>();
+            foreach (var property in curProperties)
+            {
+                if (property.PropertyType.IsGenericType)
+                {
+                    curPropertiesList.Add(new FieldDTO()
+                    {
+                        Key = property.Name,
+                        Value = property.PropertyType.FullName
+                    });
+                }
+                else
+                {
+                    curPropertiesList.Add(new FieldDTO()
+
+                    {
+                        Key = property.Name,
+                        Value = property.PropertyType.Name,
+                    });
+                }
+
+            }
+            return curPropertiesList;
         }
     }
 }

@@ -11,7 +11,7 @@ using AutoMapper;
 
 namespace Web.Controllers
 {
-    [RoutePrefix("manifest")]
+    [RoutePrefix("manifests")]
     public class ManifestController : ApiController
     {
         private IManifest _manifest;
