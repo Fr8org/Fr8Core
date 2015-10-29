@@ -48,7 +48,7 @@ namespace DockyardTest.Controllers
                 uow.RouteRepository.Add(route);
 
                 var subroute = FixtureData.TestSubrouteDO1();
-                uow.SubrouteRepository.Add(subroute);
+                uow.RouteNodeRepository.Add(subroute);
                 uow.SaveChanges();
 
                 //Arrange is done with empty action list
@@ -81,7 +81,7 @@ namespace DockyardTest.Controllers
                 uow.RouteRepository.Add(route);
 
                 var subroute = FixtureData.TestSubrouteDO1();
-                uow.SubrouteRepository.Add(subroute);
+                uow.RouteNodeRepository.Add(subroute);
 
                 //Arrange
                 //Add one test action
