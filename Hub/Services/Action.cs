@@ -43,11 +43,11 @@ namespace Hub.Services
 
         public ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO submittedActionData)
         {
-            var action = SaveAndUpdateRecursive(uow, submittedActionData, new List<ActionDO>());
+            var action = SaveAndUpdateRecursive(uow, submittedActionData, null, new List<ActionDO>());
 
             action.ParentRouteNode = submittedActionData.ParentRouteNode;
             action.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
-
+          
             uow.SaveChanges();
 
             return uow.ActionRepository.GetByKey(submittedActionData.Id);
@@ -116,7 +116,7 @@ namespace Hub.Services
             existingAction.CrateStorage = submittedAction.CrateStorage;
         }
 
-        private ActionDO SaveAndUpdateRecursive(IUnitOfWork uow, ActionDO submittedAction, List<ActionDO> pendingConfiguration)
+        private ActionDO SaveAndUpdateRecursive(IUnitOfWork uow, ActionDO submittedAction, ActionDO parent, List<ActionDO> pendingConfiguration)
         {
             ActionDO existingAction;
 
@@ -136,11 +136,18 @@ namespace Hub.Services
                     submittedAction.ActivityTemplate = uow.ActivityTemplateRepository.GetByKey(submittedAction.ActivityTemplateId.Value);
                 }
 
-                // Assign Ordering.
                 RouteNodeDO subroute = null;
-                if (submittedAction.ParentRouteNodeId != null)
+
+                if (parent == null)
                 {
-                    subroute = uow.RouteNodeRepository.GetByKey(submittedAction.ParentRouteNodeId);
+                    if (submittedAction.ParentRouteNodeId != null)
+                    {
+                        subroute = uow.RouteNodeRepository.GetByKey(submittedAction.ParentRouteNodeId);
+                    }
+                }
+                else
+                {
+                    subroute = parent;
                 }
 
                 if (subroute == null)
@@ -149,7 +156,7 @@ namespace Hub.Services
                 }
 
                 submittedAction.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
-
+                
                 // Add Action to repo.
                 uow.ActionRepository.Add(submittedAction);
 
@@ -160,7 +167,7 @@ namespace Hub.Services
                 {
                     newAction.ParentRouteNodeId = null;
                     newAction.ParentRouteNode = null;
-                    var newChild = SaveAndUpdateRecursive(uow, newAction, pendingConfiguration);
+                    var newChild = SaveAndUpdateRecursive(uow, newAction, existingAction, pendingConfiguration);
                     existingAction.ChildNodes.Add(newChild);
                 }
             }
@@ -191,7 +198,7 @@ namespace Hub.Services
                 {
                         newAction.ParentRouteNodeId = null;
                         newAction.ParentRouteNode = null;
-                        var newChild = SaveAndUpdateRecursive(uow, newAction, pendingConfiguration);
+                        var newChild = SaveAndUpdateRecursive(uow, newAction, existingAction, pendingConfiguration);
                     existingAction.ChildNodes.Add(newChild);
                 }
 
@@ -206,7 +213,7 @@ namespace Hub.Services
                 // We just update those children that haven't changed (exists both in newChildren and currentChildren)
                     foreach (var actionToUpdate in newChildren.Where(x => !x.Value.IsTempId && currentChildren.ContainsKey(x.Key)))
                 {
-                        SaveAndUpdateRecursive(uow, actionToUpdate.Value, pendingConfiguration);
+                        SaveAndUpdateRecursive(uow, actionToUpdate.Value, existingAction, pendingConfiguration);
                 }
             }
             }
@@ -233,7 +240,9 @@ namespace Hub.Services
                 ActivityTemplate = template,
                 Name = name,
                 Label = label,
-                CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO())
+                CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
+                Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1
+
             };
 
             uow.ActionRepository.Add(action);
