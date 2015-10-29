@@ -185,14 +185,12 @@ module dockyard.directives.paneConfigureAction {
                     }
                     else {
                         var fieldEvent = eventHandlerList[0];
-
                         if (fieldEvent.handler != null) {
                             crateHelper.mergeControlListCrate(
                                 scope.currentAction.configurationControls,
                                 scope.currentAction.crateStorage
                             );
                             scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
-                
                             loadConfiguration();
                         }
                     }
@@ -249,13 +247,13 @@ module dockyard.directives.paneConfigureAction {
 
                         // Dockyard auth mode.
                         if (authMS.Mode == 1) {
-                            StartInternalAuthentication($scope.currentAction.activityTemplateId);
+                            startInternalAuthentication($scope.currentAction.activityTemplateId);
                         }
 
                         // External auth mode.                           
                         else {
                             // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                            StartExternalAuthentication($scope.currentAction.activityTemplateId);
+                            startExternalAuthentication($scope.currentAction.activityTemplateId);
                         }
 
                         return;
@@ -272,7 +270,7 @@ module dockyard.directives.paneConfigureAction {
                     }, 1000);
                 }
 
-                function StartInternalAuthentication(activityTemplateId: number) {
+                function startInternalAuthentication(activityTemplateId: number) {
                     var self = this;
 
                     var modalScope = <any>$scope.$new(true);
@@ -287,7 +285,7 @@ module dockyard.directives.paneConfigureAction {
                         .result.then(() => loadConfiguration());
                 }
 
-                function StartExternalAuthentication(activityTemplateId: number) {
+                function startExternalAuthentication(activityTemplateId: number) {
                     var self = this;
 
                     var messageListener = function (event) {

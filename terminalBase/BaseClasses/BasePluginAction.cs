@@ -383,6 +383,28 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
+        /// Allows to retrieve a configuration control from crate storage.
+        /// </summary>
+        /// <param name="curCrateStorage">Crate storage.</param>
+        /// <param name="controlName">Control name.</param>
+        protected T GetStdConfigurationControl<T>(IEnumerable<CrateDTO> curCrateStorage, string controlName)
+            where T : ControlDefinitionDTO
+        {
+            try
+            {
+                var controlsCrate = curCrateStorage.FirstOrDefault(
+                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                if (controlsCrate == null) return null;
+                var controls = Crate.GetStandardConfigurationControls(controlsCrate).Controls;
+                return controls.SingleOrDefault(c => c.Name == controlName) as T;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Extract value from RadioButtonGroup where specific value or upstream field was specified.
         /// </summary>
         protected string ExtractSpecificOrUpstreamValue(

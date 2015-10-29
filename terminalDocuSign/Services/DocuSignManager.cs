@@ -58,5 +58,38 @@ namespace terminalDocuSign.Services
                 fields);
             return createDesignTimeFields;
         }
+
+        /// <summary>
+        /// Extracts fields from a DocuSign envelope.
+        /// </summary>
+        /// <param name="docuSignTemplateId">DocuSign TemplateId.</param>
+        /// <param name="docuSignAuthDTO">DocuSign authentication token.</param>
+        /// <param name="curActionDTO">ActionDTO object representing the current action. The crate with extracted 
+        /// fields will be added to this Action replacing any older instances of that crate.</param>
+        public void ExtractFieldsAndAddToCrate(string docuSignTemplateId, DocuSignAuthDTO docuSignAuthDTO, ActionDTO curActionDTO)
+        {
+            if (!string.IsNullOrEmpty(docuSignTemplateId))
+            {
+                var docusignEnvelope = new DocuSignEnvelope(
+                    docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
+
+                var userDefinedFields = docusignEnvelope
+                    .GetEnvelopeDataByTemplate(docuSignTemplateId);
+
+                var fieldCollection = userDefinedFields
+                    .Select(f => new FieldDTO()
+                    {
+                        Key = f.Name,
+                        Value = f.Value
+                    });
+
+                Crate.ReplaceCratesByManifestType(curActionDTO.CrateStorage.CrateDTO,
+                    CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
+                    new List<CrateDTO>
+                    {
+                        Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", fieldCollection.ToArray())
+                    });
+            }
+        }
     }
 }
