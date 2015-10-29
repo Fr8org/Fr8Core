@@ -8,7 +8,7 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Data.States;
 using Newtonsoft.Json;
 using TerminalBase.BaseClasses;

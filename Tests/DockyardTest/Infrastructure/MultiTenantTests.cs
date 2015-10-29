@@ -7,11 +7,11 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.ManifestSchemas;
 using Hub.Interfaces;
 using Hub.StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Data.Interfaces.Manifests;
 
 namespace DockyardTest.Infrastructure
 {

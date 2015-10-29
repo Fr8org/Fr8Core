@@ -1,6 +1,6 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using System;
 using System.Collections.Generic;
 using System.Linq;

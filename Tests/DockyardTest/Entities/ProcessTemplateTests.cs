@@ -3,11 +3,12 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
 using Hub.Interfaces;
 using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Data.Interfaces.Manifests;
+using Web.Controllers;
 
 namespace DockyardTest.Entities
 {

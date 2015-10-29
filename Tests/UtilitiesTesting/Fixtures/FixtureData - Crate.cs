@@ -2,7 +2,7 @@
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Data.States;
 using StructureMap;
 using System;

@@ -7,7 +7,7 @@ using Data.Interfaces;
 using Data.Entities;
 using System.Collections.Generic;
 using System.Reflection;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using StructureMap;
 using Data.Infrastructure.StructureMap;
 

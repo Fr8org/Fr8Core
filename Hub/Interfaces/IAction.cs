@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Hub.Enums;
 
 namespace Hub.Interfaces
@@ -40,6 +40,6 @@ namespace Hub.Interfaces
         //Task AuthenticateExternal(PluginDO plugin, ExternalAuthenticationDTO externalAuthenticateDTO);
         
 
-        Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key, string fieldName = "name", GetCrateDirection direction = GetCrateDirection.None);
+        Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Data.Interfaces.Manifests.Manifest curSchema, string key, string fieldName = "name", GetCrateDirection direction = GetCrateDirection.None);
     }
 }
