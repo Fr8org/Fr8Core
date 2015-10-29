@@ -16,7 +16,6 @@ using Hub.ModelBinders;
 using Hub.StructureMap;
 using HubWeb.App_Start;
 using HubWeb.ExceptionHandling;
-using HubWeb.NotificationQueues;
 using LogentriesCore.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;

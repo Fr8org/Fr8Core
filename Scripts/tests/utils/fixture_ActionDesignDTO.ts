@@ -94,7 +94,9 @@ module dockyard.tests.utils.fixtures {
                     value: null
                 }]
             },
-            activityTemplateId: 2,
+            activityTemplate: {
+                id: 2
+            },
             isTempId: false,
             currentView: null,
             id: 81,
@@ -126,7 +128,9 @@ module dockyard.tests.utils.fixtures {
                     value: null
                 }]
             },
-            activityTemplateId: 2,
+            activityTemplate: {
+                id: 2
+            },
             isTempId: false,
             currentView: null,
             id: 81,
@@ -158,7 +162,9 @@ module dockyard.tests.utils.fixtures {
                     value: null
                 }]
             },
-            activityTemplateId: 2,
+            activityTemplate: {
+                id: 2
+            },
             isTempId: false,
             currentView: null,
             id: 81,

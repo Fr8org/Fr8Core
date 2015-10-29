@@ -13,6 +13,8 @@ module dockyard.services {
         disconnect(): void;
     }
 
+    declare var appKey: string;
+
     class PusherNotifierService implements IPusherNotifierService {
         private client: pusherjs.pusher.Pusher;
         private pusher: any;

@@ -5,7 +5,7 @@
         GetFacts: () => void;
         dtOptionsBuilder: any;
         dtColumnDefs: any;
-        incidentRecords: Array<model.IncidentDTO>
+        incidentRecords: Array<model.IncidentDTO>;
     }
 
     class ReportIncidentController {

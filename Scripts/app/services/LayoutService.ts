@@ -10,6 +10,7 @@ module dockyard.services {
         public ACTION_HEIGHT = 300;
         public ACTION_WIDTH = 330;
         public ACTION_PADDING = 70;
+        public ARROW_WIDTH = 16;
 
         constructor() {
         }
@@ -30,14 +31,25 @@ module dockyard.services {
 
             return processedGroups;
         }
+
+        recalculateTop(actionGroups: model.ActionGroup[]) {
+            var processedGroups: model.ActionGroup[] = [actionGroups[0]];
+            for (var i = 1; i < actionGroups.length; i++) {
+                var curGroup = actionGroups[i];
+                curGroup.offsetTop = this.calculateOffsetTop(actionGroups[i - 1]);
+
+                var parentGroup = this.findParentGroup(actionGroups, curGroup.actions[0].parentRouteNodeId);
+                curGroup.arrowLength = this.calculateArrowLength(curGroup, parentGroup);
+            }
+        }
         
         // Depth first search on the ActionGroup tree going from last sibling to first.
         private processGroup(actionGroups: model.ActionDTO[][], group: model.ActionGroup, processedGroups: model.ActionGroup[]) {
             processedGroups.push(group);
             for (var i = group.actions.length - 1; i > -1; i--) {
-                var childGroup = this.findChildGroup(actionGroups, group.actions[i].id);
-                if (childGroup) {
-                    var newGroup = new model.ActionGroup(childGroup) 
+                //var childGroup = this.findChildGroup(actionGroups, group.actions[i].id);
+                if (group.actions[i].childrenActions.length) {
+                    var newGroup = new model.ActionGroup(group.actions[i].childrenActions) 
                     this.calculateGroupPosition(newGroup, group, processedGroups);
                     this.processGroup(actionGroups, newGroup, processedGroups);
                 }
@@ -45,22 +57,52 @@ module dockyard.services {
         }
 
         private calculateGroupPosition(group: model.ActionGroup, parentGroup: model.ActionGroup, processedGroups: model.ActionGroup[]): void {
-            var parentActionIdx = _.findIndex(parentGroup.actions, (action: model.ActionDTO) => {
-                return action.id === group.actions[0].parentRouteNodeId;
-            });
-            group.offsetLeft = parentGroup.offsetLeft + parentActionIdx * (this.ACTION_WIDTH + this.ACTION_PADDING);
-
-            var offsetTop = parentGroup.offsetTop + this.ACTION_HEIGHT + this.ACTION_PADDING;
-            for (var processedGroup of processedGroups) {
-                if (offsetTop <= processedGroup.offsetTop) {
-                    offsetTop = processedGroup.offsetTop + this.ACTION_HEIGHT + this.ACTION_PADDING;
-                }
-            }
-            group.offsetTop = offsetTop;
-            group.arrowLength = offsetTop - parentGroup.offsetTop - this.ACTION_HEIGHT - this.ACTION_PADDING;
+            group.offsetLeft = this.calculateOffsetLeft(parentGroup, group.actions[0]);
+            group.offsetTop = this.calculateOffsetTop(processedGroups[processedGroups.length - 1]);
+            group.arrowLength = this.calculateArrowLength(group, parentGroup);
+            group.arrowOffsetLeft = this.calculateArrowOffsetLeft(group);
         }
 
-        private findChildGroup(actionGroups: model.ActionDTO[][], parentId: number) {
+        private calculateOffsetLeft(parentGroup: model.ActionGroup, action: model.ActionDTO): number {
+            var i = 0,
+                offsetLeft = parentGroup.offsetLeft;
+            while (parentGroup.actions[i].id != action.parentRouteNodeId) {
+                offsetLeft += (parentGroup.actions[i].activityTemplate.minPaneWidth || this.ACTION_WIDTH) + this.ACTION_PADDING;
+                i++;
+            }
+            offsetLeft += ((parentGroup.actions[i].activityTemplate.minPaneWidth || this.ACTION_WIDTH) - (action.activityTemplate.minPaneWidth || this.ACTION_WIDTH)) / 2;
+
+            return offsetLeft;
+        }
+
+        private calculateOffsetTop(prevGroup: model.ActionGroup): number {
+            return prevGroup.offsetTop + prevGroup.height + this.ACTION_PADDING;
+        }
+
+        private calculateArrowLength(group: model.ActionGroup, parentGroup: model.ActionGroup): number {
+            var parentAction = this.findParentAction(group, parentGroup);
+            return group.offsetTop - parentGroup.offsetTop - parentAction.height - this.ACTION_PADDING;
+        }
+
+        private calculateArrowOffsetLeft(group: model.ActionGroup): number {
+            return ((group.actions[0].activityTemplate.minPaneWidth || this.ACTION_WIDTH) - this.ARROW_WIDTH) / 2;
+        }
+
+        private findParentAction(group: model.ActionGroup, parentGroup: model.ActionGroup): model.ActionDTO {
+            return _.find(parentGroup.actions, (action: model.ActionDTO) => {
+                return action.id === group.actions[0].parentRouteNodeId;
+            });
+        }      
+
+        private findParentGroup(actionGroups: model.ActionGroup[], parentId: number): model.ActionGroup {
+            return _.find(actionGroups, (group: model.ActionGroup) => {
+                return group.actions.some((action: model.ActionDTO) => {
+                    return action.id === parentId;
+                });
+            });
+        }        
+
+        private findChildGroup(actionGroups: model.ActionDTO[][], parentId: number): model.ActionDTO[] {
             return _.find(actionGroups, (group: model.ActionDTO[]) => {
                 return group[0].parentRouteNodeId === parentId;
             });
