@@ -18,6 +18,7 @@ using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
 using Moq;
 using Newtonsoft.Json;
+using Hub.Managers;
 
 
 namespace DockyardTest.Services
@@ -26,8 +27,10 @@ namespace DockyardTest.Services
     [Category("ContainerService")]
     public class ContainerServiceTests : BaseTest
     {
+        
         private InternalInterface.IContainer _container;
         //private IDocuSignNotification _docuSignNotificationService;
+        private EventReporter _eventReporter;
         private Fr8Account _userService;
         private string _testUserId = "testuser";
         private string xmlPayloadFullPath;
@@ -40,6 +43,7 @@ namespace DockyardTest.Services
             base.SetUp();
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _userService = ObjectFactory.GetInstance<Fr8Account>();
+            _eventReporter = new EventReporter();
             //_docuSignNotificationService = ObjectFactory.GetInstance<IDocuSignNotification>();
 
             xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
@@ -258,6 +262,8 @@ namespace DockyardTest.Services
                 await _container.Execute(uow, FixtureData.TestContainerCurrentActivityNULL());
         }
         }
+
+        }
 //
 //        [Test]
 //        [ExpectedException(typeof(ArgumentNullException))]
@@ -390,4 +396,3 @@ namespace DockyardTest.Services
 //            Assert.IsNull(curProcess.NextActivity);
 //        }
     }
-}

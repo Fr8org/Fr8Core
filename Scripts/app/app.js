@@ -11,7 +11,8 @@ var app = angular.module("app", [
     "datatables",
     "ngFileUpload",
     "textAngular",
-    "ui.select"
+    "ui.select",
+    "pusher-angular"
 ]);
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
 app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
@@ -71,7 +72,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
                         delete (config.params.suppressSpinner);
                     }
                     else {
-                        Metronic.startPageLoading({ animate: true });
                     }
                     return config;
                 },

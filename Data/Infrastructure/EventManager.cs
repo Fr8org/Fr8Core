@@ -4,6 +4,7 @@ using System;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using System.Data.Entity.Infrastructure;
 
 namespace Data.Infrastructure
 {
@@ -30,11 +31,11 @@ namespace Data.Infrastructure
 
         public delegate void PluginActionActivatedHandler(ActionDO action);
         public static event PluginActionActivatedHandler PluginActionActivated;
-         
+
 
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
-   
+
         public delegate void CustomerCreatedHandler(Fr8AccountDO user);
         public static event CustomerCreatedHandler AlertCustomerCreated;
 
@@ -89,6 +90,18 @@ namespace Data.Infrastructure
         public delegate void EventContainerLaunchedHandler(ContainerDO launchedContainer);
         public static event EventContainerLaunchedHandler EventContainerLaunched;
 
+        public delegate void EventContainerCreatedHandler(ContainerDO containerDO);
+        public static event EventContainerCreatedHandler EventContainerCreated;
+
+        public delegate void EventContainerSentHandler(ContainerDO containerDO, ActionDO actionDO);
+        public static event EventContainerSentHandler EventContainerSent;
+
+        public delegate void EventContainerReceivedHandler(ContainerDO containerDO, ActionDO actionDO);
+        public static event EventContainerReceivedHandler EventContainerReceived;
+
+        public delegate void EventContainerStateChangedHandler(DbPropertyValues currentValues);
+        public static event EventContainerStateChangedHandler EventContainerStateChanged;
+
         public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
         public static event EventProcessNodeCreatedHandler EventProcessNodeCreated;
 
@@ -121,6 +134,10 @@ namespace Data.Infrastructure
 
         public delegate void IncidentTwilioSMSSendFailureHandler(string number, string message, string errorMsg);
         public static event IncidentTwilioSMSSendFailureHandler IncidentTwilioSMSSendFailure;
+
+
+
+
         #region Method
 
 
@@ -421,9 +438,31 @@ namespace Data.Infrastructure
             var handler = IncidentTwilioSMSSendFailure;
             if (handler != null) handler(number, message, errorMsg);
         }
-        #endregion
 
-        
+        public static void ContainerCreated(ContainerDO containerDO)
+        {
+            var handler = EventContainerCreated;
+            if (handler != null) handler(containerDO);
+        }
+
+        public static void ContainerSent(ContainerDO containerDO, ActionDO actionDO)
+        {
+            var handler = EventContainerSent;
+            if (handler != null) handler(containerDO, actionDO);
+        }
+
+        public static void ContainerReceived(ContainerDO containerDO, ActionDO actionDO)
+        {
+            var handler = EventContainerReceived;
+            if (handler != null) handler(containerDO, actionDO);
+        }
+        internal static void ContainerStateChanged(DbPropertyValues currentValues)
+        {
+            var handler = EventContainerStateChanged;
+            if (handler != null) handler(currentValues);
+        }
+
+        #endregion
     }
 
 }

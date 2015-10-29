@@ -16,7 +16,6 @@ using Hub.ModelBinders;
 using Hub.StructureMap;
 using HubWeb.App_Start;
 using HubWeb.ExceptionHandling;
-using HubWeb.NotificationQueues;
 using LogentriesCore.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -81,8 +80,6 @@ namespace HubWeb
             incidentReporter.SubscribeToAlerts();
 
             ModelBinders.Binders.Add(typeof (DateTimeOffset), new KwasantDateBinder());
-
-            SharedNotificationQueues.Begin();
 
             var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

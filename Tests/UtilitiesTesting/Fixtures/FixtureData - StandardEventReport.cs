@@ -4,8 +4,8 @@ using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
 using Data.States;
+using Data.Interfaces.Manifests;
 using Hub.Interfaces;
 using Utilities.Serializers.Json;
 

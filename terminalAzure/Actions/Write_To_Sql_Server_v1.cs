@@ -7,8 +7,9 @@ using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.Manifests;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+
 using Hub.Enums;
 using TerminalBase;
 using TerminalBase.BaseClasses;

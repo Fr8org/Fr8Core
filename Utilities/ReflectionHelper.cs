@@ -27,6 +27,7 @@ namespace Utilities
 
             throw new Exception("Not a property");
         }
+
     }
 
     public class ReflectionHelper
@@ -49,6 +50,12 @@ namespace Utilities
                 return null;
             var navigationProperty = entity.GetType().GetProperty(foreignKeyAttribute.Name);
             return navigationProperty;
+        }
+
+        public static PropertyInfo[] GetProperties(Type curType)
+        {
+            var curProperties = curType.GetProperties();
+            return curProperties;
         }
     }
 }

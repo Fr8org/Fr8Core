@@ -9,6 +9,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
+using Data.Infrastructure;
 
 namespace Hub.Services
 {
@@ -71,7 +72,7 @@ namespace Hub.Services
                containerDO.ProcessNodes.Add(curProcessNode);
 
                 uow.SaveChanges();
-
+                EventManager.ContainerCreated(containerDO);
             return containerDO;
         }
 

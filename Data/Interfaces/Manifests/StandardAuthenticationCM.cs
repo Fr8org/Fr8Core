@@ -1,6 +1,6 @@
 ﻿using Data.Constants;
 
-namespace Data.Interfaces.ManifestSchemas
+namespace Data.Interfaces.Manifests
 {
     public class StandardAuthenticationCM : Manifest
     {

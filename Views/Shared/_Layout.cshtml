@@ -15,14 +15,6 @@
     @RenderSection("styles", required: false)     
     @Scripts.Render("~/bundles/js/jquery")
     @Scripts.Render("~/bundles/js/cookies")
-    
-
-    <!-- 
-        This generates a script to setup polling
-        It is overridable if people redefine the polling methods in 'immediateScripts' 
-        It also includes notifiy.js
-    -->
-    @Html.Partial("~/Views/Shared/QueuePollingScript.cshtml", null) 
 
     @RenderSection("immediateScripts", required:false)	
 	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300,600,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>

@@ -216,11 +216,11 @@ var dockyard;
                                 var authMS = angular.fromJson(authCrate.contents);
                                 // Dockyard auth mode.
                                 if (authMS.Mode == 1) {
-                                    StartInternalAuthentication($scope.currentAction.activityTemplateId);
+                                    StartInternalAuthentication($scope.currentAction.activityTemplate.id);
                                 }
                                 else {
                                     // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                                    StartExternalAuthentication($scope.currentAction.activityTemplateId);
+                                    StartExternalAuthentication($scope.currentAction.activityTemplate.id);
                                 }
                                 return;
                             }

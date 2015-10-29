@@ -8,7 +8,7 @@ using Data.Interfaces;
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Hub.Enums;
 using TerminalBase.Infrastructure;
 using Utilities;

@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -389,7 +389,7 @@ namespace Hub.Services
                         .FindOne(x => x.Plugin.Id == activityTemplate.Plugin.Id
                             && x.UserDO.Id == account.Id);
 
-                    if (authToken == null)
+                    if (authToken == null || string.IsNullOrEmpty(authToken.Token))
                     {
                         AddAuthenticationCrate(curActionDTO, activityTemplate.AuthenticationType);
                         return true;

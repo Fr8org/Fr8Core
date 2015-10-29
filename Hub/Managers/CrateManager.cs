@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Interfaces.Manifests;
 using AutoMapper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -12,7 +13,6 @@ using Data.Interfaces;
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
 using Utilities;
 
 using JsonSerializer = Utilities.Serializers.Json.JsonSerializer;

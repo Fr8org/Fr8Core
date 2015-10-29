@@ -126,31 +126,41 @@ namespace DockyardTest.Services
         [Test]
         public void CanCRUDActions()
         {
+            ActionDO origActionDO;
+
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IAction action = new Action();
-                var origActionDO = new FixtureData(uow).TestAction3();
+                var route = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(route);
+
+                var subroute = FixtureData.TestSubrouteDO1();
+                uow.RouteNodeRepository.Add(subroute);
+
+                origActionDO = new FixtureData(uow).TestAction3();
 
                 origActionDO.IsTempId = true;
-                
+                origActionDO.ParentRouteNodeId = subroute.Id;
+
                 uow.ActivityTemplateRepository.Add(origActionDO.ActivityTemplate);
                 uow.SaveChanges();
-
-                //Add
-                action.SaveOrUpdateAction(origActionDO);
-
-                //Get
-                var actionDO = action.GetById(origActionDO.Id);
-                Assert.AreEqual(origActionDO.Name, actionDO.Name);
-                Assert.AreEqual(origActionDO.Id, actionDO.Id);
-                Assert.AreEqual(origActionDO.CrateStorage, actionDO.CrateStorage);
-
-                Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
-
-                ISubroute subRoute = new Subroute();
-                //Delete
-                subRoute.DeleteAction(actionDO.Id);
             }
+
+            IAction action = new Action();
+
+            //Add
+            action.SaveOrUpdateAction(origActionDO);
+
+            //Get
+            var actionDO = action.GetById(origActionDO.Id);
+            Assert.AreEqual(origActionDO.Name, actionDO.Name);
+            Assert.AreEqual(origActionDO.Id, actionDO.Id);
+            Assert.AreEqual(origActionDO.CrateStorage, actionDO.CrateStorage);
+
+            Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
+
+            ISubroute subRoute = new Subroute();
+            //Delete
+            subRoute.DeleteAction(actionDO.Id);
         }
 
         [Test]
