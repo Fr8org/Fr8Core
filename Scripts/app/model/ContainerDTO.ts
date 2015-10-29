@@ -6,6 +6,8 @@
         containerState: number;
         currentRouteNodeId: string;
         nextRouteNodeId: string;
+        lastUpdated: string;
+        createDate: string;
     }
 
     export enum ContainerState {

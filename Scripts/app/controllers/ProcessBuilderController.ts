@@ -199,10 +199,9 @@ module dockyard.controllers {
             var action = new model.ActionDTO(this.$scope.currentSubroute.id, id, true);
             action.name = activityTemplate.name;
             action.label = activityTemplate.label;
-            action.minPaneWidth = activityTemplate.minPaneWidth;
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();
-            this.$scope.current.action.activityTemplateId = activityTemplate.id;
+            this.$scope.current.action.activityTemplate = activityTemplate;
             this.$scope.actionGroups[0].actions.push(action);
 
             this.selectAction(action);
@@ -262,6 +261,9 @@ module dockyard.controllers {
                     this.$scope.current.action = result.action;
                     var actions = this.$scope.actionGroups[0].actions
                     actions[actions.length - 1] = result.action;
+                    if (result.action.childrenActions.length) {
+                        this.$scope.actionGroups.push(new model.ActionGroup(result.action.childrenActions));
+                    }
                 }
                 else {
                     this.ActionService.get({ id: actionId }).$promise.then(action => {
@@ -299,7 +301,7 @@ module dockyard.controllers {
         */
         private PaneSelectAction_ActionTypeSelected(eventArgs: psa.ActionTypeSelectedEventArgs) {
             var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
-            var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(eventArgs.action.id, eventArgs.action.activityTemplateId);
+            var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(eventArgs.action.id, eventArgs.action.activityTemplate.id);
             this.$scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateActivityTemplateId], pwdEventArs);
         }
 
@@ -330,7 +332,7 @@ module dockyard.controllers {
                     configurationControls: new model.ControlsList(),
                     crateStorage: new model.CrateStorage(),
                     parentRouteNodeId: 1,
-                    activityTemplateId: 1,
+                    activityTemplate: null,
                     id: 1,
                     isTempId: false,
                     childrenActions: null

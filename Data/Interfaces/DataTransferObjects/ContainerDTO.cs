@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Data.Entities;
 
@@ -18,6 +19,10 @@ namespace Data.Interfaces.DataTransferObjects
 
         public int? CurrentRouteNodeId { get; set; }
         public int? NextRouteNodeId { get; set; }
+
+        public string LastUpdated { get; set; }
+
+        public string CreateDate { get; set; }
 
     }
 }
