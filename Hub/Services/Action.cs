@@ -514,7 +514,7 @@ namespace Hub.Services
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var containerDO = uow.ContainerRepository.GetByKey(containerId);
-                    EventManager.ContainerCreated(containerDO);
+                    EventManager.ContainerSent(containerDO, curActionDO);
                     var reponse = ObjectFactory.GetInstance<IPluginTransmitter>().CallActionAsync<TResult>(actionName, dto);
                     EventManager.ContainerReceived(containerDO, curActionDO);
                     return reponse;
