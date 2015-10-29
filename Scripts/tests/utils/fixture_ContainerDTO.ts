@@ -9,7 +9,9 @@ module dockyard.tests.utils.fixtures {
             routeId: 1,
             containerState: 2,
             currentRouteNodeId: null,
-            nextRouteNodeId: null
+            nextRouteNodeId: null,
+            lastUpdated: null,
+            createDate: null
         };
     }
 }
