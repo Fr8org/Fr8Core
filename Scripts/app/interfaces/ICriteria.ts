@@ -19,7 +19,7 @@ module dockyard.interfaces {
         label?: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
-        activityTemplateId: number;
+        activityTemplate: model.ActivityTemplate;
         childrenActions: Array<IActionDTO>;
     }
 

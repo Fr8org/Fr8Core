@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
+using System.Windows.Markup;
+using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
@@ -35,6 +36,7 @@ namespace Data.Interfaces.DataTransferObjects
         public const string FieldList = "FieldList";
         public const string Button = "Button";
         public const string TextSource = "TextSource";
+        public const string TextArea = "TextArea";
     }
 
     public class CheckBoxControlDefinitionDTO : ControlDefinitionDTO
@@ -106,10 +108,25 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
+    public class TextAreaDefinitionDTO : ControlDefinitionDTO
+    {
+        [JsonProperty("isReadOnly")]
+        public bool IsReadOnly { get; set; }
+
+        public TextAreaDefinitionDTO () : 
+            base(ControlTypes.TextArea)
+        {
+        }
+    }
+
     public class TextBlockControlDefinitionDTO : ControlDefinitionDTO
     {
         [JsonProperty("class")]
-        public string CssClass;
+        public string CssClass
+        {
+            get; 
+            set;
+        }
 
         public TextBlockControlDefinitionDTO()
         {
@@ -249,7 +266,7 @@ namespace Data.Interfaces.DataTransferObjects
             Value = "";
         }
     }
-
+    
     public class FieldSourceDTO
     {
         [JsonProperty("manifestType")]
@@ -270,6 +287,10 @@ namespace Data.Interfaces.DataTransferObjects
         {
             Name = name;
             Handler = handler;
+        }
+
+        public ControlEvent()
+        {
         }
     }
 
@@ -301,6 +322,7 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("name")]
         public string Name { get; set; }
     }
+
     public class ListItem
     {
         [JsonProperty("selected")]

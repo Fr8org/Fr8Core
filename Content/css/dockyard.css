@@ -135,7 +135,6 @@
 
 .action-arrow-bottom {
     background-color: #58B8A9;
-    margin-left: 160px;
     position: absolute;
     width: 16px;
 }
@@ -157,10 +156,14 @@
                 rgba(0, 0, 0, 0.137255) 0px 1px 1px 0px,
                 rgba(0, 0, 0, 0.117647) 0px 2px 1px -1px;
     display: inline-block;
-    height: 300px;
-    
+    height: auto;
+    min-height: 330px;
+    margin-bottom: 5px;
     vertical-align: top;
     width: 330px;
+    white-space: initial;
+    min-width: 200px;
+    max-width: 450px;
 }
 
 .action-name {    
@@ -198,6 +201,7 @@
     cursor: pointer;
     opacity: 0.5;
     margin-left: -3px;
+    height: 300px;
 }
 
 .action-to-add:hover {
@@ -207,8 +211,11 @@
 
 .action .pane-configure-action {    
     padding: 5px;
-    height: 250px;
+    height: auto;
+    min-height: 224px;
+    max-height: 330px;
     display: block;
+    overflow: auto;
     width: 100%;
 }
 
@@ -359,3 +366,20 @@ input[type=radio]:checked ~ div.nested-controls {
     word-wrap: break-word;
     white-space: normal;
 }
+
+.readOnlyTextArea div.ta-editor {
+    min-height: initial;
+    border-style:none;
+    height: auto;
+    overflow: auto;
+    padding: initial;
+    box-shadow:none;
+ }
+
+.radio-button-group-content {
+    margin-left: 20px;
+}
+
+.readOnlyTextArea .ta-scroll-window.form-control { height: auto; min-height: initial !important; padding:initial !important }
+.readOnlyTextArea .ta-editor.ta-html { min-height: initial !important; }
+.readOnlyTextArea .ta-scroll-window > .ta-bind { min-height: initial !important; padding:initial !important  }

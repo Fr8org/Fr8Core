@@ -1,31 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using StructureMap;
+﻿using AutoMapper;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using StructureMap;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
 using Hub.Enums;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Plugin;
-using Microsoft.AspNet.Identity;
 
 namespace Hub.Services
 {
     public class Action : IAction
     {
         private readonly ICrateManager _crate;
-        //private Task curAction;
-        private readonly IPlugin _plugin;
-        //private IRoute _route;
         private readonly Authorization _authorizationToken;
 
         private readonly IRouteNode _routeNode;
@@ -33,11 +29,8 @@ namespace Hub.Services
         public Action()
         {
             _authorizationToken = new Authorization();
-            _plugin = ObjectFactory.GetInstance<IPlugin>();
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
-            //  _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
-            //  _route = ObjectFactory.GetInstance<IRoute>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -50,42 +43,14 @@ namespace Hub.Services
 
         public ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO submittedActionData)
         {
-            ActionDO existingActionDO = null;
-            ActionDO curAction;
+            var action = SaveAndUpdateRecursive(uow, submittedActionData, new List<ActionDO>());
 
-            if (submittedActionData.ActivityTemplateId == 0)
-            {
-                submittedActionData.ActivityTemplateId = null;
-            }
-
-            if (submittedActionData.Id > 0)
-            {
-                existingActionDO = uow.ActionRepository.GetByKey(submittedActionData.Id);
-            }
-
-            if (submittedActionData.IsTempId)
-            {
-                submittedActionData.Id = 0;
-            }
-
-            if (existingActionDO != null)
-            {
-                existingActionDO.ParentRouteNode = submittedActionData.ParentRouteNode;
-                existingActionDO.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
-                existingActionDO.ActivityTemplateId = submittedActionData.ActivityTemplateId;
-                existingActionDO.Name = submittedActionData.Name;
-                existingActionDO.CrateStorage = submittedActionData.CrateStorage;
-                curAction = existingActionDO;
-            }
-            else
-            {
-                uow.ActionRepository.Add(submittedActionData);
-                curAction = submittedActionData;
-            }
+            action.ParentRouteNode = submittedActionData.ParentRouteNode;
+            action.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
 
             uow.SaveChanges();
-            curAction.IsTempId = false;
-            return curAction;
+
+            return uow.ActionRepository.GetByKey(submittedActionData.Id);
         }
 
         public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
@@ -110,67 +75,129 @@ namespace Hub.Services
         /// <param name="uow"></param>
         /// <param name="submittedActionData"></param>
         /// <returns></returns>
-        public ActionDO Update(IUnitOfWork uow, ActionDO submittedActionData)
+        //        public async Task<ActionDO> SaveUpdateAndConfigure(IUnitOfWork uow, ActionDO submittedActionData)
+        //        {
+        //            var pendingConfigurations = new List<ActionDO>();
+        //            // Update properties and structure recisurively
+        //            var existingAction = SaveAndUpdateRecursive(uow, submittedActionData, pendingConfigurations);
+        //
+        //            // Change parent if it is necessary
+        //            existingAction.ParentRouteNode = submittedActionData.ParentRouteNode;
+        //            existingAction.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
+        //
+        //            uow.SaveChanges();
+        //
+        //            foreach (var pendingConfiguration in pendingConfigurations)
+        //            {
+        //                await ConfigureSingleAction(uow, pendingConfiguration);
+        //            }
+        //
+        //            return uow.ActionRepository.GetByKey(existingAction.Id);
+        //        }
+
+        private void UpdateActionProperties(IUnitOfWork uow, ActionDO submittedAction)
         {
-            // Update properties and structure recisurively
-            var existingAction = UpdateRecursive(uow, submittedActionData);
-
-            // Change parent it it is necessary
-            existingAction.ParentRouteNode = submittedActionData.ParentRouteNode;
-            existingAction.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
-
-            return existingAction;
-        }
-
-        private ActionDO UpdateRecursive(IUnitOfWork uow, ActionDO action)
-        {
-            var existingAction = uow.ActionRepository.GetByKey(action.Id);
+            var existingAction = uow.ActionRepository.GetByKey(submittedAction.Id);
 
             if (existingAction == null)
             {
                 throw new Exception("Action was not found");
             }
 
-            // Update properties
-            existingAction.ActivityTemplateId = action.ActivityTemplateId;
-            existingAction.Name = action.Name;
-            existingAction.Label = action.Label;
-            existingAction.CrateStorage = action.CrateStorage;
+            UpdateActionProperties(existingAction, submittedAction);
+            uow.SaveChanges();
+        }
 
-            // If existing actions has children their structure and properties
-            if (action.ChildNodes != null)
+        private static void UpdateActionProperties(ActionDO existingAction, ActionDO submittedAction)
+        {
+            existingAction.ActivityTemplateId = submittedAction.ActivityTemplateId;
+            existingAction.Name = submittedAction.Name;
+            existingAction.Label = submittedAction.Label;
+            existingAction.CrateStorage = submittedAction.CrateStorage;
+        }
+
+        private ActionDO SaveAndUpdateRecursive(IUnitOfWork uow, ActionDO submittedAction, List<ActionDO> pendingConfiguration)
+        {
+            ActionDO existingAction;
+
+            if (submittedAction.ActivityTemplateId == 0)
             {
-                // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
-                // desired set of children. 
-                var newChildren = action.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
-                // current set of children
-                var currentChildren = existingAction.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
+                submittedAction.ActivityTemplateId = null;
+            }
 
-                // Now we must find what child must be added to existingAction
-                // Chilren to be added are difference between set newChildren and currentChildren (those elements that exist in newChildren but do not exist in currentChildren).
-                foreach (var newAction in newChildren.Where(x => !currentChildren.ContainsKey(x.Key)).ToArray())
+            if (submittedAction.IsTempId)
+            {
+                submittedAction.Id = 0;
+                existingAction = submittedAction;
+                submittedAction.IsTempId = false;
+
+                if (submittedAction.ActivityTemplateId != null)
                 {
-                    var newChild = Update(uow, newAction.Value);
+                    submittedAction.ActivityTemplate = uow.ActivityTemplateRepository.GetByKey(submittedAction.ActivityTemplateId.Value);
+                }
+
+                uow.ActionRepository.Add(submittedAction);
+
+                // If we have created new action add it to pending configuration list.
+                pendingConfiguration.Add(submittedAction);
+
+                foreach (var newAction in submittedAction.ChildNodes.OfType<ActionDO>())
+                {
+                    newAction.ParentRouteNodeId = null;
+                    newAction.ParentRouteNode = null;
+                    var newChild = SaveAndUpdateRecursive(uow, newAction, pendingConfiguration);
                     existingAction.ChildNodes.Add(newChild);
                 }
+            }
+            else
+            {
+                existingAction = uow.ActionRepository.GetByKey(submittedAction.Id);
 
-                // Now we must find what child must be removed from existingAction
-                // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
-                foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
+                if (existingAction == null)
                 {
-                    existingAction.ChildNodes.Remove(actionToRemove.Value);
+                    throw new Exception("Action was not found");
                 }
 
-                // We just update those children that haven't changed (exists both in newChildren and currentChildren)
-                foreach (var actionToUpdate in newChildren.Where(x => currentChildren.ContainsKey(x.Key)))
+                // Update properties
+                UpdateActionProperties(existingAction, submittedAction);
+
+                // Sync nested action structure
+                if (submittedAction.ChildNodes != null)
                 {
-                    Update(uow, actionToUpdate.Value);
+                    // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
+                    // desired set of children. 
+                    var newChildren = submittedAction.ChildNodes.OfType<ActionDO>().Where(x => !x.IsTempId).ToDictionary(x => x.Id, y => y);
+                    // current set of children
+                    var currentChildren = existingAction.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
+
+                    // Now we must find what child must be added to existingAction
+                    // Chilren to be added are difference between set newChildren and currentChildren (those elements that exist in newChildren but do not exist in currentChildren).
+                    foreach (var newAction in submittedAction.ChildNodes.OfType<ActionDO>().Where(x => x.IsTempId || !currentChildren.ContainsKey(x.Id)).ToArray())
+                    {
+                        newAction.ParentRouteNodeId = null;
+                        newAction.ParentRouteNode = null;
+                        var newChild = SaveAndUpdateRecursive(uow, newAction, pendingConfiguration);
+                        existingAction.ChildNodes.Add(newChild);
+                    }
+
+                    // Now we must find what child must be removed from existingAction
+                    // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
+                    foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
+                    {
+                        existingAction.ChildNodes.Remove(actionToRemove.Value);
+                        _routeNode.Delete(uow, actionToRemove.Value);
+                    }
+
+                    // We just update those children that haven't changed (exists both in newChildren and currentChildren)
+                    foreach (var actionToUpdate in newChildren.Where(x => !x.Value.IsTempId && currentChildren.ContainsKey(x.Key)))
+                    {
+                        SaveAndUpdateRecursive(uow, actionToUpdate.Value, pendingConfiguration);
+                    }
                 }
             }
 
             return existingAction;
         }
-
 
         public ActionDO GetById(IUnitOfWork uow, int id)
         {
@@ -201,13 +228,8 @@ namespace Hub.Services
             return action;
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(
-            IUnitOfWork uow, string userId,
-            int actionTemplateId, string name, string label = null,
-            int? parentNodeId = null, bool createRoute = false)
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
         {
-            ActionDTO curActionDTO;
-
             if (parentNodeId != null && createRoute)
             {
                 throw new ArgumentException("Parent node id can't be set together with create route flag");
@@ -235,12 +257,7 @@ namespace Hub.Services
 
             uow.SaveChanges();
 
-            var actionConfiguredData = await Configure(userId, action);
-            curActionDTO = actionConfiguredData.Item1;
-
-            // Update crates on the initial action instance with those we received 
-            // as a result of calling configure method. 
-            action.CrateStorage = actionConfiguredData.Item2.CrateStorage;
+            await ConfigureSingleAction(uow, userId, action);
 
             if (createRoute)
             {
@@ -250,15 +267,14 @@ namespace Hub.Services
             return action;
         }
 
-
-        public async Task<Tuple<ActionDTO, ActionDO>> Configure(string userId, ActionDO curActionDO)
+        private async Task<ActionDO> CallActionConfigure(string userId, ActionDO curActionDO)
         {
             if (curActionDO == null)
+            {
                 throw new ArgumentNullException("curActionDO");
-            ActionDTO tempActionDTO, curActionDTO;
-            ActionDO tempActionDO;
+            }
 
-            tempActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            var tempActionDTO = Mapper.Map<ActionDTO>(curActionDO);
 
             if (!_authorizationToken.ValidateAuthenticationNeeded(userId, tempActionDTO))
             {
@@ -273,22 +289,39 @@ namespace Hub.Services
                 }
                 catch (Exception e)
                 {
-                    var pluginUrl = curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null
-                        ? curActionDO.ActivityTemplate.Plugin.Endpoint
-                        : "<no plugin url>";
-                    EventManager.PluginConfigureFailed(pluginUrl, JsonConvert.SerializeObject(curActionDO), e.Message);
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        PreserveReferencesHandling = PreserveReferencesHandling.Objects
+                    };
+
+                    var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null && curActionDO.ActivityTemplate.Plugin.Endpoint != null) ? curActionDO.ActivityTemplate.Plugin.Endpoint : "<no plugin url>";
+                    EventManager.PluginConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
                     throw;
                 }
             }
 
-            //Plugin Configure Action Return ActionDTO
-            tempActionDO = Mapper.Map<ActionDO>(tempActionDTO);
+            return Mapper.Map<ActionDO>(tempActionDTO);
+        }
+
+        private async Task<ActionDO> ConfigureSingleAction(IUnitOfWork uow, string userId, ActionDO curActionDO)
+        {
+            curActionDO = await CallActionConfigure(userId, curActionDO);
+
+            UpdateActionProperties(uow, curActionDO);
+
+            return curActionDO;
+        }
+
+        public async Task<ActionDTO> Configure(string userId, ActionDO curActionDO)
+        {
+            curActionDO = await CallActionConfigure(userId, curActionDO);
 
             //save the received action as quickly as possible
-            SaveOrUpdateAction(tempActionDO);
-
-            //Returning ActionDTO and ActionDO
-            return new Tuple<ActionDTO, ActionDO>(tempActionDTO, tempActionDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curActionDO = SaveOrUpdateAction(uow, curActionDO);
+                return Mapper.Map<ActionDTO>(curActionDO);
+            }
         }
 
         public ActionDO MapFromDTO(ActionDTO curActionDTO)
@@ -333,10 +366,11 @@ namespace Hub.Services
                         downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
                     }
                 }
-                uow.RouteNodeRepository.Remove(curAction);
+
+                _routeNode.Delete(uow, curAction);
+
                 uow.SaveChanges();
             }
-
         }
 
         /// <summary>
