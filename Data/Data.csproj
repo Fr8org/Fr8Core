@@ -273,9 +273,11 @@
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
     <Compile Include="Interfaces\ManifestSchemas\DocuSignEnvelopeCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\DocuSignEventCM.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\DocuSignRecipientCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\Manifest.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardAuthenticationCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsCM.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardParsingRecord.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardRoutingDirectiveCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardFileHandle.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardTableDataCM.cs" />

@@ -43,6 +43,12 @@ namespace Data.Constants
         DocuSignEvent = 14,
 
         [Display(Name = "Docusign Envelope")]
-        DocuSignEnvelope
+        DocuSignEnvelope,
+
+        [Display(Name = "Standard Parsing Record")]
+        StandardParsingRecord = 15,
+
+        [Display(Name = "Docusign Recipient")]
+        DocuSignRecipient = 16,
     }
 }
