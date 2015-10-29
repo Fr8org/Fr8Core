@@ -1,4 +1,49 @@
-describe('progressbar directive', function () {
+describe('progressbar directive', function() {
+  describe('$progressSuppressWarning', function() {
+    beforeEach(module('ui.bootstrap.progressbar'));
+    beforeEach(module('template/progressbar/progress.html', 'template/progressbar/bar.html'));
+
+    it('should give warning', inject(function($compile, $log, $rootScope) {
+      spyOn($log, 'warn');
+
+      $rootScope.objects = [
+        { value: 10, type: 'success' },
+        { value: 50, type: 'warning' },
+        { value: 20 }
+      ];
+      var element = $compile('<progress animate="false"><bar ng-repeat="o in objects" value="o.value" type="{{o.type}}">{{o.value}}</bar></progress>')($rootScope);
+      $rootScope.$digest();
+
+      expect($log.warn.calls.count()).toBe(0);
+    }));
+
+    it('should suppress warning', function() {
+      module(function($provide) {
+        $provide.value('$progressSuppressWarning', true);
+      });
+
+      inject(function($compile, $log, $rootScope) {
+        spyOn($log, 'warn');
+
+        $rootScope.objects = [
+          { value: 10, type: 'success' },
+          { value: 50, type: 'warning' },
+          { value: 20 }
+        ];
+        var element = $compile('<progress animate="false"><bar ng-repeat="o in objects" value="o.value" type="{{o.type}}">{{o.value}}</bar></progress>')($rootScope);
+        $rootScope.$digest();
+
+        expect($log.warn.calls.count()).toBe(4);
+        expect($log.warn.calls.argsFor(0)).toEqual(['progress is now deprecated. Use uib-progress instead']);
+        expect($log.warn.calls.argsFor(1)).toEqual(['bar is now deprecated. Use uib-bar instead']);
+        expect($log.warn.calls.argsFor(2)).toEqual(['bar is now deprecated. Use uib-bar instead']);
+        expect($log.warn.calls.argsFor(3)).toEqual(['bar is now deprecated. Use uib-bar instead']);
+      });
+    });
+  });
+});
+
+describe('progressbar directive', function() {
   var $rootScope, $compile, element;
   beforeEach(module('ui.bootstrap.progressbar'));
   beforeEach(module('template/progressbar/progressbar.html', 'template/progressbar/progress.html', 'template/progressbar/bar.html'));
@@ -42,7 +87,7 @@ describe('progressbar directive', function () {
     expect(getBar(0).text()).toBe('22 %');
   });
 
-  it('it should be possible to add additional classes', function () {
+  it('it should be possible to add additional classes', function() {
     element = $compile('<progress class="progress-striped active" max="200"><bar class="pizza"></bar></progress>')($rootScope);
     $rootScope.$digest();
 
@@ -53,19 +98,19 @@ describe('progressbar directive', function () {
   });
 
   it('adjusts the "bar" width and aria when value changes', function() {
-      $rootScope.value = 60;
-      $rootScope.$digest();
+    $rootScope.value = 60;
+    $rootScope.$digest();
 
-      var bar = getBar(0);
-      expect(bar.css('width')).toBe('60%');
+    var bar = getBar(0);
+    expect(bar.css('width')).toBe('60%');
 
-      expect(bar.attr('aria-valuemin')).toBe('0');
-      expect(bar.attr('aria-valuemax')).toBe('100');
-      expect(bar.attr('aria-valuenow')).toBe('60');
-      expect(bar.attr('aria-valuetext')).toBe('60%');
-    });
+    expect(bar.attr('aria-valuemin')).toBe('0');
+    expect(bar.attr('aria-valuemax')).toBe('100');
+    expect(bar.attr('aria-valuenow')).toBe('60');
+    expect(bar.attr('aria-valuetext')).toBe('60%');
+  });
 
-  it('allows fractional "bar" width values, rounded to two places', function () {
+  it('allows fractional "bar" width values, rounded to two places', function() {
     $rootScope.value = 5.625;
     $rootScope.$digest();
     expect(getBar(0).css('width')).toBe('5.63%');
@@ -75,7 +120,7 @@ describe('progressbar directive', function () {
     expect(getBar(0).css('width')).toBe('1.3%');
   });
 
-  it('does not include decimals in aria values', function () {
+  it('does not include decimals in aria values', function() {
     $rootScope.value = 50.34;
     $rootScope.$digest();
 
@@ -84,7 +129,7 @@ describe('progressbar directive', function () {
     expect(bar.attr('aria-valuetext')).toBe('50%');
   });
 
-  describe('"max" attribute', function () {
+  describe('"max" attribute', function() {
     beforeEach(inject(function() {
       $rootScope.max = 200;
       element = $compile('<progressbar max="max" animate="false" value="value">{{value}}/{{max}}</progressbar>')($rootScope);
@@ -125,7 +170,7 @@ describe('progressbar directive', function () {
     });
   });
 
-  describe('"type" attribute', function () {
+  describe('"type" attribute', function() {
     beforeEach(inject(function() {
       $rootScope.type = 'success';
       element = $compile('<progressbar value="value" type="{{type}}"></progressbar>')($rootScope);
@@ -149,14 +194,14 @@ describe('progressbar directive', function () {
     });
   });
 
-  describe('stacked', function () {
+  describe('stacked', function() {
     beforeEach(inject(function() {
       $rootScope.objects = [
         { value: 10, type: 'success' },
         { value: 50, type: 'warning' },
         { value: 20 }
       ];
-      element = $compile('<progress animate="false"><bar ng-repeat="o in objects" value="o.value" type="{{o.type}}">{{o.value}}</bar></progress>')($rootScope);
+      element = $compile('<uib-progress animate="false"><uib-bar ng-repeat="o in objects" value="o.value" type="{{o.type}}">{{o.value}}</uib-bar></uib-progress>')($rootScope);
       $rootScope.$digest();
     }));
 
@@ -219,7 +264,7 @@ describe('progressbar directive', function () {
     describe('"max" attribute', function() {
       beforeEach(inject(function() {
         $rootScope.max = 200;
-        element = $compile('<progress max="max" animate="false"><bar ng-repeat="o in objects" value="o.value">{{o.value}}/{{max}}</bar></progress>')($rootScope);
+        element = $compile('<uib-progress max="max" animate="false"><uib-bar ng-repeat="o in objects" value="o.value">{{o.value}}/{{max}}</uib-bar></uib-progress>')($rootScope);
         $rootScope.$digest();
       }));
 

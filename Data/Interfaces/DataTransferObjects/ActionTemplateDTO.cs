@@ -23,5 +23,8 @@ namespace Data.Interfaces.DataTransferObjects
         public string ComponentActivities { get; set; }
 
         public string Category { get; set; }
+
+        [JsonProperty("minPaneWidth")]
+        public int MinPaneWidth { get; set; }
     }
 }

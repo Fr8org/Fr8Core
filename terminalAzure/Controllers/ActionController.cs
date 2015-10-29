@@ -5,7 +5,7 @@ using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using Data.States;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 
 namespace terminalAzure.Controllers
 {    

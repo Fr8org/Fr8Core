@@ -21,7 +21,7 @@ using terminalDocuSign;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Infrastructure.StructureMap;
 
-using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
+using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Tests.Fixtures;

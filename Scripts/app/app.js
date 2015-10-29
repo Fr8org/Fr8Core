@@ -11,7 +11,8 @@ var app = angular.module("app", [
     "datatables",
     "ngFileUpload",
     "textAngular",
-    "ui.select"
+    "ui.select",
+    "pusher-angular"
 ]);
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
 app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
@@ -71,7 +72,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
                         delete (config.params.suppressSpinner);
                     }
                     else {
-                        Metronic.startPageLoading({ animate: true });
                     }
                     return config;
                 },
@@ -96,12 +96,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             .state('routeList', {
             url: "/processes",
             templateUrl: "/AngularTemplate/RouteList",
-            data: { pageTitle: 'Routes', pageSubTitle: 'This page displays all process templates' }
+            data: { pageTitle: 'Routes', pageSubTitle: 'This page displays all Routes' }
         })
             .state('routeForm', {
             url: "/processes/{id}",
             templateUrl: "/AngularTemplate/RouteForm",
-            data: { pageTitle: 'Route', pageSubTitle: 'Add a new Process Template' },
+            data: { pageTitle: 'Route', pageSubTitle: 'Add a new Route' },
         })
             .state('processBuilder', {
             url: "/processes/{id}/builder",
@@ -143,10 +143,20 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             templateUrl: "/AngularTemplate/containerDetails",
             data: { pageTitle: 'Container  Details', pageSubTitle: '' }
         })
+            .state('solution', {
+            url: "/solution/{solutionName}",
+            templateUrl: "/AngularTemplate/Solution",
+            data: { pageTitle: 'Create a Solution', pageSubTitle: '' }
+        })
             .state('containers', {
             url: "/containers",
             templateUrl: "/AngularTemplate/ContainerList",
             data: { pageTitle: 'Containers', pageSubTitle: 'This page displays all Containers ' },
+        })
+            .state('webservices', {
+            url: "/webservices",
+            templateUrl: "/AngularTemplate/WebServiceList",
+            data: { pageTitle: 'Web Services', pageSubTitle: '' }
         });
     }]);
 /* Init global settings and run the app */

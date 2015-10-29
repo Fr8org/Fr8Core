@@ -1,40 +1,38 @@
-﻿using AutoMapper;
-using Data.Constants;
-using Data.Entities;
-using Newtonsoft.Json.Linq;
-using PluginBase.Infrastructure;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
-using Core.Interfaces;
-using PluginBase;
-using Data.Interfaces.ManifestSchemas;
 using System.Threading.Tasks;
-using Core.Enums;
+using AutoMapper;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Data.Constants;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Enums;
+using TerminalBase;
+using Data.Interfaces.Manifests;
+using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
-using PluginBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {
     public class Receive_DocuSign_Envelope_v1 : BasePluginAction
     {
-        // TODO: remove this as of DO-1064
-        // IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
-
         public Receive_DocuSign_Envelope_v1()
         {
-            // TODO: remove this as of DO-1064
-            // _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
         }
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
-                return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial);
-            return curActionDTO;
+            if (NeedsAuthentication(curActionDTO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            return await ProcessConfigurationRequest(curActionDTO, dto => ConfigurationRequestType.Initial);
         }
 
         public void Activate(ActionDTO curActionDTO)

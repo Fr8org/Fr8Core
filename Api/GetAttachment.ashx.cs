@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Web;
 using System.Web.Services;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using StructureMap;
 
-namespace Web.Api
+namespace HubWeb.Api
 {
     /// <summary>
     /// Summary description for $codebehindclassname$

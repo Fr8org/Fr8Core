@@ -76,12 +76,11 @@ module dockyard.tests.controller {
                     configurationControls: utils.fixtures.ActionDesignDTO.configurationControls,
                     crateStorage: null,
                     parentRouteNodeId: 1,
+                    activityTemplate: null,
                     activityTemplateId: 1,
                     isTempId: false,
                     id: 0,
-                    // ActionListId is set to null, since there is no ActionsLists on a blank db.
-                    actionListId: null,
-                    activityTemplate: utils.fixtures.ActivityTemplate.activityTemplateDO
+                    childrenActions: null
                 };
 
             postInvoker(done, actions);

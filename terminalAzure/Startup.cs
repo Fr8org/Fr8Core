@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
-using Core.StructureMap;
-using Data.Infrastructure.AutoMapper;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Owin;
-using PluginBase;
-using PluginBase.BaseClasses;
 using StructureMap;
+using Data.Infrastructure.AutoMapper;
+using Hub.StructureMap;
+using TerminalBase;
+using TerminalBase.BaseClasses;
 
 [assembly: OwinStartup(typeof(terminalAzure.Startup))]
 

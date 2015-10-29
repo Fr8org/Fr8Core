@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Enums;
+using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
-using DocuSign.Integrations.Client;
-using PluginBase.Infrastructure;
+using Data.Interfaces.Manifests;
+using Hub.Enums;
+using TerminalBase.Infrastructure;
 using Utilities;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
-using PluginBase.BaseClasses;
+using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {
@@ -28,9 +28,12 @@ namespace terminalDocuSign.Actions
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
-                return await ProcessConfigurationRequest(curActionDTO, actionDTO => ConfigurationEvaluator(actionDTO));
-            return curActionDTO;
+            if (NeedsAuthentication(curActionDTO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }
 
         public object Activate(ActionDTO curActionDTO)
@@ -258,50 +261,10 @@ namespace terminalDocuSign.Actions
                 }
             };
             
-            // var recipientSource = new RadioButtonGroupControlDefinitionDTO()
-            // {
-            //     Label = "Recipient",
-            //     GroupName = "Recipient",
-            //     Name = "Recipient",
-            //     Radios = new List<RadioButtonOption>()
-            //     {
-            //         new RadioButtonOption()
-            //         {
-            //             Selected = true,
-            //             Name = "specific",
-            //             Value ="This specific value"
-            //         },
-            //         new RadioButtonOption()
-            //         {
-            //             Selected = false,
-            //             Name = "crate",
-            //             Value ="A value from an Upstream Crate"
-            //         }
-            //     }
-            // };
-            // 
-            // recipientSource.Radios[0].Controls.Add(new TextBoxControlDefinitionDTO()
-            // {
-            //     Label = "",
-            //     Name = "Address"
-            // });
-            // 
-            // recipientSource.Radios[1].Controls.Add(new DropDownListControlDefinitionDTO()
-            // {
-            //     Label = "",
-            //     Name = "Select Upstream Crate",
-            //     Source = new FieldSourceDTO
-            //     {
-            //         Label = "Upstream Plugin-Provided Fields",
-            //         ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
-            //     }
-            // });
-            
-
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
-                CreateSpecificOrUpstreamValueChooser("Recipient", "Recipient", "Upstream Plugin-Provided Fields")
+                new TextSourceControlDefinitionDTO("For the Email Address Use", "Upstream Plugin-Provided Fields", "Recipient")
             };
 
             var controls = new StandardConfigurationControlsCM()

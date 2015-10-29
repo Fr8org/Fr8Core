@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="GetEmailHTML.aspx.cs" Inherits="Web.Api.GetEmailHTML" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="GetEmailHTML.aspx.cs" Inherits="HubWeb.Api.GetEmailHTML" %> 
 
 <%@ OutputCache Location="None" VaryByParam="None" %>
 

@@ -4,24 +4,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http.Results;
 using AutoMapper;
-using Core.Interfaces;
-using Core.Managers.APIManagers.Transmitters.Plugin;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
-using terminalAzure;
-using UtilitiesTesting.Fixtures;
-using Web.Controllers;
+using Data.Interfaces.Manifests;
+using Hub.Interfaces;
+using Hub.Managers.APIManagers.Transmitters.Plugin;
+using HubWeb.Controllers;
 using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
+using terminalAzure;
 using terminalDocuSign;
 
-using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
+using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Infrastructure.AutoMapper;
+using System.Security.Principal;
 
 namespace pluginIntegrationTests
 {
@@ -62,6 +63,7 @@ namespace pluginIntegrationTests
 
             _processTemplateDO = FixtureData.Route_PluginIntegration();
             _processTemplateDO.Fr8Account = _testUserAccount;
+            System.Threading.Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(_testUserAccount.Id), new string[] { "User" });
 
             _subrouteDO = FixtureData.Subroute_PluginIntegration();
             _subrouteDO.ParentRouteNode = _processTemplateDO;
@@ -190,10 +192,10 @@ namespace pluginIntegrationTests
             var curActionController = CreateActionController();
             var curActionDO = FixtureData.TestAction_Blank();
 
-            if (_subrouteDO.RouteNodes == null)
+            if (_subrouteDO.ChildNodes == null)
             {
-                _subrouteDO.RouteNodes = new List<RouteNodeDO>();
-                _subrouteDO.RouteNodes.Add(curActionDO);
+                _subrouteDO.ChildNodes = new List<RouteNodeDO>();
+                _subrouteDO.ChildNodes.Add(curActionDO);
             }
 
             if (activityTemplate != null)
@@ -206,6 +208,8 @@ namespace pluginIntegrationTests
             curActionDO.ParentRouteNodeId = _subrouteDO.Id;
 
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+
+            curActionDTO.IsTempId = true;
 
             var result = curActionController.Save(curActionDTO)
                 as OkNegotiatedContentResult<ActionDTO>;

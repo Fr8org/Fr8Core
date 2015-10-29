@@ -13,6 +13,8 @@
             private urlPrefix: string) {
 
             $scope.authError = false;
+            $scope.authErrorText = null;
+
             $scope.formData = {
                 username: 'docusign_developer@dockyard.company',
                 password: 'grolier34'
@@ -31,18 +33,22 @@
                     Password: $scope.formData.password
                 };
 
-                $http.post('/actions/authenticate', data)
-                    .then(function () {
-                        $scope.$close();
+                $http.post('/authentication/token', data)
+                    .then(function (res: any) {
+                        debugger;
+
+                        if (res.data.error) {
+                            $scope.authErrorText = res.data.error;
+                        }
+                        else {
+                            $scope.authErrorText = null;
+                            $scope.$close();
+                        }
                     })
                     .catch(function () {
                         $scope.authError = true;
                     });
             };
-
-            // $scope.actionTypeSelected = function (actionType) {
-            //     $scope.$close();
-            // }
         }
     }
 

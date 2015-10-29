@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 
-namespace Web.ViewModels
+namespace HubWeb.ViewModels
 {
     /// <summary>
     /// This is the VM used to create the VIEW /Email/Send

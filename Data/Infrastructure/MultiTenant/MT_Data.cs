@@ -7,7 +7,7 @@ using Data.Interfaces;
 using Data.Entities;
 using System.Collections.Generic;
 using System.Reflection;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using StructureMap;
 using Data.Infrastructure.StructureMap;
 
@@ -22,10 +22,10 @@ namespace Data.Infrastructure.MultiTenant
             this._mtField = new MT_Field();
         }
 
-        public Data.Entities.MT_Data Create(Manifest curManifest, Data.Entities.MT_Object correspondingMTObject)
+        public Data.Entities.MT_Data Create(string curFr8AccountId, Manifest curManifest, Data.Entities.MT_Object correspondingMTObject)
         {
             var data = new Data.Entities.MT_Data();
-            data.fr8AccountId = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser();
+            data.fr8AccountId = curFr8AccountId;
             data.CreatedAt = DateTime.Now;
             data.UpdatedAt = DateTime.Now;
             data.MT_Object = correspondingMTObject;

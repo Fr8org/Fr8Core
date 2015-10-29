@@ -1,16 +1,16 @@
 ﻿using System;
 using System.IO;
-using Core.Interfaces;
-using Data.Entities;
-using Data.Infrastructure.StructureMap;
-using Data.Interfaces;
-using Data.Repositories;
-using Utilities.Configuration.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
+using Data.Entities;
+using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
+using Data.Repositories;
+using Hub.Interfaces;
+using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

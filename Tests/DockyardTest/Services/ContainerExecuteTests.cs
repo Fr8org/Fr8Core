@@ -1,18 +1,18 @@
 ﻿using System;
-// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
-using InternalInterface = Core.Interfaces;
-using Core.Interfaces;
-using Core.Services;
-using Data.Entities;
-using Data.Interfaces;
-using Data.States;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
+// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
+using InternalInterface = Hub.Interfaces;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using Hub.Interfaces;
+using Hub.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using Data.Interfaces.DataTransferObjects;
 
 namespace DockyardTest.Services
 {
@@ -203,9 +203,9 @@ namespace DockyardTest.Services
           
             uow.RouteNodeRepository.Add(currActivity);
 
-            if (currActivity.RouteNodes != null)
+            if (currActivity.ChildNodes != null)
             {
-                foreach (var activity in currActivity.RouteNodes)
+                foreach (var activity in currActivity.ChildNodes)
                     AddActionToRepository(uow, activity);
             }
         }
