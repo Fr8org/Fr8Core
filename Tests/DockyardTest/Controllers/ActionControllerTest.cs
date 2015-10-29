@@ -44,12 +44,20 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var route = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(route);
+
+                var subroute = FixtureData.TestSubrouteDO1();
+                uow.SubrouteRepository.Add(subroute);
+                uow.SaveChanges();
+
                 //Arrange is done with empty action list
 
                 //Act
                 var actualAction = CreateActionWithId(1);
 
                 actualAction.IsTempId = true;
+                actualAction.ParentRouteNodeId = subroute.Id;
                 
                 var controller = new ActionController();
                 controller.Save(actualAction);
@@ -69,9 +77,16 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var route = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(route);
+
+                var subroute = FixtureData.TestSubrouteDO1();
+                uow.SubrouteRepository.Add(subroute);
+
                 //Arrange
                 //Add one test action
                 var action = FixtureData.TestAction1();
+                action.ParentRouteNodeId = subroute.Id;
                 
                 uow.ActionRepository.Add(action);
                 uow.SaveChanges();
@@ -79,6 +94,8 @@ namespace DockyardTest.Controllers
                 //Act
                 var actualAction = CreateActionWithId(2);
                 actualAction.IsTempId = true;
+                actualAction.ParentRouteNodeId = subroute.Id;
+
                 var controller = new ActionController();
                 controller.Save(actualAction);
 

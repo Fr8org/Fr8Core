@@ -137,7 +137,11 @@ namespace Hub.Services
                 }
 
                 // Assign Ordering.
-                var subroute = uow.SubrouteRepository.GetByKey(submittedAction.ParentRouteNodeId);
+                RouteNodeDO subroute = null;
+                if (submittedAction.ParentRouteNodeId != null)
+                {
+                    subroute = uow.RouteNodeRepository.GetByKey(submittedAction.ParentRouteNodeId);
+                }
 
                 if (subroute == null)
                 {
