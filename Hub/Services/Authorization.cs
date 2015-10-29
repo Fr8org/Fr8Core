@@ -389,7 +389,7 @@ namespace Hub.Services
                         .FindOne(x => x.Plugin.Id == activityTemplate.Plugin.Id
                             && x.UserDO.Id == account.Id);
 
-                    if (authToken == null)
+                    if (authToken == null || string.IsNullOrEmpty(authToken.Token))
                     {
                         AddAuthenticationCrate(curActionDTO, activityTemplate.AuthenticationType);
                         return true;

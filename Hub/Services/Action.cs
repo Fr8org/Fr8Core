@@ -136,6 +136,17 @@ namespace Hub.Services
                     submittedAction.ActivityTemplate = uow.ActivityTemplateRepository.GetByKey(submittedAction.ActivityTemplateId.Value);
                 }
 
+                // Assign Ordering.
+                var subroute = uow.SubrouteRepository.GetByKey(submittedAction.ParentRouteNodeId);
+
+                if (subroute == null)
+                {
+                    throw new Exception(string.Format("Unable to find Subroute by id = {0}", submittedAction.ParentRouteNodeId));
+                }
+
+                submittedAction.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
+
+                // Add Action to repo.
                 uow.ActionRepository.Add(submittedAction);
 
                 // If we have created new action add it to pending configuration list.
@@ -278,6 +289,8 @@ namespace Hub.Services
 
             if (!_authorizationToken.ValidateAuthenticationNeeded(userId, tempActionDTO))
             {
+                curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
+
                 try
                 {
                     tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
