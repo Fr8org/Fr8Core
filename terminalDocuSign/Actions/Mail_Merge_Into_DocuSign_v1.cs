@@ -170,7 +170,9 @@ namespace terminalDocuSign.Actions
                         ActivityTemplate = dataSourceActTempl,
                         Name = dataSourceActTempl.Name,
                         Label = dataSourceActTempl.Label,
-                        ParentRouteNode = curActionDO
+                        CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
+                        ParentRouteNode = curActionDO,
+                        Ordering = 1
                     });
 
                     ActivityTemplateDO mapFieldActTempl = uow.ActivityTemplateRepository.GetAll().SingleOrDefault(at => at.Name == "MapFields");
@@ -181,7 +183,9 @@ namespace terminalDocuSign.Actions
                         ActivityTemplate = mapFieldActTempl,
                         Name = mapFieldActTempl.Name,
                         Label = mapFieldActTempl.Label,
-                        ParentRouteNode = curActionDO
+                        CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
+                        ParentRouteNode = curActionDO,
+                        Ordering = 2
                     });
 
                     ActivityTemplateDO sendDocuSignEnvActTempl = uow.ActivityTemplateRepository.GetAll().SingleOrDefault(at => at.Name == "Send_DocuSign_Envelope");
@@ -190,8 +194,10 @@ namespace terminalDocuSign.Actions
                     {
                         ActivityTemplate = sendDocuSignEnvActTempl,
                         Name = sendDocuSignEnvActTempl.Name,
+                        CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
                         Label = sendDocuSignEnvActTempl.Label,
-                        ParentRouteNode = curActionDO
+                        ParentRouteNode = curActionDO, 
+                        Ordering = 3
                     });
 
                     uow.ActionRepository.Add(curActionDO);

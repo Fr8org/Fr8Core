@@ -238,6 +238,7 @@ module dockyard.directives.paneConfigureAction {
                 };
 
                 function processConfiguration() {
+                    debugger;
                     // Check if authentication is required.
                     if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, 'Standard Authentication')) {
                         var authCrate = crateHelper
@@ -247,13 +248,13 @@ module dockyard.directives.paneConfigureAction {
 
                         // Dockyard auth mode.
                         if (authMS.Mode == 1) {
-                            startInternalAuthentication($scope.currentAction.activityTemplateId);
+                            startInternalAuthentication($scope.currentAction.activityTemplate.id);
                         }
 
                         // External auth mode.                           
                         else {
                             // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                            startExternalAuthentication($scope.currentAction.activityTemplateId);
+                            startExternalAuthentication($scope.currentAction.activityTemplate.id);
                         }
 
                         return;
