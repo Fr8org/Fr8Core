@@ -168,6 +168,7 @@ namespace terminalDocuSign.Actions
                     curActionDO.ChildNodes.Add(new ActionDO()
                     {
                         ActivityTemplate = dataSourceActTempl,
+                        IsTempId = true,
                         Name = dataSourceActTempl.Name,
                         Label = dataSourceActTempl.Label,
                         CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
@@ -181,6 +182,7 @@ namespace terminalDocuSign.Actions
                     curActionDO.ChildNodes.Add(new ActionDO()
                     {
                         ActivityTemplate = mapFieldActTempl,
+                        IsTempId = true,
                         Name = mapFieldActTempl.Name,
                         Label = mapFieldActTempl.Label,
                         CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
@@ -193,6 +195,7 @@ namespace terminalDocuSign.Actions
                     curActionDO.ChildNodes.Add(new ActionDO()
                     {
                         ActivityTemplate = sendDocuSignEnvActTempl,
+                        IsTempId = true,
                         Name = sendDocuSignEnvActTempl.Name,
                         CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
                         Label = sendDocuSignEnvActTempl.Label,
@@ -200,9 +203,9 @@ namespace terminalDocuSign.Actions
                         Ordering = 3
                     });
 
-                    uow.ActionRepository.Add(curActionDO);
-                    uow.Db.Entry<ActionDO>(curActionDO).State = System.Data.Entity.EntityState.Modified;
-                    uow.SaveChanges();
+                    //uow.ActionRepository.Add(curActionDO);
+                    //uow.Db.Entry<ActionDO>(curActionDO).State = System.Data.Entity.EntityState.Modified;
+                    //uow.SaveChanges();
                 }
             }
             catch (Exception ex)
