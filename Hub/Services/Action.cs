@@ -450,9 +450,6 @@ namespace Hub.Services
 
             var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Run", curActionDO, curContainerDO.Id);
 
-            // Temporarily commented out by yakov.gnusin.
-            EventManager.ActionDispatched(curActionDO, curContainerDO.Id);
-
             return payloadDTO;
         }
 
@@ -501,17 +498,30 @@ namespace Hub.Services
             return await CallPluginActionAsync<ActionDTO>("deactivate", curActionDO);
         }
 
-        private Task<TResult> CallPluginActionAsync<TResult>(string actionName, ActionDO curActionDO, int processId = 0)
+        private Task<TResult> CallPluginActionAsync<TResult>(string actionName, ActionDO curActionDO, int containerId = 0)
         {
             if (actionName == null) throw new ArgumentNullException("actionName");
             if (curActionDO == null) throw new ArgumentNullException("curActionDO");
 
             var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
-            dto.ProcessId = processId;
+            dto.ProcessId = containerId;
             _authorizationToken.PrepareAuthToken(dto);
 
-            return ObjectFactory.GetInstance<IPluginTransmitter>()
-                .CallActionAsync<TResult>(actionName, dto);
+            EventManager.ActionDispatched(curActionDO, containerId);
+
+            if (containerId != 0)
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var containerDO = uow.ContainerRepository.GetByKey(containerId);
+                    EventManager.ContainerSent(containerDO, curActionDO);
+                    var reponse = ObjectFactory.GetInstance<IPluginTransmitter>().CallActionAsync<TResult>(actionName, dto);
+                    EventManager.ContainerReceived(containerDO, curActionDO);
+                    return reponse;
+                }
+            }
+
+            return ObjectFactory.GetInstance<IPluginTransmitter>().CallActionAsync<TResult>(actionName, dto);
         }
 
 

@@ -35,6 +35,17 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static CrateDTO CrateDTO3()
+        {
+            return new CrateDTO()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Label = "Test",
+                Contents = "Container Created Test",
+                ParentCrateId = ""
+            };
+        }
+
         public static List<ControlDefinitionDTO> SampleConfigurationControls()
         {
             var fieldSelectDocusignTemplateDTO = new DropDownListControlDefinitionDTO()

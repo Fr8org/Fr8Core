@@ -108,7 +108,7 @@ var dockyard;
                         //Allow some time for parent and current action instance to sync
                         function () { return $timeout(function () { return processConfiguration(); }, 300); });
                         // Get configuration settings template from the server if the current action does not contain those             
-                        if ($scope.currentAction.activityTemplate && $scope.currentAction.activityTemplate.id > 0) {
+                        if ($scope.currentAction.activityTemplateId > 0) {
                             if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
                                 $scope.loadConfiguration();
                             }

@@ -314,5 +314,18 @@ namespace UtilitiesTesting.Fixtures
             };
             return route;
         }
+        public static RouteDO TestContainerCreateAddsLogs()
+        {
+            var curRouteDO = new RouteDO
+            {
+                Id = 1,
+                Description = "DO-1419 Container Create Adds Logs Test",
+                Name = "Container Create",
+                RouteState = RouteState.Active
+             
+            };
+
+            return curRouteDO;
+        }
     }
 }

@@ -7,6 +7,9 @@ using Data.Validations;
 using FluentValidation;
 using Newtonsoft.Json;
 using System;
+using Data.Infrastructure;
+using System.Data.Entity.Infrastructure;
+
 
 namespace Data.Entities
 {
@@ -30,11 +33,11 @@ namespace Data.Entities
         public virtual RouteDO Route { get; set; }
 
         public virtual ICollection<ProcessNodeDO> ProcessNodes { get; set; }
-            
+
         [Required]
         [ForeignKey("ContainerStateTemplate")]
         public int ContainerState { get; set; }
-              
+
         public virtual _ContainerStateTemplate ContainerStateTemplate { get; set; }
 
         [ForeignKey("CurrentRouteNode")]
@@ -73,6 +76,11 @@ namespace Data.Entities
             ContainerValidator curValidator = new ContainerValidator();
             curValidator.ValidateAndThrow(this);
 
+        }
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
+        {
+            base.OnModify(originalValues, currentValues);
+            EventManager.ContainerStateChanged(currentValues);
         }
     }
 }
