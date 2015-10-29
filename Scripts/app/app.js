@@ -72,7 +72,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
                         delete (config.params.suppressSpinner);
                     }
                     else {
-                        Metronic.startPageLoading({ animate: true });
                     }
                     return config;
                 },
