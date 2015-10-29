@@ -169,12 +169,20 @@
             }
         }
 
+        private resetClickedFlag(fields: Array<any>) {
+            for (var field of fields) {
+                if (field.clicked) 
+                    field.clicked = false;
+            }
+        }
+
         public createControlListFromCrateStorage(crateStorage: model.CrateStorage): model.ControlsList {
             var crate = this.findByManifestType(
                 crateStorage, 'Standard Configuration Controls'
                 );
             var controlsList = new model.ControlsList();
             controlsList.fields = angular.fromJson(crate.contents).Controls;
+            this.resetClickedFlag(controlsList.fields); // Unset 'clicked' flag on buttons and other coontrols on which it exists
             this.populateListItemsFromDataSource(controlsList.fields, crateStorage);
             return controlsList;
         }

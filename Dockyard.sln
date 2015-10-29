@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubWeb", "HubWeb.csproj", "{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}"
 EndProject
@@ -24,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6CF6EAFB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockyardTest", "Tests\DockyardTest\DockyardTest.csproj", "{8D38298A-9246-4AB9-80C4-9A830213346C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Terminals", "Terminals", "{9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalAzure", "terminalAzure\terminalAzure.csproj", "{D019B112-55A8-4661-AFF5-329F998D9E28}"
 EndProject
