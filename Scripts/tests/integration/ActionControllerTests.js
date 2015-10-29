@@ -74,6 +74,7 @@ var dockyard;
                             crateStorage: null,
                             parentRouteNodeId: 1,
                             activityTemplate: null,
+                            activityTemplateId: 1,
                             isTempId: false,
                             id: 0,
                             childrenActions: null
@@ -92,6 +93,7 @@ var dockyard;
                         crateStorage: null,
                         parentRouteNodeId: 1,
                         activityTemplate: null,
+                        activityTemplateId: 1,
                         isTempId: false,
                         id: 1,
                         childrenActions: null
