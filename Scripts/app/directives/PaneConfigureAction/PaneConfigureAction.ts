@@ -122,7 +122,7 @@ module dockyard.directives.paneConfigureAction {
                 );
 
                 // Get configuration settings template from the server if the current action does not contain those             
-                if ($scope.currentAction.activityTemplateId > 0) {
+                if ($scope.currentAction.activityTemplate && $scope.currentAction.activityTemplate.id > 0) {
                     if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
                         $scope.loadConfiguration();
                     } else {
@@ -249,13 +249,13 @@ module dockyard.directives.paneConfigureAction {
 
                         // Dockyard auth mode.
                         if (authMS.Mode == 1) {
-                            StartInternalAuthentication($scope.currentAction.activityTemplateId);
+                            StartInternalAuthentication($scope.currentAction.activityTemplate.id);
                         }
 
                         // External auth mode.                           
                         else {
                             // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                            StartExternalAuthentication($scope.currentAction.activityTemplateId);
+                            StartExternalAuthentication($scope.currentAction.activityTemplate.id);
                         }
 
                         return;

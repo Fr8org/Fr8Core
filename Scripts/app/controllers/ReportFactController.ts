@@ -5,7 +5,7 @@
         GetFacts: () => void;
         dtOptionsBuilder: any;      
         dtColumnDefs: any;
-        factRecords: Array<model.FactDTO>
+        factRecords: Array<model.FactDTO>;
     }
 
     class ReportFactController {

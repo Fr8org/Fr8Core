@@ -168,6 +168,8 @@ namespace Hub.Services
 
             TraverseActivity(activity, activities.Add);
 
+	        activities.Reverse();
+
             activities.ForEach(x =>
             {
                 // TODO: it is not very smart solution. Activity service should not knon about anything except Activities
@@ -268,9 +270,8 @@ namespace Hub.Services
             return curActivityTemplates;
         }
 
-        public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IFr8AccountDO curAccount)
+	    public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups()
         {
-            //TODO make this function use curAccount !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             List<ActivityTemplateCategoryDTO> curActivityTemplates;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

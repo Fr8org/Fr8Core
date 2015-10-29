@@ -1,4 +1,4 @@
-﻿﻿using AutoMapper;
+﻿using AutoMapper;
 using Data.Entities;
 using TerminalBase.Infrastructure;
 using System;

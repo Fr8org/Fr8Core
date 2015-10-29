@@ -455,6 +455,7 @@
     <Content Include="Content\documents\Medical_Form_v2.xml" />
     <Content Include="Content\icons\web_services\aws-icon-64x64.png" />
     <Content Include="Content\icons\web_services\docusign-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\DocuSign-Logo.png" />
     <Content Include="Content\icons\web_services\slack-icon-64x64.png" />
     <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\backgrounds\about-bg.jpg" />
@@ -3886,7 +3887,9 @@
     <Content Include="Content\documents\field_trip_permission_form.docx" />
     <Content Include="Content\documents\medical_intake_form.pdf" />
     <Content Include="Content\documents\Sample Excel Contact List.xlsx" />
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="newrelic\newrelic.config" />
     <Content Include="newrelic\extensions\extension.xsd">
       <SubType>Designer</SubType>
@@ -4161,7 +4164,7 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>59448</DevelopmentServerPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:30643/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

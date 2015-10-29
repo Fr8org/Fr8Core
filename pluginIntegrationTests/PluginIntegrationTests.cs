@@ -209,6 +209,8 @@ namespace pluginIntegrationTests
 
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
 
+            curActionDTO.IsTempId = true;
+
             var result = curActionController.Save(curActionDTO)
                 as OkNegotiatedContentResult<ActionDTO>;
 
