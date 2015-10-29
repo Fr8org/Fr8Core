@@ -108,7 +108,7 @@ var dockyard;
                         //Allow some time for parent and current action instance to sync
                         function () { return $timeout(function () { return processConfiguration(); }, 300); });
                         // Get configuration settings template from the server if the current action does not contain those             
-                        if ($scope.currentAction.activityTemplateId > 0) {
+                        if ($scope.currentAction.activityTemplate && $scope.currentAction.activityTemplate.id > 0) {
                             if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
                                 $scope.loadConfiguration();
                             }
@@ -216,11 +216,11 @@ var dockyard;
                                 var authMS = angular.fromJson(authCrate.contents);
                                 // Dockyard auth mode.
                                 if (authMS.Mode == 1) {
-                                    StartInternalAuthentication($scope.currentAction.activityTemplateId);
+                                    StartInternalAuthentication($scope.currentAction.activityTemplate.id);
                                 }
                                 else {
                                     // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                                    StartExternalAuthentication($scope.currentAction.activityTemplateId);
+                                    StartExternalAuthentication($scope.currentAction.activityTemplate.id);
                                 }
                                 return;
                             }

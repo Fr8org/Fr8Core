@@ -73,7 +73,7 @@ var dockyard;
                             configurationControls: fx.ActionDesignDTO.configurationControls,
                             crateStorage: null,
                             parentRouteNodeId: 1,
-                            activityTemplateId: 1,
+                            activityTemplate: null,
                             isTempId: false,
                             id: 0,
                             childrenActions: null
@@ -91,7 +91,7 @@ var dockyard;
                         configurationControls: fx.ActionDesignDTO.configurationControls,
                         crateStorage: null,
                         parentRouteNodeId: 1,
-                        activityTemplateId: 1,
+                        activityTemplate: null,
                         isTempId: false,
                         id: 1,
                         childrenActions: null

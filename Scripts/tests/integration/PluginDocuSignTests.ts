@@ -76,7 +76,7 @@ module dockyard.tests.controller {
                     configurationControls: utils.fixtures.ActionDesignDTO.configurationControls,
                     crateStorage: null,
                     parentRouteNodeId: 1,
-                    activityTemplateId: 1,
+                    activityTemplate: null,
                     isTempId: false,
                     id: 0,
                     childrenActions: null
