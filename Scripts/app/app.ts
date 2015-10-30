@@ -60,11 +60,6 @@ app.controller('HeaderController', ['$scope', function ($scope) {
     });
 }]);
 
-/* Setup Layout Part - Sidebar */
-app.controller('PageHeadController', ['$scope', function ($scope) {
-
-}]);
-
 /* Setup Layout Part - Footer */
 app.controller('FooterController', ['$scope', function ($scope) {
     $scope.$on('$includeContentLoaded', function () {
@@ -127,7 +122,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         .state('processBuilder', {
             url: "/processes/{id}/builder",
             templateUrl: "/AngularTemplate/ProcessBuilder",
-            data: { noTitle: true, noContainer: true },
+            data: { pageTitle: '', noContainer: true },
         })
 
         .state('showIncidents', {
