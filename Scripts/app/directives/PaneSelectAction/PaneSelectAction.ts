@@ -127,7 +127,8 @@ module dockyard.directives.paneSelectAction {
         }
 
         private onActionAdd() {
-            //we should list available actions to user and let him select one
+            /*
+			//we should list available actions to user and let him select one
             this.ActivityTemplateService.getAvailableActivities().$promise.then((categoryList: Array<interfaces.IActivityCategoryDTO>) => {
                 //we should open a modal to let user select one of our activities
                 this.$modal.open({
@@ -154,6 +155,13 @@ module dockyard.directives.paneSelectAction {
                     this._$scope.$emit(MessageType[MessageType.PaneSelectAction_ActivityTypeSelected], eventArgs);
                 });
             });
+			*/
+
+			this.$modal.open({
+				animation: true,
+				templateUrl: 'AngularTemplate/PaneSelectActionModal',
+				controller: 'RouteActionsDialogController'
+			});
         }
 
         //The factory function returns Directive object as per Angular requirements
