@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using System.Web.Http.Results;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Web.Controllers;
+using HubWeb.Controllers;
 
 namespace DockyardTest.Controllers
 {

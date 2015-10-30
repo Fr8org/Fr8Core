@@ -72,6 +72,16 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             });
 
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "Select_Fr8_Object",
+                Label = "Select Fr8 Object",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1",
+                MinPaneWidth = 330
+            });
+
             return Json(result);    
         }
     }

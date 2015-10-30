@@ -68,7 +68,7 @@ namespace terminalDocuSign.Actions
         private string ExtractTemplateId(ActionDTO curActionDTO)
         {
             var confCrate = curActionDTO.CrateStorage.CrateDTO.FirstOrDefault(
-                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             var controls = Crate.GetStandardConfigurationControls(confCrate).Controls;
 

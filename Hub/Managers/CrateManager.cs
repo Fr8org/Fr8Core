@@ -64,7 +64,7 @@ namespace Hub.Managers
         {
             return Create(label, 
                 JsonConvert.SerializeObject(new StandardConfigurationControlsCM() { Controls = controls.ToList() }),
-                manifestType: CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+                manifestType: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME,
                 manifestId: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
         }
 
@@ -339,6 +339,30 @@ namespace Hub.Managers
             var standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(confControls.First().Contents);
             return standardCfgControlsMs;
         }
+        public void RemoveCrateByLabelV2(ActionDO curActionDO, string label)
+        {
+            var crateStorageDTO = curActionDO.CrateStorageDTO();
+            crateStorageDTO.CrateDTO.RemoveAll(d => d.Label == label);
+            curActionDO.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+        }
+
+        public void AddOrReplaceCrateV2(string label, ActionDO curActionDO, CrateDTO curCrateDTO)
+        {
+            var existingCratesWithLabelInActionDO = GetCratesByLabel(label, curActionDO.CrateStorageDTO());
+            if (!existingCratesWithLabelInActionDO.Any()) // no existing crates with user provided label found, then add the crate
+            {
+                AddCrate(curActionDO, curCrateDTO);
+            }
+            else
+            {
+                // Remove the existing crate for this label
+                RemoveCrateByLabelV2(curActionDO, label);
+
+                // Add the newly created crate for this label to action's crate storage
+                AddCrate(curActionDO, curCrateDTO);
+            }
+        }
+
 
     }
 }

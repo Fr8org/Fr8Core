@@ -111,8 +111,31 @@ namespace UtilitiesTesting.Fixtures
                 fieldEventRecipientSent);
         }
 
-        #region Private Methods
+        public static CrateDTO CreateStandardConfigurationControlSelectFr8Object(string selected)
+        {
+            var fieldSelectFr8Object = new DropDownListControlDefinitionDTO()
+            {
+                Label = "Select Fr8 Object",
+                Name = "Selected_Fr8_Object",
+                Value = selected,
+                Required = true,
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onChange", "requestConfig")
+                },
+                Source = new FieldSourceDTO
+                {
+                    Label = "Select Fr8 Object",
+                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
+                }
+            };
 
+            return PackControlsCrate(fieldSelectFr8Object);
+        }
+
+      
+        #region Private Methods
+       
         private static CrateDTO PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
             var controlsCrate = CreateStandardConfigurationControlsCrate(
@@ -125,7 +148,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return Create(label,
                 JsonConvert.SerializeObject(new StandardConfigurationControlsCM() { Controls = controls.ToList() }),
-                manifestType: CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+                manifestType: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME,
                 manifestId: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
         }
 

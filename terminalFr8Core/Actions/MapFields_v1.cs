@@ -23,7 +23,7 @@ namespace terminalFr8Core.Actions
             var curControlsCrate = actionDto
                 .CrateStorage
                 .CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             if (curControlsCrate == null)
             {
