@@ -13,6 +13,7 @@ using AutoMapper;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
+using Utilities;
 using InternalInterface = Hub.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
@@ -77,8 +78,20 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var processTemplateDO = uow.RouteRepository.GetByKey(routeId);
-                await _container.Launch(processTemplateDO, null);
-
+                var pusherNotifier = new PusherNotifier();
+                try
+                {
+                    await _container.Launch(processTemplateDO, null);
+                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
+                    "fr8pusher_container_executed", String.Format("Route \"{0}\" executed", processTemplateDO.Name));
+                }
+                catch
+                {
+                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
+                    "fr8pusher_container_failed", String.Format("Route \"{0}\" failed", processTemplateDO.Name));
+                }
+                
+                
                 return Ok();
             }
         }
