@@ -126,26 +126,41 @@ namespace DockyardTest.Services
         [Test]
         public void CanCRUDActions()
         {
+            ActionDO origActionDO;
+
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IAction action = new Action();
-                var origActionDO = new FixtureData(uow).TestAction3();
+                var route = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(route);
 
-                //Add
-                action.SaveOrUpdateAction(origActionDO);
+                var subroute = FixtureData.TestSubrouteDO1();
+                uow.RouteNodeRepository.Add(subroute);
 
-                //Get
-                var actionDO = action.GetById(origActionDO.Id);
-                Assert.AreEqual(origActionDO.Name, actionDO.Name);
-                Assert.AreEqual(origActionDO.Id, actionDO.Id);
-                Assert.AreEqual(origActionDO.CrateStorage, actionDO.CrateStorage);
+                origActionDO = new FixtureData(uow).TestAction3();
 
-                Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
+                origActionDO.IsTempId = true;
+                origActionDO.ParentRouteNodeId = subroute.Id;
 
-                ISubroute subRoute = new Subroute();
-                //Delete
-                subRoute.DeleteAction(actionDO.Id);
+                uow.ActivityTemplateRepository.Add(origActionDO.ActivityTemplate);
+                uow.SaveChanges();
             }
+
+            IAction action = new Action();
+
+            //Add
+            action.SaveOrUpdateAction(origActionDO);
+
+            //Get
+            var actionDO = action.GetById(origActionDO.Id);
+            Assert.AreEqual(origActionDO.Name, actionDO.Name);
+            Assert.AreEqual(origActionDO.Id, actionDO.Id);
+            Assert.AreEqual(origActionDO.CrateStorage, actionDO.CrateStorage);
+
+            Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
+
+            ISubroute subRoute = new Subroute();
+            //Delete
+            subRoute.DeleteAction(actionDO.Id);
         }
 
         [Test]
@@ -159,7 +174,7 @@ namespace DockyardTest.Services
                 Visit(tree, x => uow.ActionRepository.Add(x));
                 Visit(updatedTree, x => x.Name = string.Format("We were here {0}", x.Id));
 
-                _action.Update(uow, updatedTree);
+                _action.SaveOrUpdateAction(uow, updatedTree);
 
                 var result = uow.ActionRepository.GetByKey(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
@@ -195,7 +210,7 @@ namespace DockyardTest.Services
                     removeCounter++;
                 });
 
-                _action.Update(uow, updatedTree);
+                _action.SaveOrUpdateAction(uow, updatedTree);
 
                 var result = uow.ActionRepository.GetByKey(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
@@ -260,7 +275,7 @@ namespace DockyardTest.Services
                     });
                 }
 
-                _action.Update(uow, updatedTree);
+                _action.SaveOrUpdateAction(uow, updatedTree);
 
                 var result = uow.ActionRepository.GetByKey(tree.Id);
                 Compare(updatedTree, result, (r, a) =>

@@ -12,6 +12,8 @@
 <script src="~/bower_components/datatables/media/js/jquery.dataTables.min.js"></script>
 <script src="/bower_components/angular-datatables/dist/angular-datatables.js"></script>
 <script src="/bower_components/ng-file-upload/ng-file-upload-all.min.js" type="text/javascript"></script>
+<script src="/bower_components/pusher/dist/pusher.js"></script>
+<script src="/bower_components/pusher-angular/lib/pusher-angular.js" type="text/javascript"></script>
 <script src="~/Scripts/lib/jquery.blockui.min.js"></script>
 
 <script src="/bower_components/rangy/rangy-core.min.js"></script>
@@ -60,6 +62,11 @@
 <script src="~/Scripts/app/services/ContainerService.js"></script>
 <script src="~/Scripts/app/services/UIHelperService.js"></script>
 <script src="~/Scripts/app/services/LayoutService.js"></script>
+<script>
+    var appKey = "@Utilities.Configuration.Azure.CloudConfigurationManager.GetSetting("pusherAppKey")";
+</script>
+<script src="~/Scripts/app/services/PusherNotifierService.js"></script>
+
 <script src="~/Scripts/app/services/UserService.js"></script>
 <script src="~/Scripts/app/services/WebServiceService.js"></script>
 

@@ -10,7 +10,7 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.StructureMap;

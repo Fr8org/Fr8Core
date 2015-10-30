@@ -15,5 +15,15 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("value")]
         public string Value { get; set; }
+
+        public FieldDTO()
+        {
+        }
+
+        public FieldDTO(string key, string value)
+        {
+            Key = key;
+            Value = value;
+        }
     }
 }

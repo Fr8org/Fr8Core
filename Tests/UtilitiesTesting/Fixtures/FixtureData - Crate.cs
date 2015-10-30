@@ -2,7 +2,7 @@
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Data.States;
 using StructureMap;
 using System;
@@ -31,6 +31,17 @@ namespace UtilitiesTesting.Fixtures
                 Id = Guid.NewGuid().ToString(),
                 Label = "Label 2",
                 Contents = "Contents 2",
+                ParentCrateId = ""
+            };
+        }
+
+        public static CrateDTO CrateDTO3()
+        {
+            return new CrateDTO()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Label = "Test",
+                Contents = "Container Created Test",
                 ParentCrateId = ""
             };
         }

@@ -53,7 +53,6 @@ module dockyard.directives.paneConfigureAction {
                 
                 $scope.onChange = (event: any) => {
                     var fieldName: string;
-
                     if (!!event.target === true) {
                         // If called by DOM event (for standard fields), get field name
                         // Get name of field that received the event

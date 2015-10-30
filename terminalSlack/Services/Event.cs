@@ -8,7 +8,7 @@ using System.Web;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Hub.Managers;
 using Utilities.Configuration.Azure;
 using terminalSlack.Interfaces;

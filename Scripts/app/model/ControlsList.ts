@@ -24,6 +24,10 @@
         checked: boolean;
     }
 
+    export class ButtonControlDefinitionDTO extends ControlDefinitionDTO {
+        checked: boolean;
+    }
+
     export class TextBoxControlDefinitionDTO extends ControlDefinitionDTO {
         required: boolean;        
     }
@@ -82,6 +86,7 @@
     }
 
     export class TextAreaControlDefinitionDTO extends ControlDefinitionDTO {
+        isReadOnly:boolean;
     }
 
     export class MappingPaneControlDefinitionDTO extends ControlDefinitionDTO {

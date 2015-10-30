@@ -9,7 +9,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Hub.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;

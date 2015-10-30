@@ -16,15 +16,11 @@
     <AssemblyName>HubWeb</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort>
-    </IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>
-    </IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>
-    </IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>
-    </IISExpressUseClassicPipelineMode>
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort>44301</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
@@ -326,6 +322,7 @@
     <Compile Include="Controllers\CriteriaController.cs" />
     <Compile Include="Controllers\DockyardEventController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
+    <Compile Include="Controllers\ManifestController.cs" />
     <Compile Include="Controllers\RouteNodesController.cs" />
     <Compile Include="Controllers\AuthenticationCallbackController.cs" />
     <Compile Include="Controllers\FilesController.cs" />
@@ -348,14 +345,6 @@
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.ErrorResult.cs" />
     <Compile Include="Fr8ApiAuthorizeAttribute.cs" />
     <Compile Include="ExceptionHandling\Fr8ExceptionHandler.cs" />
-    <Compile Include="NotificationQueues\UserNotificationData.cs" />
-    <Compile Include="NotificationQueues\UserNotificationQueue.cs" />
-    <Compile Include="NotificationQueues\NotificationQueue.cs" />
-    <Compile Include="NotificationQueues\BookingRequestUpdatedQueue.cs" />
-    <Compile Include="NotificationQueues\BookingRequestReservedForUserQueue.cs" />
-    <Compile Include="NotificationQueues\HighPriorityIncidentsQueue.cs" />
-    <Compile Include="NotificationQueues\NewBookingRequestResponseQueue.cs" />
-    <Compile Include="NotificationQueues\SharedNotificationQueues.cs" />
     <Compile Include="Api\EventResponse.aspx.cs">
       <DependentUpon>EventResponse.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -380,7 +369,6 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\DockyardAccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
-    <Compile Include="Controllers\AlertingController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DataController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
@@ -454,6 +442,7 @@
     <Content Include="Content\documents\Medical_Form_v2.xml" />
     <Content Include="Content\icons\web_services\aws-icon-64x64.png" />
     <Content Include="Content\icons\web_services\docusign-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\DocuSign-Logo.png" />
     <Content Include="Content\icons\web_services\slack-icon-64x64.png" />
     <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\backgrounds\about-bg.jpg" />
@@ -3885,7 +3874,9 @@
     <Content Include="Content\documents\field_trip_permission_form.docx" />
     <Content Include="Content\documents\medical_intake_form.pdf" />
     <Content Include="Content\documents\Sample Excel Contact List.xlsx" />
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="newrelic\newrelic.config" />
     <Content Include="newrelic\extensions\extension.xsd">
       <SubType>Designer</SubType>
@@ -4024,7 +4015,6 @@
     <Content Include="Views\Email\Show.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Profile\ProfilesForUser.cshtml" />
-    <Content Include="Views\Shared\QueuePollingScript.cshtml" />
     <Content Include="Views\DockyardAccount\ForgotPassword.cshtml" />
     <Content Include="Views\DockyardAccount\ForgotPasswordConfirmation.cshtml" />
     <Content Include="Views\DockyardAccount\ResetPassword.cshtml" />
@@ -4158,16 +4148,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
-          <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>59448</DevelopmentServerPort>
-          <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:30643/</IISUrl>
-          <NTLMAuthentication>False</NTLMAuthentication>
-          <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>
-          </CustomServerUrl>
-          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>
