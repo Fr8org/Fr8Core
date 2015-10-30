@@ -1,10 +1,17 @@
 ﻿<div class="pane-configure-action" block-if="processing === true" ng-click="loadConfiguration()">
-    <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
-        <configuration-control current-action="currentAction" field="field" />
-    </div>
-    <div ng-if="currentAction.currentView">
-        <div ng-repeat="field in currentAction.configurationControls.fields">
-            <configuration-control current-action="currentAction" field="field" ng-if="field.fieldLabel==currentAction.currentView" />
+    <div ng-if="!(currentAction.activityTemplate.category==='Solution' && mode !== 'Solution')">
+        <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
+            <configuration-control current-action="currentAction" field="field" />
         </div>
+        <div ng-if="currentAction.currentView">
+            <div ng-repeat="field in currentAction.configurationControls.fields">
+                <configuration-control current-action="currentAction" field="field" ng-if="field.fieldLabel==currentAction.currentView" />
+            </div>
+        </div>
+    </div>
+    <div>
+        <a ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'Solution'"
+           class="btn btn-large btn-warning"
+           stop-click-propagation href="{{'#/solution/' + currentAction.id}}">Return to Solution Page</a>
     </div>
 </div>
