@@ -27,16 +27,16 @@ namespace terminalAzure.Actions
         //General Methods (every Action class has these)
 
         //maybe want to return the full Action here
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO)
         {
-            return await ProcessConfigurationRequest(curActionDTO, EvaluateReceivedRequest);
+            return await ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest);
         }
 
         //this entire function gets passed as a delegate to the main processing code in the base class
         //currently many actions have two stages of configuration, and this method determines which stage should be applied
-        private ConfigurationRequestType EvaluateReceivedRequest(ActionDTO curActionDTO)
+        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            CrateStorageDTO curCrates = curActionDTO.CrateStorage;
+            CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
 
             if (curCrates.CrateDTO.Count == 0)
                 return ConfigurationRequestType.Initial;
@@ -44,7 +44,7 @@ namespace terminalAzure.Actions
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name connection string with a value
             var controlsCrates = Crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
-                curActionDTO.CrateStorage);
+                curActionDO.CrateStorageDTO());
             var connectionStrings = Crate.GetElementByKey(controlsCrates, key: "connection_string", keyFieldName: "name")
                 .Select(e => (string)e["value"])
                 .Where(s => !string.IsNullOrEmpty(s))
@@ -67,17 +67,20 @@ namespace terminalAzure.Actions
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
         {
-            if (curActionDTO.CrateStorage == null)
+            if (curActionDO.CrateStorage == null)
             {
-                curActionDTO.CrateStorage = new CrateStorageDTO();
+                curActionDO.CrateStorage = "";
             }
 
-            var crateControls = CreateControlsCrate();
-            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+            var crateList = new List<CrateDTO>();
 
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            crateList.Add(CreateControlsCrate());
+
+            curActionDO.UpdateCrateStorageDTO(crateList);
+
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
 
         private CrateDTO CreateControlsCrate() { 

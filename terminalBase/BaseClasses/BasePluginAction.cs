@@ -23,7 +23,7 @@ namespace TerminalBase.BaseClasses
 {
     //this method allows a specific Action to inject its own evaluation function into the 
     //standard ProcessConfigurationRequest
-    public delegate ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO);
+    public delegate ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO);
 
     public class BasePluginAction
     {
@@ -103,17 +103,16 @@ namespace TerminalBase.BaseClasses
             return null;
         }
 
-        protected async Task<ActionDTO> ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
+        protected async Task<ActionDO> ProcessConfigurationRequest(ActionDO curActionDO, ConfigurationEvaluator configurationEvaluationResult)
         {
-            
-            if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
+            if (configurationEvaluationResult(curActionDO) == ConfigurationRequestType.Initial)
             {
-                return await InitialConfigurationResponse(curActionDTO);
+                return await InitialConfigurationResponse(curActionDO);
             }
 
-            else if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Followup)
+            else if (configurationEvaluationResult(curActionDO) == ConfigurationRequestType.Followup)
             {
-                return await FollowupConfigurationResponse(curActionDTO);
+                return await FollowupConfigurationResponse(curActionDO);
             }
 
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
@@ -122,34 +121,34 @@ namespace TerminalBase.BaseClasses
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public virtual async Task<ActionDTO> Configure(ActionDTO actionDTO)
+        public virtual async Task<ActionDO> Configure(ActionDO actionDO)
         {
-            return await ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(actionDO, ConfigurationEvaluator);
         }
 
         /// <summary>
         /// This method "evaluates" as to what configuration should be called. 
         /// Every plugin action will have its own decision making; hence this method must be implemented in the relevant child class.
         /// </summary>
-        /// <param name="curActionDTO"></param>
+        /// <param name="curActionDO"></param>
         /// <returns></returns>
-        public virtual ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        public virtual ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             throw new NotImplementedException("ConfigurationEvaluator method not implemented in child class.");
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
-        protected virtual async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected virtual async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
         {
             //Returns Task<ActivityDTO> using FromResult as the return type is known
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
-        protected virtual async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected virtual async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
         {
             //Returns Task<ActivityDTO> using FromResult as the return type is known
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
 
         //wrapper for support test method
@@ -212,9 +211,9 @@ namespace TerminalBase.BaseClasses
             return controlsCrate;
         }
 
-        protected string ExtractControlFieldValue(ActionDTO curActionDto, string fieldName)
+        protected string ExtractControlFieldValue(ActionDTO curActionDTO, string fieldName)
         {
-            var controlsCrate = curActionDto.CrateStorage.CrateDTO
+            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
                 .FirstOrDefault(
                     x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
                     && x.Label == "Configuration_Controls");
@@ -253,14 +252,13 @@ namespace TerminalBase.BaseClasses
             return upstreamFieldsCrate;
         }
 
-        protected ConfigurationRequestType ReturnInitialUnlessExistsField(ActionDTO curActionDTO, string fieldName, Data.Interfaces.Manifests.Manifest curSchema)
+        protected ConfigurationRequestType ReturnInitialUnlessExistsField(ActionDO curActionDO, string fieldName, Data.Interfaces.Manifests.Manifest curSchema)
         {
-            CrateStorageDTO curCrates = curActionDTO.CrateStorage;
+            CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
 
             if (curCrates.CrateDTO.Count == 0)
                 return ConfigurationRequestType.Initial;
 
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name select_file with a value

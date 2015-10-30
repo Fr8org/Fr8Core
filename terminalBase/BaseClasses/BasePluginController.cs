@@ -5,6 +5,7 @@ using System.Web.Http;
 using TerminalBase.Infrastructure;
 using System.Threading.Tasks;
 using Utilities.Configuration.Azure;
+using Data.Entities;
 
 namespace TerminalBase.BaseClasses
 {
@@ -62,21 +63,21 @@ namespace TerminalBase.BaseClasses
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public object HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
+        public object HandleDockyardRequest(string curPlugin, string curActionPath, ActionDO curActionDO, object dataObject = null)
         {
-            if (curActionDTO == null)
+            if (curActionDO == null)
                 throw new ArgumentNullException("curActionDTO");
-            if (curActionDTO.ActivityTemplate == null)
+            if (curActionDO.ActivityTemplate == null)
                 throw new ArgumentException("ActivityTemplate is null", "curActionDTO");
-            if (dataObject == null) dataObject = curActionDTO;
+            if (dataObject == null) dataObject = curActionDO;
 
-            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
+            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDO.ActivityTemplate.Name, curActionDO.ActivityTemplate.Version);
 
             Type calledType = Type.GetType(curAssemblyName + ", " + curPlugin);
             if (calledType == null)
                 throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} plugin.", 
-                    curActionDTO.ActivityTemplate.Name,
-                    curActionDTO.ActivityTemplate.Version, 
+                    curActionDO.ActivityTemplate.Name,
+                    curActionDO.ActivityTemplate.Version, 
                     curPlugin), "curActionDTO");
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
