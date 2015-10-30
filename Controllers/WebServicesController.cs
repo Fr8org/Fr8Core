@@ -53,6 +53,9 @@ namespace HubWeb.Controllers
 
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
+				// Getting web services and their actions as one set, then filtering that set
+				// to get only those actions whose category matches any of categories provided
+				// resulting set is grouped into batches 1 x web service - n x actions
 				models = uow.WebServiceRepository.GetQuery()
 						.Join(uow.ActivityTemplateRepository.GetQuery(), ws => ws.Id, at => at.WebServiceId, (ws, at) => new { ws, at })
 						.Where(x => categories.Any(p => p == x.at.Category))
