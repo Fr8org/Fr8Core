@@ -269,7 +269,7 @@ namespace Hub.Services
 
             if (createRoute)
             {
-                route = ObjectFactory.GetInstance<IRoute>().Create(uow, name);
+                route = ObjectFactory.GetInstance<IRoute>().Create(uow, label);
                 parentNode = ObjectFactory.GetInstance<ISubroute>().Create(uow, route, name + " #1");
             }
             else
