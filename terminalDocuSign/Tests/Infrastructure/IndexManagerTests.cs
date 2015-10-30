@@ -16,7 +16,7 @@ namespace terminalDocuSign.Tests.Infrastructure
             string[] searchTypes = { "drafts", "awaiting_my_signature", "completed", "out_for_signature" };
             foreach (string type in searchTypes)
             {
-                var accountEnvelopes = test.GetEnvelopes(type, DateTime.Now.AddMonths(-1), DateTime.Now, true, 100);
+                var accountEnvelopes = test.GetEnvelopes(type, DateTime.Now.AddMonths(-1), DateTime.Now, true, 1);
             }
         }
 
