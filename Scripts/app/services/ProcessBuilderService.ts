@@ -7,6 +7,7 @@ module dockyard.services {
     export interface IRouteService extends ng.resource.IResourceClass<interfaces.IRouteVM> {
         getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IRouteVM>;
         getFull: (id: Object) => interfaces.IRouteVM;
+        getByAction: (id: { id: number }) => interfaces.IRouteVM;
         execute: (id: { id: number }) => void;
         activate: (processTemplate: model.RouteDTO) => void;
         deactivate: (processTemplate: model.RouteDTO) => void;
@@ -80,7 +81,14 @@ module dockyard.services {
                         status: '@status'
                     }
                 },
-
+                'getByAction': {
+                    method: 'GET',
+                    isArray: false,
+                    url: '/routes/getByAction/:id',
+                    params: {
+                        id: '@id'
+                    }
+                },
                 'execute': {
                     method: 'POST',
                     isArray: false,

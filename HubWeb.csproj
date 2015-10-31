@@ -726,6 +726,7 @@
     <Content Include="Views\Home\DocuSign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
+    <Content Include="_PowerShellScripts\CheckWebSettings.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageFileListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerListController.ts" />
