@@ -24,6 +24,7 @@ foreach ($projectFile in $projectFiles) {
 if ($failure -eq 1) {
 	Write-Host "Web settings check FAILED" -ForegroundColor "White" -backgroundColor "Red" 
 	Write-Host "Please uncheck 'Apply server settings to all users' on the Project settings dialog for the projects listed above and commit again."
+	exit 1
 }
 else {
 	Write-Host "Web settings check OK" -ForegroundColor "Green"
