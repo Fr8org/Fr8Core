@@ -1,11 +1,14 @@
 #
 # CheckWebSettings.ps1
 #
+$cur_prev = (Get-Item -Path ".\" -Verbose).FullName
 cd $PSScriptRoot
 cd ..
 $cur = (Get-Item -Path ".\" -Verbose).FullName
 
 $projectFiles = get-childitem  -Include HubWeb.csproj, terminal*.csproj -Exclude terminalWebRole.csproj -recurse  -ErrorAction SilentlyContinue -Force | select -expandproperty FullName
+cd $cur_prev
+
 foreach ($projectFile in $projectFiles) {
 	$xml = [xml] (get-content $projectFile)
 	$nsmgr =new-object System.Xml.XmlNamespaceManager($xml.NameTable)
