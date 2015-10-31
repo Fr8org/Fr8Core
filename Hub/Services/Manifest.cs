@@ -8,6 +8,7 @@ using Hub.Managers;
 using Data.Interfaces;
 using Data.Interfaces.Manifests;
 using System.Reflection;
+using Data.Crates;
 using Hub.Interfaces;
 using Newtonsoft.Json;
 using StructureMap;
@@ -28,9 +29,9 @@ namespace Hub.Services
 
         // Use the reflection and get the properties of manifest class. 
         // Create the designTime fields from fetched properties and send it to client.
-        public CrateDTO GetById(int id)
+        public Crate GetById(int id)
         {
-            CrateDTO crateDTO = null;
+            Crate crateDTO = null;
             string manifestAssemblyName = null;
 
             _curManifestDictionary.TryGetValue(id, out manifestAssemblyName);

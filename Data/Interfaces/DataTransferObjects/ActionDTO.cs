@@ -1,5 +1,6 @@
 ﻿using Data.Entities;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -7,12 +8,13 @@ namespace Data.Interfaces.DataTransferObjects
     {
         public ActionDTO() : base()
         {
-            CrateStorage = new CrateStorageDTO();
+           // CrateStorage = new CrateStorageDTO();
         }
 
         public int? ParentRouteNodeId { get; set; }
 
-        public CrateStorageDTO CrateStorage { get; set; }
+        //public CrateStorageDTO CrateStorage { get; set; }
+        public JToken CrateStorage { get; set; }
 
         public int? ActivityTemplateId { get; set; }
 

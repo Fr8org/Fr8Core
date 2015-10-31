@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Crates;
 using Data.Entities;
 using Data.Exceptions;
 using Data.Interfaces.Manifests;
@@ -49,11 +50,10 @@ namespace Hub.Services
         //    }
         //}
 
-        public async Task ProcessInboundEvents(CrateDTO curCrateStandardEventReport)
+        public async Task ProcessInboundEvents(Crate curCrateStandardEventReport)
         {
-            EventReportCM eventReportMS = _crate.GetContents<EventReportCM>(curCrateStandardEventReport);
-
-
+            var eventReportMS = curCrateStandardEventReport.Get<EventReportCM>();
+            
             if (eventReportMS.EventPayload == null)
                 throw new ArgumentException("EventReport can't have a null payload");
             if (eventReportMS.ExternalAccountId == null)
@@ -85,7 +85,7 @@ namespace Hub.Services
             }
         }
 
-        public Task LaunchProcesses(List<RouteDO> curRoutes, CrateDTO curEventReport)
+        public Task LaunchProcesses(List<RouteDO> curRoutes, Crate curEventReport)
         {
             var processes = new List<Task>();
 
@@ -99,7 +99,7 @@ namespace Hub.Services
             return Task.WhenAll(processes);
         }
 
-        public async Task LaunchProcess(RouteDO curRoute, CrateDTO curEventData)
+        public async Task LaunchProcess(RouteDO curRoute, Crate curEventData)
         {
             if (curRoute == null)
                 throw new EntityNotFoundException(curRoute);

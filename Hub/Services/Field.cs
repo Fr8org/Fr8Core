@@ -9,6 +9,7 @@ using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Hub.Enums;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -54,16 +55,16 @@ namespace Hub.Services
 
                 foreach (var upstreamRouteNode in routeNodes)
                 {
-                    var crates = _crate.GetCratesByManifestType(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, upstreamRouteNode.CrateStorageDTO());
-                    foreach (var crate in crates)
+                    //var crates = _crate.GetCratesByManifestType(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, upstreamRouteNode.CrateStorageDTO());
+
+                    foreach (var crate in _crate.GetStorage(upstreamRouteNode.CrateStorage).CratesOfType<StandardDesignTimeFieldsCM>())
                     {
                         if (data.CrateLabel != null && data.CrateLabel != crate.Label)
                         {
                             continue;
                         }
 
-                        var designTimeFieldsCM = _crate.GetStandardDesignTimeFields(crate);
-                        if (designTimeFieldsCM.Fields.Any(field => field.Key == data.FieldName))
+                        if (crate.Value.Fields.Any(field => field.Key == data.FieldName))
                         {
                             return true;
                         }

@@ -7,14 +7,14 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class CrateStorageDTO
-    {
-        public CrateStorageDTO()
-        {
-            CrateDTO = new List<CrateDTO>();
-        }
-
-        [JsonProperty("crates")]
-        public List<CrateDTO> CrateDTO { get; set; }
-    }
+//    public class CrateStorageDTO
+//    {
+//        public CrateStorageDTO()
+//        {
+//            CrateDTO = new List<CrateDTO>();
+//        }
+//
+//        [JsonProperty("crates")]
+//        public List<CrateDTO> CrateDTO { get; set; }
+//    }
 }

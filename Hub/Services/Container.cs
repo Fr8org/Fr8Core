@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Crates;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
@@ -10,6 +11,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
 using Data.Infrastructure;
+using Hub.Managers;
 
 namespace Hub.Services
 {
@@ -22,7 +24,7 @@ namespace Hub.Services
         private readonly IProcessNode _processNode;
         private readonly IRouteNode _activity;
         private readonly IRoute _route;
-
+        private readonly ICrateManager _crate;
         
         
 
@@ -31,6 +33,7 @@ namespace Hub.Services
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
             _activity = ObjectFactory.GetInstance<IRouteNode>();
             _route = ObjectFactory.GetInstance<IRoute>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         
@@ -41,7 +44,7 @@ namespace Hub.Services
         /// <param name="processTemplateId"></param>
         /// <param name="envelopeId"></param>
         /// <returns></returns>
-        public ContainerDO Create(IUnitOfWork uow, int processTemplateId, CrateDTO curEvent)
+        public ContainerDO Create(IUnitOfWork uow, int processTemplateId, Crate curEvent)
         {
             var containerDO = ObjectFactory.GetInstance<ContainerDO>();
 
@@ -52,15 +55,16 @@ namespace Hub.Services
 
                 containerDO.Name = curRoute.Name;
                 containerDO.ContainerState = ContainerState.Unstarted;
-
-                var crates = new List<CrateDTO>();
+           
                 if (curEvent != null)
                 {
-                    crates.Add(curEvent);
+                    using (var updater = _crate.UpdateStorage(() => containerDO.CrateStorage))
+                    {
+                        updater.CrateStorage.Add(curEvent);
+                    }
                 }
-                containerDO.UpdateCrateStorageDTO(crates);
 
-            containerDO.CurrentRouteNode = _route.GetInitialActivity(uow, curRoute);
+                containerDO.CurrentRouteNode = _route.GetInitialActivity(uow, curRoute);
 
                 uow.ContainerRepository.Add(containerDO);
                 uow.SaveChanges();
@@ -76,9 +80,9 @@ namespace Hub.Services
             return containerDO;
         }
 
-        
 
-        public async Task Launch(RouteDO curRoute, CrateDTO curEvent)
+
+        public async Task Launch(RouteDO curRoute, Crate curEvent)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

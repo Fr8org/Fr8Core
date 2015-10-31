@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using Newtonsoft.Json;
-using StructureMap;
 using Data.Entities;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
+using StructureMap;
 
 namespace Hub.Services
 {
@@ -168,21 +165,24 @@ namespace Hub.Services
 
                 foreach (var downStreamActivity in downStreamActivities)
                 {
-                    var crateStorage = downStreamActivity.CrateStorageDTO();
-                    var cratesToReset = _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, crateStorage).ToList();
-                    foreach (var crateDTO in cratesToReset)
-                    {
-                        var configurationControls = _crate.GetStandardConfigurationControls(crateDTO);
-                        foreach (var controlDefinitionDTO in configurationControls.Controls)
-                        {
-                            (controlDefinitionDTO as IResettable).Reset();
-                        }
-                        crateDTO.Contents = JsonConvert.SerializeObject(configurationControls);
-                    }
+                    var currentActivity = downStreamActivity;
+                    bool somethingToReset = false;
 
-                    if (cratesToReset.Any())
+                    using (var updater = _crate.UpdateStorage(() => currentActivity.CrateStorage))
                     {
-                        downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
+                        foreach (var configurationControls in updater.CrateStorage.CrateValuesOfType<StandardConfigurationControlsCM>())
+                        {
+                            foreach (IResettable resettable in configurationControls.Controls)
+                            {
+                                resettable.Reset();
+                                somethingToReset = true;
+                            }
+                        }
+
+                        if (!somethingToReset)
+                        {
+                            updater.DiscardChanges();
+                        }
                     }
                 }
 
