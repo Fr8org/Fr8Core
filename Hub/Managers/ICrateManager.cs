@@ -45,7 +45,6 @@ namespace Hub.Managers
         void AddCrate(PayloadDTO payload, List<CrateDTO> curCrateDTO);
         void AddCrate(PayloadDTO payload, CrateDTO curCrateDTO);
         void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO);
-        void AddOrReplaceCrateV2(string label, ActionDO curActionDO, CrateDTO curCrateDTO);
         StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO);
         List<CrateDTO> GetCrates(ActionDO curActionDO);
     }

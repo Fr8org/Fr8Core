@@ -63,7 +63,7 @@ namespace terminalFr8Core.Actions
                 // Change the label of the design time field crate in the current context.
                 var designTimeControlName = "Select Fr8 Object Properties";
                 fr8ObjectCrateDTO.Label = designTimeControlName;
-                Crate.AddOrReplaceCrateV2(designTimeControlName, curActionDO, fr8ObjectCrateDTO);
+                Crate.AddOrReplaceCrate(designTimeControlName, curActionDO, fr8ObjectCrateDTO);
                 curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
             }
             return await Task.FromResult(curActionDTO);
