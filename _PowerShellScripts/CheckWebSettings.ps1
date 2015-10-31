@@ -27,5 +27,5 @@ if ($failure -eq 1) {
 }
 else {
 	Write-Host "Web settings check OK" -ForegroundColor "Green"
-}
+} 
 exit 0
