@@ -73,12 +73,9 @@ namespace Data.Constants
         StandardFr8Terminal = 23,
 
         [Display(Name = "Standard File List")]
-        StandardFileList = 24
-        DocuSignEnvelope,
-
-       
+        StandardFileList = 24,
 
         [Display(Name = "Docusign Recipient")]
-        DocuSignRecipient = 26,
+        DocuSignRecipient = 26
     }
 }
