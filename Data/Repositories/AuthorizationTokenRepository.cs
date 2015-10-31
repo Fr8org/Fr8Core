@@ -38,7 +38,7 @@ namespace Data.Repositories
             {
                 RedirectURL = url,
                 UserID = userID,
-                ExpiresAt = DateTime.Now.AddDays(10),
+				ExpiresAt = DateTime.UtcNow.AddDays(10),
                 SegmentTrackingEventName = segmentEventName,
                 Plugin = new PluginDO()
                 {

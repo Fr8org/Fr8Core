@@ -13,7 +13,7 @@ namespace Data.Entities
         public virtual void BeforeCreate()
         {
             if (CreateDate == default(DateTimeOffset))
-                CreateDate = DateTimeOffset.Now;
+                CreateDate = DateTimeOffset.UtcNow;
         }
 
         public virtual void AfterCreate()
@@ -22,7 +22,7 @@ namespace Data.Entities
 
         public virtual void BeforeSave()
         {
-            LastUpdated = DateTimeOffset.Now;
+			LastUpdated = DateTimeOffset.UtcNow;
         }
 
         public virtual void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)

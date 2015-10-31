@@ -241,16 +241,19 @@ namespace Daemons
             }
             else
             {
+				// TODO: Since this stuff probably runs on server and performs some specific 
+				// recurring activities this is the place where we might want to use 
+				// DateTimeOffset and specify offset
                 m_RunningThread = new Thread(() =>
                 {
                     bool firstExecution = true;
-                    DateTime lastExecutionTime = DateTime.Now;
+                    DateTime lastExecutionTime = DateTime.UtcNow;
 
                     while (!IsStopping)
                     {
                         try
                         {
-                            DateTime currTime = DateTime.Now;
+							DateTime currTime = DateTime.UtcNow;
                             if (firstExecution ||
                                 (currTime - lastExecutionTime).TotalMilliseconds > WaitTimeBetweenExecution)
                             {
