@@ -10,15 +10,15 @@ namespace Data.Interfaces.Manifests
     {
         public string Name { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public string StartDate { get; set; }
 
-        public DateTime EndDate { get; set; }
+        public string EndDate { get; set; }
 
         public string Service { get; set; }
 
         public string ExternalAccountId { get; set; }
 
-        public string InternalAccountid { get; set; }
+        public string InternalAccountId { get; set; }
 
         public StandardParsingRecordCM()
             : base(Constants.MT.StandardParsingRecord)
