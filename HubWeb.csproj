@@ -726,11 +726,11 @@
     <Content Include="Views\Home\DocuSign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
+    <Content Include="_PowerShellScripts\CheckWebSettings.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageFileListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerDetailsController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\RouteActionsDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SelectActionController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\RouteDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ReportFactController.ts" />
@@ -784,7 +784,6 @@
     <TypeScriptCompile Include="Scripts\app\model\Route.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessBuilderState.ts" />
     <TypeScriptCompile Include="Scripts\app\model\User.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\WebServiceActionSetDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\WebServiceDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ContainerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\CrateHelper.ts" />
