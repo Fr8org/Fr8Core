@@ -14,7 +14,7 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -89,15 +89,15 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                int actionTemplateId = uow.ActivityTemplateRepository.GetAll().
-                    Where(at => at.Name == solutionName).Select(at => at.Id).FirstOrDefault();
-                if (actionTemplateId == 0)
+                var activityTemplate = uow.ActivityTemplateRepository.GetAll().
+                    Where(at => at.Name == solutionName).FirstOrDefault();
+                if (activityTemplate == null)
                 {
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
                 }
 
                 var result = await _action.CreateAndConfigure(uow, userId,
-                    actionTemplateId, "Solution", null, null, true);
+                    activityTemplate.Id, activityTemplate.Name, activityTemplate.Label, null, true);
                 return Ok(_route.MapRouteToDto(uow, (RouteDO)result));
             }
         }
@@ -174,5 +174,5 @@ namespace HubWeb.Controllers
 //
 //            return Ok();
 //        }    
-    }
+            }
 }

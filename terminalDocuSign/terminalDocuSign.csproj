@@ -49,6 +49,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Utilities\DocuSign.Integration.Client.dll</HintPath>
     </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -189,6 +197,7 @@
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="DataTransferObjects\DocuSignAuthDTO.cs" />
     <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
+    <Compile Include="Infrastructure\IndexManager.cs" />
     <Compile Include="Infrastructure\PluginDataAutoMapperBootStrapper.cs" />
     <Compile Include="DataTransferObjects\RecipientDTO.cs" />
     <Compile Include="DataTransferObjects\RecipientsDTO.cs" />
@@ -224,6 +233,7 @@
     <Compile Include="Tests\Infrastructure\DocusignConnectParserTests.cs" />
     <Compile Include="Tests\Infrastructure\DocuSignTemplateTests.cs" />
     <Compile Include="Tests\Fixtures\PluginFixtureData - DocusignAccount.cs" />
+    <Compile Include="Tests\Infrastructure\IndexManagerTests.cs" />
     <Compile Include="Tests\Services\EnvelopeServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -292,16 +302,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
-          <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>0</DevelopmentServerPort>
-          <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:53234/</IISUrl>
-          <NTLMAuthentication>False</NTLMAuthentication>
-          <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>
-          </CustomServerUrl>
-          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
           <servers defaultServer="">
             <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:48024/" workingDir="" />
           </servers>

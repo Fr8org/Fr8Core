@@ -5,6 +5,7 @@ using Data.Entities;
 using Data.States;
 using Hub.Services;
 using Utilities.Configuration.Azure;
+using Data.Interfaces.Manifests;
 
 namespace terminalFr8Core.Controllers
 {
@@ -17,11 +18,11 @@ namespace terminalFr8Core.Controllers
         /// </summary>
         [HttpGet]
         [Route("discover")]
-        [ResponseType(typeof(List<ActivityTemplateDO>))]
+        [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverPlugins()
         {
             var result = new List<ActivityTemplateDO>();
-            
+
             var plugin = new PluginDO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
@@ -38,7 +39,7 @@ namespace terminalFr8Core.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
-				MinPaneWidth = 330
+                MinPaneWidth = 330
             });
 
             result.Add(new ActivityTemplateDO
@@ -49,7 +50,7 @@ namespace terminalFr8Core.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
-				MinPaneWidth = 380
+                MinPaneWidth = 380
             });
 
             result.Add(new ActivityTemplateDO
@@ -60,7 +61,7 @@ namespace terminalFr8Core.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
-				MinPaneWidth = 330
+                MinPaneWidth = 330
             });
 
             result.Add(new ActivityTemplateDO
@@ -72,7 +73,12 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             });
 
-            return Json(result);    
+            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            {
+                Definition = plugin,
+                Actions = result
+            };
+            return Json(curStandardFr8TerminalCM);
         }
     }
 }

@@ -7,7 +7,7 @@ using StructureMap;
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 
 namespace UtilitiesTesting.Fixtures
 {

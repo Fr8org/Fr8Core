@@ -15,6 +15,7 @@ using Hub.Managers.APIManagers.Packagers;
 using Hub.Services;
 using Utilities;
 using Utilities.Logging;
+using System.Data.Entity.Infrastructure;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
 
@@ -56,8 +57,13 @@ namespace Hub.Managers
             EventManager.EventActionStarted += LogEventActionStarted;
             EventManager.EventActionDispatched += LogEventActionDispatched;
             EventManager.PluginEventReported += LogPluginEvent;
-            EventManager.PluginActionActivated  += PluginActionActivated;
+            EventManager.PluginActionActivated += PluginActionActivated;
             EventManager.EventProcessRequestReceived += EventManagerOnEventProcessRequestReceived;
+            EventManager.EventContainerCreated += LogEventContainerCreated;
+            EventManager.EventContainerSent += LogEventContainerSent;
+            EventManager.EventContainerReceived += LogEventContainerReceived;
+            EventManager.EventContainerStateChanged += LogEventContainerStateChanged;
+
         }
 
 
@@ -84,7 +90,7 @@ namespace Hub.Managers
             EventManager.AlertTokenRequestInitiated -= OnAlertTokenRequestInitiated;
             EventManager.AlertTokenObtained -= OnAlertTokenObtained;
             EventManager.AlertTokenRevoked -= OnAlertTokenRevoked;
-            
+
             EventManager.EventDocuSignNotificationReceived -= LogDocuSignNotificationReceived;
             EventManager.EventContainerLaunched -= LogEventProcessLaunched;
             EventManager.EventProcessNodeCreated -= LogEventProcessNodeCreated;
@@ -94,6 +100,10 @@ namespace Hub.Managers
             EventManager.EventActionDispatched -= LogEventActionDispatched;
             EventManager.PluginEventReported -= LogPluginEvent;
             EventManager.PluginActionActivated -= PluginActionActivated;
+            EventManager.EventContainerCreated -= LogEventContainerCreated;
+            EventManager.EventContainerSent -= LogEventContainerSent;
+            EventManager.EventContainerReceived -= LogEventContainerReceived;
+            EventManager.EventContainerStateChanged -= LogEventContainerStateChanged;
         }
 
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
@@ -199,7 +209,7 @@ namespace Hub.Managers
             {
                 //CustomerId = containerDO.Fr8AccountId,
                 CustomerId = containerDO.Route.Fr8Account.Id,
-                Data =  containerDO.Id.ToStr(),
+                Data = containerDO.Id.ToStr(),
                 ObjectId = containerDO.Id.ToStr(),
                 PrimaryCategory = "Process Access",
                 SecondaryCategory = "Process",
@@ -520,7 +530,7 @@ namespace Hub.Managers
                     SecondaryCategory = "Activity Templates",
                     Activity = "Registered",
                     ObjectId = null,
-                    Data = string.Format("{0} activity templates were registrated",count)
+                    Data = string.Format("{0} activity templates were registrated", count)
                     //Data = "User registrated with " + curUser.EmailAddress.Address
                 };
                 Logger.GetLogger().Info(curFactDO.Data);
@@ -636,7 +646,7 @@ namespace Hub.Managers
         {
             var fact = new FactDO
             {
-                CustomerId =  launchedContainer.Route.Fr8Account.Id,
+                CustomerId = launchedContainer.Route.Fr8Account.Id,
                 Data = launchedContainer.Id.ToStr(),
                 ObjectId = launchedContainer.Id.ToStr(),
                 PrimaryCategory = "Container Execution",
@@ -782,24 +792,46 @@ namespace Hub.Managers
         // Commented by Vladimir. DO-1214. If one action can have only one Process?
         private void PluginActionActivated(ActionDO curAction)
         {
-//            ProcessDO processInExecution;
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                int? processId = uow.ActionListRepository.GetByKey(curAction.ParentActivityId).ProcessID;
-//                processInExecution = uow.ProcessRepository.GetByKey(processId);
-//            }
-//
-//            var fact = new FactDO
-//            {
-//                CustomerId = processInExecution.DockyardAccountId,
-//                Data = processInExecution.Id.ToStr(),
-//                ObjectId = curAction.Id.ToStr(),
-//                PrimaryCategory = "Action",
-//                SecondaryCategory = "Activation",
-//                Activity = "Completed"
-//            };
-//
-//            SaveAndLogFact(fact);
+            //            ProcessDO processInExecution;
+            //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            //            {
+            //                int? processId = uow.ActionListRepository.GetByKey(curAction.ParentActivityId).ProcessID;
+            //                processInExecution = uow.ProcessRepository.GetByKey(processId);
+            //            }
+            //
+            //            var fact = new FactDO
+            //            {
+            //                CustomerId = processInExecution.DockyardAccountId,
+            //                Data = processInExecution.Id.ToStr(),
+            //                ObjectId = curAction.Id.ToStr(),
+            //                PrimaryCategory = "Action",
+            //                SecondaryCategory = "Activation",
+            //                Activity = "Completed"
+            //            };
+            //
+            //            SaveAndLogFact(fact);
+        }
+
+        private void LogEventContainerCreated(ContainerDO containerDO)
+        {
+                CreateContainerFact(containerDO, "Created");
+        }
+        private void LogEventContainerSent(ContainerDO containerDO, ActionDO actionDO)
+        {
+                CreateContainerFact(containerDO, "Sent To Terminal", actionDO);
+        }
+        private void LogEventContainerReceived(ContainerDO containerDO, ActionDO actionDO)
+        {
+                CreateContainerFact(containerDO, "Received From Terminal", actionDO);
+        }
+        private void LogEventContainerStateChanged(DbPropertyValues currentValues)
+        {
+            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            //In the GetByKey I make use of dictionary datatype: https://msdn.microsoft.com/en-us/data/jj592677.aspx
+            var curContainerDO = uow.ContainerRepository.GetByKey(currentValues[currentValues.PropertyNames.First()]);
+            CreateContainerFact(curContainerDO, "State Change");
+
+
         }
 
         public enum EventType
@@ -808,5 +840,31 @@ namespace Hub.Managers
             Error,
             Warning
         }
+
+
+        private void CreateContainerFact(ContainerDO containerDO, string activity, ActionDO actionDO = null)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curFact = new FactDO
+                {
+                    CustomerId = containerDO.Route.Fr8Account.Id,
+                    ObjectId = containerDO.Id.ToStr(),
+                    PrimaryCategory = "Containers",
+                    SecondaryCategory = "Operations",
+                    Activity = activity
+                };
+                if (actionDO != null)
+                {
+                    var terminalName = actionDO.ActivityTemplate.Plugin.Name;
+                    curFact.Data = string.Format("Terminal: {0} - Action: {1}.", terminalName, actionDO.Name);
+                }
+            
+            LogFactInformation(curFact, curFact.Data);
+            uow.FactRepository.Add(curFact);
+            uow.SaveChanges();
+            }
+        }
+
     }
 }

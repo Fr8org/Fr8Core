@@ -202,6 +202,7 @@ module dockyard.controllers {
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();
             this.$scope.current.action.activityTemplate = activityTemplate;
+            this.$scope.current.action.activityTemplateId = activityTemplate.id;
             this.$scope.actionGroups[0].actions.push(action);
 
             this.selectAction(action);
@@ -333,6 +334,7 @@ module dockyard.controllers {
                     crateStorage: new model.CrateStorage(),
                     parentRouteNodeId: 1,
                     activityTemplate: null,
+                    activityTemplateId: 1,
                     id: 1,
                     isTempId: false,
                     childrenActions: null

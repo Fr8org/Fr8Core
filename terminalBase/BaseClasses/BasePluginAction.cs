@@ -11,7 +11,7 @@ using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Hub.Enums;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -253,7 +253,7 @@ namespace TerminalBase.BaseClasses
             return upstreamFieldsCrate;
         }
 
-        protected ConfigurationRequestType ReturnInitialUnlessExistsField(ActionDTO curActionDTO, string fieldName, Manifest curSchema)
+        protected ConfigurationRequestType ReturnInitialUnlessExistsField(ActionDTO curActionDTO, string fieldName, Data.Interfaces.Manifests.Manifest curSchema)
         {
             CrateStorageDTO curCrates = curActionDTO.CrateStorage;
 
@@ -264,7 +264,7 @@ namespace TerminalBase.BaseClasses
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name select_file with a value
-            Manifest manifestSchema = new Manifest(Data.Constants.MT.StandardConfigurationControls);
+            Data.Interfaces.Manifests.Manifest manifestSchema = new Data.Interfaces.Manifests.Manifest(Data.Constants.MT.StandardConfigurationControls);
 
             var keys = Action.FindKeysByCrateManifestType(curActionDO, manifestSchema, fieldName).Result
                 .Select(e => (string)e["value"])
@@ -385,6 +385,28 @@ namespace TerminalBase.BaseClasses
             };
 
             return control;
+        }
+
+        /// <summary>
+        /// Allows to retrieve a configuration control from crate storage.
+        /// </summary>
+        /// <param name="curCrateStorage">Crate storage.</param>
+        /// <param name="controlName">Control name.</param>
+        protected T GetStdConfigurationControl<T>(IEnumerable<CrateDTO> curCrateStorage, string controlName)
+            where T : ControlDefinitionDTO
+        {
+            try
+            {
+                var controlsCrate = curCrateStorage.FirstOrDefault(
+                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                if (controlsCrate == null) return null;
+                var controls = Crate.GetStandardConfigurationControls(controlsCrate).Controls;
+                return controls.SingleOrDefault(c => c.Name == controlName) as T;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         /// <summary>

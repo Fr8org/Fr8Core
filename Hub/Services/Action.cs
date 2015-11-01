@@ -3,7 +3,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
@@ -43,15 +43,15 @@ namespace Hub.Services
 
         public ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO submittedActionData)
         {
-            var action = SaveAndUpdateRecursive(uow, submittedActionData, new List<ActionDO>());
+            var action = SaveAndUpdateRecursive(uow, submittedActionData, null, new List<ActionDO>());
 
             action.ParentRouteNode = submittedActionData.ParentRouteNode;
             action.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
-
+          
             uow.SaveChanges();
 
             return uow.ActionRepository.GetByKey(submittedActionData.Id);
-        }
+            }
 
         public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
         {
@@ -116,7 +116,7 @@ namespace Hub.Services
             existingAction.CrateStorage = submittedAction.CrateStorage;
         }
 
-        private ActionDO SaveAndUpdateRecursive(IUnitOfWork uow, ActionDO submittedAction, List<ActionDO> pendingConfiguration)
+        private ActionDO SaveAndUpdateRecursive(IUnitOfWork uow, ActionDO submittedAction, ActionDO parent, List<ActionDO> pendingConfiguration)
         {
             ActionDO existingAction;
 
@@ -136,11 +136,18 @@ namespace Hub.Services
                     submittedAction.ActivityTemplate = uow.ActivityTemplateRepository.GetByKey(submittedAction.ActivityTemplateId.Value);
                 }
 
-                // Assign Ordering.
                 RouteNodeDO subroute = null;
-                if (submittedAction.ParentRouteNodeId != null)
+
+                if (parent == null)
                 {
-                    subroute = uow.RouteNodeRepository.GetByKey(submittedAction.ParentRouteNodeId);
+                    if (submittedAction.ParentRouteNodeId != null)
+                    {
+                        subroute = uow.RouteNodeRepository.GetByKey(submittedAction.ParentRouteNodeId);
+                    }
+                }
+                else
+                {
+                    subroute = parent;
                 }
 
                 if (subroute == null)
@@ -149,7 +156,7 @@ namespace Hub.Services
                 }
 
                 submittedAction.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
-
+                
                 // Add Action to repo.
                 uow.ActionRepository.Add(submittedAction);
 
@@ -160,7 +167,7 @@ namespace Hub.Services
                 {
                     newAction.ParentRouteNodeId = null;
                     newAction.ParentRouteNode = null;
-                    var newChild = SaveAndUpdateRecursive(uow, newAction, pendingConfiguration);
+                    var newChild = SaveAndUpdateRecursive(uow, newAction, existingAction, pendingConfiguration);
                     existingAction.ChildNodes.Add(newChild);
                 }
             }
@@ -168,47 +175,47 @@ namespace Hub.Services
             {
                 existingAction = uow.ActionRepository.GetByKey(submittedAction.Id);
 
-                if (existingAction == null)
-                {
-                    throw new Exception("Action was not found");
-                }
+            if (existingAction == null)
+            {
+                throw new Exception("Action was not found");
+            }
 
-                // Update properties
+            // Update properties
                 UpdateActionProperties(existingAction, submittedAction);
 
                 // Sync nested action structure
                 if (submittedAction.ChildNodes != null)
-                {
-                    // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
-                    // desired set of children. 
+            {
+                // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
+                // desired set of children. 
                     var newChildren = submittedAction.ChildNodes.OfType<ActionDO>().Where(x => !x.IsTempId).ToDictionary(x => x.Id, y => y);
-                    // current set of children
-                    var currentChildren = existingAction.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
+                // current set of children
+                var currentChildren = existingAction.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
 
-                    // Now we must find what child must be added to existingAction
-                    // Chilren to be added are difference between set newChildren and currentChildren (those elements that exist in newChildren but do not exist in currentChildren).
+                // Now we must find what child must be added to existingAction
+                // Chilren to be added are difference between set newChildren and currentChildren (those elements that exist in newChildren but do not exist in currentChildren).
                     foreach (var newAction in submittedAction.ChildNodes.OfType<ActionDO>().Where(x => x.IsTempId || !currentChildren.ContainsKey(x.Id)).ToArray())
-                    {
+                {
                         newAction.ParentRouteNodeId = null;
                         newAction.ParentRouteNode = null;
-                        var newChild = SaveAndUpdateRecursive(uow, newAction, pendingConfiguration);
-                        existingAction.ChildNodes.Add(newChild);
-                    }
-
-                    // Now we must find what child must be removed from existingAction
-                    // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
-                    foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
-                    {
-                        existingAction.ChildNodes.Remove(actionToRemove.Value);
-                        _routeNode.Delete(uow, actionToRemove.Value);
-                    }
-
-                    // We just update those children that haven't changed (exists both in newChildren and currentChildren)
-                    foreach (var actionToUpdate in newChildren.Where(x => !x.Value.IsTempId && currentChildren.ContainsKey(x.Key)))
-                    {
-                        SaveAndUpdateRecursive(uow, actionToUpdate.Value, pendingConfiguration);
-                    }
+                        var newChild = SaveAndUpdateRecursive(uow, newAction, existingAction, pendingConfiguration);
+                    existingAction.ChildNodes.Add(newChild);
                 }
+
+                // Now we must find what child must be removed from existingAction
+                // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
+                foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
+                {
+                    existingAction.ChildNodes.Remove(actionToRemove.Value);
+                        _routeNode.Delete(uow, actionToRemove.Value);
+                }
+
+                // We just update those children that haven't changed (exists both in newChildren and currentChildren)
+                    foreach (var actionToUpdate in newChildren.Where(x => !x.Value.IsTempId && currentChildren.ContainsKey(x.Key)))
+                {
+                        SaveAndUpdateRecursive(uow, actionToUpdate.Value, existingAction, pendingConfiguration);
+                }
+            }
             }
 
             return existingAction;
@@ -233,7 +240,9 @@ namespace Hub.Services
                 ActivityTemplate = template,
                 Name = name,
                 Label = label,
-                CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO())
+                CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
+                Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1
+
             };
 
             uow.ActionRepository.Add(action);
@@ -260,7 +269,7 @@ namespace Hub.Services
 
             if (createRoute)
             {
-                route = ObjectFactory.GetInstance<IRoute>().Create(uow, name);
+                route = ObjectFactory.GetInstance<IRoute>().Create(uow, label);
                 parentNode = ObjectFactory.GetInstance<ISubroute>().Create(uow, route, name + " #1");
             }
             else
@@ -295,17 +304,17 @@ namespace Hub.Services
             {
                 curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
 
-                try
-                {
-                    tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
-                }
-                catch (ArgumentException e)
-                {
-                    EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO), e.Message);
-                    throw;
-                }
-                catch (Exception e)
-                {
+            try
+            {
+                tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
+            }
+            catch (ArgumentException e)
+            {
+                EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO), e.Message);
+                throw;
+            }
+            catch (Exception e)
+            {
                     JsonSerializerSettings settings = new JsonSerializerSettings
                     {
                         PreserveReferencesHandling = PreserveReferencesHandling.Objects
@@ -313,8 +322,8 @@ namespace Hub.Services
 
                     var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null && curActionDO.ActivityTemplate.Plugin.Endpoint != null) ? curActionDO.ActivityTemplate.Plugin.Endpoint : "<no plugin url>";
                     EventManager.PluginConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
-                    throw;
-                }
+                throw;
+            }
             }
 
             return Mapper.Map<ActionDO>(tempActionDTO);
@@ -379,9 +388,9 @@ namespace Hub.Services
                     }
 
                     if (cratesToReset.Any())
-                    {
+                {
                         downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
-                    }
+                }
                 }
 
                 _routeNode.Delete(uow, curAction);
@@ -418,18 +427,18 @@ namespace Hub.Services
 
         public async Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow)
         {
-            EventManager.ActionStarted(curAction);
+                EventManager.ActionStarted(curAction);
 
-            var payload = await Run(curAction, curContainerDO);
+                var payload = await Run(curAction, curContainerDO);
 
-            if (payload != null)
-            {
-                curContainerDO.CrateStorage = payload.CrateStorage;
+                if (payload != null)
+                {
+                    curContainerDO.CrateStorage = payload.CrateStorage;
+                }
+
+                uow.ActionRepository.Attach(curAction);
+                uow.SaveChanges();
             }
-
-            uow.ActionRepository.Attach(curAction);
-            uow.SaveChanges();
-        }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
         public async Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO)
@@ -440,9 +449,6 @@ namespace Hub.Services
             }
 
             var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Run", curActionDO, curContainerDO.Id);
-
-            // Temporarily commented out by yakov.gnusin.
-            EventManager.ActionDispatched(curActionDO, curContainerDO.Id);
 
             return payloadDTO;
         }
@@ -492,28 +498,41 @@ namespace Hub.Services
             return await CallPluginActionAsync<ActionDTO>("deactivate", curActionDO);
         }
 
-        private Task<TResult> CallPluginActionAsync<TResult>(string actionName, ActionDO curActionDO, int processId = 0)
+        private Task<TResult> CallPluginActionAsync<TResult>(string actionName, ActionDO curActionDO, int containerId = 0)
         {
             if (actionName == null) throw new ArgumentNullException("actionName");
             if (curActionDO == null) throw new ArgumentNullException("curActionDO");
 
             var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
-            dto.ProcessId = processId;
+            dto.ProcessId = containerId;
             _authorizationToken.PrepareAuthToken(dto);
 
-            return ObjectFactory.GetInstance<IPluginTransmitter>()
-                .CallActionAsync<TResult>(actionName, dto);
+            EventManager.ActionDispatched(curActionDO, containerId);
+
+            if (containerId != 0)
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var containerDO = uow.ContainerRepository.GetByKey(containerId);
+                    EventManager.ContainerSent(containerDO, curActionDO);
+                    var reponse = ObjectFactory.GetInstance<IPluginTransmitter>().CallActionAsync<TResult>(actionName, dto);
+                    EventManager.ContainerReceived(containerDO, curActionDO);
+                    return reponse;
+                }
+            }
+
+            return ObjectFactory.GetInstance<IPluginTransmitter>().CallActionAsync<TResult>(actionName, dto);
         }
 
 
-        public async Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key,
+        public async Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Data.Interfaces.Manifests.Manifest curSchema, string key,
                                                                 string fieldName = "name",
                                                                 GetCrateDirection direction = GetCrateDirection.None)
         {
             var controlsCrates = _crate.GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO()).ToList();
 
             if (direction != GetCrateDirection.None)
-            {
+        {
                 var upstreamCrates = await ObjectFactory.GetInstance<IRouteNode>()
                     .GetCratesByDirection(curActionDO.Id, curSchema.ManifestName, direction).ConfigureAwait(false);
 
@@ -521,7 +540,7 @@ namespace Hub.Services
             }
 
             var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: fieldName);
-            return keys;
+           return keys;
         }
     }
 }

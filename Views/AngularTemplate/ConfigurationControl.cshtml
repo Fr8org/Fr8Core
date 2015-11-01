@@ -95,7 +95,7 @@
         Button template
     *@
     <div ng-if='field.type == "@ControlTypes.Button"'>
-        <button ng-click="onClick($event)" data-field-name='{{::field.name}}' id='pca__btn__{{::field.name | validId}}' class="{{::field.class || "btn btn-success"}}" name='pca__btn__{{::field.name | validId}}'>{{::field.label}}</button>
+        <button ng-click="field.clicked=true;onClick($event)" data-field-name='{{::field.name}}' id='pca__btn__{{::field.name | validId}}' class="{{::field.class || 'btn btn-success'}}" name='pca__btn__{{::field.name | validId}}'>{{::field.label}}</button>
     </div>
 
     @*

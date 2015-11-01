@@ -81,7 +81,7 @@ namespace HubWeb.Controllers
                 var pusherNotifier = new PusherNotifier();
                 try
                 {
-                    await _container.Launch(processTemplateDO, null);
+                await _container.Launch(processTemplateDO, null);
                     pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
                     "fr8pusher_container_executed", String.Format("Route \"{0}\" executed", processTemplateDO.Name));
                 }
@@ -91,7 +91,7 @@ namespace HubWeb.Controllers
                     "fr8pusher_container_failed", String.Format("Route \"{0}\" failed", processTemplateDO.Name));
                 }
                 
-                
+
                 return Ok();
             }
         }

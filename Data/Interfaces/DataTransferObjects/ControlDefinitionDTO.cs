@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Markup;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
@@ -202,12 +202,19 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
-    public class ButtonControlDefinisionDTO : ControlDefinitionDTO
+    public class ButtonControlDefinitionDTO : ControlDefinitionDTO
     {
         [JsonProperty("class")]
         public string CssClass;
 
-        public ButtonControlDefinisionDTO()
+        /// <summary>
+        /// Where the button was clicked before the current /configure request was sent.
+        /// Used to recognize 'click' event on server-side.
+        /// </summary>
+        [JsonProperty("clicked")]
+        public bool Clicked;
+
+        public ButtonControlDefinitionDTO()
         {
             Type = ControlTypes.Button;
         }

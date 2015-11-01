@@ -6,10 +6,10 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
 using Hub.Interfaces;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Data.Interfaces.Manifests;
 
 namespace DockyardTest.Services
 {

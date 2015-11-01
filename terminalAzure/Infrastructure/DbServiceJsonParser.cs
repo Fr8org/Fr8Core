@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 using Data.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using TerminalBase.Infrastructure;
 
 namespace terminalAzure.Infrastructure

@@ -34,6 +34,7 @@
                         <model.ActionDTO> {
                             id: 1,
                             name: 'Action 1',
+                            activityTemplateId: 1,
                             activityTemplate: {
                                 id: 1
                             },
@@ -42,6 +43,7 @@
                         <model.ActionDTO>{
                             id: 2,
                             name: 'Action 2',
+                            activityTemplateId: 1,
                             activityTemplate: {
                                 id: 1
                             },

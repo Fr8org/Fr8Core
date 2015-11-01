@@ -24,6 +24,10 @@
         checked: boolean;
     }
 
+    export class ButtonControlDefinitionDTO extends ControlDefinitionDTO {
+        checked: boolean;
+    }
+
     export class TextBoxControlDefinitionDTO extends ControlDefinitionDTO {
         required: boolean;        
     }

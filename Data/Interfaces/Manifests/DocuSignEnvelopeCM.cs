@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Interfaces.ManifestSchemas
+namespace Data.Interfaces.Manifests
 {
     public class DocuSignEnvelopeCM : Manifest
     {
@@ -15,6 +15,8 @@ namespace Data.Interfaces.ManifestSchemas
         public string CompletedDate { get; set; }
         public string EnvelopeId { get; set; }
         public string ExternalAccountId { get; set; }
+
+        public string StatusChangedDateTime { get; set; }
 
         public DocuSignEnvelopeCM()
               : base(Constants.MT.DocuSignEnvelope)

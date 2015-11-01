@@ -9,9 +9,9 @@ using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
 using Hub.Enums;
 using TerminalBase;
+using Data.Interfaces.Manifests;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.DataTransferObjects;
@@ -21,8 +21,10 @@ namespace terminalDocuSign.Actions
 {
     public class Receive_DocuSign_Envelope_v1 : BasePluginAction
     {
+        DocuSignManager _docuSignManager; 
         public Receive_DocuSign_Envelope_v1()
         {
+            _docuSignManager = new DocuSignManager();
         }
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
@@ -190,28 +192,7 @@ namespace terminalDocuSign.Actions
             }
 
             // If DocuSignTemplate Id was found, then add design-time fields.
-            if (!string.IsNullOrEmpty(docuSignTemplateId))
-            {
-                var docusignEnvelope = new DocuSignEnvelope(
-                    docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
-
-                var userDefinedFields = docusignEnvelope
-                    .GetEnvelopeDataByTemplate(docuSignTemplateId);
-
-                var fieldCollection = userDefinedFields
-                    .Select(f => new FieldDTO()
-                    {
-                        Key = f.Name,
-                        Value = f.Value
-                    });
-
-                Crate.ReplaceCratesByManifestType(curActionDTO.CrateStorage.CrateDTO,
-                    CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
-                    new List<CrateDTO>
-                    {
-                        Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", fieldCollection.ToArray())
-                    });
-            }
+            _docuSignManager.ExtractFieldsAndAddToCrate(docuSignTemplateId, docuSignAuthDTO, curActionDTO);
 
             return curActionDTO;
         }

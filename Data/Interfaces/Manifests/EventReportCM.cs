@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Data.Interfaces.DataTransferObjects;
+using Data.Constants;
 
-namespace Data.Interfaces.ManifestSchemas
+namespace Data.Interfaces.Manifests
 {
-    public class EventReportCM
+    public class EventReportCM : Manifest
     {
         public string EventNames { get; set; }
         public string ContainerDoId { get; set; }
@@ -13,8 +14,9 @@ namespace Data.Interfaces.ManifestSchemas
         public string Source { get; set; }
 
         public EventReportCM()
+            : base(Constants.MT.StandardEventReport)
         {
             EventPayload = new List<CrateDTO>();
         }
-}
+    }
 }
