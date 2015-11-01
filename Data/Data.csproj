@@ -274,6 +274,7 @@
     <Compile Include="Interfaces\IMTFieldTypeRepository.cs" />
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
+    <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8RoutesCM .cs" />
     <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM.cs" />
