@@ -394,15 +394,9 @@ namespace HubWeb.Controllers
             String param = id;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Fr8AccountDO user;
-                if (param.Equals("getCurrent"))
-                {
-                    user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);
-                }
-                else
-                {
-                    user = uow.UserRepository.FindOne(u => u.Id == param);
-                }
+                var user = param.Equals("getCurrent") 
+                    ? uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name) 
+                    : uow.UserRepository.FindOne(u => u.Id == param);
                 var userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
                 userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
                 return Ok(userDTO);
