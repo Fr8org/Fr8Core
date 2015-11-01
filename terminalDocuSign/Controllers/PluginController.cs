@@ -10,14 +10,17 @@ using Data.States;
 using Hub.Services;
 using TerminalBase.BaseClasses;
 using Utilities.Configuration.Azure;
+using System.Web.Http.Description;
+using Data.Interfaces.Manifests;
 
 namespace terminalDocuSign.Controllers
-{    
+{
     [RoutePrefix("plugins")]
     public class PluginController : ApiController
     {
         [HttpGet]
         [Route("discover")]
+        [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult Get()
         {
             var plugin = new PluginDO()
@@ -36,19 +39,19 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Monitors,
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.Internal,
-				MinPaneWidth = 330
+                MinPaneWidth = 330
             };
 
-			var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
-			{
-				Version = "1",
-				Name = "Send_DocuSign_Envelope",
+            var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
+            {
+                Version = "1",
+                Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
-				Plugin = plugin,
+                Plugin = plugin,
                 AuthenticationType = AuthenticationType.Internal,
-				MinPaneWidth = 330
-			};
+                MinPaneWidth = 330
+            };
 
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
             {
@@ -58,7 +61,7 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Receivers,
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.Internal,
-				MinPaneWidth = 330
+                MinPaneWidth = 330
             };
 
             var recordDocuSignEvents = new ActivityTemplateDO
@@ -69,7 +72,7 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Forwarders,
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.Internal,
-				MinPaneWidth = 330
+                MinPaneWidth = 330
             };
 
             var mailMergeActionTemplate = new ActivityTemplateDO
@@ -103,7 +106,12 @@ namespace terminalDocuSign.Controllers
                 collectFormDataSolution
             };
 
-            return Ok(actionList);
+            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            {
+                Definition = plugin,
+                Actions = actionList
+            };
+            return Json(curStandardFr8TerminalCM);
         }
     }
 }
