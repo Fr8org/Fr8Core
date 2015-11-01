@@ -9,14 +9,17 @@ using TerminalBase.BaseClasses;
 using System.Collections.Generic;
 using Data.States;
 using Utilities.Configuration.Azure;
+using System.Web.Http.Description;
+using Data.Interfaces.Manifests;
 
 namespace terminalSalesforce.Controllers
 {
-     [RoutePrefix("plugins")]
+    [RoutePrefix("plugins")]
     public class PluginController : ApiController
     {
         [HttpGet]
         [Route("discover")]
+        [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult Get()
         {
             var plugin = new PluginDO()
@@ -35,7 +38,7 @@ namespace terminalSalesforce.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.External,
                 Category = ActivityCategory.Forwarders,
-				MinPaneWidth = 330
+                MinPaneWidth = 330
             };
 
             var actionList = new List<ActivityTemplateDO>()
@@ -43,7 +46,12 @@ namespace terminalSalesforce.Controllers
                 action
             };
 
-            return Ok(actionList);
+            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            {
+                Definition = plugin,
+                Actions = actionList
+            };
+            return Json(curStandardFr8TerminalCM);
         }
     }
 }
