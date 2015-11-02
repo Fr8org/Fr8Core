@@ -392,7 +392,3 @@ input[type=radio]:checked ~ div.nested-controls {
     min-height: initial !important;
     padding: initial !important;
 }
-
-.container.app-container {
-    width: 100%;
-}

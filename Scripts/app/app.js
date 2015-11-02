@@ -103,7 +103,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             .state('processBuilder', {
             url: "/processes/{id}/builder",
             templateUrl: "/AngularTemplate/ProcessBuilder",
-            data: { pageTitle: '', noContainer: true },
+            data: { pageTitle: '' },
         })
             .state('showIncidents', {
             url: "/showIncidents",
