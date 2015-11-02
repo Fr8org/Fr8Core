@@ -16,6 +16,7 @@ using Data.Interfaces.DataTransferObjects;
 using Utilities;
 
 using JsonSerializer = Utilities.Serializers.Json.JsonSerializer;
+using Data.Crates.Helpers;
 
 namespace Hub.Managers
 {
@@ -338,6 +339,32 @@ namespace Hub.Managers
                 return null;
             var standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(confControls.First().Contents);
             return standardCfgControlsMs;
+        }
+
+        public void AddLogMessage(string label, List<LogItemDTO> logItemList, ContainerDO containerDO)
+        {
+            if (String.IsNullOrEmpty(label))
+                throw new ArgumentNullException("Parameter Label is empty");
+            if (logItemList == null)
+                throw new ArgumentNullException("Parameter Log Item DTO list is empty.");
+            if (containerDO == null)
+                throw new ArgumentNullException("Parameter ContainerDO is null.");
+
+            var curManifestSchema = new StandardLoggingCM()
+            {
+                Item = logItemList
+            };
+
+            var curLoggingCrate = Create(label,
+                            JsonConvert.SerializeObject(curManifestSchema),
+                            manifestType: CrateManifests.STANDARD_LOGGING_MANIFEST_NAME,
+                            manifestId: CrateManifests.STANDARD_LOGGING_MANIFEST_ID);
+
+            var curCrateList = new List<CrateDTO>();
+
+            curCrateList.Add(curLoggingCrate);
+
+            containerDO.UpdateCrateStorageDTO(curCrateList);
         }
 
     }
