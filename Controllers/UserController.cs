@@ -402,7 +402,7 @@ namespace HubWeb.Controllers
 
         [Route("api/user/getCurrent")]
         [HttpGet]
-        public IHttpActionResult getCurrent()
+        public IHttpActionResult GetCurrent()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
