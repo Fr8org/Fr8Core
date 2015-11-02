@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 
-namespace terminalAzure.Infrastructure
+namespace TerminalSqlUtilities
 {
     public interface IDbProvider
     {

@@ -14,6 +14,7 @@ using Hub.Enums;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using TerminalSqlUtilities;
 using terminalAzure.Infrastructure;
 using terminalAzure.Services;
 
@@ -309,7 +310,7 @@ namespace terminalAzure.Actions
                 }
 
                 // TODO: change "dbo" schema later.
-                tables.Add(new Table("dbo", tablePair.Key, new[] { new Row(values) }));
+                tables.Add(new Table(new TableInfo("dbo", tablePair.Key), new[] { new Row(values) }));
             }
 
             return tables;
