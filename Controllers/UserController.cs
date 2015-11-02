@@ -391,12 +391,22 @@ namespace HubWeb.Controllers
         [DockyardAuthorize(Roles = Roles.Admin)]
         public IHttpActionResult Get(string id)
         {
-            String param = id;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var user = param.Equals("getCurrent") 
-                    ? uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name) 
-                    : uow.UserRepository.FindOne(u => u.Id == param);
+                var user = uow.UserRepository.FindOne(u => u.Id == id);
+                var userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
+                userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
+                return Ok(userDTO);
+            }
+        }
+
+        [Route("api/user/getCurrent")]
+        [HttpGet]
+        public IHttpActionResult getCurrent()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);
                 var userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
                 userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
                 return Ok(userDTO);
