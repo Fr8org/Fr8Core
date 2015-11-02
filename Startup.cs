@@ -241,13 +241,6 @@ namespace HubWeb
                             needSave = true;
                         }
 
-                        if (registeredItem.Id > 0 && 
-                            repositaryItem.Id != registeredItem.Id)
-                        {
-                            repositaryItem.Id = registeredItem.Id;
-                            needSave = true;
-                        }
-
                         if (registeredItem.TerminalID > 0 && 
                             repositaryItem.TerminalID != registeredItem.TerminalID)
                         {
