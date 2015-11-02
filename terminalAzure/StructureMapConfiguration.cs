@@ -7,6 +7,7 @@ using StructureMap.Configuration.DSL;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Services;
+using TerminalSqlUtilities;
 using terminalAzure.Infrastructure;
 
 namespace terminalAzure

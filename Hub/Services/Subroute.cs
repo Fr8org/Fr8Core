@@ -169,7 +169,7 @@ namespace Hub.Services
                 foreach (var downStreamActivity in downStreamActivities)
                 {
                     var crateStorage = downStreamActivity.CrateStorageDTO();
-                    var cratesToReset = _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, crateStorage).ToList();
+                    var cratesToReset = _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, crateStorage).ToList();
                     foreach (var crateDTO in cratesToReset)
                     {
                         var configurationControls = _crate.GetStandardConfigurationControls(crateDTO);

@@ -127,7 +127,7 @@ namespace terminalExcel.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Select an Excel file",
-                    ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+                    ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME
                 },
             };
             controlList.Add(filePickerControl);
@@ -223,7 +223,7 @@ namespace terminalExcel.Actions
                 throw new AmbiguityException();
 
             // RFemove previously created configuration control crate
-            Crate.RemoveCrateByManifestType(curActionDTO.CrateStorage.CrateDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+            Crate.RemoveCrateByManifestType(curActionDTO.CrateStorage.CrateDTO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
             // Creating configuration control crate with a file picker and textblock
             var configControlsCrateDTO = CreateConfigurationControlsCrate(true);
             curActionDTO.CrateStorage.CrateDTO.Add(configControlsCrateDTO);

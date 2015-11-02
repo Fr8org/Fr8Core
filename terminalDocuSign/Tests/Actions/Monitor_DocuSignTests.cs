@@ -43,7 +43,7 @@ namespace terminalDocuSign.Tests.Actions
             //Assert
             Assert.IsNotNull(result.CrateStorage);
             Assert.AreEqual(4, result.CrateStorage.CrateDTO.Count);
-            Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
+            Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
             Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[1].ManifestType);
 
             //DO-1300 states Initial configuration response should add the standard design time fields with envelope ID
