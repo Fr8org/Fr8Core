@@ -383,6 +383,10 @@
     <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.Designer.cs">
       <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511021809221_Renamed_PluginId_To_TerminalId.cs" />
+    <Compile Include="Migrations\201511021809221_Renamed_PluginId_To_TerminalId.Designer.cs">
+      <DependentUpon>201511021809221_Renamed_PluginId_To_TerminalId.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -659,6 +663,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510261339053_CreateWebServicesTable_Migration.resx">
       <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511021809221_Renamed_PluginId_To_TerminalId.resx">
+      <DependentUpon>201511021809221_Renamed_PluginId_To_TerminalId.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

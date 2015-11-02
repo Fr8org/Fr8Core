@@ -389,7 +389,7 @@ namespace UtilitiesTesting.Fixtures
                 Version = "v1",
                 AuthenticationType = AuthenticationType.None,
                 Plugin = curPluginDO,
-                PluginID = 1,
+                TerminalID = 1
             };
 
 

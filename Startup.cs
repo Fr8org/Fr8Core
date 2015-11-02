@@ -128,6 +128,7 @@ namespace HubWeb
 
         public async Task RegisterPluginActions()
         {
+            var listRegisteredActivityTemplates = new List<ActivityTemplateDO>();
             var alertReporter = ObjectFactory.GetInstance<EventReporter>();
 
             var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
@@ -153,6 +154,7 @@ namespace HubWeb
                         try
                         {
                             new ActivityTemplate().Register(curItem);
+                            listRegisteredActivityTemplates.Add(curItem);
                             count++;
                         }
                         catch (Exception ex)
@@ -175,6 +177,7 @@ namespace HubWeb
                 }
             }
 
+            UpdateActivityTemplates(listRegisteredActivityTemplates);
             alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
         }
 
@@ -206,5 +209,91 @@ namespace HubWeb
         {
             return WebApp.Start<Startup>(url: url);
         }
+
+        private void UpdateActivityTemplates(List<ActivityTemplateDO> listRegisteredItems)
+        {
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var needSave = false;
+                var repository = uow.ActivityTemplateRepository;
+                var listRepositaryItems = repository.GetAll().ToList();
+                foreach (var repositaryItem in listRepositaryItems)
+                {
+                    var registeredItem = listRegisteredItems.FirstOrDefault(x => x.Name.ToLower().Equals(repositaryItem.Name.ToLower()));
+                    if (!object.Equals(registeredItem, default(ActivityTemplateDO)))
+                    {
+                        if (repositaryItem.Label != repositaryItem.Label)
+                        {
+                            repositaryItem.Label = registeredItem.Label;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.MinPaneWidth != registeredItem.MinPaneWidth)
+                        {
+                            repositaryItem.MinPaneWidth = registeredItem.MinPaneWidth;
+                            needSave = true;
+                        }
+
+                        if (registeredItem.WebServiceId != null && 
+                            repositaryItem.WebServiceId != registeredItem.WebServiceId)
+                        {   
+                            repositaryItem.WebServiceId = registeredItem.WebServiceId;
+                            needSave = true;
+                        }
+
+                        if (registeredItem.Id > 0 && 
+                            repositaryItem.Id != registeredItem.Id)
+                        {
+                            repositaryItem.Id = registeredItem.Id;
+                            needSave = true;
+                        }
+
+                        if (registeredItem.TerminalID > 0 && 
+                            repositaryItem.TerminalID != registeredItem.TerminalID)
+                        {
+                            repositaryItem.TerminalID = registeredItem.TerminalID;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.Version != registeredItem.Version)
+                        {
+                            repositaryItem.Version = registeredItem.Version;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.Category != registeredItem.Category)
+                        {
+                            repositaryItem.Category = registeredItem.Category;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.AuthenticationType != registeredItem.AuthenticationType)
+                        {
+                            repositaryItem.AuthenticationType = registeredItem.AuthenticationType;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.ComponentActivities != registeredItem.ComponentActivities)
+                        {
+                            repositaryItem.ComponentActivities = registeredItem.ComponentActivities;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.Tags != registeredItem.Tags)
+                        {
+                            repositaryItem.Tags = registeredItem.Tags;
+                            needSave = true;
+                        }
+                        
+                    }
+                }
+
+                if (needSave)
+                {
+                    uow.SaveChanges();
+                }
+            }
+        }
+
     }
 }

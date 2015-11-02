@@ -18,14 +18,14 @@ namespace Data.Entities
             this.AuthenticationType = States.AuthenticationType.None;
         }
 
-        public ActivityTemplateDO(string name, string label, string version, int pluginId) : this()
+        public ActivityTemplateDO(string name, string label, string version, int terminalId) : this()
         {
             this.Name = name;
             this.Label = label;
             this.Version = version;
             /* We don't need to validate pluginId because of EF chack ForeignKey and if pluginId doesn't exist in table Plugins then 
              * EF will throw 'System.Data.Entity.Infrastructure.DbUpdateException'  */
-            this.PluginID = pluginId;
+            this.TerminalID = terminalId;
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace Data.Entities
         public string ComponentActivities { get; set; }
 
         [ForeignKey("Plugin")]
-        public int PluginID { get; set; }
+        public int TerminalID { get; set; }
         
         public virtual PluginDO Plugin { get; set; }
 

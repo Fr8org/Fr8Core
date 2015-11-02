@@ -341,7 +341,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ActivityTemplateDO>()
                 .HasRequired(x => x.Plugin)
                 .WithMany()
-                .HasForeignKey(x => x.PluginID)
+                .HasForeignKey(x => x.TerminalID)
                 .WillCascadeOnDelete(false);
 
 			modelBuilder.Entity<ActivityTemplateDO>()

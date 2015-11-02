@@ -33,20 +33,20 @@ namespace Hub.Managers.APIManagers.Transmitters.Plugin
                 throw new ArgumentOutOfRangeException("actionDTO", actionDTO.ActivityTemplateId, "ActivityTemplate must be specified either explicitly or by using ActivityTemplateId");
             }
 
-            int pluginId;
+            int terminalId;
 
             if (actionDTO.ActivityTemplate == null)
             {
                 var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>().GetByKey(actionDTO.ActivityTemplateId.Value);
                 actionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDO, ActivityTemplateDTO>(activityTemplate);
-                pluginId = activityTemplate.PluginID;
+                terminalId = activityTemplate.TerminalID;
             }
             else
             {
-                pluginId = actionDTO.ActivityTemplate.PluginID;
+                terminalId = actionDTO.ActivityTemplate.PluginID;
             }
            
-            var plugin = ObjectFactory.GetInstance<IPlugin>().GetAll().FirstOrDefault(x => x.Id == pluginId);
+            var plugin = ObjectFactory.GetInstance<IPlugin>().GetAll().FirstOrDefault(x => x.Id == terminalId);
 
             if (plugin == null || string.IsNullOrEmpty(plugin.Endpoint))
             {
