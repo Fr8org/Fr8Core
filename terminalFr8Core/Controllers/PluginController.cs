@@ -73,11 +73,21 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             });
 
-            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "ConnectToSql",
+                Label = "Connect To SQL",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1"
+            });
+
+            var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = plugin,
                 Actions = result
             };
+
             return Json(curStandardFr8TerminalCM);
         }
     }

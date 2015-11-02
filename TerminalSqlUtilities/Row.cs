@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace terminalAzure.Infrastructure
+namespace TerminalSqlUtilities
 {
     public class Row
     {
