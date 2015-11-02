@@ -266,7 +266,6 @@
     <Compile Include="Interfaces\DataTransferObjects\RouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\WebServiceActionSetDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\WebServiceDTO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\IMTDataRepository.cs" />
