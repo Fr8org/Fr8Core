@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Data.Interfaces.Manifests;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Interfaces.Manifests
+namespace Data.Interfaces.ManifestSchemas
 {
-    public class StandardParsingRecordCM : Manifest
+    public class StandardParsingRecord : Manifest
     {
         public string Name { get; set; }
 
@@ -20,10 +21,10 @@ namespace Data.Interfaces.Manifests
 
         public string InternalAccountId { get; set; }
 
-        public StandardParsingRecordCM()
+        public StandardParsingRecord()
             : base(Constants.MT.StandardParsingRecord)
         {
-        }
 
+        }
     }
 }

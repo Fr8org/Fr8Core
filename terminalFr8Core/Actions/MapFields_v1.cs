@@ -102,7 +102,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            CrateDTO getErrorMessageCrate = null; 
+            var cratesToAssemble = new List<CrateDTO>();
 
             var curUpstreamFields =
                 (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Upstream))
@@ -116,11 +116,14 @@ namespace terminalFr8Core.Actions
 
             if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
             {
-                getErrorMessageCrate = GetTextBoxControlForDisplayingError("MapFieldsErrorMessage",
+                CrateDTO getErrorMessageCrate = GetTextBoxControlForDisplayingError("MapFieldsErrorMessage",
                          "This action couldn't find either source fields or target fields (or both). " +
                         "Try configuring some Actions first, then try this page again.");
                 curActionDTO.CurrentView = "MapFieldsErrorMessage";
+                cratesToAssemble.Add(getErrorMessageCrate);
             }
+            else
+            {
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
             CrateDTO downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Plugin-Provided Fields", curDownstreamFields);
@@ -128,16 +131,12 @@ namespace terminalFr8Core.Actions
 
             var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 
-            var cratesToAssemble = new List<CrateDTO>()
+                cratesToAssemble.AddRange(new List<CrateDTO>()
             {
                 downstreamFieldsCrate,
                 upstreamFieldsCrate,
                 curConfigurationControlsCrate
-            };
-
-            if (getErrorMessageCrate != null)
-            {
-                cratesToAssemble.Add(getErrorMessageCrate);
+                });
             }
 
             curActionDTO.CrateStorage = AssembleCrateStorage(cratesToAssemble.ToArray());

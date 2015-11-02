@@ -5,6 +5,7 @@ using Data.Entities;
 using Data.States;
 using Hub.Services;
 using Utilities.Configuration.Azure;
+using Data.Interfaces.Manifests;
 
 namespace terminalFr8Core.Controllers
 {
@@ -17,7 +18,7 @@ namespace terminalFr8Core.Controllers
         /// </summary>
         [HttpGet]
         [Route("discover")]
-        [ResponseType(typeof(List<ActivityTemplateDO>))]
+        [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverPlugins()
         {
             var result = new List<ActivityTemplateDO>();
@@ -72,6 +73,12 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             });
 
+            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            {
+                Definition = plugin,
+                Actions = result
+            };
+            return Json(curStandardFr8TerminalCM);
             result.Add(new ActivityTemplateDO
             {
                 Name = "Select_Fr8_Object",
