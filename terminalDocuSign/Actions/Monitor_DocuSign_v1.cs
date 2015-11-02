@@ -58,7 +58,7 @@ namespace terminalDocuSign.Actions
 
         private string GetSelectedTemplateId(ActionDTO curActionDTO)
         {
-            var controlsCrates = Crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+            var controlsCrates = Crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME,
                 curActionDTO.CrateStorage);
             var curDocuSignTemplateId = Crate.GetElementByKey(controlsCrates, key: "Selected_DocuSign_Template",
                 keyFieldName: "name")

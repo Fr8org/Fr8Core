@@ -153,6 +153,7 @@
   <ItemGroup>
     <Compile Include="Actions\AddPayloadManually_v1.cs" />
     <Compile Include="Actions\ConnectToSql_v1.cs" />
+    <Compile Include="Actions\Select_Fr8_Object_v1.cs" />
     <Compile Include="Actions\StoreMTData_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
