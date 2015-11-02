@@ -9,7 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using AutoMapper;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [RoutePrefix("manifests")]
     public class ManifestController : ApiController

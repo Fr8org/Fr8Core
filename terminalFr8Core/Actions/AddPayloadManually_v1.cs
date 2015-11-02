@@ -18,7 +18,7 @@ namespace terminalFr8Core.Actions
             var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
 
             var controlsCrate = curActionDTO.CrateStorage.CrateDTO
-                .SingleOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                .SingleOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
             if (controlsCrate == null)
             {
                 throw new ApplicationException("Could not find ControlsConfiguration crate.");
@@ -67,7 +67,7 @@ namespace terminalFr8Core.Actions
         protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             var controlsCrate = curActionDTO.CrateStorage.CrateDTO
-                .SingleOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                .SingleOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
             if (controlsCrate == null)
             {
                 throw new ApplicationException("Could not find ControlsConfiguration crate.");

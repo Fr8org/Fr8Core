@@ -46,7 +46,7 @@ namespace Hub.Services
                     throw new ArgumentException(manifestAssemblyName);
 
                 PropertyInfo[] propertyInfo = ReflectionHelper.GetProperties(cuAssemblyType);
-                List<FieldDTO> curFieldDTO = convertPropertyToFields(propertyInfo);
+                List<FieldDTO> curFieldDTO = ConvertPropertyToFields(propertyInfo);
 
                 crateDTO = _curCrateManager.CreateDesignTimeFieldsCrate(manifestAssemblyName, curFieldDTO.ToArray());
             }
@@ -55,7 +55,7 @@ namespace Hub.Services
         }
 
         // Convert all properties to FieldDTO
-        public List<FieldDTO> convertPropertyToFields( PropertyInfo[]  curProperties)
+        public List<FieldDTO> ConvertPropertyToFields( PropertyInfo[]  curProperties)
         {
             var curPropertiesList = new List<FieldDTO>();
             foreach (var property in curProperties)

@@ -376,7 +376,7 @@ namespace Hub.Services
                 foreach (var downStreamActivity in downStreamActivities)
                 {
                     var crateStorage = downStreamActivity.CrateStorageDTO();
-                    var cratesToReset = _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, crateStorage).ToList();
+                    var cratesToReset = _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, crateStorage).ToList();
                     foreach (var crateDTO in cratesToReset)
                     {
                         var configurationControls = _crate.GetStandardConfigurationControls(crateDTO);
@@ -460,12 +460,12 @@ namespace Hub.Services
 
             var curCrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curAction.CrateStorage);
             var curControlsCrate =
-                _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, curCrateStorage)
+                _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, curCrateStorage)
                     .FirstOrDefault();
 
             if (curControlsCrate == null || string.IsNullOrEmpty(curControlsCrate.Contents))
             {
-                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
+                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME));
             }
 
 

@@ -258,7 +258,7 @@ namespace pluginIntegrationTests
             Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
             Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 4);
             Assert.True((actionDTO.Content.CrateStorage.CrateDTO
-                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME)));
+                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME)));
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Available Templates" && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME));
 
@@ -290,7 +290,7 @@ namespace pluginIntegrationTests
 
             // Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
             var configurationControlsCrate = curCrateStorage.CrateDTO
-                .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
                 configurationControlsCrate.Contents);
@@ -315,7 +315,7 @@ namespace pluginIntegrationTests
             Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
             Assert.AreEqual(3, actionDTO.Content.CrateStorage.CrateDTO.Count);//replace this with 3 when 1123 is fixed
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO
-                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
+                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME));
             //Assert.True(result.Content.CrateDTO   //uncomment this when 1123 is fixed
               //  .Any(x => x.Label == "Available Templates" && x.ManifestType == "Standard Design-Time Fields"));
             //Assert.True(actionDTO.Content.CrateStorage.CrateDTO
@@ -342,7 +342,7 @@ namespace pluginIntegrationTests
             Assert.NotNull(result.Content.CrateStorage.CrateDTO);
             Assert.AreEqual(result.Content.CrateStorage.CrateDTO.Count, 2);
             Assert.True(result.Content.CrateStorage.CrateDTO
-                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
+                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME));
             Assert.True(result.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Queryable Criteria" && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME));
 
@@ -362,7 +362,7 @@ namespace pluginIntegrationTests
             Assert.NotNull(result.Content.CrateStorage.CrateDTO);
             Assert.AreEqual(result.Content.CrateStorage.CrateDTO.Count, 1);
             Assert.True(result.Content.CrateStorage.CrateDTO
-                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
+                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME));
 
             return result.Content.CrateStorage;
         }
@@ -371,7 +371,7 @@ namespace pluginIntegrationTests
         {
             // Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
             var configurationControlsCrate = curCrateStorage.CrateDTO
-                .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
                 configurationControlsCrate.Contents);
@@ -396,7 +396,7 @@ namespace pluginIntegrationTests
             Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
             Assert.AreEqual(2, actionDTO.Content.CrateStorage.CrateDTO.Count);//replace this with 3 when 1123 is fixed
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO
-                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
+                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME));
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Sql Table Columns" && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME));
 

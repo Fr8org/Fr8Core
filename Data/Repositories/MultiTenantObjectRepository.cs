@@ -44,12 +44,13 @@ namespace Data.Repositories
             var data = _mtData.Create(curFr8AccountId, curManifest, correspondingMTObject);
             MapManifestToMTData(curFr8AccountId, curManifest, curDataProperties, data, correspondingMTObject);
             _uow.MTDataRepository.Add(data);
+            _uow.SaveChanges();
         }
 
         public void AddOrUpdate<T>(IUnitOfWork _uow, string curFr8AccountId, T curManifest, Expression<Func<T, object>> keyProperty)
             where T : Manifest
         {
-            var curManifestType = typeof (T);
+            var curManifestType = typeof(T);
             var coorespondingMTFieldType = _mtFieldType.GetOrCreateMT_FieldType(_uow, curManifestType);
             _uow.SaveChanges();
             var currentMTObject =
@@ -118,21 +119,24 @@ namespace Data.Repositories
 
         private MT_Data FindMT_DataByExpression(IUnitOfWork _uow, string curFr8AccountId, PropertyInfo leftOperand, object rightOperand, MethodInfo equalMethod, MT_Object curMTObject)
         {
-            var correspondingDTFields = _uow.MTFieldRepository.FindList(a => a.MT_ObjectId == curMTObject.Id);
-            var keyMTField = correspondingDTFields.Where(a => a.Name == leftOperand.Name).FirstOrDefault();
-            var corrMTDataProperty = typeof(MT_Data).GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
-                .Where(a => a.Name == "Value" + keyMTField.FieldColumnOffset).FirstOrDefault();
-
-            var possibleDatas = _uow.MTDataRepository.FindList(a => a.MT_ObjectId == curMTObject.Id && a.fr8AccountId == curFr8AccountId);
             MT_Data curMTData = null;
-            foreach (var data in possibleDatas)
+            if (curMTObject != null)
             {
-                if (data.IsDeleted) continue;
-                var val = corrMTDataProperty.GetValue(data);
-                if ((bool)equalMethod.Invoke(val, new object[] { val, rightOperand }))
-                    curMTData = data;
-            }
+                var correspondingDTFields = _uow.MTFieldRepository.FindList(a => a.MT_ObjectId == curMTObject.Id);
+                var keyMTField = correspondingDTFields.Where(a => a.Name == leftOperand.Name).FirstOrDefault();
+                var corrMTDataProperty = typeof(MT_Data).GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
+                    .Where(a => a.Name == "Value" + keyMTField.FieldColumnOffset).FirstOrDefault();
 
+                var possibleDatas = _uow.MTDataRepository.FindList(a => a.MT_ObjectId == curMTObject.Id && a.fr8AccountId == curFr8AccountId);
+
+                foreach (var data in possibleDatas)
+                {
+                    if (data.IsDeleted) continue;
+                    var val = corrMTDataProperty.GetValue(data);
+                    if ((bool)equalMethod.Invoke(val, new object[] { val, rightOperand }))
+                        curMTData = data;
+                }
+            }
             return curMTData;
         }
 
@@ -179,10 +183,18 @@ namespace Data.Repositories
             var curMTObjectTypeField = _mtFieldType.GetOrCreateMT_FieldType(_uow, typeof(T));
             MT_Object curMTObject = null;
             if (ManifestId == -1)
-                //We assume that there must be a single MTObject
-                curMTObject = _uow.MTObjectRepository.GetQuery().Where(a => a.MT_FieldType == curMTObjectTypeField).SingleOrDefault();
+            {
+                //We assume that there must be a single MTObject                
+                curMTObject = _uow.MTObjectRepository.GetQuery().Where(a => a.MT_FieldType.Id == curMTObjectTypeField.Id).SingleOrDefault();
+                if (curMTObject != null)
+                    curMTObject.Fields = _uow.MTFieldRepository.GetQuery().Where(a => a.MT_ObjectId == curMTObject.Id).ToList();
+            }
             else
-                curMTObject = _uow.MTObjectRepository.GetQuery().Where(a => a.MT_FieldType == curMTObjectTypeField && a.ManifestId == ManifestId).SingleOrDefault();
+            {
+                curMTObject = _uow.MTObjectRepository.GetQuery().Where(a => a.MT_FieldType.TypeName == curMTObjectTypeField.TypeName && a.ManifestId == ManifestId).SingleOrDefault();
+                if (curMTObject != null)
+                    curMTObject.Fields = _uow.MTFieldRepository.GetQuery().Where(a => a.MT_ObjectId == curMTObject.Id).ToList();
+            }
 
             return curMTObject;
         }
@@ -214,20 +226,23 @@ namespace Data.Repositories
             var properties = obj.GetType().GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();
             var dataValueCells = data.GetType().GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();
 
-            foreach (var DTField in correspondingDTFields)
+            if (correspondingDTFields != null)
             {
-                var correspondingProperty = properties.Where(a => a.Name == DTField.Name).FirstOrDefault();
-                var valueCell = dataValueCells.Where(a => a.Name == "Value" + DTField.FieldColumnOffset).FirstOrDefault();
-
-                object val = null;
-                if (!correspondingProperty.PropertyType.IsValueType)
-                    val = valueCell.GetValue(data);
-                else
+                foreach (var DTField in correspondingDTFields)
                 {
-                    object boxedObject = RuntimeHelpers.GetObjectValue(correspondingProperty);
-                }
+                    var correspondingProperty = properties.Where(a => a.Name == DTField.Name).FirstOrDefault();
+                    var valueCell = dataValueCells.Where(a => a.Name == "Value" + DTField.FieldColumnOffset).FirstOrDefault();
 
-                correspondingProperty.SetValue(obj, val);
+                    object val = null;
+                    if (!correspondingProperty.PropertyType.IsValueType)
+                        val = valueCell.GetValue(data);
+                    else
+                    {
+                        object boxedObject = RuntimeHelpers.GetObjectValue(correspondingProperty);
+                    }
+
+                    correspondingProperty.SetValue(obj, val);
+                }
             }
             return (T)obj;
         }
