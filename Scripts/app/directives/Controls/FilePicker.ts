@@ -115,6 +115,14 @@ module dockyard.directives.filePicker {
 
     app.directive('filePicker', FilePicker.Factory());
 
+    app.filter('formatInput', function () {
+        return function (input) {
+            if (input) {
+                return 'Selected File : ' + input.substring(input.lastIndexOf('/') + 1, input.length)
+            }
+        }
+    });
+
     //TODO talk to alex and move this class to services folder? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     interface IFileService {

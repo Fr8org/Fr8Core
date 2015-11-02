@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using StructureMap;
-using Core.Interfaces;
-using Core.Managers;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using Hub.Managers;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     public class DockyardEventController : ApiController
     {

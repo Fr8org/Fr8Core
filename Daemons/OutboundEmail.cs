@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using StructureMap;
 using Daemons.EventExposers;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using Core.Managers.APIManagers.Packagers;
-using StructureMap;
+using Hub.Managers.APIManagers.Packagers;
+using Hub.Services;
 using Utilities;
 using Utilities.Logging;
-using Data.Infrastructure;
-using Core.Services;
 
 namespace Daemons
 {

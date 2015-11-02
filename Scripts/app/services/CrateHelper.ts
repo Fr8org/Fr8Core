@@ -6,8 +6,7 @@
         }
 
         public throwError(errorText: string) {
-            alert(errorText);
-            throw errorText;
+            throw new Error(errorText);
         }
 
         public hasCrateOfManifestType(crateStorage: model.CrateStorage, manifestType: string): boolean {
@@ -141,7 +140,7 @@
             //now we should look for crates with manifestType Standard Design Time Fields
             //to set or override our DropdownListBox items
             for (var i = 0; i < fields.length; i++) {
-                if (fields[i].type == 'DropDownList') {
+                if (fields[i].type == 'DropDownList' || fields[i].type == 'TextSource') {
                     var dropdownListField = <model.DropDownListControlDefinitionDTO> fields[i];
                     if (!dropdownListField.source) {
                         continue;
@@ -170,12 +169,20 @@
             }
         }
 
+        private resetClickedFlag(fields: Array<any>) {
+            for (var field of fields) {
+                if (field.clicked) 
+                    field.clicked = false;
+            }
+        }
+
         public createControlListFromCrateStorage(crateStorage: model.CrateStorage): model.ControlsList {
             var crate = this.findByManifestType(
                 crateStorage, 'Standard Configuration Controls'
                 );
             var controlsList = new model.ControlsList();
             controlsList.fields = angular.fromJson(crate.contents).Controls;
+            this.resetClickedFlag(controlsList.fields); // Unset 'clicked' flag on buttons and other coontrols on which it exists
             this.populateListItemsFromDataSource(controlsList.fields, crateStorage);
             return controlsList;
         }

@@ -1,4 +1,6 @@
-﻿@*TextBlock control main container*@
-<div class="{{field.class}}">
-    {{field.value}}
+﻿@*TextSource control container*@
+<div>
+    <label for="pca__chk__{{groupName | validId }}__{{field.$$hashKey}}">
+        {{field.value}}
+    </label>
 </div>

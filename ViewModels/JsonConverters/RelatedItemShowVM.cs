@@ -1,4 +1,4 @@
-﻿namespace Web.ViewModels.JsonConverters
+﻿namespace HubWeb.ViewModels.JsonConverters
 {
     public class RelatedItemShowVM
     {

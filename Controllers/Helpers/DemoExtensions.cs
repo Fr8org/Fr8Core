@@ -10,7 +10,7 @@ using DayPilot.Web.Mvc.Json;
 //using DayPilot.Web.Ui;
 
 
-namespace Web.Controllers.Helpers
+namespace HubWeb.Controllers.Helpers
 {
     public static class DemoExtensions
     {

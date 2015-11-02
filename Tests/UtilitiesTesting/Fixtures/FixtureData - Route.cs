@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Core.Interfaces;
-using Core.Managers;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Data.States;
-using StructureMap;
+using Hub.Interfaces;
+using Hub.Managers;
 using Utilities.Serializers.Json;
 
 namespace UtilitiesTesting.Fixtures
@@ -313,6 +313,19 @@ namespace UtilitiesTesting.Fixtures
                 Fr8Account = FixtureData.TestDockyardAccount5()
             };
             return route;
+        }
+        public static RouteDO TestContainerCreateAddsLogs()
+        {
+            var curRouteDO = new RouteDO
+            {
+                Id = 1,
+                Description = "DO-1419 Container Create Adds Logs Test",
+                Name = "Container Create",
+                RouteState = RouteState.Active
+             
+            };
+
+            return curRouteDO;
         }
     }
 }

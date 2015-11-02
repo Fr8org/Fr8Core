@@ -1,20 +1,20 @@
-﻿using Core.Interfaces;
-using Core.Services;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using Microsoft.AspNet.Identity;
-using Data.Interfaces.DataTransferObjects;
 using AutoMapper;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Hub.Interfaces;
+using Hub.Services;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
     [RoutePrefix("api/manageFile")]

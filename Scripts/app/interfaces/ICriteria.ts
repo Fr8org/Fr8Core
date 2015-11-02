@@ -12,14 +12,16 @@ module dockyard.interfaces {
     }
 
     export interface IActionDTO {
-        id: number,
-        isTempId: boolean, 
-        parentRouteNodeId: number,
+        id: number;
+        isTempId: boolean;
+        parentRouteNodeId: number;
         name: string;
         label?: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
+        activityTemplate: model.ActivityTemplate;
         activityTemplateId: number;
+        childrenActions: Array<IActionDTO>;
     }
 
     export interface IActivityCategoryDTO {

@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Enums;
 using Newtonsoft.Json;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
-using PluginBase.Infrastructure;
-using PluginBase.BaseClasses;
+using Data.Interfaces.Manifests;
+using Hub.Enums;
+using TerminalBase.Infrastructure;
+using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Actions
 {
@@ -102,7 +102,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            CrateDTO getErrorMessageCrate = null; 
+            var cratesToAssemble = new List<CrateDTO>();
 
             var curUpstreamFields =
                 (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Upstream))
@@ -116,28 +116,27 @@ namespace terminalFr8Core.Actions
 
             if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
             {
-                getErrorMessageCrate = GetTextBoxControlForDisplayingError("MapFieldsErrorMessage",
+                CrateDTO getErrorMessageCrate = GetTextBoxControlForDisplayingError("MapFieldsErrorMessage",
                          "This action couldn't find either source fields or target fields (or both). " +
                         "Try configuring some Actions first, then try this page again.");
                 curActionDTO.CurrentView = "MapFieldsErrorMessage";
-            }
-
-            //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
-            CrateDTO downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Plugin-Provided Fields", curDownstreamFields);
-            CrateDTO upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
-
-            var curConfigurationControlsCrate = CreateStandardConfigurationControls();
-
-            var cratesToAssemble = new List<CrateDTO>()
-            {
-                downstreamFieldsCrate,
-                upstreamFieldsCrate,
-                curConfigurationControlsCrate
-            };
-
-            if (getErrorMessageCrate != null)
-            {
                 cratesToAssemble.Add(getErrorMessageCrate);
+            }
+            else
+            {
+
+                //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
+                CrateDTO downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Plugin-Provided Fields", curDownstreamFields);
+                CrateDTO upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+
+                var curConfigurationControlsCrate = CreateStandardConfigurationControls();
+
+                cratesToAssemble.AddRange(new List<CrateDTO>()
+                {
+                    downstreamFieldsCrate,
+                    upstreamFieldsCrate,
+                    curConfigurationControlsCrate
+                });
             }
 
             curActionDTO.CrateStorage = AssembleCrateStorage(cratesToAssemble.ToArray());
@@ -187,7 +186,7 @@ namespace terminalFr8Core.Actions
                 || downStreamFields.Fields.Count == 0)
             {
                 return true;
-        }
+            }
 
             // If all rules are passed, then it is not an initial configuration request.
             return false;

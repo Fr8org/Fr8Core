@@ -16,6 +16,7 @@ describe('tabs', function() {
       expect(t.eq(i).text().trim()).toEqual(titlesArray[i]);
     }
   }
+
   function expectContents(contentsArray) {
     var c = contents();
     expect(c.length).toEqual(contentsArray.length);
@@ -26,7 +27,6 @@ describe('tabs', function() {
 
 
   describe('basics', function() {
-
     beforeEach(inject(function($compile, $rootScope) {
       scope = $rootScope.$new();
       scope.first = '1';
@@ -99,7 +99,6 @@ describe('tabs', function() {
   });
 
   describe('basics with initial active tab', function() {
-
     beforeEach(inject(function($compile, $rootScope) {
       scope = $rootScope.$new();
 
@@ -173,35 +172,31 @@ describe('tabs', function() {
     }));
 
     it('should call select  for the first tab', function() {
-        expect(execOrder).toEqual([ 'select1' ]);
+      expect(execOrder).toEqual([ 'select1' ]);
     });
 
     it('should call deselect, then select', function() {
-          execOrder = [];
+      execOrder = [];
 
-          // Select second tab
-          titles().eq(1).find('a').click();
-          expect(execOrder).toEqual([ 'deselect1', 'select2' ]);
+      // Select second tab
+      titles().eq(1).find('a').click();
+      expect(execOrder).toEqual([ 'deselect1', 'select2' ]);
 
-          execOrder = [];
+      execOrder = [];
 
-          // Select again first tab
-          titles().eq(0).find('a').click();
-          expect(execOrder).toEqual([ 'deselect2', 'select1' ]);
+      // Select again first tab
+      titles().eq(0).find('a').click();
+      expect(execOrder).toEqual([ 'deselect2', 'select1' ]);
     });
   });
 
   describe('ng-repeat', function() {
-
-    beforeEach(inject(function($compile, $rootScope) {
+    var $compile, $rootScope;
+    beforeEach(inject(function(_$compile_, _$rootScope_) {
+      $compile = _$compile_;
+      $rootScope = _$rootScope_;
       scope = $rootScope.$new();
 
-      function makeTab(active) {
-        return {
-          active: !!active,
-          select: jasmine.createSpy()
-        };
-      }
       scope.tabs = [
         makeTab(), makeTab(), makeTab(true), makeTab()
       ];
@@ -215,6 +210,13 @@ describe('tabs', function() {
       ].join('\n'))(scope);
       scope.$apply();
     }));
+
+    function makeTab(active) {
+      return {
+        active: !!active,
+        select: jasmine.createSpy()
+      };
+    }
 
     function titles() {
       return elm.find('ul.nav-tabs li');
@@ -265,6 +267,33 @@ describe('tabs', function() {
       scope.$apply();
       expectTabActive(scope.tabs[2]);
     });
+
+    it('should not select twice', function() {
+      elm.remove();
+      elm = null;
+      scope = $rootScope.$new();
+
+      scope.tabs = [
+        makeTab(), makeTab(), makeTab(true), makeTab()
+      ];
+      scope.foo = {active: true};
+      scope.select = jasmine.createSpy();
+      elm = $compile([
+        '<tabset>',
+        '  <tab ng-repeat="t in tabs" active="t.active" select="select()">',
+        '    <tab-heading><b>heading</b> {{index}}</tab-heading>',
+        '    content {{$index}}',
+        '  </tab>',
+        '  <tab active="foo.active" select="select()">',
+        '    <tab-heading><b>heading</b> foo</tab-heading>',
+        '    content foo',
+        '  </tab>',
+        '</tabset>'
+      ].join('\n'))(scope);
+      scope.$apply();
+
+      expect(scope.select.calls.count()).toBe(1);
+    });
   });
 
   describe('advanced tab-heading element', function() {
@@ -312,7 +341,6 @@ describe('tabs', function() {
 
   //Tests that http://git.io/lG6I9Q is fixed
   describe('tab ordering', function() {
-
     beforeEach(inject(function($compile, $rootScope) {
       scope = $rootScope.$new();
       scope.tabs = [
@@ -403,9 +431,7 @@ describe('tabs', function() {
       ctrl = $controller('TabsetController', {$scope: scope});
     }));
 
-
     describe('select', function() {
-
       it('should mark given tab selected', function() {
         var tab = mockTab();
 
@@ -440,7 +466,6 @@ describe('tabs', function() {
 
 
     describe('addTab', function() {
-
       it('should append tab', function() {
         var tab1 = mockTab(), tab2 = mockTab();
 
@@ -452,7 +477,6 @@ describe('tabs', function() {
         ctrl.addTab(tab2);
         expect(ctrl.tabs).toEqual([tab1, tab2]);
       });
-
 
       it('should select the first one', function() {
         var tab1 = mockTab(), tab2 = mockTab();
@@ -484,7 +508,6 @@ describe('tabs', function() {
   });
 
   describe('remove', function() {
-
     it('should remove title tabs when elements are destroyed and change selection', inject(function($controller, $compile, $rootScope) {
       scope = $rootScope.$new();
       elm = $compile('<tabset><tab heading="1">Hello</tab><tab ng-repeat="i in list" heading="tab {{i}}">content {{i}}</tab></tabset>')(scope);
@@ -526,16 +549,16 @@ describe('tabs', function() {
       expect(contents().eq(1)).toHaveClass('active');
     }));
 
-    it('should not select tabs when being destroyed', inject(function($controller, $compile, $rootScope){
+    it('should not select tabs when being destroyed', inject(function($controller, $compile, $rootScope) {
       var selectList = [],
           deselectList = [],
-          getTab = function(active){
+          getTab = function(active) {
             return {
               active: active,
-              select : function(){
+              select : function() {
                 selectList.push('select');
               },
-              deselect : function(){
+              deselect : function() {
                 deselectList.push('deselect');
               }
             };
@@ -669,7 +692,6 @@ describe('tabs', function() {
 
   //https://github.com/angular-ui/bootstrap/issues/524
   describe('child compilation', function() {
-
     var elm;
     beforeEach(inject(function($compile, $rootScope) {
       elm = $compile('<tabset><tab><div></div></tab></tabset></div>')($rootScope.$new());

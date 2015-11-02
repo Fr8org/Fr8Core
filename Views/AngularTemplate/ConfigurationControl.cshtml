@@ -47,8 +47,8 @@
         DownDownList template
     *@
     <div ng-if='field.type == "@ControlTypes.DropDownList"'>
-        <label class='control-label'>{{::field.label}}</label>
-        <drop-down-list-box field='field' change='onChange'></drop-down-list-box>
+        <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
+        <drop-down-list-box field='field' change='onChange' data-field-name='{{::field.name}}'></drop-down-list-box>
     </div>  
     
     @*
@@ -95,8 +95,23 @@
         Button template
     *@
     <div ng-if='field.type == "@ControlTypes.Button"'>
-        <button ng-click="onClick($event)" data-field-name='{{::field.name}}' id='pca__btn__{{::field.name | validId}}' class="{{::field.class}}" name='pca__btn__{{::field.name | validId}}'>{{::field.label}}</button>
+        <button ng-click="field.clicked=true;onClick($event)" data-field-name='{{::field.name}}' id='pca__btn__{{::field.name | validId}}' class="{{::field.class || 'btn btn-success'}}" name='pca__btn__{{::field.name | validId}}'>{{::field.label}}</button>
     </div>
+
+    @*
+    TextSource template
+    *@
+    <div ng-if='field.type == "@ControlTypes.TextSource"'>
+        <text-source change="onChange" data-field-name='{{::field.name}}' field="field"></text-source>
+    </div>
+
+    @*
+        TextArea template
+    *@
+    <div ng-if='field.type == "@ControlTypes.TextArea"'>
+        <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
+        <text-area field='field'></text-area>
+    </div> 
 
     @* Add more configuration field templates below *@
 </div>

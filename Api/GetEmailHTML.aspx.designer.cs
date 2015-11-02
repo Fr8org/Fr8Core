@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Web.Api {
+namespace HubWeb.Api {
     
     
     public partial class GetEmailHTML {

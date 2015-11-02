@@ -31,6 +31,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
@@ -200,6 +209,7 @@
     <Compile Include="Entities\MT_Data.cs" />
     <Compile Include="Entities\MT_Field.cs" />
     <Compile Include="Entities\MT_Object.cs" />
+    <Compile Include="Entities\WebServiceDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
@@ -213,6 +223,7 @@
     <Compile Include="Infrastructure\MultiTenant\MT_Field.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_FieldType.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_Object.cs" />
+    <Compile Include="Interfaces\CrateManifests.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
@@ -228,6 +239,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ExternalAuthenticationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalAuthUrlDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\LogItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionProcessResultDTO.cs" />
@@ -249,28 +261,41 @@
     <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ContainerDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\QueryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SubrouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\RouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\WebServiceDTO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\IMTDataRepository.cs" />
     <Compile Include="Interfaces\IMTFieldRepository.cs" />
     <Compile Include="Interfaces\IMTFieldTypeRepository.cs" />
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\DocuSignEnvelopeCM.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\DocuSignEventCM.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\Manifest.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\StandardAuthenticationCM.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsCM.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\StandardRoutingDirectiveCM.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\StandardFileHandle.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\StandardTableDataCM.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\StandardPayloadDataCM.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\StandardDesignTimeFieldsCM.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\EventReportCM.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\EventSubscriptionCM.cs" />
+    <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardFr8RoutesCM .cs" />
+    <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM.cs" />
+    <Compile Include="Interfaces\Manifests\DocuSignEventCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardFr8TerminalCM.cs" />
+    <Compile Include="Interfaces\Manifests\Manifest.cs" />
+    <Compile Include="Interfaces\Manifests\StandardAuthenticationCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardConfigurationControlsCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardEmailMessageCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardFr8ContainersCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardFr8HubsCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardLoggingCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardParsingRecordCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardQueryCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardRoutingDirectiveCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardFileHandle.cs" />
+    <Compile Include="Interfaces\Manifests\StandardSecurityCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardTableDataCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardPayloadDataCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardDesignTimeFieldsCM.cs" />
+    <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
+    <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
@@ -311,19 +336,60 @@
     <Compile Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.Designer.cs">
       <DependentUpon>201510152143047_Add_Label_Property_To_ActionTemplate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510181719065_IngnoreChangesUpdate.cs" />
+    <Compile Include="Migrations\201510181719065_IngnoreChangesUpdate.Designer.cs">
+      <DependentUpon>201510181719065_IngnoreChangesUpdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.cs" />
     <Compile Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.Designer.cs">
       <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201510200800364_AddActivityTemplatState.cs" />
-    <Compile Include="Migrations\201510200800364_AddActivityTemplatState.Designer.cs">
-      <DependentUpon>201510200800364_AddActivityTemplatState.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201510200747079_UpdateMTTables.cs" />
     <Compile Include="Migrations\201510200747079_UpdateMTTables.Designer.cs">
       <DependentUpon>201510200747079_UpdateMTTables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.cs" />
+    <Compile Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.Designer.cs">
+      <DependentUpon>201510201228599_ModifiedAuthorizeTokenTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510202031291_NothingIgnoreChanages.cs" />
+    <Compile Include="Migrations\201510202031291_NothingIgnoreChanages.Designer.cs">
+      <DependentUpon>201510202031291_NothingIgnoreChanages.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510212105295_AddMinPaneWidth.cs" />
+    <Compile Include="Migrations\201510212105295_AddMinPaneWidth.Designer.cs">
+      <DependentUpon>201510212105295_AddMinPaneWidth.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510221210362_ActivityTemplate_AuthType_Migration.cs" />
+    <Compile Include="Migrations\201510221210362_ActivityTemplate_AuthType_Migration.Designer.cs">
+      <DependentUpon>201510221210362_ActivityTemplate_AuthType_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510230242497_FixUp_2_Migration.cs" />
+    <Compile Include="Migrations\201510230242497_FixUp_2_Migration.Designer.cs">
+      <DependentUpon>201510230242497_FixUp_2_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510252034017_AddTagsToActivityTemplateDO.cs" />
+    <Compile Include="Migrations\201510252034017_AddTagsToActivityTemplateDO.Designer.cs">
+      <DependentUpon>201510252034017_AddTagsToActivityTemplateDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs" />
+    <Compile Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.Designer.cs">
+      <DependentUpon>201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510271826316_MERGE_Migration.cs" />
+    <Compile Include="Migrations\201510271826316_MERGE_Migration.Designer.cs">
+      <DependentUpon>201510271826316_MERGE_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.cs" />
+    <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.Designer.cs">
+      <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511020822053_AddActivityTemplateState.cs" />
+    <Compile Include="Migrations\201511020822053_AddActivityTemplateState.Designer.cs">
+      <DependentUpon>201511020822053_AddActivityTemplateState.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
+    <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -333,7 +399,9 @@
     <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
+    <Compile Include="Repositories\WebServiceRepository.cs" />
     <Compile Include="States\ActivityCategory.cs" />
+    <Compile Include="States\AuthenticationType.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
@@ -409,6 +477,7 @@
     <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
+    <Compile Include="States\Templates\_AuthenticationTypeTemplate.cs" />
     <Compile Include="States\Templates\_ActivityTemplateStateTemplate.cs" />
     <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
@@ -562,14 +631,44 @@
     <EmbeddedResource Include="Migrations\201510152143047_Add_Label_Property_To_ActionTemplate.resx">
       <DependentUpon>201510152143047_Add_Label_Property_To_ActionTemplate.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510181719065_IngnoreChangesUpdate.resx">
+      <DependentUpon>201510181719065_IngnoreChangesUpdate.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510181426528_RemoveFrAccountIdFromContainerDO.resx">
       <DependentUpon>201510181426528_RemoveFrAccountIdFromContainerDO.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201510200800364_AddActivityTemplatState.resx">
-      <DependentUpon>201510200800364_AddActivityTemplatState.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510200747079_UpdateMTTables.resx">
       <DependentUpon>201510200747079_UpdateMTTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510201228599_ModifiedAuthorizeTokenTable.resx">
+      <DependentUpon>201510201228599_ModifiedAuthorizeTokenTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510202031291_NothingIgnoreChanages.resx">
+      <DependentUpon>201510202031291_NothingIgnoreChanages.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510212105295_AddMinPaneWidth.resx">
+      <DependentUpon>201510212105295_AddMinPaneWidth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510221210362_ActivityTemplate_AuthType_Migration.resx">
+      <DependentUpon>201510221210362_ActivityTemplate_AuthType_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510230242497_FixUp_2_Migration.resx">
+      <DependentUpon>201510230242497_FixUp_2_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510252034017_AddTagsToActivityTemplateDO.resx">
+      <DependentUpon>201510252034017_AddTagsToActivityTemplateDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.resx">
+      <DependentUpon>201510271338091_ActivityTemplate_Add_WebServiceReference_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510271826316_MERGE_Migration.resx">
+      <DependentUpon>201510271826316_MERGE_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510261339053_CreateWebServicesTable_Migration.resx">
+      <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511020822053_AddActivityTemplateState.resx">
+      <DependentUpon>201511020822053_AddActivityTemplateState.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

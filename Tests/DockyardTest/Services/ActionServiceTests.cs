@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Helpers;
 using AutoMapper;
-using Core.Interfaces;
-using Core.Managers;
-using Core.Managers.APIManagers.Transmitters.Plugin;
-using Core.Managers.APIManagers.Transmitters.Restful;
-using Core.Services;
+using Moq;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using StructureMap;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Moq;
-using NUnit.Framework;
-using StructureMap;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Managers.APIManagers.Transmitters.Plugin;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using Hub.Services;
+using TerminalBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Action = Core.Services.Action;
-using System.Threading.Tasks;
-using System.Web.Helpers;
+using Action = Hub.Services.Action;
 
-using Newtonsoft.Json;
-using Data.Infrastructure;
 
 namespace DockyardTest.Services
 {
@@ -36,7 +37,8 @@ namespace DockyardTest.Services
         private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
         private readonly IEnumerable<ActivityTemplateDO> _pr2Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "SQL Read", Version = "1.0" } };
         private bool _eventReceived;
-
+        private BasePluginAction _basePluginAction;
+        private IPlugin _plugin;
         private Mock<IPluginTransmitter> PluginTransmitterMock
         {
             get { return Mock.Get(ObjectFactory.GetInstance<IPluginTransmitter>()); }
@@ -51,6 +53,8 @@ namespace DockyardTest.Services
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
             _eventReceived = false;
+            _basePluginAction = new BasePluginAction();
+            _plugin = ObjectFactory.GetInstance<Plugin>();
         }
         
         // DO-1214
@@ -108,40 +112,239 @@ namespace DockyardTest.Services
 //            }
 //        }
 
+
+
+
         [Test]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public async void Action_Configure_WithNullActionTemplate_ThrowsArgumentNullException()
         {
             var _service = new Action();
-            await _service.Configure(null);
+            await _service.Configure(null, null);
         }
 
         [Test]
         public void CanCRUDActions()
         {
+            ActionDO origActionDO;
+
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IAction action = new Action();
-                var origActionDO = new FixtureData(uow).TestAction3();
+                var route = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(route);
 
-                //Add
-                action.SaveOrUpdateAction(origActionDO);
+                var subroute = FixtureData.TestSubrouteDO1();
+                uow.RouteNodeRepository.Add(subroute);
 
-                //Get
-                var actionDO = action.GetById(origActionDO.Id);
-                Assert.AreEqual(origActionDO.Name, actionDO.Name);
-                Assert.AreEqual(origActionDO.Id, actionDO.Id);
-                Assert.AreEqual(origActionDO.CrateStorage, actionDO.CrateStorage);
+                origActionDO = new FixtureData(uow).TestAction3();
 
-                Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
+                origActionDO.IsTempId = true;
+                origActionDO.ParentRouteNodeId = subroute.Id;
 
-                ISubroute subRoute = new Subroute();
-                //Delete
-                subRoute.DeleteAction(actionDO.Id);
+                uow.ActivityTemplateRepository.Add(origActionDO.ActivityTemplate);
+                uow.SaveChanges();
+            }
+
+            IAction action = new Action();
+
+            //Add
+            action.SaveOrUpdateAction(origActionDO);
+
+            //Get
+            var actionDO = action.GetById(origActionDO.Id);
+            Assert.AreEqual(origActionDO.Name, actionDO.Name);
+            Assert.AreEqual(origActionDO.Id, actionDO.Id);
+            Assert.AreEqual(origActionDO.CrateStorage, actionDO.CrateStorage);
+
+            Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
+
+            ISubroute subRoute = new Subroute();
+            //Delete
+            subRoute.DeleteAction(actionDO.Id);
+        }
+
+        [Test]
+        public void ActionWithNestedUpdated_StructureUnchanged()
+        {
+            var tree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+            var updatedTree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Visit(tree, x => uow.ActionRepository.Add(x));
+                Visit(updatedTree, x => x.Name = string.Format("We were here {0}", x.Id));
+
+                _action.SaveOrUpdateAction(uow, updatedTree);
+
+                var result = uow.ActionRepository.GetByKey(tree.Id);
+                Compare(updatedTree, result, (r, a) =>
+                {
+                    if (r.Name != a.Name)
+                    {
+                        throw new Exception("Update failed");
+                    }
+                });
+            }
+        }
+
+        [Test]
+        public void ActionWithNestedUpdated_RemoveElements()
+        {
+            var tree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+            var updatedTree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Visit(tree, x => uow.ActionRepository.Add(x));
+
+                int removeCounter = 0;
+
+                Visit(updatedTree, a =>
+                {
+                    if (removeCounter % 3 == 0 && a.ParentRouteNode != null)
+                    {
+                        a.ParentRouteNode.ChildNodes.Remove(a);
+                    }
+
+                    removeCounter++;
+                });
+
+                _action.SaveOrUpdateAction(uow, updatedTree);
+
+                var result = uow.ActionRepository.GetByKey(tree.Id);
+                Compare(updatedTree, result, (r, a) =>
+                {
+                    if (r.Id != a.Id)
+                    {
+                        throw new Exception("Update failed");
+                    }
+                });
+            }
+        }
+
+        [Test]
+        public void ActionWithNestedUpdated_AddElements()
+        {
+            var tree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+            var updatedTree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
+
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Visit(tree, x => uow.ActionRepository.Add(x));
+
+                int addCounter = 0;
+
+                Visit(updatedTree, a =>
+                {
+                    if (addCounter % 3 == 0 && a.ParentRouteNode != null)
+                    {
+                        var newAction = new ActionDO
+                        {
+                            Id = addCounter + 666,
+                            ParentRouteNode = a,
+                            Name = "____New " + addCounter
+                        };
+
+                        a.ParentRouteNode.ChildNodes.Add(newAction);
+                        uow.ActionRepository.Add(newAction);
+                    }
+
+                    addCounter++;
+                });
+
+                for (int i = 0; i < 4; i++)
+                {
+                    Visit(updatedTree, a =>
+                    {
+                        if (a.Id > 666)
+                        {
+                            var newAction = new ActionDO
+                            {
+                                Id = addCounter + 666,
+                                ParentRouteNode = a,
+                                Name = "____New " + addCounter
+                            };
+
+                            a.ParentRouteNode.ChildNodes.Add(newAction);
+                            uow.ActionRepository.Add(newAction);
+                        }
+
+                        addCounter++;
+                    });
+                }
+
+                _action.SaveOrUpdateAction(uow, updatedTree);
+
+                var result = uow.ActionRepository.GetByKey(tree.Id);
+                Compare(updatedTree, result, (r, a) =>
+                {
+                    if (r.Id != a.Id)
+                    {
+                        throw new Exception("Update failed");
+                    }
+                });
             }
         }
 
 
+        [Test]
+        public void CreateNewAction()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var plugin = new PluginDO()
+                {
+                    PluginStatus = PluginStatus.Active,
+                    Endpoint = "ep",
+                    Version = "1",
+                    Name = "plugin",
+                };
+
+                uow.PluginRepository.Add(plugin);
+                uow.SaveChanges();
+
+                var template = new ActivityTemplateDO("Template1", "label", "1", plugin.Id);
+                uow.ActivityTemplateRepository.Add(template);
+                var parent = new ActionDO();
+                uow.ActionRepository.Add(parent);
+
+                uow.SaveChanges();
+
+                const string actionName = "TestAction";
+                var response = _action.Create(uow, template.Id, actionName, null, parent);
+
+                Assert.AreEqual(parent.ChildNodes.Count, 1);
+                Assert.AreEqual(parent.ChildNodes[0], response);
+                Assert.AreEqual(response.Name, actionName);
+            }
+        }
+
+        private void Compare(ActionDO reference, ActionDO actual, Action<ActionDO, ActionDO> callback)
+        {
+            callback(reference, actual);
+
+            if (reference.ChildNodes.Count != actual.ChildNodes.Count)
+            {
+                throw new Exception("Unable to compare nodes with different number of children.");
+            }
+
+            for (int i = 0; i < reference.ChildNodes.Count; i++)
+            {
+                Compare((ActionDO)reference.ChildNodes[i], (ActionDO)actual.ChildNodes[i], callback);
+            }
+        }
+
+        private void Visit(ActionDO action, Action<ActionDO> callback)
+        {
+            callback(action);
+
+            foreach (var child in action.ChildNodes.OfType<ActionDO>().ToArray())
+            {
+                Visit(child, callback);
+            }
+        }
 
         //[Test,Ignore("plugin transmitter in v2 doesn't allow anything except ActioDTO as input param")]
         //public async void CanProcessDocuSignTemplate()
@@ -271,40 +474,6 @@ namespace DockyardTest.Services
                 //Assert
                 Assert.That(response.Status, Is.EqualTo(TaskStatus.RanToCompletion));
             }
-        }
-
-        [Test]
-        public void Authenticate_AuthorizationTokenIsActive_ReturnsAuthorizationToken()
-        {
-            var curActionDO = FixtureData.TestActionAuthenticate1();
-
-            AuthorizationTokenDO curAuthorizationTokenDO = FixtureData.TestActionAuthenticate2();
-            curAuthorizationTokenDO.Plugin = curActionDO.ActivityTemplate.Plugin;
-            curAuthorizationTokenDO.UserDO = ((SubrouteDO)(curActionDO.ParentRouteNode)).Route.Fr8Account;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.AuthorizationTokenRepository.Add(curAuthorizationTokenDO);
-                uow.SaveChanges();
-            }
-            string result = _action.Authenticate(curActionDO);
-            Assert.AreEqual("TestToken", result);
-        }
-
-        [Test]
-        public void Authenticate_AuthorizationTokenIsRevoke_RedirectsToPluginAuthenticate()
-        {
-            var curActionDO = FixtureData.TestActionAuthenticate1();
-
-            AuthorizationTokenDO curAuthorizationTokenDO = FixtureData.TestActionAuthenticate3();
-            curAuthorizationTokenDO.Plugin = curActionDO.ActivityTemplate.Plugin;
-            curAuthorizationTokenDO.UserDO = ((SubrouteDO)(curActionDO.ParentRouteNode)).Route.Fr8Account;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.AuthorizationTokenRepository.Add(curAuthorizationTokenDO);
-                uow.SaveChanges();
-            }
-            string result = _action.Authenticate(curActionDO);
-            Assert.AreEqual("AuthorizationToken", result);
         }
 
         [Test]
@@ -448,189 +617,6 @@ namespace DockyardTest.Services
             }
             Assert.IsTrue(_eventReceived);
         //            Assert.AreEqual(actionDo.ActionState, ActionState.Active);
-        }
-
-        [Test]
-        public void ActionWithNestedUpdated_StructureUnchanged()
-        {
-            var tree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
-            var updatedTree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                Visit(tree, x => uow.ActionRepository.Add(x));
-                Visit(updatedTree, x => x.Name = string.Format("We were here {0}", x.Id));
-
-                _action.Update(uow, updatedTree);
-
-                var result = uow.ActionRepository.GetByKey(tree.Id);
-                Compare(updatedTree, result, (r, a) =>
-                {
-                    if (r.Name != a.Name)
-                    {
-                        throw new Exception("Update failed");
-                    }
-                });
-            }
-        }
-
-        [Test]
-        public void ActionWithNestedUpdated_RemoveElements()
-        {
-            var tree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
-            var updatedTree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
-            
-            
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                Visit(tree, x => uow.ActionRepository.Add(x));
-                
-                int removeCounter = 0;
-                
-                Visit(updatedTree, a=>
-                {
-                    if (removeCounter%3 == 0 && a.ParentRouteNode != null)
-                    {
-                        a.ParentRouteNode.ChildNodes.Remove(a);
-                    }
-
-                    removeCounter++;
-                });
-
-                _action.Update(uow, updatedTree);
-
-                var result = uow.ActionRepository.GetByKey(tree.Id);
-                Compare(updatedTree, result, (r, a) =>
-                {
-                    if (r.Id != a.Id)
-                    {
-                        throw new Exception("Update failed");
-                    }
-                });
-            }
-        }
-
-        [Test]
-        public void ActionWithNestedUpdated_AddElements()
-        {
-            var tree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
-            var updatedTree = FixtureData.CreateTestActionTreeWithOnlyActionDo();
-
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                Visit(tree, x => uow.ActionRepository.Add(x));
-
-                int addCounter = 0;
-                
-                Visit(updatedTree, a =>
-                {
-                    if (addCounter % 3 == 0 && a.ParentRouteNode != null)
-                    {
-                        var newAction = new ActionDO
-                        {
-                            Id = addCounter + 666,
-                            ParentRouteNode = a,
-                            Name = "____New " + addCounter
-                        };
-
-                        a.ParentRouteNode.ChildNodes.Add(newAction);
-                        uow.ActionRepository.Add(newAction);
-                    }
-
-                    addCounter++;
-                });
-
-                for (int i = 0; i < 4; i ++)
-                {
-                    Visit(updatedTree, a =>
-                    {
-                        if (a.Id > 666)
-                        {
-                            var newAction = new ActionDO
-                            {
-                                Id = addCounter + 666,
-                                ParentRouteNode = a,
-                                Name = "____New " + addCounter
-                            };
-
-                            a.ParentRouteNode.ChildNodes.Add(newAction);
-                            uow.ActionRepository.Add(newAction);
-                        }
-
-                        addCounter++;
-                    });
-                }
-
-                _action.Update(uow, updatedTree);
-
-                var result = uow.ActionRepository.GetByKey(tree.Id);
-                Compare(updatedTree, result, (r, a) =>
-                {
-                    if (r.Id != a.Id)
-                    {
-                        throw new Exception("Update failed");
-                    }
-                });
-            }
-        }
-
-
-        [Test]
-        public void CreateNewAction()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var plugin = new PluginDO()
-                {
-                    PluginStatus = PluginStatus.Active,
-                    Endpoint = "ep",
-                    Version = "1",
-                    Name = "plugin",
-                };
-                
-                uow.PluginRepository.Add(plugin);
-                uow.SaveChanges();
-
-                var template = new ActivityTemplateDO("Template1", "label", "1", plugin.Id);
-                uow.ActivityTemplateRepository.Add(template);
-                var parent = new ActionDO();
-                uow.ActionRepository.Add(parent);
-                
-                uow.SaveChanges();
-
-                const string actionName = "TestAction";
-                var response = _action.Create(uow, template.Id, actionName, null, parent);
-
-                Assert.AreEqual(parent.ChildNodes.Count, 1);
-                Assert.AreEqual(parent.ChildNodes[0], response);
-                Assert.AreEqual(response.Name, actionName);
-            }
-        }
-
-        private void Compare(ActionDO reference, ActionDO actual, Action<ActionDO, ActionDO> callback)
-        {
-            callback(reference, actual);
-
-            if (reference.ChildNodes.Count != actual.ChildNodes.Count)
-            {
-                throw new Exception("Unable to compare nodes with different number of children.");
-            }
-
-            for (int i = 0; i < reference.ChildNodes.Count; i ++)
-            {
-                Compare((ActionDO)reference.ChildNodes[i], (ActionDO)actual.ChildNodes[i], callback);
-            }
-        }
-
-        private void Visit(ActionDO action, Action<ActionDO> callback)
-        {
-            callback(action);
-
-            foreach (var child in action.ChildNodes.OfType<ActionDO>().ToArray())
-            {
-                Visit(child, callback);
-            }
         }
 
         private void EventManager_EventActionStarted(ActionDO action)

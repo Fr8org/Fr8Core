@@ -6,6 +6,13 @@
     float: right;
 }
 
+.table-without-pagination .dataTables_length,
+.table-without-pagination .dataTables_filter,
+.table-without-pagination .dataTables_info,
+.table-without-pagination .dataTables_paginate {
+    display: none;
+}
+
 /* 
     This one is for Angular Bootstrap.
     More info: https://angular-ui.github.io/bootstrap/
@@ -57,7 +64,6 @@
 .processActionStep {
     background-image: URL("/Content/img/ProcessBuilder/circle.png");
     display: inline-flex;
-    ;
     width: 80px;
     height: 50px;
     background-repeat: no-repeat;
@@ -107,44 +113,60 @@
     width: 80px;
 }
 
-.switch-btn.active {
-    background-color: #428bca;
-}
+    .switch-btn.active {
+        background-color: #428bca;
+    }
 
 .process-builder-container {
+    height: 800px;
     overflow-y: auto;
+    position: relative;
     white-space: nowrap;
 }
 
-.action-arrow {
+.action-arrow-right {
     background-image: url('/Content/img/site/arrow_blue_ic_arrow_forward_48px-512.png');
     background-size: contain;
     display: inline-block;
     height: 50px;
-    margin-top: 120px;
+    margin: 125px 10px 0 7px;
     width: 50px;
 }
 
+.action-arrow-bottom {
+    background-color: #58B8A9;
+    position: absolute;
+    width: 16px;
+}
+
+    .action-arrow-bottom::after {
+        content: '';
+        border-right: 14px solid transparent;
+        border-left: 14px solid transparent;
+        border-top: 20px solid #58B8A9;
+        display: block;
+        bottom: -13px;
+        left: -6px;
+        position: absolute;
+    }
+
 .action {
     background-color: white;
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px 0px,
-                rgba(0, 0, 0, 0.137255) 0px 1px 1px 0px,
-                rgba(0, 0, 0, 0.117647) 0px 2px 1px -1px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px 0px, rgba(0, 0, 0, 0.137255) 0px 1px 1px 0px, rgba(0, 0, 0, 0.117647) 0px 2px 1px -1px;
     display: inline-block;
-    height: 300px;
-    margin: 10px;
-    
+    height: auto;
+    min-height: 330px;
+    margin-bottom: 5px;
     vertical-align: top;
     width: 330px;
+    white-space: initial;
+    min-width: 200px;
+    max-width: 450px;
 }
 
 .action-name {
-    
     text-align: center;
-
 }
-
-
 
 .action-menu {
     bottom: 5px;
@@ -152,13 +174,15 @@
     right: 5px;
     color: white;
 }
-.action-menu:hover {
-    color: #bab7b7;
-}
+
+    .action-menu:hover {
+        color: #bab7b7;
+    }
+
 .action-header {
-    padding-top:15px;
-    padding-right:10px;
-    background-color:#1eac48;
+    padding-top: 15px;
+    padding-right: 10px;
+    background-color: #1eac48;
     margin-top: 0px;
     padding-bottom: 10px;
     border-bottom: 1px;
@@ -166,28 +190,38 @@
     text-align: center;
     position: relative;
 }
-.action-header p{
-    
-    font-weight:800;
-    font-size:22px;
-    color: white;
-}
+
+    .action-header p {
+        font-weight: 800;
+        font-size: 22px;
+        color: white;
+    }
 
 .action-to-add {
     cursor: pointer;
     opacity: 0.5;
+    margin-left: -3px;
+    height: 300px;
 }
 
-.action-to-add:hover {
-    border-color: black;
-    opacity: 1;
-}
+    .action-to-add:hover {
+        border-color: black;
+        opacity: 1;
+    }
 
-.action .pane-configure-action {    
+.action .pane-configure-action {
     padding: 5px;
-    height: 250px;
+    height: auto;
+    min-height: 224px;
+    max-height: 330px;
     display: block;
+    overflow: auto;
     width: 100%;
+}
+
+.action-group {
+    display: inline-block;
+    position: absolute;
 }
 
 /* Select Action */
@@ -201,21 +235,21 @@
     vertical-align: top;
 }
 
-.select-action-category th {
-    background-color: #EBE9F1;
-}
+    .select-action-category th {
+        background-color: #EBE9F1;
+    }
 
-.select-action-category td, 
-.select-action-category th {
-    border: 1px solid #ddd;
-    padding: 5px;
-    width: 200px;
-}
+    .select-action-category td,
+    .select-action-category th {
+        border: 1px solid #ddd;
+        padding: 5px;
+        width: 200px;
+    }
 
-.select-action-category td:hover {
-    background-color: #f9f9f9;
-    cursor: pointer;
-}
+        .select-action-category td:hover {
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
 
 .select-action-list {
     border: 2px solid black;
@@ -253,15 +287,15 @@
         padding-left: 0;
     }
 
-.query-builder-table tbody,
-.query-builder-table thead {
-    display: block;
-}
+    .query-builder-table tbody,
+    .query-builder-table thead {
+        display: block;
+    }
 
-.query-builder-table tbody {
-    max-height: 125px;
-    overflow-y: auto;
-}
+    .query-builder-table tbody {
+        max-height: 125px;
+        overflow-y: auto;
+    }
 
 .query-builder-add-button {
     margin-left: 27px;
@@ -293,20 +327,20 @@ form.internal-authenticate-form {
     margin-left: 20px;
 }
 
-input[type=radio] + div.nested-controls {
+input[type=radio] ~ div.nested-controls {
     display: none;
-} 
+}
 
-input[type=radio]:checked + div.nested-controls {
+input[type=radio]:checked ~ div.nested-controls {
     display: block;
-} 
+}
 
 .page-header-top, .page-header-menu {
     padding-left: 10px;
     padding-right: 2%;
 }
 
-.page-header .container{
+.page-header .container {
     width: 100%;
     margin: 0;
 }
@@ -317,6 +351,44 @@ input[type=radio]:checked + div.nested-controls {
 
 .ui-select-match > span, .nested-controls input {
     height: 26px;
-    padding-top: 3px; 
+    padding-top: 3px;
     padding-bottom: 3px;
+}
+
+/*Class to display the text block properly*/
+.TextBlockClass {
+    display: block;
+    width: 100%;
+    height: auto;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+.readOnlyTextArea div.ta-editor {
+    min-height: initial;
+    border-style: none;
+    height: auto;
+    overflow: auto;
+    padding: initial;
+    box-shadow: none;
+}
+
+.radio-button-group-content {
+    margin-left: 20px;
+}
+
+.readOnlyTextArea .ta-scroll-window.form-control {
+    height: auto;
+    min-height: initial !important;
+    padding: initial !important;
+}
+
+.readOnlyTextArea .ta-editor.ta-html {
+    min-height: initial !important;
+}
+
+.readOnlyTextArea .ta-scroll-window > .ta-bind {
+    min-height: initial !important;
+    padding: initial !important;
 }

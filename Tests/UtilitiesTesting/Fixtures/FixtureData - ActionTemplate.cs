@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using DocuSign.Integrations.Client;
 using StructureMap;
-using Core.Interfaces;
-using Core.Managers;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-
+using Hub.Interfaces;
+using Hub.Managers;
 
 namespace UtilitiesTesting.Fixtures
 {

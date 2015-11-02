@@ -4,9 +4,9 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using HubWeb.Controllers;
 using DockyardTest.Controllers.Api;
 using UtilitiesTesting.Fixtures;
-using Web.Controllers;
 
 namespace DockyardTest.Controllers
 {

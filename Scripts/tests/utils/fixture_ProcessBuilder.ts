@@ -8,7 +8,7 @@
             routeState: 1,
             subscribedDocuSignTemplates: [],
             externalEventSubscription: [],
-            startingProcessNodeTemplateId: 1
+            startingSubrouteId: 1
         };
 
         public static processBuilderState = new model.ProcessBuilderState();
@@ -35,12 +35,18 @@
                             id: 1,
                             name: 'Action 1',
                             activityTemplateId: 1,
+                            activityTemplate: {
+                                id: 1
+                            },
                             parentRouteNodeId: 1
                         },
                         <model.ActionDTO>{
                             id: 2,
                             name: 'Action 2',
                             activityTemplateId: 1,
+                            activityTemplate: {
+                                id: 1
+                            },
                             parentRouteNodeId: 1
                         }
                     ]

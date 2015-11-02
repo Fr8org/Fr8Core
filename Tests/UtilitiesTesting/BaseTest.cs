@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Web.Http;
+using AutoMapper;
 using NUnit.Framework;
 using StructureMap;
-using Core.Managers;
-using Core.StructureMap;
 using Data.Infrastructure.AutoMapper;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Managers;
+using Hub.StructureMap;
 using Web.ViewModels;
-using AutoMapper;
 
 namespace UtilitiesTesting
 {

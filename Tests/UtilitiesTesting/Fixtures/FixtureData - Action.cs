@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Core.Interfaces;
-using Core.Managers;
+using Newtonsoft.Json;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Data.States;
-using Newtonsoft.Json;
-using StructureMap;
+using Hub.Interfaces;
+using Hub.Managers;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -387,7 +387,7 @@ namespace UtilitiesTesting.Fixtures
                 //ActionType = "Write to Sql Server",
                 //ParentPluginRegistration = "pluginAzureSqlServer",
                 Version = "v1",
-                AuthenticationType = "OAuth",
+                AuthenticationType = AuthenticationType.None,
                 Plugin = curPluginDO,
                 PluginID = 1,
             };
@@ -686,6 +686,179 @@ namespace UtilitiesTesting.Fixtures
             return curAction;
         }
 
+        public static ActionDO CreateTestActionTreeWithOnlyActionDo()
+        {
+            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
+            crateStorageDTO.CrateDTO.Add(CreateStandardConfigurationControls());
+            string crateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+
+
+            ActionDO curAction = new ActionDO()
+            {
+                Id = 1,
+                Ordering = 1,
+                CrateStorage = crateStorage,
+                ChildNodes = new List<RouteNodeDO>
+                {
+                    new ActionDO
+                    {
+                        Id = 23,
+                        Ordering = 1,
+                        ParentRouteNodeId = 1,
+                         CrateStorage=  crateStorage
+                    },
+                    new ActionDO
+                    {
+                        Id = 43,
+                        ParentRouteNodeId = 1,
+                                        Ordering = 2,
+                         CrateStorage=  crateStorage,
+                        ChildNodes = new List<RouteNodeDO>
+                        {
+                            new ActionDO
+                            {
+                                Id = 44,
+                                Ordering = 1,
+                                ParentRouteNodeId = 43,
+                                CrateStorage=  crateStorage
+                                    },
+                                    new ActionDO
+                                    {
+                                Id = 46,
+                                Ordering = 2,
+                                ParentRouteNodeId = 43,
+                                CrateStorage=  crateStorage
+                            },
+                            new ActionDO
+                            {
+                                Id = 48,
+                                Ordering = 3,
+                                ParentRouteNodeId = 43,
+                                CrateStorage=  crateStorage
+                            },
+
+                        }
+                    },
+                    new ActionDO
+                    {
+                        Id = 52,
+                        Ordering = 3,
+                        ParentRouteNodeId = 1,
+                        ChildNodes = new List<RouteNodeDO>
+                        {
+                            new ActionDO
+                            {
+                                Id = 53,
+                                Ordering = 1,
+                                ParentRouteNodeId = 52,
+                                CrateStorage=  crateStorage
+                            },
+                            new ActionDO
+                            {
+                                Id = 54,
+                                ParentRouteNodeId = 52,
+                                Ordering = 2,
+
+                                ChildNodes = new List<RouteNodeDO>
+                                {
+                                    new ActionDO
+                                    {
+                                        Id = 56,
+                                        ParentRouteNodeId = 54,
+                                        Ordering = 1,
+                                CrateStorage=  crateStorage
+                                    },
+                                    new ActionDO
+                                    {
+                                        Id = 57,
+                                        ParentRouteNodeId = 54,
+                                        Ordering = 2
+                                    },
+                                    new ActionDO
+                                    {
+                                        Id = 58,
+                                        ParentRouteNodeId = 54,
+                                        Ordering = 3,
+                                CrateStorage=  crateStorage
+                                    },
+
+                                }
+                            },
+                            new ActionDO
+                            {
+                                Id = 55,
+                                ParentRouteNodeId = 52,
+                                Ordering = 3,
+                                CrateStorage=  crateStorage
+                            },
+
+                        }
+                    },
+                    new ActionDO
+                    {
+                        Id = 59,
+                        Ordering = 4,
+                        ParentRouteNodeId = 1,
+                         CrateStorage=  crateStorage,
+                        ChildNodes = new List<RouteNodeDO>
+                        {
+                            new ActionDO
+                            {
+                                Id = 60,
+                                ParentRouteNodeId = 59,
+                                Ordering = 1,
+                                CrateStorage=  crateStorage
+                            },
+                            new ActionDO
+                            {
+                                Id = 61,
+                                ParentRouteNodeId = 59,
+                                Ordering = 2,
+                                CrateStorage=  crateStorage,
+                                ChildNodes = new List<RouteNodeDO>
+                                {
+                                    new ActionDO
+                                    {
+                                        Id = 63,
+                                        ParentRouteNodeId = 61,
+                                        Ordering = 1,
+                                CrateStorage=  crateStorage
+                                    },
+                                    new ActionDO
+                                    {
+                                        Id = 64,
+                                        ParentRouteNodeId = 61,
+                                        Ordering = 2,
+                                CrateStorage=  crateStorage
+                                    },
+                                    new ActionDO
+                                    {
+                                        Id = 65,
+                                        ParentRouteNodeId = 61,
+                                        Ordering = 3,
+                                CrateStorage=  crateStorage
+                                    },
+                                }
+                            },
+
+                            new ActionDO
+                            {
+                                Id = 62,
+                                ParentRouteNodeId = 59,
+                                Ordering = 3,
+                                CrateStorage=  crateStorage
+                            },
+                        },
+
+                    }
+                }
+            };
+
+            FixParentActivityReferences(curAction);
+
+            return curAction;
+        }
+
         public static ActionDO TestActionStateActive()
         {
             var actionTemplate = FixtureData.TestActivityTemplateDO1();
@@ -936,181 +1109,6 @@ namespace UtilitiesTesting.Fixtures
 
             return curAction;
         }
-
-
-        public static ActionDO CreateTestActionTreeWithOnlyActionDo()
-        {
-            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
-            crateStorageDTO.CrateDTO.Add(CreateStandardConfigurationControls());
-            string crateStorage = JsonConvert.SerializeObject(crateStorageDTO);
-
-
-            ActionDO curAction = new ActionDO()
-            {
-                Id = 1,
-                Ordering = 1,
-                CrateStorage = crateStorage,
-                ChildNodes = new List<RouteNodeDO>
-                {
-                    new ActionDO
-                    {
-                        Id = 23,
-                        Ordering = 1,
-                        ParentRouteNodeId = 1,
-                         CrateStorage=  crateStorage
-                    },
-                    new ActionDO
-                    {
-                        Id = 43,
-                        ParentRouteNodeId = 1,
-                                        Ordering = 2,
-                         CrateStorage=  crateStorage,
-                        ChildNodes = new List<RouteNodeDO>
-                        {
-                            new ActionDO
-                            {
-                                Id = 44,
-                                Ordering = 1,
-                                ParentRouteNodeId = 43,
-                                CrateStorage=  crateStorage
-                                    },
-                                    new ActionDO
-                                    {
-                                Id = 46,
-                                Ordering = 2,
-                                ParentRouteNodeId = 43,
-                                CrateStorage=  crateStorage
-                            },
-                            new ActionDO
-                            {
-                                Id = 48,
-                                Ordering = 3,
-                                ParentRouteNodeId = 43,
-                                CrateStorage=  crateStorage
-                            },
-
-                        }
-                    },
-                    new ActionDO
-                    {
-                        Id = 52,
-                        Ordering = 3,
-                        ParentRouteNodeId = 1,
-                        ChildNodes = new List<RouteNodeDO>
-                        {
-                            new ActionDO
-                            {
-                                Id = 53,
-                                Ordering = 1,
-                                ParentRouteNodeId = 52,
-                                CrateStorage=  crateStorage
-                            },
-                            new ActionDO
-                            {
-                                Id = 54,
-                                ParentRouteNodeId = 52,
-                                Ordering = 2,
-
-                                ChildNodes = new List<RouteNodeDO>
-                                {
-                                    new ActionDO
-                                    {
-                                        Id = 56,
-                                        ParentRouteNodeId = 54,
-                                        Ordering = 1,
-                                CrateStorage=  crateStorage
-                                    },
-                                    new ActionDO
-                                    {
-                                        Id = 57,
-                                        ParentRouteNodeId = 54,
-                                        Ordering = 2
-                                    },
-                                    new ActionDO
-                                    {
-                                        Id = 58,
-                                        ParentRouteNodeId = 54,
-                                        Ordering = 3,
-                                CrateStorage=  crateStorage
-                                    },
-
-                                }
-                            },
-                            new ActionDO
-                            {
-                                Id = 55,
-                                ParentRouteNodeId = 52,
-                                Ordering = 3,
-                                CrateStorage=  crateStorage
-                            },
-
-                        }
-                    },
-                    new ActionDO
-                    {
-                        Id = 59,
-                        Ordering = 4,
-                        ParentRouteNodeId = 1,
-                         CrateStorage=  crateStorage,
-                        ChildNodes = new List<RouteNodeDO>
-                        {
-                            new ActionDO
-                            {
-                                Id = 60,
-                                ParentRouteNodeId = 59,
-                                Ordering = 1,
-                                CrateStorage=  crateStorage
-                            },
-                            new ActionDO
-                            {
-                                Id = 61,
-                                ParentRouteNodeId = 59,
-                                Ordering = 2,
-                                CrateStorage=  crateStorage,
-                                ChildNodes = new List<RouteNodeDO>
-                                {
-                                    new ActionDO
-                                    {
-                                        Id = 63,
-                                        ParentRouteNodeId = 61,
-                                        Ordering = 1,
-                                CrateStorage=  crateStorage
-                                    },
-                                    new ActionDO
-                                    {
-                                        Id = 64,
-                                        ParentRouteNodeId = 61,
-                                        Ordering = 2,
-                                CrateStorage=  crateStorage
-                                    },
-                                    new ActionDO
-                                    {
-                                        Id = 65,
-                                        ParentRouteNodeId = 61,
-                                        Ordering = 3,
-                                CrateStorage=  crateStorage
-                                    },
-                                }
-                            },
-
-                            new ActionDO
-                            {
-                                Id = 62,
-                                ParentRouteNodeId = 59,
-                                Ordering = 3,
-                                CrateStorage=  crateStorage
-                            },
-                        },
-
-                    }
-                }
-            };
-
-            FixParentActivityReferences(curAction);
-
-            return curAction;
-        }
-
         public static ActionDO TestActionTreeWithActionTemplates()
         {
             List<CrateDTO> curCratesDTO = FixtureData.TestCrateDTO1();

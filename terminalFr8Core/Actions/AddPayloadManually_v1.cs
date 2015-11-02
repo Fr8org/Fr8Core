@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
-using PluginBase.Infrastructure;
-using PluginBase.BaseClasses;
+using Data.Interfaces.Manifests;
+using TerminalBase.Infrastructure;
+using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Actions
 {

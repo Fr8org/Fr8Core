@@ -22,7 +22,7 @@ using System.Web.Http.Dependencies;
 using Microsoft.Practices.ServiceLocation;
 using StructureMap;
 
-namespace Web.DependencyResolution
+namespace HubWeb.DependencyResolution
 {
     /// <summary>
     /// The structure map dependency scope.

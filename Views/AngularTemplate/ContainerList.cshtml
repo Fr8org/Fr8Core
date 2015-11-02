@@ -31,22 +31,26 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Name</th>
                                     <th>Route Id</th>
+                                    <th>Create Date</th>
+                                    <th>Last Updated</th>
+                                    <th>Name</th>
                                     <th>Container State</th>
-                                    <th>Current Route Node Id</th>
+                                    @*<th>Current Route Node Id</th>*@
                                     @*<th style="text-align:right">Actions</th>*@
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr ng-repeat="container in currentAccountContainers" ng-click="goToContainerDetailsPage(container.id)">
                                     <td>{{ container.id }}</td>
-                                    <td>{{ container.name }}</td>
                                     <td>{{ container.routeId }}</td>
+                                    <td>{{ container.createDate }}</td>
+                                    <td>{{ container.lastUpdated }}</td>
+                                    <td>{{ container.name }}</td>
                                     <td>
-                                            <span>{{ container.containerState | ContainerState }}</span>
-                                        </td>
-                                    <td>{{ container.currentRouteNodeId }}</td>
+                                       <span>{{ container.containerState | ContainerState }}</span>
+                                    </td>
+                                   @* <td>{{ container.currentRouteNodeId }}</td>*@
                                     @*<td>
                                         <div>
                                             <button type="button" class="btn btn-sm red">Execute</button>

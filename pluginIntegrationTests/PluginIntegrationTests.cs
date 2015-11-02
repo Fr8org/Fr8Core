@@ -4,24 +4,25 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http.Results;
 using AutoMapper;
-using Core.Interfaces;
-using Core.Managers.APIManagers.Transmitters.Plugin;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
-using pluginAzureSqlServer;
-using UtilitiesTesting.Fixtures;
-using Web.Controllers;
+using Data.Interfaces.Manifests;
+using Hub.Interfaces;
+using Hub.Managers.APIManagers.Transmitters.Plugin;
+using HubWeb.Controllers;
 using UtilitiesTesting;
-using pluginDocuSign;
+using UtilitiesTesting.Fixtures;
+using terminalAzure;
+using terminalDocuSign;
 
-using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
-using pluginDocuSign.Infrastructure.StructureMap;
-using pluginDocuSign.Infrastructure.AutoMapper;
+using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
+using terminalDocuSign.Infrastructure.StructureMap;
+using terminalDocuSign.Infrastructure.AutoMapper;
+using System.Security.Principal;
 
 namespace pluginIntegrationTests
 {
@@ -62,6 +63,7 @@ namespace pluginIntegrationTests
 
             _processTemplateDO = FixtureData.Route_PluginIntegration();
             _processTemplateDO.Fr8Account = _testUserAccount;
+            System.Threading.Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(_testUserAccount.Id), new string[] { "User" });
 
             _subrouteDO = FixtureData.Subroute_PluginIntegration();
             _subrouteDO.ParentRouteNode = _processTemplateDO;
@@ -108,13 +110,13 @@ namespace pluginIntegrationTests
             _coreServer = pluginIntegrationTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
 
             var docuSignServerUrl = "http://" + FixtureData.TestPlugin_DocuSign_EndPoint + "/";
-            _docuSignServer = pluginDocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
+            _docuSignServer = terminalDocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
 
             var dockyardCoreServerUrl = "http://" + FixtureData.TestPlugin_Core_EndPoint + "/";
             _dockyardCoreServer = terminalFr8Core.SelfHostFactory.CreateServer(dockyardCoreServerUrl);
 
             var azureSqlServerServerUrl = "http://" + FixtureData.TestPlugin_AzureSqlServer_EndPoint + "/";
-            _azureSqlServerServer = pluginAzureSqlServer.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
+            _azureSqlServerServer = terminalAzure.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
 
 
         }
@@ -206,6 +208,8 @@ namespace pluginIntegrationTests
             curActionDO.ParentRouteNodeId = _subrouteDO.Id;
 
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+
+            curActionDTO.IsTempId = true;
 
             var result = curActionController.Save(curActionDTO)
                 as OkNegotiatedContentResult<ActionDTO>;

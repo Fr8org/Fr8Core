@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
-using Core.Interfaces;
-using Core.Services;
-using Data.Interfaces.DataTransferObjects;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Data.Entities;
-using Data.States;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using Hub.Interfaces;
+using Hub.Services;
 
 namespace DockyardTest.Services
 {

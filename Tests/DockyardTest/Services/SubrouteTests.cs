@@ -1,8 +1,8 @@
 ﻿using System;
-using Core.Interfaces;
-using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
+using Data.Interfaces;
+using Hub.Interfaces;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
