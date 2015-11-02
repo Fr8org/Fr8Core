@@ -10,7 +10,7 @@ using StructureMap;
 
 namespace HubWeb.Controllers
 {
-	[RoutePrefix("api/webservices")]
+	[RoutePrefix("webservices")]
 	public class WebServicesController : ApiController
 	{
 		[HttpGet]
