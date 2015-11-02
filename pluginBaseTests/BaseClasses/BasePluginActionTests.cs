@@ -88,7 +88,7 @@ namespace pluginBaseTests.BaseClasses
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, result.ManifestType);
+            Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, result.ManifestType);
         }
 
 
