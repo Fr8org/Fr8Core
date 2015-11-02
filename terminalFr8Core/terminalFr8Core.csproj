@@ -182,6 +182,10 @@
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TerminalSqlUtilities\TerminalSqlUtilities.csproj">
+      <Project>{fa105e66-8756-4f57-8230-2a52bfebddc6}</Project>
+      <Name>TerminalSqlUtilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>

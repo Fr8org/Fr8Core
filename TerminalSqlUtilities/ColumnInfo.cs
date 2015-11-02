@@ -2,18 +2,18 @@
 {
     public class ColumnInfo
     {
-        public ColumnInfo(TableInfo table, string columnName)
+        public ColumnInfo(TableInfo tableInfo, string columnName)
         {
-            _table = table;
+            _tableInfo = tableInfo;
             _columnName = columnName;
         }
 
-        public TableInfo Table { get { return _table; } }
+        public TableInfo TableInfo { get { return _tableInfo; } }
 
         public string ColumnName { get { return _columnName; } }
 
 
-        private readonly TableInfo _table;
+        private readonly TableInfo _tableInfo;
         private readonly string _columnName;
     }
 }

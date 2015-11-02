@@ -97,6 +97,69 @@ namespace TerminalSqlUtilities
         }
 
         /// <summary>
+        /// Get full column name in database syntax.
+        /// </summary>
+        public string GetFullColumnName(ColumnInfo columnInfo)
+        {
+            if (string.IsNullOrEmpty(columnInfo.TableInfo.SchemaName))
+            {
+                return string.Format(
+                    "[{0}].[{1}]",
+                    columnInfo.TableInfo.TableName,
+                    columnInfo.ColumnName
+                );
+            }
+            else
+            {
+                return string.Format(
+                    "[{0}].[{1}].[{2}]",
+                    columnInfo.TableInfo.SchemaName,
+                    columnInfo.TableInfo.TableName,
+                    columnInfo.ColumnName
+                );
+            }
+        }
+
+        /// <summary>
+        /// List all columns from database.
+        /// </summary>
+        public IEnumerable<ColumnInfo> ListAllColumns(IDbTransaction tx)
+        {
+            using (var cmd = tx.Connection.CreateCommand())
+            {
+                cmd.CommandText =
+                    @"SELECT
+	                    [c].[TABLE_SCHEMA],
+	                    [c].[TABLE_NAME],
+	                    [c].[COLUMN_NAME] 
+                    FROM [INFORMATION_SCHEMA].[COLUMNS] [c]";
+
+                cmd.Transaction = tx;
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    var columns = new List<ColumnInfo>();
+
+                    while (reader.Read())
+                    {
+                        var schemaName = reader.GetString(0);
+                        var tableName = reader.GetString(1);
+                        var columnName = reader.GetString(2);
+
+                        columns.Add(
+                            new ColumnInfo(
+                                new TableInfo(schemaName, tableName),
+                                columnName
+                            )
+                        );
+                    }
+
+                    return columns;
+                }
+            }
+        }
+
+        /// <summary>
         /// Ensure that string is a valid SQL-identifier.
         /// </summary>
         private void EnsureValidIdentifier(string id)
