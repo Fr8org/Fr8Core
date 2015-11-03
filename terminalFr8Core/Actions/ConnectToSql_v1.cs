@@ -66,7 +66,7 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            RemoveErrorControl(curActionDTO);
+            RemoveErrorLabel(curActionDTO, "ErrorLabel");
 
             Crate.RemoveCrateByLabel(
                 curActionDTO.CrateStorage.CrateDTO,
@@ -89,7 +89,12 @@ namespace terminalFr8Core.Actions
                 }
                 catch
                 {
-                    AddErrorControl(curActionDTO);
+                    AddErrorLabel(
+                        curActionDTO,
+                        "ErrorLabel",
+                        "Unexpected error",
+                        "Error occured while trying to fetch columns from database specified."
+                    );
                 }
             }
 
@@ -151,51 +156,6 @@ namespace terminalFr8Core.Actions
                     columnInfo.TableInfo.TableName,
                     columnInfo.ColumnName
                 );
-            }
-        }
-
-        private void AddErrorControl(ActionDTO curActionDTO)
-        {
-            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
-
-            if (controlsCrate == null) { return; }
-
-            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
-                controlsCrate.Contents);
-
-            if (controls == null) { return; }
-
-            controls.Controls.Add(new TextBlockControlDefinitionDTO()
-            {
-                Label = "ErrorLabel",
-                Value = "Error occured while trying to fetch columns from database specified.",
-                CssClass = "well well-lg"
-            });
-
-            controlsCrate.Contents = JsonConvert.SerializeObject(controlsCrate);
-        }
-
-        private void RemoveErrorControl(ActionDTO curActionDTO)
-        {
-            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
-
-            if (controlsCrate == null) { return; }
-
-            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
-                controlsCrate.Contents);
-
-            if (controls == null) { return; }
-
-            
-            var errorLabel = controls.Controls
-                .FirstOrDefault(x => x.Label == "ErrorLabel");
-
-            if (errorLabel != null)
-            {
-                controls.Controls.Remove(errorLabel);
-                controlsCrate.Contents = JsonConvert.SerializeObject(controlsCrate);
             }
         }
 

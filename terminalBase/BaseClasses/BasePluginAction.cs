@@ -513,5 +513,55 @@ namespace TerminalBase.BaseClasses
 
             throw new ApplicationException("No field found with specified key.");
         }
+
+        protected void AddErrorLabel(ActionDTO curActionDTO, string name, string label, string text)
+        {
+            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+
+            if (controlsCrate == null)
+            {
+                controlsCrate = Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls");
+                curActionDTO.CrateStorage.CrateDTO.Add(controlsCrate);
+            }
+
+            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
+                controlsCrate.Contents);
+
+            if (controls == null) { return; }
+
+            controls.Controls.Add(new TextBlockControlDefinitionDTO()
+            {
+                Name = name,
+                Label = label,
+                Value = text,
+                CssClass = "well well-lg"
+            });
+
+            controlsCrate.Contents = JsonConvert.SerializeObject(controls);
+        }
+
+        protected void RemoveErrorLabel(ActionDTO curActionDTO, string name)
+        {
+            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+
+            if (controlsCrate == null) { return; }
+
+            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
+                controlsCrate.Contents);
+
+            if (controls == null) { return; }
+
+
+            var errorLabel = controls.Controls
+                .FirstOrDefault(x => x.Name == name);
+
+            if (errorLabel != null)
+            {
+                controls.Controls.Remove(errorLabel);
+                controlsCrate.Contents = JsonConvert.SerializeObject(controlsCrate);
+            }
+        }
     }
 }
