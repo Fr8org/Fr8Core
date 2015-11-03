@@ -577,5 +577,28 @@ namespace TerminalBase.BaseClasses
 
             return controlsCrate;
         }
+
+        protected void UpdateDesignTimeCrateValue(
+            ActionDTO actionDTO, string label, params FieldDTO[] fields)
+        {
+            var crate = actionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    && x.Label == "Selected Object");
+
+            if (crate == null)
+            {
+                crate = Crate.CreateDesignTimeFieldsCrate("Selected Object", fields);
+
+                actionDTO.CrateStorage.CrateDTO.Add(crate);
+            }
+            else
+            {
+                var fieldsMS = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(crate.Contents);
+                fieldsMS.Fields.Clear();
+                fieldsMS.Fields.AddRange(fields);
+
+                crate.Contents = JsonConvert.SerializeObject(fieldsMS);
+            }
+        }
     }
 }

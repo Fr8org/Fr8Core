@@ -84,7 +84,7 @@ namespace terminalFr8Core.Actions
             return curActionDTO;
         }
 
-        protected override Task<ActionDTO> FollowupConfigurationResponse(
+        protected override async Task<ActionDTO> FollowupConfigurationResponse(
             ActionDTO curActionDTO)
         {
             RemoveControl(curActionDTO, "SelectObjectError");
@@ -95,7 +95,7 @@ namespace terminalFr8Core.Actions
                 AddLabelControl(curActionDTO, "SelectObjectError",
                     "No object selected", "Please select object from the list above.");
 
-                return Task.FromResult(curActionDTO);
+                return curActionDTO;
             }
             else
             {
@@ -106,10 +106,11 @@ namespace terminalFr8Core.Actions
                     AddQueryBuilder(curActionDTO);
 
                     UpdatePreviousSelectedObject(curActionDTO, selectedObject);
+                    await UpdateQueryableCriteria(curActionDTO, selectedObject);
                 }
             }
 
-            return Task.FromResult(curActionDTO);
+            return curActionDTO;
         }
 
         /// <summary>
@@ -226,7 +227,7 @@ namespace terminalFr8Core.Actions
         {
             var crate = actionDTO.CrateStorage.CrateDTO
                 .FirstOrDefault(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
-                    && x.Label == "SelectedObject");
+                    && x.Label == "Selected Object");
 
             if (crate == null)
             {
@@ -247,27 +248,44 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private void UpdatePreviousSelectedObject(ActionDTO actionDTO, string selectedObject)
         {
-            var crate = actionDTO.CrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
-                    && x.Label == "SelectedObject");
+            UpdateDesignTimeCrateValue(
+                actionDTO,
+                "Selected Object",
+                new FieldDTO() { Key = selectedObject, Value = selectedObject }
+            );
+        }
 
-            if (crate == null)
+        private async Task<List<FieldDTO>> MatchColumnsForSelectedObject(
+            ActionDTO actionDTO, string selectedObject)
+        {
+            var columnDefinitions = await ExtractColumnDefinitions(actionDTO);
+            if (columnDefinitions == null)
             {
-                crate = Crate.CreateDesignTimeFieldsCrate(
-                    "SelectedObject",
-                    new FieldDTO() { Key = selectedObject, Value = selectedObject }
-                );
+                columnDefinitions = new List<FieldDTO>();
+            }
 
-                actionDTO.CrateStorage.CrateDTO.Add(crate);
+            List<FieldDTO> matchedColumns;
+            if (string.IsNullOrEmpty(selectedObject))
+            {
+                matchedColumns = new List<FieldDTO>();
             }
             else
             {
-                var fields = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(crate.Contents);
-                fields.Fields.Clear();
-                fields.Fields.Add(new FieldDTO() { Key = selectedObject, Value = selectedObject });
-
-                crate.Contents = JsonConvert.SerializeObject(fields);
+                matchedColumns = columnDefinitions
+                    .Where(x => x.Key.StartsWith(selectedObject))
+                    .ToList();
             }
+
+            return matchedColumns;
+        }
+
+        /// <summary>
+        /// Update queryable criteria list.
+        /// </summary>
+        private async Task UpdateQueryableCriteria(ActionDTO actionDTO, string selectedObject)
+        {
+            var matchedColumns = await MatchColumnsForSelectedObject(actionDTO, selectedObject);
+            UpdateDesignTimeCrateValue(actionDTO, "Queryable Criteria", matchedColumns.ToArray());
         }
 
         /// <summary>
