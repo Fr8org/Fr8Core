@@ -16,6 +16,7 @@ using Hub.Services;
 using Utilities;
 using Utilities.Configuration.Azure;
 using Utilities.Logging;
+using Hub.Interfaces;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -128,11 +129,10 @@ namespace HubWeb
 
         public async Task RegisterPluginActions()
         {
-            var alertReporter = ObjectFactory.GetInstance<EventReporter>();
-
+            int totalRegisteredTerminals = 0;
+            var eventReporter = ObjectFactory.GetInstance<EventReporter>();
             var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
-            int count = 0;
-            var uri=string.Empty;
+            var uri = string.Empty;
             foreach (string url in activityTemplateHosts)
             {
                 try
@@ -140,42 +140,21 @@ namespace HubWeb
                     uri = url.StartsWith("http") ? url : "http://" + url;
                     uri += "/plugins/discover";
 
-                    var pluginService = new Plugin();
-                    var activityTemplateList = await pluginService.GetAvailableActions(uri);
-                    // For discover serialization see:
-                    //   # pluginAzureSqlServer.Controllers.PluginController#DiscoverPlugins()
-                    //   # pluginDockyardCore.Controllers.PluginController#DiscoverPlugins()
-                    //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
-
-
-                    foreach (var curItem in activityTemplateList)
-                    {
-                        try
-                        {
-                            new ActivityTemplate().Register(curItem);
-                            count++;
-                        }
-                        catch (Exception ex)
-                        {
-                            alertReporter = ObjectFactory.GetInstance<EventReporter>();
-                            alertReporter.ActivityTemplatePluginRegistrationError(
-                                string.Format("Failed to register {0} plugin. Error Message: {1}", curItem.Plugin.Name, ex.Message),
-                                ex.GetType().Name);
-                        }
-
-                    }
+                    var pluginService = ObjectFactory.GetInstance<IPlugin>(); ;
+                    totalRegisteredTerminals += await pluginService.RegisterTerminals(uri);
                 }
                 catch (Exception ex)
                 {
-                    alertReporter = ObjectFactory.GetInstance<EventReporter>();
-                    alertReporter.ActivityTemplatePluginRegistrationError(
-                        string.Format("Failed plugin service: {0}. Error Message: {1} ", uri, ex.Message), 
+                    eventReporter = ObjectFactory.GetInstance<EventReporter>();
+                    eventReporter.ActivityTemplatePluginRegistrationError(
+                        string.Format("Failed terminal service: {0}. Error Message: {1} ", uri, ex.Message),
                         ex.GetType().Name);
 
                 }
             }
+            eventReporter.ActivityTemplatesSuccessfullyRegistered(totalRegisteredTerminals);
 
-            alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
+
         }
 
         public bool CheckForActivityTemplate(string templateName)

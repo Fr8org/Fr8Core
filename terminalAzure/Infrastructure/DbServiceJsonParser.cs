@@ -8,6 +8,7 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using TerminalBase.Infrastructure;
+using TerminalSqlUtilities;
 
 namespace terminalAzure.Infrastructure
 {
@@ -37,7 +38,7 @@ namespace terminalAzure.Infrastructure
         public string ExtractConnectionString(ActionDTO curActionDTO)
         {
             var controlsCrate = curActionDTO.CrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             if (controlsCrate == null)
             {
@@ -64,7 +65,7 @@ namespace terminalAzure.Infrastructure
             var tableRows = ExtractRows(table.Properties());
 
             // Create table instance and return.
-            return new Table(SchemaName, TableName, tableRows);
+            return new Table(new TableInfo(SchemaName, TableName), tableRows);
         }
 
         /// <summary>

@@ -22,7 +22,7 @@ namespace terminalFr8Core.Controllers
         public IHttpActionResult DiscoverPlugins()
         {
             var result = new List<ActivityTemplateDO>();
-
+            
             var plugin = new PluginDO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
@@ -39,7 +39,7 @@ namespace terminalFr8Core.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
-                MinPaneWidth = 330
+				MinPaneWidth = 330
             });
 
             result.Add(new ActivityTemplateDO
@@ -50,7 +50,7 @@ namespace terminalFr8Core.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
-                MinPaneWidth = 380
+				MinPaneWidth = 380
             });
 
             result.Add(new ActivityTemplateDO
@@ -61,7 +61,7 @@ namespace terminalFr8Core.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
-                MinPaneWidth = 330
+				MinPaneWidth = 330
             });
 
             result.Add(new ActivityTemplateDO
@@ -73,12 +73,33 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             });
 
-            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "ConnectToSql",
+                Label = "Connect To SQL",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1"
+            });
+
+            var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = plugin,
                 Actions = result
             };
+
             return Json(curStandardFr8TerminalCM);
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "Select_Fr8_Object",
+                Label = "Select Fr8 Object",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1",
+                MinPaneWidth = 330
+            });
+
+            return Json(result);    
         }
     }
 }

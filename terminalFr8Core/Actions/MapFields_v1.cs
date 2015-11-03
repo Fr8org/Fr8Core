@@ -23,7 +23,7 @@ namespace terminalFr8Core.Actions
             var curControlsCrate = actionDto
                 .CrateStorage
                 .CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             if (curControlsCrate == null)
             {
@@ -125,17 +125,17 @@ namespace terminalFr8Core.Actions
             else
             {
 
-                //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
-                CrateDTO downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Plugin-Provided Fields", curDownstreamFields);
-                CrateDTO upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+            //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
+            CrateDTO downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Plugin-Provided Fields", curDownstreamFields);
+            CrateDTO upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
 
-                var curConfigurationControlsCrate = CreateStandardConfigurationControls();
+            var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 
                 cratesToAssemble.AddRange(new List<CrateDTO>()
-                {
-                    downstreamFieldsCrate,
-                    upstreamFieldsCrate,
-                    curConfigurationControlsCrate
+            {
+                downstreamFieldsCrate,
+                upstreamFieldsCrate,
+                curConfigurationControlsCrate
                 });
             }
 
@@ -186,7 +186,7 @@ namespace terminalFr8Core.Actions
                 || downStreamFields.Fields.Count == 0)
             {
                 return true;
-            }
+        }
 
             // If all rules are passed, then it is not an initial configuration request.
             return false;

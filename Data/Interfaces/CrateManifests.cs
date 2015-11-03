@@ -15,7 +15,7 @@ namespace Data.Interfaces
         public const string DESIGNTIME_FIELDS_MANIFEST_NAME = "Standard Design-Time Fields";
 
         public const int STANDARD_CONF_CONTROLS_MANIFEST_ID = 6;
-        public const string STANDARD_CONF_CONTROLS_NANIFEST_NAME = "Standard Configuration Controls";
+        public const string STANDARD_CONF_CONTROLS_MANIFEST_NAME = "Standard Configuration Controls";
 
         public const int STANDARD_EVENT_REPORT_ID = 7;
         public const string STANDARD_EVENT_REPORT_NAME = "Standard Event Report";

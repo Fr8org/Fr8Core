@@ -11,6 +11,6 @@ namespace Hub.Interfaces
     public interface IManifest
     {
         CrateDTO GetById(int id);
-        List<FieldDTO> convertPropertyToFields(PropertyInfo[] propertyInfo);
+        List<FieldDTO> ConvertPropertyToFields(PropertyInfo[] propertyInfo);
     }
 }
