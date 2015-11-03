@@ -12,6 +12,9 @@ namespace Data.Entities
         public string RecipientEmail { get; set; }
         public string EnvelopeId { get; set; }
 
+        public string DocumentName { get; set; }
+        public string TemplateName { get; set; }
+
         public string DocuSignObject { get; set; }
         public string Status { get; set; }
         public string CreateDate { get; set; }

@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class AddedRecipientEmailId : IMigrationMetadata
+    public sealed partial class AddedDocuSignFields : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddedRecipientEmailId));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddedDocuSignFields));
         
         string IMigrationMetadata.Id
         {
-            get { return "201511030717303_AddedRecipientEmailId"; }
+            get { return "201511031320271_AddedDocuSignFields"; }
         }
         
         string IMigrationMetadata.Source

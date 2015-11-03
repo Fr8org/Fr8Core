@@ -98,17 +98,48 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
-            if (NeedsAuthentication(actionDto))
+            if (NeedsAuthentication(curActionDTO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(actionDto.ProcessId);
+            string selectedOption, selectedValue;
+            GetTemplateRecipientPickerValue(curActionDTO, out selectedOption, out selectedValue);
 
-            // Extract envelope id from the payload Crate
-            string envelopeId = GetEnvelopeId(processPayload);
+            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+
+            string envelopeId = string.Empty;
+
+            if (!string.IsNullOrEmpty(selectedOption))
+            {
+                switch (selectedOption)
+                {
+                    case "template":
+                        var curAvailableTemplates =
+                            Crate.GetStandardDesignTimeFields(
+                                Crate.GetCratesByLabel("Available Templates", curActionDTO.CrateStorage).Single());
+
+                        if (
+                            curAvailableTemplates.Fields.Single(field => field.Value.Equals(selectedValue))
+                                .Value.Equals(selectedValue))
+                        {
+                            envelopeId = GetValueForKey(processPayload, "EnvelopeId");
+                        }
+
+                        break;
+                    case "recipient":
+                        var curRecipientEmail = GetValueForKey(processPayload, "RecipientEmail");
+                        if (curRecipientEmail.Equals(selectedValue))
+                        {
+                            envelopeId = GetValueForKey(processPayload, "EnvelopeId");
+                        }
+                        break;
+                }
+            }
+
+
 
             // Make sure that it exists
             if (String.IsNullOrEmpty(envelopeId))
@@ -136,7 +167,7 @@ namespace terminalDocuSign.Actions
             return processPayload;
         }
 
-        private string GetEnvelopeId(PayloadDTO curPayloadDTO)
+        private string GetValueForKey(PayloadDTO curPayloadDTO, string curKey)
         {
             var eventReportCrate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault();
             if (eventReportCrate == null)
@@ -154,7 +185,7 @@ namespace terminalDocuSign.Actions
             var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
             if (fields == null || fields.Count == 0) return null;
 
-            var envelopeIdField = fields.SingleOrDefault(f => f.Key == "EnvelopeId");
+            var envelopeIdField = fields.SingleOrDefault(f => f.Key == curKey);
             if (envelopeIdField == null) return null;
 
             return envelopeIdField.Value;
@@ -191,64 +222,64 @@ namespace terminalDocuSign.Actions
 
         protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            //get the selected option and its value
-            string selectedOption, selectedValue;
-            GetTemplateRecipientPickerValue(curActionDTO, out selectedOption, out selectedValue);
+            ////get the selected option and its value
+            //string selectedOption, selectedValue;
+            //GetTemplateRecipientPickerValue(curActionDTO, out selectedOption, out selectedValue);
 
-            if (!string.IsNullOrEmpty(selectedOption))
-            {
-                //get the existing DocuSign event fields
-                var curEventFieldsCrate =
-                    Crate.GetCratesByLabel("DocuSign Event Fields", curActionDTO.CrateStorage).Single();
-                var curEventFields = Crate.GetStandardDesignTimeFields(curEventFieldsCrate);
+            //if (!string.IsNullOrEmpty(selectedOption))
+            //{
+            //    //get the existing DocuSign event fields
+            //    var curEventFieldsCrate =
+            //        Crate.GetCratesByLabel("DocuSign Event Fields", curActionDTO.CrateStorage).Single();
+            //    var curEventFields = Crate.GetStandardDesignTimeFields(curEventFieldsCrate);
 
-                switch (selectedOption)
-                {
-                    case "template":
-                        //set the selected template ID if template option is selected
-                        curEventFields.Fields.ForEach(field =>
-                        {
-                            //set the template ID
-                            if (field.Key.Equals("TemplateId"))
-                            {
-                                field.Value = selectedValue;
-                            }
+            //    switch (selectedOption)
+            //    {
+            //        case "template":
+            //            //set the selected template ID if template option is selected
+            //            curEventFields.Fields.ForEach(field =>
+            //            {
+            //                //set the template ID
+            //                if (field.Key.Equals("TemplateId"))
+            //                {
+            //                    field.Value = selectedValue;
+            //                }
 
-                            //empty the recipient email
-                            if (field.Key.Equals("RecipientEmail"))
-                            {
-                                field.Value = string.Empty;
-                            }
-                        });
-                        break;
-                    case "recipient":
-                        //set the selected recipient email if recipient option is selected
-                        curEventFields.Fields.ForEach(field =>
-                        {
-                            //set the template ID
-                            if (field.Key.Equals("RecipientEmail"))
-                            {
-                                field.Value = selectedValue;
-                            }
+            //                //empty the recipient email
+            //                if (field.Key.Equals("RecipientEmail"))
+            //                {
+            //                    field.Value = string.Empty;
+            //                }
+            //            });
+            //            break;
+            //        case "recipient":
+            //            //set the selected recipient email if recipient option is selected
+            //            curEventFields.Fields.ForEach(field =>
+            //            {
+            //                //set the template ID
+            //                if (field.Key.Equals("RecipientEmail"))
+            //                {
+            //                    field.Value = selectedValue;
+            //                }
 
-                            //empty the template ID
-                            if (field.Key.Equals("TemplateId"))
-                            {
-                                field.Value = string.Empty;
-                            }
-                        });
-                        break;
-                }
+            //                //empty the template ID
+            //                if (field.Key.Equals("TemplateId"))
+            //                {
+            //                    field.Value = string.Empty;
+            //                }
+            //            });
+            //            break;
+            //    }
 
-                //update the DocuSign Event Fields with new value
-                Crate.ReplaceCratesByLabel(curActionDTO.CrateStorage.CrateDTO, "DocuSign Event Fields",
-                    new List<CrateDTO>
-                    {
-                        Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", curEventFields.Fields.ToArray())
-                    });
+            //    //update the DocuSign Event Fields with new value
+            //    Crate.ReplaceCratesByLabel(curActionDTO.CrateStorage.CrateDTO, "DocuSign Event Fields",
+            //        new List<CrateDTO>
+            //        {
+            //            Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", curEventFields.Fields.ToArray())
+            //        });
 
-                UpdateSelectedEvents(curActionDTO);
-            }
+            //    UpdateSelectedEvents(curActionDTO);
+            //}
 
             return Task.FromResult(curActionDTO);
         }
@@ -417,9 +448,9 @@ namespace terminalDocuSign.Actions
         private CrateDTO PackCrate_DocuSignEventFields()
         {
             return Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields",
-                new FieldDTO { Key = "EnvelopeId", Value = string.Empty },
+                new FieldDTO { Key = "EnvelopeId", Value = string.Empty }/*,
                 new FieldDTO { Key = "TemplateId", Value = string.Empty },
-                new FieldDTO { Key = "RecipientEmail", Value = string.Empty });
+                new FieldDTO { Key = "RecipientEmail", Value = string.Empty }*/);
         }
     }
 }

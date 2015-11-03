@@ -204,6 +204,8 @@
     <Compile Include="Constants\FieldValidationResult.cs" />
     <Compile Include="Constants\ActivityDirection.cs" />
     <Compile Include="Constants\ManifestIdEnum.cs" />
+    <Compile Include="Entities\DocuSignParserModels\DocumentStatus.cs" />
+    <Compile Include="Entities\DocuSignParserModels\DocumentStatuses.cs" />
     <Compile Include="Entities\RouteNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
@@ -384,9 +386,9 @@
     <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.Designer.cs">
       <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201511030717303_AddedRecipientEmailId.cs" />
-    <Compile Include="Migrations\201511030717303_AddedRecipientEmailId.Designer.cs">
-      <DependentUpon>201511030717303_AddedRecipientEmailId.cs</DependentUpon>
+    <Compile Include="Migrations\201511031320271_AddedDocuSignFields.cs" />
+    <Compile Include="Migrations\201511031320271_AddedDocuSignFields.Designer.cs">
+      <DependentUpon>201511031320271_AddedDocuSignFields.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -665,8 +667,8 @@
     <EmbeddedResource Include="Migrations\201510261339053_CreateWebServicesTable_Migration.resx">
       <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201511030717303_AddedRecipientEmailId.resx">
-      <DependentUpon>201511030717303_AddedRecipientEmailId.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201511031320271_AddedDocuSignFields.resx">
+      <DependentUpon>201511031320271_AddedDocuSignFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
