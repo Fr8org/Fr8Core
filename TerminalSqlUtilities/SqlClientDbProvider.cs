@@ -185,6 +185,14 @@ namespace TerminalSqlUtilities
             {
                 return DbType.Boolean;
             }
+            else if (dataTypeUpper.Contains("BINARY"))
+            {
+                return DbType.Binary;
+            }
+            else if (dataTypeUpper == "UNIQUEIDENTIFIER")
+            {
+                return DbType.Guid;
+            }
             else
             {
                 throw new NotSupportedException("Unknown data type");

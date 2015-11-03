@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -139,6 +140,29 @@ namespace terminalFr8Core.Actions
             return tablesDefinition.Fields;
         }
 
+        private async Task<List<FieldDTO>> ExtractColumnTypes(ActionDTO actionDTO)
+        {
+            var upstreamCrates = await GetCratesByDirection(
+                actionDTO.Id,
+                CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
+                GetCrateDirection.Upstream
+            );
+
+            if (upstreamCrates == null) { return null; }
+
+            var columnTypesCrate = upstreamCrates
+                .FirstOrDefault(x => x.Label == "Sql Column Types");
+
+            if (columnTypesCrate == null) { return null; }
+
+            var columnTypes = JsonConvert
+                .DeserializeObject<StandardDesignTimeFieldsCM>(columnTypesCrate.Contents);
+
+            if (columnTypes == null) { return null; }
+
+            return columnTypes.Fields;
+        }
+
         /// <summary>
         /// Returns distinct list of table names from Table Definitions list.
         /// </summary>
@@ -259,11 +283,23 @@ namespace terminalFr8Core.Actions
             ActionDTO actionDTO, string selectedObject)
         {
             var columnDefinitions = await ExtractColumnDefinitions(actionDTO);
-            if (columnDefinitions == null)
+            var columnTypes = await ExtractColumnTypes(actionDTO);
+
+            if (columnDefinitions == null || columnTypes == null)
             {
                 columnDefinitions = new List<FieldDTO>();
             }
 
+            // Create columnTypeMap dictionary.
+            var columnTypeMap = new Dictionary<string, DbType>();
+            foreach (var columnType in columnTypes)
+            {
+                columnTypeMap.Add(columnType.Key, (DbType)Enum.Parse(typeof(DbType), columnType.Value));
+            }
+
+            var supportedColumnTypes = new HashSet<DbType>() { DbType.String, DbType.Int32, DbType.Boolean };
+
+            // Match columns and filter by supported column type.
             List<FieldDTO> matchedColumns;
             if (string.IsNullOrEmpty(selectedObject))
             {
@@ -273,6 +309,7 @@ namespace terminalFr8Core.Actions
             {
                 matchedColumns = columnDefinitions
                     .Where(x => x.Key.StartsWith(selectedObject))
+                    .Where(x => supportedColumnTypes.Contains(columnTypeMap[x.Key]))
                     .Select(x =>
                     {
                         var tokens = x.Key.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);

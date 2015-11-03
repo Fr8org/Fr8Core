@@ -79,13 +79,21 @@ namespace terminalFr8Core.Actions
                 try
                 {
                     var tableDefinitions = RetrieveTableDefinitions(connectionString);
-                    var tableDefinitionCrate = Crate
-                        .CreateDesignTimeFieldsCrate(
+                    var tableDefinitionCrate = 
+                        Crate.CreateDesignTimeFieldsCrate(
                             "Sql Table Definitions",
                             tableDefinitions.ToArray()
                         );
 
+                    var columnTypes = RetrieveColumnTypes(connectionString);
+                    var columnTypesCrate =
+                        Crate.CreateDesignTimeFieldsCrate(
+                            "Sql Column Types",
+                            columnTypes.ToArray()
+                        );
+
                     curActionDTO.CrateStorage.CrateDTO.Add(tableDefinitionCrate);
+                    curActionDTO.CrateStorage.CrateDTO.Add(columnTypesCrate);
                 }
                 catch
                 {
@@ -109,7 +117,7 @@ namespace terminalFr8Core.Actions
             return connectionStringControl.Value;
         }
 
-        private List<FieldDTO> RetrieveTableDefinitions(string connectionString)
+        private void ListAllDbColumns(string connectionString, Action<IEnumerable<ColumnInfo>> callback)
         {
             var provider = DbProvider.GetDbProvider(DefaultDbProvider);
 
@@ -119,23 +127,56 @@ namespace terminalFr8Core.Actions
 
                 using (var tx = conn.BeginTransaction())
                 {
-                    var fieldsList = new List<FieldDTO>();
-
                     var columns = provider.ListAllColumns(tx);
-                    foreach (var column in columns)
+
+                    if (callback != null)
                     {
-                        var fullColumnName = GetColumnName(column);
-
-                        fieldsList.Add(new FieldDTO()
-                        {
-                            Key = fullColumnName,
-                            Value = fullColumnName
-                        });
+                        callback.Invoke(columns);
                     }
-
-                    return fieldsList;
                 }
             }
+        }
+
+        private List<FieldDTO> RetrieveTableDefinitions(string connectionString)
+        {
+            var fieldsList = new List<FieldDTO>();
+
+            ListAllDbColumns(connectionString, columns =>
+            {
+                foreach (var column in columns)
+                {
+                    var fullColumnName = GetColumnName(column);
+
+                    fieldsList.Add(new FieldDTO()
+                    {
+                        Key = fullColumnName,
+                        Value = fullColumnName
+                    });
+                }
+            });
+
+            return fieldsList;
+        }
+
+        private List<FieldDTO> RetrieveColumnTypes(string connectionString)
+        {
+            var fieldsList = new List<FieldDTO>();
+
+            ListAllDbColumns(connectionString, columns =>
+            {
+                foreach (var column in columns)
+                {
+                    var fullColumnName = GetColumnName(column);
+
+                    fieldsList.Add(new FieldDTO()
+                    {
+                        Key = fullColumnName,
+                        Value = column.DbType.ToString()
+                    });
+                }
+            });
+
+            return fieldsList;
         }
 
         private string GetColumnName(ColumnInfo columnInfo)
