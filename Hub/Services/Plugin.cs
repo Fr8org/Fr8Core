@@ -9,6 +9,7 @@ using Data.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces.Manifests;
+using Hub.Managers;
 
 namespace Hub.Services
 {
@@ -25,12 +26,30 @@ namespace Hub.Services
             }
         }
 
-        public async Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
+        public async Task<int> RegisterTerminals(string uri)
         {
-            var restClient = new RestfulServiceClient();
-            var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
-            return standardFr8TerminalCM.Actions;
+            int registeredTerminals = 0;
+            var eventReporter = ObjectFactory.GetInstance<EventReporter>();
+
+            var activityTemplateList = await GetAvailableActions(uri);
+            foreach (var activityTemplate in activityTemplateList)
+            {
+                try
+                {
+                    new ActivityTemplate().Register(activityTemplate);
+                    registeredTerminals++;
+                }
+                catch (Exception ex)
+                {
+                    eventReporter = ObjectFactory.GetInstance<EventReporter>();
+                    eventReporter.ActivityTemplatePluginRegistrationError(
+                        string.Format("Failed to register {0} terminal. Error Message: {1}", activityTemplate.Plugin.Name, ex.Message),
+                        ex.GetType().Name);
+                }
+            }
+            return registeredTerminals;
         }
+        
 
         /// <summary>
         /// Parses the required plugin service URL for the given action by Plugin Name and its version
@@ -60,6 +79,13 @@ namespace Hub.Services
                 //return the pugin URL
                 return curPluginUrl;
             }
+        }
+
+        private async Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
+        {
+            var restClient = new RestfulServiceClient();
+            var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
+            return standardFr8TerminalCM.Actions;
         }
     }
 }
