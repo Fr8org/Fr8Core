@@ -105,33 +105,37 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            string selectedOption, selectedValue;
-            GetTemplateRecipientPickerValue(curActionDTO, out selectedOption, out selectedValue);
+            //get currently selected option and its value
+            string curSelectedOption, curSelectedValue;
+            GetTemplateRecipientPickerValue(curActionDTO, out curSelectedOption, out curSelectedValue);
 
             var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
 
             string envelopeId = string.Empty;
 
-            if (!string.IsNullOrEmpty(selectedOption))
+            //retrieve envelope ID based on the selected option and its value
+            if (!string.IsNullOrEmpty(curSelectedOption))
             {
-                switch (selectedOption)
+                switch (curSelectedOption)
                 {
                     case "template":
+                        //filter the incoming envelope by template value selected by the user
                         var curAvailableTemplates =
-                            Crate.GetStandardDesignTimeFields(
-                                Crate.GetCratesByLabel("Available Templates", curActionDTO.CrateStorage).Single());
+                            Crate.GetStandardDesignTimeFields(Crate.GetCratesByLabel("Available Templates", curActionDTO.CrateStorage).Single());
 
-                        if (
-                            curAvailableTemplates.Fields.Single(field => field.Value.Equals(selectedValue))
-                                .Value.Equals(selectedValue))
+                        //if the incoming enveloped is prepared using selected template, get the envelope ID
+                        if (curAvailableTemplates.Fields.Single(field => field.Value.Equals(curSelectedValue)).Value.Equals(curSelectedValue))
                         {
                             envelopeId = GetValueForKey(processPayload, "EnvelopeId");
                         }
 
                         break;
                     case "recipient":
+                        //filter incoming envelope by recipient email address specified by the user
                         var curRecipientEmail = GetValueForKey(processPayload, "RecipientEmail");
-                        if (curRecipientEmail.Equals(selectedValue))
+
+                        //if the incoming envelope's recipient is user specified one, get the envelope ID
+                        if (curRecipientEmail.Equals(curSelectedValue))
                         {
                             envelopeId = GetValueForKey(processPayload, "EnvelopeId");
                         }
@@ -222,64 +226,8 @@ namespace terminalDocuSign.Actions
 
         protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            ////get the selected option and its value
-            //string selectedOption, selectedValue;
-            //GetTemplateRecipientPickerValue(curActionDTO, out selectedOption, out selectedValue);
-
-            //if (!string.IsNullOrEmpty(selectedOption))
-            //{
-            //    //get the existing DocuSign event fields
-            //    var curEventFieldsCrate =
-            //        Crate.GetCratesByLabel("DocuSign Event Fields", curActionDTO.CrateStorage).Single();
-            //    var curEventFields = Crate.GetStandardDesignTimeFields(curEventFieldsCrate);
-
-            //    switch (selectedOption)
-            //    {
-            //        case "template":
-            //            //set the selected template ID if template option is selected
-            //            curEventFields.Fields.ForEach(field =>
-            //            {
-            //                //set the template ID
-            //                if (field.Key.Equals("TemplateId"))
-            //                {
-            //                    field.Value = selectedValue;
-            //                }
-
-            //                //empty the recipient email
-            //                if (field.Key.Equals("RecipientEmail"))
-            //                {
-            //                    field.Value = string.Empty;
-            //                }
-            //            });
-            //            break;
-            //        case "recipient":
-            //            //set the selected recipient email if recipient option is selected
-            //            curEventFields.Fields.ForEach(field =>
-            //            {
-            //                //set the template ID
-            //                if (field.Key.Equals("RecipientEmail"))
-            //                {
-            //                    field.Value = selectedValue;
-            //                }
-
-            //                //empty the template ID
-            //                if (field.Key.Equals("TemplateId"))
-            //                {
-            //                    field.Value = string.Empty;
-            //                }
-            //            });
-            //            break;
-            //    }
-
-            //    //update the DocuSign Event Fields with new value
-            //    Crate.ReplaceCratesByLabel(curActionDTO.CrateStorage.CrateDTO, "DocuSign Event Fields",
-            //        new List<CrateDTO>
-            //        {
-            //            Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", curEventFields.Fields.ToArray())
-            //        });
-
-            //    UpdateSelectedEvents(curActionDTO);
-            //}
+            //just update the user selected envelope events in the follow up configuration
+            UpdateSelectedEvents(curActionDTO);
 
             return Task.FromResult(curActionDTO);
         }
@@ -374,7 +322,6 @@ namespace terminalDocuSign.Actions
 
             return PackControlsCrate(
                 PackCrate_TemplateRecipientPicker(),
-                //_docuSignManager.CreateDocuSignTemplatePicker(true),
                 fieldEnvelopeSent,
                 fieldEnvelopeReceived,
                 fieldRecipientSigned,
@@ -448,9 +395,7 @@ namespace terminalDocuSign.Actions
         private CrateDTO PackCrate_DocuSignEventFields()
         {
             return Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields",
-                new FieldDTO { Key = "EnvelopeId", Value = string.Empty }/*,
-                new FieldDTO { Key = "TemplateId", Value = string.Empty },
-                new FieldDTO { Key = "RecipientEmail", Value = string.Empty }*/);
+                new FieldDTO {Key = "EnvelopeId", Value = string.Empty});
         }
     }
 }

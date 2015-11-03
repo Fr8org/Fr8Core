@@ -295,13 +295,10 @@ namespace pluginIntegrationTests
             var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
                 configurationControlsCrate.Contents, new ControlDefinitionDTOConverter());
 
-            // Modify value of Selected_DocuSign_Template field and push it back to crate,
-            // exact same way we do on front-end.
-            //var docuSignTemplateControl = controlsMS.Controls.Single(x => x.Name == "Selected_DocuSign_Template");
-            //docuSignTemplateControl.Value = fieldsMS.Fields.First().Value;
-
             controlsMS.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.ForEach(r => r.Selected = false);
 
+            // Modify value of Selected_DocuSign_Template field and push it back to crate,
+            // exact same way we do on front-end.
             var docuSignTemplateControl =
                 controlsMS.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.Single(r => r.Name.Equals("template"));
 
