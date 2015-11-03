@@ -35,6 +35,31 @@ namespace Hub.Managers
 //            return crateDTO;
 //        }
 
+        public JToken CrateStorageToJson(CrateStorage storage)
+        {
+            return CrateStorageSerializer.Default.SaveToJson(storage);
+        }
+
+        public CrateSerializationProxy SerializeToProxy(Crate crate)
+        {
+            return CrateStorageSerializer.Default.SaveToProxy(crate);
+        }
+
+        public string SerializeToString(Crate crate)
+        {
+            return CrateStorageSerializer.Default.SaveToString(crate);
+        }
+
+        public JToken SerializeToJson(Crate crate)
+        {
+            return CrateStorageSerializer.Default.SaveToJson(crate);
+        }
+
+        public Crate Deserialize(CrateSerializationProxy token)
+        {
+            return CrateStorageSerializer.Default.LoadCrate(token);
+        }
+
         public ICrateStorageUpdater UpdateStorage(Expression<Func<JToken>> storageAccessExpression)
         {
             return new CrateStorageStorageUpdater(storageAccessExpression);
@@ -65,6 +90,26 @@ namespace Hub.Managers
             return CrateStorageSerializer.Default.Load(rawStorage);
         }
 
+        public bool IsEmptyStorage(JToken rawStorage)
+        {
+            if (rawStorage == null)
+            {
+                return true;
+            }
+
+            return GetStorage(rawStorage).Count == 0;
+        }
+
+        public bool IsEmptyStorage(string rawStorage)
+        {
+            if (string.IsNullOrWhiteSpace(rawStorage))
+            {
+                return true;
+            }
+
+            return GetStorage(rawStorage).Count == 0;
+        }
+
         public string EmptyStorageAsStr()
         {
             return CrateStorageSerializer.Default.SaveToString(new CrateStorage());
@@ -74,6 +119,8 @@ namespace Hub.Managers
         {
             return CrateStorageSerializer.Default.SaveToJson(new CrateStorage());
         }
+
+
 
         public Crate CreateAuthenticationCrate(string label, AuthenticationMode mode)
         {
@@ -94,9 +141,9 @@ namespace Hub.Managers
 //                manifestId: CrateManifests.STANDARD_AUTHENTICATION_ID);
         }
 
-        public Crate CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
+        public Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
         {
-            return Crate.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields.ToList() });
+            return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields.ToList() });
 //
 //            return Create(label, 
 //                JsonConvert.SerializeObject(new StandardDesignTimeFieldsCM() { Fields = fields.ToList() }),
@@ -124,6 +171,7 @@ namespace Hub.Managers
 //                manifestId: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_ID);
         }
 
+        
         public Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport)
         {
             return Crate.FromContent(label, eventReport);
@@ -243,9 +291,9 @@ namespace Hub.Managers
 //            }
 //        }
 
-        public Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)
+        public Crate CreatePayloadDataCrateExcel(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)
         {
-            return Crate.FromContent(crateLabel, TransformStandardTableDataToStandardPayloadData(payloadDataObjectType, tableDataMS));
+            return Crate.FromContent(crateLabel, TransformStandardTableDataToStandardPayloadDataExcel(payloadDataObjectType, tableDataMS));
 //
 //            return Create(crateLabel,
 //                            JsonConvert.SerializeObject(TransformStandardTableDataToStandardPayloadData(payloadDataObjectType, tableDataMS)),
@@ -256,21 +304,16 @@ namespace Hub.Managers
 //        public Crate CreatePayloadDataCrate(List<KeyValuePair<string,string>> curFields)
 //        {            
 //            List<FieldDTO> crateFields = new List<FieldDTO>();
+//
 //            foreach(var field in curFields)
 //            {
-//                crateFields.Add(new FieldDTO() { Key = field.Key, Value = field.Value });             
+//                crateFields.Add(new FieldDTO { Key = field.Key, Value = field.Value });             
 //            }
 //
-//            var crate = new Crate(CrateManifestType.FromEnum(MT.StandardPayloadData));
-//
-//            crate.Put(crateFields);
-//
-//            return ;
-//
-//            return Create("Payload Data", JsonConvert.SerializeObject(crateFields));            
+//            return Crate.FromJson(CrateManifestType.Unknown, JToken.FromObject(crateFields));
 //        }
 
-        private StandardPayloadDataCM TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataCM tableDataMS)
+        private StandardPayloadDataCM TransformStandardTableDataToStandardPayloadDataExcel(string curObjectType, StandardTableDataCM tableDataMS)
         {
             var payloadDataMS = new StandardPayloadDataCM()
             {

@@ -26,6 +26,7 @@ namespace Hub.Interfaces
 
         IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups();
 
+	    Task<List<Crate<T>>> GetCratesByDirection<T>(int activityId, GetCrateDirection direction);
 	    Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction);
 
         IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount);

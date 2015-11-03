@@ -208,6 +208,7 @@
     <Compile Include="Crates\CrateManifestAttribute.cs" />
     <Compile Include="Crates\CrateManifestType.cs" />
     <Compile Include="Crates\CrateManifestTypeDescriptionAttribute.cs" />
+    <Compile Include="Crates\CrateSerializationProxy.cs" />
     <Compile Include="Crates\CrateStorage.cs" />
     <Compile Include="Crates\ICrateStorageSerializer.cs" />
     <Compile Include="Crates\IManifestSerializer.cs" />

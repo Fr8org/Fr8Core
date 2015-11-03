@@ -7,7 +7,7 @@
     export class Crate {
         id: string;
         label: string;
-        contents: string;
+        contents: Object;
         parentCrateId: string;
         manifestType: string;
         manifestId: string;

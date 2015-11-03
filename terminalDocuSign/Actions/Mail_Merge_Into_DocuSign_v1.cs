@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Data.Crates;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.DataTransferObjects;
@@ -39,7 +40,7 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Create configuration controls crate.
         /// </summary>
-        private async Task<CrateDTO> CreateConfigurationControlsCrate()
+        private async Task<Crate> CreateConfigurationControlsCrate()
         {
             var controlList = new List<ControlDefinitionDTO>();
 
@@ -50,7 +51,7 @@ namespace terminalDocuSign.Actions
                 ListItems = await GetDataSourceListItems("Table Data Generator")
             });
 
-            controlList.Add(_docuSignManager.CreateDocuSignTemplatePicker(false, "DocuSignTemplate", "2. Use which DocuSign Template?"));
+            controlList.Add(DocuSignManager.CreateDocuSignTemplatePicker(false, "DocuSignTemplate", "2. Use which DocuSign Template?"));
             controlList.Add(new ButtonControlDefinitionDTO()
             {
                 Label = "Continue",

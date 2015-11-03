@@ -16,6 +16,11 @@ namespace Data.Crates
             Label = crate.Label;
             Content = crate.Get<T>();
         }
+
+        public static Crate<T> FromContent(string label, T content)
+        {
+            return new Crate<T>(Crate.FromContent(label, content));
+        }
     }
 
     public class Crate

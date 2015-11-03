@@ -8,7 +8,9 @@ using System.Configuration;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Data.Crates;
 using Hub.Interfaces;
+using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities.Configuration.Azure;
 
@@ -18,8 +20,10 @@ namespace TerminalBase.Infrastructure
     {
         private readonly EventReportCrateFactory _eventReportCrateFactory;
         private readonly LoggingDataCrateFactory _loggingDataCrateFactory;
-
-        public delegate CrateDTO EventParser(string externalEventPayload);
+        private readonly ICrateManager _crateManager;
+        
+        public delegate Crate EventParser(string externalEventPayload);
+        
         private string eventWebServerUrl = string.Empty;
 
         public BasePluginEvent()
@@ -28,6 +32,7 @@ namespace TerminalBase.Infrastructure
             eventWebServerUrl = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
 
@@ -53,7 +58,7 @@ namespace TerminalBase.Infrastructure
             //TODO inpect this
             //I am not sure what to supply for parameters eventName and palletId, so i passed pluginName and eventType
             return restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                _eventReportCrateFactory.Create(eventType, pluginName, loggingDataCrate));
+                _crateManager.SerializeToProxy(_eventReportCrateFactory.Create(eventType, pluginName, loggingDataCrate)));
 
         }
 
@@ -84,7 +89,7 @@ namespace TerminalBase.Infrastructure
 
             //return the response from the fr8's Event Controller
             return restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                _eventReportCrateFactory.Create("Plugin Incident", pluginName, loggingDataCrate));
+                _crateManager.SerializeToProxy(_eventReportCrateFactory.Create("Plugin Incident", pluginName, loggingDataCrate)));
         }
 
         /// <summary>

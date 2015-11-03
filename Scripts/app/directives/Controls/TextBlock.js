@@ -3,8 +3,8 @@ var dockyard;
 (function (dockyard) {
     var directives;
     (function (directives) {
-        var textBlock;
-        (function (textBlock) {
+        var button;
+        (function (button) {
             'use strict';
             //More detail on creating directives in TypeScript: 
             //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
@@ -36,7 +36,7 @@ var dockyard;
                 return TextBlock;
             })();
             app.directive('textBlock', TextBlock.Factory());
-        })(textBlock = directives.textBlock || (directives.textBlock = {}));
+        })(button = directives.button || (directives.button = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
 //# sourceMappingURL=TextBlock.js.map

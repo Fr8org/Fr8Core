@@ -36,15 +36,15 @@ namespace Data.Crates
                     }
                     else
                     {
-                        return false;
+                        manifestType = CrateManifestType.Unknown;
                     }
                 }
                 else
                 {
                     manifestType = CrateManifestType.FromEnum(manifestAttr.ManifestType);
                 }
-            
-                ManifestsCache.Add(type, manifestAttr != null ? CrateManifestType.FromEnum(manifestAttr.ManifestType) : CrateManifestType.Unknown);
+
+                ManifestsCache.Add(type, manifestType);
 
                 return true;
             }
@@ -59,9 +59,23 @@ namespace Data.Crates
                 manifestType = CrateManifestType.Unknown;
                 return false;
             }
-
+            
             var type = instance.GetType();
-
+            var manifest = instance as Manifest;
+            
+            if (manifest != null)
+            {
+                lock (GlobalTypeCacheLock)
+                {
+                    if (!ManifestsCache.TryGetValue(type, out manifestType))
+                    {
+                        manifestType = new CrateManifestType(manifest.ManifestName, (int) manifest.ManifestType);
+                        ManifestsCache.Add(type, manifestType);
+                        return true;
+                    }
+                }
+            }
+            
             return TryResolveManifest(type, out manifestType);
         }
 

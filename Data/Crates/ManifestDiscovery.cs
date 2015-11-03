@@ -28,13 +28,18 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
-        public static void ConfigureInitial()
+        public void ConfigureInitial()
         {
             var manifest = typeof(Interfaces.Manifests.Manifest);
 
             foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(x => manifest.IsAssignableFrom(x) || x.GetCustomAttribute<CrateManifestAttribute>() != null))
             {
-                Default.RegisterManifest(type);
+                if (type.IsAbstract)
+                {
+                    continue;
+                }
+
+                RegisterManifest(type);
             }
         }
 

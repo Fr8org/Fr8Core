@@ -43,15 +43,12 @@ namespace terminalFr8Core.Actions
                 var curProcessPayload = await GetProcessPayload(actionDto.ProcessId);
 
                 //get docu sign envelope crate from payload
-                var curDocuSignEnvelopeCrate =
-                    Crate.GetCratesByLabel("DocuSign Envelope Manifest", curProcessPayload.CrateStorageDTO()).Single();
-
+                var curDocuSignEnvelopeCrate = Crate.GetStorage(curProcessPayload.CrateStorage).CratesOfType<DocuSignEnvelopeCM>().Single(x => x.Label == "DocuSign Envelope Manifest");
+                    
                 string curFr8AccountId = string.Empty;
                 if (curDocuSignEnvelopeCrate != null)
                 {
-                    DocuSignEnvelopeCM docuSignEnvelope =
-                        JsonConvert.DeserializeObject<DocuSignEnvelopeCM>(curDocuSignEnvelopeCrate.Contents);
-
+                    DocuSignEnvelopeCM docuSignEnvelope = curDocuSignEnvelopeCrate.Value;
                     curFr8AccountId =
                         uow.AuthorizationTokenRepository.GetQuery()
                             .Single(auth => auth.ExternalAccountId.Equals(docuSignEnvelope.ExternalAccountId))
@@ -63,13 +60,11 @@ namespace terminalFr8Core.Actions
                 }
 
                 //get docu sign event crate from payload
-                var curDocuSignEventCrate =
-                    Crate.GetCratesByLabel("DocuSign Event Manifest", curProcessPayload.CrateStorageDTO()).Single();
+                var curDocuSignEventCrate = Crate.GetStorage(curProcessPayload.CrateStorage).CratesOfType<DocuSignEventCM>().Single(x => x.Label == "DocuSign Event Manifest");
 
                 if (curDocuSignEventCrate != null)
                 {
-                    DocuSignEventCM docuSignEvent =
-                        JsonConvert.DeserializeObject<DocuSignEventCM>(curDocuSignEventCrate.Contents);
+                    DocuSignEventCM docuSignEvent = curDocuSignEventCrate.Value;
 
                     curFr8AccountId =
                         uow.AuthorizationTokenRepository.GetQuery()
@@ -85,12 +80,12 @@ namespace terminalFr8Core.Actions
             }
         }
 
+        
         protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
-            CrateDTO curMergedUpstreamRunTimeObjects =
-                await MergeUpstreamFields(curActionDO.Id, "Available Run-Time Objects");
+            var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO.Id, "Available Run-Time Objects");
 
             var fieldSelectObjectTypes = new DropDownListControlDefinitionDTO()
             {
@@ -101,25 +96,22 @@ namespace terminalFr8Core.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = curMergedUpstreamRunTimeObjects.Label,
-                    ManifestType = curMergedUpstreamRunTimeObjects.ManifestType
+                    ManifestType = curMergedUpstreamRunTimeObjects.ManifestType.Type
                 }
             };
 
             var curConfigurationControlsCrate = PackControlsCrate(fieldSelectObjectTypes);
 
-            FieldDTO[] curSelectedFields =
-                JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(curMergedUpstreamRunTimeObjects.Contents)
-                    .Fields.Select(field => new FieldDTO {Key = field.Key, Value = field.Value})
-                    .ToArray();
+            FieldDTO[] curSelectedFields = curMergedUpstreamRunTimeObjects.Value.Fields.Select(field => new FieldDTO {Key = field.Key, Value = field.Value}).ToArray();
 
             var curSelectedObjectType = Crate.CreateDesignTimeFieldsCrate("SelectedObjectTypes", curSelectedFields);
 
-            curActionDO.UpdateCrateStorageDTO(new List<CrateDTO>
+            using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
             {
-                curMergedUpstreamRunTimeObjects,
-                curConfigurationControlsCrate,
-                curSelectedObjectType
-            });
+                updater.CrateStorage.Add(curMergedUpstreamRunTimeObjects);
+                updater.CrateStorage.Add(curConfigurationControlsCrate);
+                updater.CrateStorage.Add(curSelectedObjectType);
+            }
 
             return Mapper.Map<ActionDTO>(curActionDO);
         }

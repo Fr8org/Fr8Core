@@ -53,16 +53,20 @@ namespace Hub.Services
         public async Task ProcessInboundEvents(Crate curCrateStandardEventReport)
         {
             var eventReportMS = curCrateStandardEventReport.Get<EventReportCM>();
-            
+
             if (eventReportMS.EventPayload == null)
+            {
                 throw new ArgumentException("EventReport can't have a null payload");
+            }
             if (eventReportMS.ExternalAccountId == null)
+            {
                 throw new ArgumentException("EventReport can't have a null ExternalAccountId");
+            }
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //find the corresponding DockyardAccount
-                var authToken = uow.AuthorizationTokenRepository
-                    .FindOne(at => at.ExternalAccountId == eventReportMS.ExternalAccountId);
+                var authToken = uow.AuthorizationTokenRepository.FindOne(at => at.ExternalAccountId == eventReportMS.ExternalAccountId);
                 if (authToken == null)
                 {
                     return;
@@ -75,13 +79,9 @@ namespace Hub.Services
                     .FindList(pt => pt.Fr8Account.Id == curDockyardAccount.Id)
                     .Where(x => x.RouteState == RouteState.Active);
 
-                var subscribingRoutes = _route.MatchEvents(initialRoutesList.ToList(),
-                    eventReportMS);
-
-
+                var subscribingRoutes = _route.MatchEvents(initialRoutesList.ToList(), eventReportMS);
 
                 await LaunchProcesses(subscribingRoutes, curCrateStandardEventReport);
-            
             }
         }
 

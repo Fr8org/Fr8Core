@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Crates;
 using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.DataTransferObjects
@@ -13,7 +14,7 @@ namespace Data.Interfaces.DataTransferObjects
 
         public string PalletId { get; set; }
 
-        public JToken CrateStorage { get; set; }
+        public CrateStorage CrateStorage { get; set; }
     }
 
     public class LoggingData

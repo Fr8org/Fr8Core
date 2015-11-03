@@ -19,7 +19,15 @@ namespace Data.Interfaces.Manifests
         }
         public string ManifestName
         {
-            get { return ManifestType.GetEnumDisplayName(); }
+            get
+            {
+                if (ManifestType == 0)
+                {
+                    return null;
+                }
+
+                return ManifestType.GetEnumDisplayName();
+            }
         }
 
         public Manifest()

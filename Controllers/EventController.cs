@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Web.Http;
+using Data.Crates;
 using StructureMap;
 using Data.Crates.Helpers;
 using Data.Infrastructure;
@@ -50,10 +51,10 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult Post(CrateDTO submittedEventsCrate)
+        public IHttpActionResult Post(CrateSerializationProxy submittedEventsCrate)
         {
 
-            var eventDTO = _crate.GetContents<EventDTO>(submittedEventsCrate);
+            var eventDTO = _crate.Deserialize(submittedEventsCrate).Get<EventDTO>();
 
             //Request of alex to keep things simple for now
             if (eventDTO.CrateStorage.Count != 1)
@@ -66,12 +67,12 @@ namespace HubWeb.Controllers
             var errorMsgList = new List<string>();
             foreach (var crateDTO in eventDTO.CrateStorage)
             {
-                if (crateDTO.ManifestType != "Dockyard Plugin Event or Incident Report")
+                if (crateDTO.ManifestType.Type != "Dockyard Plugin Event or Incident Report")
                 {
-                    errorMsgList.Add("Don't know how to process an EventReport with the Contents: " + crateDTO.Contents);
+                    errorMsgList.Add("Don't know how to process an EventReport with the Contents: " + submittedEventsCrate.Contents);
                     continue;
                 }
-                var loggingData =_crate.GetContents<LoggingData>(crateDTO);
+                var loggingData =crateDTO.Get<LoggingData>();
                 currentRouter(loggingData);
             }
 

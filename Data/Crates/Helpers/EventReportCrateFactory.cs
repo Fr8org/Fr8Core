@@ -1,35 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using StructureMap;
 using Data.Interfaces.DataTransferObjects;
-using Utilities.Serializers.Json;
 
 namespace Data.Crates.Helpers
 {
     public class EventReportCrateFactory
     {
-//        public CrateDTO Create(String eventName, String palletId, params CrateDTO[] crates)
-//        {
-//            return Create(eventName, palletId, crates.ToList());
-//        }
+        public Crate Create(String eventName, String palletId, params Crate[] crates)
+        {
+            return Create(eventName, palletId, crates);
+        }
 //
-//        public CrateDTO Create(String eventName, String palletId, List<CrateDTO> crates)
-//        {
-//            var eventDTO = new EventDTO
-//            {
-//                EventName = eventName,
-//                PalletId = palletId,
-//                CrateStorage = crates
-//            };
-//            return Create(eventDTO);
-//        }
+        public Crate Create(String eventName, String palletId, IEnumerable<Crate> crates)
+        {
+            var eventDTO = new EventDTO
+            {
+                EventName = eventName,
+                PalletId = palletId,
+                CrateStorage = new CrateStorage(crates)
+            };
+
+            return Create(eventDTO);
+        }
+
+        public Crate Create(EventDTO eventDTO)
+        {
+            return Crate.FromContent("Dockyard Plugin Event or Incident Report", eventDTO);
 //
-//        public CrateDTO Create(EventDTO eventDTO)
-//        {
 //            var eventDTOContent = JsonConvert.SerializeObject(eventDTO);
 //            return new CrateDTO()
 //            {
@@ -39,6 +36,6 @@ namespace Data.Crates.Helpers
 //                ManifestType = "Dockyard Plugin Event or Incident Report",
 //                ManifestId = 2
 //            };
-//        }
+        }
     }
 }

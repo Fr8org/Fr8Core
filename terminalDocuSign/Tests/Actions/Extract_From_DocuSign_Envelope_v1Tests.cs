@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Crates;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -33,30 +34,30 @@ namespace terminalDocuSign.Tests.Actions
             _extract_From_DocuSign_Envelope_v1 = new Receive_DocuSign_Envelope_v1();
         }
 
-        [Test, Ignore("Vas, Introduced upstream actions logic to get the design time fields as part of DO-1300. This is invalid now")]
-        public async Task Configure_ConfigurationRequestTypeIsInitial_ShouldCrateStorage()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //Arrange
-                uow.RouteNodeRepository.Add(FixtureData.ConfigureTestActionTree());
-                uow.SaveChanges();
-                ActionDO curAction = FixtureData.ConfigureTestAction57();
-                ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
-                curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
-
-                Extract_From_DocuSign_Envelope_v1_Proxy curExtract_From_DocuSign_Envelope_v1_For_Testing = new Extract_From_DocuSign_Envelope_v1_Proxy();
-
-                //Act
-                var result = await curExtract_From_DocuSign_Envelope_v1_For_Testing.Configure(curActionDTO);
-
-                //Assert
-                Assert.IsNotNull(result.CrateStorage);
-                Assert.AreEqual(2, result.CrateStorage.CrateDTO.Count);
-                Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
-                Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[1].ManifestType);
-            }
-        }
+//        [Test, Ignore("Vas, Introduced upstream actions logic to get the design time fields as part of DO-1300. This is invalid now")]
+//        public async Task Configure_ConfigurationRequestTypeIsInitial_ShouldCrateStorage()
+//        {
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                //Arrange
+//                uow.RouteNodeRepository.Add(FixtureData.ConfigureTestActionTree());
+//                uow.SaveChanges();
+//                ActionDO curAction = FixtureData.ConfigureTestAction57();
+//                ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
+//                curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
+//
+//                Extract_From_DocuSign_Envelope_v1_Proxy curExtract_From_DocuSign_Envelope_v1_For_Testing = new Extract_From_DocuSign_Envelope_v1_Proxy();
+//
+//                //Act
+//                var result = await curExtract_From_DocuSign_Envelope_v1_For_Testing.Configure(curActionDTO);
+//
+//                //Assert
+//                Assert.IsNotNull(result.CrateStorage);
+//                Assert.AreEqual(2, result.CrateStorage.CrateDTO.Count);
+//                Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
+//                Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[1].ManifestType);
+//            }
+//        }
 
         [Test]
         public void GetEnvelopeId_ParameterAsPayloadDTO_ReturnsEnvelopeInformation()
@@ -119,7 +120,7 @@ namespace terminalDocuSign.Tests.Actions
             _activity = ObjectFactory.GetInstance<IRouteNode>();
         }
 
-        protected async override Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        protected async override Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -130,11 +131,11 @@ namespace terminalDocuSign.Tests.Actions
                     .Select(x => Mapper.Map<ActionDTO>(x))
                     .ToList();
 
-                var curCrates = new List<CrateDTO>();
+                var curCrates = new List<Crate>();
 
                 foreach (var curAction in upstreamActions)
                 {
-                    curCrates.AddRange(Crate.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
+                    curCrates.AddRange(Crate.GetStorage(curAction.CrateStorage).Where(x=>x.ManifestType.Type == manifestType).ToList());
                 }
 
                 return await Task.FromResult(curCrates);

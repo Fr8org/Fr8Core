@@ -7,10 +7,10 @@ namespace Data.Crates
         public readonly Enum ManifestType;
         public readonly Type Serializer;
         
-        public CrateManifestAttribute(Enum manifestId, Type serializer = null)
+        public CrateManifestAttribute(object manifestId, Type serializer = null)
         {
             Serializer = serializer;
-            ManifestType = manifestId;
+            ManifestType = (Enum)manifestId;
         }
 
         public CrateManifestAttribute(Type serializer)

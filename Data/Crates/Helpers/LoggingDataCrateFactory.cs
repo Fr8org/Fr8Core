@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using StructureMap;
-using Data.Interfaces.DataTransferObjects;
-using Utilities.Serializers.Json;
+﻿using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Crates.Helpers
 {
     public class LoggingDataCrateFactory
     {
-//        public CrateDTO Create(LoggingData loggingData)
-//        {
-//            // var serializer = new JsonSerializer();
-//            // var contents = serializer.Serialize(loggingData);
-//
+        public Crate Create(LoggingData loggingData)
+        {
+            return Crate.FromContent("Dockyard Plugin Event or Incident Report", loggingData);
+
+            // var serializer = new JsonSerializer();
+            // var contents = serializer.Serialize(loggingData);
+
 //            var contents = JsonConvert.SerializeObject(loggingData);
 //
 //            return new CrateDTO()
@@ -27,6 +21,6 @@ namespace Data.Crates.Helpers
 //                ManifestType = "Dockyard Plugin Event or Incident Report",
 //                ManifestId = 3
 //            };
-//        }
+        }
     }
 }

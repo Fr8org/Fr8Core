@@ -16,7 +16,14 @@ namespace Data.Interfaces.Manifests
         {
             Controls = new List<ControlDefinitionDTO>();
         }
-		 public ControlDefinitionDTO FindByName(string name)
+
+        public StandardConfigurationControlsCM(IEnumerable<ControlDefinitionDTO> controls)
+            :this()
+        {
+            Controls.AddRange(controls);
+        }
+
+        public ControlDefinitionDTO FindByName(string name)
 		  {
 			  return Controls.SingleOrDefault(x => x.Name == name);
 		  }

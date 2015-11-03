@@ -9,7 +9,7 @@ namespace Data.Crates
         // Declarations
         /**********************************************************************************/
 
-        public static readonly CrateManifestType Unknown = new CrateManifestType(null, -1);
+        public static readonly CrateManifestType Unknown = new CrateManifestType(null, 0);
 
         /**********************************************************************************/
 

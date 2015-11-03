@@ -38,6 +38,22 @@ namespace Data.Crates
         /**********************************************************************************/
         // Functions
         /**********************************************************************************/
+        
+        public CrateStorage()
+        {
+        }
+
+        /**********************************************************************************/
+
+        public CrateStorage(IEnumerable<Crate> crates)
+        {
+            foreach (var crate in crates)
+            {
+                _crates.Add(crate.Id, crate);
+            }
+        }
+
+        /**********************************************************************************/
 
         public IEnumerator<Crate> GetEnumerator()
         {
@@ -101,6 +117,13 @@ namespace Data.Crates
         public IEnumerable<T> CrateValuesOfType<T>()
         {
             return CratesOfType<T>().Select(x => x.Get<T>());
+        }
+
+        /**********************************************************************************/
+
+        public IEnumerable<T> CrateValuesOfType<T>(Predicate<Crate> predicate)
+        {
+            return CratesOfType<T>().Where(x => predicate(x)).Select(x => x.Get<T>());
         }
 
         /**********************************************************************************/

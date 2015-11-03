@@ -532,6 +532,11 @@ namespace Hub.Services
         }
 
 
+//        public Task<IEnumerable<T>> FindCratesByManifestType<T>(ActionDO curActionDO, GetCrateDirection direction = GetCrateDirection.None)
+//        {
+//
+//        }
+
 //        public async Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Data.Interfaces.Manifests.Manifest curSchema, string key,
 //                                                                string fieldName = "name",
 //                                                                GetCrateDirection direction = GetCrateDirection.None)

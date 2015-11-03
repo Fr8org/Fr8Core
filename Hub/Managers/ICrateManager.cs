@@ -28,12 +28,23 @@ namespace Hub.Managers
 //        IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO);
 
   //      IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName);
+        JToken SerializeToJson(Crate crate);
+        JToken CrateStorageToJson(CrateStorage storage);
+        string SerializeToString(Crate crate);
+        
+        CrateSerializationProxy SerializeToProxy(Crate crate);
+        Crate Deserialize(CrateSerializationProxy proxy);
+
         ICrateStorageUpdater UpdateStorage(Expression<Func<JToken>> storageAccessExpression);
         ICrateStorageUpdater UpdateStorage(Expression<Func<string>> storageAccessExpression);
         CrateStorage GetStorage(string rawStorage);
         CrateStorage GetStorage(JToken rawStorage);
+        bool IsEmptyStorage(string rawStorage);
+        bool IsEmptyStorage(JToken rawStorage);
+
+        //Crate CreatePayloadDataCrate(List<KeyValuePair<string, string>> curFields);
         Crate CreateAuthenticationCrate(string label, AuthenticationMode mode);
-        Crate CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
+        Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
         Crate CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls);
         Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport);
         Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);
@@ -50,7 +61,7 @@ namespace Hub.Managers
 //        void ReplaceCratesByLabel(IList<CrateDTO> sourceCrates, string label, IList<CrateDTO> newCratesContent);
 
         //StandardPayloadDataMS CreatePayloadDataCrate(string curObjectType);
-        Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
+        Crate CreatePayloadDataCrateExcel(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
 
 //        void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
 //        void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO);
