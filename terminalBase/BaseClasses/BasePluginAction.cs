@@ -541,6 +541,24 @@ namespace TerminalBase.BaseClasses
             controlsCrate.Contents = JsonConvert.SerializeObject(controls);
         }
 
+        protected ControlDefinitionDTO FindControl(ActionDTO curActionDTO, string name)
+        {
+            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+
+            if (controlsCrate == null) { return null; }
+
+            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
+                controlsCrate.Contents);
+
+            if (controls == null) { return null; }
+
+            var control = controls.Controls
+                .FirstOrDefault(x => x.Name == name);
+
+            return control;
+        }
+
         protected void RemoveControl(ActionDTO curActionDTO, string name)
         {
             var controlsCrate = curActionDTO.CrateStorage.CrateDTO
@@ -554,12 +572,12 @@ namespace TerminalBase.BaseClasses
             if (controls == null) { return; }
 
 
-            var errorLabel = controls.Controls
+            var control = controls.Controls
                 .FirstOrDefault(x => x.Name == name);
 
-            if (errorLabel != null)
+            if (control != null)
             {
-                controls.Controls.Remove(errorLabel);
+                controls.Controls.Remove(control);
                 controlsCrate.Contents = JsonConvert.SerializeObject(controls);
             }
         }
