@@ -38,7 +38,7 @@ namespace terminalAzure.Infrastructure
         public string ExtractConnectionString(ActionDTO curActionDTO)
         {
             var controlsCrate = curActionDTO.CrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             if (controlsCrate == null)
             {

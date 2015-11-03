@@ -257,7 +257,7 @@ namespace terminalFr8Core.Actions
                 return ConfigurationRequestType.Initial;
             }
 
-            var hasControlsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME) != null;
+            var hasControlsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME) != null;
 
             var hasQueryFieldsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) != null;
 
@@ -280,7 +280,7 @@ namespace terminalFr8Core.Actions
         /// <returns></returns>
         private bool HasValidConfiguration(ActionDTO curActionDataPackageDTO)
         {
-            CrateDTO crateDTO = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+            CrateDTO crateDTO = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             if (crateDTO != null && !string.IsNullOrEmpty(crateDTO.Contents))
             {
@@ -309,7 +309,7 @@ namespace terminalFr8Core.Actions
             string curLabel = string.Empty;
             switch (curManifestType)
             {
-                case CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME:
+                case CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME:
                     curLabel = "Configuration_Controls";
                     break;
                 case CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME:

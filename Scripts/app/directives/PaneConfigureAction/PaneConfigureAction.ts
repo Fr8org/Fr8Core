@@ -239,7 +239,6 @@ module dockyard.directives.paneConfigureAction {
                 };
 
                 function processConfiguration() {
-                    debugger;
                     // Check if authentication is required.
                     if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, 'Standard Authentication')) {
                         var authCrate = crateHelper

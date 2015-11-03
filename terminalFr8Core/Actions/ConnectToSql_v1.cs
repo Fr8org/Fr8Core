@@ -157,7 +157,7 @@ namespace terminalFr8Core.Actions
         private void AddErrorControl(ActionDTO curActionDTO)
         {
             var controlsCrate = curActionDTO.CrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             if (controlsCrate == null) { return; }
 
@@ -179,7 +179,7 @@ namespace terminalFr8Core.Actions
         private void RemoveErrorControl(ActionDTO curActionDTO)
         {
             var controlsCrate = curActionDTO.CrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             if (controlsCrate == null) { return; }
 

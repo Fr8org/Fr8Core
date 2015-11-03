@@ -41,6 +41,9 @@
     <!-- BEGIN TEXTANGULAR STYLES -->
     <link href="~/bower_components/textAngular/dist/textAngular.css" rel="stylesheet" />
     <!-- END TEXTANGULAR STYLES -->
+    <!-- BEGIN TOAST STYLES-->
+    <link href="/bower_components/ngToast/dist/ngToast.min.css" rel="stylesheet">
+    <!-- END TOAST STYLES-->
 
     <link rel="shortcut icon" href="favicon.ico" />
 </head>
@@ -49,6 +52,9 @@
 <!-- DOC: Apply "page-header-menu-fixed" class to set the mega menu fixed  -->
 <!-- DOC: Apply "page-header-top-fixed" class to set the top menu fixed  -->
 <body ng-controller="AppController" class="page-on-load">
+        <div ng-controller="NotifierController">
+            <toast></toast>
+        </div>
     <!-- BEGIN PAGE SPINNER -->
     <div ng-spinner-bar class="page-spinner-bar">
         <div class="bounce1"></div>

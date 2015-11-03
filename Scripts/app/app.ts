@@ -13,7 +13,8 @@ var app = angular.module("app", [
     "ngFileUpload",
     "textAngular",
     "ui.select",
-    "pusher-angular"
+    "pusher-angular",
+    "ngToast"
 ]);
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
