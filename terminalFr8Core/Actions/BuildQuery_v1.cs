@@ -81,33 +81,7 @@ namespace terminalFr8Core.Actions
                 Crate.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray())
             );
 
-            curActionDTO.CrateStorage.CrateDTO.Add(
-                Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", columnDefinitions.ToArray())
-            );
-
             return curActionDTO;
-        }
-
-        private void AddSelectObjectDdl(ActionDTO actionDTO)
-        {
-            AddControl(
-                actionDTO,
-                new DropDownListControlDefinitionDTO()
-                {
-                    Label = "Select Object",
-                    Name = "SelectObjectDdl",
-                    Required = true,
-                    Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onChange", "requestConfig")
-                    },
-                    Source = new FieldSourceDTO
-                    {
-                        Label = "Available Tables",
-                        ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
-                    }
-                }
-            );
         }
 
         protected override Task<ActionDTO> FollowupConfigurationResponse(
@@ -123,8 +97,17 @@ namespace terminalFr8Core.Actions
 
                 return Task.FromResult(curActionDTO);
             }
+            else
+            {
+                var prevSelectedObject = ExtractPreviousSelectedObject(curActionDTO);
+                if (prevSelectedObject != selectedObject)
+                {
+                    RemoveControl(curActionDTO, "SelectedQuery");
+                    AddQueryBuilder(curActionDTO);
 
-            AddQueryBuilder(curActionDTO);
+                    UpdatePreviousSelectedObject(curActionDTO, selectedObject);
+                }
+            }
 
             return Task.FromResult(curActionDTO);
         }
@@ -193,6 +176,31 @@ namespace terminalFr8Core.Actions
         }
 
         /// <summary>
+        /// Add SelectObject drop-down-list to controls crate.
+        /// </summary>
+        private void AddSelectObjectDdl(ActionDTO actionDTO)
+        {
+            AddControl(
+                actionDTO,
+                new DropDownListControlDefinitionDTO()
+                {
+                    Label = "Select Object",
+                    Name = "SelectObjectDdl",
+                    Required = true,
+                    Events = new List<ControlEvent>()
+                    {
+                        new ControlEvent("onChange", "requestConfig")
+                    },
+                    Source = new FieldSourceDTO
+                    {
+                        Label = "Available Tables",
+                        ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    }
+                }
+            );
+        }
+
+        /// <summary>
         /// Extract SelectedObject from Action crates.
         /// </summary>
         private string ExtractSelectedObject(ActionDTO actionDTO)
@@ -209,6 +217,57 @@ namespace terminalFr8Core.Actions
             if (selectObjectDdl == null) { return null; }
 
             return selectObjectDdl.Value;
+        }
+
+        /// <summary>
+        /// Exract previously stored valued of selected object type.
+        /// </summary>
+        private string ExtractPreviousSelectedObject(ActionDTO actionDTO)
+        {
+            var crate = actionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    && x.Label == "SelectedObject");
+
+            if (crate == null)
+            {
+                return null;
+            }
+
+            var fields = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(crate.Contents);
+            if (fields == null || fields.Fields.Count == 0)
+            {
+                return null;
+            }
+
+            return fields.Fields[0].Key;
+        }
+
+        /// <summary>
+        /// Update previously stored value of selected object type.
+        /// </summary>
+        private void UpdatePreviousSelectedObject(ActionDTO actionDTO, string selectedObject)
+        {
+            var crate = actionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    && x.Label == "SelectedObject");
+
+            if (crate == null)
+            {
+                crate = Crate.CreateDesignTimeFieldsCrate(
+                    "SelectedObject",
+                    new FieldDTO() { Key = selectedObject, Value = selectedObject }
+                );
+
+                actionDTO.CrateStorage.CrateDTO.Add(crate);
+            }
+            else
+            {
+                var fields = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(crate.Contents);
+                fields.Fields.Clear();
+                fields.Fields.Add(new FieldDTO() { Key = selectedObject, Value = selectedObject });
+
+                crate.Contents = JsonConvert.SerializeObject(fields);
+            }
         }
 
         /// <summary>
