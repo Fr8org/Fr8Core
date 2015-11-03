@@ -183,12 +183,11 @@ namespace Hub.Managers
 
         public void ReplaceCratesByLabel(IList<CrateDTO> sourceCrates, string label, IList<CrateDTO> newCratesContent)
         {
-            var curMatchedCrates = GetCratesByLabel(label, new CrateStorageDTO {CrateDTO = sourceCrates.ToList()});
+            //remove existing crates with the label
+            RemoveCrateByLabel(sourceCrates, label);
 
-            foreach (CrateDTO curMatchedCrate in curMatchedCrates)
-            {
-                ReplaceCratesByManifestType(sourceCrates, curMatchedCrate.ManifestType, newCratesContent);
-            }
+            //add the new content to the source crates
+            newCratesContent.ToList().ForEach(sourceCrates.Add);
         }
 
         public CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)

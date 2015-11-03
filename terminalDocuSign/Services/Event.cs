@@ -89,6 +89,7 @@ namespace terminalDocuSign.Services
                     ExternalEventType = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
                     EnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId,
                     RecipientId = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Id,
+                    RecipientEmail = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Email,
                     DocuSignObject = "Envelope",
                     Status = docuSignEnvelopeInformation.EnvelopeStatus.Status,
                     CreateDate = docuSignEnvelopeInformation.EnvelopeStatus.CreatedDate,
@@ -126,6 +127,7 @@ namespace terminalDocuSign.Services
             returnList.Add(new KeyValuePair<string,string>("EnvelopeId",curEvent.EnvelopeId));
             returnList.Add(new KeyValuePair<string,string>("ExternalEventType",curEvent.ExternalEventType.ToString()));
             returnList.Add(new KeyValuePair<string,string>("RecipientId",curEvent.RecipientId));
+            returnList.Add(new KeyValuePair<string, string>("RecipientEmail", curEvent.RecipientEmail));
 
             returnList.Add(new KeyValuePair<string, string>("Object", curEvent.DocuSignObject));
             returnList.Add(new KeyValuePair<string, string>("Status", curEvent.Status));

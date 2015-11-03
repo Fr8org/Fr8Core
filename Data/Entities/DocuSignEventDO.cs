@@ -9,6 +9,7 @@ namespace Data.Entities
 
         public int ExternalEventType { get; set; }
         public string RecipientId { get; set; }
+        public string RecipientEmail { get; set; }
         public string EnvelopeId { get; set; }
 
         public string DocuSignObject { get; set; }

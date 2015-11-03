@@ -384,6 +384,10 @@
     <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.Designer.cs">
       <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511030717303_AddedRecipientEmailId.cs" />
+    <Compile Include="Migrations\201511030717303_AddedRecipientEmailId.Designer.cs">
+      <DependentUpon>201511030717303_AddedRecipientEmailId.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -660,6 +664,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510261339053_CreateWebServicesTable_Migration.resx">
       <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511030717303_AddedRecipientEmailId.resx">
+      <DependentUpon>201511030717303_AddedRecipientEmailId.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -56,15 +56,18 @@ namespace terminalDocuSign.Actions
             return createDesignTimeFields;
         }
 
-        private string GetSelectedTemplateId(ActionDTO curActionDTO)
+        private void GetTemplateRecipientPickerValue(ActionDTO curActionDTO, out string selectedOption,
+                                                     out string selectedValue)
         {
-            var controlsCrates = Crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME,
-                curActionDTO.CrateStorage);
-            var curDocuSignTemplateId = Crate.GetElementByKey(controlsCrates, key: "Selected_DocuSign_Template",
-                keyFieldName: "name")
-                .Select(e => (string)e["value"])
-                .FirstOrDefault(s => !string.IsNullOrEmpty(s));
-            return curDocuSignTemplateId;
+            //get the option which is selected from the Template/Recipient picker
+            var pickedControl =
+                Crate.GetStandardConfigurationControls(
+                    Crate.GetCratesByLabel("Configuration_Controls", curActionDTO.CrateStorage).First())
+                    .Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.Single(r => r.Selected);
+
+            //set the output values
+            selectedOption = pickedControl.Name;
+            selectedValue = pickedControl.Controls[0].Value;
         }
 
         public object Activate(ActionDTO curDataPackage)
@@ -188,23 +191,54 @@ namespace terminalDocuSign.Actions
 
         protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            string curSelectedTemplateId = GetSelectedTemplateId(curActionDTO);
+            //get the selected option and its value
+            string selectedOption, selectedValue;
+            GetTemplateRecipientPickerValue(curActionDTO, out selectedOption, out selectedValue);
 
-            if (!string.IsNullOrEmpty(curSelectedTemplateId))
+            if (!string.IsNullOrEmpty(selectedOption))
             {
                 //get the existing DocuSign event fields
-                var curEventFieldsCrate = Crate.GetCratesByLabel("DocuSign Event Fields", curActionDTO.CrateStorage).Single();
+                var curEventFieldsCrate =
+                    Crate.GetCratesByLabel("DocuSign Event Fields", curActionDTO.CrateStorage).Single();
                 var curEventFields = Crate.GetStandardDesignTimeFields(curEventFieldsCrate);
 
-                //set the selected template ID
-                curEventFields.Fields.ForEach(field =>
+                switch (selectedOption)
                 {
-                    if (field.Key.Equals("TemplateId"))
-                    {
-                        field.Value = curSelectedTemplateId;
-                    }
-                });
+                    case "template":
+                        //set the selected template ID if template option is selected
+                        curEventFields.Fields.ForEach(field =>
+                        {
+                            //set the template ID
+                            if (field.Key.Equals("TemplateId"))
+                            {
+                                field.Value = selectedValue;
+                            }
 
+                            //empty the recipient email
+                            if (field.Key.Equals("RecipientEmail"))
+                            {
+                                field.Value = string.Empty;
+                            }
+                        });
+                        break;
+                    case "recipient":
+                        //set the selected recipient email if recipient option is selected
+                        curEventFields.Fields.ForEach(field =>
+                        {
+                            //set the template ID
+                            if (field.Key.Equals("RecipientEmail"))
+                            {
+                                field.Value = selectedValue;
+                            }
+
+                            //empty the template ID
+                            if (field.Key.Equals("TemplateId"))
+                            {
+                                field.Value = string.Empty;
+                            }
+                        });
+                        break;
+                }
 
                 //update the DocuSign Event Fields with new value
                 Crate.ReplaceCratesByLabel(curActionDTO.CrateStorage.CrateDTO, "DocuSign Event Fields",
@@ -308,11 +342,64 @@ namespace terminalDocuSign.Actions
             };
 
             return PackControlsCrate(
-                _docuSignManager.CreateDocuSignTemplatePicker(true),
+                PackCrate_TemplateRecipientPicker(),
+                //_docuSignManager.CreateDocuSignTemplatePicker(true),
                 fieldEnvelopeSent,
                 fieldEnvelopeReceived,
                 fieldRecipientSigned,
                 fieldEventRecipientSent);
+        }
+
+        private ControlDefinitionDTO PackCrate_TemplateRecipientPicker()
+        {
+            var templateRecipientPicker = new RadioButtonGroupControlDefinitionDTO()
+            {
+                Label = "Monitor for Envelopes that:",
+                GroupName = "TemplateRecipientPicker",
+                Name = "TemplateRecipientPicker",
+                Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")},
+                Radios = new List<RadioButtonOption>()
+                {
+                    new RadioButtonOption()
+                    {
+                        Selected = true,
+                        Name = "recipient",
+                        Value = "Are sent to the recipient:",
+                        Controls = new List<ControlDefinitionDTO>
+                        {
+                            new TextBoxControlDefinitionDTO()
+                            {
+                                Label = "",
+                                Name = "RecipientValue",
+                                Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
+                            }
+                        }
+                    },
+
+                    new RadioButtonOption()
+                    {
+                        Selected = false,
+                        Name = "template",
+                        Value = "Use the template:",
+                        Controls = new List<ControlDefinitionDTO>
+                        {
+                            new DropDownListControlDefinitionDTO()
+                            {
+                                Label = "",
+                                Name = "UpstreamCrate",
+                                Source = new FieldSourceDTO
+                                {
+                                    Label = "Available Templates",
+                                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                                },
+                                Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
+                            }
+                        }
+                    }
+                }
+            };
+
+            return templateRecipientPicker;
         }
 
         private CrateDTO PackCrate_TemplateNames(DocuSignAuthDTO authDTO)
@@ -331,7 +418,8 @@ namespace terminalDocuSign.Actions
         {
             return Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields",
                 new FieldDTO { Key = "EnvelopeId", Value = string.Empty },
-                new FieldDTO { Key = "TemplateId", Value = string.Empty });
+                new FieldDTO { Key = "TemplateId", Value = string.Empty },
+                new FieldDTO { Key = "RecipientEmail", Value = string.Empty });
         }
     }
 }
