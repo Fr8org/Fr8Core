@@ -10,7 +10,8 @@ namespace terminalSalesforce.Services
     {
         private Authentication _authentication = new Authentication();
         private Lead _lead = new Lead();
-
+        private Contact _contact = new Contact();
+        private Account _account = new Account();
         public SalesforceIntegration()
         {
            
@@ -32,6 +33,44 @@ namespace terminalSalesforce.Services
                 throw;
             }
             return createFlag;
-        }         
+        } 
+        
+        public bool CreateContact(ActionDTO currentDTO)
+        {
+            bool createFlag = true;
+            try
+            {
+                var actionDTO = Task.Run(() => _authentication.RefreshAccessToken(currentDTO)).Result;
+                currentDTO = actionDTO;
+                var createtask = _contact.CreateContact(currentDTO);
+            }
+            catch (Exception ex)
+            {
+                createFlag = false;
+                Logger.GetLogger().Error(ex);
+                throw;
+            }
+            return createFlag;
+        }
+
+        public bool CreateAccount(ActionDTO currentDTO)
+        {
+            bool createFlag = true;
+            try
+            {
+                var actionDTO = Task.Run(() => _authentication.RefreshAccessToken(currentDTO)).Result;
+                currentDTO = actionDTO;
+                var createtask = _account.CreateAccount(currentDTO);
+            }
+            catch (Exception ex)
+            {
+                createFlag = false;
+                Logger.GetLogger().Error(ex);
+                throw;
+            }
+            return createFlag;
+        }
+
+
     }
 }
