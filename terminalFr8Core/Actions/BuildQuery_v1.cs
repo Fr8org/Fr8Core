@@ -112,7 +112,31 @@ namespace terminalFr8Core.Actions
         protected override Task<ActionDTO> FollowupConfigurationResponse(
             ActionDTO curActionDTO)
         {
-            throw new NotImplementedException();
+            var selectedObject = ExtractSelectedObject(curActionDTO);
+            if (string.IsNullOrEmpty(selectedObject))
+            {
+                return Task.FromResult(curActionDTO);
+            }
+
+
+
+            return Task.FromResult(curActionDTO);
+        }
+
+        private string ExtractSelectedObject(ActionDTO actionDTO)
+        {
+            var controlsCrate = actionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+
+            if (controlsCrate == null) { return null; }
+
+            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
+                controlsCrate.Contents);
+
+            var selectObjectDdl = controls.Controls.FirstOrDefault(x => x.Name == "SelectObjectDdl");
+            if (selectObjectDdl == null) { return null; }
+
+            return selectObjectDdl.Value;
         }
         
         /// <summary>
