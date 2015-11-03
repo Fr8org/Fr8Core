@@ -514,16 +514,9 @@ namespace TerminalBase.BaseClasses
             throw new ApplicationException("No field found with specified key.");
         }
 
-        protected void AddErrorLabel(ActionDTO curActionDTO, string name, string label, string text)
+        protected void AddLabelControl(ActionDTO curActionDTO, string name, string label, string text)
         {
-            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
-
-            if (controlsCrate == null)
-            {
-                controlsCrate = Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls");
-                curActionDTO.CrateStorage.CrateDTO.Add(controlsCrate);
-            }
+            var controlsCrate = EnsureControlsCrate(curActionDTO);
 
             var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
                 controlsCrate.Contents);
@@ -541,7 +534,7 @@ namespace TerminalBase.BaseClasses
             controlsCrate.Contents = JsonConvert.SerializeObject(controls);
         }
 
-        protected void RemoveErrorLabel(ActionDTO curActionDTO, string name)
+        protected void RemoveLabelControl(ActionDTO curActionDTO, string name)
         {
             var controlsCrate = curActionDTO.CrateStorage.CrateDTO
                 .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
@@ -562,6 +555,20 @@ namespace TerminalBase.BaseClasses
                 controls.Controls.Remove(errorLabel);
                 controlsCrate.Contents = JsonConvert.SerializeObject(controlsCrate);
             }
+        }
+
+        protected CrateDTO EnsureControlsCrate(ActionDTO actionDTO)
+        {
+            var controlsCrate = actionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+
+            if (controlsCrate == null)
+            {
+                controlsCrate = Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls");
+                actionDTO.CrateStorage.CrateDTO.Add(controlsCrate);
+            }
+
+            return controlsCrate;
         }
     }
 }

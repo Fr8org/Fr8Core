@@ -82,7 +82,7 @@ namespace terminalSlack.Actions
             return result;
         }
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public override async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
             if (NeedsAuthentication(curActionDTO))
             {
@@ -92,7 +92,7 @@ namespace terminalSlack.Actions
             return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
         {
             var crateStorage = curActionDTO.CrateStorage;
 

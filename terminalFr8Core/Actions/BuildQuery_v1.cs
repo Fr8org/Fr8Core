@@ -51,7 +51,7 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActionDTO> InitialConfigurationResponse(
             ActionDTO curActionDTO)
         {
-            RemoveErrorLabel(curActionDTO, "UpstreamError");
+            RemoveLabelControl(curActionDTO, "UpstreamError");
 
             var tableDefinitions = await ExtractTableDefinitions(curActionDTO);
             List<FieldDTO> tablesList = null;
@@ -63,7 +63,7 @@ namespace terminalFr8Core.Actions
 
             if (tablesList == null || tablesList.Count == 0)
             {
-                AddErrorLabel(
+                AddLabelControl(
                     curActionDTO,
                     "UpstreamError",
                     "Unexpected error",
@@ -71,10 +71,42 @@ namespace terminalFr8Core.Actions
                 );
                 return curActionDTO;
             }
-            
-            // var tablesCrate = Crate.CreateDesignTimeFieldsCrate("")
+
+            var controlsCrate = EnsureControlsCrate(curActionDTO);
+            AddSelectObjectDdl(curActionDTO);
+            AddLabelControl(curActionDTO, "SelectObjectError",
+                "No object selected", "Please select object from the list above.");
+
+            curActionDTO.CrateStorage.CrateDTO.Add(
+                Crate.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray())
+            );
 
             return curActionDTO;
+        }
+
+        private void AddSelectObjectDdl(ActionDTO actionDTO)
+        {
+            var controlsCrate = EnsureControlsCrate(actionDTO);
+            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(controlsCrate.Contents);
+
+            var dropDownList = new DropDownListControlDefinitionDTO()
+            {
+                Label = "Select Object",
+                Name = "SelectObjectDdl",
+                Required = true,
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onChange", "requestConfig")
+                },
+                Source = new FieldSourceDTO
+                {
+                    Label = "Available Tables",
+                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                }
+            };
+
+            controls.Controls.Add(dropDownList);
+            controlsCrate.Contents = JsonConvert.SerializeObject(controls);
         }
 
         protected override Task<ActionDTO> FollowupConfigurationResponse(

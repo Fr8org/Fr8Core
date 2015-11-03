@@ -66,7 +66,7 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            RemoveErrorLabel(curActionDTO, "ErrorLabel");
+            RemoveLabelControl(curActionDTO, "ErrorLabel");
 
             Crate.RemoveCrateByLabel(
                 curActionDTO.CrateStorage.CrateDTO,
@@ -89,7 +89,7 @@ namespace terminalFr8Core.Actions
                 }
                 catch
                 {
-                    AddErrorLabel(
+                    AddLabelControl(
                         curActionDTO,
                         "ErrorLabel",
                         "Unexpected error",
