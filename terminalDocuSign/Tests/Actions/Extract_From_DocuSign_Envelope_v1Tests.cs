@@ -53,7 +53,7 @@ namespace terminalDocuSign.Tests.Actions
                 //Assert
                 Assert.IsNotNull(result.CrateStorage);
                 Assert.AreEqual(2, result.CrateStorage.CrateDTO.Count);
-                Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
+                Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
                 Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[1].ManifestType);
             }
         }

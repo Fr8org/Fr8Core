@@ -1,11 +1,12 @@
-﻿using TerminalBase;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using StructureMap;
+using TerminalBase;
+using TerminalSqlUtilities;
 
 namespace terminalAzure.Infrastructure
 {

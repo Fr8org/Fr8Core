@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using System.Web.Http.Results;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Web.Controllers;
+using HubWeb.Controllers;
 
 namespace DockyardTest.Controllers
 {
@@ -132,7 +132,7 @@ namespace DockyardTest.Controllers
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("EndDate")), "EndDate Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Name")), "Name Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("ExternalAccountId")), "ExternalAccountId Not Found");
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("InternalAccountid")), "InternalAccountid Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("InternalAccountId")), "InternalAccountid Not Found");
         }
 
         

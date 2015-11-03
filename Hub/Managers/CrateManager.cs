@@ -64,7 +64,7 @@ namespace Hub.Managers
         {
             return Create(label, 
                 JsonConvert.SerializeObject(new StandardConfigurationControlsCM() { Controls = controls.ToList() }),
-                manifestType: CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+                manifestType: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME,
                 manifestId: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
         }
 

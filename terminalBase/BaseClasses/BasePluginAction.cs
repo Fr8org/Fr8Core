@@ -215,7 +215,7 @@ namespace TerminalBase.BaseClasses
         {
             var controlsCrate = curActionDTO.CrateStorage.CrateDTO
                 .FirstOrDefault(
-                    x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+                    x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME
                     && x.Label == "Configuration_Controls");
 
             if (controlsCrate == null)
@@ -326,7 +326,7 @@ namespace TerminalBase.BaseClasses
             var crateControls = Crate.Create(
                 "Configuration_Controls",
                 JsonConvert.SerializeObject(controls),
-                CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+                CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME
             );
 
             return crateControls;
@@ -396,7 +396,7 @@ namespace TerminalBase.BaseClasses
             try
             {
                 var controlsCrate = curCrateStorage.FirstOrDefault(
-                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
                 if (controlsCrate == null) return null;
                 var controls = Crate.GetStandardConfigurationControls(controlsCrate).Controls;
                 return controls.SingleOrDefault(c => c.Name == controlName) as T;
@@ -416,7 +416,7 @@ namespace TerminalBase.BaseClasses
             string controlName)
         {
             var controlsCrate = designTimeCrateStorage.CrateDTO.FirstOrDefault(
-                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             var controls = Crate.GetStandardConfigurationControls(controlsCrate).Controls;
             var control = controls

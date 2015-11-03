@@ -8,6 +8,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using Data.Interfaces.Manifests;
 
 namespace Hub.Services
 {
@@ -15,7 +16,7 @@ namespace Hub.Services
     /// File service
     /// </summary>
     public class Plugin : IPlugin
-    { 
+    {
         public IEnumerable<PluginDO> GetAll()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -25,12 +26,10 @@ namespace Hub.Services
         }
 
         public async Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
-        //    public IList<ActivityTemplateDO> GetAvailableActions(string uri)
         {
-            // IList<ActionTemplateDO> actionTemplateList = null; ;
             var restClient = new RestfulServiceClient();
-            return await restClient.GetAsync<IList<ActivityTemplateDO>>(new Uri(uri, UriKind.Absolute));
-            //var actionTemplateList = restClient.GetAsync<Task<IList<ActivityTemplateDO>>>(new Uri(uri, UriKind.Absolute)).Result;
+            var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
+            return standardFr8TerminalCM.Actions;
         }
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace Hub.Services
                     uow.PluginRepository.FindOne(
                         plugin => plugin.Name.Equals(curPluginName) && plugin.Version.Equals(curPluginVersion));
 
-                
+
                 string curPluginUrl = string.Empty;
 
                 //if there is a valid plugin, prepare the URL with its endpoint and add the given action name
