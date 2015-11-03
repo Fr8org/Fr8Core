@@ -293,7 +293,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private void AddQueryBuilder(ActionDTO actionDTO)
         {
-            var queryBuilder = new FilterPaneControlDefinitionDTO()
+            var queryBuilder = new QueryBuilderControlDefinitionDTO()
             {
                 Label = "Please, specify query:",
                 Name = "SelectedQuery",

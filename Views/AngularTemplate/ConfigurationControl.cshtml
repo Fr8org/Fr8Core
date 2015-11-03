@@ -67,6 +67,13 @@
     </div>
 
     @*
+        QueryBuilder template
+    *@
+    <div ng-if='field.type == "@ControlTypes.QueryBuilder"'>
+        <query-builder current-action='currentAction' field='field'></query-builder>
+    </div>
+
+    @*
         MappingPane template
     *@
     <div ng-if='field.type == "@ControlTypes.MappingPane"'>
