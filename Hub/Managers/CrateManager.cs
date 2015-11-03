@@ -346,24 +346,19 @@ namespace Hub.Managers
             if (String.IsNullOrEmpty(label))
                 throw new ArgumentNullException("Parameter Label is empty");
             if (logItemList == null)
-                throw new ArgumentNullException("Parameter Log Item DTO list is empty.");
+                throw new ArgumentNullException("Parameter LogItemDTO list is null.");
             if (containerDO == null)
                 throw new ArgumentNullException("Parameter ContainerDO is null.");
-
             var curManifestSchema = new StandardLoggingCM()
             {
                 Item = logItemList
             };
-
             var curLoggingCrate = Create(label,
                             JsonConvert.SerializeObject(curManifestSchema),
                             manifestType: CrateManifests.STANDARD_LOGGING_MANIFEST_NAME,
                             manifestId: CrateManifests.STANDARD_LOGGING_MANIFEST_ID);
-
             var curCrateList = new List<CrateDTO>();
-
             curCrateList.Add(curLoggingCrate);
-
             containerDO.UpdateCrateStorageDTO(curCrateList);
         }
 
