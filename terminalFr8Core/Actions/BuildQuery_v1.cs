@@ -273,6 +273,13 @@ namespace terminalFr8Core.Actions
             {
                 matchedColumns = columnDefinitions
                     .Where(x => x.Key.StartsWith(selectedObject))
+                    .Select(x =>
+                    {
+                        var tokens = x.Key.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+                        var columnName = tokens[tokens.Length - 1];
+
+                        return new FieldDTO() { Key = columnName, Value = columnName };
+                    })
                     .ToList();
             }
 
