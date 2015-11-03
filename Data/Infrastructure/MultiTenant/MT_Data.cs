@@ -26,8 +26,8 @@ namespace Data.Infrastructure.MultiTenant
         {
             var data = new Data.Entities.MT_Data();
             data.fr8AccountId = curFr8AccountId;
-            data.CreatedAt = DateTime.Now;
-            data.UpdatedAt = DateTime.Now;
+            data.CreatedAt = DateTime.UtcNow;
+            data.UpdatedAt = DateTime.UtcNow;
             data.MT_Object = correspondingMTObject;
             return data;
         }

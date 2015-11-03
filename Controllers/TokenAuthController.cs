@@ -23,7 +23,7 @@ namespace HubWeb.Controllers
                 var validToken = uow.AuthorizationTokenRepository.GetQuery().FirstOrDefault(t => t.Id.ToString() == token);
                 if (validToken == null)
                     throw new HttpException(404, "Authorization token not found.");
-                if (validToken.ExpiresAt < DateTime.Now)
+				if (validToken.ExpiresAt < DateTime.UtcNow)
                     throw new HttpException(404, "Authorization token expired.");
 
                 ObjectFactory.GetInstance<ISecurityServices>().Login(uow, validToken.UserDO);

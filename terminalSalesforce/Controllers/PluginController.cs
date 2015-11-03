@@ -30,7 +30,7 @@ namespace terminalSalesforce.Controllers
                 Version = "1"
             };
 
-            var action = new ActivityTemplateDO()
+            var createLeadAction = new ActivityTemplateDO()
             {
                 Version = "1",
                 Name = "Create_Lead",
@@ -41,9 +41,31 @@ namespace terminalSalesforce.Controllers
                 MinPaneWidth = 330
             };
 
+            var createContactAction = new ActivityTemplateDO()
+            {
+                Version = "1",
+                Name = "Create_Contact",
+                Label = "Create Contact",
+                Plugin = plugin,
+                AuthenticationType = AuthenticationType.External,
+                Category = ActivityCategory.Forwarders,
+                MinPaneWidth = 330
+            };
+
+            var createAccountAction = new ActivityTemplateDO()
+            {
+                Version = "1",
+                Name = "Create_Account",
+                Label = "Create Account",
+                Plugin = plugin,
+                AuthenticationType = AuthenticationType.External,
+                Category = ActivityCategory.Forwarders,
+                MinPaneWidth = 330
+            };
+
             var actionList = new List<ActivityTemplateDO>()
             {
-                action
+                createLeadAction,createContactAction,createAccountAction
             };
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()

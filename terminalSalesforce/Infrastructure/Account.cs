@@ -11,28 +11,29 @@ using terminalSalesforce.Services;
 
 namespace terminalSalesforce.Infrastructure
 {
-    public class Lead
+    public class Account
     {
-        ForceClient client;       
-        public async Task CreateLead(ActionDTO currentActionDTO)
+        ForceClient client;     
+
+        public async Task CreateAccount(ActionDTO currentActionDTO)
         {
             
             string instanceUrl, apiVersion;
             ParseAuthToken(currentActionDTO.AuthToken.AdditionalAttributes, out instanceUrl, out apiVersion);
             client = new ForceClient(instanceUrl, currentActionDTO.AuthToken.Token, apiVersion);
-            LeadDTO lead = new LeadDTO();
+            AccountDTO account = new AccountDTO();
             var curFieldList =
-               JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(currentActionDTO.CrateStorage.CrateDTO.First(field => field.Contents.Contains("firstName")).Contents);
-            lead.FirstName = curFieldList.Controls.First(x => x.Name == "firstName").Value;
-            lead.LastName = curFieldList.Controls.First(x => x.Name == "lastName").Value;
-            lead.Company = curFieldList.Controls.First(x => x.Name == "companyName").Value;
-            if (!String.IsNullOrEmpty(lead.LastName) && !String.IsNullOrEmpty(lead.Company))
+               JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(currentActionDTO.CrateStorage.CrateDTO.First(field => field.Contents.Contains("accountName")).Contents);
+            account.Name = curFieldList.Controls.First(x => x.Name == "accountName").Value;           
+            account.AccountNumber = curFieldList.Controls.First(x => x.Name == "accountNumber").Value;
+            account.Phone = curFieldList.Controls.First(x => x.Name == "phone").Value;
+            if (!String.IsNullOrEmpty(account.Name))
             {
-                var newLeadId = await client.CreateAsync("Lead", lead);
+                var accountId = await client.CreateAsync("Account", account);
             }
         }
 
-        public void ParseAuthToken(string authonTokenAdditionalValues,out string instanceUrl,out string apiVersion)
+        public void ParseAuthToken(string authonTokenAdditionalValues, out string instanceUrl, out string apiVersion)
         {
             int startIndexOfInstanceUrl = authonTokenAdditionalValues.IndexOf("instance_url");
             int startIndexOfApiVersion = authonTokenAdditionalValues.IndexOf("api_version");
@@ -41,5 +42,6 @@ namespace terminalSalesforce.Infrastructure
             instanceUrl = instanceUrl.Replace("instance_url=", "");
             apiVersion = apiVersion.Replace("api_version=", "");
         }
+       
     }
 }
