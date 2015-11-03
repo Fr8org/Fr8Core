@@ -581,13 +581,12 @@ namespace TerminalBase.BaseClasses
         protected void UpdateDesignTimeCrateValue(
             ActionDTO actionDTO, string label, params FieldDTO[] fields)
         {
-            var crate = actionDTO.CrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
-                    && x.Label == "Selected Object");
+            var crate = actionDTO.CrateStorage.CrateDTO.FirstOrDefault(
+                x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME && x.Label == label);
 
             if (crate == null)
             {
-                crate = Crate.CreateDesignTimeFieldsCrate("Selected Object", fields);
+                crate = Crate.CreateDesignTimeFieldsCrate(label, fields);
 
                 actionDTO.CrateStorage.CrateDTO.Add(crate);
             }
