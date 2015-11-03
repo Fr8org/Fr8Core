@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Data.Crates;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
@@ -9,6 +10,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
+using Newtonsoft.Json.Linq;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -292,7 +294,7 @@ namespace UtilitiesTesting.Fixtures
             return actionDo;
         }
 
-        public static CrateDTO GetEnvelopeIdCrate(string curEnvelopeId = "11f41f43-57bd-4568-86f5-9ceabdaafc43")
+        public static Crate GetEnvelopeIdCrate(string curEnvelopeId = "11f41f43-57bd-4568-86f5-9ceabdaafc43")
         {
             var crateFields = new List<FieldDTO>()
                     {
@@ -300,14 +302,9 @@ namespace UtilitiesTesting.Fixtures
                         new FieldDTO() { Key = "ExternalEventType", Value = "1" },
                         new FieldDTO() { Key = "RecipientId", Value= "1" }
                     };
-            var curEventData = new CrateDTO()
-            {
-                Contents = JsonConvert.SerializeObject(crateFields),
-                Label = "Event Data",
-                Id = Guid.NewGuid().ToString()
-            };
 
-            return curEventData;
+
+            return Crate.FromJson("Event Data", JToken.FromObject(crateFields));
         }
 
         public static string EnvelopeIdCrateJson()
@@ -472,12 +469,10 @@ namespace UtilitiesTesting.Fixtures
                 fieldSelectDockusignTemplate
             };
 
-            var crateConfiguration = new List<CrateDTO>()
+            using (var updater = _crate.UpdateStorage(actionDo))
             {
-                _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields)),
-            };
-
-            _crate.AddCrate(actionDo, crateConfiguration);
+                updater.CrateStorage.Add(Crate.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(fields)));
+            }
 
             return actionDo;
         }
@@ -515,11 +510,11 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO TestActionTree()
         {
-            List<CrateDTO> curCratesDTO = FixtureData.TestCrateDTO1();
-            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
-            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
-            string crateStorage = JsonConvert.SerializeObject(crateStorageDTO);
-
+            var curCratesDTO = FixtureData.TestCrateDTO1();
+            var crateStorageDTO = new CrateStorage();
+            crateStorageDTO.AddRange(curCratesDTO);
+            var crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            string crateStorage = JsonConvert.SerializeObject(crateManager.CrateStorageToJson(crateStorageDTO));
             
             ActionDO curAction = new ActionDO()
             {
@@ -688,9 +683,12 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO CreateTestActionTreeWithOnlyActionDo()
         {
-            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
-            crateStorageDTO.CrateDTO.Add(CreateStandardConfigurationControls());
-            string crateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+            var curCratesDTO = FixtureData.TestCrateDTO1();
+            var crateStorageDTO = new CrateStorage();
+            crateStorageDTO.AddRange(curCratesDTO);
+            var crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            string crateStorage = JsonConvert.SerializeObject(crateManager.CrateStorageToJson(crateStorageDTO));
+            
 
 
             ActionDO curAction = new ActionDO()
@@ -911,37 +909,37 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActionDO ConfigureTestAction57()
-        {
-            var actionTemplate = ActionTemplate();
-
-            var containerDO = new ContainerDO()
-            {
-                Id = 1,
-                CrateStorage = EnvelopeIdCrateJson(),
-                RouteId = TestRoute2().Id,
-                ContainerState = 1
-            };
-
-            var actionDo = new ActionDO()
-            {
-                Name = "testaction",
-                Id = 57,
-                Ordering = 2,
-                ParentRouteNodeId = 54,
-                ActivityTemplateId = actionTemplate.Id,
-                ActivityTemplate = actionTemplate,
-                CrateStorage = EnvelopeIdCrateJson()
-            };
-
-            return actionDo;
-        }
+//        public static ActionDO ConfigureTestAction57()
+//        {
+//            var actionTemplate = ActionTemplate();
+//
+//            var containerDO = new ContainerDO()
+//            {
+//                Id = 1,
+//                CrateStorage = EnvelopeIdCrateJson(),
+//                RouteId = TestRoute2().Id,
+//                ContainerState = 1
+//            };
+//
+//            var actionDo = new ActionDO()
+//            {
+//                Name = "testaction",
+//                Id = 57,
+//                Ordering = 2,
+//                ParentRouteNodeId = 54,
+//                ActivityTemplateId = actionTemplate.Id,
+//                ActivityTemplate = actionTemplate,
+//                CrateStorage = EnvelopeIdCrateJson()
+//            };
+//
+//            return actionDo;
+//        }
 
         public static ActionDO ConfigureTestActionTree()
         {
-            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
-            crateStorageDTO.CrateDTO.Add(CreateStandardConfigurationControls());
-            string crateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+            var crateStorageDTO = new CrateStorage();
+            var crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            string crateStorage = JsonConvert.SerializeObject(crateManager.CrateStorageToJson(crateStorageDTO));
 
 
             ActionDO curAction = new ActionDO()
@@ -1111,10 +1109,11 @@ namespace UtilitiesTesting.Fixtures
         }
         public static ActionDO TestActionTreeWithActionTemplates()
         {
-            List<CrateDTO> curCratesDTO = FixtureData.TestCrateDTO1();
-            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
-            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
-            string crateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+           var curCratesDTO = FixtureData.TestCrateDTO1();
+            var crateStorageDTO = new CrateStorage();
+            crateStorageDTO.AddRange(curCratesDTO);
+            var crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            string crateStorage = JsonConvert.SerializeObject(crateManager.CrateStorageToJson(crateStorageDTO));
             var curActionTemplate = FixtureData.ActionTemplate();
 
             ActionDO curAction = new ActionDO()

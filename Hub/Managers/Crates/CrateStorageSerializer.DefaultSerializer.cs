@@ -27,6 +27,11 @@ namespace Hub.Managers.Crates
 
             public object Deserialize(JToken crateContent)
             {
+                if (crateContent == null)
+                {
+                    return null;
+                }
+
                 return crateContent.ToObject(_targetType, Serializer);
             }
 

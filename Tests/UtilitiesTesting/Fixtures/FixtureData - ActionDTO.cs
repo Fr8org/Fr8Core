@@ -2,6 +2,8 @@
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Hub.Managers;
+using StructureMap;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -22,7 +24,11 @@ namespace UtilitiesTesting.Fixtures
                 Name = "test action type",
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1(),
             };
-            curActionDTO.CrateStorage.CrateDTO.Add(CreateStandardConfigurationControls());
+
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(curActionDTO))
+            {
+                updater.CrateStorage.Add(CreateStandardConfigurationControls());
+            }
 
             return curActionDTO;
         }
@@ -34,10 +40,13 @@ namespace UtilitiesTesting.Fixtures
                 Name = "test action type",
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1()
             };
-            curActionDTO.CrateStorage.CrateDTO.Add(CreateStandardConfigurationControls());
-            var configurationFields = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(curActionDTO.CrateStorage.CrateDTO[0].Contents);
 
-            curActionDTO.CrateStorage.CrateDTO.Add(CreateEventSubscriptionCrate(configurationFields));
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(curActionDTO))
+            {
+                var controls = CreateStandardConfigurationControls();
+                updater.CrateStorage.Add(controls);
+                updater.CrateStorage.Add(controls);
+            }
 
             return curActionDTO;
         }
@@ -45,8 +54,13 @@ namespace UtilitiesTesting.Fixtures
         public static ActionDTO CreateStandardDesignTimeFields()
         {
             ActionDTO curActionDTO = new ActionDTO();
-            List<CrateDTO> curCratesDTO = FixtureData.TestCrateDTO2();
-            curActionDTO.CrateStorage.CrateDTO.AddRange(curCratesDTO);
+            var curCratesDTO = FixtureData.TestCrateDTO2();
+            
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(curActionDTO))
+            {
+                updater.CrateStorage.AddRange(curCratesDTO);
+            }
+
             return curActionDTO;
         }
 

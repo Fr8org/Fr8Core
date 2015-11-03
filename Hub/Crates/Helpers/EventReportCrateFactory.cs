@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Managers;
+using StructureMap;
 
 namespace Data.Crates.Helpers
 {
@@ -8,7 +10,7 @@ namespace Data.Crates.Helpers
     {
         public Crate Create(String eventName, String palletId, params Crate[] crates)
         {
-            return Create(eventName, palletId, crates);
+            return Create(eventName, palletId, (IEnumerable<Crate>) crates);
         }
 //
         public Crate Create(String eventName, String palletId, IEnumerable<Crate> crates)
@@ -17,10 +19,14 @@ namespace Data.Crates.Helpers
             {
                 EventName = eventName,
                 PalletId = palletId,
-                CrateStorage = new CrateStorage(crates)
             };
 
-            return Create(eventDTO);
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(()=>eventDTO.CrateStorage))
+            {
+                updater.CrateStorage.AddRange(crates);
+            }
+
+            return Crate.FromContent("Dockyard Plugin Event or Incident Report", eventDTO);
         }
 
         public Crate Create(EventDTO eventDTO)

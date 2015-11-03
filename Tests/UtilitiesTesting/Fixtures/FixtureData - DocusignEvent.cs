@@ -4,6 +4,8 @@ using Data.States;
 using DocuSign.Integrations.Client;
 using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
+using Data.Crates;
+using Newtonsoft.Json.Linq;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -20,7 +22,8 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static CrateDTO DocuSignEventToCrate(DocuSignEventDO curEvent)
+        
+        public static Crate DocuSignEventToCrate(DocuSignEventDO curEvent)
         {
             var crateFields = new List<FieldDTO>()
                     {
@@ -28,13 +31,8 @@ namespace UtilitiesTesting.Fixtures
                         new FieldDTO() { Key = "ExternalEventType", Value = curEvent.ExternalEventType.ToString() },
                         new FieldDTO() {Key = "RecipientId", Value = curEvent.RecipientId.ToString() }
                     };
-            var curEventData = new CrateDTO()
-            {
-                Contents = Newtonsoft.Json.JsonConvert.SerializeObject(crateFields),
-                Label = "Event Data",
-                Id = Guid.NewGuid().ToString()
-            };
-            return curEventData;
+
+            return Crate.FromJson("Event Data", JToken.FromObject(crateFields));
         }
 
     }

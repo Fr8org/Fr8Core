@@ -110,14 +110,7 @@ namespace terminalDocuSign.Actions
 
         private string GetEnvelopeId(PayloadDTO curPayloadDTO)
         {
-            var eventReportCrate = Crate.GetStorage(curPayloadDTO.CrateStorage).CratesOfType<EventReportCM>().SingleOrDefault();
-
-            if (eventReportCrate == null)
-            {
-                return null;
-            }
-
-            var standardPayload = eventReportCrate.Value.EventPayload.CrateValuesOfType<StandardPayloadDataCM>().FirstOrDefault();
+            var standardPayload = Crate.GetStorage(curPayloadDTO.CrateStorage).CrateValuesOfType<StandardPayloadDataCM>().FirstOrDefault();
 
             if (standardPayload == null)
             {

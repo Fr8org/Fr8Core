@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using Data.Crates;
 using Data.Crates.Helpers;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Managers;
+using StructureMap;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -22,8 +25,13 @@ namespace UtilitiesTesting.Fixtures
             var eventDto = new EventDTO
             {
                 EventName = "Plugin Incident",
-                CrateStorage = new List<CrateDTO> { loggingDataCrate }
             };
+
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage((() => eventDto.CrateStorage)))
+            {
+                updater.CrateStorage.Add(loggingDataCrate);
+            }
+
             return eventDto;
         }
 
@@ -37,8 +45,13 @@ namespace UtilitiesTesting.Fixtures
             var eventDto = new EventDTO
             {
                 EventName = "Plugin Event",
-                CrateStorage = new List<CrateDTO> { loggingDataCrate }
             };
+
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage((() => eventDto.CrateStorage)))
+            {
+                updater.CrateStorage.Add(loggingDataCrate);
+            }
+
             return eventDto;
         }
     }

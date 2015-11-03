@@ -1,23 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Data.Constants;
 using Data.Crates;
+using Data.Interfaces.Manifests;
 using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class EventDTO
+    public class EventDTO : Manifest
     {
         public string EventName { get; set; }
 
         public string PalletId { get; set; }
 
-        public CrateStorage CrateStorage { get; set; }
+        public JToken CrateStorage { get; set; }
+
+        public EventDTO() 
+            : base(MT.EventOrIncidentReport)
+        {
+        }
     }
 
-    public class LoggingData
+    public class LoggingData : Manifest
     {
         public string ObjectId { get; set; }
 
@@ -30,5 +32,11 @@ namespace Data.Interfaces.DataTransferObjects
         public string SecondaryCategory { get; set; }
 
         public string Activity { get; set; }
+
+        public LoggingData()
+            : base(MT.LoggingData)
+        {
+        }
     }
+    
 }

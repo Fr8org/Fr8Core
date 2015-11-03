@@ -1,11 +1,15 @@
-﻿using UtilitiesTesting;
+﻿using System.Linq;
+using UtilitiesTesting;
 using terminalDocuSign.Actions;
 using Data.Interfaces.DataTransferObjects;
 using UtilitiesTesting.Fixtures;
 using Data.Interfaces;
 using System.Threading.Tasks;
+using Data.Interfaces.Manifests;
+using Hub.Managers;
 using NUnit.Framework;
 using Newtonsoft.Json;
+using StructureMap;
 using terminalDocuSign.Tests.Fixtures;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Infrastructure.AutoMapper;
@@ -41,17 +45,14 @@ namespace terminalDocuSign.Tests.Actions
             var result = await _monitor_DocuSign.Configure(curActionDTO);
 
             //Assert
+            var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
             Assert.IsNotNull(result.CrateStorage);
-            Assert.AreEqual(4, result.CrateStorage.CrateDTO.Count);
-            Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
-            Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[1].ManifestType);
+            Assert.AreEqual(4, storage.Count);
 
-            //DO-1300 states Initial configuration response should add the standard design time fields with envelope ID
-            Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[2].ManifestType);
-            Assert.AreEqual("DocuSign Event Fields", result.CrateStorage.CrateDTO[2].Label);
-
-            //NOTE:DO-1236 states - initial configuration response should add the standard event subscription
-            Assert.AreEqual(CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME, result.CrateStorage.CrateDTO[3].ManifestType);
+            Assert.AreEqual(storage.CratesOfType<EventSubscriptionCM>().Any(), true);
+            Assert.AreEqual(storage.CratesOfType<StandardConfigurationControlsCM>().Any(), true);
+            Assert.AreEqual(storage.CratesOfType<StandardDesignTimeFieldsCM>().Count(), 2);
+            Assert.AreEqual(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSign Event Fields"), true);
         }
 
         [Test]
@@ -81,8 +82,8 @@ namespace terminalDocuSign.Tests.Actions
             var result = _monitor_DocuSign.Configure(curActionDTO);
 
             //Assert
-            Assert.AreEqual(result.Result.CrateStorage.CrateDTO.Count, result.Result.CrateStorage.CrateDTO.Count);
-            Assert.AreEqual(result.Result.CrateStorage.CrateDTO[1].ManifestType, result.Result.CrateStorage.CrateDTO[1].ManifestType);
+//            Assert.AreEqual(result.Result.CrateStorage.CrateDTO.Count, result.Result.CrateStorage.CrateDTO.Count);
+//            Assert.AreEqual(result.Result.CrateStorage.CrateDTO[1].ManifestType, result.Result.CrateStorage.CrateDTO[1].ManifestType);
         }
 
         [Test]

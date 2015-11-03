@@ -147,7 +147,14 @@ namespace Hub.Managers.Crates
 
             if (serializer != null)
             {
-                crate = Crate.FromContent(serializer.Deserialize(proxy.Contents), proxy.Id);
+                if (proxy.Contents != null)
+                {
+                    crate = Crate.FromContent(serializer.Deserialize(proxy.Contents), proxy.Id);
+                }
+                else
+                {
+                    crate = new Crate(manifestType, proxy.Id);
+                }
             }
             else
             {

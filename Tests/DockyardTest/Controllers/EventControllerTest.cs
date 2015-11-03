@@ -49,7 +49,7 @@ namespace DockyardTest.Controllers
 
             //Act
 
-            var result = _eventController.Post(_eventReportCrateFactoryHelper.Create(eventDto));
+            var result = _eventController.Post(_crate.SerializeToProxy(_eventReportCrateFactoryHelper.Create(eventDto)));
 
             //Assert
             Assert.IsTrue(result is OkResult);
@@ -72,13 +72,13 @@ namespace DockyardTest.Controllers
                 var curEventDTO = FixtureData.TestPluginEventDto();
 
                 //Act
-                var result = _eventController.Post(_eventReportCrateFactoryHelper.Create(curEventDTO));
+                var result = _eventController.Post(_crate.SerializeToProxy(_eventReportCrateFactoryHelper.Create(curEventDTO)));
 
                 //Assert
                 Assert.IsTrue(result is OkResult);
                 List<FactDO> savedFactDoList = uow.FactRepository.GetAll().ToList();
                 Assert.AreEqual(1, savedFactDoList.Count());
-                var loggingData = _crate.GetContents<LoggingData>(curEventDTO.CrateStorage.First());
+                var loggingData = _crate.GetStorage(curEventDTO.CrateStorage).First().Get<LoggingData>();
                 Assert.AreEqual(loggingData.PrimaryCategory, savedFactDoList[0].PrimaryCategory);
                 Assert.AreEqual(loggingData.SecondaryCategory, savedFactDoList[0].SecondaryCategory);
                 _eventReporter.UnsubscribeFromAlerts();

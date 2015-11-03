@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Data.Crates;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
@@ -140,10 +141,10 @@ namespace UtilitiesTesting.Fixtures
                 eventSubscriptionMS.Subscriptions.Add("DocuSign Envelope Sent");
                 eventSubscriptionMS.Subscriptions.Add("Write to SQL AZure");
 
-                var eventReportJSON = serializer.Serialize(eventSubscriptionMS);
-
-                CrateDTO crateDTO = crate.Create("Standard Event Subscriptions", eventReportJSON, "Standard Event Subscriptions");
-                actionDo.UpdateCrateStorageDTO(new List<CrateDTO>() { crateDTO });
+                using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(actionDo))
+                {
+                    updater.CrateStorage.Add(Crate.FromContent("Standard Event Subscriptions", eventSubscriptionMS));
+                }
 
                 uow.ActionRepository.Add(actionDo);
                 subrouteDO.ChildNodes.Add(actionDo);

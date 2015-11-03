@@ -110,6 +110,17 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
+        public static Crate FromJson(string label, JToken content)
+        {
+            return new Crate(CrateManifestType.Unknown)
+            {
+                Label = label,
+                _rawContent = content
+            };
+        }
+
+        /**********************************************************************************/
+
         public static Crate FromJson(CrateManifestType manifestType, JToken content)
         {
             return new Crate(manifestType)

@@ -199,6 +199,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
     <Compile Include="Enums\SearchDirection.cs" />
     <Compile Include="Enums\GetCrateDirection.cs" />
     <Compile Include="Exceptions\AmbiguityException.cs" />
@@ -212,6 +213,7 @@
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
     <Compile Include="Managers\CrateManager.StorageUpdater.cs" />
+    <Compile Include="Managers\CrateMangerExtensions.cs" />
     <Compile Include="Managers\Crates\CrateStorageSerializer.cs" />
     <Compile Include="Managers\Crates\CrateStorageSerializer.DefaultSerializer.cs" />
     <Compile Include="Managers\Crates\CrateStorageSerializer.SerializationProxy.cs" />
@@ -336,7 +338,6 @@
     <Content Include="Resources\perfect-krawsant.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Crates\" />
     <Folder Include="Diagnostics\" />
     <Folder Include="Managers\APIManagers\Packagers\Docusign\" />
     <Folder Include="UserAlerting\" />

@@ -45,6 +45,13 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
+        public CrateStorage(params Crate[] crates)
+            : this((IEnumerable<Crate>)crates)
+        {
+        }
+
+        /**********************************************************************************/
+
         public CrateStorage(IEnumerable<Crate> crates)
         {
             foreach (var crate in crates)
@@ -83,6 +90,16 @@ namespace Data.Crates
             crate.Label = label;
 
             Add(crate);
+        }
+
+        /**********************************************************************************/
+
+        public void AddRange(IEnumerable<Crate> crates)
+        {
+            foreach (var crate in crates)
+            {
+                Add(crate);
+            }
         }
 
         /**********************************************************************************/
@@ -195,6 +212,13 @@ namespace Data.Crates
         public bool ContainsKey(string key)
         {
             return _crates.ContainsKey(key);
+        }
+
+        /**********************************************************************************/
+
+        public bool Remove(Crate crate)
+        {
+            return Remove(crate.Id);
         }
 
         /**********************************************************************************/
