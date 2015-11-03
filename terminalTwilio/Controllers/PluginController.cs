@@ -24,6 +24,11 @@ namespace terminalTwilio.Controllers
                 Version = "1"
             };
 
+	        var webService = new WebServiceDO
+	        {
+		        Name = "Twilio"
+	        };
+
             var sendViaTwilioTemplate = new ActivityTemplateDO
             {
                 Name = "Send_Via_Twilio",
@@ -33,7 +38,8 @@ namespace terminalTwilio.Controllers
                 Version = "1",
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
-                MinPaneWidth = 330
+                MinPaneWidth = 330,
+				WebService = webService
             };
 
             var actionList = new List<ActivityTemplateDO>

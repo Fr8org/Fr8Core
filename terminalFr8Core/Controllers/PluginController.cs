@@ -31,6 +31,11 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             };
 
+	        var webService = new WebServiceDO
+	        {
+		        Name = "fr8 Core"
+	        };
+
             result.Add(new ActivityTemplateDO
             {
                 Name = "FilterUsingRunTimeData",
@@ -39,7 +44,8 @@ namespace terminalFr8Core.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
-				MinPaneWidth = 330
+				MinPaneWidth = 330,
+				WebService = webService
             });
 
             result.Add(new ActivityTemplateDO
@@ -50,7 +56,8 @@ namespace terminalFr8Core.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
-				MinPaneWidth = 380
+				MinPaneWidth = 380,
+				WebService = webService
             });
 
             result.Add(new ActivityTemplateDO
@@ -61,7 +68,8 @@ namespace terminalFr8Core.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
-				MinPaneWidth = 330
+				MinPaneWidth = 330,
+				WebService = webService
             });
 
             result.Add(new ActivityTemplateDO
@@ -70,7 +78,8 @@ namespace terminalFr8Core.Controllers
                 Label = "Store MT Data",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
-                Version = "1"
+                Version = "1",
+				WebService = webService
             });
 
             result.Add(new ActivityTemplateDO
@@ -79,7 +88,8 @@ namespace terminalFr8Core.Controllers
                 Label = "Connect To SQL",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
-                Version = "1"
+                Version = "1",
+				WebService = webService
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
