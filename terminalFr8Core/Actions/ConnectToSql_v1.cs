@@ -205,7 +205,7 @@ namespace terminalFr8Core.Actions
 
         public Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<PayloadDTO>(null);
         }
 
         #endregion Execution.
