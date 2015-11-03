@@ -186,9 +186,8 @@ namespace HubWeb
             {
                 using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    ActivityTemplateRepository activityTemplateRepository = uow.ActivityTemplateRepository;
-
-                    foreach(var item in activityTemplateRepository.GetAll())
+                    var activityTemplateList = uow.ActivityTemplateRepository.GetAll();
+                    foreach(var item in activityTemplateList)
                     {
                         item.ActivityTemplateState = ActivityTemplateState.Inactive;
                     }
@@ -212,7 +211,7 @@ namespace HubWeb
                     ActivityTemplateRepository activityTemplateRepositary = uow.ActivityTemplateRepository;
                     List<ActivityTemplateDO> activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
 
-                    if (activityTemplateRepositaryItems.Find(item => item.Name == templateName) == null)
+                    if (!activityTemplateRepositaryItems.Any(item => item.Name == templateName))
                     {
                         found = false;
                     }
@@ -221,7 +220,7 @@ namespace HubWeb
             }
             catch (Exception e)
             {
-                Logger.GetLogger().Error("Error checking for activity template ", e);
+                Logger.GetLogger().Error(String.Format("Error checking for activity template \"{0}\"", templateName), e);
             }
             return found;
         }

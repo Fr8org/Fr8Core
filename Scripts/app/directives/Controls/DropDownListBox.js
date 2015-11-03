@@ -7,13 +7,13 @@ var dockyard;
         (function (dropDownListBox) {
             'use strict';
             function DropDownListBox() {
-                var controller = ['$scope', '$filter', function ($scope, $filter) {
+                var controller = ['$scope', function ($scope) {
                         $scope.setSelectedItem = function (item) {
                             $scope.field.value = item.value || item.Value;
                             $scope.selectedItem = item;
                             // Invoke onChange event handler
                             if ($scope.change != null && angular.isFunction($scope.change)) {
-                                $scope.change()($filter('validId')($scope.field.name));
+                                $scope.change()($scope.field.name);
                             }
                         };
                         var findAndSetSelectedItem = function () {
