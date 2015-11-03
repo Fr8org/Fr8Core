@@ -35,7 +35,6 @@ module dockyard.directives.designerHeader {
                 $attrs: ng.IAttributes) => {
 
                 $scope.onStateChange = () => {
-                    debugger;
                     if ($scope.route.routeState === model.RouteState.Inactive) {
                         RouteService.deactivate($scope.route);
                     } else {
