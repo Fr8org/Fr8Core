@@ -16,6 +16,19 @@ namespace Data.Infrastructure.AutoMapper
     {
         public static void ConfigureAutoMapper()
         {
+            Mapper.CreateMap<ActionNameDTO, ActivityTemplateDO>()
+                .ForMember(activityTemplateDO => activityTemplateDO.Name, opts => opts.ResolveUsing(e => e.Name))
+                .ForMember(activityTemplateDO => activityTemplateDO.Version, opts => opts.ResolveUsing(e => e.Version));
+
+
+            Mapper.CreateMap<ActionDO, ActionDTO>();
+
+            Mapper.CreateMap<Fr8AccountDO, UserDTO>()
+                .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))
+                .ForMember(dto => dto.Status, opts => opts.ResolveUsing(e => e.State.Value));
+
+            Mapper.CreateMap<WebServiceDO, WebServiceDTO>();
+            Mapper.CreateMap<WebServiceDTO, WebServiceDO>();
             Mapper.CreateMap<string, JToken>().ConvertUsing<StringToJTokenConverter>();
             Mapper.CreateMap<JToken, string>().ConvertUsing<JTokenToStringConverter>();
 
@@ -60,7 +73,8 @@ namespace Data.Infrastructure.AutoMapper
 //                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
             Mapper.CreateMap<RouteDO, RouteOnlyDTO>();
-
+            Mapper.CreateMap<RouteOnlyDTO, RouteDO>();
+            Mapper.CreateMap<RouteDO, RouteOnlyDTO>();
             Mapper.CreateMap<SubrouteDTO, SubrouteDO>()
                 .ForMember(x => x.ParentRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId));
             Mapper.CreateMap<SubrouteDO, SubrouteDTO>()
