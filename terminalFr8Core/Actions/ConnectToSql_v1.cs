@@ -66,7 +66,7 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            RemoveLabelControl(curActionDTO, "ErrorLabel");
+            RemoveControl(curActionDTO, "ErrorLabel");
 
             Crate.RemoveCrateByLabel(
                 curActionDTO.CrateStorage.CrateDTO,

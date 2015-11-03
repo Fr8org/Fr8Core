@@ -51,14 +51,14 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActionDTO> InitialConfigurationResponse(
             ActionDTO curActionDTO)
         {
-            RemoveLabelControl(curActionDTO, "UpstreamError");
+            RemoveControl(curActionDTO, "UpstreamError");
 
-            var tableDefinitions = await ExtractTableDefinitions(curActionDTO);
+            var columnDefinitions = await ExtractColumnDefinitions(curActionDTO);
             List<FieldDTO> tablesList = null;
 
-            if (tableDefinitions != null)
+            if (columnDefinitions != null)
             {
-                tablesList = ExtractTableNames(tableDefinitions);
+                tablesList = ExtractTableNames(columnDefinitions);
             }
 
             if (tablesList == null || tablesList.Count == 0)
@@ -81,68 +81,58 @@ namespace terminalFr8Core.Actions
                 Crate.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray())
             );
 
+            curActionDTO.CrateStorage.CrateDTO.Add(
+                Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", columnDefinitions.ToArray())
+            );
+
             return curActionDTO;
         }
 
         private void AddSelectObjectDdl(ActionDTO actionDTO)
         {
-            var controlsCrate = EnsureControlsCrate(actionDTO);
-            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(controlsCrate.Contents);
-
-            var dropDownList = new DropDownListControlDefinitionDTO()
-            {
-                Label = "Select Object",
-                Name = "SelectObjectDdl",
-                Required = true,
-                Events = new List<ControlEvent>()
+            AddControl(
+                actionDTO,
+                new DropDownListControlDefinitionDTO()
                 {
-                    new ControlEvent("onChange", "requestConfig")
-                },
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Tables",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    Label = "Select Object",
+                    Name = "SelectObjectDdl",
+                    Required = true,
+                    Events = new List<ControlEvent>()
+                    {
+                        new ControlEvent("onChange", "requestConfig")
+                    },
+                    Source = new FieldSourceDTO
+                    {
+                        Label = "Available Tables",
+                        ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    }
                 }
-            };
-
-            controls.Controls.Add(dropDownList);
-            controlsCrate.Contents = JsonConvert.SerializeObject(controls);
+            );
         }
 
         protected override Task<ActionDTO> FollowupConfigurationResponse(
             ActionDTO curActionDTO)
         {
+            RemoveControl(curActionDTO, "SelectObjectError");
+
             var selectedObject = ExtractSelectedObject(curActionDTO);
             if (string.IsNullOrEmpty(selectedObject))
             {
+                AddLabelControl(curActionDTO, "SelectObjectError",
+                    "No object selected", "Please select object from the list above.");
+
                 return Task.FromResult(curActionDTO);
             }
 
-
+            AddQueryBuilder(curActionDTO);
 
             return Task.FromResult(curActionDTO);
         }
 
-        private string ExtractSelectedObject(ActionDTO actionDTO)
-        {
-            var controlsCrate = actionDTO.CrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
-
-            if (controlsCrate == null) { return null; }
-
-            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
-                controlsCrate.Contents);
-
-            var selectObjectDdl = controls.Controls.FirstOrDefault(x => x.Name == "SelectObjectDdl");
-            if (selectObjectDdl == null) { return null; }
-
-            return selectObjectDdl.Value;
-        }
-        
         /// <summary>
         /// Returns list of FieldDTO from upper crate from ConnectToSql action.
         /// </summary>
-        private async Task<List<FieldDTO>> ExtractTableDefinitions(ActionDTO actionDTO)
+        private async Task<List<FieldDTO>> ExtractColumnDefinitions(ActionDTO actionDTO)
         {
             var upstreamCrates = await GetCratesByDirection(
                 actionDTO.Id,
@@ -200,6 +190,45 @@ namespace terminalFr8Core.Actions
                 .ToList();
 
             return result;
+        }
+
+        /// <summary>
+        /// Extract SelectedObject from Action crates.
+        /// </summary>
+        private string ExtractSelectedObject(ActionDTO actionDTO)
+        {
+            var controlsCrate = actionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+
+            if (controlsCrate == null) { return null; }
+
+            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
+                controlsCrate.Contents);
+
+            var selectObjectDdl = controls.Controls.FirstOrDefault(x => x.Name == "SelectObjectDdl");
+            if (selectObjectDdl == null) { return null; }
+
+            return selectObjectDdl.Value;
+        }
+
+        /// <summary>
+        /// Add query builder widget to action.
+        /// </summary>
+        private void AddQueryBuilder(ActionDTO actionDTO)
+        {
+            var queryBuilder = new FilterPaneControlDefinitionDTO()
+            {
+                Label = "Please, specify query:",
+                Name = "SelectedQuery",
+                Required = true,
+                Source = new FieldSourceDTO
+                {
+                    Label = "Queryable Criteria",
+                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                }
+            };
+
+            AddControl(actionDTO, queryBuilder);
         }
 
         #endregion Configuration.

@@ -516,6 +516,20 @@ namespace TerminalBase.BaseClasses
 
         protected void AddLabelControl(ActionDTO curActionDTO, string name, string label, string text)
         {
+            AddControl(
+                curActionDTO,
+                new TextBlockControlDefinitionDTO()
+                {
+                    Name = name,
+                    Label = label,
+                    Value = text,
+                    CssClass = "well well-lg"
+                }
+            );
+        }
+
+        protected void AddControl(ActionDTO curActionDTO, ControlDefinitionDTO control)
+        {
             var controlsCrate = EnsureControlsCrate(curActionDTO);
 
             var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
@@ -523,18 +537,11 @@ namespace TerminalBase.BaseClasses
 
             if (controls == null) { return; }
 
-            controls.Controls.Add(new TextBlockControlDefinitionDTO()
-            {
-                Name = name,
-                Label = label,
-                Value = text,
-                CssClass = "well well-lg"
-            });
-
+            controls.Controls.Add(control);
             controlsCrate.Contents = JsonConvert.SerializeObject(controls);
         }
 
-        protected void RemoveLabelControl(ActionDTO curActionDTO, string name)
+        protected void RemoveControl(ActionDTO curActionDTO, string name)
         {
             var controlsCrate = curActionDTO.CrateStorage.CrateDTO
                 .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
@@ -553,7 +560,7 @@ namespace TerminalBase.BaseClasses
             if (errorLabel != null)
             {
                 controls.Controls.Remove(errorLabel);
-                controlsCrate.Contents = JsonConvert.SerializeObject(controlsCrate);
+                controlsCrate.Contents = JsonConvert.SerializeObject(controls);
             }
         }
 
