@@ -344,7 +344,7 @@ namespace Hub.Managers
         public void AddLogMessage(string label, List<LogItemDTO> logItemList, ContainerDO containerDO)
         {
             if (String.IsNullOrEmpty(label))
-                throw new ArgumentNullException("Parameter Label is empty");
+                throw new ArgumentException("Parameter Label is empty");
             if (logItemList == null)
                 throw new ArgumentNullException("Parameter LogItemDTO list is null.");
             if (containerDO == null)
