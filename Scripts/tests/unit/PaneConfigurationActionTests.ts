@@ -28,13 +28,13 @@ module dockyard.tests.controller {
             internalAuthAction = fx.ActionDesignDTO.internalAuthActionVM,
             externalAuthAction = fx.ActionDesignDTO.externalAuthActionVM;
 
-        beforeEach(module(($provide) => {
-            _actionServiceMock = new utils.ActionServiceMock(null);
-
-            $provide.factory('ActionService', () => {
-                return _actionServiceMock;
-            });
-        }));
+        // beforeEach(module(($provide) => {
+        //     _actionServiceMock = new utils.ActionServiceMock(null);
+        // 
+        //     $provide.factory('ActionService', () => {
+        //         return _actionServiceMock;
+        //     });
+        // }));
 
         beforeEach(inject(($rootScope, $compile, $q, $httpBackend, $timeout) => {
             _$httpBackend = $httpBackend;
