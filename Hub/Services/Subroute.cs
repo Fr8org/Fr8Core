@@ -5,9 +5,6 @@ using System.Linq;
 using Newtonsoft.Json;
 using StructureMap;
 using System.Threading.Tasks;
-using Core.Interfaces;
-using Core.Managers;
-using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
@@ -161,30 +158,30 @@ namespace Hub.Services
                 crateDTO.Label == "Validation Errors" && crateDTO.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
         }
 
-        protected async Task<bool> ValidateDownstreamActionsAndDelete(int id)
+        protected async Task<bool> ValidateDownstreamActionsAndDelete(string userId, int actionId)
         {
             var validationErrors = new List<CrateDTO>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //we should backup this action to see it's effect to downstream actions on deletion
                 //with asNoTracking we can keep a copy of curAction on memory
-                var curActionBackup = await uow.RouteNodeRepository.GetQuery().AsNoTracking().SingleAsync(a => a.Id == id);
-                //TODO refactor this code for a better way
-                
+                var curAction = await uow.ActionRepository.GetQuery().SingleAsync(a => a.Id == actionId);
+                var downstreamActions = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
 
-                //to prevent one more call to db; attach object by it's id and delete it
-                var curAction = new ActionDO { Id = id };
-                uow.RouteNodeRepository.Attach(curAction);
-                uow.RouteNodeRepository.Remove(curAction);
-            uow.SaveChanges();
+                //set ActivityTemplate and parentRouteNode of current action to null -> to simulate a delete
+                int? templateIdBackup = curAction.ActivityTemplateId;
+                int? parentRouteNodeIdBackup = curAction.ParentRouteNodeId;
+                curAction.ActivityTemplateId = null;
+                curAction.ParentRouteNodeId = null;
+                uow.SaveChanges();
 
-                var downstreamActions = _routeNode.GetDownstreamActivities(uow, curActionBackup).OfType<ActionDO>();
+
                 //lets start multithreaded calls
                 var configureTaskList = new List<Task<ActionDTO>>();
                 foreach (var downstreamAction in downstreamActions)
                 {
-                    configureTaskList.Add(_action.Configure(downstreamAction));
-        }
+                    configureTaskList.Add(_action.ConfigureOnTheFly(userId, downstreamAction));
+                }
 
                 await Task.WhenAll(configureTaskList);
 
@@ -194,10 +191,10 @@ namespace Hub.Services
 
                 foreach (var pluginResponse in pluginResponseList)
                 {
-                    var pluginError = GetValidationErrors(pluginResponse.CrateStorage);
-                    if (pluginError != null)
+                    var pluginValidationError = GetValidationErrors(pluginResponse.CrateStorage);
+                    if (pluginValidationError != null)
                     {
-                        validationErrors.Add(pluginError);
+                        validationErrors.Add(pluginValidationError);
                     }
                 }
 
@@ -205,11 +202,14 @@ namespace Hub.Services
                 if (validationErrors.Count > 0)
                 {
                     //restore it
-                    uow.RouteNodeRepository.Add(curActionBackup);
+                    curAction.ActivityTemplateId = templateIdBackup;
+                    curAction.ParentRouteNodeId = parentRouteNodeIdBackup;
                     uow.SaveChanges();
                 }
                 else
                 {
+                    uow.ActionRepository.Remove(curAction);
+                    uow.SaveChanges();
                     //TODO update ordering of downstream actions
                 }
 
@@ -217,25 +217,21 @@ namespace Hub.Services
             return validationErrors.Count < 1;
         }
 
-        public async Task<string> DeleteAction(int id, bool confirmed)
+        //TODO find a better response type for this function
+        public async Task<bool> DeleteAction(string userId, int actionId, bool confirmed)
         {
             if (confirmed)
             {
                 //we can assume that there has been some validation errors on previous call
                 //but user still wants to delete this action
                 //lets use kludge solution
-                DeleteActionKludge(id);
+                DeleteActionKludge(actionId);
             }
             else
             {
-                bool isDeleted = await ValidateDownstreamActionsAndDelete(id);
-                if (!isDeleted)
-                {
-                    //we need user confirmation
-                    return "we need confirmation";
-                }
+                return await ValidateDownstreamActionsAndDelete(userId, actionId);
             }
-            return "we have deleted it";
+            return true;
         }
 
         protected void DeleteActionKludge(int id)

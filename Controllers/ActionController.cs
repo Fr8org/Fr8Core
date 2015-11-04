@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -18,7 +20,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Services;
+using Authorization = Hub.Services.Authorization;
 
 namespace HubWeb.Controllers
 {
@@ -137,8 +139,12 @@ namespace HubWeb.Controllers
         [Route("{id:int}")]
         public async Task<IHttpActionResult> Delete(int id, bool confirmed = false)
         {
-            var msg = await _subRoute.DeleteAction(id, confirmed);
-            return Ok(msg);
+            var isDeleted = await _subRoute.DeleteAction(User.Identity.GetUserId(), id, confirmed);
+            if (!isDeleted)
+            {
+                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
+            }
+            return Ok();
         }
 
         /// <summary>

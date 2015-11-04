@@ -16,6 +16,7 @@ namespace Hub.Interfaces
         ActionDO SaveOrUpdateAction(ActionDO currentActionDo);
         ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO currentActionDo);
         Task<ActionDTO> Configure(string userId, ActionDO curActionDO);
+        Task<ActionDTO> ConfigureOnTheFly(string userId, ActionDO curActionDO);
         //Task<ActionDO> SaveUpdateAndConfigure(IUnitOfWork uow, ActionDO submittedActionDo);
         ActionDO GetById(int id);
         ActionDO GetById(IUnitOfWork uow, int id);

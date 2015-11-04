@@ -171,23 +171,29 @@ module dockyard.controllers {
             });
         }
 
+        private reloadProcessTemplate() {
+            this.$scope.actionGroups = [];
+            this.$scope.current = new model.ProcessBuilderState();
+            this.loadProcessTemplate();
+        }
+
         private deleteAction(action: model.ActionDTO) {
             //TODO -> should we generate an event for delete event?
+
             var self = this;
-            this.uiHelperService
-                .openConfirmationModal('Are you sure you want to delete this Action? You will have to reconfigure all downstream Actions.')
-                .then(() => {
-
-                self.ActionService.deleteById({ id: action.id, confirmed: false }).$promise.then((response) => {
-                    console.log(response);
-                    alert(response);
-                    //lets reload process template
-                    self.$scope.actionGroups = [];
-                    self.$scope.current = new model.ProcessBuilderState();
-                    self.loadProcessTemplate();
+            self.ActionService.deleteById({ id: action.id, confirmed: false }).$promise.then((response) => {
+                self.reloadProcessTemplate();
+            }, (error) => {
+                debugger;
+                this.uiHelperService
+                    .openConfirmationModal('There will be validation errors when you delete this action and you will have to reconfigure all downstream actions. Are you sure?')
+                    .then(() => {
+                    self.ActionService.deleteById({ id: action.id, confirmed: true }).$promise.then(() => {
+                        self.reloadProcessTemplate();
+                    });
                 });
-
             });
+            
             
         }
 

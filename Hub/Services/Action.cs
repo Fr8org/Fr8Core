@@ -338,6 +338,12 @@ namespace Hub.Services
             return curActionDO;
         }
 
+        public async Task<ActionDTO> ConfigureOnTheFly(string userId, ActionDO curActionDO)
+        {
+            curActionDO = await CallActionConfigure(userId, curActionDO);
+            return Mapper.Map<ActionDTO>(curActionDO);
+        }
+
         public async Task<ActionDTO> Configure(string userId, ActionDO curActionDO)
         {
             curActionDO = await CallActionConfigure(userId, curActionDO);
