@@ -73,8 +73,8 @@ namespace Data.Migrations
 
                 route.Name = _name;
                 route.Description = "Template for testing";
-                route.CreateDate = DateTime.Now;
-                route.LastUpdated = DateTime.Now;
+				route.CreateDate = DateTime.UtcNow;
+				route.LastUpdated = DateTime.UtcNow;
                 route.RouteState = RouteState.Inactive; // we don't want this process template can be executed ouside of tests
 
                 if (add)

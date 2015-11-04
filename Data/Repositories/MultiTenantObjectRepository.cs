@@ -65,7 +65,7 @@ namespace Data.Repositories
                     correspondingDTFields, keyPropertyInfo);
                 if (correspondingMTData != null)
                 {
-                    correspondingMTData.UpdatedAt = DateTime.Now;
+					correspondingMTData.UpdatedAt = DateTime.UtcNow;
                     var curDataProperties =
                         curManifestType.GetProperties(System.Reflection.BindingFlags.DeclaredOnly |
                                                       System.Reflection.BindingFlags.Instance |
@@ -91,7 +91,7 @@ namespace Data.Repositories
             MT_Data correspondingMTData = FindMT_DataByKeyField(_uow, curFr8AccountId, curManifest, correspondingDTObject, correspondingDTFields, keyPropertyInfo);
             if (correspondingMTData == null) throw new Exception(String.Format("MT_Data wasn't found for {0} with {1} == {2}", curManifest.ManifestName, keyPropertyInfo.Name));
 
-            correspondingMTData.UpdatedAt = DateTime.Now;
+			correspondingMTData.UpdatedAt = DateTime.UtcNow;
             var curDataProperties = curManifestType.GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();
             MapManifestToMTData(curFr8AccountId, curManifest, curDataProperties, correspondingMTData, correspondingDTObject);
         }
