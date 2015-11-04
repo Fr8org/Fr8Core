@@ -7,14 +7,17 @@ module dockyard.services {
     export interface IRouteService extends ng.resource.IResourceClass<interfaces.IRouteVM> {
         getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IRouteVM>;
         getFull: (id: Object) => interfaces.IRouteVM;
-        execute: (id: {id: number}) => void;
+        getByAction: (id: { id: number }) => interfaces.IRouteVM;
+        execute: (id: { id: number }) => void;
         activate: (processTemplate: model.RouteDTO) => void;
         deactivate: (processTemplate: model.RouteDTO) => void;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
+        configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IActionVM>;
         getByProcessTemplate: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
+        create: (args: { actionTemplateId: number, name: string, label: string, parentNideId: number, createRoute: boolean }) => ng.resource.IResource<model.RouteDTO | model.ActionDTO>;
+        createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.RouteDTO>;
         //TODO make resource class do this operation
         deleteById: (id: { id: number; confirmed: boolean }) => ng.resource.IResource<string>;
         
@@ -60,17 +63,28 @@ module dockyard.services {
     */
 
     app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
-        <IRouteService>$resource('/api/route/:id', { id: '@id' },
+        <IRouteService>$resource('/routes/:id', { id: '@id' },
             {
-                'getbystatus': {
-                    method: 'GET',
-                    isArray: true,
-                    url: '/api/route/getactive'
-                },
                 'getFull': {
                     method: 'GET',
                     isArray: false,
-                    url: '/api/route/full/:id',
+                    url: '/routes/full/:id',
+                    params: {
+                        id: '@id'
+                    }
+                },
+                'getbystatus': {
+                    method: 'GET',
+                    isArray: true,
+                    url: '/routes/status?status=:status',
+                    params: {
+                        status: '@status'
+                    }
+                },
+                'getByAction': {
+                    method: 'GET',
+                    isArray: false,
+                    url: '/routes/getByAction/:id',
                     params: {
                         id: '@id'
                     }
@@ -85,13 +99,13 @@ module dockyard.services {
                 },
                 'activate': {
                     method: 'POST',
-                    url: '/api/route/activate/',
+                    url: '/routes/activate/',
                     params: {
                     }
                 },
                 'deactivate': {
                     method: 'POST',
-                    url: '/api/route/deactivate/',
+                    url: '/routes/deactivate/',
                     params: {
                     }
                 }
@@ -109,7 +123,21 @@ module dockyard.services {
         DocuSignExternalEventDTO CRUD service.
     */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
-        <IDocuSignTriggerService>$resource('/api/route/triggersettings')
+        <IDocuSignTriggerService>$resource('/route/triggersettings')
+    ]);
+
+    app.factory('ActionTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
+        <IActionService>$resource('/actiontemplates/', null,
+            {
+                'available': {
+                    method: 'GET',
+                    isArray: true,
+                    url: '/route_nodes/available',
+                    params: {
+                        tag: '@tag'
+                    }
+                }
+            })
     ]);
 
     /* 
@@ -153,6 +181,17 @@ module dockyard.services {
                 'deleteById': {
                     method: 'DELETE',
                     url: '/actions/:id?confirmed=:confirmed'
+                },
+                'create': {
+                    method: 'POST',
+                    url: '/actions/create'
+                },
+                'createSolution': {
+                    method: 'POST',
+                    url: '/actions/create',
+                    params: {
+                        solutionName: '@solutionName'
+                    }
                 },
                 'params': {
                     id: 'id'

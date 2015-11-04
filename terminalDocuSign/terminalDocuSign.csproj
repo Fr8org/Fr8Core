@@ -49,6 +49,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Utilities\DocuSign.Integration.Client.dll</HintPath>
     </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -176,16 +184,20 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\Mail_Merge_Into_DocuSign_v1.cs" />
+    <Compile Include="Actions\Collect_Form_Data_Solution_v1.cs" />
     <Compile Include="Actions\Receive_DocuSign_Envelope_v1.cs" />
     <Compile Include="Actions\Record_DocuSign_Events_v1.cs" />
     <Compile Include="Actions\Send_DocuSign_Envelope_v1.cs" />
     <Compile Include="Actions\Monitor_DocuSign_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\PluginController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="DataTransferObjects\DocuSignAuthDTO.cs" />
     <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
+    <Compile Include="Infrastructure\IndexManager.cs" />
     <Compile Include="Infrastructure\PluginDataAutoMapperBootStrapper.cs" />
     <Compile Include="DataTransferObjects\RecipientDTO.cs" />
     <Compile Include="DataTransferObjects\RecipientsDTO.cs" />
@@ -201,6 +213,7 @@
     <Compile Include="Infrastructure\Signer.cs" />
     <Compile Include="Infrastructure\Tab.cs" />
     <Compile Include="Interfaces\IDocuSignEnvelope.cs" />
+    <Compile Include="Services\DocuSignManager.cs" />
     <Compile Include="Services\DocuSignEnvelope.cs" />
     <Compile Include="Services\DocuSignTemplate.cs" />
     <Compile Include="Services\Event.cs" />
@@ -220,6 +233,7 @@
     <Compile Include="Tests\Infrastructure\DocusignConnectParserTests.cs" />
     <Compile Include="Tests\Infrastructure\DocuSignTemplateTests.cs" />
     <Compile Include="Tests\Fixtures\PluginFixtureData - DocusignAccount.cs" />
+    <Compile Include="Tests\Infrastructure\IndexManagerTests.cs" />
     <Compile Include="Tests\Services\EnvelopeServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -240,9 +254,9 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj">
+    <ProjectReference Include="..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
-      <Name>Core</Name>
+      <Name>Hub</Name>
     </ProjectReference>
     <ProjectReference Include="..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
@@ -250,7 +264,7 @@
     </ProjectReference>
     <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>PluginBase</Name>
+      <Name>TerminalBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
@@ -289,7 +303,7 @@
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
           <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
-          <servers defaultServer="SelfHostServer">
+          <servers defaultServer="">
             <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:48024/" workingDir="" />
           </servers>
         </WebProjectProperties>

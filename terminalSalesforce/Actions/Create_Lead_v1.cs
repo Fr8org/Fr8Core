@@ -2,7 +2,7 @@
 using StructureMap;
 using terminalSalesforce.Infrastructure;
 using System.Threading.Tasks;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Salesforce.Common;
 using terminalSalesforce.Services;
 using TerminalBase.Infrastructure;
@@ -21,11 +21,8 @@ namespace terminalSalesforce.Actions
         {
             if (NeedsAuthentication(curActionDTO))
             {
-                FlaggedForAuthentication(curActionDTO);
-                return curActionDTO;
+                throw new ApplicationException("No AuthToken provided.");
             }
-
-            RemoveAuthenticationCrate(curActionDTO);
 
             return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }

@@ -5,20 +5,19 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
-using Core.Services;
-using Data.Constants;
 using Newtonsoft.Json;
-
 using StructureMap;
-using Core.Enums;
-using Core.Interfaces;
-using Core.Managers;
+using Data.Constants;
 using Data.Entities;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
+using Hub.Enums;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Services;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
-using Data.Interfaces;
 
 namespace TerminalBase.BaseClasses
 {
@@ -58,38 +57,6 @@ namespace TerminalBase.BaseClasses
             return false;
         }
 
-        protected void RemoveAuthenticationCrate(ActionDTO actionDTO)
-        {
-            if (actionDTO.CrateStorage != null
-                && actionDTO.CrateStorage.CrateDTO != null)
-            {
-                var authCrates = actionDTO.CrateStorage.CrateDTO
-                    .Where(x => x.ManifestType == CrateManifests.STANDARD_AUTHENTICATION_NAME)
-                    .ToList();
-
-                foreach (var authCrate in authCrates)
-                {
-                    actionDTO.CrateStorage.CrateDTO.Remove(authCrate);
-                }
-            }
-        }
-
-        protected void AddAuthenticationCrate(
-            ActionDTO actionDTO, AuthenticationMode mode)
-        {
-            if (actionDTO.CrateStorage == null)
-            {
-                actionDTO.CrateStorage = new CrateStorageDTO()
-                {
-                    CrateDTO = new List<CrateDTO>()
-                };
-            }
-
-            actionDTO.CrateStorage.CrateDTO.Add(
-                Crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
-            );
-        }
-
         protected async Task<PayloadDTO> GetProcessPayload(int processId)
         {
             var httpClient = new HttpClient();
@@ -97,7 +64,7 @@ namespace TerminalBase.BaseClasses
                 + "api/containers/"
                 + processId.ToString();
 
-            using (var response = await httpClient.GetAsync(url))
+            using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
             {
                 var content = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<PayloadDTO>(content);
@@ -121,7 +88,7 @@ namespace TerminalBase.BaseClasses
                     var fieldCheckResult = result[i];
                     if (fieldCheckResult == FieldValidationResult.NotExists)
                     {
-                        validationErrorList.Add(new FieldDTO() { Key = requiredFieldList.ElementAt(i).FieldName, Value = "Required" });
+                        validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required" });
                     }
                 }
 
@@ -167,20 +134,6 @@ namespace TerminalBase.BaseClasses
             }
 
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
-        }
-
-        protected bool ValidateAuthentication(ActionDTO curActionDTO, AuthenticationMode curAuthenticationMode)
-        {
-            if (NeedsAuthentication(curActionDTO))
-            {
-                AddAuthenticationCrate(
-                    curActionDTO,
-                    curAuthenticationMode);
-                return false;
-            }
-            else
-                RemoveAuthenticationCrate(curActionDTO);
-            return true;
         }
 
         /// <summary>
@@ -263,6 +216,11 @@ namespace TerminalBase.BaseClasses
             };
         }
 
+        protected CrateDTO PackControls(StandardConfigurationControlsCM page)
+        {
+            return PackControlsCrate(page.Controls.ToArray());
+        }
+        
         protected CrateDTO PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
             var controlsCrate = Crate.CreateStandardConfigurationControlsCrate(
@@ -275,7 +233,7 @@ namespace TerminalBase.BaseClasses
         {
             var controlsCrate = curActionDto.CrateStorage.CrateDTO
                 .FirstOrDefault(
-                    x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+                    x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME
                     && x.Label == "Configuration_Controls");
 
             if (controlsCrate == null)
@@ -312,7 +270,7 @@ namespace TerminalBase.BaseClasses
             return upstreamFieldsCrate;
         }
 
-        protected ConfigurationRequestType ReturnInitialUnlessExistsField(ActionDTO curActionDTO, string fieldName, Manifest curSchema)
+        protected ConfigurationRequestType ReturnInitialUnlessExistsField(ActionDTO curActionDTO, string fieldName, Data.Interfaces.Manifests.Manifest curSchema)
         {
             CrateStorageDTO curCrates = curActionDTO.CrateStorage;
 
@@ -323,7 +281,7 @@ namespace TerminalBase.BaseClasses
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name select_file with a value
-            Manifest manifestSchema = new Manifest(Data.Constants.MT.StandardConfigurationControls);
+            Data.Interfaces.Manifests.Manifest manifestSchema = new Data.Interfaces.Manifests.Manifest(Data.Constants.MT.StandardConfigurationControls);
 
             var keys = Action.FindKeysByCrateManifestType(curActionDO, manifestSchema, fieldName).Result
                 .Select(e => (string)e["value"])
@@ -387,7 +345,7 @@ namespace TerminalBase.BaseClasses
             var crateControls = Crate.Create(
                 "Configuration_Controls",
                 JsonConvert.SerializeObject(controls),
-                CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+                CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME
             );
 
             return crateControls;
@@ -411,7 +369,7 @@ namespace TerminalBase.BaseClasses
                         Selected = true,
                         Name = "specific",
                         Value = "this specific value",
-                        Controls = new List<ControlDefinitionDTO>()
+                        Controls = new List<ControlDefinitionDTO>
                         {
                             new TextBoxControlDefinitionDTO()
                             {
@@ -426,7 +384,7 @@ namespace TerminalBase.BaseClasses
                         Selected = false,
                         Name = "upstream",
                         Value = "a value from an Upstream Crate",
-                        Controls = new List<ControlDefinitionDTO>()
+                        Controls = new List<ControlDefinitionDTO>
                         {
                             new DropDownListControlDefinitionDTO()
                             {
@@ -446,6 +404,27 @@ namespace TerminalBase.BaseClasses
             return control;
         }
 
+        /// <summary>
+        /// Allows to retrieve a configuration control from crate storage.
+        /// </summary>
+        /// <param name="curCrateStorage">Crate storage.</param>
+        /// <param name="controlName">Control name.</param>
+        protected T GetStdConfigurationControl<T>(IEnumerable<CrateDTO> curCrateStorage, string controlName)
+            where T : ControlDefinitionDTO
+        {
+            try
+            {
+                var controlsCrate = curCrateStorage.FirstOrDefault(
+                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+                if (controlsCrate == null) return null;
+                var controls = Crate.GetStandardConfigurationControls(controlsCrate).Controls;
+                return controls.SingleOrDefault(c => c.Name == controlName) as T;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
 
         /// <summary>
         /// Extract value from RadioButtonGroup where specific value or upstream field was specified.
@@ -456,7 +435,7 @@ namespace TerminalBase.BaseClasses
             string controlName)
         {
             var controlsCrate = designTimeCrateStorage.CrateDTO.FirstOrDefault(
-                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             var controls = Crate.GetStandardConfigurationControls(controlsCrate).Controls;
             var control = controls
@@ -487,7 +466,7 @@ namespace TerminalBase.BaseClasses
                 default:
                     throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
             }
-            }
+        }
 
         private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroupControlDefinitionDTO radioButtonGroupControl, CrateStorageDTO runTimeCrateStorage)
         {
@@ -530,91 +509,130 @@ namespace TerminalBase.BaseClasses
             var crates = Crate.GetCratesByManifestType(
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, crateStorage);
 
-            foreach (var crate in crates)
-            {
-                var allFields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
-                var searchField = allFields.FirstOrDefault(x => x.Key == fieldKey);
+            var fieldValues = Crate.GetElementByKey(crates, key: fieldKey, keyFieldName: "key")
+                .Select(e => (string)e["value"])
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToArray();
 
-                if (searchField != null)
-                {
-                    return searchField.Value;
-                }
-            }
+            if (fieldValues.Length > 0)
+                return fieldValues[0];
+
+            //foreach (var crate in crates)
+            //{
+            //    var allFields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
+            //    var searchField = allFields.FirstOrDefault(x => x.Key == fieldKey);
+
+            //    if (searchField != null)
+            //    {
+            //        return searchField.Value;
+            //    }
+            //}
 
             throw new ApplicationException("No field found with specified key.");
         }
 
-        public void FlaggedForAuthentication(ActionDTO curActionDTO)
+        protected void AddLabelControl(ActionDTO curActionDTO, string name, string label, string text)
         {
-            AddAuthenticationCrate(
+            AddControl(
                     curActionDTO,
-                    AuthenticationMode.ExternalMode);
-        }
-
-
-        /// <summary>
-        /// Retrieve authorization token
-        /// </summary>
-        /// <param name="curActionDO"></param>
-        /// <returns></returns>
-        public string Authenticate(ActionDO curActionDO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                Fr8AccountDO curDockyardAccountDO = GetAccount(curActionDO);
-                var curPlugin = curActionDO.ActivityTemplate.Plugin;
-                string curToken = string.Empty;
-
-                if (curDockyardAccountDO != null)
+                new TextBlockControlDefinitionDTO()
                 {
-                    curToken = _authorizationToken.GetToken(curDockyardAccountDO.Id, curPlugin.Id);
-
-                    if (!string.IsNullOrEmpty(curToken))
-                        return curToken;
+                    Name = name,
+                    Label = label,
+                    Value = text,
+                    CssClass = "well well-lg"
                 }
-
-                curToken = _authorizationToken.GetPluginToken(curPlugin.Id);
-                if (!string.IsNullOrEmpty(curToken))
-                    return curToken;
-                return _plugin.Authorize();
-            }
+            );
         }
 
-        public bool IsAuthenticated(Fr8AccountDO account, PluginDO plugin)
+        protected void AddControl(ActionDTO curActionDTO, ControlDefinitionDTO control)
         {
-            if (!plugin.RequiresAuthentication)
-            {
-                return true;
-            }
+            var controlsCrate = EnsureControlsCrate(curActionDTO);
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var hasAuthToken = uow.AuthorizationTokenRepository
-                    .GetQuery()
-                    .Any(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
+            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
+                controlsCrate.Contents);
 
-                return hasAuthToken;
-            }
+            if (controls == null) { return; }
+
+            controls.Controls.Add(control);
+            controlsCrate.Contents = JsonConvert.SerializeObject(controls);
         }
 
-        /// <summary>
-        /// Retrieve account
-        /// </summary>
-        /// <param name="curActionDO"></param>
-        /// <returns></returns>
-        public Fr8AccountDO GetAccount(ActionDO curActionDO)
-        {
-            if (curActionDO.ParentRouteNode != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
+        protected ControlDefinitionDTO FindControl(ActionDTO curActionDTO, string name)
             {
-                // Can't follow guideline to init services inside constructor. 
-                // Current implementation of Route and Action services are not good and are depedant on each other.
-                // Initialization of services in constructor will cause stack overflow
-                var route = ObjectFactory.GetInstance<IRoute>().GetRoute(curActionDO);
-                return route != null ? route.Fr8Account : null;
+            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+
+            if (controlsCrate == null) { return null; }
+
+            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
+                controlsCrate.Contents);
+
+            if (controls == null) { return null; }
+
+            var control = controls.Controls
+                .FirstOrDefault(x => x.Name == name);
+
+            return control;
+        }
+
+        protected void RemoveControl(ActionDTO curActionDTO, string name)
+        {
+            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+
+            if (controlsCrate == null) { return; }
+
+            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
+                controlsCrate.Contents);
+
+            if (controls == null) { return; }
+
+
+            var control = controls.Controls
+                .FirstOrDefault(x => x.Name == name);
+
+            if (control != null)
+            {
+                controls.Controls.Remove(control);
+                controlsCrate.Contents = JsonConvert.SerializeObject(controls);
+            }
             }
 
-            return null;
+        protected CrateDTO EnsureControlsCrate(ActionDTO actionDTO)
+            {
+            var controlsCrate = actionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
+            if (controlsCrate == null)
+            {
+                controlsCrate = Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls");
+                actionDTO.CrateStorage.CrateDTO.Add(controlsCrate);
+            }
+
+            return controlsCrate;
+        }
+
+        protected void UpdateDesignTimeCrateValue(
+            ActionDTO actionDTO, string label, params FieldDTO[] fields)
+        {
+            var crate = actionDTO.CrateStorage.CrateDTO.FirstOrDefault(
+                x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME && x.Label == label);
+
+            if (crate == null)
+            {
+                crate = Crate.CreateDesignTimeFieldsCrate(label, fields);
+
+                actionDTO.CrateStorage.CrateDTO.Add(crate);
+            }
+            else
+            {
+                var fieldsMS = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(crate.Contents);
+                fieldsMS.Fields.Clear();
+                fieldsMS.Fields.AddRange(fields);
+
+                crate.Contents = JsonConvert.SerializeObject(fieldsMS);
+            }
         }      
     }
 }

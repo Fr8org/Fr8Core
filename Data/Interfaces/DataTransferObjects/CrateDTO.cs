@@ -11,7 +11,7 @@ namespace Data.Interfaces.DataTransferObjects
     {
         public CrateDTO()
         {
-            this.CreateTime = DateTime.Now;
+            this.CreateTime = DateTime.UtcNow;
         }
 
         public string Id { get; set; }

@@ -546,6 +546,16 @@ namespace Data.Infrastructure
             }
         }
 
+	    private WebServiceRepository _webServiceRepository;
+
+	    public IWebServiceRepository WebServiceRepository
+	    {
+		    get
+		    {
+			    return _webServiceRepository ?? (_webServiceRepository = new WebServiceRepository(this));
+		    }
+	    }
+
 	    public void Save()
         {
             _context.SaveChanges();

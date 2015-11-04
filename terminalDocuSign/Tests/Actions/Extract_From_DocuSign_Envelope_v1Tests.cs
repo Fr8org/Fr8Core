@@ -1,20 +1,20 @@
-﻿using Moq;
-using UtilitiesTesting;
-using terminalDocuSign.Actions;
-using Data.Interfaces.DataTransferObjects;
-using Core.Interfaces;
-using UtilitiesTesting.Fixtures;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
+using Moq;
+using Newtonsoft.Json;
+using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
-using AutoMapper;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Linq;
-using Core.Enums;
-using NUnit.Framework;
+using Hub.Enums;
+using Hub.Interfaces;
 using Utilities.Configuration.Azure;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
+using terminalDocuSign.Actions;
 using terminalDocuSign.Tests.Fixtures;
 
 namespace terminalDocuSign.Tests.Actions
@@ -53,7 +53,7 @@ namespace terminalDocuSign.Tests.Actions
                 //Assert
                 Assert.IsNotNull(result.CrateStorage);
                 Assert.AreEqual(2, result.CrateStorage.CrateDTO.Count);
-                Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
+                Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
                 Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[1].ManifestType);
             }
         }

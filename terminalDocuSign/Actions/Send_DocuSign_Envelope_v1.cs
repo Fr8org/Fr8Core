@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Enums;
+using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
-using DocuSign.Integrations.Client;
+using Data.Interfaces.Manifests;
+using Hub.Enums;
 using TerminalBase.Infrastructure;
 using Utilities;
 using terminalDocuSign.DataTransferObjects;
@@ -28,9 +28,12 @@ namespace terminalDocuSign.Actions
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
-                return await ProcessConfigurationRequest(curActionDTO, actionDTO => ConfigurationEvaluator(actionDTO));
-            return curActionDTO;
+            if (NeedsAuthentication(curActionDTO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }
 
         public object Activate(ActionDTO curActionDTO)
@@ -65,7 +68,7 @@ namespace terminalDocuSign.Actions
         private string ExtractTemplateId(ActionDTO curActionDTO)
         {
             var confCrate = curActionDTO.CrateStorage.CrateDTO.FirstOrDefault(
-                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             var controls = Crate.GetStandardConfigurationControls(confCrate).Controls;
 
@@ -261,7 +264,7 @@ namespace terminalDocuSign.Actions
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
-                new TextSourceControlDefinitionDTO("Recipient", "Upstream Plugin-Provided Fields", "Recipient")
+                new TextSourceControlDefinitionDTO("For the Email Address Use", "Upstream Plugin-Provided Fields", "Recipient")
             };
 
             var controls = new StandardConfigurationControlsCM()

@@ -12,7 +12,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 1,
                 CriteriaExecutionType = 1,
                 ConditionsJSON = @"{""criteria"":[{""field"":""Value"",""operator"":""Equals"",""value"":""test value 1""}]}",
-                LastUpdated = DateTime.Now,
+				LastUpdated = DateTimeOffset.UtcNow,
                 Subroute = TestSubrouteDO1()
             };
             return criteriaDO;
@@ -25,7 +25,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 78,
                 CriteriaExecutionType = 2,
                 ConditionsJSON = @"{""criteria"":[{""field"":""Value"",""operator"":""Equals"",""value"":""test value 1""}]}",
-                LastUpdated = DateTime.Now,
+				LastUpdated = DateTimeOffset.UtcNow,
                 
             };
             return criteriaDO;

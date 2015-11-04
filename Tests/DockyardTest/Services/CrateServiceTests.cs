@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Core.Interfaces;
-using Core.Managers;
-using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using Hub.Managers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -89,5 +89,20 @@ namespace DockyardTest.Services
         //    var controls = FixtureData.AllConfigurationControls();
         //    var curCrateDTO = _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", controls.ToArray());
         //}
+        [Test]
+        public void CanAddLogMessageToContainerDO()
+        {
+            // Arrange
+            var curContainerDO = FixtureData.TestContainer1();
+            var curLogItemList = FixtureData.LogItemDTOList();
+            var curLabel = "Crate Manager Can Add Log Message To ContainerDO Test";
+            var curCrateDTOContents = "{\"Item\":[{\"Name\":\"LogItemDTO1\",\"PrimaryCategory\":\"Container\",\"SecondaryCategory\":\"LogItemDTO Generator\",\"Activity\":\"Add Log Message\",\"Data\":\"\"}],\"ManifestType\":13,\"ManifestId\":13,\"ManifestName\":\"Standard Logging Crate\"}";
+            //Act
+            _crate.AddLogMessage(curLabel, curLogItemList, curContainerDO);
+            var updatedCrate = curContainerDO.CrateStorageDTO().CrateDTO[0];
+            //Assert
+            Assert.AreEqual(curLabel, updatedCrate.Label);
+            Assert.AreEqual(curCrateDTOContents, updatedCrate.Contents);
+        }
     }
 }

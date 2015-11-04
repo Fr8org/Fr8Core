@@ -7,6 +7,9 @@ using Data.Validations;
 using FluentValidation;
 using Newtonsoft.Json;
 using System;
+using Data.Infrastructure;
+using System.Data.Entity.Infrastructure;
+
 
 namespace Data.Entities
 {
@@ -73,6 +76,11 @@ namespace Data.Entities
             ContainerValidator curValidator = new ContainerValidator();
             curValidator.ValidateAndThrow(this);
 
+        }
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
+        {
+            base.OnModify(originalValues, currentValues);
+            EventManager.ContainerStateChanged(currentValues);
         }
     }
 }

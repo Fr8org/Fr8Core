@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Net.Mail;
-using Core.Managers.APIManagers.Packagers;
-using Core.Services;
+using Moq;
+using NUnit.Framework;
+using StructureMap;
 using Daemons;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Moq;
-using NUnit.Framework;
-using StructureMap;
+using Hub.Managers.APIManagers.Packagers;
+using Hub.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using Core.ExternalServices;
+using Hub.ExternalServices;
 
 namespace Daemons
 {

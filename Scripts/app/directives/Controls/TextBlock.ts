@@ -1,5 +1,5 @@
 ﻿/// <reference path="../../_all.ts" />
-module dockyard.directives.textBlock {
+module dockyard.directives.button {
     'use strict';
 
     export interface ITextBlockScope extends ng.IScope {

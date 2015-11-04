@@ -38,7 +38,7 @@ module dockyard.directives {
                             if (crate != null) {
                                 var crateJson = angular.fromJson(crate.contents);
                                 angular.forEach(crateJson.Fields, function (it) {
-                                    $scope.fields.push({ name: it.Key, key: it.Key });
+                                    $scope.fields.push({ name: it.key, key: it.key });
                                 });
                             }
                         }
@@ -58,7 +58,7 @@ module dockyard.directives {
                                     $scope.defaultOperator,
                                     null)
                             ];
-                            $scope.executionType = 1;
+                            $scope.executionType = 2;
                         }
                     });
 

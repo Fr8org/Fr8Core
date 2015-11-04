@@ -1,18 +1,19 @@
-﻿using Core.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Moq;
+using StructureMap;
 using Data.Entities;
 using Data.Exceptions;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Hub.Interfaces;
 using NUnit.Framework;
-using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using System.Linq;
-using Moq;
-using System.Collections.Generic;
-using Data.Interfaces.DataTransferObjects;
-using System.Threading.Tasks;
-using System;
+
 namespace DockyardTest.Services
 {
     [TestFixture]
@@ -65,7 +66,7 @@ namespace DockyardTest.Services
                 Assert.AreNotEqual(result.Id, 0);
                 Assert.NotNull(result.StartingSubroute);
                 Assert.AreEqual(result.Subroutes.Count(), 1);
-                Assert.AreEqual(result.StartingSubroute.RouteNodes.Count, 2);
+                Assert.AreEqual(result.StartingSubroute.ChildNodes.Count, 2);
             }
         }
 

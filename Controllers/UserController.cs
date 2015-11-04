@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
 using AutoMapper.Internal;
-using Core.Managers;
-using Core.Managers.APIManagers.Authorizers;
-using Core.Services;
-using Data.Entities;
-using Data.Interfaces;
-using Data.States;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using Hub.Managers;
+using Hub.Managers.APIManagers.Authorizers;
+using Hub.Services;
+using HubWeb.ViewModels;
 using Utilities;
 using Utilities.Logging;
-using Web.ViewModels;
-using Data.Interfaces.DataTransferObjects;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [DockyardAuthorize]
     public class UserController : ApiController
@@ -394,6 +394,19 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var user = uow.UserRepository.FindOne(u => u.Id == id);
+                var userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
+                userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
+                return Ok(userDTO);
+            }
+        }
+
+        [Route("api/user/getCurrent")]
+        [HttpGet]
+        public IHttpActionResult GetCurrent()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);
                 var userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
                 userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
                 return Ok(userDTO);

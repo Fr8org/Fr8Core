@@ -5,6 +5,7 @@ using Data.Entities;
 using Data.States;
 using Utilities.Configuration.Azure;
 using Utilities.Configuration.Azure;
+using Data.Interfaces.Manifests;
 
 namespace terminalExcel.Controllers
 {
@@ -17,7 +18,7 @@ namespace terminalExcel.Controllers
         /// </summary>
         [HttpGet]
         [Route("discover")]
-        [ResponseType(typeof(List<ActivityTemplateDO>))]
+        [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverPlugins()
         {
             var result = new List<ActivityTemplateDO>();
@@ -30,21 +31,24 @@ namespace terminalExcel.Controllers
                 Version = "1"
             };
 
-            var template = new ActivityTemplateDO
+            result.Add(new ActivityTemplateDO
             {
-                Name = "Extract_Data",
-                Label = "Extract Data",
+                Name = "Load_Table_Data",
+                Label = "Load Table Data",
                 Version = "1",
                 Category = ActivityCategory.Receivers,
                 Plugin = plugin,
+                Tags = "Table Data Generator",
                 MinPaneWidth = 210
+            });
+
+
+            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            {
+                Definition = plugin,
+                Actions = result
             };
-
-           
-
-            result.Add(template);
-
-            return Json(result);    
+            return Json(curStandardFr8TerminalCM);
         }
     }
 }

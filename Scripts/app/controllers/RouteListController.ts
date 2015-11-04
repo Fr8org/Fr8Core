@@ -73,9 +73,11 @@ module dockyard.controllers {
 
         private activateProcessTemplate(processTemplate) {
             this.ProcessTemplateService.activate(processTemplate);
+            location.reload();
         };
         private deactivateProcessTemplate(processTemplate) {
             this.ProcessTemplateService.deactivate(processTemplate);
+            location.reload();
         };
         private executeProcessTemplate(processTemplateId, $event) {
             this.ProcessTemplateService.execute({ id: processTemplateId });

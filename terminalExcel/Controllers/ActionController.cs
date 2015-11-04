@@ -38,9 +38,9 @@ namespace terminalExcel.Controllers
 
         [HttpPost]
         [Route("run")]
-        public async Task<ActionDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>) _basePluginController.HandleDockyardRequest(curPlugin, "Run", curActionDTO);
+            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Run", curActionDTO);
         }
     }
 }

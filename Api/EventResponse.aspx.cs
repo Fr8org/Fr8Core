@@ -2,7 +2,7 @@
 using Data.Interfaces;
 using StructureMap;
 
-namespace Web.Api
+namespace HubWeb.Api
 {
     public partial class EventResponse : System.Web.UI.Page
     {

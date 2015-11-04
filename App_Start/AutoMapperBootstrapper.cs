@@ -4,12 +4,12 @@ using System.Linq;
 using AutoMapper;
 using Newtonsoft.Json.Linq;
 using Data.Entities;
-using Web.ViewModels;
-using Web.ViewModels.JsonConverters;
-using Utilities.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
+using HubWeb.ViewModels;
+using HubWeb.ViewModels.JsonConverters;
+using Utilities.AutoMapper;
 
-namespace Web.App_Start
+namespace HubWeb.App_Start
 {
     public class AutoMapperBootStrapper
     {
@@ -23,14 +23,10 @@ namespace Web.App_Start
                 .ForMember(mu => mu.HasGoogleToken, opts => opts.Ignore())
                 .ForMember(mu => mu.GoogleSpreadsheets, opts => opts.Ignore());
 
-            Mapper.CreateMap<ActionNameDTO, ActivityTemplateDO>()
-                  .ForMember(activityTemplateDO => activityTemplateDO.Name, opts => opts.ResolveUsing(e => e.Name))
-                  .ForMember(activityTemplateDO => activityTemplateDO.Version, opts => opts.ResolveUsing(e => e.Version));
-             
-            Mapper.CreateMap<RouteOnlyDTO, RouteDO>();
-            Mapper.CreateMap<RouteDO, RouteOnlyDTO>();
+          
             Mapper.CreateMap<UserVM, EmailAddressDO>()
                 .ForMember(userDO => userDO.Address, opts => opts.ResolveUsing(e => e.EmailAddress));
+
             Mapper.CreateMap<UserVM, Fr8AccountDO>()
                 .ForMember(userDO => userDO.Id, opts => opts.ResolveUsing(e => e.Id))
                 .ForMember(userDO => userDO.FirstName, opts => opts.ResolveUsing(e => e.FirstName))
@@ -39,11 +35,7 @@ namespace Web.App_Start
                 .ForMember(userDO => userDO.EmailAddress, opts => opts.ResolveUsing(e => new EmailAddressDO {Address = e.EmailAddress}))
                 .ForMember(userDO => userDO.Roles, opts => opts.Ignore());
 
-            Mapper.CreateMap<ActionDO, ActionDTO>();
-
-            Mapper.CreateMap<Fr8AccountDO, UserDTO>()
-                .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))
-                .ForMember(dto => dto.Status, opts => opts.ResolveUsing(e => e.State.Value));
+          
         }
     }
 }

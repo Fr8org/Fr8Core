@@ -1,5 +1,5 @@
 ﻿using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
@@ -67,5 +67,28 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplate = FixtureData.TestActivityTemplateSendGrid()
             };
         }
+        public static ActionDTO TestActionDTOSelectFr8ObjectInitial()
+        {
+            ActionDTO curActionDTO = new ActionDTO()
+            {
+                Name = "test action type",
+                ActivityTemplate = FixtureData.ActivityTemplateDTOSelectFr8Object(),
+            };
+            // curActionDTO.CrateStorage.CrateDTO.Add(CreateStandardConfigurationControls());
+
+            return curActionDTO;
+        }
+        public static ActionDTO TestActionDTOSelectFr8ObjectFollowup(string selected)
+        {
+            ActionDTO curActionDTO = new ActionDTO()
+            {
+                Name = "test action type",
+                ActivityTemplate = FixtureData.ActivityTemplateDTOSelectFr8Object(),
+            };
+            curActionDTO.CrateStorage.CrateDTO.Add(CreateStandardConfigurationControlSelectFr8Object(selected));
+
+            return curActionDTO;
+        }
+		
     }
 }

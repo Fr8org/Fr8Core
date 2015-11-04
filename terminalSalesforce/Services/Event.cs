@@ -1,9 +1,4 @@
-﻿using Core.Interfaces;
-using Core.Managers;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
-using terminalSalesforce.Infrastructure;
-using StructureMap;
+﻿using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,9 +10,14 @@ using System.Xml.Linq;
 using System.Configuration;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using Data.Interfaces.ManifestSchemas;
-using Core.StructureMap;
+using Data.Interfaces.Manifests;
+using Newtonsoft.Json;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.StructureMap;
 using TerminalBase.BaseClasses;
+using terminalSalesforce.Infrastructure;
 
 namespace terminalSalesforce.Services
 {

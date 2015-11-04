@@ -2,7 +2,7 @@
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Data.States;
 using StructureMap;
 using System;
@@ -31,6 +31,17 @@ namespace UtilitiesTesting.Fixtures
                 Id = Guid.NewGuid().ToString(),
                 Label = "Label 2",
                 Contents = "Contents 2",
+                ParentCrateId = ""
+            };
+        }
+
+        public static CrateDTO CrateDTO3()
+        {
+            return new CrateDTO()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Label = "Test",
+                Contents = "Container Created Test",
                 ParentCrateId = ""
             };
         }
@@ -249,6 +260,22 @@ namespace UtilitiesTesting.Fixtures
                 Contents = "{\"Controls\":[{\"groupName\":\"SMSNumber_Group\",\"radios\":[{\"selected\":false,\"name\":\"SMSNumberOption\",\"value\":null,\"controls\":[{\"name\":\"SMS_Number\",\"required\":true,\"value\":null,\"label\":\"SMS Number\",\"type\":\"TextBox\",\"selected\":false,\"events\":null,\"source\":null}]},{\"selected\":true,\"name\":\"SMSNumberOption\",\"value\":null,\"controls\":[{\"listItems\":[{\"Key\":\"+15005550006\",\"Value\":\"+15005550006\"}],\"name\":\"upstream_crate\",\"required\":false,\"value\":\"+15005550006\",\"label\":\"a value from Upstream Crate:\",\"type\":\"DropDownList\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":{\"manifestType\":\"Standard Design-Time Fields\",\"label\":\"Available Fields\"}}]}],\"name\":null,\"required\":false,\"value\":null,\"label\":\"For the SMS Number use:\",\"type\":\"RadioButtonGroup\",\"selected\":false,\"events\":null,\"source\":null},{\"name\":\"SMS_Body\",\"required\":true,\"value\":\"DocuSign Sent\",\"label\":\"SMS Body\",\"type\":\"TextBox\",\"selected\":false,\"events\":null,\"source\":null}]}",
             };
         }
+        public static List<LogItemDTO> LogItemDTOList()
+        {
+            var curLogItemDTOList = new List<LogItemDTO>();
 
+            var curLogItemDTO = new LogItemDTO
+            {
+                Name = "LogItemDTO1",
+                PrimaryCategory = "Container",
+                SecondaryCategory = "LogItemDTO Generator",
+                Activity = "Add Log Message",
+                Data = ""
+            };
+
+            curLogItemDTOList.Add(curLogItemDTO);
+
+            return curLogItemDTOList;
+        }
     }
 }

@@ -10,7 +10,7 @@ var dockyard;
             //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
             var RadioButtonGroup = (function () {
                 function RadioButtonGroup() {
-                    this.template = '<div ng-repeat="radio in field.radios"><radio-button-option group-name="{{field.groupName}}" change-selection="changeSelection(radio)" currentAction="currentAction" field="radio"></radio-button-option></div>';
+                    this.template = '<div ng-repeat="radio in field.radios"><div class="radio-button-group-content"> <radio-button-option group-name="{{field.groupName}}" change-selection="changeSelection(radio)" currentAction="currentAction" field="radio"></radio-button-option></div></div>';
                     this.scope = {
                         currentAction: '=',
                         field: '=',

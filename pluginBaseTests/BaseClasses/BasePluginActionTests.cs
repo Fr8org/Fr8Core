@@ -1,14 +1,14 @@
-﻿using AutoMapper;
-using Core.Interfaces;
+﻿using System;
+using System.Threading.Tasks;
+using AutoMapper;
+using NUnit.Framework;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using NUnit.Framework;
+using Hub.Enums;
+using Hub.Interfaces;
 using TerminalBase.Infrastructure;
-using StructureMap;
-using System;
-using System.Threading.Tasks;
-using Core.Enums;
 using TerminalBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
@@ -83,13 +83,12 @@ namespace pluginBaseTests.BaseClasses
             //Arrange
             object[] parameters = new object[] { FixtureData.FieldDefinitionDTO1() };
 
-            ;
             //Act
             var result = (CrateDTO)ClassMethod.Invoke(typeof(BasePluginAction), "PackControlsCrate", parameters);
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, result.ManifestType);
+            Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, result.ManifestType);
         }
 
 

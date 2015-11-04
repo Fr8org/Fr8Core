@@ -1,0 +1,74 @@
+﻿<div ng-controller="WebServiceListController">
+
+	<div class="row" style="margin-bottom: 24px;">
+		<div class="col-md-12 col-sm-12">
+			<div class="portlet light ">
+
+				<div class="portlet-title">
+					<div class="caption caption-md">
+						<i class="icon-bar-chart font-green-haze hide"></i>
+						<span class="caption-subject font-green-haze bold uppercase">All Web Services</span>
+						<span class="caption-helper hide">weekly stats...</span>
+					</div>
+					<div class="actions">
+						<a class="btn green" ng-click="showAddWebServiceModal()" href="#">Add Web Service</a>
+					</div>
+				</div>
+
+				<div class="portlet-body">
+					<div ng-show="webServices.length == 0" class="ng-hide">No web services found.</div>
+					<div ng-show="webServices.length > 0">
+						<table datatable="ng" class="row-border hover">
+							<thead>
+								<tr>
+									<th>Id</th>
+									<th>Icon</th>
+									<th>Name</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="webService in webServices">
+									<td>{{webService.id}}</td>
+									<td>
+										<img src="{{webService.iconPath}}" width="32" height="32" />
+									</td>
+									<td>{{webService.name}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<script type="text/ng-template" id="webServiceFormModal">
+		<form role="form" ng-submit="submit()" name="form" novalidate>
+			
+			<div class="modal-header">
+				<h3 class="modal-title">Add Web Service</h3>
+			</div>
+
+			<div class="modal-body">
+
+				<div class="form-group">
+					<label class="control-label">Name</label>
+					<input type="text" placeholder="" maxlength="100" class="form-control" ng-model="webService.name" />
+				</div>
+				<div class="form-group">
+					<label class="control-label">Icon Path</label>
+					<input type="text" placeholder="" maxlength="100" class="form-control" ng-model="webService.iconPath" />
+				</div>
+
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn btn-primary" type="submit">Ok</button>
+				<button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+			</div>
+
+		</form>
+	</script>
+
+</div>

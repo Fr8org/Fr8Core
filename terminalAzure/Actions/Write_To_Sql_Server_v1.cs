@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Enums;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
+using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.Manifests;
+using Data.Interfaces.DataTransferObjects;
+
+using Hub.Enums;
+using TerminalBase;
+using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
+using TerminalSqlUtilities;
 using terminalAzure.Infrastructure;
 using terminalAzure.Services;
-using TerminalBase.Infrastructure;
-using StructureMap;
-using TerminalBase;
-using Data.Interfaces;
-using Data.Interfaces.ManifestSchemas;
-using TerminalBase.BaseClasses;
 
 namespace terminalAzure.Actions
 {
@@ -42,7 +44,7 @@ namespace terminalAzure.Actions
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name connection string with a value
-            var controlsCrates = Crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+            var controlsCrates = Crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME,
                 curActionDTO.CrateStorage);
             var connectionStrings = Crate.GetElementByKey(controlsCrates, key: "connection_string", keyFieldName: "name")
                 .Select(e => (string)e["value"])
@@ -308,7 +310,7 @@ namespace terminalAzure.Actions
                 }
 
                 // TODO: change "dbo" schema later.
-                tables.Add(new Table("dbo", tablePair.Key, new[] { new Row(values) }));
+                tables.Add(new Table(new TableInfo("dbo", tablePair.Key), new[] { new Row(values) }));
             }
 
             return tables;

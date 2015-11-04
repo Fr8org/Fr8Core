@@ -1,0 +1,16 @@
+﻿@{
+    Layout = null;
+}
+@model HubWeb.ViewModels.AuthenticationErrorVM
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Authentication failed</title>
+</head>
+<body>
+    <div>Authentication failed due to following reason:</div>
+    <div>@Model.Error</div>
+</body>
+</html>

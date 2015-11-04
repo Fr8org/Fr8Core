@@ -13,7 +13,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using StructureMap;
 using MT_Field = Data.Entities.MT_Field;
@@ -70,6 +70,8 @@ namespace Data.Migrations
 
             //AddAuthorizationTokens(uow);
             AddContainerDOForTestingApi(uow);
+
+	        AddWebServices(uow);
         }
 
         //Method to let us seed into memory as well
@@ -96,7 +98,7 @@ namespace Data.Migrations
                 Id = "eec6e3b9-63b5-4f55-af49-b0d40dc8d5e2",
                 Label = "Payload Data",
                 ManifestId = 0,
-                CreateTime = DateTime.Now,
+                CreateTime = DateTime.UtcNow,
                 ManifestType = string.Empty,
                 Contents = JsonConvert.SerializeObject(new object[]{
                 new
@@ -123,7 +125,7 @@ namespace Data.Migrations
                 Id = "eec6e3b9-63b5-4f55-af49-b0d40dc8d5e2",
                 Label = "Standard Event Report",
                 ManifestId = 7,
-                CreateTime = DateTime.Now,
+				CreateTime = DateTime.UtcNow,
                 ManifestType = "Standard Event Report",
                 Contents = JsonConvert.SerializeObject(docusignEventPayload)
             };
@@ -141,7 +143,7 @@ namespace Data.Migrations
                     Id = "671a5b28-1e80-4fbd-ac62-2f308893192f",
                     Label = "DocuSign Envelope Payload Data",
                     ManifestId = 5,
-                    CreateTime = DateTime.Now,
+					CreateTime = DateTime.UtcNow,
                     ManifestType = "Standard Payload Data",
                     Contents = JsonConvert.SerializeObject(new[]
                     {
@@ -173,7 +175,7 @@ namespace Data.Migrations
                 var docuSignPlugin = uow.PluginRepository.FindOne(p => p.Name == "pluginDocuSign");
                 token.Plugin = docuSignPlugin;
                 token.PluginID = docuSignPlugin.Id;
-                token.ExpiresAt = DateTime.Now.AddDays(10);
+				token.ExpiresAt = DateTime.UtcNow.AddDays(10);
 
                 uow.AuthorizationTokenRepository.Add(token);
                 uow.SaveChanges();
@@ -440,14 +442,21 @@ namespace Data.Migrations
             // Create test DockYard account for plugin subscription.
             // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
 
-            AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1", true);
-            AddPlugins(uow, "pluginExcel", "localhost:47011", "1", false);
-            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1", true);
+            // TODO: remove this, DO-1397
+            // AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1", true);
+            // AddPlugins(uow, "pluginExcel", "localhost:47011", "1", false);
+            // AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1", true);
+            AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1");
+            AddPlugins(uow, "pluginExcel", "localhost:47011", "1");
+            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1");
             uow.SaveChanges();
         }
 
+        // TODO: remove this, DO-1397
+        // private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint,
+        //     string version, bool requiresAuthentication)
         private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint,
-            string version, bool requiresAuthentication)
+            string version)
         {
             // Check that plugin does not exist yet.
             var pluginExists = uow.PluginRepository.GetQuery().Any(x => x.Name == pluginName);
@@ -462,7 +471,8 @@ namespace Data.Migrations
                     PluginStatus = PluginStatus.Active,
                     Endpoint = endPoint,
                     Version = version,
-                    RequiresAuthentication = requiresAuthentication
+                    // TODO: remove this, DO-1397
+                    // RequiresAuthentication = requiresAuthentication
                 };
 
                 uow.PluginRepository.Add(pluginDO);
@@ -493,14 +503,39 @@ namespace Data.Migrations
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
         }
 
+	    private void AddWebServices(IUnitOfWork uow)
+	    {
+			AddWebService(uow, "AWS", "/Content/icons/web_services/aws-icon-64x64.png");
+			AddWebService(uow, "Slack", "/Content/icons/web_services/slack-icon-64x64.png");
+			AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
+
+			uow.SaveChanges();
+	    }
+
+	    private void AddWebService(IUnitOfWork uow, string name, string iconPath)
+	    {
+		    var isWsExists = uow.WebServiceRepository.GetQuery().Any(x => x.Name == name);
+
+		    if (!isWsExists)
+		    {
+				var webServiceDO = new WebServiceDO
+				{
+					Name = name,
+					IconPath = iconPath
+				};
+
+				uow.WebServiceRepository.Add(webServiceDO);
+		    }
+	    }
+
 
         //Getting random working time within next 3 days
         private static DateTimeOffset GetRandomEventStartTime()
         {
-            TimeSpan timeSpan = DateTime.Now.AddDays(3) - DateTime.Now;
+			TimeSpan timeSpan = DateTime.UtcNow.AddDays(3) - DateTime.UtcNow;
             var randomTest = new Random();
             TimeSpan newSpan = new TimeSpan(0, randomTest.Next(0, (int)timeSpan.TotalMinutes), 0);
-            DateTime newDate = DateTime.Now;
+			DateTime newDate = DateTime.UtcNow;
             while (newDate.TimeOfDay.Hours < 9)
             {
                 newDate = newDate.Add(new TimeSpan(1, 0, 0));

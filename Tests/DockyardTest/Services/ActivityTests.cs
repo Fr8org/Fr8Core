@@ -1,18 +1,18 @@
-﻿using Core.Interfaces;
-using Core.Services;
-using Core.StructureMap;
-using Data.Entities;
-using Data.Interfaces;
-using Data.States;
-using Moq;
-using NUnit.Framework;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Moq;
+using NUnit.Framework;
+using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Data.States;
+using Hub.Interfaces;
+using Hub.Services;
+using Hub.StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -71,7 +71,7 @@ namespace DockyardTest.Services
         {
             seq.Add(root);
 
-            foreach (var activityDo in root.RouteNodes.OrderBy(x=>x.Ordering))
+            foreach (var activityDo in root.ChildNodes.OrderBy(x=>x.Ordering))
             {
                 TraverseActivities(activityDo, seq);
             }

@@ -14,12 +14,12 @@ namespace Data.Entities
         public void BeforeCreate()
         {
             if (CreateDate == default(DateTimeOffset))
-                CreateDate = DateTimeOffset.Now;
+                CreateDate = DateTimeOffset.UtcNow;
         }
 
         public void BeforeSave()
         {
-            LastUpdated = DateTimeOffset.Now;
+            LastUpdated = DateTimeOffset.UtcNow;
         }
     }
 }

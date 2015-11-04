@@ -5,9 +5,9 @@ module dockyard.directives.paneConfigureAction {
     export enum MessageType {
         PaneConfigureAction_ActionUpdated,
         PaneConfigureAction_ActionRemoved,
-        PaneConfigureAction_InternalAuthentication,
-        PaneConfigureAction_ExternalAuthentication,
-        PaneConfigureAction_Reconfigure
+        PaneConfigureAction_Reconfigure,
+        PaneConfigureAction_RenderConfiguration,
+        PaneConfigureAction_ChildActionsDetected
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
@@ -65,6 +65,7 @@ module dockyard.directives.paneConfigureAction {
         mapFields: (scope: IPaneConfigureActionScope) => void;
         processing: boolean;
         configurationWatchUnregisterer: Function;
+        mode: string;
     }
 
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -76,7 +77,8 @@ module dockyard.directives.paneConfigureAction {
         public templateUrl = '/AngularTemplate/PaneConfigureAction';
         public controller: ($scope: IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
-            currentAction: '='
+            currentAction: '=',
+            mode: '@'
         };
         public restrict = 'E';
 
@@ -84,9 +86,11 @@ module dockyard.directives.paneConfigureAction {
             private ActionService: services.IActionService,
             private crateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
-            private $timeout: ng.ITimeoutService
+            private $timeout: ng.ITimeoutService,
+            private $modal,
+            private $window: ng.IWindowService,
+            private $http: ng.IHttpService
         ) {
-
             PaneConfigureAction.prototype.link = (
                 scope: IPaneConfigureActionScope,
                 element: ng.IAugmentedJQuery,
@@ -112,6 +116,11 @@ module dockyard.directives.paneConfigureAction {
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], function () {
                     loadConfiguration();
                 });
+
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_RenderConfiguration],
+                    //Allow some time for parent and current action instance to sync
+                    () => $timeout(() => processConfiguration(), 300)
+                );
 
                 // Get configuration settings template from the server if the current action does not contain those             
                 if ($scope.currentAction.activityTemplateId > 0) {
@@ -177,24 +186,20 @@ module dockyard.directives.paneConfigureAction {
                     }
                     else {
                         var fieldEvent = eventHandlerList[0];
-
                         if (fieldEvent.handler != null) {
                             crateHelper.mergeControlListCrate(
                                 scope.currentAction.configurationControls,
                                 scope.currentAction.crateStorage
                             );
                             scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
-                
                             loadConfiguration();
                         }
                     }
-                }
-
+                } 
 
                 // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
                 // We parse its contents and put it into currentAction.configurationControls structure.
                 function loadConfiguration() {
-
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;
 
@@ -203,20 +208,27 @@ module dockyard.directives.paneConfigureAction {
                     }
 
                     ActionService.configure($scope.currentAction).$promise
-                        .then((res: any) => {
+                        .then((res: interfaces.IActionVM) => {
+                            if (res.childrenActions && res.childrenActions.length > 0) {
+                                // If the directive is used for configuring solutions,
+                                // the SolutionController would listen to this event 
+                                // and redirect user to the ProcessBuilder once if is received.
+                                // It means that solution configuration is complete. 
+                                $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
+                            }
                             $scope.currentAction.crateStorage = res.crateStorage;
                             $scope.processConfiguration();
                         })
                         .catch((result) => {
                             var errorText = 'Something went wrong. Click to retry.';
-                            if (result.status && result.status >= 300) {
+                            if (result.status && result.status >= 400) {
                                 // Bad http response
                                 errorText = 'Configuration loading error. Click to retry.';
                             } else if (result.message) {
                                 // Exception was thrown in the code
                                 errorText = result.message;
                             }
-                            var control = new model.TextBlock('TextBlock', errorText, 'well well-lg alert-danger');
+                            var control = new model.TextBlock(errorText, 'well well-lg alert-danger');
                             $scope.currentAction.configurationControls = new model.ControlsList();
                             $scope.currentAction.configurationControls.fields = [control];
                         })
@@ -236,18 +248,13 @@ module dockyard.directives.paneConfigureAction {
 
                         // Dockyard auth mode.
                         if (authMS.Mode == 1) {
-                            $scope.$emit(
-                                MessageType[MessageType.PaneConfigureAction_InternalAuthentication],
-                                new InternalAuthenticationArgs($scope.currentAction.activityTemplateId)
-                            );
+                            startInternalAuthentication($scope.currentAction.activityTemplate.id);
                         }
+
                         // External auth mode.                           
                         else {
                             // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                            $scope.$emit(
-                                MessageType[MessageType.PaneConfigureAction_ExternalAuthentication],
-                                new ExternalAuthenticationArgs($scope.currentAction.activityTemplateId)
-                            );
+                            startExternalAuthentication($scope.currentAction.activityTemplate.id);
                         }
 
                         return;
@@ -263,7 +270,50 @@ module dockyard.directives.paneConfigureAction {
                             true);
                     }, 1000);
                 }
-            };
+
+                function startInternalAuthentication(activityTemplateId: number) {
+                    var self = this;
+
+                    var modalScope = <any>$scope.$new(true);
+                    modalScope.activityTemplateId = activityTemplateId;
+
+                    $modal.open({
+                        animation: true,
+                        templateUrl: 'AngularTemplate/InternalAuthentication',
+                        controller: 'InternalAuthenticationController',
+                        scope: modalScope
+                    })
+                        .result.then(() => loadConfiguration());
+                }
+
+                function startExternalAuthentication(activityTemplateId: number) {
+                    var self = this;
+
+                    var messageListener = function (event) {
+                        if (!self.$scope || !event.data || event.data != 'external-auth-success') {
+                            return;
+                        }
+                        loadConfiguration();
+                    };
+
+                    $http
+                        .get('/authentication/initial_url?id=' + activityTemplateId)
+                        .then(res => {
+                            var url = (<any>res.data).url;
+                            var childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
+                            window.addEventListener('message', messageListener);
+                            var isClosedHandler = function () {
+                                if (childWindow.closed) {
+                                    window.removeEventListener('message', messageListener);
+                                }
+                                else {
+                                    setTimeout(isClosedHandler, 500);
+                                }
+                            };
+                            setTimeout(isClosedHandler, 500);
+                        });
+                }
+            }
         }    
 
         //The factory function returns Directive object as per Angular requirements
@@ -272,13 +322,16 @@ module dockyard.directives.paneConfigureAction {
                 ActionService,
                 crateHelper: services.CrateHelper,
                 $filter: ng.IFilterService,
-                $timeout: ng.ITimeoutService
+                $timeout: ng.ITimeoutService,
+                $modal,
+                $window: ng.IWindowService,
+                $http: ng.IHttpService
             ) => {
 
-                return new PaneConfigureAction(ActionService, crateHelper, $filter, $timeout);
+                return new PaneConfigureAction(ActionService, crateHelper, $filter, $timeout, $modal, $window, $http);
             };
 
-            directive['$inject'] = ['ActionService', 'CrateHelper', '$filter', '$timeout'];
+            directive['$inject'] = ['ActionService', 'CrateHelper', '$filter', '$timeout', '$modal', '$window', '$http'];
             return directive;
         }
     }

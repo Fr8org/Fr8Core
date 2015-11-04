@@ -68,6 +68,7 @@ namespace Data.Interfaces
 
         IPluginRepository PluginRepository { get; }
         ISubscriptionRepository SubscriptionRepository { get; }
+		IWebServiceRepository WebServiceRepository { get; }
 
 	    /// <summary>
         /// Call this to commit the unit of work

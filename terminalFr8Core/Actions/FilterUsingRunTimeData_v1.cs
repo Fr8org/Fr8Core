@@ -1,14 +1,14 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Core.Enums;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Enums;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalFr8Core.Interfaces;
@@ -31,7 +31,7 @@ namespace terminalFr8Core.Actions
 
             ActionDO curAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             var controlsMS = Action.GetControlsManifest(curAction);
-
+            
             ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane);
             if (filterPaneControl == null)
             {
@@ -61,7 +61,7 @@ namespace terminalFr8Core.Actions
         }
 
         private bool Evaluate(string criteria, int processId, IEnumerable<FieldDTO> values)
-        {
+            {
             if (criteria == null)
                 throw new ArgumentNullException("criteria");
             if (criteria == string.Empty)
@@ -116,9 +116,10 @@ namespace terminalFr8Core.Actions
                 var nameRightExpr = Expression.Constant(condition.Field);
                 var nameExpression = Expression.Equal(nameLeftExpr, nameRightExpr);
 
-                var valueLeftExpr = Expression.Property(pe, valuePropInfo);
-                var valueRightExpr = Expression.Constant(condition.Value);
-
+                var valueLeftExpr = Expression.Invoke(TryMakeDecimalExpression.Value, Expression.Property(pe, valuePropInfo));
+                var valueRightExpr = Expression.Invoke(TryMakeDecimalExpression.Value, Expression.Constant(condition.Value));
+                var comparisionExpr = Expression.Call(valueLeftExpr, "CompareTo", null, valueRightExpr);
+                var zero = Expression.Constant(0);
 
                 var op = condition.Operator;
                 Expression criterionExpression;
@@ -126,22 +127,22 @@ namespace terminalFr8Core.Actions
                 switch (op)
                 {
                     case "eq":
-                        criterionExpression = Expression.Equal(valueLeftExpr, valueRightExpr);
+                        criterionExpression = Expression.Equal(comparisionExpr, zero);
                         break;
                     case "neq":
-                        criterionExpression = Expression.NotEqual(valueLeftExpr, valueRightExpr);
+                        criterionExpression = Expression.NotEqual(comparisionExpr, zero);
                         break;
                     case "gt":
-                        criterionExpression = Expression.GreaterThan(valueLeftExpr, valueRightExpr);
+                        criterionExpression = Expression.GreaterThan(comparisionExpr, zero);
                         break;
                     case "gte":
-                        criterionExpression = Expression.GreaterThanOrEqual(valueLeftExpr, valueRightExpr);
+                        criterionExpression = Expression.GreaterThanOrEqual(comparisionExpr, zero);
                         break;
                     case "lt":
-                        criterionExpression = Expression.LessThan(valueLeftExpr, valueRightExpr);
+                        criterionExpression = Expression.LessThan(comparisionExpr, zero);
                         break;
                     case "lte":
-                        criterionExpression = Expression.LessThanOrEqual(valueLeftExpr, valueRightExpr);
+                        criterionExpression = Expression.LessThanOrEqual(comparisionExpr, zero);
                         break;
                     default:
                         throw new NotSupportedException(string.Format("Not supported operator: {0}", op));
@@ -173,10 +174,28 @@ namespace terminalFr8Core.Actions
             return whereCallExpression;
         }
 
+        private static readonly Lazy<Expression<Func<string, IComparable>>> TryMakeDecimalExpression =
+            new Lazy<Expression<Func<string, IComparable>>>(() =>
+            {
+                var value = Expression.Parameter(typeof(string), "value");
+                var returnValue = Expression.Variable(typeof(IComparable), "result");
+                var decimalValue = Expression.Variable(typeof(decimal), "decimalResult");
+                var ifExpression = Expression.IfThenElse(
+                    Expression.Call(typeof(decimal), "TryParse", null,
+                            Expression.TypeAs(value, typeof(string)), decimalValue),
+                    Expression.Assign(returnValue, Expression.TypeAs(decimalValue, typeof(IComparable))),
+                    Expression.Assign(returnValue, Expression.TypeAs(value, typeof(IComparable))));
+                var func = Expression.Block(
+                    new[] { returnValue, decimalValue },
+                    ifExpression,
+                    returnValue);
+                return Expression.Lambda<Func<string, IComparable>>(func, "TryMakeDecimal", new[] { value });
+            });
+
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
+        public override async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
         }
@@ -214,7 +233,7 @@ namespace terminalFr8Core.Actions
                 //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
                 CrateDTO queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
                     "Queryable Criteria", curUpstreamFields);
-
+                    
                 //build a controls crate to render the pane
                 CrateDTO configurationControlsCrate = CreateControlsCrate();
 
@@ -247,15 +266,11 @@ namespace terminalFr8Core.Actions
                 return ConfigurationRequestType.Initial;
             }
 
-            var hasControlsCrate = curActionDataPackageDTO.CrateStorage.CrateDTO
-                .Any(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
-                    && x.Label == "Configuration_Controls");
+            var hasControlsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME) != null;
 
-            var hasQueryFieldsCrate = curActionDataPackageDTO.CrateStorage.CrateDTO
-                .Any(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
-                    && x.Label == "Queryable Criteria");
+            var hasQueryFieldsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) != null;
 
-            if (hasControlsCrate && hasQueryFieldsCrate)
+            if (hasControlsCrate && hasQueryFieldsCrate && HasValidConfiguration(curActionDataPackageDTO))
             {
                 
                 return ConfigurationRequestType.Followup;
@@ -264,6 +279,58 @@ namespace terminalFr8Core.Actions
             {
                 return ConfigurationRequestType.Initial;
             }
+        }
+
+
+
+        /// <summary>
+        ///  Returns true, if at least one row has been fully configured.
+        /// </summary>
+        /// <param name="curActionDataPackageDTO"></param>
+        /// <returns></returns>
+        private bool HasValidConfiguration(ActionDTO curActionDataPackageDTO)
+        {
+            CrateDTO crateDTO = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+
+            if (crateDTO != null && !string.IsNullOrEmpty(crateDTO.Contents))
+            {
+                RadioButtonOption radioButtonOption = JsonConvert.DeserializeObject<RadioButtonOption>(crateDTO.Contents);
+                if (radioButtonOption != null)
+                {
+                    foreach (ControlDefinitionDTO controlDefinitionDTO in radioButtonOption.Controls)
+                    {
+                        if (!string.IsNullOrEmpty(controlDefinitionDTO.Value))
+                        {
+                            FilterDataDTO filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(controlDefinitionDTO.Value);
+                            return filterDataDTO.Conditions.Any(x =>
+                                  x.Field != null && x.Field != "" &&
+                                  x.Operator != null && x.Operator != "" &&
+                                  x.Value != null && x.Value != "");
+                        }
+                    }
+                }
+
+            }
+            return false;
+        }
+
+        private CrateDTO GetCratesByManifestType(ActionDTO curActionDataPackageDTO, string curManifestType)
+        {
+            string curLabel = string.Empty;
+            switch (curManifestType)
+            {
+                case CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME:
+                    curLabel = "Configuration_Controls";
+                    break;
+                case CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME:
+                    curLabel = "Queryable Criteria";
+                    break;
+            }
+
+            return curActionDataPackageDTO.CrateStorage.CrateDTO.FirstOrDefault(x =>
+                x.ManifestType == curManifestType
+                && x.Label == curLabel);
+
         }
     }
 }

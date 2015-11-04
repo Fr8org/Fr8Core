@@ -7,7 +7,7 @@ using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 
-namespace Web.ExceptionHandling
+namespace HubWeb.ExceptionHandling
 {
     public partial class Fr8ExceptionHandler
     {

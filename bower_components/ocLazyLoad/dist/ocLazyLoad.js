@@ -1,6 +1,6 @@
 /**
  * oclazyload - Load modules on demand (lazy load) with angularJS
- * @version v1.0.4
+ * @version v1.0.6
  * @link https://github.com/ocombe/ocLazyLoad
  * @license MIT
  * @author Olivier Combe <olivier.combe@gmail.com>
@@ -34,7 +34,8 @@
         },
             debug = false,
             events = false,
-            moduleCache = [];
+            moduleCache = [],
+            modulePromises = {};
 
         moduleCache.push = function (value) {
             if (this.indexOf(value) === -1) {
@@ -136,18 +137,22 @@
          * @param obj
          */
         var stringify = function stringify(obj) {
-            var cache = [];
-            return JSON.stringify(obj, function (key, value) {
-                if (angular.isObject(value) && value !== null) {
-                    if (cache.indexOf(value) !== -1) {
-                        // Circular reference found, discard key
-                        return;
+            try {
+                return JSON.stringify(obj);
+            } catch (e) {
+                var cache = [];
+                return JSON.stringify(obj, function (key, value) {
+                    if (angular.isObject(value) && value !== null) {
+                        if (cache.indexOf(value) !== -1) {
+                            // Circular reference found, discard key
+                            return;
+                        }
+                        // Store value in our collection
+                        cache.push(value);
                     }
-                    // Store value in our collection
-                    cache.push(value);
-                }
-                return value;
-            });
+                    return value;
+                });
+            }
         };
 
         var hashCode = function hashCode(str) {
@@ -221,16 +226,28 @@
             if (angular.isUndefined(regInvokes[moduleName][type])) {
                 regInvokes[moduleName][type] = {};
             }
-            var onInvoke = function onInvoke(invokeName, signature) {
+            var onInvoke = function onInvoke(invokeName, invoke) {
                 if (!regInvokes[moduleName][type].hasOwnProperty(invokeName)) {
                     regInvokes[moduleName][type][invokeName] = [];
                 }
-                if (regInvokes[moduleName][type][invokeName].indexOf(signature) === -1) {
+                if (checkHashes(invoke, regInvokes[moduleName][type][invokeName])) {
                     newInvoke = true;
-                    regInvokes[moduleName][type][invokeName].push(signature);
+                    regInvokes[moduleName][type][invokeName].push(invoke);
                     broadcast('ocLazyLoad.componentLoaded', [moduleName, type, invokeName]);
                 }
             };
+
+            function checkHashes(potentialNew, invokes) {
+                var isNew = true,
+                    newHash;
+                if (invokes.length) {
+                    newHash = signature(potentialNew);
+                    angular.forEach(invokes, function (invoke) {
+                        isNew = isNew && signature(invoke) !== newHash;
+                    });
+                }
+                return isNew;
+            }
 
             function signature(data) {
                 if (angular.isArray(data)) {
@@ -250,15 +267,15 @@
             }
 
             if (angular.isString(invokeList)) {
-                onInvoke(invokeList, signature(args[2][1]));
+                onInvoke(invokeList, args[2][1]);
             } else if (angular.isObject(invokeList)) {
                 angular.forEach(invokeList, function (invoke, key) {
                     if (angular.isString(invoke)) {
                         // decorators for example
-                        onInvoke(invoke, signature(invokeList[1]));
+                        onInvoke(invoke, invokeList[1]);
                     } else {
                         // components registered as object lists {"componentName": function() {}}
-                        onInvoke(key, signature(invoke));
+                        onInvoke(key, invoke);
                     }
                 });
             } else {
@@ -600,9 +617,11 @@
                  * Inject new modules into Angular
                  * @param moduleName
                  * @param localParams
+                 * @param real
                  */
                 inject: function inject(moduleName) {
                     var localParams = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+                    var real = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
 
                     var self = this,
                         deferred = $q.defer();
@@ -610,17 +629,18 @@
                         if (angular.isArray(moduleName)) {
                             var promisesList = [];
                             angular.forEach(moduleName, function (module) {
-                                promisesList.push(self.inject(module));
+                                promisesList.push(self.inject(moduleName, localParams, real));
                             });
                             return $q.all(promisesList);
                         } else {
-                            self._addToLoadList(self._getModuleName(moduleName), true);
+                            self._addToLoadList(self._getModuleName(moduleName), true, real);
                         }
                     }
                     if (modulesToLoad.length > 0) {
                         var res = modulesToLoad.slice(); // clean copy
                         var loadNext = function loadNext(moduleName) {
                             moduleCache.push(moduleName);
+                            modulePromises[moduleName] = deferred.promise;
                             self._loadDependencies(moduleName, localParams).then(function success() {
                                 try {
                                     justLoaded = [];
@@ -643,6 +663,8 @@
 
                         // load the first in list
                         loadNext(modulesToLoad.shift());
+                    } else if (localParams && localParams.name && modulePromises[localParams.name]) {
+                        return modulePromises[localParams.name];
                     } else {
                         deferred.resolve();
                     }
@@ -744,7 +766,7 @@
             priority: 1000,
             compile: function compile(element, attrs) {
                 // we store the content and remove it before compilation
-                var content = element[0].innerHTML;
+                var content = element.contents();
                 element.html('');
 
                 return function ($scope, $element, $attr) {
@@ -754,14 +776,7 @@
                     }, function (moduleName) {
                         if (angular.isDefined(moduleName)) {
                             $ocLazyLoad.load(moduleName).then(function () {
-                                $animate.enter(content, $element);
-                                var contents = element.contents();
-                                angular.forEach(contents, function (content) {
-                                    if (content.nodeType !== 3) {
-                                        // 3 is a text node
-                                        $compile(content)($scope);
-                                    }
-                                });
+                                $animate.enter($compile(content)($scope), $element);
                             });
                         }
                     }, true);
@@ -1110,7 +1125,7 @@
 
                 // if someone used an external loader and called the load function with just the module name
                 if (angular.isUndefined(config.files) && angular.isDefined(config.name) && $delegate.moduleExists(config.name)) {
-                    return $delegate.inject(config.name, localParams);
+                    return $delegate.inject(config.name, localParams, true);
                 }
 
                 $delegate.filesLoader(config, localParams).then(function () {
