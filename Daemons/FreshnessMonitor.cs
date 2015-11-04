@@ -134,7 +134,7 @@ namespace Daemons
         {
             double expectedResponseActiveDurationMinutes = Convert.ToDouble(_configRepository.Get<string>("ExpectedResponseActiveDuration"));
 
-            DateTimeOffset responseTimeLimit = DateTimeOffset.Now.Subtract(TimeSpan.FromMinutes(expectedResponseActiveDurationMinutes));
+            DateTimeOffset responseTimeLimit = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(expectedResponseActiveDurationMinutes));
             List<ExpectedResponseDO> staleResponseList = uow.ExpectedResponseRepository.GetQuery()
                 .Where(x => x.Status == ExpectedResponseStatus.Active && x.LastUpdated < responseTimeLimit).ToList();
             foreach (var er in staleResponseList)

@@ -37,6 +37,7 @@ namespace Data.Interfaces.DataTransferObjects
         public const string Button = "Button";
         public const string TextSource = "TextSource";
         public const string TextArea = "TextArea";
+        public const string QueryBuilder = "QueryBuilder";
     }
 
     public class CheckBoxControlDefinitionDTO : ControlDefinitionDTO
@@ -78,6 +79,14 @@ namespace Data.Interfaces.DataTransferObjects
         public TextBoxControlDefinitionDTO()
         {
             Type = ControlTypes.TextBox;
+        }
+    }
+
+    public class QueryBuilderControlDefinitionDTO : ControlDefinitionDTO
+    {
+        public QueryBuilderControlDefinitionDTO()
+        {
+            Type = ControlTypes.QueryBuilder;
         }
     }
 

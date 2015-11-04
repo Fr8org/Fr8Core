@@ -17,7 +17,7 @@ namespace UtilitiesTesting.Fixtures
                 PrimaryCategory = "Operations",
                 SecondaryCategory = "System Startup",
                 Activity = "system startup",
-                CreateDate = DateTimeOffset.Now.AddDays(-1) 
+                CreateDate = DateTimeOffset.UtcNow.AddDays(-1) 
             };
             return curFactDO;
         }

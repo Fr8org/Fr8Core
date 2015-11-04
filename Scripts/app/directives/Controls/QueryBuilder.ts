@@ -3,17 +3,17 @@
 module dockyard.directives {
     'use strict';
 
-    export function FilterPane(): ng.IDirective {
+    export function QueryBuilder(): ng.IDirective {
         return {
             restrict: 'E',
-            templateUrl: '/AngularTemplate/FilterPane',
+            templateUrl: '/AngularTemplate/QueryBuilder',
             scope: {
                 currentAction: '=',
                 field: '='
             },
             controller: ['$scope', '$timeout', 'CrateHelper',
                 function (
-                    $scope: IPaneDefineCriteriaScope,
+                    $scope: IQueryBuilderScope,
                     $timeout: ng.ITimeoutService,
                     crateHelper: services.CrateHelper
                     ) {
@@ -48,8 +48,7 @@ module dockyard.directives {
 
                         if (newValue && newValue.value) {
                             var jsonValue = angular.fromJson(newValue.value);
-                            $scope.conditions = <Array<interfaces.ICondition>>jsonValue.conditions;
-                            $scope.executionType = jsonValue.executionType;
+                            $scope.conditions = <Array<interfaces.ICondition>>jsonValue;
                         }
                         else {
                             $scope.conditions = [
@@ -58,37 +57,28 @@ module dockyard.directives {
                                     $scope.defaultOperator,
                                     null)
                             ];
-                            $scope.executionType = 2;
                         }
                     });
 
                     var updateFieldValue = function () {
-                        $scope.field.value = angular.toJson({
-                            executionType: $scope.executionType,
-                            conditions: $scope.conditions
-                        });
+                        $scope.field.value = angular.toJson($scope.conditions);
                     };
 
                     $scope.$watch('conditions', function () {
                         updateFieldValue();
                     }, true);
-
-                    $scope.$watch('executionType', function () {
-                        updateFieldValue();
-                    });
                 }
             ]
         }
     }
 
-    export interface IPaneDefineCriteriaScope extends ng.IScope {
+    export interface IQueryBuilderScope extends ng.IScope {
         field: any;
         fields: Array<interfaces.IField>;
         operators: Array<interfaces.IOperator>;
         defaultOperator: string;
         conditions: Array<interfaces.ICondition>;
-        executionType: number;
     }
 }
 
-app.directive('filterPane', dockyard.directives.FilterPane);
+app.directive('queryBuilder', dockyard.directives.QueryBuilder);
