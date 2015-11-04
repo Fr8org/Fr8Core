@@ -30,7 +30,7 @@ namespace terminalDocuSign.Controllers
         {
             ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
-            var resultActionDO = await (Task<ActionDO>)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", submittedActionDO);
+            var resultActionDO = await (Task<ActionDO>)_basePluginController.HandleFr8Request(curPlugin, "Configure", submittedActionDO);
 
             var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
 
@@ -43,7 +43,7 @@ namespace terminalDocuSign.Controllers
         {
             ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDataPackage);
 
-            var resultActionDO = _basePluginController.HandleDockyardRequest(curPlugin, "Activate", submittedActionDO);
+            var resultActionDO = _basePluginController.HandleFr8Request(curPlugin, "Activate", submittedActionDO);
 
             var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
 
@@ -56,7 +56,7 @@ namespace terminalDocuSign.Controllers
         {
             ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDataPackage);
 
-            var resultActionDO = _basePluginController.HandleDockyardRequest(curPlugin, "Deactivate", submittedActionDO);
+            var resultActionDO = _basePluginController.HandleFr8Request(curPlugin, "Deactivate", submittedActionDO);
 
             var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
 
@@ -69,7 +69,7 @@ namespace terminalDocuSign.Controllers
         {
             ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
-            var resultPayloadDTO = await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Run", submittedActionDO);
+            var resultPayloadDTO = await (Task<PayloadDTO>)_basePluginController.HandleFr8Request(curPlugin, "Run", submittedActionDO);
 
             return resultPayloadDTO;
 

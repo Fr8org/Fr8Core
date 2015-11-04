@@ -20,14 +20,14 @@ namespace terminalSendGrid.Controllers
         [Route("configure")]
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
+            return await (Task<ActionDTO>)_basePluginController.HandleFr8Request(curPlugin, "Configure", curActionDTO);
         }
 
         [HttpPost]
         [Route("run")]
         public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
-            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Run", curActionDTO);
+            return await (Task<PayloadDTO>)_basePluginController.HandleFr8Request(curPlugin, "Run", curActionDTO);
         }
     }
 }

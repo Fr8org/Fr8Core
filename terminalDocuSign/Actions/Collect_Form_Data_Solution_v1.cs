@@ -117,7 +117,7 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
-            return await GetProcessPayload(actionDto.ProcessId);
+            return await GetProcessPayload(actionDto.ContainerIdId);
         }
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)

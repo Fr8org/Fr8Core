@@ -100,10 +100,10 @@ namespace terminalAzure.Actions
         }
 
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
         {
             //In all followup calls, update data fields of the configuration store          
-            List<String> contentsList = GetFieldMappings(curActionDTO);
+            List<String> contentsList = GetFieldMappings(curActionDO);
 
             var curCrateStorageDTO = new CrateStorageDTO
             {
@@ -117,7 +117,7 @@ namespace terminalAzure.Actions
                 }
             };
 
-            var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
+
 
             int foundSameCrateDTOAtIndex = curActionDO.CrateStorageDTO().CrateDTO.FindIndex(m => m.Label == "Sql Table Columns");
             if (foundSameCrateDTOAtIndex == -1)
@@ -133,8 +133,8 @@ namespace terminalAzure.Actions
             }
 
             curCrateStorageDTO = curActionDO.CrateStorageDTO();
-            curActionDTO.CrateStorage = curCrateStorageDTO;
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            curActionDO.CrateStorageDTO().CrateDTO = curCrateStorageDTO.CrateDTO;
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
 
         public object Activate(ActionDO curActionDO)
@@ -148,11 +148,11 @@ namespace terminalAzure.Actions
             return "Deactivated";
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDO actionDO)
         {
-            var processPayload = await GetProcessPayload(actionDto.ProcessId);
+            var processPayload = await GetProcessPayload(actionDO.ContainerIdId);
 
-            var curCommandArgs = PrepareSQLWrite(actionDto, processPayload);
+            var curCommandArgs = PrepareSQLWrite(actionDO, processPayload);
 
             var dbService = new DbService();
             dbService.WriteCommand(curCommandArgs);
@@ -175,11 +175,11 @@ namespace terminalAzure.Actions
         //CONFIGURATION-Related Methods
         //-----------------------------------------
 
-        public List<string> GetFieldMappings(ActionDTO curActionDTO)
+        public List<string> GetFieldMappings(ActionDO curActionDO)
         {
             //Get configuration settings and check for connection string
-            CrateStorageDTO curCrates = curActionDTO.CrateStorage;
-            if (curActionDTO.CrateStorage.CrateDTO.Count == 0)
+            CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
+            if (curActionDO.CrateStorageDTO().CrateDTO.Count == 0)
             {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }

@@ -504,7 +504,7 @@ namespace Hub.Services
             if (curActionDO == null) throw new ArgumentNullException("curActionDO");
 
             var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
-            dto.ProcessId = containerId;
+            dto.ContainerIdId = containerId;
             _authorizationToken.PrepareAuthToken(dto);
 
             EventManager.ActionDispatched(curActionDO, containerId);

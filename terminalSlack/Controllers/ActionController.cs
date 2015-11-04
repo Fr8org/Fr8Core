@@ -31,7 +31,7 @@ namespace terminalSlack.Controllers
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
             return await (Task<ActionDTO>) _basePluginController
-                .HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
+                .HandleFr8Request(curPlugin, "Configure", curActionDTO);
         }
 
         [HttpPost]
@@ -52,7 +52,7 @@ namespace terminalSlack.Controllers
         [Route("run")]
         public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
-            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(
+            return await (Task<PayloadDTO>)_basePluginController.HandleFr8Request(
                 curPlugin, "Run", actionDto);
         }
     }

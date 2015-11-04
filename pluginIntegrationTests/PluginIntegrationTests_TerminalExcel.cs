@@ -58,7 +58,7 @@ namespace pluginIntegrationTests
 
             var curActionDTO = new ActionDTO()
             {
-                ProcessId = 1,
+                ContainerIdId = 1,
                 ParentRouteNodeId = 1,
                 CrateStorage = new CrateStorageDTO()
                 {

@@ -32,7 +32,7 @@ namespace terminalSlack.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(actionDto.ProcessId);
+            var processPayload = await GetProcessPayload(actionDto.ContainerIdId);
 
             if (NeedsAuthentication(actionDto))
             {

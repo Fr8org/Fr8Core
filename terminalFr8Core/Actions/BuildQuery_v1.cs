@@ -358,7 +358,7 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
-            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+            var processPayload = await GetProcessPayload(curActionDTO.ContainerIdId);
 
             var selectedObject = ExtractSelectedObject(curActionDTO);
             if (string.IsNullOrEmpty(selectedObject))

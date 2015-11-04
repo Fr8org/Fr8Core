@@ -57,12 +57,12 @@ namespace TerminalBase.BaseClasses
             return false;
         }
 
-        protected async Task<PayloadDTO> GetProcessPayload(int processId)
+        protected async Task<PayloadDTO> GetProcessPayload(int containerId)
         {
             var httpClient = new HttpClient();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/containers/"
-                + processId.ToString();
+                + containerId.ToString();
 
             using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
             {
@@ -512,10 +512,10 @@ namespace TerminalBase.BaseClasses
             throw new ApplicationException("No field found with specified key.");
         }
 
-        protected void AddLabelControl(ActionDTO curActionDTO, string name, string label, string text)
+        protected void AddLabelControl(ActionDO curActionDO, string name, string label, string text)
         {
             AddControl(
-                curActionDTO,
+                curActionDO,
                 new TextBlockControlDefinitionDTO()
                 {
                     Name = name,
@@ -526,9 +526,9 @@ namespace TerminalBase.BaseClasses
             );
         }
 
-        protected void AddControl(ActionDTO curActionDTO, ControlDefinitionDTO control)
+        protected void AddControl(ActionDO curActionDO, ControlDefinitionDTO control)
         {
-            var controlsCrate = EnsureControlsCrate(curActionDTO);
+            var controlsCrate = EnsureControlsCrate(curActionDO);
 
             var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
                 controlsCrate.Contents);
@@ -539,9 +539,9 @@ namespace TerminalBase.BaseClasses
             controlsCrate.Contents = JsonConvert.SerializeObject(controls);
         }
 
-        protected ControlDefinitionDTO FindControl(ActionDTO curActionDTO, string name)
+        protected ControlDefinitionDTO FindControl(ActionDO curActionDO, string name)
         {
-            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+            var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO
                 .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             if (controlsCrate == null) { return null; }
@@ -557,9 +557,9 @@ namespace TerminalBase.BaseClasses
             return control;
         }
 
-        protected void RemoveControl(ActionDTO curActionDTO, string name)
+        protected void RemoveControl(ActionDO curActionDO, string name)
         {
-            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+            var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO
                 .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             if (controlsCrate == null) { return; }
@@ -580,31 +580,31 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        protected CrateDTO EnsureControlsCrate(ActionDTO actionDTO)
+        protected CrateDTO EnsureControlsCrate(ActionDO actionDO)
         {
-            var controlsCrate = actionDTO.CrateStorage.CrateDTO
+            var controlsCrate = actionDO.CrateStorageDTO().CrateDTO
                 .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             if (controlsCrate == null)
             {
                 controlsCrate = Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls");
-                actionDTO.CrateStorage.CrateDTO.Add(controlsCrate);
+                actionDO.CrateStorageDTO().CrateDTO.Add(controlsCrate);
             }
 
             return controlsCrate;
         }
 
         protected void UpdateDesignTimeCrateValue(
-            ActionDTO actionDTO, string label, params FieldDTO[] fields)
+            ActionDO actionDO, string label, params FieldDTO[] fields)
         {
-            var crate = actionDTO.CrateStorage.CrateDTO.FirstOrDefault(
+            var crate = actionDO.CrateStorageDTO().CrateDTO.FirstOrDefault(
                 x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME && x.Label == label);
 
             if (crate == null)
             {
                 crate = Crate.CreateDesignTimeFieldsCrate(label, fields);
 
-                actionDTO.CrateStorage.CrateDTO.Add(crate);
+                actionDO.CrateStorageDTO().CrateDTO.Add(crate);
             }
             else
             {
