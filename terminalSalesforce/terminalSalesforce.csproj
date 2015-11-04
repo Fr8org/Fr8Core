@@ -206,6 +206,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\Create_Account_v1.cs" />
+    <Compile Include="Actions\Create_Contact_v1.cs" />
     <Compile Include="Actions\Create_Lead_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
@@ -215,7 +217,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\Account.cs" />
+    <Compile Include="Infrastructure\AccountDTO.cs" />
     <Compile Include="Infrastructure\Authentication.cs" />
+    <Compile Include="Infrastructure\Contact.cs" />
+    <Compile Include="Infrastructure\ContactDTO.cs" />
     <Compile Include="Infrastructure\IEvent.cs" />
     <Compile Include="Infrastructure\ISalesforceIntegration.cs" />
     <Compile Include="Infrastructure\Lead.cs" />

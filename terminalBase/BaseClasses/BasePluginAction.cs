@@ -511,5 +511,109 @@ namespace TerminalBase.BaseClasses
 
             throw new ApplicationException("No field found with specified key.");
         }
+
+        protected void AddLabelControl(ActionDTO curActionDTO, string name, string label, string text)
+        {
+            AddControl(
+                curActionDTO,
+                new TextBlockControlDefinitionDTO()
+                {
+                    Name = name,
+                    Label = label,
+                    Value = text,
+                    CssClass = "well well-lg"
+                }
+            );
+        }
+
+        protected void AddControl(ActionDTO curActionDTO, ControlDefinitionDTO control)
+        {
+            var controlsCrate = EnsureControlsCrate(curActionDTO);
+
+            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
+                controlsCrate.Contents);
+
+            if (controls == null) { return; }
+
+            controls.Controls.Add(control);
+            controlsCrate.Contents = JsonConvert.SerializeObject(controls);
+        }
+
+        protected ControlDefinitionDTO FindControl(ActionDTO curActionDTO, string name)
+        {
+            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+
+            if (controlsCrate == null) { return null; }
+
+            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
+                controlsCrate.Contents);
+
+            if (controls == null) { return null; }
+
+            var control = controls.Controls
+                .FirstOrDefault(x => x.Name == name);
+
+            return control;
+        }
+
+        protected void RemoveControl(ActionDTO curActionDTO, string name)
+        {
+            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+
+            if (controlsCrate == null) { return; }
+
+            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
+                controlsCrate.Contents);
+
+            if (controls == null) { return; }
+
+
+            var control = controls.Controls
+                .FirstOrDefault(x => x.Name == name);
+
+            if (control != null)
+            {
+                controls.Controls.Remove(control);
+                controlsCrate.Contents = JsonConvert.SerializeObject(controls);
+            }
+        }
+
+        protected CrateDTO EnsureControlsCrate(ActionDTO actionDTO)
+        {
+            var controlsCrate = actionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+
+            if (controlsCrate == null)
+            {
+                controlsCrate = Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls");
+                actionDTO.CrateStorage.CrateDTO.Add(controlsCrate);
+            }
+
+            return controlsCrate;
+        }
+
+        protected void UpdateDesignTimeCrateValue(
+            ActionDTO actionDTO, string label, params FieldDTO[] fields)
+        {
+            var crate = actionDTO.CrateStorage.CrateDTO.FirstOrDefault(
+                x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME && x.Label == label);
+
+            if (crate == null)
+            {
+                crate = Crate.CreateDesignTimeFieldsCrate(label, fields);
+
+                actionDTO.CrateStorage.CrateDTO.Add(crate);
+            }
+            else
+            {
+                var fieldsMS = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(crate.Contents);
+                fieldsMS.Fields.Clear();
+                fieldsMS.Fields.AddRange(fields);
+
+                crate.Contents = JsonConvert.SerializeObject(fieldsMS);
+            }
+        }
     }
 }

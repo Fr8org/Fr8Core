@@ -7,17 +7,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using terminalSalesforce.Services;
 
 namespace terminalSalesforce.Infrastructure
 {
     public class Lead
     {
-        ForceClient client;
+        ForceClient client;       
         public async Task CreateLead(ActionDTO currentActionDTO)
         {
             
             string instanceUrl, apiVersion;
-            ParseAuthToken(currentActionDTO.AuthToken.AdditionalAttributes,out instanceUrl,out apiVersion);
+            ParseAuthToken(currentActionDTO.AuthToken.AdditionalAttributes, out instanceUrl, out apiVersion);
             client = new ForceClient(instanceUrl, currentActionDTO.AuthToken.Token, apiVersion);
             LeadDTO lead = new LeadDTO();
             var curFieldList =
@@ -40,8 +41,5 @@ namespace terminalSalesforce.Infrastructure
             instanceUrl = instanceUrl.Replace("instance_url=", "");
             apiVersion = apiVersion.Replace("api_version=", "");
         }
-
-
-
     }
 }

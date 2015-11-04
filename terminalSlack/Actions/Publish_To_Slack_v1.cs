@@ -11,7 +11,6 @@ using TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
-using Data.Entities;
 
 namespace terminalSlack.Actions
 {
@@ -26,27 +25,27 @@ namespace terminalSlack.Actions
             _slackIntegration = new SlackIntegration();
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO)
+        public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
-            if (NeedsAuthentication(actionDO))
+            if (NeedsAuthentication(actionDto))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(actionDO.ProcessId);
+            var processPayload = await GetProcessPayload(actionDto.ProcessId);
 
-            if (NeedsAuthentication(actionDO))
+            if (NeedsAuthentication(actionDto))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var actionChannelId = ExtractControlFieldValue(actionDO, "Selected_Slack_Channel");
+            var actionChannelId = ExtractControlFieldValue(actionDto, "Selected_Slack_Channel");
             if (string.IsNullOrEmpty(actionChannelId))
             {
                 throw new ApplicationException("No selected channelId found in action.");
             }
 
-            var actionFieldName = ExtractControlFieldValue(actionDO, "Select_Message_Field");
+            var actionFieldName = ExtractControlFieldValue(actionDto, "Select_Message_Field");
             if (string.IsNullOrEmpty(actionFieldName))
             {
                 throw new ApplicationException("No selected field found in action.");
@@ -60,7 +59,7 @@ namespace terminalSlack.Actions
                 throw new ApplicationException("No specified field found in action.");
             }
 
-            await _slackIntegration.PostMessageToChat(actionDO.AuthToken.Token,
+            await _slackIntegration.PostMessageToChat(actionDto.AuthToken.Token,
                 actionChannelId, payloadMessageField.Value);
 
             return processPayload;
@@ -83,17 +82,17 @@ namespace terminalSlack.Actions
             return result;
         }
 
-        public async Task<ActionDO> Configure(ActionDO curActionDO)
+        public override async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (NeedsAuthentication(curActionDO))
+            if (NeedsAuthentication(curActionDTO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x));
+            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
         {
             var crateStorage = curActionDTO.CrateStorage;
 
@@ -105,20 +104,20 @@ namespace terminalSlack.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(
-            ActionDO curActionDO)
+        protected override async Task<ActionDTO> InitialConfigurationResponse(
+            ActionDTO curActionDTO)
         {
-            var oauthToken = curActionDO.AuthToken.Token;
+            var oauthToken = curActionDTO.AuthToken.Token;
             var channels = await _slackIntegration.GetChannelList(oauthToken);
 
             var crateControls = PackCrate_ConfigurationControls();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
-            var crateAvailableFields = await CreateAvailableFieldsCrate(curActionDO);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateControls);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateAvailableChannels);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateAvailableFields);
+            var crateAvailableFields = await CreateAvailableFieldsCrate(curActionDTO);
+            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+            curActionDTO.CrateStorage.CrateDTO.Add(crateAvailableChannels);
+            curActionDTO.CrateStorage.CrateDTO.Add(crateAvailableFields);
 
-            return curActionDO;
+            return curActionDTO;
         }
 
         private CrateDTO PackCrate_ConfigurationControls()
@@ -169,10 +168,10 @@ namespace terminalSlack.Actions
             return crate;
         }
 
-        private async Task<CrateDTO> CreateAvailableFieldsCrate(ActionDO actionDO)
+        private async Task<CrateDTO> CreateAvailableFieldsCrate(ActionDTO actionDTO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(actionDO.Id, GetCrateDirection.Upstream))
+                (await GetDesignTimeFields(actionDTO.Id, GetCrateDirection.Upstream))
                 .Fields
                 .ToArray();
 

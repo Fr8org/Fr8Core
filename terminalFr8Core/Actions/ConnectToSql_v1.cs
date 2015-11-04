@@ -22,11 +22,11 @@ namespace terminalFr8Core.Actions
 
 
         public override ConfigurationRequestType ConfigurationEvaluator(
-            ActionDO curActionDO)
+            ActionDTO curActionDTO)
         {
-            if (curActionDO.CrateStorageDTO() == null
-                || curActionDO.CrateStorageDTO().CrateDTO == null
-                || curActionDO.CrateStorageDTO().CrateDTO.Count == 0)
+            if (curActionDTO.CrateStorage == null
+                || curActionDTO.CrateStorage.CrateDTO == null
+                || curActionDTO.CrateStorage.CrateDTO.Count == 0)
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -34,18 +34,18 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override Task<ActionDO> InitialConfigurationResponse(
-            ActionDO curActionDO)
+        protected override Task<ActionDTO> InitialConfigurationResponse(
+            ActionDTO curActionDTO)
         {
-            if (curActionDO.CrateStorage == null)
+            if (curActionDTO.CrateStorage == null)
             {
-                curActionDO.UpdateCrateStorageDTO(new CrateStorageDTO().CrateDTO);
+                curActionDTO.CrateStorage = new CrateStorageDTO();
             }
 
             var crateControls = CreateControlsCrate();
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateControls);
+            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 
-            return Task.FromResult<ActionDO>(curActionDO);
+            return Task.FromResult<ActionDTO>(curActionDTO);
         }
 
         private CrateDTO CreateControlsCrate()
@@ -64,47 +64,60 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(control);
         }
 
-        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
+        protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            RemoveErrorControl(curActionDO);
+            RemoveControl(curActionDTO, "ErrorLabel");
 
             Crate.RemoveCrateByLabel(
-                curActionDO.CrateStorageDTO().CrateDTO,
+                curActionDTO.CrateStorage.CrateDTO,
                 "Sql Table Definitions"
             );
 
-            var connectionString = ExtractConnectionString(curActionDO);
+            var connectionString = ExtractConnectionString(curActionDTO);
             if (!string.IsNullOrEmpty(connectionString))
             {
                 try
                 {
                     var tableDefinitions = RetrieveTableDefinitions(connectionString);
-                    var tableDefinitionCrate = Crate
-                        .CreateDesignTimeFieldsCrate(
+                    var tableDefinitionCrate = 
+                        Crate.CreateDesignTimeFieldsCrate(
                             "Sql Table Definitions",
                             tableDefinitions.ToArray()
                         );
 
-                    curActionDO.CrateStorageDTO().CrateDTO.Add(tableDefinitionCrate);
+                    var columnTypes = RetrieveColumnTypes(connectionString);
+                    var columnTypesCrate =
+                        Crate.CreateDesignTimeFieldsCrate(
+                            "Sql Column Types",
+                            columnTypes.ToArray()
+                        );
+
+                    curActionDTO.CrateStorage.CrateDTO.Add(tableDefinitionCrate);
+                    curActionDTO.CrateStorage.CrateDTO.Add(columnTypesCrate);
                 }
                 catch
                 {
-                    AddErrorControl(curActionDO);
+                    AddLabelControl(
+                        curActionDTO,
+                        "ErrorLabel",
+                        "Unexpected error",
+                        "Error occured while trying to fetch columns from database specified."
+                    );
                 }
             }
 
-            return base.FollowupConfigurationResponse(curActionDO);
+            return base.FollowupConfigurationResponse(curActionDTO);
         }
 
-        private string ExtractConnectionString(ActionDO curActionDO)
+        private string ExtractConnectionString(ActionDTO curActionDTO)
         {
-            var configControls = Crate.GetConfigurationControls(curActionDO);
+            var configControls = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
             var connectionStringControl = configControls.FindByName("ConnectionString");
 
             return connectionStringControl.Value;
         }
 
-        private List<FieldDTO> RetrieveTableDefinitions(string connectionString)
+        private void ListAllDbColumns(string connectionString, Action<IEnumerable<ColumnInfo>> callback)
         {
             var provider = DbProvider.GetDbProvider(DefaultDbProvider);
 
@@ -114,23 +127,56 @@ namespace terminalFr8Core.Actions
 
                 using (var tx = conn.BeginTransaction())
                 {
-                    var fieldsList = new List<FieldDTO>();
-
                     var columns = provider.ListAllColumns(tx);
-                    foreach (var column in columns)
+
+                    if (callback != null)
                     {
-                        var fullColumnName = GetColumnName(column);
-
-                        fieldsList.Add(new FieldDTO()
-                        {
-                            Key = fullColumnName,
-                            Value = fullColumnName
-                        });
+                        callback.Invoke(columns);
                     }
-
-                    return fieldsList;
                 }
             }
+        }
+
+        private List<FieldDTO> RetrieveTableDefinitions(string connectionString)
+        {
+            var fieldsList = new List<FieldDTO>();
+
+            ListAllDbColumns(connectionString, columns =>
+            {
+                foreach (var column in columns)
+                {
+                    var fullColumnName = GetColumnName(column);
+
+                    fieldsList.Add(new FieldDTO()
+                    {
+                        Key = fullColumnName,
+                        Value = fullColumnName
+                    });
+                }
+            });
+
+            return fieldsList;
+        }
+
+        private List<FieldDTO> RetrieveColumnTypes(string connectionString)
+        {
+            var fieldsList = new List<FieldDTO>();
+
+            ListAllDbColumns(connectionString, columns =>
+            {
+                foreach (var column in columns)
+                {
+                    var fullColumnName = GetColumnName(column);
+
+                    fieldsList.Add(new FieldDTO()
+                    {
+                        Key = fullColumnName,
+                        Value = column.DbType.ToString()
+                    });
+                }
+            });
+
+            return fieldsList;
         }
 
         private string GetColumnName(ColumnInfo columnInfo)
@@ -154,58 +200,13 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        private void AddErrorControl(ActionDO curActionDO)
-        {
-            var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
-
-            if (controlsCrate == null) { return; }
-
-            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
-                controlsCrate.Contents);
-
-            if (controls == null) { return; }
-
-            controls.Controls.Add(new TextBlockControlDefinitionDTO()
-            {
-                Label = "ErrorLabel",
-                Value = "Error occured while trying to fetch columns from database specified.",
-                CssClass = "well well-lg"
-            });
-
-            controlsCrate.Contents = JsonConvert.SerializeObject(controlsCrate);
-        }
-
-        private void RemoveErrorControl(ActionDO curActionDO)
-        {
-            var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
-
-            if (controlsCrate == null) { return; }
-
-            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
-                controlsCrate.Contents);
-
-            if (controls == null) { return; }
-
-            
-            var errorLabel = controls.Controls
-                .FirstOrDefault(x => x.Label == "ErrorLabel");
-
-            if (errorLabel != null)
-            {
-                controls.Controls.Remove(errorLabel);
-                controlsCrate.Contents = JsonConvert.SerializeObject(controlsCrate);
-            }
-        }
-
         #endregion Configuration.
 
         #region Execution.
 
-        public Task<PayloadDTO> Run(ActionDO curActionDO)
+        public Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<PayloadDTO>(null);
         }
 
         #endregion Execution.

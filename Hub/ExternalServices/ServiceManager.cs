@@ -291,7 +291,7 @@ namespace Hub.ExternalServices
             {
                 lock (ServiceInfo)
                 {
-                    _lastSuccess = DateTime.Now;
+					_lastSuccess = DateTime.UtcNow;
                     Success++;
                 }
             }
@@ -300,7 +300,7 @@ namespace Hub.ExternalServices
             {
                 lock (ServiceInfo)
                 {
-                    _lastFail = DateTime.Now;
+					_lastFail = DateTime.UtcNow;
                     Fail++;
                 }
             }
@@ -320,7 +320,7 @@ namespace Hub.ExternalServices
             public void AddEvent(String eventName)
             {
                 lock (ServiceInfo)
-                    _events.Add(new Tuple<DateTime, string>(DateTime.Now, eventName));
+					_events.Add(new Tuple<DateTime, string>(DateTime.UtcNow, eventName));
             }
 
             public void SetFlag(String flagName, Object flagValue)

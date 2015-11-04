@@ -179,7 +179,7 @@ namespace Daemons
             }
             catch (SocketException ex) //we were getting strange socket errors after time, and it looks like a reset solves things
             {
-                EventManager.EmailProcessingFailure(DateTime.Now.to_S(), "Got that SocketException");
+                EventManager.EmailProcessingFailure(DateTime.UtcNow.to_S(), "Got that SocketException");
                 LogFail(ex, "Hit SocketException. Trying to reset the IMAP Client.");
                 RestartClient();
             }

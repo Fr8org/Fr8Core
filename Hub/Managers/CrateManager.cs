@@ -16,6 +16,7 @@ using Data.Interfaces.DataTransferObjects;
 using Utilities;
 
 using JsonSerializer = Utilities.Serializers.Json.JsonSerializer;
+using Data.Crates.Helpers;
 
 namespace Hub.Managers
 {
@@ -183,12 +184,11 @@ namespace Hub.Managers
 
         public void ReplaceCratesByLabel(IList<CrateDTO> sourceCrates, string label, IList<CrateDTO> newCratesContent)
         {
-            var curMatchedCrates = GetCratesByLabel(label, new CrateStorageDTO {CrateDTO = sourceCrates.ToList()});
+            //remove existing crates with the label
+            RemoveCrateByLabel(sourceCrates, label);
 
-            foreach (CrateDTO curMatchedCrate in curMatchedCrates)
-            {
-                ReplaceCratesByManifestType(sourceCrates, curMatchedCrate.ManifestType, newCratesContent);
-            }
+            //add the new content to the source crates
+            newCratesContent.ToList().ForEach(sourceCrates.Add);
         }
 
         public CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)
@@ -338,6 +338,27 @@ namespace Hub.Managers
                 return null;
             var standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(confControls.First().Contents);
             return standardCfgControlsMs;
+        }
+
+        public void AddLogMessage(string label, List<LogItemDTO> logItemList, ContainerDO containerDO)
+        {
+            if (String.IsNullOrEmpty(label))
+                throw new ArgumentException("Parameter Label is empty");
+            if (logItemList == null)
+                throw new ArgumentNullException("Parameter LogItemDTO list is null.");
+            if (containerDO == null)
+                throw new ArgumentNullException("Parameter ContainerDO is null.");
+            var curManifestSchema = new StandardLoggingCM()
+            {
+                Item = logItemList
+            };
+            var curLoggingCrate = Create(label,
+                            JsonConvert.SerializeObject(curManifestSchema),
+                            manifestType: CrateManifests.STANDARD_LOGGING_MANIFEST_NAME,
+                            manifestId: CrateManifests.STANDARD_LOGGING_MANIFEST_ID);
+            var curCrateList = new List<CrateDTO>();
+            curCrateList.Add(curLoggingCrate);
+            containerDO.UpdateCrateStorageDTO(curCrateList);
         }
 
     }

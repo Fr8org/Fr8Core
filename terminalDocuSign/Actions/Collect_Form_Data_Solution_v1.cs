@@ -158,7 +158,7 @@ namespace terminalDocuSign.Actions
                     IsTempId = true,
                     ActivityTemplateId = firstActionTemplate.Id,
                     CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
-                    CreateDate = DateTime.Now,
+                    CreateDate = DateTimeOffset.UtcNow,
                     Ordering = 1,
                     Name = "First action"
                 };
@@ -175,7 +175,7 @@ namespace terminalDocuSign.Actions
                     ActivityTemplateId = finalActionTemplateId,
                     IsTempId = true,
                     CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
-                    CreateDate = DateTime.Now,
+					CreateDate = DateTimeOffset.UtcNow,
                     Ordering = 2,
                     Name = "Final action"
                 };
