@@ -10,6 +10,7 @@ using Data.Interfaces.Manifests;
 using Hub.Enums;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
@@ -140,29 +141,6 @@ namespace terminalFr8Core.Actions
             return tablesDefinition.Fields;
         }
 
-        private async Task<List<FieldDTO>> ExtractColumnTypes(ActionDTO actionDTO)
-        {
-            var upstreamCrates = await GetCratesByDirection(
-                actionDTO.Id,
-                CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
-                GetCrateDirection.Upstream
-            );
-
-            if (upstreamCrates == null) { return null; }
-
-            var columnTypesCrate = upstreamCrates
-                .FirstOrDefault(x => x.Label == "Sql Column Types");
-
-            if (columnTypesCrate == null) { return null; }
-
-            var columnTypes = JsonConvert
-                .DeserializeObject<StandardDesignTimeFieldsCM>(columnTypesCrate.Contents);
-
-            if (columnTypes == null) { return null; }
-
-            return columnTypes.Fields;
-        }
-
         /// <summary>
         /// Returns distinct list of table names from Table Definitions list.
         /// </summary>
@@ -282,19 +260,14 @@ namespace terminalFr8Core.Actions
         private async Task<List<FieldDTO>> MatchColumnsForSelectedObject(
             ActionDTO actionDTO, string selectedObject)
         {
-            var columnDefinitions = await ExtractColumnDefinitions(actionDTO);
-            var columnTypes = await ExtractColumnTypes(actionDTO);
+            var findObjectHelper = new FindObjectHelper();
 
-            if (columnDefinitions == null || columnTypes == null)
+            var columnDefinitions = await ExtractColumnDefinitions(actionDTO);
+            var columnTypeMap = await findObjectHelper.ExtractColumnTypes(this, actionDTO);
+
+            if (columnDefinitions == null || columnTypeMap == null)
             {
                 columnDefinitions = new List<FieldDTO>();
-            }
-
-            // Create columnTypeMap dictionary.
-            var columnTypeMap = new Dictionary<string, DbType>();
-            foreach (var columnType in columnTypes)
-            {
-                columnTypeMap.Add(columnType.Key, (DbType)Enum.Parse(typeof(DbType), columnType.Value));
             }
 
             var supportedColumnTypes = new HashSet<DbType>() { DbType.String, DbType.Int32, DbType.Boolean };

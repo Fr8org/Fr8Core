@@ -210,5 +210,13 @@ namespace TerminalSqlUtilities
                 throw new Exception(string.Format("Invalid identifier \"{0}\"", id));
             }
         }
+
+        /// <summary>
+        /// Execute query against database and return table data.
+        /// </summary>
+        public Table ExecuteQuery(Query query)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

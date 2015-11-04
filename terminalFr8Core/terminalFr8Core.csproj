@@ -166,6 +166,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Actions\MapFields_v1.cs" />
+    <Compile Include="Infrastructure\FindObjectHelper.cs" />
     <Compile Include="Interfaces\FilterConditionDTO.cs" />
     <Compile Include="Interfaces\FilterDataDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -205,9 +206,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Infrastructure\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
