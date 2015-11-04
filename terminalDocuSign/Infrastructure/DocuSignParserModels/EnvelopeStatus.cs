@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace Data.Entities.DocuSignParserModels
+namespace terminalDocuSign.Infrastructure.DocuSignParserModels
 {
     [XmlRoot(ElementName = "EnvelopeStatus")]
     public class EnvelopeStatus

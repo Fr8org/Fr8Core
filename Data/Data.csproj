@@ -204,8 +204,6 @@
     <Compile Include="Constants\FieldValidationResult.cs" />
     <Compile Include="Constants\ActivityDirection.cs" />
     <Compile Include="Constants\ManifestIdEnum.cs" />
-    <Compile Include="Entities\DocuSignParserModels\DocumentStatus.cs" />
-    <Compile Include="Entities\DocuSignParserModels\DocumentStatuses.cs" />
     <Compile Include="Entities\RouteNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
@@ -409,10 +407,6 @@
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\DocuSignEventDO.cs" />
-    <Compile Include="Entities\DocuSignParserModels\DocuSignEnvelopeInformation.cs" />
-    <Compile Include="Entities\DocuSignParserModels\EnvelopeStatus.cs" />
-    <Compile Include="Entities\DocuSignParserModels\RecipientStatus.cs" />
-    <Compile Include="Entities\DocuSignParserModels\RecipientStatuses.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\PluginDO.cs" />
