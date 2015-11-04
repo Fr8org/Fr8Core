@@ -22,6 +22,7 @@ using Hub.Services;
 
 namespace HubWeb.Controllers
 {
+    [Fr8ApiAuthorize]
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
@@ -56,7 +57,6 @@ namespace HubWeb.Controllers
 
 
         [HttpPost]
-        //[Fr8ApiAuthorize]
         [Route("create")]
         public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
         {
@@ -81,7 +81,6 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [Fr8ApiAuthorize]
         [Route("create")]
         public async Task<IHttpActionResult> Create(string solutionName)
         {

@@ -16,6 +16,7 @@ using Hub.Managers;
 namespace HubWeb.Controllers
 {
     [RoutePrefix("route_nodes")]
+    [Fr8ApiAuthorize]
     public class RouteNodesController : ApiController
     {
         private readonly IRouteNode _activity;
