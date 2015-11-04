@@ -18,7 +18,7 @@ namespace Hub.Services
     {
 
         private readonly IPlugin _plugin;
-        private string salesforceInstanceName = ConfigurationManager.AppSettings["terminalSaleforceName"].ToString();
+        
 
         public Event()
         {
@@ -46,7 +46,7 @@ namespace Hub.Services
             var result = await new HttpClient().PostAsync(new Uri(curPluginUrl, UriKind.Absolute), request.Content);
 
             //Salesforce response needs to be acknowledge
-            if (pluginName == salesforceInstanceName)
+            if (pluginName == "terminalSalesforce")
             {
                 string xmlResponse = result.Content.ReadAsAsync<string>().Result;
                 return xmlResponse;
