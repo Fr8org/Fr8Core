@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201511031320271_AddedDocuSignFields"; }
+            get { return "201511040622414_AddedDocuSignFields"; }
         }
         
         string IMigrationMetadata.Source

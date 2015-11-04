@@ -13,6 +13,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
+using terminalDocuSign.DataTransferObjects;
 using Utilities.Configuration.Azure;
 using terminalDocuSign.Infrastructure;
 
@@ -32,7 +33,7 @@ namespace terminalDocuSign.Services
         public async Task<object> Process(string curExternalEventPayload)
         {
             //parse the external event xml payload
-            List<DocuSignEventDO> curExternalEvents;
+            List<DocuSignEventDTO> curExternalEvents;
             string curEnvelopeId;
             Parse(curExternalEventPayload, out curExternalEvents, out curEnvelopeId);
 
@@ -77,14 +78,14 @@ namespace terminalDocuSign.Services
             return content;
         }
 
-        private void Parse(string xmlPayload, out List<DocuSignEventDO> curEvents, out string curEnvelopeId)
+        private void Parse(string xmlPayload, out List<DocuSignEventDTO> curEvents, out string curEnvelopeId)
         {
-            curEvents = new List<DocuSignEventDO>();
+            curEvents = new List<DocuSignEventDTO>();
             try
             {
                 var docuSignEnvelopeInformation = DocuSignConnectParser.GetEnvelopeInformation(xmlPayload);
                 curEnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId;
-                curEvents.Add(new DocuSignEventDO
+                curEvents.Add(new DocuSignEventDTO
                 {
                     ExternalEventType = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
                     EnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId,
@@ -110,7 +111,7 @@ namespace terminalDocuSign.Services
             }
         }
 
-        private IEnumerable<CrateDTO> ExtractEventPayload(IEnumerable<DocuSignEventDO> curEvents)
+        private IEnumerable<CrateDTO> ExtractEventPayload(IEnumerable<DocuSignEventDTO> curEvents)
         {
             IList<CrateDTO> curEventPayloadData = new List<CrateDTO>();
 
@@ -123,7 +124,7 @@ namespace terminalDocuSign.Services
             return curEventPayloadData;
         }
 
-        private List<KeyValuePair<string,string>> CreateKeyValuePairList(DocuSignEventDO curEvent)
+        private List<KeyValuePair<string, string>> CreateKeyValuePairList(DocuSignEventDTO curEvent)
         {
             List<KeyValuePair<string, string>> returnList = new List<KeyValuePair<string, string>>();
             returnList.Add(new KeyValuePair<string,string>("EnvelopeId",curEvent.EnvelopeId));
