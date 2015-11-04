@@ -13,6 +13,8 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
+using System.Configuration;
+using System.Xml.Linq;
 
 namespace HubWeb.Controllers
 {
@@ -26,6 +28,7 @@ namespace HubWeb.Controllers
       
 
         private delegate void EventRouter(LoggingData loggingData);
+        private string salesforceInstanceName = ConfigurationManager.AppSettings["terminalSaleforceName"].ToString();
 
         public EventController()
         {
@@ -123,11 +126,11 @@ namespace HubWeb.Controllers
 
 
             //Check if responding to Salesforce
-            if(pluginName=="pluginSalesforce")
-            {
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(result);
-                return Content(HttpStatusCode.OK, doc, Configuration.Formatters.XmlFormatter);
+            if (pluginName == salesforceInstanceName)
+            {               
+                var xml = XElement.Parse(result);
+                return Content(HttpStatusCode.OK, xml, GlobalConfiguration.Configuration.Formatters.XmlFormatter);
+              
             }
             
             

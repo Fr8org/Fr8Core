@@ -7,6 +7,7 @@ using StructureMap;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
+using System.Configuration;
 
 namespace Hub.Services
 {
@@ -17,6 +18,7 @@ namespace Hub.Services
     {
 
         private readonly IPlugin _plugin;
+        private string salesforceInstanceName = ConfigurationManager.AppSettings["terminalSaleforceName"].ToString();
 
         public Event()
         {
@@ -44,7 +46,7 @@ namespace Hub.Services
             var result = await new HttpClient().PostAsync(new Uri(curPluginUrl, UriKind.Absolute), request.Content);
 
             //Salesforce response needs to be acknowledge
-            if (pluginName=="pluginSalesforce")
+            if (pluginName == salesforceInstanceName)
             {
                 string xmlResponse = result.Content.ReadAsAsync<string>().Result;
                 return xmlResponse;

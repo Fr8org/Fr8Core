@@ -22,9 +22,6 @@ namespace HubWeb
             config.Formatters.JsonFormatter.SerializerSettings.Formatting =
                 Newtonsoft.Json.Formatting.Indented;
 
-            //Added XML Serializer - used for Salesforce Outbound Message Response
-            config.Formatters.XmlFormatter.UseXmlSerializer = true;
-
             config.Services.Replace(typeof(IExceptionHandler), new Fr8ExceptionHandler());
 		}
 	}
