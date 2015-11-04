@@ -31,7 +31,7 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO)
         {
             return null;
         }
@@ -77,39 +77,38 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
         {
             CrateStorageDTO crateStrorageDTO;
-            if (curActionDTO.CrateStorage == null)
+            if (curActionDO.CrateStorage == null)
             {
-                curActionDTO.CrateStorage = new CrateStorageDTO();
+                curActionDO.UpdateCrateStorageDTO(new CrateStorageDTO().CrateDTO);
             }
 
-            if (curActionDTO.Id > 0)
+            if (curActionDO.Id > 0)
             {
-                if (curActionDTO.AuthToken == null || curActionDTO.AuthToken.Token == null)
+                if (curActionDO.AuthToken == null || curActionDO.AuthToken.Token == null)
                 {
                     CrateDTO configurationControlsCrate = await CreateNoAuthCrate();
                     crateStrorageDTO = AssembleCrateStorage(configurationControlsCrate);
                 }
                 else
                 {
-                    var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
-                    ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+                    var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDO.AuthToken.Token);
 
                     //build a controls crate to render the pane
                     CrateDTO configurationControlsCrate = await CreateConfigurationControlsCrate();
                     CrateDTO templatesFieldCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
                     crateStrorageDTO = AssembleCrateStorage(templatesFieldCrate, configurationControlsCrate);
                 }
-                curActionDTO.CrateStorage = crateStrorageDTO;
+                curActionDO.UpdateCrateStorageDTO(crateStrorageDTO.CrateDTO);
             }
             else
             {
                 throw new ArgumentException(
                     "Configuration requires the submission of an Action that has a real ActionId");
             }
-            return curActionDTO;
+            return curActionDO;
         }
 
         private Task<CrateDTO> CreateNoAuthCrate()
@@ -126,25 +125,25 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// If there's a value in select_file field of the crate, then it is a followup call.
         /// </summary>
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             // Do not tarsnfer to follow up when child actions are already present 
-            if (curActionDTO.ChildrenActions.Count() > 0) return ConfigurationRequestType.Initial;
+            if (curActionDO.ChildrenActions.Count() > 0) return ConfigurationRequestType.Initial;
 
             // "Follow up" phase is when Continue button is clicked 
             ButtonControlDefinitionDTO button = GetStdConfigurationControl<ButtonControlDefinitionDTO>(
-                curActionDTO.CrateStorage.CrateDTO, "Continue");
+                curActionDO.CrateStorageDTO().CrateDTO, "Continue");
             if (button == null) return ConfigurationRequestType.Initial;
             if (button.Clicked == false) return ConfigurationRequestType.Initial;
 
             // If no values selected in textboxes, remain on initial phase
             DropDownListControlDefinitionDTO dataSource = GetStdConfigurationControl<DropDownListControlDefinitionDTO>(
-                curActionDTO.CrateStorage.CrateDTO, "DataSource");
+                curActionDO.CrateStorageDTO().CrateDTO, "DataSource");
             if (dataSource.Value == null) return ConfigurationRequestType.Initial;
             _dataSourceValue = dataSource.Value;
 
             DropDownListControlDefinitionDTO docuSignTemplate = GetStdConfigurationControl<DropDownListControlDefinitionDTO>(
-                curActionDTO.CrateStorage.CrateDTO, "DocuSignTemplate");
+                curActionDO.CrateStorageDTO().CrateDTO, "DocuSignTemplate");
             if (docuSignTemplate.Value == null) return ConfigurationRequestType.Initial;
             _docuSignTemplateValue = docuSignTemplate.Value;
 
@@ -152,19 +151,17 @@ namespace terminalDocuSign.Actions
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
-            _docuSignManager.ExtractFieldsAndAddToCrate(_docuSignTemplateValue, docuSignAuthDTO, curActionDTO);
-
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDO.AuthToken.Token);
+            _docuSignManager.ExtractFieldsAndAddToCrate(_docuSignTemplateValue, docuSignAuthDTO, curActionDO);
 
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     ActivityTemplateDO dataSourceActTempl = uow.ActivityTemplateRepository.GetAll().FirstOrDefault(at => at.Name == _dataSourceValue);
-                    if (dataSourceActTempl == null) return curActionDTO;
+                    if (dataSourceActTempl == null) return curActionDO;
                     curActionDO.ChildNodes.Add(new ActionDO()
                     {
                         ActivityTemplate = dataSourceActTempl,
@@ -177,7 +174,7 @@ namespace terminalDocuSign.Actions
                     });
 
                     ActivityTemplateDO mapFieldActTempl = uow.ActivityTemplateRepository.GetAll().FirstOrDefault(at => at.Name == "MapFields");
-                    if (mapFieldActTempl == null) return curActionDTO;
+                    if (mapFieldActTempl == null) return curActionDO;
 
                     curActionDO.ChildNodes.Add(new ActionDO()
                     {
@@ -191,7 +188,7 @@ namespace terminalDocuSign.Actions
                     });
 
                     ActivityTemplateDO sendDocuSignEnvActTempl = uow.ActivityTemplateRepository.GetAll().FirstOrDefault(at => at.Name == "Send_DocuSign_Envelope");
-                    if (mapFieldActTempl == null) return curActionDTO;
+                    if (mapFieldActTempl == null) return curActionDO;
                     curActionDO.ChildNodes.Add(new ActionDO()
                     {
                         ActivityTemplate = sendDocuSignEnvActTempl,
@@ -213,8 +210,8 @@ namespace terminalDocuSign.Actions
                 return null;
             }
 
-            curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            return await Task.FromResult(curActionDTO);
+
+            return await Task.FromResult(curActionDO);
         }
     }
 }

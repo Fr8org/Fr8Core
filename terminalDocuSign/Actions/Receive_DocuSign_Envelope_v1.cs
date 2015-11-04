@@ -27,34 +27,34 @@ namespace terminalDocuSign.Actions
             _docuSignManager = new DocuSignManager();
         }
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO)
         {
-            if (NeedsAuthentication(curActionDTO))
+            if (NeedsAuthentication(curActionDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDTO, dto => ConfigurationRequestType.Initial);
+            return await ProcessConfigurationRequest(curActionDO, dto => ConfigurationRequestType.Initial);
         }
 
-        public void Activate(ActionDTO curActionDTO)
+        public void Activate(ActionDO curActionDO)
         {
             return; // Will be changed when implementation is plumbed in.
         }
 
-        public void Deactivate(ActionDTO curActionDTO)
+        public void Deactivate(ActionDO curActionDO)
         {
             return; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDO actionDO)
         {
-            if (NeedsAuthentication(actionDto))
+            if (NeedsAuthentication(actionDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(actionDto.ProcessId);
+            var processPayload = await GetProcessPayload(actionDO.ProcessId);
 
             //Get envlopeId
             string envelopeId = GetEnvelopeId(processPayload);
@@ -63,7 +63,7 @@ namespace terminalDocuSign.Actions
                 throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
             }
 
-            var payload = CreateActionPayload(actionDto, envelopeId);
+            var payload = CreateActionPayload(actionDO, envelopeId);
             var cratesList = new List<CrateDTO>()
             {
                 Crate.Create("DocuSign Envelope Data",
@@ -77,28 +77,28 @@ namespace terminalDocuSign.Actions
             return processPayload;
         }
 
-        public IList<FieldDTO> CreateActionPayload(ActionDTO curActionDTO, string curEnvelopeId)
+        public IList<FieldDTO> CreateActionPayload(ActionDO curActionDO, string curEnvelopeId)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDO.AuthToken.Token);
 
             var docusignEnvelope = new DocuSignEnvelope(
                 docuSignAuthDTO.Email,
                 docuSignAuthDTO.ApiPassword);
 
             var curEnvelopeData = docusignEnvelope.GetEnvelopeData(curEnvelopeId);
-            var fields = GetFields(curActionDTO);
+            var fields = GetFields(curActionDO);
 
             if (fields == null || fields.Count == 0)
             {
-                throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDTO.Id);
+                throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDO.Id);
             }
 
             return docusignEnvelope.ExtractPayload(fields, curEnvelopeId, curEnvelopeData);
         }
 
-        private List<FieldDTO> GetFields(ActionDTO curActionDO)
+        private List<FieldDTO> GetFields(ActionDO curActionDO)
         {
-            var fieldsCrate = curActionDO.CrateStorage.CrateDTO
+            var fieldsCrate = curActionDO.CrateStorageDTO().CrateDTO
                 .Where(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
                     && x.Label == "DocuSignTemplateUserDefinedFields")
                 .FirstOrDefault();
@@ -138,14 +138,14 @@ namespace terminalDocuSign.Actions
             return envelopeIdField.Value;
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(
-                curActionDTO.AuthToken.Token);
+                curActionDO.AuthToken.Token);
 
             //get envelopeIdFromUpstreamActions
             var envelopeIdFromUpstreamActions = await Action.FindKeysByCrateManifestType(
-                                                            Mapper.Map<ActionDO>(curActionDTO),
+                                                            Mapper.Map<ActionDO>(curActionDO),
                                                             new Manifest(MT.StandardDesignTimeFields),
                                                             "EnvelopeId",
                                                             "Key",
@@ -174,12 +174,12 @@ namespace terminalDocuSign.Actions
 
             //add the text block crate
             var crateControls = PackControlsCrate(textBlock);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+            curActionDO.CrateStorageDTO().CrateDTO.Add(crateControls);
 
             //get the template ID from the upstream actions
             string docuSignTemplateId = string.Empty;
             var docusignTemplateIdFromUpstreamActions = await Action.FindKeysByCrateManifestType(
-                                                                    Mapper.Map<ActionDO>(curActionDTO),
+                                                                    Mapper.Map<ActionDO>(curActionDO),
                                                                     new Manifest(MT.StandardDesignTimeFields),
                                                                     "TemplateId",
                                                                     "Key",
@@ -192,9 +192,9 @@ namespace terminalDocuSign.Actions
             }
 
             // If DocuSignTemplate Id was found, then add design-time fields.
-            _docuSignManager.ExtractFieldsAndAddToCrate(docuSignTemplateId, docuSignAuthDTO, curActionDTO);
+            _docuSignManager.ExtractFieldsAndAddToCrate(docuSignTemplateId, docuSignAuthDTO, curActionDO);
 
-            return curActionDTO;
+            return curActionDO;
         }
     }
 }

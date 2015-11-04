@@ -22,16 +22,16 @@ namespace terminalTwilio.Actions
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
 	    }
 
-        public override async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO)
         {
-            return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial);
+            return await ProcessConfigurationRequest(curActionDO, actionDo => ConfigurationRequestType.Initial);
         }
 
         //this entire function gets passed as a delegate to the main processing code in the base class
         //currently many actions have two stages of configuration, and this method determines which stage should be applied
-        private ConfigurationRequestType EvaluateReceivedRequest(ActionDTO curActionDTO)
+        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            CrateStorageDTO curCrates = curActionDTO.CrateStorage;
+            CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
 
             if (curCrates.CrateDTO.Count == 0)
                 return ConfigurationRequestType.Initial;
@@ -39,15 +39,15 @@ namespace terminalTwilio.Actions
                 return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
         {
-            if (curActionDTO.CrateStorage == null)
+            if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDTO.CrateStorage = new CrateStorageDTO();
+                curActionDO.UpdateCrateStorageDTO(new CrateStorageDTO().CrateDTO);
             }
-            curActionDTO.CrateStorage.CrateDTO.Add(PackCrate_ConfigurationControls());
-            curActionDTO.CrateStorage.CrateDTO.Add(GetAvailableDataFields(curActionDTO));
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            curActionDO.CrateStorageDTO().CrateDTO.Add(PackCrate_ConfigurationControls());
+            curActionDO.CrateStorageDTO().CrateDTO.Add(GetAvailableDataFields(curActionDO));
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
 
         private CrateDTO PackCrate_ConfigurationControls()
@@ -115,7 +115,7 @@ namespace terminalTwilio.Actions
             return phoneNumberFields;
         }
 
-        private CrateDTO GetAvailableDataFields(ActionDTO curActionDTO)
+        private CrateDTO GetAvailableDataFields(ActionDO curActionDO)
         {
             CrateDTO crateDTO = new CrateDTO();
 
@@ -125,7 +125,7 @@ namespace terminalTwilio.Actions
             {
                 crateDTO = PackCrate_ErrorTextBox("Error_NoUpstreamLists",
                             "No Upstream fr8 Lists Were Found.");
-                curActionDTO.CurrentView = "Error_NoUpstreamLists";
+                curActionDO.CurrentView = "Error_NoUpstreamLists";
             }
             else
             {
@@ -135,10 +135,10 @@ namespace terminalTwilio.Actions
             return crateDTO;
         }
 
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
         {
             //not currently any requirements that need attention at FollowupConfigurationResponse
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
 
         public object Activate(ActionDO curActionDO)
@@ -152,11 +152,11 @@ namespace terminalTwilio.Actions
             return curActionDO;
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO)
         {
-            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+            var processPayload = await GetProcessPayload(curActionDO.ProcessId);
 
-            var controlsCrate = curActionDTO.CrateStorage.CrateDTO.FirstOrDefault();
+            var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO.FirstOrDefault();
             if (controlsCrate == null)
                 return null;
 

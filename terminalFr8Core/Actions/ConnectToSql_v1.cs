@@ -22,11 +22,11 @@ namespace terminalFr8Core.Actions
 
 
         public override ConfigurationRequestType ConfigurationEvaluator(
-            ActionDTO curActionDTO)
+            ActionDO curActionDO)
         {
-            if (curActionDTO.CrateStorage == null
-                || curActionDTO.CrateStorage.CrateDTO == null
-                || curActionDTO.CrateStorage.CrateDTO.Count == 0)
+            if (curActionDO.CrateStorageDTO() == null
+                || curActionDO.CrateStorageDTO().CrateDTO == null
+                || curActionDO.CrateStorageDTO().CrateDTO.Count == 0)
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -34,18 +34,18 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override Task<ActionDTO> InitialConfigurationResponse(
-            ActionDTO curActionDTO)
+        protected override Task<ActionDO> InitialConfigurationResponse(
+            ActionDO curActionDO)
         {
-            if (curActionDTO.CrateStorage == null)
+            if (curActionDO.CrateStorage == null)
             {
-                curActionDTO.CrateStorage = new CrateStorageDTO();
+                curActionDO.UpdateCrateStorageDTO(new CrateStorageDTO().CrateDTO);
             }
 
             var crateControls = CreateControlsCrate();
-            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+            curActionDO.CrateStorageDTO().CrateDTO.Add(crateControls);
 
-            return Task.FromResult<ActionDTO>(curActionDTO);
+            return Task.FromResult<ActionDO>(curActionDO);
         }
 
         private CrateDTO CreateControlsCrate()
@@ -64,16 +64,16 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(control);
         }
 
-        protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
         {
-            RemoveErrorControl(curActionDTO);
+            RemoveErrorControl(curActionDO);
 
             Crate.RemoveCrateByLabel(
-                curActionDTO.CrateStorage.CrateDTO,
+                curActionDO.CrateStorageDTO().CrateDTO,
                 "Sql Table Definitions"
             );
 
-            var connectionString = ExtractConnectionString(curActionDTO);
+            var connectionString = ExtractConnectionString(curActionDO);
             if (!string.IsNullOrEmpty(connectionString))
             {
                 try
@@ -85,20 +85,20 @@ namespace terminalFr8Core.Actions
                             tableDefinitions.ToArray()
                         );
 
-                    curActionDTO.CrateStorage.CrateDTO.Add(tableDefinitionCrate);
+                    curActionDO.CrateStorageDTO().CrateDTO.Add(tableDefinitionCrate);
                 }
                 catch
                 {
-                    AddErrorControl(curActionDTO);
+                    AddErrorControl(curActionDO);
                 }
             }
 
-            return base.FollowupConfigurationResponse(curActionDTO);
+            return base.FollowupConfigurationResponse(curActionDO);
         }
 
-        private string ExtractConnectionString(ActionDTO curActionDTO)
+        private string ExtractConnectionString(ActionDO curActionDO)
         {
-            var configControls = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
+            var configControls = Crate.GetConfigurationControls(curActionDO);
             var connectionStringControl = configControls.FindByName("ConnectionString");
 
             return connectionStringControl.Value;
@@ -154,9 +154,9 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        private void AddErrorControl(ActionDTO curActionDTO)
+        private void AddErrorControl(ActionDO curActionDO)
         {
-            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+            var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO
                 .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             if (controlsCrate == null) { return; }
@@ -176,9 +176,9 @@ namespace terminalFr8Core.Actions
             controlsCrate.Contents = JsonConvert.SerializeObject(controlsCrate);
         }
 
-        private void RemoveErrorControl(ActionDTO curActionDTO)
+        private void RemoveErrorControl(ActionDO curActionDO)
         {
-            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+            var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO
                 .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             if (controlsCrate == null) { return; }
@@ -203,7 +203,7 @@ namespace terminalFr8Core.Actions
 
         #region Execution.
 
-        public Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public Task<PayloadDTO> Run(ActionDO curActionDO)
         {
             throw new NotImplementedException();
         }

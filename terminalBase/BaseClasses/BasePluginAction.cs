@@ -211,9 +211,9 @@ namespace TerminalBase.BaseClasses
             return controlsCrate;
         }
 
-        protected string ExtractControlFieldValue(ActionDTO curActionDTO, string fieldName)
+        protected string ExtractControlFieldValue(ActionDO curActionDO, string fieldName)
         {
-            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+            var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO
                 .FirstOrDefault(
                     x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME
                     && x.Label == "Configuration_Controls");

@@ -27,30 +27,51 @@ namespace terminalFr8Core.Controllers
         [Route("configure")]
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>) _basePluginController
-                .HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
+            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
+
+            var resultActionDO = await (Task<ActionDO>)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", submittedActionDO);
+
+            var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
+
+            return resultActionDTO;
         }
 
         [HttpPost]
         [Route("activate")]
-        public ActionDTO Activate(ActionDTO curActionDTO)
+        public ActionDTO Activate(ActionDTO curActionDataPackage)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Activate", curActionDTO);
+            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDataPackage);
+
+            var resultActionDO = _basePluginController.HandleDockyardRequest(curPlugin, "Activate", submittedActionDO);
+
+            var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
+
+            return resultActionDTO;
         }
 
         [HttpPost]
         [Route("deactivate")]
-        public ActionDTO Deactivate(ActionDTO curActionDTO)
+        public ActionDTO Deactivate(ActionDTO curActionDataPackage)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Deactivate", curActionDTO);
+            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDataPackage);
+
+            var resultActionDO = _basePluginController.HandleDockyardRequest(curPlugin, "Deactivate", submittedActionDO);
+
+            var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
+
+            return resultActionDTO;
         }
 
         [HttpPost]
         [Route("run")]
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
-            return await (Task<PayloadDTO>) _basePluginController.HandleDockyardRequest(
-                curPlugin, "Run", actionDto);
+            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
+
+            var resultPayloadDTO = await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Run", submittedActionDO);
+
+            return resultPayloadDTO;
+
         }
     }
 }

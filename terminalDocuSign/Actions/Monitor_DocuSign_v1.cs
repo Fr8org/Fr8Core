@@ -22,19 +22,19 @@ namespace terminalDocuSign.Actions
     {
         DocuSignManager _docuSignManager = new DocuSignManager();
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO)
         {
-            if (NeedsAuthentication(curActionDTO))
+            if (NeedsAuthentication(curActionDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x));
         }
 
-        public ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        public ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            CrateStorageDTO curCrates = curActionDTO.CrateStorage;
+            CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
 
             if (curCrates.CrateDTO.Count == 0)
             {
@@ -56,10 +56,10 @@ namespace terminalDocuSign.Actions
             return createDesignTimeFields;
         }
 
-        private string GetSelectedTemplateId(ActionDTO curActionDTO)
+        private string GetSelectedTemplateId(ActionDO curActionDO)
         {
             var controlsCrates = Crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME,
-                curActionDTO.CrateStorage);
+                curActionDO.CrateStorageDTO());
             var curDocuSignTemplateId = Crate.GetElementByKey(controlsCrates, key: "Selected_DocuSign_Template",
                 keyFieldName: "name")
                 .Select(e => (string)e["value"])
@@ -67,7 +67,7 @@ namespace terminalDocuSign.Actions
             return curDocuSignTemplateId;
         }
 
-        public object Activate(ActionDTO curDataPackage)
+        public object Activate(ActionDO curDataPackage)
         {
             DocuSignAccount docuSignAccount = new DocuSignAccount();
             ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
@@ -81,7 +81,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public object Deactivate(ActionDTO curDataPackage)
+        public object Deactivate(ActionDO curDataPackage)
         {
             DocuSignAccount docuSignAccount = new DocuSignAccount();
             ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
@@ -95,14 +95,14 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDO actionDO)
         {
-            if (NeedsAuthentication(actionDto))
+            if (NeedsAuthentication(actionDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(actionDto.ProcessId);
+            var processPayload = await GetProcessPayload(actionDO.ProcessId);
 
             // Extract envelope id from the payload Crate
             string envelopeId = GetEnvelopeId(processPayload);
@@ -157,43 +157,43 @@ namespace terminalDocuSign.Actions
             return envelopeIdField.Value;
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
         {
             var docuSignAuthDTO = JsonConvert
-                .DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
+                .DeserializeObject<DocuSignAuthDTO>(curActionDO.AuthToken.Token);
 
-            if (curActionDTO.CrateStorage == null)
+            if (curActionDO.CrateStorage == null)
             {
-                curActionDTO.CrateStorage = new CrateStorageDTO();
+                curActionDO.CrateStorage = "";
             }
 
             var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             var eventFields = PackCrate_DocuSignEventFields();
 
-            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
-            curActionDTO.CrateStorage.CrateDTO.Add(eventFields);
+            curActionDO.CrateStorageDTO().CrateDTO.Add(crateControls);
+            curActionDO.CrateStorageDTO().CrateDTO.Add(crateDesignTimeFields);
+            curActionDO.CrateStorageDTO().CrateDTO.Add(eventFields);
 
-            var configurationFields = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
+            var configurationFields = Crate.GetConfigurationControls(curActionDO);
 
             // Remove previously added crate of "Standard Event Subscriptions" schema
 
-            Crate.ReplaceCratesByManifestType(curActionDTO.CrateStorage.CrateDTO,
+            Crate.ReplaceCratesByManifestType(curActionDO.CrateStorageDTO().CrateDTO,
                 CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
                 new List<CrateDTO> { PackCrate_EventSubscriptions(configurationFields) });
 
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            return await Task.FromResult(curActionDO);
         }
 
-        protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
         {
-            string curSelectedTemplateId = GetSelectedTemplateId(curActionDTO);
+            string curSelectedTemplateId = GetSelectedTemplateId(curActionDO);
 
             if (!string.IsNullOrEmpty(curSelectedTemplateId))
             {
                 //get the existing DocuSign event fields
-                var curEventFieldsCrate = Crate.GetCratesByLabel("DocuSign Event Fields", curActionDTO.CrateStorage).Single();
+                var curEventFieldsCrate = Crate.GetCratesByLabel("DocuSign Event Fields", curActionDO.CrateStorageDTO()).Single();
                 var curEventFields = Crate.GetStandardDesignTimeFields(curEventFieldsCrate);
 
                 //set the selected template ID
@@ -207,26 +207,26 @@ namespace terminalDocuSign.Actions
 
 
                 //update the DocuSign Event Fields with new value
-                Crate.ReplaceCratesByLabel(curActionDTO.CrateStorage.CrateDTO, "DocuSign Event Fields",
+                Crate.ReplaceCratesByLabel(curActionDO.CrateStorageDTO().CrateDTO, "DocuSign Event Fields",
                     new List<CrateDTO>
                     {
                         Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", curEventFields.Fields.ToArray())
                     });
 
-                UpdateSelectedEvents(curActionDTO);
+                UpdateSelectedEvents(curActionDO);
             }
 
-            return Task.FromResult(curActionDTO);
+            return Task.FromResult(curActionDO);
         }
 
         /// <summary>
         /// Updates event subscriptions list by user checked check boxes.
         /// </summary>
         /// <remarks>The configuration controls include check boxes used to get the selected DocuSign event subscriptions</remarks>
-        private void UpdateSelectedEvents(ActionDTO curActionDTO)
+        private void UpdateSelectedEvents(ActionDO curActionDO)
         {
             //get the config controls manifest
-            var curConfigControlsCrate = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
+            var curConfigControlsCrate = Crate.GetConfigurationControls(curActionDO);
 
             //get selected check boxes (i.e. user wanted to subscribe these DocuSign events to monitor for)
             var curSelectedDocuSignEvents =
@@ -239,7 +239,7 @@ namespace terminalDocuSign.Actions
                 curSelectedDocuSignEvents.ToArray());
 
             //replace the existing crate with new event subscription crate
-            Crate.ReplaceCratesByManifestType(curActionDTO.CrateStorage.CrateDTO,
+            Crate.ReplaceCratesByManifestType(curActionDO.CrateStorageDTO().CrateDTO,
                 CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME, new List<CrateDTO> {curEventSubscriptionCrate});
         }
 

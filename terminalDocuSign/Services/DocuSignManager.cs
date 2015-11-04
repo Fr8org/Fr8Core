@@ -7,6 +7,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
+using Data.Entities;
 
 namespace terminalDocuSign.Services
 {
@@ -66,7 +67,7 @@ namespace terminalDocuSign.Services
         /// <param name="docuSignAuthDTO">DocuSign authentication token.</param>
         /// <param name="curActionDTO">ActionDTO object representing the current action. The crate with extracted 
         /// fields will be added to this Action replacing any older instances of that crate.</param>
-        public void ExtractFieldsAndAddToCrate(string docuSignTemplateId, DocuSignAuthDTO docuSignAuthDTO, ActionDTO curActionDTO)
+        public void ExtractFieldsAndAddToCrate(string docuSignTemplateId, DocuSignAuthDTO docuSignAuthDTO, ActionDO curActionDO)
         {
             if (!string.IsNullOrEmpty(docuSignTemplateId))
             {
@@ -83,7 +84,7 @@ namespace terminalDocuSign.Services
                         Value = f.Value
                     });
 
-                Crate.ReplaceCratesByManifestType(curActionDTO.CrateStorage.CrateDTO,
+                Crate.ReplaceCratesByManifestType(curActionDO.CrateStorageDTO().CrateDTO,
                     CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                     new List<CrateDTO>
                     {

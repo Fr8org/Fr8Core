@@ -25,12 +25,11 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Execute(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Execute(ActionDO curActionDO)
         {
-            var curPayloadDTO = await GetProcessPayload(curActionDTO.ProcessId);
+            var curPayloadDTO = await GetProcessPayload(curActionDO.ProcessId);
 
-            ActionDO curAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
-            var controlsMS = Action.GetControlsManifest(curAction);
+            var controlsMS = Action.GetControlsManifest(curActionDO);
 
             ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane);
             if (filterPaneControl == null)
@@ -195,9 +194,9 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public override async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO)
         {
-            return await ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator);
         }
 
         private CrateDTO CreateControlsCrate()
@@ -220,13 +219,13 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Looks for first Create with Id == "Standard Design-Time" among all upcoming Actions.
         /// </summary>
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
         {
-            if (curActionDTO.Id > 0)
+            if (curActionDO.Id > 0)
             {
                 //this conversion from actiondto to Action should be moved back to the controller edge
                 var curUpstreamFields =
-                    (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Upstream))
+                    (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream))
                     .Fields
                     .ToArray();
 
@@ -238,7 +237,7 @@ namespace terminalFr8Core.Actions
                 CrateDTO configurationControlsCrate = CreateControlsCrate();
 
                 var crateStrorageDTO = AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
-                curActionDTO.CrateStorage = crateStrorageDTO;
+                curActionDO.UpdateCrateStorageDTO(crateStrorageDTO.CrateDTO);
             }
             else
             {
@@ -246,22 +245,22 @@ namespace terminalFr8Core.Actions
                     "Configuration requires the submission of an Action that has a real ActionId");
             }
 
-            return curActionDTO;
+            return curActionDO;
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDataPackageDTO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDataPackageDO)
         {
-            if (curActionDataPackageDTO.CrateStorage == null
-                && curActionDataPackageDTO.CrateStorage.CrateDTO == null)
+            if (curActionDataPackageDO.CrateStorage == null
+                && curActionDataPackageDO.CrateStorageDTO().CrateDTO == null)
             {
                 return ConfigurationRequestType.Initial;
             }
 
-            var hasControlsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME) != null;
+            var hasControlsCrate = GetCratesByManifestType(curActionDataPackageDO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME) != null;
 
-            var hasQueryFieldsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) != null;
+            var hasQueryFieldsCrate = GetCratesByManifestType(curActionDataPackageDO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) != null;
 
-            if (hasControlsCrate && hasQueryFieldsCrate && HasValidConfiguration(curActionDataPackageDTO))
+            if (hasControlsCrate && hasQueryFieldsCrate && HasValidConfiguration(curActionDataPackageDO))
             {
                 return ConfigurationRequestType.Followup;
             }
@@ -278,9 +277,9 @@ namespace terminalFr8Core.Actions
         /// </summary>
         /// <param name="curActionDataPackageDTO"></param>
         /// <returns></returns>
-        private bool HasValidConfiguration(ActionDTO curActionDataPackageDTO)
+        private bool HasValidConfiguration(ActionDO curActionDataPackageDO)
         {
-            CrateDTO crateDTO = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+            CrateDTO crateDTO = GetCratesByManifestType(curActionDataPackageDO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             if (crateDTO != null && !string.IsNullOrEmpty(crateDTO.Contents))
             {
@@ -304,7 +303,7 @@ namespace terminalFr8Core.Actions
             return false;
         }
 
-        private CrateDTO GetCratesByManifestType(ActionDTO curActionDataPackageDTO, string curManifestType)
+        private CrateDTO GetCratesByManifestType(ActionDO curActionDataPackageDO, string curManifestType)
         {
             string curLabel = string.Empty;
             switch (curManifestType)
@@ -317,7 +316,7 @@ namespace terminalFr8Core.Actions
                     break;
             }
 
-            return curActionDataPackageDTO.CrateStorage.CrateDTO.FirstOrDefault(x =>
+            return curActionDataPackageDO.CrateStorageDTO().CrateDTO.FirstOrDefault(x =>
                 x.ManifestType == curManifestType
                 && x.Label == curLabel);
 

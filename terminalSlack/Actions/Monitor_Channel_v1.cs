@@ -10,6 +10,7 @@ using TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
+using Data.Entities;
 
 namespace terminalSlack.Actions
 {
@@ -22,14 +23,14 @@ namespace terminalSlack.Actions
             _slackIntegration = new SlackIntegration();
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDO actionDO)
         {
-            if (NeedsAuthentication(actionDto))
+            if (NeedsAuthentication(actionDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(actionDto.ProcessId);
+            var processPayload = await GetProcessPayload(actionDO.ProcessId);
             var payloadFields = ExtractPayloadFields(processPayload);
 
             var payloadChannelIdField = payloadFields.FirstOrDefault(x => x.Key == "channel_id");
@@ -39,7 +40,7 @@ namespace terminalSlack.Actions
             }
 
             var payloadChannelId = payloadChannelIdField.Value;
-            var actionChannelId = ExtractControlFieldValue(actionDto, "Selected_Slack_Channel");
+            var actionChannelId = ExtractControlFieldValue(actionDO, "Selected_Slack_Channel");
 
             if (payloadChannelId != actionChannelId)
             {
@@ -81,19 +82,19 @@ namespace terminalSlack.Actions
             return payloadFields;
         }
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO)
         {
-            if (NeedsAuthentication(curActionDTO))
+            if (NeedsAuthentication(curActionDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x));
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            var crateStorage = curActionDTO.CrateStorage;
+            var crateStorage = curActionDO.CrateStorageDTO();
 
             if (crateStorage.CrateDTO.Count == 0)
             {
@@ -103,22 +104,22 @@ namespace terminalSlack.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(
-            ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(
+            ActionDO curActionDO)
         {
-            var oauthToken = curActionDTO.AuthToken.Token;
+            var oauthToken = curActionDO.AuthToken.Token;
             var channels = await _slackIntegration.GetChannelList(oauthToken);
 
             var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = CreateDesignTimeFieldsCrate();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateEventSubscriptions = CreateEventSubscriptionCrate();
-            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateAvailableChannels);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateEventSubscriptions);
+            curActionDO.CrateStorageDTO().CrateDTO.Add(crateControls);
+            curActionDO.CrateStorageDTO().CrateDTO.Add(crateDesignTimeFields);
+            curActionDO.CrateStorageDTO().CrateDTO.Add(crateAvailableChannels);
+            curActionDO.CrateStorageDTO().CrateDTO.Add(crateEventSubscriptions);
 
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
 
         private CrateDTO PackCrate_ConfigurationControls()

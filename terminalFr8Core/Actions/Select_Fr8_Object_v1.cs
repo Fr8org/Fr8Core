@@ -22,27 +22,27 @@ namespace terminalFr8Core.Actions
     {
 
         // configure the action will return the initial UI crate 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
+        public async Task<ActionDO> Configure(ActionDO curActionDataPackageDO)
         {
-            return await ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator);
         }
 
-        protected override Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
         {
             // build a controls crate to render the dropdown build
             var configurationControlsCrate = CreateControlsCrate();
 
             var crateDesignTimeFields = PackFr8ObjectCrate();
             var crateStrorageDTO = AssembleCrateStorage(configurationControlsCrate, crateDesignTimeFields);
-            curActionDTO.CrateStorage = crateStrorageDTO;
+            curActionDO.UpdateCrateStorageDTO( crateStrorageDTO.CrateDTO);
 
-            return Task.FromResult(curActionDTO);
+            return Task.FromResult(curActionDO);
         }
 
-        private string GetSelectedFr8Object(ActionDTO curActionDTO)
+        private string GetSelectedFr8Object(ActionDO curActionDO)
         {
             var controlsCrates = Crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME,
-                curActionDTO.CrateStorage);
+                curActionDO.CrateStorageDTO());
             var curFr8Selected_Object = Crate.GetElementByKey(controlsCrates, key: "Selected_Fr8_Object",
                 keyFieldName: "name")
                 .Select(e => (string)e["value"])
@@ -50,23 +50,22 @@ namespace terminalFr8Core.Actions
             return curFr8Selected_Object;
         }
 
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
         {
 
-            string curSelectedFr8Object = GetSelectedFr8Object(curActionDTO);
+            string curSelectedFr8Object = GetSelectedFr8Object(curActionDO);
 
             if (!string.IsNullOrEmpty(curSelectedFr8Object))
             {
-                var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
                 var fr8ObjectCrateDTO = await GetDesignTimeFieldsCrateOfSelectedFr8Object(curSelectedFr8Object);
 
                 // Change the label of the design time field crate in the current context.
                 var designTimeControlName = "Select Fr8 Object Properties";
                 fr8ObjectCrateDTO.Label = designTimeControlName;
                 Crate.AddOrReplaceCrate(designTimeControlName, curActionDO, fr8ObjectCrateDTO);
-                curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+
             }
-            return await Task.FromResult(curActionDTO);
+            return await Task.FromResult(curActionDO);
         }
 
         private CrateDTO CreateControlsCrate()
@@ -92,11 +91,11 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(fieldSelectFr8Object);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (curActionDTO.CrateStorage == null
-                || curActionDTO.CrateStorage.CrateDTO == null
-                || curActionDTO.CrateStorage.CrateDTO.Count == 0)
+            if (curActionDO.CrateStorageDTO() == null
+                || curActionDO.CrateStorageDTO().CrateDTO == null
+                || curActionDO.CrateStorageDTO().CrateDTO.Count == 0)
             {
                 return ConfigurationRequestType.Initial;
             }

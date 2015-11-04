@@ -18,29 +18,29 @@ namespace terminalFr8Core.Actions
 {
     public class StoreMTData_v1 : BasePluginAction
     {
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO)
         {
-            return await ProcessConfigurationRequest(curActionDTO, actionDTO => ConfigurationRequestType.Initial);
+            return await ProcessConfigurationRequest(curActionDO, actionDO => ConfigurationRequestType.Initial);
         }
 
-        public Task<object> Activate(ActionDTO curActionDTO)
+        public Task<object> Activate(ActionDO curActionDO)
         {
             //No activation logic decided yet
             return null;
         }
 
-        public Task<object> Deactivate(ActionDTO curDataPackage)
+        public Task<object> Deactivate(ActionDO curDataPackage)
         {
             //No deactivation logic decided yet
             return null;
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDO actionDO)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //get the process payload
-                var curProcessPayload = await GetProcessPayload(actionDto.ProcessId);
+                var curProcessPayload = await GetProcessPayload(actionDO.ProcessId);
 
                 //get docu sign envelope crate from payload
                 var curDocuSignEnvelopeCrate =
@@ -85,9 +85,8 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
         {
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
             CrateDTO curMergedUpstreamRunTimeObjects =
                 await MergeUpstreamFields(curActionDO.Id, "Available Run-Time Objects");
@@ -121,7 +120,7 @@ namespace terminalFr8Core.Actions
                 curSelectedObjectType
             });
 
-            return Mapper.Map<ActionDTO>(curActionDO);
+            return curActionDO;
         }
     }
 }

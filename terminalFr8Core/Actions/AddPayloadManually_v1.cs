@@ -8,16 +8,17 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
+using Data.Entities;
 
 namespace terminalFr8Core.Actions
 {
     public class AddPayloadManually_v1 : BasePluginAction
     {
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO)
         {
-            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+            var processPayload = await GetProcessPayload(curActionDO.ProcessId);
 
-            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+            var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO
                 .SingleOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
             if (controlsCrate == null)
             {
@@ -48,25 +49,25 @@ namespace terminalFr8Core.Actions
             return processPayload;
         }
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
+        public async Task<ActionDO> Configure(ActionDO curActionDataPackageDO)
         {
-            return await ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator);
         }
 
-        protected override Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
         {
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
             var crateStrorageDTO = AssembleCrateStorage(configurationControlsCrate);
-            curActionDTO.CrateStorage = crateStrorageDTO;
+            curActionDO.UpdateCrateStorageDTO(crateStrorageDTO.CrateDTO);
 
-            return Task.FromResult(curActionDTO);
+            return Task.FromResult(curActionDO);
         }
 
-        protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
         {
-            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+            var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO
                 .SingleOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
             if (controlsCrate == null)
             {
@@ -84,7 +85,7 @@ namespace terminalFr8Core.Actions
             }
 
             Crate.RemoveCrateByLabel(
-                curActionDTO.CrateStorage.CrateDTO,
+                curActionDO.CrateStorageDTO().CrateDTO,
                 "ManuallyAddedPayload"
                 );
 
@@ -92,14 +93,14 @@ namespace terminalFr8Core.Actions
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
             userDefinedPayload.ForEach(x => x.Value = x.Key);
 
-            curActionDTO.CrateStorage.CrateDTO.Add(
+            curActionDO.CrateStorageDTO().CrateDTO.Add(
                 Crate.CreateDesignTimeFieldsCrate(
                     "ManuallyAddedPayload",
                     userDefinedPayload.ToArray()
                     )
                 );
 
-            return Task.FromResult(curActionDTO);
+            return Task.FromResult(curActionDO);
         }
 
         private CrateDTO CreateControlsCrate()
@@ -118,11 +119,11 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(fieldFilterPane);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (curActionDTO.CrateStorage == null
-                || curActionDTO.CrateStorage.CrateDTO == null
-                || curActionDTO.CrateStorage.CrateDTO.Count == 0)
+            if (curActionDO.CrateStorage == null
+                || curActionDO.CrateStorageDTO().CrateDTO == null
+                || curActionDO.CrateStorageDTO().CrateDTO.Count == 0)
             {
                 return ConfigurationRequestType.Initial;
             }

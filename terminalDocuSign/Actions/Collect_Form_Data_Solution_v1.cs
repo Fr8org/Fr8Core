@@ -88,14 +88,14 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO)
         {
-            return await ProcessConfigurationRequest(curActionDTO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator);
         }
 
-        public ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        public ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            CrateStorageDTO curCrates = curActionDTO.CrateStorage;
+            CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
 
             if (curCrates.CrateDTO.Count == 0)
             {
@@ -120,17 +120,17 @@ namespace terminalDocuSign.Actions
             return await GetProcessPayload(actionDto.ProcessId);
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
         {
-            if (curActionDTO.CrateStorage == null)
+            if (curActionDO.CrateStorage == null)
             {
-                curActionDTO.CrateStorage = new CrateStorageDTO();
+                curActionDO.CrateStorage = "";
             }
 
-            curActionDTO.CrateStorage.CrateDTO.Add(PackControls(new ActionUi()));
-            curActionDTO.CrateStorage.CrateDTO.AddRange(await PackSources());
+            curActionDO.CrateStorageDTO().CrateDTO.Add(PackControls(new ActionUi()));
+            curActionDO.CrateStorageDTO().CrateDTO.AddRange(await PackSources());
 
-            return curActionDTO;
+            return curActionDO;
         }
 
         protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)

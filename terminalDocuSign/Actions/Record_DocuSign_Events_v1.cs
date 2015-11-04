@@ -12,6 +12,7 @@ using StructureMap;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
 using TerminalBase.BaseClasses;
+using Data.Entities;
 
 namespace terminalDocuSign.Actions
 {
@@ -22,17 +23,17 @@ namespace terminalDocuSign.Actions
         /// </summary>
         /// <param name="curActionDTO"></param>
         /// <returns></returns>
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO)
         {
-            if (NeedsAuthentication(curActionDTO))
+            if (NeedsAuthentication(curActionDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDTO, dto => ConfigurationRequestType.Initial);
+            return await ProcessConfigurationRequest(curActionDO, dto => ConfigurationRequestType.Initial);
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
         {
             /*
              * Discussed with Alexei and it is required to have empty Standard Configuration Control in the crate.
@@ -58,21 +59,19 @@ namespace terminalDocuSign.Actions
                 });
 
             //update crate storage with standard event subscription crate
-            curActionDTO.CrateStorage = new CrateStorageDTO()
-            {
-                CrateDTO = new List<CrateDTO> { curControlsCrate, curEventSubscriptionsCrate, curAvailableRunTimeObjectsDesignTimeCrate }
-            };
+            curActionDO.UpdateCrateStorageDTO(new List<CrateDTO> { curControlsCrate, curEventSubscriptionsCrate, curAvailableRunTimeObjectsDesignTimeCrate });
+
 
             /*
              * Note: We should not call Activate at the time of Configuration. For this action, it may be valid use case.
              * Because this particular action will be used internally, it would be easy to execute the Process directly.
              */
-            await Activate(curActionDTO);
+            await Activate(curActionDO);
 
-            return await Task.FromResult(curActionDTO);
+            return await Task.FromResult(curActionDO);
         }
 
-        public Task<object> Activate(ActionDTO curActionDTO)
+        public Task<object> Activate(ActionDO curActionDO)
         {
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
@@ -100,7 +99,7 @@ namespace terminalDocuSign.Actions
             return Task.FromResult((object)true);
         }
 
-        public object Deactivate(ActionDTO curDataPackage)
+        public object Deactivate(ActionDO curDataPackage)
         {
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
@@ -113,14 +112,14 @@ namespace terminalDocuSign.Actions
             return true;
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDO actionDO)
         {
-            if (NeedsAuthentication(actionDto))
+            if (NeedsAuthentication(actionDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var curProcessPayload = await GetProcessPayload(actionDto.ProcessId);
+            var curProcessPayload = await GetProcessPayload(actionDO.ProcessId);
 
             var curEventReport = JsonConvert.DeserializeObject<EventReportCM>(curProcessPayload.CrateStorageDTO().CrateDTO[0].Contents);
 

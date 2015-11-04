@@ -17,14 +17,14 @@ namespace terminalSalesforce.Actions
     {
         ISalesforceIntegration _salesforce = new SalesforceIntegration();
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO)
         {
-            if (NeedsAuthentication(curActionDTO))
+            if (NeedsAuthentication(curActionDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x));
         }
 
         public object Activate(ActionDO curActionDO)
@@ -39,43 +39,43 @@ namespace terminalSalesforce.Actions
             return "Deactivated";
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO)
         {
             PayloadDTO processPayload = null;
-          
-                processPayload = await GetProcessPayload(curActionDTO.ProcessId);
 
-                if (NeedsAuthentication(curActionDTO))
+            processPayload = await GetProcessPayload(curActionDO.ProcessId);
+
+            if (NeedsAuthentication(curActionDO))
                 {
                     throw new ApplicationException("No AuthToken provided.");
                 }
 
 
-                var lastName = ExtractControlFieldValue(curActionDTO,"lastName");
+            var lastName = ExtractControlFieldValue(curActionDO, "lastName");
                 if (string.IsNullOrEmpty(lastName))
                 {
                     throw new ApplicationException("No last name found in action.");
                 }
 
-                var company = ExtractControlFieldValue(curActionDTO, "companyName");
+                var company = ExtractControlFieldValue(curActionDO, "companyName");
                 if (string.IsNullOrEmpty(company))
                 {
                     throw new ApplicationException("No company name found in action.");
                 }
 
-                bool result = _salesforce.CreateLead(curActionDTO);
+                bool result = _salesforce.CreateLead(curActionDO);
            
           
             return processPayload;
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             return ConfigurationRequestType.Initial;
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(
-         ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(
+         ActionDO curActionDO)
         {
             var firstNameCrate = new TextBoxControlDefinitionDTO()
             {
@@ -100,9 +100,9 @@ namespace terminalSalesforce.Actions
             };
 
             var controls = PackControlsCrate(firstNameCrate, lastNAme, company);
-            curActionDTO.CrateStorage.CrateDTO.Add(controls);
+            curActionDO.CrateStorageDTO().CrateDTO.Add(controls);
 
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
     }
 }

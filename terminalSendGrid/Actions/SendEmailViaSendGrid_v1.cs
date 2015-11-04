@@ -31,18 +31,18 @@ namespace terminalSendGrid.Actions
             _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
         }
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO)
         {
-            return await ProcessConfigurationRequest(curActionDTO, EvaluateReceivedRequest);
+            return await ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest);
         }
 
         /// <summary>
         /// this entire function gets passed as a delegate to the main processing code in the base class
         /// currently many actions have two stages of configuration, and this method determines which stage should be applied
         /// </summary>
-        private ConfigurationRequestType EvaluateReceivedRequest(ActionDTO curActionDTO)
+        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            var curCrates = curActionDTO.CrateStorage;
+            var curCrates = curActionDO.CrateStorageDTO();
 
             if (curCrates == null || curCrates.CrateDTO.Count == 0)
             {
@@ -54,17 +54,17 @@ namespace terminalSendGrid.Actions
             }
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
         {
-            if (curActionDTO.CrateStorage == null)
+            if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDTO.CrateStorage = new CrateStorageDTO();
+                curActionDO.UpdateCrateStorageDTO(new CrateStorageDTO().CrateDTO);
             }
 
-            curActionDTO.CrateStorage.CrateDTO.Add(CreateControlsCrate());
-            curActionDTO.CrateStorage.CrateDTO.Add(await GetAvailableDataFields(curActionDTO));
+            curActionDO.CrateStorageDTO().CrateDTO.Add(CreateControlsCrate());
+            curActionDO.CrateStorageDTO().CrateDTO.Add(await GetAvailableDataFields(curActionDO));
 
-            return curActionDTO;
+            return curActionDO;
         }
 
         /// <summary>
@@ -124,10 +124,10 @@ namespace terminalSendGrid.Actions
             return Crate.CreateStandardConfigurationControlsCrate("Send Grid", controls);
         }
 
-        private async Task<CrateDTO> GetAvailableDataFields(ActionDTO curActionDTO)
+        private async Task<CrateDTO> GetAvailableDataFields(ActionDO curActionDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream))
                     .Fields
                     .ToArray();
 
@@ -158,24 +158,24 @@ namespace terminalSendGrid.Actions
             return htmlText;
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO)
         {
             var fromAddress = _configRepository.Get("OutboundFromAddress");
 
-            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+            var processPayload = await GetProcessPayload(curActionDO.ProcessId);
 
             var emailAddress = ExtractSpecificOrUpstreamValue(
-                curActionDTO.CrateStorage,
+                curActionDO.CrateStorageDTO(),
                 processPayload.CrateStorageDTO(),
                 "EmailAddress"
             );
             var emailSubject = ExtractSpecificOrUpstreamValue(
-                curActionDTO.CrateStorage,
+                curActionDO.CrateStorageDTO(),
                 processPayload.CrateStorageDTO(),
                 "EmailSubject"
             );
             var emailBody = ExtractSpecificOrUpstreamValue(
-                curActionDTO.CrateStorage,
+                curActionDO.CrateStorageDTO(),
                 processPayload.CrateStorageDTO(),
                 "EmailBody"
             );
