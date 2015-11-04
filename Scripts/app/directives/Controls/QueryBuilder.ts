@@ -48,7 +48,7 @@ module dockyard.directives {
 
                         if (newValue && newValue.value) {
                             var jsonValue = angular.fromJson(newValue.value);
-                            $scope.conditions = <Array<interfaces.ICondition>>jsonValue.conditions;
+                            $scope.conditions = <Array<interfaces.ICondition>>jsonValue;
                         }
                         else {
                             $scope.conditions = [
@@ -61,9 +61,7 @@ module dockyard.directives {
                     });
 
                     var updateFieldValue = function () {
-                        $scope.field.value = angular.toJson({
-                            conditions: $scope.conditions
-                        });
+                        $scope.field.value = angular.toJson($scope.conditions);
                     };
 
                     $scope.$watch('conditions', function () {

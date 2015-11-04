@@ -356,11 +356,52 @@ namespace terminalFr8Core.Actions
 
         #region Execution.
 
-        public Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
+            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
 
+            var selectedObject = ExtractSelectedObject(curActionDTO);
+            if (string.IsNullOrEmpty(selectedObject))
+            {
+                throw new ApplicationException("No query object was selected.");
+            }
 
-            return Task.FromResult<PayloadDTO>(null);
+            var queryBuilder = FindControl(curActionDTO, "SelectedQuery");
+            if (queryBuilder == null)
+            {
+                throw new ApplicationException("No QueryBuilder control found.");
+            }
+
+            var criteria = JsonConvert.DeserializeObject<List<CriteriaDTO>>(queryBuilder.Value);
+
+            var sqlQueryCrate = CreateSqlQueryCrate(selectedObject, criteria);
+
+            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { sqlQueryCrate });
+
+            return processPayload;
+        }
+
+        private CrateDTO CreateSqlQueryCrate(string selectedObject, List<CriteriaDTO> criteria)
+        {
+            var query = new QueryDTO()
+            {
+                Name = selectedObject,
+                Criteria = criteria
+            };
+
+            var standardQueryCM = new StandardQueryCM()
+            {
+                Queries = new List<QueryDTO>() { query }
+            };
+
+            var sqlQueryCrate = Crate.Create(
+                "Sql Query",
+                JsonConvert.SerializeObject(standardQueryCM),
+                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
+                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
+            );
+
+            return sqlQueryCrate;
         }
 
         #endregion Execution.
