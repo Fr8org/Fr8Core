@@ -84,12 +84,31 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDO
             {
+                Name = "Select_Fr8_Object",
+                Label = "Select Fr8 Object",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1",
+                MinPaneWidth = 330
+            });
+
+            result.Add(new ActivityTemplateDO
+            {
                 Name = "ConnectToSql",
                 Label = "Connect To SQL",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
                 Version = "1",
 				WebService = webService
+            });
+
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "BuildQuery",
+                Label = "Build Query",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1"
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
@@ -99,17 +118,6 @@ namespace terminalFr8Core.Controllers
             };
 
             return Json(curStandardFr8TerminalCM);
-            result.Add(new ActivityTemplateDO
-            {
-                Name = "Select_Fr8_Object",
-                Label = "Select Fr8 Object",
-                Category = ActivityCategory.Processors,
-                Plugin = plugin,
-                Version = "1",
-                MinPaneWidth = 330
-            });
-
-            return Json(result);    
         }
     }
 }

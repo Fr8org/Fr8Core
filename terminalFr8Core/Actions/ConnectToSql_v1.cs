@@ -66,7 +66,7 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            RemoveErrorControl(curActionDTO);
+            RemoveControl(curActionDTO, "ErrorLabel");
 
             Crate.RemoveCrateByLabel(
                 curActionDTO.CrateStorage.CrateDTO,
@@ -79,17 +79,30 @@ namespace terminalFr8Core.Actions
                 try
                 {
                     var tableDefinitions = RetrieveTableDefinitions(connectionString);
-                    var tableDefinitionCrate = Crate
-                        .CreateDesignTimeFieldsCrate(
+                    var tableDefinitionCrate = 
+                        Crate.CreateDesignTimeFieldsCrate(
                             "Sql Table Definitions",
                             tableDefinitions.ToArray()
                         );
 
+                    var columnTypes = RetrieveColumnTypes(connectionString);
+                    var columnTypesCrate =
+                        Crate.CreateDesignTimeFieldsCrate(
+                            "Sql Column Types",
+                            columnTypes.ToArray()
+                        );
+
                     curActionDTO.CrateStorage.CrateDTO.Add(tableDefinitionCrate);
+                    curActionDTO.CrateStorage.CrateDTO.Add(columnTypesCrate);
                 }
                 catch
                 {
-                    AddErrorControl(curActionDTO);
+                    AddLabelControl(
+                        curActionDTO,
+                        "ErrorLabel",
+                        "Unexpected error",
+                        "Error occured while trying to fetch columns from database specified."
+                    );
                 }
             }
 
@@ -104,7 +117,7 @@ namespace terminalFr8Core.Actions
             return connectionStringControl.Value;
         }
 
-        private List<FieldDTO> RetrieveTableDefinitions(string connectionString)
+        private void ListAllDbColumns(string connectionString, Action<IEnumerable<ColumnInfo>> callback)
         {
             var provider = DbProvider.GetDbProvider(DefaultDbProvider);
 
@@ -114,23 +127,56 @@ namespace terminalFr8Core.Actions
 
                 using (var tx = conn.BeginTransaction())
                 {
-                    var fieldsList = new List<FieldDTO>();
-
                     var columns = provider.ListAllColumns(tx);
-                    foreach (var column in columns)
+
+                    if (callback != null)
                     {
-                        var fullColumnName = GetColumnName(column);
-
-                        fieldsList.Add(new FieldDTO()
-                        {
-                            Key = fullColumnName,
-                            Value = fullColumnName
-                        });
+                        callback.Invoke(columns);
                     }
-
-                    return fieldsList;
                 }
             }
+        }
+
+        private List<FieldDTO> RetrieveTableDefinitions(string connectionString)
+        {
+            var fieldsList = new List<FieldDTO>();
+
+            ListAllDbColumns(connectionString, columns =>
+            {
+                foreach (var column in columns)
+                {
+                    var fullColumnName = GetColumnName(column);
+
+                    fieldsList.Add(new FieldDTO()
+                    {
+                        Key = fullColumnName,
+                        Value = fullColumnName
+                    });
+                }
+            });
+
+            return fieldsList;
+        }
+
+        private List<FieldDTO> RetrieveColumnTypes(string connectionString)
+        {
+            var fieldsList = new List<FieldDTO>();
+
+            ListAllDbColumns(connectionString, columns =>
+            {
+                foreach (var column in columns)
+                {
+                    var fullColumnName = GetColumnName(column);
+
+                    fieldsList.Add(new FieldDTO()
+                    {
+                        Key = fullColumnName,
+                        Value = column.DbType.ToString()
+                    });
+                }
+            });
+
+            return fieldsList;
         }
 
         private string GetColumnName(ColumnInfo columnInfo)
@@ -154,58 +200,13 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        private void AddErrorControl(ActionDTO curActionDTO)
-        {
-            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
-
-            if (controlsCrate == null) { return; }
-
-            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
-                controlsCrate.Contents);
-
-            if (controls == null) { return; }
-
-            controls.Controls.Add(new TextBlockControlDefinitionDTO()
-            {
-                Label = "ErrorLabel",
-                Value = "Error occured while trying to fetch columns from database specified.",
-                CssClass = "well well-lg"
-            });
-
-            controlsCrate.Contents = JsonConvert.SerializeObject(controlsCrate);
-        }
-
-        private void RemoveErrorControl(ActionDTO curActionDTO)
-        {
-            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
-
-            if (controlsCrate == null) { return; }
-
-            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
-                controlsCrate.Contents);
-
-            if (controls == null) { return; }
-
-            
-            var errorLabel = controls.Controls
-                .FirstOrDefault(x => x.Label == "ErrorLabel");
-
-            if (errorLabel != null)
-            {
-                controls.Controls.Remove(errorLabel);
-                controlsCrate.Contents = JsonConvert.SerializeObject(controlsCrate);
-            }
-        }
-
         #endregion Configuration.
 
         #region Execution.
 
         public Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
-            throw new NotImplementedException();
+            return Task.FromResult<PayloadDTO>(null);
         }
 
         #endregion Execution.

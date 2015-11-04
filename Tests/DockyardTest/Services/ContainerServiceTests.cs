@@ -34,7 +34,6 @@ namespace DockyardTest.Services
         private Fr8Account _userService;
         private string _testUserId = "testuser";
         private string xmlPayloadFullPath;
-        DocuSignEventDO docusignEventDO;
         ProcessNodeDO processNodeDO;
 
         [SetUp]
@@ -50,7 +49,6 @@ namespace DockyardTest.Services
             if (xmlPayloadFullPath == string.Empty)
                 throw new Exception("XML payload file for testing DocuSign notification is not found.");
 
-            docusignEventDO = FixtureData.TestDocuSignEvent1();
             processNodeDO = FixtureData.TestProcessNode2();
         }
 
@@ -167,8 +165,7 @@ namespace DockyardTest.Services
                 //Arrange
                 //Create a process template
                 var curRoute = FixtureData.TestRouteWithSubscribeEvent();
-                var curEvent = FixtureData.TestDocuSignEvent1();
-
+                
                 //Create activity mock to process the actions
                 Mock<IRouteNode> activityMock = new Mock<IRouteNode>(MockBehavior.Default);
                 activityMock.Setup(a => a.Process(1, It.IsAny<ContainerDO>())).Returns(Task.Delay(2));
@@ -176,7 +173,7 @@ namespace DockyardTest.Services
 
                 //Act
                 _container = new InternalClass.Container();
-                _container.Launch(curRoute, FixtureData.DocuSignEventToCrate(curEvent));
+                _container.Launch(curRoute, FixtureData.TestDocuSignEventCrate());
 
                 //Assert
                 //since we have only one action in the template, the process should be called exactly once

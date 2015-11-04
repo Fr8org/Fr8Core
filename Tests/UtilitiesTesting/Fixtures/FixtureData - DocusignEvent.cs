@@ -9,24 +9,13 @@ namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
     {
-        public static DocuSignEventDO TestDocuSignEvent1()
-        {
-            return new DocuSignEventDO
-            {
-                   EnvelopeId    = "36",
-                   ExternalEventType = 1,
-                   RecipientId = "TestRecipientId"
-                   
-            };
-        }
-
-        public static CrateDTO DocuSignEventToCrate(DocuSignEventDO curEvent)
+        public static CrateDTO TestDocuSignEventCrate()
         {
             var crateFields = new List<FieldDTO>()
                     {
-                        new FieldDTO () { Key = "EnvelopeId", Value = curEvent.EnvelopeId },
-                        new FieldDTO() { Key = "ExternalEventType", Value = curEvent.ExternalEventType.ToString() },
-                        new FieldDTO() {Key = "RecipientId", Value = curEvent.RecipientId.ToString() }
+                        new FieldDTO () { Key = "EnvelopeId", Value = "36" },
+                        new FieldDTO() { Key = "ExternalEventType", Value = "1" },
+                        new FieldDTO() {Key = "RecipientId", Value = "TestRecipientId" }
                     };
             var curEventData = new CrateDTO()
             {
