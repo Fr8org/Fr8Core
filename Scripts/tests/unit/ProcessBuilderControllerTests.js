@@ -7,7 +7,7 @@ var dockyard;
         var controller;
         (function (controller) {
             describe("ProcessBuilder Framework message processing", function () {
-                beforeEach(module("app"));
+                // beforeEach(module("app"));
                 app.run(['$httpBackend', function ($httpBackend) {
                         //we need this because stateProvider loads on test startup and routes us to default state 
                         //which is myaccount and has template URL with /AngularTemplate/MyAccountPage

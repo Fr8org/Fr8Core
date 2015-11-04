@@ -8,7 +8,7 @@ module dockyard.tests.controller {
 
     describe("ProcessBuilder Framework message processing", () => {
         
-        beforeEach(module("app"));
+        // beforeEach(module("app"));
 
         app.run(['$httpBackend', ($httpBackend) => {
                 //we need this because stateProvider loads on test startup and routes us to default state 

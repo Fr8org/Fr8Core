@@ -7,7 +7,7 @@ module dockyard.tests.controller {
     import fx = dockyard.tests.utils.fixtures;
 
     describe("PaneConfigureAction", () => {
-        beforeEach(module("app"));
+        // beforeEach(module("app"));
 
         app.run(['$httpBackend',
             function ($httpBackend) {
