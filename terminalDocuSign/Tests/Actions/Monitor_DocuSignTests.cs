@@ -90,10 +90,10 @@ namespace terminalDocuSign.Tests.Actions
         {
             //Arrange
             PayloadDTO curPayloadDTO = FixtureData.PayloadDTO1();
-            object[] parameters = new object[] { curPayloadDTO };
+            object[] parameters = new object[] { curPayloadDTO, "EnvelopeId" };
 
             //Act
-            var result = (string)ClassMethod.Invoke(typeof(Monitor_DocuSign_v1), "GetEnvelopeId", parameters);
+            var result = (string)ClassMethod.Invoke(typeof(Monitor_DocuSign_v1), "GetValueForKey", parameters);
 
             //Assert
             Assert.AreEqual("EnvelopeIdValue", result);

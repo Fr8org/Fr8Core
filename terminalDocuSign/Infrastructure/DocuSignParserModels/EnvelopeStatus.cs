@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace Data.Entities.DocuSignParserModels
+namespace terminalDocuSign.Infrastructure.DocuSignParserModels
 {
     [XmlRoot(ElementName = "EnvelopeStatus")]
     public class EnvelopeStatus
@@ -13,6 +13,9 @@ namespace Data.Entities.DocuSignParserModels
 
         [XmlElement("RecipientStatuses")]
         public RecipientStatuses RecipientStatuses { get; set; }
+
+        [XmlElement("DocumentStatuses")]
+        public DocumentStatuses DocumentStatuses { get; set; }
 
         [XmlElement("Email")]
         public string ExternalAccountId { get; set; }
