@@ -127,33 +127,46 @@ module dockyard.directives.paneSelectAction {
         }
 
         private onActionAdd() {
-            //we should list available actions to user and let him select one
-            this.ActivityTemplateService.getAvailableActivities().$promise.then((categoryList: Array<interfaces.IActivityCategoryDTO>) => {
-                //we should open a modal to let user select one of our activities
-                this.$modal.open({
-                    animation: true,
-                    templateUrl: 'AngularTemplate/PaneSelectActionModal',
-                    //this is a simple modal controller, so i didn't have an urge to seperate this
-                    //but resolve is used to make future seperation easier
-                    controller: ['$modalInstance', '$scope', 'activityCategories', ($modalInstance, $modalScope, activityCategories: Array<interfaces.IActivityCategoryDTO>) => {
-                        $modalScope.activityCategories = activityCategories;
-                        $modalScope.activityTypeSelected = (activityType: interfaces.IActivityTemplateVM) => {
-                            $modalInstance.close(activityType);
-                        };
-                        $modalScope.cancel = () => {
-                            $modalInstance.dismiss();
-                        };
-                    }],
-                    resolve: {
-                        'activityCategories': () => categoryList
-                    },
-                    windowClass: 'select-action-modal'
-                }).result.then((selectedActivity: interfaces.IActivityTemplateVM) => {
-                    //now we should emit an activity type selected event
-                    var eventArgs = new ActivityTypeSelectedEventArgs(selectedActivity);
-                    this._$scope.$emit(MessageType[MessageType.PaneSelectAction_ActivityTypeSelected], eventArgs);
-                });
-            });
+			/*
+		   //we should list available actions to user and let him select one
+		   this.ActivityTemplateService.getAvailableActivities().$promise.then((categoryList: Array<interfaces.IActivityCategoryDTO>) => {
+			   //we should open a modal to let user select one of our activities
+			   this.$modal.open({
+				   animation: true,
+				   templateUrl: 'AngularTemplate/PaneSelectActionModal',
+				   //this is a simple modal controller, so i didn't have an urge to seperate this
+				   //but resolve is used to make future seperation easier
+				   controller: ['$modalInstance', '$scope', 'activityCategories', ($modalInstance, $modalScope, activityCategories: Array<interfaces.IActivityCategoryDTO>) => {
+					   $modalScope.activityCategories = activityCategories;
+					   $modalScope.activityTypeSelected = (activityType: interfaces.IActivityTemplateVM) => {
+						   $modalInstance.close(activityType);
+					   };
+					   $modalScope.cancel = () => {
+						   $modalInstance.dismiss();
+					   };
+				   }],
+				   resolve: {
+					   'activityCategories': () => categoryList
+				   },
+				   windowClass: 'select-action-modal'
+			   }).result.then((selectedActivity: interfaces.IActivityTemplateVM) => {
+				   //now we should emit an activity type selected event
+				   var eventArgs = new ActivityTypeSelectedEventArgs(selectedActivity);
+				   this._$scope.$emit(MessageType[MessageType.PaneSelectAction_ActivityTypeSelected], eventArgs);
+			   });
+		   });
+		   */
+
+			this.$modal.open({
+				animation: true,
+				templateUrl: 'AngularTemplate/PaneSelectActionModal',
+				controller: 'RouteActionsDialogController'
+			})
+			.result.then((selectedActivity: interfaces.IActivityTemplateVM) => {
+				//now we should emit an activity type selected event
+				var eventArgs = new ActivityTypeSelectedEventArgs(selectedActivity);
+				this._$scope.$emit(MessageType[MessageType.PaneSelectAction_ActivityTypeSelected], eventArgs);
+			});
         }
 
         //The factory function returns Directive object as per Angular requirements
