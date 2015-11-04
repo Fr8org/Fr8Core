@@ -4,6 +4,7 @@ using terminalSalesforce.Infrastructure;
 using System.Threading.Tasks;
 using Data.Interfaces.Manifests;
 using Salesforce.Common;
+using Hub.Managers;
 using terminalSalesforce.Services;
 using TerminalBase.Infrastructure;
 using System.Collections.Generic;
@@ -99,8 +100,10 @@ namespace terminalSalesforce.Actions
                 Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
             };
 
-            var controls = PackControlsCrate(firstNameCrate, lastNAme, company);
-            curActionDTO.CrateStorage.CrateDTO.Add(controls);
+            using (var updater = Crate.UpdateStorage(curActionDTO))
+            {
+                updater.CrateStorage.Add(PackControlsCrate(firstNameCrate, lastNAme, company));
+            }
 
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }

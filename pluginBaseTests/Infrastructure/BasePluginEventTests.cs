@@ -1,4 +1,5 @@
 ﻿using System;
+using Data.Crates;
 using Moq;
 using NUnit.Framework;
 using Data.Interfaces.DataTransferObjects;
@@ -33,7 +34,7 @@ namespace pluginBaseTests.Infrastructure
             //verify that the post call is made to Fr8 Event Controller
             restClientMock.Verify(
                 client => client.PostAsync(new Uri(CloudConfigurationManager.GetSetting("EventWebServerUrl"), UriKind.Absolute), 
-                    It.IsAny<CrateDTO>()), Times.Exactly(1));
+                    It.IsAny<CrateSerializationProxy>()), Times.Exactly(1));
 
             restClientMock.VerifyAll();
         }

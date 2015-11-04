@@ -2,6 +2,8 @@
 using Data.Interfaces.Manifests;
 using System.Xml;
 using System.Xml.Linq;
+using Data.Crates;
+
 namespace terminalSalesforce.Infrastructure
 {
     public interface IEvent
@@ -9,6 +11,6 @@ namespace terminalSalesforce.Infrastructure
         /// <summary>
         /// Processes external event payload from the plugin
         /// </summary>
-        CrateDTO ProcessEvent(string curExternalEventPayload);
+        Crate ProcessEvent(string curExternalEventPayload);
     }
 }

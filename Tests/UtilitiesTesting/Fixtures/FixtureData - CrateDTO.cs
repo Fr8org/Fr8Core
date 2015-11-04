@@ -16,13 +16,13 @@ namespace UtilitiesTesting.Fixtures
     {
 
 
-        public static List<Crate> TestCrateDTO1()
+        public static List<Crate<StandardDesignTimeFieldsCM>> TestCrateDTO1()
         {
             List<FieldDTO> fields = new List<FieldDTO>();
             fields.Add(new FieldDTO() { Key = "Medical_Form_v1", Value = Guid.NewGuid().ToString() });
             fields.Add(new FieldDTO() { Key = "Medical_Form_v2", Value = Guid.NewGuid().ToString() });
 
-            return new List<Crate>() {Crate.FromContent("Available Templates", new StandardDesignTimeFieldsCM() {Fields = fields})};
+            return new List<Crate<StandardDesignTimeFieldsCM>>() { Crate<StandardDesignTimeFieldsCM>.FromContent("Available Templates", new StandardDesignTimeFieldsCM() { Fields = fields }) };
         }
 
         public static List<Crate> TestCrateDTO2()

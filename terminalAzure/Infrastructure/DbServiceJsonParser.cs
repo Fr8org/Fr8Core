@@ -7,6 +7,8 @@ using Data.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Hub.Managers;
+using StructureMap;
 using TerminalBase.Infrastructure;
 
 namespace terminalAzure.Infrastructure
@@ -16,6 +18,13 @@ namespace terminalAzure.Infrastructure
         //since we're working with a single table, leaving these constants for now.
         private const string TableName = "Customer";
         private const string SchemaName = "dbo";
+        private readonly ICrateManager _crateManager;
+
+
+        public DbServiceJsonParser()
+        {
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+        }
 
         /// <summary>
         /// Create Table instance from raw JSON data.
@@ -36,18 +45,15 @@ namespace terminalAzure.Infrastructure
 
         public string ExtractConnectionString(ActionDTO curActionDTO)
         {
-            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+            var controlsMS = _crateManager.GetStorage(curActionDTO).CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
-            if (controlsCrate == null)
+            if (controlsMS == null)
             {
                 throw new ApplicationException("No controls crate found.");
             }
 
-            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(controlsCrate.Contents);
-            var connectionStringControl = controlsMS.Controls
-                .FirstOrDefault(x => x.Name == "connection_string");
-
+            var connectionStringControl = controlsMS.Controls.FirstOrDefault(x => x.Name == "connection_string");
+            
             if (connectionStringControl == null)
             {
                 throw new ApplicationException("No connection_string control found.");

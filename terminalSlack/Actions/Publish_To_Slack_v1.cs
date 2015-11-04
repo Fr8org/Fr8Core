@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Enums;
+using Hub.Managers;
 using TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
@@ -67,16 +69,12 @@ namespace terminalSlack.Actions
 
         private List<FieldDTO> ExtractPayloadFields(PayloadDTO processPayload)
         {
-            var payloadDataCrates = processPayload.CrateStorageDTO()
-                .CrateDTO
-                .Where(x => x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME)
-                .ToList();
+            var payloadDataCrates = Crate.GetStorage(processPayload.CrateStorage).CratesOfType<StandardPayloadDataCM>();
 
             var result = new List<FieldDTO>();
             foreach (var payloadDataCrate in payloadDataCrates)
             {
-                var crateData = JsonConvert.DeserializeObject<List<FieldDTO>>(payloadDataCrate.Contents);
-                result.AddRange(crateData);
+                result.AddRange(payloadDataCrate.Value.AllValues());
             }
 
             return result;
@@ -94,9 +92,7 @@ namespace terminalSlack.Actions
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
         {
-            var crateStorage = curActionDTO.CrateStorage;
-
-            if (crateStorage.CrateDTO.Count == 0)
+            if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -113,14 +109,18 @@ namespace terminalSlack.Actions
             var crateControls = PackCrate_ConfigurationControls();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateAvailableFields = await CreateAvailableFieldsCrate(curActionDTO);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateAvailableChannels);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateAvailableFields);
+
+            using (var updater = Crate.UpdateStorage(curActionDTO))
+            {
+                updater.CrateStorage.Add(crateControls);
+                updater.CrateStorage.Add(crateAvailableChannels);
+                updater.CrateStorage.Add(crateAvailableFields);
+            }
 
             return curActionDTO;
         }
 
-        private CrateDTO PackCrate_ConfigurationControls()
+        private Crate PackCrate_ConfigurationControls()
         {
             var fieldSelectChannel = new DropDownListControlDefinitionDTO()
             {
@@ -157,7 +157,7 @@ namespace terminalSlack.Actions
             return PackControlsCrate(fieldSelectChannel, fieldSelectMessageField);
         }
 
-        private CrateDTO CreateAvailableChannelsCrate(IEnumerable<FieldDTO> channels)
+        private Crate CreateAvailableChannelsCrate(IEnumerable<FieldDTO> channels)
         {
             var crate =
                 Crate.CreateDesignTimeFieldsCrate(
@@ -168,7 +168,7 @@ namespace terminalSlack.Actions
             return crate;
         }
 
-        private async Task<CrateDTO> CreateAvailableFieldsCrate(ActionDTO actionDTO)
+        private async Task<Crate> CreateAvailableFieldsCrate(ActionDTO actionDTO)
         {
             var curUpstreamFields =
                 (await GetDesignTimeFields(actionDTO.Id, GetCrateDirection.Upstream))

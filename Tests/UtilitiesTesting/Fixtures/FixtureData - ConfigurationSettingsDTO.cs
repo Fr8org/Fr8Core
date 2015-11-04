@@ -47,10 +47,9 @@ namespace UtilitiesTesting.Fixtures
             var curConfigurationStore = new CrateStorage
             {
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                Crates =
-                {
+               
                     crate.CreateStandardConfigurationControlsCrate("AzureSqlServer Design-Time Fields", TestConnectionStringFieldDefinition())
-                }
+                
             };
 
             return curConfigurationStore;

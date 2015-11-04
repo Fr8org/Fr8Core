@@ -4,9 +4,11 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Constants;
 using System.Linq;
 using System.Reflection;
+using Data.Crates;
 
 namespace Data.Interfaces.Manifests
 {
+    [CrateManifest(typeof(StandardConfigurationControlsSerializer))]
     public class StandardConfigurationControlsCM : Manifest
     {
         public List<ControlDefinitionDTO> Controls { get; set; }
@@ -139,6 +141,4 @@ namespace Data.Interfaces.Manifests
             return null;
         }
     }
-
-
 }

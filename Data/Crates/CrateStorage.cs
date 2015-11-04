@@ -195,6 +195,30 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
+        public int Remove<T>()
+        {
+            CrateManifestType manifestType;
+            if (!ManifestTypeCache.TryResolveManifest(typeof(T), out manifestType))
+            {
+                return 0;
+            }
+
+            int removed = 0;
+
+            foreach (var source in _crates.Values.ToArray())
+            {
+                if (source.ManifestType == manifestType)
+                {
+                    _crates.Remove(source.Id);
+                    removed++;
+                }
+            }
+
+            return removed;
+        }
+
+        /**********************************************************************************/
+
         public int RemoveByManifestId(int manifestId)
         {
             return RemoveUsingPredicate(x => x.ManifestType.Id == manifestId);

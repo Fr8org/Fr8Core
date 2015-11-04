@@ -22,13 +22,13 @@ namespace terminalDocuSign.Actions
         private class ActionUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
-            public DropDownListControlDefinitionDTO DocuSignTemplateSelector { get; private set; }
+            public DropDownListControlDefinitionDTO Selected_DocuSign_Template { get; private set; }
 
             public ActionUi()
             {
                 Controls = new List<ControlDefinitionDTO>
                 {
-                    (DocuSignTemplateSelector = DocuSignManager.CreateDocuSignTemplatePicker(true, "DocuSignTemplateSelector")),
+                    (Selected_DocuSign_Template = DocuSignManager.CreateDocuSignTemplatePicker(true)),
                    
                     (new CheckBoxControlDefinitionDTO
                     {
@@ -215,7 +215,7 @@ namespace terminalDocuSign.Actions
 
             ui.ClonePropertiesFrom(controls);
             
-            string curSelectedTemplateId = ui.DocuSignTemplateSelector.Value;
+            string curSelectedTemplateId = ui.Selected_DocuSign_Template.Value;
 
             if (!string.IsNullOrWhiteSpace(curSelectedTemplateId))
             {

@@ -87,7 +87,7 @@ namespace Data.Interfaces.Manifests
                 }
             }
         }
-
+        
         public bool HasValues()
         {
             if (PayloadObjects == null)
