@@ -7,13 +7,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Hub.Managers;
+using StructureMap;
 using terminalSalesforce.Services;
 
 namespace terminalSalesforce.Infrastructure
 {
     public class Account
     {
-        ForceClient client;     
+        ForceClient client;
+        private ICrateManager _crateManager;
+
+        public Account()
+        {
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+        }
 
         public async Task CreateAccount(ActionDTO currentActionDTO)
         {
@@ -22,8 +30,7 @@ namespace terminalSalesforce.Infrastructure
             ParseAuthToken(currentActionDTO.AuthToken.AdditionalAttributes, out instanceUrl, out apiVersion);
             client = new ForceClient(instanceUrl, currentActionDTO.AuthToken.Token, apiVersion);
             AccountDTO account = new AccountDTO();
-            var curFieldList =
-               JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(currentActionDTO.CrateStorage.CrateDTO.First(field => field.Contents.Contains("accountName")).Contents);
+            var curFieldList = _crateManager.FromDto(currentActionDTO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().First();
             account.Name = curFieldList.Controls.First(x => x.Name == "accountName").Value;           
             account.AccountNumber = curFieldList.Controls.First(x => x.Name == "accountNumber").Value;
             account.Phone = curFieldList.Controls.First(x => x.Name == "phone").Value;

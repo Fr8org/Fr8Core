@@ -240,7 +240,7 @@ namespace Hub.Services
                 ActivityTemplate = template,
                 Name = name,
                 Label = label,
-                CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
+                CrateStorage = _crate.EmptyStorageAsStr(),
                 Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1
 
             };
@@ -375,21 +375,24 @@ namespace Hub.Services
 
                 foreach (var downStreamActivity in downStreamActivities)
                 {
-                    var crateStorage = downStreamActivity.CrateStorageDTO();
-                    var cratesToReset = _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, crateStorage).ToList();
-                    foreach (var crateDTO in cratesToReset)
+                    var currentActivity = downStreamActivity;
+
+                    using (var updater = _crate.UpdateStorage(() => currentActivity.CrateStorage))
                     {
-                        var configurationControls = _crate.GetStandardConfigurationControls(crateDTO);
-                        foreach (var controlDefinitionDTO in configurationControls.Controls)
+                        bool hasChanges = false;
+                        foreach (var configurationControls in updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
                         {
-                            (controlDefinitionDTO as IResettable).Reset();
+                            foreach (IResettable resettable in configurationControls.Controls)
+                            {
+                                resettable.Reset();
+                                hasChanges = true;
                         }
-                        crateDTO.Contents = JsonConvert.SerializeObject(configurationControls);
                     }
 
-                    if (cratesToReset.Any())
+                        if (!hasChanges)
                 {
-                        downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
+                            updater.DiscardChanges();
+                }
                 }
                 }
 
@@ -433,7 +436,11 @@ namespace Hub.Services
 
                 if (payload != null)
                 {
-                    curContainerDO.CrateStorage = payload.CrateStorage;
+                    using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+                    {
+                        updater.CrateStorage = _crate.FromDto(payload.CrateStorage);
+                }
+                //    curContainerDO.CrateStorage = payload.CrateStorage;
                 }
 
                 uow.ActionRepository.Attach(curAction);
@@ -457,19 +464,19 @@ namespace Hub.Services
         //looks for the Configuration Controls Crate and Extracts the ManifestSchema
         public StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction)
         {
+            var control = _crate.GetStorage(curAction.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+//            var curCrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curAction.CrateStorage);
+//            var curControlsCrate =
+//                _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, curCrateStorage)
+//                    .FirstOrDefault();
 
-            var curCrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curAction.CrateStorage);
-            var curControlsCrate =
-                _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, curCrateStorage)
-                    .FirstOrDefault();
-
-            if (curControlsCrate == null || string.IsNullOrEmpty(curControlsCrate.Contents))
+            if (control == null)
             {
                 throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME));
             }
 
 
-            return JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(curControlsCrate.Contents);
+            return control;
 
         }
 
@@ -525,22 +532,27 @@ namespace Hub.Services
         }
 
 
-        public async Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Data.Interfaces.Manifests.Manifest curSchema, string key,
-                                                                string fieldName = "name",
-                                                                GetCrateDirection direction = GetCrateDirection.None)
-        {
-            var controlsCrates = _crate.GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO()).ToList();
+//        public Task<IEnumerable<T>> FindCratesByManifestType<T>(ActionDO curActionDO, GetCrateDirection direction = GetCrateDirection.None)
+//        {
+//
+//        }
 
-            if (direction != GetCrateDirection.None)
-        {
-                var upstreamCrates = await ObjectFactory.GetInstance<IRouteNode>()
-                    .GetCratesByDirection(curActionDO.Id, curSchema.ManifestName, direction).ConfigureAwait(false);
-
-                controlsCrates.AddRange(upstreamCrates);
-            }
-
-            var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: fieldName);
-           return keys;
-        }
+//        public async Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Data.Interfaces.Manifests.Manifest curSchema, string key,
+//                                                                string fieldName = "name",
+//                                                                GetCrateDirection direction = GetCrateDirection.None)
+//        {
+//            var controlsCrates = _crate.GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO()).ToList();
+//
+//            if (direction != GetCrateDirection.None)
+//        {
+//                var upstreamCrates = await ObjectFactory.GetInstance<IRouteNode>()
+//                    .GetCratesByDirection(curActionDO.Id, curSchema.ManifestName, direction).ConfigureAwait(false);
+//
+//                controlsCrates.AddRange(upstreamCrates);
+//            }
+//
+//            var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: fieldName);
+//           return keys;
+//        }
     }
 }

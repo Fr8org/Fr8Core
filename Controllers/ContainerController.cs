@@ -22,7 +22,10 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
+using Hub.Managers;
 using Hub.Services;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HubWeb.Controllers
 {
@@ -34,12 +37,13 @@ namespace HubWeb.Controllers
     {
         private readonly InternalInterface.IContainer _container;
         private readonly ISecurityServices _security;
-
+       // private readonly ICrateManager _crateManager;
 
         public ContainerController()
         {
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
+      //      _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         [HttpGet]
@@ -49,7 +53,9 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curContainerDO = uow.ContainerRepository.GetByKey(id);
-                var curPayloadDTO = new PayloadDTO(curContainerDO.CrateStorage, id);
+                var curPayloadDTO = new PayloadDTO(id);
+
+                curPayloadDTO.CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curContainerDO.CrateStorage);
 
                 EventManager.ProcessRequestReceived(curContainerDO);
 

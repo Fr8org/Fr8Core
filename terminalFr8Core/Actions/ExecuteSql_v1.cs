@@ -8,6 +8,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Enums;
+using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
@@ -29,12 +30,16 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            AddLabelControl(
-                curActionDTO,
-                "NoConfigLabel",
-                "No configuration",
-                "This action does not require any configuration."
-            );
+            using (var updater = Crate.UpdateStorage(curActionDTO))
+            {
+                AddLabelControl(
+
+                    updater.CrateStorage,
+                    "NoConfigLabel",
+                    "No configuration",
+                    "This action does not require any configuration."
+                    );
+            }
 
             return Task.FromResult(curActionDTO);
         }
@@ -45,14 +50,12 @@ namespace terminalFr8Core.Actions
 
         private QueryDTO ExtractSqlQuery(PayloadDTO payload)
         {
-            var sqlQueryCrate = payload.CrateStorageDTO().CrateDTO.FirstOrDefault(
-                x => x.Label == "Sql Query"
-                    && x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME);
+            var sqlQueryCrate = Crate.FromDto(payload.CrateStorage).CratesOfType<StandardQueryCM>(x => x.Label == "Sql Query").FirstOrDefault();
 
             if (sqlQueryCrate == null) { return null; }
 
             
-            var queryCM = JsonConvert.DeserializeObject<StandardQueryCM>(sqlQueryCrate.Contents);
+            var queryCM = sqlQueryCrate.Content;
             if (queryCM == null || queryCM.Queries == null || queryCM.Queries.Count == 0) { return null; }
 
             return queryCM.Queries[0];
@@ -142,8 +145,7 @@ namespace terminalFr8Core.Actions
 
             if (connectionStringCrate == null) { return null; }
 
-            var connectionStringCM = JsonConvert
-                .DeserializeObject<StandardDesignTimeFieldsCM>(connectionStringCrate.Contents);
+            var connectionStringCM = connectionStringCrate.Get<StandardDesignTimeFieldsCM>();
 
             if (connectionStringCM == null) { return null; }
 
@@ -178,14 +180,12 @@ namespace terminalFr8Core.Actions
             var data = dbProvider.ExecuteQuery(query);
             var payloadCM = BuildStandardPayloadData(data, columnTypes);
 
-            var payloadCMCrate = Crate.Create(
-                "Sql Query Result",
-                JsonConvert.SerializeObject(payloadCM),
-                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
-                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
-            );
+            var payloadCMCrate = Data.Crates.Crate.FromContent("Sql Query Result", payloadCM);
 
-            payload.UpdateCrateStorageDTO(new List<CrateDTO>() { payloadCMCrate });
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                updater.CrateStorage.Add(payloadCMCrate);
+            }
 
             return payload;
         }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Crates;
 using Data.Entities;
 using Data.Exceptions;
 using Data.Interfaces.Manifests;
@@ -49,20 +50,23 @@ namespace Hub.Services
         //    }
         //}
 
-        public async Task ProcessInboundEvents(CrateDTO curCrateStandardEventReport)
+        public async Task ProcessInboundEvents(Crate curCrateStandardEventReport)
         {
-            EventReportCM eventReportMS = _crate.GetContents<EventReportCM>(curCrateStandardEventReport);
-
+            var eventReportMS = curCrateStandardEventReport.Get<EventReportCM>();
 
             if (eventReportMS.EventPayload == null)
+            {
                 throw new ArgumentException("EventReport can't have a null payload");
+            }
             if (eventReportMS.ExternalAccountId == null)
+            {
                 throw new ArgumentException("EventReport can't have a null ExternalAccountId");
+            }
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //find the corresponding DockyardAccount
-                var authToken = uow.AuthorizationTokenRepository
-                    .FindOne(at => at.ExternalAccountId == eventReportMS.ExternalAccountId);
+                var authToken = uow.AuthorizationTokenRepository.FindOne(at => at.ExternalAccountId == eventReportMS.ExternalAccountId);
                 if (authToken == null)
                 {
                     return;
@@ -75,17 +79,13 @@ namespace Hub.Services
                     .FindList(pt => pt.Fr8Account.Id == curDockyardAccount.Id)
                     .Where(x => x.RouteState == RouteState.Active);
 
-                var subscribingRoutes = _route.MatchEvents(initialRoutesList.ToList(),
-                    eventReportMS);
-
-
+                var subscribingRoutes = _route.MatchEvents(initialRoutesList.ToList(), eventReportMS);
 
                 await LaunchProcesses(subscribingRoutes, curCrateStandardEventReport);
-            
             }
         }
 
-        public Task LaunchProcesses(List<RouteDO> curRoutes, CrateDTO curEventReport)
+        public Task LaunchProcesses(List<RouteDO> curRoutes, Crate curEventReport)
         {
             var processes = new List<Task>();
 
@@ -99,7 +99,7 @@ namespace Hub.Services
             return Task.WhenAll(processes);
         }
 
-        public async Task LaunchProcess(RouteDO curRoute, CrateDTO curEventData)
+        public async Task LaunchProcess(RouteDO curRoute, Crate curEventData)
         {
             if (curRoute == null)
                 throw new EntityNotFoundException(curRoute);
