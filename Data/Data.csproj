@@ -213,7 +213,9 @@
     <Compile Include="Crates\CrateStorageSerializer.DefaultSerializer.cs" />
     <Compile Include="Crates\CrateT.cs" />
     <Compile Include="Crates\DenySerizalitionConverter.cs" />
-    <Compile Include="Crates\ICrateStorageSerializer.cs" />
+    <Compile Include="Crates\ICrateStorageSerializer.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Crates\IManifestSerializer.cs" />
     <Compile Include="Crates\ManifestDiscovery.cs" />
     <Compile Include="Crates\ManifestTypeCache.cs" />
