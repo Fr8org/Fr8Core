@@ -9,7 +9,7 @@ namespace TerminalSqlUtilities
             string connectionString,
             TableInfo tableInfo,
             IEnumerable<ColumnInfo> columns,
-            IEnumerable<CriteriaDTO> conditions)
+            IEnumerable<FilterConditionDTO> conditions)
         {
             _connectionString = connectionString;
             _tableInfo = tableInfo;
@@ -32,7 +32,7 @@ namespace TerminalSqlUtilities
             get { return _columns; }
         }
 
-        public IEnumerable<CriteriaDTO> Conditions
+        public IEnumerable<FilterConditionDTO> Conditions
         {
             get { return _conditions; }
         }
@@ -41,6 +41,6 @@ namespace TerminalSqlUtilities
         private readonly string _connectionString;
         private readonly TableInfo _tableInfo;
         private readonly IEnumerable<ColumnInfo> _columns;
-        private readonly IEnumerable<CriteriaDTO> _conditions;
+        private readonly IEnumerable<FilterConditionDTO> _conditions;
     }
 }

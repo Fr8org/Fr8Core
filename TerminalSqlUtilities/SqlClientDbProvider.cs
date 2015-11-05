@@ -220,7 +220,7 @@ namespace TerminalSqlUtilities
         /// </summary>
         public Table ExecuteQuery(SelectQuery query)
         {
-            var sqlQuery = _queryBuilder.BuildSqlQuery(query);
+            var sqlQuery = _queryBuilder.BuildSelectQuery(query);
 
             using (var conn = CreateConnection(query.ConnectionString))
             {

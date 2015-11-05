@@ -44,6 +44,8 @@
     <Compile Include="DbProvider.cs" />
     <Compile Include="FieldValue.cs" />
     <Compile Include="IDbProvider.cs" />
+    <Compile Include="ISqlQueryBuilder.cs" />
+    <Compile Include="ParametrizedSqlPart.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelectQuery.cs" />
     <Compile Include="Row.cs" />

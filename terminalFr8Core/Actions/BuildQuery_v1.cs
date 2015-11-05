@@ -345,7 +345,7 @@ namespace terminalFr8Core.Actions
                 throw new ApplicationException("No QueryBuilder control found.");
             }
 
-            var criteria = JsonConvert.DeserializeObject<List<CriteriaDTO>>(queryBuilder.Value);
+            var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(queryBuilder.Value);
 
             var sqlQueryCrate = CreateSqlQueryCrate(selectedObject, criteria);
 
@@ -354,7 +354,9 @@ namespace terminalFr8Core.Actions
             return processPayload;
         }
 
-        private CrateDTO CreateSqlQueryCrate(string selectedObject, List<CriteriaDTO> criteria)
+        private CrateDTO CreateSqlQueryCrate(
+            string selectedObject,
+            List<FilterConditionDTO> criteria)
         {
             var query = new QueryDTO()
             {

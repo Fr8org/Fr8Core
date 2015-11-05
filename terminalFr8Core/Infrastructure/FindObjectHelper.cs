@@ -49,6 +49,7 @@ namespace terminalFr8Core.Infrastructure
 
         public string ConvertValueToString(object value, DbType dbType)
         {
+            return Convert.ToString(value);
         }
     }
 }

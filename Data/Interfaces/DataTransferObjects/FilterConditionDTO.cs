@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace terminalFr8Core.Interfaces
+namespace Data.Interfaces.DataTransferObjects
 {
     /// <summary>
     /// Single FilterPane condition.
