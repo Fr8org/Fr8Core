@@ -30,12 +30,23 @@ namespace Hub.Managers
         {
             return CrateStorageSerializer.Default.ConvertFromDto(crateStorage);
         }
-
+        /// <summary>
+        /// Use this method to edit CrateStorage repersented byt CrateStorageDTO property of some class instance. This method will return IDisposable updater.
+        /// On Dispose it will write changes to the property specified by the Expression. 
+        /// </summary>
+        /// <param name="storageAccessExpression"></param>
+        /// <returns></returns>
         public ICrateStorageUpdater UpdateStorage(Expression<Func<CrateStorageDTO>> storageAccessExpression)
         {
             return new CrateStorageStorageUpdater(storageAccessExpression);
         }
 
+        /// <summary>
+        /// Use this method to edit CrateStorage represented by string property of some class instance. This method will return IDisposable updater.
+        /// On Dispose it will write changes to the property specified by the Expression. 
+        /// </summary>
+        /// <param name="storageAccessExpression"></param>
+        /// <returns></returns>
         public ICrateStorageUpdater UpdateStorage(Expression<Func<string>> storageAccessExpression)
         {
             return new CrateStorageStorageUpdater(storageAccessExpression);

@@ -26,7 +26,12 @@ namespace Data.Crates
         }
 
         /**********************************************************************************/
-
+        /// <summary>
+        /// Register custom serializer for manifest type. 
+        /// You don't have to call this method wile your manifest resides in Data project. 
+        /// </summary>
+        /// <param name="manifestType"></param>
+        /// <param name="serializer"></param>
         public void RegisterSerializer(CrateManifestType manifestType, IManifestSerializer serializer)
         {
             lock (_serializers)
@@ -81,7 +86,11 @@ namespace Data.Crates
         }
 
         /**********************************************************************************/
-
+        /// <summary>
+        /// Convert CrateStorageDTO to CrateStorage
+        /// </summary>
+        /// <param name="rawStorage"></param>
+        /// <returns></returns>
         public CrateStorage ConvertFromDto(CrateStorageDTO rawStorage)
         {
             var storage = new CrateStorage();
@@ -98,7 +107,11 @@ namespace Data.Crates
         }
 
         /**********************************************************************************/
-
+        /// <summary>
+        /// Convert CrateStorage ot DTO
+        /// </summary>
+        /// <param name="storage"></param>
+        /// <returns></returns>
         public CrateStorageDTO ConvertToDto(CrateStorage storage)
         {
             var storageSerializationProxy = new CrateStorageDTO
@@ -118,7 +131,11 @@ namespace Data.Crates
         }
 
         /**********************************************************************************/
-
+        /// <summary>
+        /// Convert DTO to Crate instance
+        /// </summary>
+        /// <param name="proxy"></param>
+        /// <returns></returns>
         public Crate ConvertFromDto(CrateDTO proxy)
         {
             var manifestType = new CrateManifestType(proxy.ManifestType, proxy.ManifestId);
@@ -147,7 +164,11 @@ namespace Data.Crates
         }
 
         /**********************************************************************************/
-
+        /// <summary>
+        /// Convert crate to DTO
+        /// </summary>
+        /// <param name="crate"></param>
+        /// <returns></returns>
         public CrateDTO ConvertToDto(Crate crate)
         {
             IManifestSerializer serializer = GetSerializer(crate.ManifestType);
