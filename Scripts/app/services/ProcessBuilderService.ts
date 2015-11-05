@@ -11,6 +11,7 @@ module dockyard.services {
         execute: (id: { id: number }) => void;
         activate: (processTemplate: model.RouteDTO) => void;
         deactivate: (processTemplate: model.RouteDTO) => void;
+        update: (data: Object) => interfaces.IRouteVM;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -107,6 +108,13 @@ module dockyard.services {
                     method: 'POST',
                     url: '/routes/deactivate/',
                     params: {
+                    }
+                },
+                'update': {
+                    method: 'POST',
+                    url: '/routes/',
+                    params: {
+
                     }
                 }
             })

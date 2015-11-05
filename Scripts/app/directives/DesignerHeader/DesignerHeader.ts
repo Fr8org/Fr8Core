@@ -5,6 +5,8 @@ module dockyard.directives.designerHeader {
 
     export interface IDesignerHeaderScope extends ng.IScope {
         onStateChange(): void;
+        editTitle(): void;
+        onTitleChange(): void;
         route: model.RouteDTO
     }
 
@@ -40,6 +42,19 @@ module dockyard.directives.designerHeader {
                     } else {
                         RouteService.activate($scope.route);
                     }
+                };
+
+                const editingClass = 'design-header-title-editing';
+                var $title = $($element).find('.designer-header-title');
+                $scope.editTitle = () => {
+                    $title.addClass(editingClass);
+                    $title.children('.design-header-title-editField').focus();
+                };
+
+                $scope.onTitleChange = () => {
+                    $title.removeClass(editingClass);
+                    var result = RouteService.update({ id: $scope.route.id, name: $scope.route.name });
+                    result.$promise.then(() => { });
                 };
 
                 var unregister = $scope.$watch(function () {

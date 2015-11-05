@@ -101,6 +101,24 @@
     padding: 20px;
 }
 
+.design-header-title-editField { 
+    display: none;
+    font-size: 24px;
+    border: 0;
+    margin: 0 -5px;
+    padding: 0 5px;
+    font-weight: bold;
+    width: 100%;
+}
+
+.designer-header-title.design-header-title-editing .design-header-title-editField { 
+    display: inline-block;
+}
+
+.designer-header-title.design-header-title-editing .process-template-name, .designer-header-title.design-header-title-editing .designer-header-glyphicon {
+    display: none;
+}
+
 .designer-header-glyphicon {
     font-size: 18px;
     line-height: 34px;
@@ -117,6 +135,7 @@
 
 .designer-header-status {
     float: right;
+    text-align: right;
 }
 
 .designer-header-statusLabel {
