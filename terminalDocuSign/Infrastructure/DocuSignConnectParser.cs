@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml.Serialization;
-using Data.Entities.DocuSignParserModels;
+using terminalDocuSign.Infrastructure.DocuSignParserModels;
 
 namespace terminalDocuSign.Infrastructure
 {

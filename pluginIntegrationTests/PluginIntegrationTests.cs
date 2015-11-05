@@ -293,12 +293,17 @@ namespace pluginIntegrationTests
                 .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
 
             var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
-                configurationControlsCrate.Contents);
+                configurationControlsCrate.Contents, new ControlDefinitionDTOConverter());
+
+            controlsMS.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.ForEach(r => r.Selected = false);
 
             // Modify value of Selected_DocuSign_Template field and push it back to crate,
             // exact same way we do on front-end.
-            var docuSignTemplateControl = controlsMS.Controls.Single(x => x.Name == "Selected_DocuSign_Template");
-            docuSignTemplateControl.Value = fieldsMS.Fields.First().Value;
+            var docuSignTemplateControl =
+                controlsMS.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.Single(r => r.Name.Equals("template"));
+
+            docuSignTemplateControl.Selected = true;
+            docuSignTemplateControl.Controls[0].Value = fieldsMS.Fields.First().Value;
 
             configurationControlsCrate.Contents = JsonConvert.SerializeObject(controlsMS);
         }
@@ -313,7 +318,7 @@ namespace pluginIntegrationTests
             Assert.NotNull(actionDTO);
             Assert.NotNull(actionDTO.Content);
             Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
-            Assert.AreEqual(3, actionDTO.Content.CrateStorage.CrateDTO.Count);//replace this with 3 when 1123 is fixed
+            Assert.AreEqual(4, actionDTO.Content.CrateStorage.CrateDTO.Count);//replace this with 3 when 1123 is fixed
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME));
             //Assert.True(result.Content.CrateDTO   //uncomment this when 1123 is fixed

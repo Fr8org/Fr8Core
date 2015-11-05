@@ -172,7 +172,6 @@
     <Compile Include="Fixtures\FixtureData - CrateDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Criteria.cs" />
     <Compile Include="Fixtures\FixtureData - DockyardAccount.cs" />
-    <Compile Include="Fixtures\FixtureData - DocuSignEnvelopeInformation.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignEvent.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignTemplate.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />

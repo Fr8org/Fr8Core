@@ -6,3 +6,11 @@ localhost:39504
 localhost:30699
 localhost:47011
 localhost:10601
+localhost:4882
+localhost:4883
+localhost:4793
+localhost:1404
+localhost:1406
+localhost:1407
+localhost:4885
+localhost:4884

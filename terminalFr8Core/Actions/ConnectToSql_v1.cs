@@ -92,8 +92,19 @@ namespace terminalFr8Core.Actions
                             columnTypes.ToArray()
                         );
 
+                    var connectionStringFieldList = new List<FieldDTO>()
+                    {
+                        new FieldDTO() { Key = connectionString, Value = connectionString }
+                    };
+                    var connectionStringCrate =
+                        Crate.CreateDesignTimeFieldsCrate(
+                            "Sql Connection String",
+                            connectionStringFieldList.ToArray()
+                        );
+
                     curActionDTO.CrateStorage.CrateDTO.Add(tableDefinitionCrate);
                     curActionDTO.CrateStorage.CrateDTO.Add(columnTypesCrate);
+                    curActionDTO.CrateStorage.CrateDTO.Add(connectionStringCrate);
                 }
                 catch
                 {

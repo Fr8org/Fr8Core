@@ -57,15 +57,15 @@ namespace HubWeb.Controllers
         public IHttpActionResult GetByAction(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
+            {
                 var action = uow.ActionRepository.GetByKey(id);
                 var route = _route.GetRoute(action);
                 var result = _route.MapRouteToDto(uow, route);
 
                 return Ok(result);
             };
-        }
-
+        }  
+              
         [Route("status")]
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
@@ -152,6 +152,8 @@ namespace HubWeb.Controllers
 
         
 
+        [HttpDelete]
+        [Route("{id:int}")]
         public IHttpActionResult Delete(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

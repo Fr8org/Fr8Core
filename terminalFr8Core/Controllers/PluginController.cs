@@ -39,7 +39,7 @@ namespace terminalFr8Core.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
-                MinPaneWidth = 330
+				MinPaneWidth = 330
             });
 
             result.Add(new ActivityTemplateDO
@@ -50,7 +50,7 @@ namespace terminalFr8Core.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
-                MinPaneWidth = 380
+				MinPaneWidth = 380
             });
 
             result.Add(new ActivityTemplateDO
@@ -96,6 +96,15 @@ namespace terminalFr8Core.Controllers
             {
                 Name = "BuildQuery",
                 Label = "Build Query",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1"
+            });
+
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "ExecuteSql",
+                Label = "Execute Sql Query",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
                 Version = "1"

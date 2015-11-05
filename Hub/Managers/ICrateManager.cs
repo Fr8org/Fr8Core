@@ -27,6 +27,7 @@ namespace Hub.Managers
         CrateDTO CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);
         CrateDTO CreatePayloadDataCrate(List<KeyValuePair<string, string>> curFields);
         CrateDTO CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table);
+        CrateDTO CreateErrorCrate(string message);
         void AddLogMessage(string label, List<LogItemDTO> logItemList, ContainerDO containerDO);
         void RemoveCrateByManifestId(IList<CrateDTO> crates, int manifestId);
         void RemoveCrateByManifestType(IList<CrateDTO> crates, string manifestType);

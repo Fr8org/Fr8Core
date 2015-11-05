@@ -19,7 +19,6 @@ namespace Data.Interfaces.Manifests
 
     public class PayloadObjectDTO
     {
-
         public PayloadObjectDTO()
         {
             PayloadObject = new List<FieldDTO>();

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using Data.Interfaces.DataTransferObjects;
 
 namespace terminalFr8Core.Interfaces
 {

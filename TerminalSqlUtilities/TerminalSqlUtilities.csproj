@@ -40,14 +40,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColumnInfo.cs" />
+    <Compile Include="DbHelper.cs" />
     <Compile Include="DbProvider.cs" />
     <Compile Include="FieldValue.cs" />
     <Compile Include="IDbProvider.cs" />
+    <Compile Include="ISqlQueryBuilder.cs" />
+    <Compile Include="ParametrizedSqlPart.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SelectQuery.cs" />
     <Compile Include="Row.cs" />
     <Compile Include="SqlClientDbProvider.cs" />
+    <Compile Include="SqlClientSqlQueryBuilder.cs" />
+    <Compile Include="SqlQuery.cs" />
+    <Compile Include="SqlQueryParameter.cs" />
     <Compile Include="Table.cs" />
     <Compile Include="TableInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Data\Data.csproj">
+      <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
+      <Name>Data</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
