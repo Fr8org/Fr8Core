@@ -17,12 +17,12 @@ module dockyard.services {
             getAll: {
                 method: 'GET',
                 isArray: true,
-                url: 'api/user'
+                url: '/api/user'
                 },
             getCurrentUser: {
                 method: 'GET',
                 isArray: false,
-                url: 'api/user/getCurrent'
+                url: '/api/user/getCurrent'
             }
         })
     ]);

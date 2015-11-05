@@ -132,7 +132,7 @@ module dockyard.directives.paneSelectAction {
                 //we should open a modal to let user select one of our activities
                 this.$modal.open({
                     animation: true,
-                    templateUrl: 'AngularTemplate/PaneSelectActionModal',
+                    templateUrl: '/AngularTemplate/PaneSelectActionModal',
                     //this is a simple modal controller, so i didn't have an urge to seperate this
                     //but resolve is used to make future seperation easier
                     controller: ['$modalInstance', '$scope', 'activityCategories', ($modalInstance, $modalScope, activityCategories: Array<interfaces.IActivityCategoryDTO>) => {
