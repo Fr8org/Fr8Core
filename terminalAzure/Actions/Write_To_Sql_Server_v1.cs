@@ -14,6 +14,7 @@ using Hub.Managers;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using TerminalSqlUtilities;
 using terminalAzure.Infrastructure;
 using terminalAzure.Services;
 
@@ -44,17 +45,11 @@ namespace terminalAzure.Actions
 
             var storage = Crate.GetStorage(curActionDTO);
 
-            var controlsCrates = storage.CratesOfType<StandardConfigurationControlsCM>().ToArray();
-
-//            var connectionStrings = Crate.GetElementByKey(controlsCrates, key: "connection_string", keyFieldName: "name")
-//                .Select(e => (string)e["value"])
-//                .Where(s => !string.IsNullOrEmpty(s))
-//                .ToArray();
-
+            var connectionStrings = storage.CratesOfType<StandardConfigurationControlsCM>().Select(x => x.Value.FindByName("connection_string")).Where(x => x != null && !string.IsNullOrWhiteSpace(x.Value)).ToArray();
 
             //if there are more than 2 return connection strings, something is wrong
             //if there are none or if there's one but it's value is "" the return initial else return followup
-            var objCount = controlsCrates.Length;
+            var objCount = connectionStrings.Length;
             if (objCount > 1)
                 throw new ArgumentException("didn't expect to see more than one connectionStringObject with the name Connection String on this Action", "curActionDTO");
             if (objCount == 0)
@@ -96,13 +91,13 @@ namespace terminalAzure.Actions
         {
             //In all followup calls, update data fields of the configuration store          
             List<String> contentsList = GetFieldMappings(curActionDTO);
-            
+
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
                 updater.CrateStorage.RemoveByLabel("Sql Table Columns");
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
                 updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Sql Table Columns", contentsList.Select(col => new FieldDTO() {Key = col, Value = col}).ToArray()));
-            }
+                }
 
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
@@ -290,7 +285,7 @@ namespace terminalAzure.Actions
                 }
 
                 // TODO: change "dbo" schema later.
-                tables.Add(new Table("dbo", tablePair.Key, new[] { new Row(values) }));
+                tables.Add(new Table(new TableInfo("dbo", tablePair.Key), new[] { new Row(values) }));
             }
 
             return tables;

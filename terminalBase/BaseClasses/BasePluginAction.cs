@@ -381,21 +381,7 @@ namespace TerminalBase.BaseClasses
             return control;
         }
 
-        /// <summary>
-        /// Allows to retrieve a configuration control from crate storage.
-        /// </summary>
-        /// <param name="curCrateStorage">Crate storage.</param>
-        /// <param name="controlName">Control name.</param>
-        protected T GetStdConfigurationControl<T>(IEnumerable<Crate> curCrateStorage, string controlName)
-            where T : ControlDefinitionDTO
-        {
-            var controlsCrate = curCrateStorage.FirstOrDefault(x => x.ManifestType.Type == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
-
-            if (controlsCrate == null) return null;
-            var controls = controlsCrate.Get<StandardConfigurationControlsCM>().Controls;
-            return controls.SingleOrDefault(c => c.Name == controlName) as T;
-        }
-
+        
         /// <summary>
         /// Extract value from RadioButtonGroup where specific value or upstream field was specified.
         /// </summary>
@@ -471,10 +457,10 @@ namespace TerminalBase.BaseClasses
         protected string ExtractDesignTimeFieldValue(CrateStorage crateStorage, string fieldKey)
         {
             var crates = crateStorage.Crates.Where(x => x.ManifestType.Type == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME);
-            
+
             var fieldValues = crates.SelectMany(x => x.Get<StandardPayloadDataCM>().GetValues(fieldKey))
-                                    .Where(s => !string.IsNullOrEmpty(s))
-                                    .ToArray();
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToArray();
 
             if (fieldValues.Length > 0)
                 return fieldValues[0];
@@ -491,6 +477,86 @@ namespace TerminalBase.BaseClasses
             //}
 
             throw new ApplicationException("No field found with specified key.");
+        }
+
+       protected void AddLabelControl(CrateStorage storage, string name, string label, string text)
+        {
+            AddControl(
+                storage,
+                new TextBlockControlDefinitionDTO()
+                {
+                    Name = name,
+                    Label = label,
+                    Value = text,
+                    CssClass = "well well-lg"
+                }
+            );
+        }
+
+        protected void AddControl(CrateStorage storage, ControlDefinitionDTO control)
+        {
+            var controlsCrate = EnsureControlsCrate(storage);
+
+            if (controlsCrate.Value == null) { return; }
+
+            controlsCrate.Value.Controls.Add(control);
+        }
+
+        protected ControlDefinitionDTO FindControl(CrateStorage storage, string name)
+        {
+            var controlsCrate = storage.CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
+            if (controlsCrate == null) { return null; }
+
+            var control = controlsCrate.Controls
+                .FirstOrDefault(x => x.Name == name);
+
+            return control;
+        }
+
+        protected void RemoveControl(CrateStorage storage, string name)
+        {
+            var controlsCrate = storage.CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
+            if (controlsCrate == null) { return; }
+
+
+            var control = controlsCrate.Controls.FirstOrDefault(x => x.Name == name);
+
+            if (control != null)
+            {
+                controlsCrate.Controls.Remove(control);
+           }
+        }
+
+        protected Crate<StandardConfigurationControlsCM> EnsureControlsCrate(CrateStorage storage)
+        {
+            var controlsCrate = storage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
+            if (controlsCrate == null)
+            {
+                controlsCrate = Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls");
+                storage.Add(controlsCrate);
+            }
+
+            return controlsCrate;
+        }
+
+        protected void UpdateDesignTimeCrateValue(CrateStorage storage, string label, params FieldDTO[] fields)
+        {
+            var crate = storage.CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == label);
+
+            if (crate == null)
+            {
+                crate = Crate.CreateDesignTimeFieldsCrate(label, fields);
+
+                storage.Add(crate);
+            }
+            else
+            {
+                crate.Value.Fields.Clear();
+                crate.Value.Fields.AddRange(fields);
+            }
         }
     }
 }

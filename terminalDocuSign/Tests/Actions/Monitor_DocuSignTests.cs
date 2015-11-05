@@ -49,10 +49,13 @@ namespace terminalDocuSign.Tests.Actions
             Assert.IsNotNull(result.CrateStorage);
             Assert.AreEqual(4, storage.Count);
 
-            Assert.AreEqual(storage.CratesOfType<EventSubscriptionCM>().Any(), true);
-            Assert.AreEqual(storage.CratesOfType<StandardConfigurationControlsCM>().Any(), true);
+            Assert.IsTrue(storage.CratesOfType<StandardConfigurationControlsCM>().Any());
             Assert.AreEqual(storage.CratesOfType<StandardDesignTimeFieldsCM>().Count(), 2);
-            Assert.AreEqual(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSign Event Fields"), true);
+            Assert.IsTrue(storage.CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "DocuSign Event Fields").Any());
+            
+            //NOTE:DO-1236 states - initial configuration response should add the standard event subscription
+            Assert.IsTrue(storage.CratesOfType<EventSubscriptionCM>().Any());
+           
         }
 
         [Test]
@@ -91,10 +94,10 @@ namespace terminalDocuSign.Tests.Actions
         {
             //Arrange
             PayloadDTO curPayloadDTO = FixtureData.PayloadDTO1();
-            object[] parameters = new object[] { curPayloadDTO };
+            object[] parameters = new object[] { curPayloadDTO, "EnvelopeId" };
 
             //Act
-            var result = (string)ClassMethod.Invoke(typeof(Monitor_DocuSign_v1), "GetEnvelopeId", parameters);
+            var result = (string)ClassMethod.Invoke(typeof(Monitor_DocuSign_v1), "GetValueForKey", parameters);
 
             //Assert
             Assert.AreEqual("EnvelopeIdValue", result);

@@ -45,7 +45,7 @@ namespace Hub.Managers
         //Crate CreatePayloadDataCrate(List<KeyValuePair<string, string>> curFields);
         Crate CreateAuthenticationCrate(string label, AuthenticationMode mode);
         Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
-        Crate CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls);
+        Crate<StandardConfigurationControlsCM> CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls);
         Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport);
         Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);
       //  Crate CreatePayloadDataCrate(List<KeyValuePair<string, string>> curFields);

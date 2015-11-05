@@ -86,7 +86,8 @@ var dockyard;
                     this.$http = $http;
                     this.templateUrl = '/AngularTemplate/PaneConfigureAction';
                     this.scope = {
-                        currentAction: '='
+                        currentAction: '=',
+                        mode: '@'
                     };
                     this.restrict = 'E';
                     PaneConfigureAction.prototype.link = function (scope, element, attrs) {
@@ -209,7 +210,6 @@ var dockyard;
                         }
                         ;
                         function processConfiguration() {
-                            debugger;
                             // Check if authentication is required.
                             if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, 'Standard Authentication')) {
                                 var authCrate = crateHelper

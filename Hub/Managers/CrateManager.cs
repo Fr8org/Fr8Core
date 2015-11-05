@@ -151,9 +151,9 @@ namespace Hub.Managers
 //                manifestId: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
         }
 
-        public Crate CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
+        public Crate<StandardConfigurationControlsCM> CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
         {
-            return Crate.FromContent(label, new StandardConfigurationControlsCM() {Controls = controls.ToList()});
+            return Crate<StandardConfigurationControlsCM>.FromContent(label, new StandardConfigurationControlsCM() { Controls = controls.ToList() });
 //            
 //            return Create(label, 
 //                JsonConvert.SerializeObject(new StandardConfigurationControlsCM() { Controls = controls.ToList() }),

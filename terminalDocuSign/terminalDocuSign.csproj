@@ -196,7 +196,15 @@
     <Compile Include="Controllers\PluginController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="DataTransferObjects\DocuSignAuthDTO.cs" />
+    <Compile Include="DataTransferObjects\DocuSignEventDTO.cs" />
     <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatus.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatuses.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\DocuSignEnvelopeInformation.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\EnvelopeStatus.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatus.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatuses.cs" />
+    <Compile Include="Infrastructure\IndexManager.cs" />
     <Compile Include="Infrastructure\PluginDataAutoMapperBootStrapper.cs" />
     <Compile Include="DataTransferObjects\RecipientDTO.cs" />
     <Compile Include="DataTransferObjects\RecipientsDTO.cs" />
@@ -226,12 +234,13 @@
     <Compile Include="Tests\Actions\Monitor_DocuSignTests.cs" />
     <Compile Include="Tests\DocusignApiHelper.cs" />
     <Compile Include="Tests\Fixtures\AppSettingsFixture.cs" />
-    <Compile Include="Tests\Fixtures\PluginFixtureData - DocusignAccount.cs" />
     <Compile Include="Tests\Fixtures\PluginFixtureData - Recipient.cs" />
     <Compile Include="Tests\Fixtures\PluginFixtureData - Signer.cs" />
     <Compile Include="Tests\IDocusignApiHelper.cs" />
     <Compile Include="Tests\Infrastructure\DocusignConnectParserTests.cs" />
     <Compile Include="Tests\Infrastructure\DocuSignTemplateTests.cs" />
+    <Compile Include="Tests\Fixtures\PluginFixtureData - DocusignAccount.cs" />
+    <Compile Include="Tests\Infrastructure\IndexManagerTests.cs" />
     <Compile Include="Tests\Services\EnvelopeServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>

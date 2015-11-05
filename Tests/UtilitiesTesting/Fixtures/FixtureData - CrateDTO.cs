@@ -33,7 +33,7 @@ namespace UtilitiesTesting.Fixtures
             fields.Add(new FieldDTO() { Key = "Text 8", Value = Guid.NewGuid().ToString() });
             fields.Add(new FieldDTO() { Key = "Doctor", Value = Guid.NewGuid().ToString() });
             fields.Add(new FieldDTO() { Key = "Condition", Value = Guid.NewGuid().ToString() });
-            
+
             return new List<Crate>() { Crate.FromContent("DocuSignTemplateUserDefinedFields", new StandardDesignTimeFieldsCM() { Fields = fields }) };
 
         }
@@ -92,6 +92,29 @@ namespace UtilitiesTesting.Fixtures
                 fieldEventRecipientSent);
         }
 
+        public static Crate CreateStandardConfigurationControlSelectFr8Object(string selected)
+        {
+            var fieldSelectFr8Object = new DropDownListControlDefinitionDTO()
+            {
+                Label = "Select Fr8 Object",
+                Name = "Selected_Fr8_Object",
+                Value = selected,
+                Required = true,
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onChange", "requestConfig")
+                },
+                Source = new FieldSourceDTO
+                {
+                    Label = "Select Fr8 Object",
+                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
+                }
+            };
+
+            return PackControlsCrate(fieldSelectFr8Object);
+        }
+
+      
         #region Private Methods
 
         private static Crate PackControlsCrate(params ControlDefinitionDTO[] controlsList)

@@ -10,6 +10,7 @@ using Data.Interfaces.Manifests;
 using Hub.Managers;
 using StructureMap;
 using TerminalBase.Infrastructure;
+using TerminalSqlUtilities;
 
 namespace terminalAzure.Infrastructure
 {
@@ -53,7 +54,7 @@ namespace terminalAzure.Infrastructure
             }
 
             var connectionStringControl = controlsMS.Controls.FirstOrDefault(x => x.Name == "connection_string");
-            
+
             if (connectionStringControl == null)
             {
                 throw new ApplicationException("No connection_string control found.");
@@ -70,7 +71,7 @@ namespace terminalAzure.Infrastructure
             var tableRows = ExtractRows(table.Properties());
 
             // Create table instance and return.
-            return new Table(SchemaName, TableName, tableRows);
+            return new Table(new TableInfo(SchemaName, TableName), tableRows);
         }
 
         /// <summary>

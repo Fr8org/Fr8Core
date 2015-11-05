@@ -14,12 +14,13 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
+using terminalDocuSign.DataTransferObjects;
 using Utilities.Configuration.Azure;
 using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Services
 {
-    public class Event : Interfaces.IEvent
+    public class Event : terminalDocuSign.Interfaces.IEvent
     {
         private readonly EventReporter _alertReporter;
         private readonly ICrateManager _crate;
@@ -33,7 +34,7 @@ namespace terminalDocuSign.Services
         public async Task<object> Process(string curExternalEventPayload)
         {
             //parse the external event xml payload
-            List<DocuSignEventDO> curExternalEvents;
+            List<DocuSignEventDTO> curExternalEvents;
             string curEnvelopeId;
             Parse(curExternalEventPayload, out curExternalEvents, out curEnvelopeId);
 
@@ -48,7 +49,7 @@ namespace terminalDocuSign.Services
             };
 
             //prepare the event report
-            var curEventReport = _crate.CreateStandardEventReportCrate("Standard Event Report", eventReportContent);
+            var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
 
             string url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";
             var response = await new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), _crate.SerializeToProxy(curEventReport));
@@ -61,7 +62,7 @@ namespace terminalDocuSign.Services
                 {
                     return JsonConvert.DeserializeObject(content);
                 }
-                catch
+                catch 
                 {
                     return new
                     {
@@ -77,18 +78,21 @@ namespace terminalDocuSign.Services
             return content;
         }
 
-        private void Parse(string xmlPayload, out List<DocuSignEventDO> curEvents, out string curEnvelopeId)
+        private void Parse(string xmlPayload, out List<DocuSignEventDTO> curEvents, out string curEnvelopeId)
         {
-            curEvents = new List<DocuSignEventDO>();
+            curEvents = new List<DocuSignEventDTO>();
             try
             {
                 var docuSignEnvelopeInformation = DocuSignConnectParser.GetEnvelopeInformation(xmlPayload);
                 curEnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId;
-                curEvents.Add(new DocuSignEventDO
+                curEvents.Add(new DocuSignEventDTO
                 {
                     ExternalEventType = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
                     EnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId,
+                    DocumentName = docuSignEnvelopeInformation.EnvelopeStatus.DocumentStatuses.Statuses[0].Name,
+                    TemplateName = docuSignEnvelopeInformation.EnvelopeStatus.DocumentStatuses.Statuses[0].TemplateName,
                     RecipientId = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Id,
+                    RecipientEmail = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Email,
                     DocuSignObject = "Envelope",
                     Status = docuSignEnvelopeInformation.EnvelopeStatus.Status,
                     CreateDate = docuSignEnvelopeInformation.EnvelopeStatus.CreatedDate,
@@ -107,24 +111,29 @@ namespace terminalDocuSign.Services
             }
         }
 
-        private CrateStorage ExtractEventPayload(IEnumerable<DocuSignEventDO> curEvents)
+        private CrateStorage ExtractEventPayload(IEnumerable<DocuSignEventDTO> curEvents)
         {
-            var storage = new CrateStorage();
-
+            var stroage = new CrateStorage();
+            
             foreach (var curEvent in curEvents)
             {
-                storage.Add(Crate.FromContent("", new StandardPayloadDataCM(CreateKeyValuePairList(curEvent))));
+                var payloadCrate = Data.Crates.Crate.FromContent("", new StandardPayloadDataCM(CreateKeyValuePairList(curEvent)));
+                stroage.Add(payloadCrate);
             }
 
-            return storage;
+            return stroage;
         }
 
-        private List<FieldDTO> CreateKeyValuePairList(DocuSignEventDO curEvent)
+        private List<FieldDTO> CreateKeyValuePairList(DocuSignEventDTO curEvent)
         {
             List<FieldDTO> returnList = new List<FieldDTO>();
-            returnList.Add(new FieldDTO("EnvelopeId", curEvent.EnvelopeId));
-            returnList.Add(new FieldDTO("ExternalEventType", curEvent.ExternalEventType.ToString()));
-            returnList.Add(new FieldDTO("RecipientId", curEvent.RecipientId));
+            returnList.Add(new FieldDTO("EnvelopeId",curEvent.EnvelopeId));
+            returnList.Add(new FieldDTO("ExternalEventType",curEvent.ExternalEventType.ToString()));
+            returnList.Add(new FieldDTO("RecipientId",curEvent.RecipientId));
+            returnList.Add(new FieldDTO("RecipientEmail", curEvent.RecipientEmail));
+
+            returnList.Add(new FieldDTO("DocumentName", curEvent.DocumentName));
+            returnList.Add(new FieldDTO("TemplateName", curEvent.TemplateName));
 
             returnList.Add(new FieldDTO("Object", curEvent.DocuSignObject));
             returnList.Add(new FieldDTO("Status", curEvent.Status));
@@ -137,6 +146,8 @@ namespace terminalDocuSign.Services
             returnList.Add(new FieldDTO("EventId", curEvent.EventId));
 
             return returnList;
-        }
+            }
+
+
     }
 }

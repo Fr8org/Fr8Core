@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Data.Crates;
+using Data.Interfaces.Manifests;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -118,6 +119,12 @@ namespace terminalDocuSign.Actions
             return Task.FromResult((Crate)PackControlsCrate(controlList.ToArray()));
         }
 
+        private T GetStdConfigurationControl<T>(CrateStorage storage, string name)
+            where T : ControlDefinitionDTO
+        {
+            return (T) storage.CrateValuesOfType<StandardConfigurationControlsCM>().First().FindByName(name);
+        }
+
         /// <summary>
         /// If there's a value in select_file field of the crate, then it is a followup call.
         /// </summary>
@@ -157,7 +164,7 @@ namespace terminalDocuSign.Actions
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    ActivityTemplateDO dataSourceActTempl = uow.ActivityTemplateRepository.GetAll().SingleOrDefault(at => at.Name == _dataSourceValue);
+                    ActivityTemplateDO dataSourceActTempl = uow.ActivityTemplateRepository.GetAll().FirstOrDefault(at => at.Name == _dataSourceValue);
                     if (dataSourceActTempl == null) return curActionDTO;
                     curActionDO.ChildNodes.Add(new ActionDO()
                     {
@@ -170,7 +177,7 @@ namespace terminalDocuSign.Actions
                         Ordering = 1
                     });
 
-                    ActivityTemplateDO mapFieldActTempl = uow.ActivityTemplateRepository.GetAll().SingleOrDefault(at => at.Name == "MapFields");
+                    ActivityTemplateDO mapFieldActTempl = uow.ActivityTemplateRepository.GetAll().FirstOrDefault(at => at.Name == "MapFields");
                     if (mapFieldActTempl == null) return curActionDTO;
 
                     curActionDO.ChildNodes.Add(new ActionDO()
@@ -184,7 +191,7 @@ namespace terminalDocuSign.Actions
                         Ordering = 2
                     });
 
-                    ActivityTemplateDO sendDocuSignEnvActTempl = uow.ActivityTemplateRepository.GetAll().SingleOrDefault(at => at.Name == "Send_DocuSign_Envelope");
+                    ActivityTemplateDO sendDocuSignEnvActTempl = uow.ActivityTemplateRepository.GetAll().FirstOrDefault(at => at.Name == "Send_DocuSign_Envelope");
                     if (mapFieldActTempl == null) return curActionDTO;
                     curActionDO.ChildNodes.Add(new ActionDO()
                     {

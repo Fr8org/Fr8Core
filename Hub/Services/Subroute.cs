@@ -171,16 +171,16 @@ namespace Hub.Services
                     using (var updater = _crate.UpdateStorage(() => currentActivity.CrateStorage))
                     {
                         foreach (var configurationControls in updater.CrateStorage.CrateValuesOfType<StandardConfigurationControlsCM>())
-                        {
+                    {
                             foreach (IResettable resettable in configurationControls.Controls)
-                            {
+                        {
                                 resettable.Reset();
                                 somethingToReset = true;
-                            }
                         }
+                    }
 
                         if (!somethingToReset)
-                        {
+                    {
                             updater.DiscardChanges();
                         }
                     }

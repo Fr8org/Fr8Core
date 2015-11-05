@@ -269,7 +269,7 @@ namespace Hub.Services
 
             if (createRoute)
             {
-                route = ObjectFactory.GetInstance<IRoute>().Create(uow, name);
+                route = ObjectFactory.GetInstance<IRoute>().Create(uow, label);
                 parentNode = ObjectFactory.GetInstance<ISubroute>().Create(uow, route, name + " #1");
             }
             else
@@ -386,14 +386,14 @@ namespace Hub.Services
                             {
                                 resettable.Reset();
                                 hasChanges = true;
-                            }
-                        }
-
-                        if (!hasChanges)
-                        {
-                            updater.DiscardChanges();
                         }
                     }
+
+                        if (!hasChanges)
+                {
+                            updater.DiscardChanges();
+                }
+                }
                 }
 
                 _routeNode.Delete(uow, curAction);
@@ -439,7 +439,7 @@ namespace Hub.Services
                     using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
                     {
                         updater.CrateStorage = _crate.GetStorage(payload.CrateStorage);
-                    }
+                }
                 //    curContainerDO.CrateStorage = payload.CrateStorage;
                 }
 
@@ -472,7 +472,7 @@ namespace Hub.Services
 
             if (control == null)
             {
-                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
+                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME));
             }
 
 

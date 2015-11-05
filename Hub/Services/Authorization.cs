@@ -81,7 +81,7 @@ namespace Hub.Services
                     };
                     uow.AuthorizationTokenRepository.Add(tokenDO);
                 }
-                tokenDO.ExpiresAt = DateTime.Now.AddYears(100);
+				tokenDO.ExpiresAt = DateTime.UtcNow.AddYears(100);
                 tokenDO.Token = token;
                 uow.SaveChanges();
             }

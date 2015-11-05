@@ -8,6 +8,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Hub.Enums;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -93,7 +94,7 @@ namespace pluginBaseTests.BaseClasses
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, result.ManifestType.Type);
+            Assert.IsTrue(result.Get<StandardConfigurationControlsCM>() != null);
         }
 
 

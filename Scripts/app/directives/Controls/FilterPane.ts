@@ -38,7 +38,7 @@ module dockyard.directives {
                             if (crate != null) {
                                 var crateJson = <any>crate.contents;
                                 angular.forEach(crateJson.Fields, function (it) {
-                                    $scope.fields.push({ name: it.Key, key: it.Key });
+                                    $scope.fields.push({ name: it.key, key: it.key });
                                 });
                             }
                         }

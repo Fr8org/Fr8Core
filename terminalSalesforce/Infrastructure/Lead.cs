@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Hub.Managers;
 using StructureMap;
+using terminalSalesforce.Services;
 
 namespace terminalSalesforce.Infrastructure
 {
@@ -28,7 +29,7 @@ namespace terminalSalesforce.Infrastructure
         {
             
             string instanceUrl, apiVersion;
-            ParseAuthToken(currentActionDTO.AuthToken.AdditionalAttributes,out instanceUrl,out apiVersion);
+            ParseAuthToken(currentActionDTO.AuthToken.AdditionalAttributes, out instanceUrl, out apiVersion);
             client = new ForceClient(instanceUrl, currentActionDTO.AuthToken.Token, apiVersion);
             LeadDTO lead = new LeadDTO();
 
@@ -55,8 +56,5 @@ namespace terminalSalesforce.Infrastructure
             instanceUrl = instanceUrl.Replace("instance_url=", "");
             apiVersion = apiVersion.Replace("api_version=", "");
         }
-
-
-
     }
 }

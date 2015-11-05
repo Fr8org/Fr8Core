@@ -13,25 +13,25 @@ namespace Utilities
             {
 
                 case "last5minutes":
-                    dateRange.StartTime = DateTimeOffset.Now.AddMinutes(-5);
+                    dateRange.StartTime = DateTimeOffset.UtcNow.AddMinutes(-5);
                     break;
                 case "lasthour":
-                    dateRange.StartTime = DateTimeOffset.Now.AddHours(-1);
+					dateRange.StartTime = DateTimeOffset.UtcNow.AddHours(-1);
                     break;
                 case "lastday":
-                    dateRange.StartTime = DateTimeOffset.Now.AddDays(-1);
+					dateRange.StartTime = DateTimeOffset.UtcNow.AddDays(-1);
                     break;
                 case "lastweek":
-                    dateRange.StartTime = DateTimeOffset.Now.AddDays(-7);
+					dateRange.StartTime = DateTimeOffset.UtcNow.AddDays(-7);
                     break;
             }
-            dateRange.EndTime = DateTimeOffset.Now;
+			dateRange.EndTime = DateTimeOffset.UtcNow;
             return dateRange;
         }
 
         public static string TimeAgo(this DateTimeOffset dt)
         {
-            TimeSpan span = DateTimeOffset.Now - dt;
+			TimeSpan span = DateTimeOffset.UtcNow - dt;
             if (span.Days > 365)
             {
                 int years = (span.Days / 365);

@@ -236,7 +236,7 @@ namespace terminalFr8Core.Actions
                 using (var updater = Crate.UpdateStorage(() => curActionDTO.CrateStorage))
                 {
                     updater.CrateStorage = AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
-                }
+            }
             }
             else
             {
@@ -254,7 +254,7 @@ namespace terminalFr8Core.Actions
                 return ConfigurationRequestType.Initial;
             }
 
-            var hasControlsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME) != null;
+            var hasControlsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME) != null;
 
             var hasQueryFieldsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) != null;
 
@@ -308,7 +308,7 @@ namespace terminalFr8Core.Actions
             string curLabel = string.Empty;
             switch (curManifestType)
             {
-                case CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME:
+                case CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME:
                     curLabel = "Configuration_Controls";
                     break;
                 case CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME:

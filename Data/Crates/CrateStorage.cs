@@ -111,7 +111,28 @@ namespace Data.Crates
         
         /**********************************************************************************/
 
+        public Crate<T> FirstCrate<T>(Predicate<Crate> predicate)
+        {
+            return CratesOfType<T>(predicate).First();
+        }
+
+        /**********************************************************************************/
+
+        public Crate<T> FirstCrateOrDefault<T>(Predicate<Crate> predicate)
+        {
+            return CratesOfType<T>(predicate).FirstOrDefault();
+        }
+
+        /**********************************************************************************/
+
         public IEnumerable<Crate<T>> CratesOfType<T>()
+        {
+            return CratesOfType<T>(null);
+        }
+
+        /**********************************************************************************/
+
+        public IEnumerable<Crate<T>> CratesOfType<T>(Predicate<Crate> predicate)
         {
             CrateManifestType manifestType;
 
@@ -122,7 +143,7 @@ namespace Data.Crates
 
             foreach (var crate in _crates.Values)
             {
-                if (crate.ManifestType == manifestType)
+                if (crate.ManifestType == manifestType && (predicate == null || predicate(crate)))
                 {
                     yield return new Crate<T>(crate);
                 }

@@ -45,11 +45,16 @@ namespace Data.Interfaces.Manifests
             ObjectType = "Unspecified";
         }
 
-        public StandardPayloadDataCM(List<FieldDTO> fields)
+        public StandardPayloadDataCM(IEnumerable<FieldDTO> fields)
             : this()
         {
             PayloadObjects = new List<PayloadObjectDTO>();
             PayloadObjects.Add(new PayloadObjectDTO(fields));
+        }
+
+        public StandardPayloadDataCM(params FieldDTO[] fields)
+            :this((IEnumerable<FieldDTO>)fields)
+        {
         }
 
         public bool TryGetValue(string key, bool skipNull, out string value)

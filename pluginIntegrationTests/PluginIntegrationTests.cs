@@ -295,11 +295,16 @@ namespace pluginIntegrationTests
             // Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
             var configurationControlsCrate = curCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single(x => x.Label == "Configuration_Controls");
             var controlsMS = configurationControlsCrate.Value;
+            
+            controlsMS.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.ForEach(r => r.Selected = false);
 
             // Modify value of Selected_DocuSign_Template field and push it back to crate,
             // exact same way we do on front-end.
-            var docuSignTemplateControl = controlsMS.Controls.Single(x => x.Name == "Selected_DocuSign_Template");
-            docuSignTemplateControl.Value = fieldsMS.Fields.First().Value;
+            var docuSignTemplateControl =
+                controlsMS.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.Single(r => r.Name.Equals("template"));
+
+            docuSignTemplateControl.Selected = true;
+            docuSignTemplateControl.Controls[0].Value = fieldsMS.Fields.First().Value;
         }
 
         private async Task<CrateStorage> WaitForDocuSignEvent_ConfigureFollowUp(ActionDTO curActionDTO)
@@ -343,7 +348,7 @@ namespace pluginIntegrationTests
             Assert.AreEqual(storage.Count, 2);
             Assert.True(storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls"));
             Assert.True(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Queryable Criteria"));
-            
+
             return storage;
         }
 
@@ -387,13 +392,11 @@ namespace pluginIntegrationTests
             // Assert FollowUp Configure result.
             Assert.NotNull(actionDTO);
             Assert.NotNull(actionDTO.Content);
-            Assert.NotNull(actionDTO.Content.CrateStorage);
 
             var storage = _crateManager.GetStorage(actionDTO.Content);
 
-            Assert.AreEqual(storage.Count, 1);
+            Assert.AreEqual(2, storage.Count);//replace this with 3 when 1123 is fixed
             Assert.True(storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls"));
-
             Assert.True(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Sql Table Columns"));
 
             return storage;

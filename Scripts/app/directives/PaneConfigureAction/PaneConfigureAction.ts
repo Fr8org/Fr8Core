@@ -65,6 +65,7 @@ module dockyard.directives.paneConfigureAction {
         mapFields: (scope: IPaneConfigureActionScope) => void;
         processing: boolean;
         configurationWatchUnregisterer: Function;
+        mode: string;
     }
 
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -76,7 +77,8 @@ module dockyard.directives.paneConfigureAction {
         public templateUrl = '/AngularTemplate/PaneConfigureAction';
         public controller: ($scope: IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
-            currentAction: '='
+            currentAction: '=',
+            mode: '@'
         };
         public restrict = 'E';
 
@@ -89,7 +91,6 @@ module dockyard.directives.paneConfigureAction {
             private $window: ng.IWindowService,
             private $http: ng.IHttpService
         ) {
-
             PaneConfigureAction.prototype.link = (
                 scope: IPaneConfigureActionScope,
                 element: ng.IAugmentedJQuery,
@@ -238,7 +239,6 @@ module dockyard.directives.paneConfigureAction {
                 };
 
                 function processConfiguration() {
-                    debugger;
                     // Check if authentication is required.
                     if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, 'Standard Authentication')) {
                         var authCrate = crateHelper

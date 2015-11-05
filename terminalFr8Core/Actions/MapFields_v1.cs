@@ -30,7 +30,7 @@ namespace terminalFr8Core.Actions
             {
                 throw new ApplicationException("No controls crate found.");
             }
-            
+
             var curMappingControl = curControlsMS.Controls.FirstOrDefault(x => x.Name == "Selected_Mapping");
 
             if (curMappingControl == null || string.IsNullOrEmpty(curMappingControl.Value))
@@ -104,7 +104,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            Crate getErrorMessageCrate = null; 
+            Crate getErrorMessageCrate = null;
 
             var curUpstreamFields =
                 (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Upstream))
@@ -125,35 +125,33 @@ namespace terminalFr8Core.Actions
             }
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
-            Crate downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Plugin-Provided Fields", curDownstreamFields);
-            Crate upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+            var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Plugin-Provided Fields", curDownstreamFields);
+            var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
 
             var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 
-            var cratesToAssemble = new List<Crate>()
-            {
-                downstreamFieldsCrate,
-                upstreamFieldsCrate,
-                curConfigurationControlsCrate
-            };
 
-            if (getErrorMessageCrate != null)
+            using (var updater = Crate.UpdateStorage(curActionDTO))
             {
-                cratesToAssemble.Add(getErrorMessageCrate);
-            }
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(downstreamFieldsCrate);
+                updater.CrateStorage.Add(upstreamFieldsCrate);
+                updater.CrateStorage.Add(curConfigurationControlsCrate);
 
-            using (var updater = Crate.UpdateStorage(() => curActionDTO.CrateStorage))
-            {
-                updater.CrateStorage = AssembleCrateStorage(cratesToAssemble.ToArray());
+                if (getErrorMessageCrate != null)
+                {
+                    updater.CrateStorage.Add(getErrorMessageCrate);
+                }
             }
 
             return curActionDTO;
         }
 
         /// <summary>
-        /// Check if initial configuration was requested.
-        /// </summary>
-        private bool CheckIsInitialConfiguration(ActionDTO curAction)
+                /// Check if initial configuration was requested.
+                /// </summary>
+            private
+            bool CheckIsInitialConfiguration(ActionDTO curAction)
         {
             CrateStorage storage;
 

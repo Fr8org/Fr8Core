@@ -43,7 +43,7 @@ namespace terminalExcel.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = "Select an Excel file",
-                        ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+                        ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME
                     },
                 }));
 
@@ -94,7 +94,7 @@ namespace terminalExcel.Actions
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
             
-
+            
             using (var updater = Crate.UpdateStorage(processPayload))
             {
                 updater.CrateStorage.Add(Crate.CreatePayloadDataCrateExcel("ExcelTableRow", "Excel Data", tableDataMS));
@@ -157,7 +157,7 @@ namespace terminalExcel.Actions
         //        return curFileDOTask;
         //    }
         //}
-        
+
 
         /// <summary>
         /// Looks for upstream and downstream Creates.
@@ -176,7 +176,7 @@ namespace terminalExcel.Actions
                     updater.CrateStorage.Clear();
                     updater.CrateStorage.Add(upstreamFieldsCrate);
                     updater.CrateStorage.Add(PackControls(new ActionUi(false)));
-                }
+            }
             }
             else
             {
@@ -202,7 +202,7 @@ namespace terminalExcel.Actions
                 }).ToArray();
 
             var hasDesignTimeFields = storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Spreadsheet Column Headers");
-            
+
             if (filePathsFromUserSelection.Length == 1 || hasDesignTimeFields)
             {
                 return ConfigurationRequestType.Followup;
@@ -234,11 +234,11 @@ namespace terminalExcel.Actions
                 updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
                 updater.CrateStorage.Add(PackControls(new ActionUi(true)));
 
-                if (filePathsFromUserSelection.Length > 0)
-                {
+            if (filePathsFromUserSelection.Length > 0)
+            {
                     var selectedFilePath = filePathsFromUserSelection[0].select_file.Value;
                     TransformExcelFileDataToStandardTableDataCrate(storage, selectedFilePath);
-                }
+            }
 
                 return curActionDTO;
             }
