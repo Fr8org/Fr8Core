@@ -45,11 +45,10 @@ namespace TerminalBase.BaseClasses
             _authorizationToken = new Authorization();
         }
 
-        protected bool NeedsAuthentication(ActionDTO actionDTO)
+        protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
-            if (actionDTO == null
-                || actionDTO.AuthToken == null
-                || string.IsNullOrEmpty(actionDTO.AuthToken.Token))
+            if (authTokenDO == null
+                || string.IsNullOrEmpty(authTokenDO.Token))
             {
                 return true;
             }

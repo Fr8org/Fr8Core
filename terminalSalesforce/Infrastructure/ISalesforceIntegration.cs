@@ -1,4 +1,5 @@
-﻿using Data.Interfaces.DataTransferObjects;
+﻿using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace terminalSalesforce.Infrastructure
 {
     public interface ISalesforceIntegration
     {
-        bool CreateLead(ActionDTO actionDTO);
+        bool CreateLead(ActionDO actionDO, AuthorizationTokenDO authTokenDO);
 
-        bool CreateContact(ActionDTO actionDTO);
+        bool CreateContact(ActionDO actionDTO);
 
-        bool CreateAccount(ActionDTO actionDTO);
+        bool CreateAccount(ActionDO actionDTO);
     }
 }

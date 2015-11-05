@@ -20,50 +20,29 @@ namespace terminalAzure.Controllers
         [Route("configure")]
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-
-            var resultActionDO = await (Task<ActionDO>)_basePluginController.HandleFr8Request(curPlugin, "Configure", submittedActionDO);
-
-            var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
-
-            return resultActionDTO;
+            return await (Task<ActionDTO>)_basePluginController.HandleFr8Request(curPlugin, "Configure", curActionDTO);
         }
        
         [HttpPost]
         [Route("activate")]
         public ActionDTO Activate(ActionDTO curActionDataPackage)
         {
-            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDataPackage);
 
-            var resultActionDO = _basePluginController.HandleFr8Request(curPlugin, "Activate", submittedActionDO);
-
-            var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
-
-            return resultActionDTO;
+            return (ActionDTO)_basePluginController.HandleFr8Request(curPlugin, "Activate", curActionDataPackage);
         }
 
         [HttpPost]
         [Route("deactivate")]
         public ActionDTO Deactivate(ActionDTO curActionDataPackage)
         {
-            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDataPackage);
-
-            var resultActionDO = _basePluginController.HandleFr8Request(curPlugin, "Deactivate", submittedActionDO);
-
-            var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
-
-            return resultActionDTO;
+            return (ActionDTO)_basePluginController.HandleFr8Request(curPlugin, "Deactivate", curActionDataPackage);
         }
 
         [HttpPost]
         [Route("run")]
         public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
-            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-
-            var resultPayloadDTO = await (Task<PayloadDTO>)_basePluginController.HandleFr8Request(curPlugin, "Run", submittedActionDO);
-
-            return resultPayloadDTO;
+            return await (Task<PayloadDTO>)_basePluginController.HandleFr8Request(curPlugin, "Run", curActionDTO);
 
         }
 
@@ -73,7 +52,7 @@ namespace terminalAzure.Controllers
         [HttpPost]
         [Route("Write_To_Sql_Server")]
         [Obsolete]
-        public IHttpActionResult Process(ActionDTO curActionDTO)
+        public IHttpActionResult Process(ActionDO curActionDO)
         {
             //var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
@@ -85,7 +64,7 @@ namespace terminalAzure.Controllers
 
         [HttpPost]
         [Route("Write_To_Sql_Server/{path}")]
-        public IHttpActionResult Process(string path, ActionDTO curActionDTO)
+        public IHttpActionResult Process(string path, ActionDO curActionDO)
 
         {
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);

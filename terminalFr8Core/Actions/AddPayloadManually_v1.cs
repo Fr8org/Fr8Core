@@ -14,9 +14,9 @@ namespace terminalFr8Core.Actions
 {
     public class AddPayloadManually_v1 : BasePluginAction
     {
-        public async Task<PayloadDTO> Run(ActionDO curActionDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
-            var processPayload = await GetProcessPayload(curActionDO.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
 
             var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO
                 .SingleOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);

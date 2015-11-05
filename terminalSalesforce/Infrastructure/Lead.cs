@@ -1,4 +1,5 @@
-﻿using Data.Interfaces.DataTransferObjects;
+﻿using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Salesforce.Force;
@@ -14,15 +15,15 @@ namespace terminalSalesforce.Infrastructure
     public class Lead
     {
         ForceClient client;       
-        public async Task CreateLead(ActionDTO currentActionDTO)
+        public async Task CreateLead(ActionDO currentActionDO, AuthorizationTokenDO authTokenDO)
         {
             
             string instanceUrl, apiVersion;
-            ParseAuthToken(currentActionDTO.AuthToken.AdditionalAttributes, out instanceUrl, out apiVersion);
-            client = new ForceClient(instanceUrl, currentActionDTO.AuthToken.Token, apiVersion);
+            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
+            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
             LeadDTO lead = new LeadDTO();
             var curFieldList =
-               JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(currentActionDTO.CrateStorage.CrateDTO.First(field => field.Contents.Contains("firstName")).Contents);
+               JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(currentActionDO.CrateStorageDTO().CrateDTO.First(field => field.Contents.Contains("firstName")).Contents);
             lead.FirstName = curFieldList.Controls.First(x => x.Name == "firstName").Value;
             lead.LastName = curFieldList.Controls.First(x => x.Name == "lastName").Value;
             lead.Company = curFieldList.Controls.First(x => x.Name == "companyName").Value;

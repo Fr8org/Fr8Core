@@ -125,7 +125,7 @@ namespace terminalTwilio.Actions
             {
                 crateDTO = PackCrate_ErrorTextBox("Error_NoUpstreamLists",
                             "No Upstream fr8 Lists Were Found.");
-                curActionDO.CurrentView = "Error_NoUpstreamLists";
+                curActionDO.currentView = "Error_NoUpstreamLists";
             }
             else
             {
@@ -152,9 +152,9 @@ namespace terminalTwilio.Actions
             return curActionDO;
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
-            var processPayload = await GetProcessPayload(curActionDO.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
 
             var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO.FirstOrDefault();
             if (controlsCrate == null)

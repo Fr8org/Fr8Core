@@ -158,11 +158,11 @@ namespace terminalSendGrid.Actions
             return htmlText;
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
             var fromAddress = _configRepository.Get("OutboundFromAddress");
 
-            var processPayload = await GetProcessPayload(curActionDO.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
 
             var emailAddress = ExtractSpecificOrUpstreamValue(
                 curActionDO.CrateStorageDTO(),

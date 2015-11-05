@@ -6,6 +6,7 @@ using TerminalBase.Infrastructure;
 using System.Threading.Tasks;
 using Utilities.Configuration.Azure;
 using Data.Entities;
+using AutoMapper;
 
 namespace TerminalBase.BaseClasses
 {
@@ -52,7 +53,7 @@ namespace TerminalBase.BaseClasses
             return _basePluginEvent.SendEventOrIncidentReport(pluginName, "Plugin Incident");
         }
 
-        
+
         /// <summary>
         /// Reports event when process an action
         /// </summary>
@@ -63,26 +64,49 @@ namespace TerminalBase.BaseClasses
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public object HandleFr8Request(string curPlugin, string curActionPath, ActionDO curActionDO, object dataObject = null)
+        public object HandleFr8Request(string curPlugin, string curActionPath, ActionDTO curActionDTO)
         {
-            if (curActionDO == null)
+            if (curActionDTO == null)
                 throw new ArgumentNullException("curActionDTO");
-            if (curActionDO.ActivityTemplate == null)
+            if (curActionDTO.ActivityTemplate == null)
                 throw new ArgumentException("ActivityTemplate is null", "curActionDTO");
-            if (dataObject == null) dataObject = curActionDO;
 
-            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDO.ActivityTemplate.Name, curActionDO.ActivityTemplate.Version);
+
+            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
 
             Type calledType = Type.GetType(curAssemblyName + ", " + curPlugin);
             if (calledType == null)
-                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} plugin.", 
-                    curActionDO.ActivityTemplate.Name,
-                    curActionDO.ActivityTemplate.Version, 
+                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} plugin.",
+                    curActionDTO.ActivityTemplate.Name,
+                    curActionDTO.ActivityTemplate.Version,
                     curPlugin), "curActionDTO");
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
-            var response = (object)curMethodInfo.Invoke(curObject, new Object[] { dataObject });
-            return response;
+
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
+            var curContainerId = curActionDTO.ContainerId;
+            object response;
+            switch (curActionPath)
+            {
+                case "Configure":
+                    response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                    return response;
+                case "Run":
+                    response = (Task<PayloadDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                    return response;
+                case "InitialConfigurationResponse":
+                    response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                    return response;
+                case "FollowupConfigurationResponse":
+                    response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO, curContainerId });
+                    return response;
+                default:
+                    response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+                    return response;
+            }
+            
+
         }
     }
 }

@@ -25,9 +25,9 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Execute(ActionDO curActionDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
-            var curPayloadDTO = await GetProcessPayload(curActionDO.ProcessId);
+            var curPayloadDTO = await GetProcessPayload(containerId);
 
             var controlsMS = Action.GetControlsManifest(curActionDO);
 

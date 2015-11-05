@@ -18,7 +18,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Execute(ActionDO actionDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, int containerId)
         {
             var curControlsCrate = actionDO
                 .CrateStorageDTO()
@@ -42,7 +42,7 @@ namespace terminalFr8Core.Actions
             var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
 
-            var processPayload = await GetProcessPayload(actionDO.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
 
             var actionPayloadCrates = new List<CrateDTO>()
             {
@@ -119,7 +119,7 @@ namespace terminalFr8Core.Actions
                 CrateDTO getErrorMessageCrate = GetTextBoxControlForDisplayingError("MapFieldsErrorMessage",
                          "This action couldn't find either source fields or target fields (or both). " +
                         "Try configuring some Actions first, then try this page again.");
-                curActionDO.CurrentView = "MapFieldsErrorMessage";
+                curActionDO.currentView = "MapFieldsErrorMessage";
                 cratesToAssemble.Add(getErrorMessageCrate);
             }
             else

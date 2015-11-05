@@ -17,9 +17,9 @@ namespace terminalSalesforce.Actions
     {
         ISalesforceIntegration _salesforce = new SalesforceIntegration();
 
-        public async Task<ActionDO> Configure(ActionDO curActionDO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
-            if (NeedsAuthentication(curActionDO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
@@ -39,13 +39,13 @@ namespace terminalSalesforce.Actions
             return "Deactivated";
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
             PayloadDTO processPayload = null;
 
-            processPayload = await GetProcessPayload(curActionDO.ProcessId);
+            processPayload = await GetProcessPayload(containerId);
 
-            if (NeedsAuthentication(curActionDO))
+            if (NeedsAuthentication(authTokenDO))
                 {
                     throw new ApplicationException("No AuthToken provided.");
                 }
@@ -63,7 +63,7 @@ namespace terminalSalesforce.Actions
                     throw new ApplicationException("No company name found in action.");
                 }
 
-                bool result = _salesforce.CreateLead(curActionDO);
+                bool result = _salesforce.CreateLead(curActionDO, authTokenDO);
            
           
             return processPayload;

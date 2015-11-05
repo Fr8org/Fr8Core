@@ -22,11 +22,11 @@ namespace terminalFr8Core.Actions
 
 
         public override ConfigurationRequestType ConfigurationEvaluator(
-            ActionDTO curActionDTO)
+            ActionDO curActionDO)
         {
-            if (curActionDTO.CrateStorage == null
-                || curActionDTO.CrateStorage.CrateDTO == null
-                || curActionDTO.CrateStorage.CrateDTO.Count == 0)
+            if (curActionDO.CrateStorageDTO() == null
+                || curActionDO.CrateStorageDTO().CrateDTO == null
+                || curActionDO.CrateStorageDTO().CrateDTO.Count == 0)
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -34,18 +34,18 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override Task<ActionDTO> InitialConfigurationResponse(
-            ActionDTO curActionDTO)
+        protected override Task<ActionDO> InitialConfigurationResponse(
+            ActionDO curActionDO)
         {
-            if (curActionDTO.CrateStorage == null)
+            if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDTO.CrateStorage = new CrateStorageDTO();
+                curActionDO.UpdateCrateStorageDTO( new CrateStorageDTO().CrateDTO);
             }
 
             var crateControls = CreateControlsCrate();
-            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+            curActionDO.CrateStorageDTO().CrateDTO.Add(crateControls);
 
-            return Task.FromResult<ActionDTO>(curActionDTO);
+            return Task.FromResult<ActionDO>(curActionDO);
         }
 
         private CrateDTO CreateControlsCrate()
@@ -64,16 +64,16 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(control);
         }
 
-        protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
         {
-            RemoveControl(curActionDTO, "ErrorLabel");
+            RemoveControl(curActionDO, "ErrorLabel");
 
             Crate.RemoveCrateByLabel(
-                curActionDTO.CrateStorage.CrateDTO,
+                curActionDO.CrateStorageDTO().CrateDTO,
                 "Sql Table Definitions"
             );
 
-            var connectionString = ExtractConnectionString(curActionDTO);
+            var connectionString = ExtractConnectionString(curActionDO);
             if (!string.IsNullOrEmpty(connectionString))
             {
                 try
@@ -92,13 +92,13 @@ namespace terminalFr8Core.Actions
                             columnTypes.ToArray()
                         );
 
-                    curActionDTO.CrateStorage.CrateDTO.Add(tableDefinitionCrate);
-                    curActionDTO.CrateStorage.CrateDTO.Add(columnTypesCrate);
+                    curActionDO.CrateStorageDTO().CrateDTO.Add(tableDefinitionCrate);
+                    curActionDO.CrateStorageDTO().CrateDTO.Add(columnTypesCrate);
                 }
                 catch
                 {
                     AddLabelControl(
-                        curActionDTO,
+                        curActionDO,
                         "ErrorLabel",
                         "Unexpected error",
                         "Error occured while trying to fetch columns from database specified."
@@ -106,12 +106,12 @@ namespace terminalFr8Core.Actions
                 }
             }
 
-            return base.FollowupConfigurationResponse(curActionDTO);
+            return base.FollowupConfigurationResponse(curActionDO);
         }
 
-        private string ExtractConnectionString(ActionDTO curActionDTO)
+        private string ExtractConnectionString(ActionDO curActionDO)
         {
-            var configControls = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
+            var configControls = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDO));
             var connectionStringControl = configControls.FindByName("ConnectionString");
 
             return connectionStringControl.Value;
@@ -204,7 +204,7 @@ namespace terminalFr8Core.Actions
 
         #region Execution.
 
-        public Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
             return Task.FromResult<PayloadDTO>(null);
         }

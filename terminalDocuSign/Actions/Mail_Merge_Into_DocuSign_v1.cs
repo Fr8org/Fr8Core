@@ -31,7 +31,7 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDO curActionDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
             return null;
         }
@@ -77,7 +77,7 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             CrateStorageDTO crateStrorageDTO;
             if (curActionDO.CrateStorage == null)
@@ -87,14 +87,14 @@ namespace terminalDocuSign.Actions
 
             if (curActionDO.Id > 0)
             {
-                if (curActionDO.AuthToken == null || curActionDO.AuthToken.Token == null)
+                if (authTokenDO == null)
                 {
                     CrateDTO configurationControlsCrate = await CreateNoAuthCrate();
                     crateStrorageDTO = AssembleCrateStorage(configurationControlsCrate);
                 }
                 else
                 {
-                    var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDO.AuthToken.Token);
+                    var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
                     //build a controls crate to render the pane
                     CrateDTO configurationControlsCrate = await CreateConfigurationControlsCrate();
@@ -128,7 +128,7 @@ namespace terminalDocuSign.Actions
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             // Do not tarsnfer to follow up when child actions are already present 
-            if (curActionDO.ChildrenActions.Count() > 0) return ConfigurationRequestType.Initial;
+            if (curActionDO.ChildNodes.Count() > 0) return ConfigurationRequestType.Initial;
 
             // "Follow up" phase is when Continue button is clicked 
             ButtonControlDefinitionDTO button = GetStdConfigurationControl<ButtonControlDefinitionDTO>(
@@ -151,9 +151,9 @@ namespace terminalDocuSign.Actions
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDO.AuthToken.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
             _docuSignManager.ExtractFieldsAndAddToCrate(_docuSignTemplateValue, docuSignAuthDTO, curActionDO);
 
             try

@@ -35,12 +35,12 @@ namespace terminalFr8Core.Actions
             return null;
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //get the process payload
-                var curProcessPayload = await GetProcessPayload(actionDO.ProcessId);
+                var curProcessPayload = await GetProcessPayload(containerId);
 
                 //get docu sign envelope crate from payload
                 var curDocuSignEnvelopeCrate =

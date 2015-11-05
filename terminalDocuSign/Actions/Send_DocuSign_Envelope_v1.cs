@@ -26,9 +26,9 @@ namespace terminalDocuSign.Actions
         {
         }
 
-        public async Task<ActionDTO> Configure(ActionDO curActionDO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(curActionDO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
@@ -41,16 +41,16 @@ namespace terminalDocuSign.Actions
             return "Activate Request"; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
-            if (curActionDO.AuthToken == null)
+            if (authTokenDO == null)
             {
                 throw new ApplicationException("No auth token provided.");
             }
 
-            var processPayload = await GetProcessPayload(curActionDO.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
 
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDO.AuthToken.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
             var curEnvelope = new Envelope();
             curEnvelope.Login = new DocuSignPackager()
@@ -85,7 +85,7 @@ namespace terminalDocuSign.Actions
 
         private Envelope AddTemplateData(ActionDO actionDO, PayloadDTO processPayload, Envelope curEnvelope)
         {
-            var curTemplateId = ExtractTemplateId(curActionDO);
+            var curTemplateId = ExtractTemplateId(actionDO);
             var curRecipientAddress = ExtractSpecificOrUpstreamValue(
                 actionDO.CrateStorageDTO(),
                 processPayload.CrateStorageDTO(),
@@ -139,9 +139,9 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDO.AuthToken.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
             var template = new DocuSignTemplate();
             template.Login = new DocuSignPackager()
@@ -160,7 +160,7 @@ namespace terminalDocuSign.Actions
                 var crateControlsDTO = CreateDocusignTemplateConfigurationControls(curActionDO);
                 // and one to hold the available templates, which need to be requested from docusign
                 var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
-                curActionDO.CrateStorageDTO().CrateDTO = AssembleCrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
+                curActionDO.UpdateCrateStorageDTO(AssembleCrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO).CrateDTO);
             }
 
             // Build a crate with the list of available upstream fields
@@ -183,9 +183,9 @@ namespace terminalDocuSign.Actions
             return curActionDO;
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDO.AuthToken.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
             var curCrates = curActionDO.CrateStorageDTO().CrateDTO;
 
             if (curCrates == null || curCrates.Count == 0)

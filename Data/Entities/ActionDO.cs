@@ -25,7 +25,7 @@ namespace Data.Entities
         [NotMapped]
         public bool IsTempId { get; set; }
 
-        public string CurrentView { get; set; }
+        public string currentView { get; set; }
 
         public CrateStorageDTO CrateStorageDTO()
         {

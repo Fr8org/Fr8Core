@@ -23,14 +23,14 @@ namespace terminalExcel.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDO curActionDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
-            return await CreateStandardPayloadDataFromStandardTableData(curActionDO);
+            return await CreateStandardPayloadDataFromStandardTableData(curActionDO, containerId);
         }
 
-        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO)
+        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, int containerId)
         {
-            var processPayload = await GetProcessPayload(curActionDO.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
 
             var tableDataMS = await GetTargetTableData(
                 curActionDO.Id,
