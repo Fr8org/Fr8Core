@@ -3,9 +3,9 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace TerminalSqlUtilities
 {
-    public class Query
+    public class SelectQuery
     {
-        public Query(
+        public SelectQuery(
             string connectionString,
             TableInfo tableInfo,
             IEnumerable<ColumnInfo> columns,

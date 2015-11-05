@@ -49,7 +49,6 @@ namespace terminalFr8Core.Infrastructure
 
         public string ConvertValueToString(object value, DbType dbType)
         {
-            throw new NotImplementedException();
         }
     }
 }

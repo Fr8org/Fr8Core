@@ -34,6 +34,6 @@ namespace TerminalSqlUtilities
         /// <summary>
         /// Execute query against database, and return table result.
         /// </summary>
-        Table ExecuteQuery(Query query);
+        Table ExecuteQuery(SelectQuery query);
     }
 }

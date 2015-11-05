@@ -71,7 +71,7 @@ namespace terminalFr8Core.Actions
             return columnInfo;
         }
 
-        private Query BuildQuery(string connectionString,
+        private SelectQuery BuildQuery(string connectionString,
             QueryDTO query, Dictionary<string, DbType> columnTypes)
         {
             var tableInfo = new TableInfo(query.Name);
@@ -79,7 +79,7 @@ namespace terminalFr8Core.Actions
 
             var columns = tableColumns.Select(x => CreateColumnInfo(x, columnTypes)).ToList();
 
-            var returnedQuery = new Query(connectionString, tableInfo, columns, query.Criteria);
+            var returnedQuery = new SelectQuery(connectionString, tableInfo, columns, query.Criteria);
             return returnedQuery;
         }
 
