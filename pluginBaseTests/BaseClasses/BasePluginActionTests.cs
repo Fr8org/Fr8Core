@@ -138,9 +138,9 @@ namespace pluginBaseTests.BaseClasses
         }
 
 
-        private ConfigurationRequestType EvaluateReceivedRequest(ActionDTO curActionDTO)
+        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            CrateStorageDTO curCrates = curActionDTO.CrateStorage;
+            CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
             if (curCrates.CrateDTO.Count == 0)
                 return ConfigurationRequestType.Initial;
             return ConfigurationRequestType.Followup;

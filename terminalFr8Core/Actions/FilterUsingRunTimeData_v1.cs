@@ -194,9 +194,9 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authToken=null)
         {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authToken);
         }
 
         private CrateDTO CreateControlsCrate()
@@ -219,7 +219,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Looks for first Create with Id == "Standard Design-Time" among all upcoming Actions.
         /// </summary>
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
             if (curActionDO.Id > 0)
             {

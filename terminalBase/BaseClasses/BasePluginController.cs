@@ -64,7 +64,7 @@ namespace TerminalBase.BaseClasses
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public object HandleFr8Request(string curPlugin, string curActionPath, ActionDTO curActionDTO)
+        public object HandleFr8Request(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject=null)
         {
             if (curActionDTO == null)
                 throw new ArgumentNullException("curActionDTO");
@@ -84,22 +84,23 @@ namespace TerminalBase.BaseClasses
             object curObject = Activator.CreateInstance(calledType);
 
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             var curContainerId = curActionDTO.ContainerId;
             object response;
             switch (curActionPath)
             {
                 case "Configure":
-                    response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                    response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                     return response;
                 case "Run":
                     response = (Task<PayloadDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                     return response;
                 case "InitialConfigurationResponse":
-                    response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                    response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                     return response;
                 case "FollowupConfigurationResponse":
-                    response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO, curContainerId });
+                    response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO, curContainerId });
                     return response;
                 default:
                     response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });

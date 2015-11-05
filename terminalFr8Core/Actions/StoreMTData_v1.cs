@@ -18,9 +18,9 @@ namespace terminalFr8Core.Actions
 {
     public class StoreMTData_v1 : BasePluginAction
     {
-        public async Task<ActionDO> Configure(ActionDO curActionDO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, actionDO => ConfigurationRequestType.Initial);
+            return await ProcessConfigurationRequest(curActionDO, actionDO => ConfigurationRequestType.Initial, authTokenDO);
         }
 
         public Task<object> Activate(ActionDO curActionDO)
@@ -85,7 +85,7 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
 
             CrateDTO curMergedUpstreamRunTimeObjects =

@@ -49,12 +49,12 @@ namespace terminalFr8Core.Actions
             return processPayload;
         }
 
-        public async Task<ActionDO> Configure(ActionDO curActionDataPackageDO)
+        public async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
@@ -65,7 +65,7 @@ namespace terminalFr8Core.Actions
             return Task.FromResult(curActionDO);
         }
 
-        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
+        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
             var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO
                 .SingleOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);

@@ -23,14 +23,14 @@ namespace terminalSlack.Actions
             _slackIntegration = new SlackIntegration();
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(actionDO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(actionDO.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
             var payloadFields = ExtractPayloadFields(processPayload);
 
             var payloadChannelIdField = payloadFields.FirstOrDefault(x => x.Key == "channel_id");
@@ -82,14 +82,14 @@ namespace terminalSlack.Actions
             return payloadFields;
         }
 
-        public async Task<ActionDO> Configure(ActionDO curActionDO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(curActionDO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x));
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x),authTokenDO);
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
@@ -104,10 +104,9 @@ namespace terminalSlack.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(
-            ActionDO curActionDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var oauthToken = curActionDO.AuthToken.Token;
+            var oauthToken = authTokenDO.Token;
             var channels = await _slackIntegration.GetChannelList(oauthToken);
 
             var crateControls = PackCrate_ConfigurationControls();

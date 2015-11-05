@@ -155,7 +155,7 @@ namespace terminalExcel.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
             if (curActionDO.Id > 0)
             {
@@ -206,7 +206,7 @@ namespace terminalExcel.Actions
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
 
             var filePathsFromUserSelection = Action.FindKeysByCrateManifestType(curActionDO, new Manifest(Data.Constants.MT.StandardConfigurationControls), "select_file").Result

@@ -28,9 +28,9 @@ namespace terminalAzure.Actions
         //General Methods (every Action class has these)
 
         //maybe want to return the full Action here
-        public async Task<ActionDO> Configure(ActionDO curActionDO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest);
+            return await ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest, authTokenDO);
         }
 
         //this entire function gets passed as a delegate to the main processing code in the base class
@@ -223,10 +223,10 @@ namespace terminalAzure.Actions
 
         //EXECUTION-Related Methods
         //-----------------------------------------
-        private WriteCommandArgs PrepareSQLWrite(ActionDTO curActionDTO, PayloadDTO processPayload)
+        private WriteCommandArgs PrepareSQLWrite(ActionDO curActionDO, PayloadDTO processPayload)
         {
             var parser = new DbServiceJsonParser();
-            var curConnStringObject = parser.ExtractConnectionString(curActionDTO);
+            var curConnStringObject = parser.ExtractConnectionString(curActionDO);
             var curSQLData = ConvertProcessPayloadToSqlInputs(processPayload);
 
             return new WriteCommandArgs(ProviderName, curConnStringObject, curSQLData);

@@ -22,12 +22,12 @@ namespace terminalFr8Core.Actions
     {
 
         // configure the action will return the initial UI crate 
-        public async Task<ActionDO> Configure(ActionDO curActionDataPackageDO)
+        public async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             // build a controls crate to render the dropdown build
             var configurationControlsCrate = CreateControlsCrate();
@@ -50,7 +50,7 @@ namespace terminalFr8Core.Actions
             return curFr8Selected_Object;
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authToken = null)
         {
 
             string curSelectedFr8Object = GetSelectedFr8Object(curActionDO);

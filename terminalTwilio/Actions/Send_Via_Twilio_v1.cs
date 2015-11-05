@@ -22,9 +22,9 @@ namespace terminalTwilio.Actions
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
 	    }
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, actionDo => ConfigurationRequestType.Initial);
+            return await ProcessConfigurationRequest(curActionDO, actionDO => ConfigurationRequestType.Initial, authTokenDO);
         }
 
         //this entire function gets passed as a delegate to the main processing code in the base class
@@ -39,7 +39,7 @@ namespace terminalTwilio.Actions
                 return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (curActionDO.CrateStorageDTO() == null)
             {
@@ -135,7 +135,7 @@ namespace terminalTwilio.Actions
             return crateDTO;
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO,AuthorizationTokenDO authTokenDO)
         {
             //not currently any requirements that need attention at FollowupConfigurationResponse
             return await Task.FromResult<ActionDO>(curActionDO);

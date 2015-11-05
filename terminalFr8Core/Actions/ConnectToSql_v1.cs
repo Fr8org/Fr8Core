@@ -34,8 +34,7 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override Task<ActionDO> InitialConfigurationResponse(
-            ActionDO curActionDO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
             if (curActionDO.CrateStorageDTO() == null)
             {
@@ -64,7 +63,7 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(control);
         }
 
-        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
+        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
             RemoveControl(curActionDO, "ErrorLabel");
 

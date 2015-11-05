@@ -50,8 +50,7 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(
-            ActionDO curActionDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
             RemoveControl(curActionDO, "UpstreamError");
 
@@ -86,8 +85,7 @@ namespace terminalFr8Core.Actions
             return curActionDO;
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(
-            ActionDO curActionDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
             RemoveControl(curActionDO, "SelectObjectError");
 

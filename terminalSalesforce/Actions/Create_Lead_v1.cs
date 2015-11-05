@@ -17,14 +17,14 @@ namespace terminalSalesforce.Actions
     {
         ISalesforceIntegration _salesforce = new SalesforceIntegration();
 
-        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
+        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x));
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
         }
 
         public object Activate(ActionDO curActionDO)
@@ -74,8 +74,7 @@ namespace terminalSalesforce.Actions
             return ConfigurationRequestType.Initial;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(
-         ActionDO curActionDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var firstNameCrate = new TextBoxControlDefinitionDTO()
             {

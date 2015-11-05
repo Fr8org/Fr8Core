@@ -105,22 +105,22 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        public object Activate(ActionDTO curDataPackage)
+        public object Activate(ActionDO curDataPackage)
         {
             return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
         }
 
-        public object Deactivate(ActionDTO curDataPackage)
+        public object Deactivate(ActionDO curDataPackage)
         {
             return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
-            return await GetProcessPayload(actionDto.ContainerIdId);
+            return await GetProcessPayload(containerId);
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
             if (curActionDO.CrateStorage == null)
             {
@@ -133,13 +133,13 @@ namespace terminalDocuSign.Actions
             return curActionDO;
         }
 
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
             var controls = new ActionUi();
             
-            controls.ClonePropertiesFrom(Crate.GetStandardConfigurationControls(curActionDTO.CrateStorage.CrateDTO.First(x => x.ManifestId == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID)));
+            controls.ClonePropertiesFrom(Crate.GetStandardConfigurationControls(curActionDO.CrateStorageDTO().CrateDTO.First(x => x.ManifestId == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID)));
             
-            var action = Mapper.Map<ActionDO>(curActionDTO);
+            var action = Mapper.Map<ActionDO>(curActionDO);
 
             action.ChildNodes = new List<RouteNodeDO>();
 
@@ -183,7 +183,7 @@ namespace terminalDocuSign.Actions
                 action.ChildNodes.Add(finalAction);
             }
             
-            return Mapper.Map<ActionDTO>(action);
+            return action;
         }
         
         private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(Predicate<ActivityTemplateDO> query)

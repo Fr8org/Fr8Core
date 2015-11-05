@@ -33,7 +33,7 @@ namespace terminalDocuSign.Actions
             return await ProcessConfigurationRequest(curActionDO, dto => ConfigurationRequestType.Initial);
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
             /*
              * Discussed with Alexei and it is required to have empty Standard Configuration Control in the crate.

@@ -98,9 +98,9 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO,int containerId, AuthorizationTokenDO authTokenDO = null)
         {
-            if (NeedsAuthentication(curActionDTO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
@@ -109,7 +109,7 @@ namespace terminalDocuSign.Actions
             string curSelectedOption, curSelectedValue;
             GetTemplateRecipientPickerValue(curActionDTO, out curSelectedOption, out curSelectedValue);
 
-            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
 
             string envelopeId = string.Empty;
 
@@ -224,7 +224,7 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
-        protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO, AuthorizationTokenDO authTokenDO = null)
         {
             //just update the user selected envelope events in the follow up configuration
             UpdateSelectedEvents(curActionDTO);

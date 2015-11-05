@@ -10,6 +10,8 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using terminalAzure.Controllers;
 using terminalAzure.Tests.Fixtures;
+using AutoMapper;
+using Data.Entities;
 
 namespace terminalAzure.Tests.Controllers
 {
@@ -35,9 +37,7 @@ namespace terminalAzure.Tests.Controllers
             string curActionPath = "Configure";
 
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
-
-            ActionDTO actionDTO = await (Task<ActionDTO>)_basePluginController
-                .HandleFr8Request(curPlugin, curActionPath, curActionDTO);
+            ActionDTO actionDTO = await (Task<ActionDTO>)_basePluginController.HandleFr8Request(curPlugin, curActionPath, curActionDTO);
 
             Assert.AreEqual("Standard Configuration Controls", actionDTO.CrateStorage.CrateDTO[0].ManifestType);
         }
