@@ -41,6 +41,24 @@ module dockyard.directives.designerHeader {
                         RouteService.activate($scope.route);
                     }
                 };
+
+                var unregister = $scope.$watch(function () {
+                    if ($scope.route) {
+                        var input: HTMLInputElement = <HTMLInputElement>$($element).find('input[data-bootstrap-switch]').get(0);
+                        $($element).find('[data-bootstrap-switch]').bootstrapSwitch({
+                            state: $scope.route.routeState === model.RouteState.Active,
+                            onSwitchChange: () => {
+                                if (input.checked) {
+                                    RouteService.activate($scope.route);
+                                } else {
+                                    RouteService.deactivate($scope.route);
+                                }
+                            }
+                        });
+
+                        unregister();
+                    }
+                });
             };
         }
 

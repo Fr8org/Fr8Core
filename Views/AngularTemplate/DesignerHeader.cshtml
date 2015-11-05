@@ -1,7 +1,10 @@
-﻿<div class="designer-header">
-    <div class="process-template-name">{{route.name}}</div>
-    <div class="btn-group">
+﻿<div class="designer-header container">
+    <div class="process-template-name">{{route.name}}</div><span class="glyphicon glyphicon-pencil designer-header-glyphicon" aria-hidden="true"></span>
+    <div class="designer-header-status" >
+        <span class="designer-header-statusLabel">Status:</span><input type="checkbox" data-bootstrap-switch class="bootstrap-switch-checkbox" data-on-text="Active" data-off-text="Inactive" ng-model="route.routeState" ng-true-value="2" ng-false-value="1">
+    </div>
+    @*<div class="btn-group designer-header-status">
         <label class="btn switch-btn" ng-model="route.routeState" btn-radio="1" ng-change="onStateChange()">Inactive</label>
         <label class="btn switch-btn" ng-model="route.routeState" btn-radio="2" ng-change="onStateChange()">Active</label>
-    </div>
+    </div>*@
 </div>

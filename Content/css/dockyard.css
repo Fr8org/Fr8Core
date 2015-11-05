@@ -95,9 +95,17 @@
 /* Process Builder */
 
 .designer-header {
-    background-color: #58b8a9;
+    background-color: white;
+    color: #58b8a9;
     margin-bottom: 20px;
     padding: 20px;
+}
+
+.designer-header-glyphicon {
+    font-size: 18px;
+    line-height: 34px;
+    margin-left: 20px;
+    cursor: pointer;
 }
 
 .process-template-name {
@@ -105,7 +113,19 @@
     font-size: 24px;
     font-weight: bold;
     vertical-align: top;
-    min-width: 300px;
+}
+
+.designer-header-status {
+    float: right;
+}
+
+.designer-header-statusLabel {
+    margin-right: 10px;
+}
+
+.designer-header-status .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary {
+    background-color: #58b8a9;
+    color: white;
 }
 
 .switch-btn {

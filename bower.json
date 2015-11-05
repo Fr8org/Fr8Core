@@ -47,7 +47,8 @@
     "textAngular": "~1.4.6",
     "pusher-angular": "~0.1.8",
     "pusher": "~3.0.0",
-    "ngToast": "ngtoast#~1.5.6"
+    "ngToast": "ngtoast#~1.5.6",
+    "bootstrap-switch": "~3.3.2"
   },
   "resolutions": {
     "angular": "~1.4.3"
