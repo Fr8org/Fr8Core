@@ -8,6 +8,10 @@ namespace TerminalSqlUtilities
 {
     public class SqlClientDbProvider : IDbProvider
     {
+        private readonly DbHelper _dbHelper = new DbHelper();
+        private readonly SqlClientSqlQueryBuilder _queryBuilder = new SqlClientSqlQueryBuilder();
+
+
         public IDbConnection CreateConnection(string connectionString)
         {
             return new SqlConnection(connectionString);
@@ -208,6 +212,43 @@ namespace TerminalSqlUtilities
             if (!valid)
             {
                 throw new Exception(string.Format("Invalid identifier \"{0}\"", id));
+            }
+        }
+
+        /// <summary>
+        /// Execute query against database and return table data.
+        /// </summary>
+        public Table ExecuteQuery(SelectQuery query)
+        {
+            var sqlQuery = _queryBuilder.BuildSelectQuery(query);
+
+            using (var conn = CreateConnection(query.ConnectionString))
+            {
+                conn.Open();
+
+                using (var tx = conn.BeginTransaction())
+                {
+                    using (var cmd = tx.Connection.CreateCommand())
+                    {
+                        cmd.Transaction = tx;
+                        cmd.CommandText = sqlQuery.Sql;
+
+                        foreach (var parameter in sqlQuery.Parameters)
+                        {
+                            var dbParam = cmd.CreateParameter();
+                            dbParam.ParameterName = parameter.Name;
+                            dbParam.Value = parameter.Value;
+
+                            cmd.Parameters.Add(dbParam);
+                        }
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            var dataTable = _dbHelper.ExtractDataTable(query.TableInfo, reader);
+                            return dataTable;
+                        }
+                    }
+                }
             }
         }
     }

@@ -153,7 +153,7 @@ namespace TerminalBase.BaseClasses
         }
 
         //wrapper for support test method
-        protected async virtual Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        public async virtual Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
         {
             return await Activity.GetCratesByDirection(activityId, manifestType, direction);
         }
