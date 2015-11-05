@@ -18,7 +18,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDO actionDO, int containerId)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, int containerId, AuthorizationTokenDO authTokenDO=null)
         {
             var curControlsCrate = actionDO
                 .CrateStorageDTO()
@@ -60,9 +60,9 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public async Task<ActionDO> Configure(ActionDO actionDO)
+        public async Task<ActionDO> Configure(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(actionDO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(actionDO, ConfigurationEvaluator, authTokenDO);
         }
 
         private void FillCrateConfigureList(IEnumerable<ActionDO> actions,

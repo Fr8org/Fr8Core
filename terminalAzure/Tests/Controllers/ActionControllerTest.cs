@@ -37,9 +37,10 @@ namespace terminalAzure.Tests.Controllers
             string curActionPath = "Configure";
 
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
-            ActionDTO actionDTO = await (Task<ActionDTO>)_basePluginController.HandleFr8Request(curPlugin, curActionPath, curActionDTO);
 
-            Assert.AreEqual("Standard Configuration Controls", actionDTO.CrateStorage.CrateDTO[0].ManifestType);
+            var result = await (Task<ActionDTO>)_basePluginController.HandleFr8Request(curPlugin, curActionPath, curActionDTO);
+
+            Assert.AreEqual("Standard Configuration Controls", result.CrateStorage.CrateDTO[0].ManifestType);
         }
     }
 }

@@ -16,14 +16,14 @@ namespace terminalSalesforce.Actions
     {
         ISalesforceIntegration _salesforce = new SalesforceIntegration();
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(curActionDTO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
         }
 
         public object Activate(ActionDO curActionDO)
@@ -38,26 +38,26 @@ namespace terminalSalesforce.Actions
             return "Deactivated";
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
             PayloadDTO processPayload = null;
 
-            processPayload = await GetProcessPayload(curActionDTO.ContainerIdId);
+            processPayload = await GetProcessPayload(containerId);
 
-            if (NeedsAuthentication(curActionDTO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
 
-            var accountName = ExtractControlFieldValue(curActionDTO, "accountName");
+            var accountName = ExtractControlFieldValue(curActionDO, "accountName");
             if (string.IsNullOrEmpty(accountName))
             {
                 throw new ApplicationException("No account name found in action.");
             }
 
 
-            bool result = _salesforce.CreateAccount(curActionDTO);
+            bool result = _salesforce.CreateAccount(curActionDO, authTokenDO);
 
 
             return processPayload;
@@ -68,8 +68,7 @@ namespace terminalSalesforce.Actions
             return ConfigurationRequestType.Initial;
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(
-         ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
             var accountName = new TextBoxControlDefinitionDTO()
             {
@@ -95,9 +94,9 @@ namespace terminalSalesforce.Actions
             };
 
             var controls = PackControlsCrate(accountName, accountNumber, phone);
-            curActionDTO.CrateStorage.CrateDTO.Add(controls);
+            curActionDO.CrateStorageDTO().CrateDTO.Add(controls);
 
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            return await Task.FromResult(curActionDO);
         }
     }
 }

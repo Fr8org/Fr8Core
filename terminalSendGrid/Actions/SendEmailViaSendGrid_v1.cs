@@ -31,7 +31,7 @@ namespace terminalSendGrid.Actions
             _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
         }
 
-        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             return await ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest, authTokenDO);
         }
@@ -58,7 +58,7 @@ namespace terminalSendGrid.Actions
         {
             if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDO.UpdateCrateStorageDTO(new CrateStorageDTO().CrateDTO);
+                curActionDO.CrateStorageDTO().CrateDTO.Add(new CrateDTO());
             }
 
             curActionDO.CrateStorageDTO().CrateDTO.Add(CreateControlsCrate());

@@ -38,7 +38,7 @@ namespace terminalFr8Core.Actions
         {
             if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDO.UpdateCrateStorageDTO( new CrateStorageDTO().CrateDTO);
+                curActionDO.CrateStorageDTO().CrateDTO.Add(new CrateDTO());
             }
 
             var crateControls = CreateControlsCrate();
@@ -105,7 +105,7 @@ namespace terminalFr8Core.Actions
                 }
             }
 
-            return base.FollowupConfigurationResponse(curActionDO);
+            return base.FollowupConfigurationResponse(curActionDO, authTokenDO);
         }
 
         private string ExtractConnectionString(ActionDO curActionDO)

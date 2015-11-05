@@ -10,6 +10,8 @@ using terminalDocuSign.Tests.Fixtures;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using Utilities.Configuration.Azure;
+using AutoMapper;
+using Data.Entities;
 
 
 namespace terminalDocuSign.Tests.Actions
@@ -36,22 +38,23 @@ namespace terminalDocuSign.Tests.Actions
             //Arrange
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
             curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
-
+            AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
             //Act
-            var result = await _monitor_DocuSign.Configure(curActionDTO);
+            var result = await _monitor_DocuSign.Configure(curActionDO,curAuthTokenDO);
 
             //Assert
-            Assert.IsNotNull(result.CrateStorage);
-            Assert.AreEqual(4, result.CrateStorage.CrateDTO.Count);
-            Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
-            Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[1].ManifestType);
+            Assert.IsNotNull(result.CrateStorageDTO());
+            Assert.AreEqual(4, result.CrateStorageDTO().CrateDTO.Count);
+            Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, result.CrateStorageDTO().CrateDTO[0].ManifestType);
+            Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorageDTO().CrateDTO[1].ManifestType);
 
             //DO-1300 states Initial configuration response should add the standard design time fields with envelope ID
-            Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[2].ManifestType);
-            Assert.AreEqual("DocuSign Event Fields", result.CrateStorage.CrateDTO[2].Label);
+            Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorageDTO().CrateDTO[2].ManifestType);
+            Assert.AreEqual("DocuSign Event Fields", result.CrateStorageDTO().CrateDTO[2].Label);
 
             //NOTE:DO-1236 states - initial configuration response should add the standard event subscription
-            Assert.AreEqual(CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME, result.CrateStorage.CrateDTO[3].ManifestType);
+            Assert.AreEqual(CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME, result.CrateStorageDTO().CrateDTO[3].ManifestType);
         }
 
         [Test]
@@ -76,13 +79,14 @@ namespace terminalDocuSign.Tests.Actions
             //Arrange
             ActionDTO curActionDTO = FixtureData.TestActionDTO3();
             curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
-
+            AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
             //Act
-            var result = _monitor_DocuSign.Configure(curActionDTO);
+            var result = _monitor_DocuSign.Configure(curActionDO,curAuthTokenDO);
 
             //Assert
-            Assert.AreEqual(result.Result.CrateStorage.CrateDTO.Count, result.Result.CrateStorage.CrateDTO.Count);
-            Assert.AreEqual(result.Result.CrateStorage.CrateDTO[1].ManifestType, result.Result.CrateStorage.CrateDTO[1].ManifestType);
+            Assert.AreEqual(result.Result.CrateStorageDTO().CrateDTO.Count, result.Result.CrateStorageDTO().CrateDTO.Count);
+            Assert.AreEqual(result.Result.CrateStorageDTO().CrateDTO[1].ManifestType, result.Result.CrateStorageDTO().CrateDTO[1].ManifestType);
         }
 
         [Test]

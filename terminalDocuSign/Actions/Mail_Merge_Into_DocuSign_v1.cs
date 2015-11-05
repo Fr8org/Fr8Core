@@ -33,7 +33,7 @@ namespace terminalDocuSign.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
-            return null;
+            return  null;
         }
 
         /// <summary>
@@ -80,9 +80,9 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             CrateStorageDTO crateStrorageDTO;
-            if (curActionDO.CrateStorage == null)
+            if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDO.UpdateCrateStorageDTO(new CrateStorageDTO().CrateDTO);
+                curActionDO.CrateStorageDTO().CrateDTO.Add(new CrateDTO());
             }
 
             if (curActionDO.Id > 0)

@@ -27,14 +27,14 @@ namespace terminalDocuSign.Actions
             _docuSignManager = new DocuSignManager();
         }
 
-        public async Task<ActionDO> Configure(ActionDO curActionDO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(curActionDO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDO, dto => ConfigurationRequestType.Initial);
+            return await ProcessConfigurationRequest(curActionDO, dto => ConfigurationRequestType.Initial, authTokenDO);
         }
 
         public void Activate(ActionDO curActionDO)
@@ -47,14 +47,14 @@ namespace terminalDocuSign.Actions
             return; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(actionDO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(actionDO.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
 
             //Get envlopeId
             string envelopeId = GetEnvelopeId(processPayload);
@@ -63,7 +63,7 @@ namespace terminalDocuSign.Actions
                 throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
             }
 
-            var payload = CreateActionPayload(actionDO, envelopeId);
+            var payload = CreateActionPayload(actionDO,authTokenDO, envelopeId);
             var cratesList = new List<CrateDTO>()
             {
                 Crate.Create("DocuSign Envelope Data",
@@ -77,9 +77,9 @@ namespace terminalDocuSign.Actions
             return processPayload;
         }
 
-        public IList<FieldDTO> CreateActionPayload(ActionDO curActionDO, string curEnvelopeId)
+        public IList<FieldDTO> CreateActionPayload(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDO.AuthToken.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
             var docusignEnvelope = new DocuSignEnvelope(
                 docuSignAuthDTO.Email,
@@ -141,7 +141,7 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(
-                curActionDO.AuthToken.Token);
+                authTokenDO.Token);
 
             //get envelopeIdFromUpstreamActions
             var envelopeIdFromUpstreamActions = await Action.FindKeysByCrateManifestType(

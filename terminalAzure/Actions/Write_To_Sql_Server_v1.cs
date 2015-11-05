@@ -28,7 +28,7 @@ namespace terminalAzure.Actions
         //General Methods (every Action class has these)
 
         //maybe want to return the full Action here
-        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
             return await ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest, authTokenDO);
         }
@@ -70,11 +70,11 @@ namespace terminalAzure.Actions
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
-            if (curActionDO.CrateStorage == null)
+            if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDO.CrateStorage = "";
+                curActionDO.CrateStorageDTO().CrateDTO.Add(new CrateDTO());
             }
 
             var crateList = new List<CrateDTO>();
@@ -100,7 +100,7 @@ namespace terminalAzure.Actions
         }
 
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
             //In all followup calls, update data fields of the configuration store          
             List<String> contentsList = GetFieldMappings(curActionDO);

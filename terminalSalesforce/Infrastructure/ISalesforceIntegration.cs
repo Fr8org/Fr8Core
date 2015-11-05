@@ -12,8 +12,8 @@ namespace terminalSalesforce.Infrastructure
     {
         bool CreateLead(ActionDO actionDO, AuthorizationTokenDO authTokenDO);
 
-        bool CreateContact(ActionDO actionDTO);
+        bool CreateContact(ActionDO actionDTO, AuthorizationTokenDO authTokenDO);
 
-        bool CreateAccount(ActionDO actionDTO);
+        bool CreateAccount(ActionDO actionDTO, AuthorizationTokenDO authTokenDO);
     }
 }

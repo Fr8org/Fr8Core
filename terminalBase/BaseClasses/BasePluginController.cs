@@ -64,7 +64,7 @@ namespace TerminalBase.BaseClasses
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public object HandleFr8Request(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject=null)
+        public object HandleFr8Request(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
         {
             if (curActionDTO == null)
                 throw new ArgumentNullException("curActionDTO");
@@ -91,22 +91,33 @@ namespace TerminalBase.BaseClasses
             switch (curActionPath)
             {
                 case "Configure":
-                    response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                    return response;
+                    {
+                        Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                        ActionDTO resultActionDTO = Mapper.Map<ActionDTO>(resutlActionDO.Result);
+                        return Task.FromResult<ActionDTO>(resultActionDTO);
+                    }
                 case "Run":
-                    response = (Task<PayloadDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                    return response;
+                    {
+                        response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
+                        return response;
+                    }
                 case "InitialConfigurationResponse":
-                    response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                    return response;
+                    {
+                        Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                        ActionDTO resultActionDTO = Mapper.Map<ActionDTO>(resutlActionDO.Result);
+                        return Task.FromResult<ActionDTO>(resultActionDTO);
+                    }
                 case "FollowupConfigurationResponse":
-                    response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO, curContainerId });
-                    return response;
+                    {
+                        Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                        ActionDTO resultActionDTO = Mapper.Map<ActionDTO>(resutlActionDO.Result);
+                        return Task.FromResult<ActionDTO>(resultActionDTO);
+                    }
                 default:
                     response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
                     return response;
             }
-            
+
 
         }
     }

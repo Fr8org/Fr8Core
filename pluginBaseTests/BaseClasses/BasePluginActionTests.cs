@@ -48,13 +48,15 @@ namespace pluginBaseTests.BaseClasses
             //Arrange
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
             ConfigurationEvaluator curConfigurationEvaluator = EvaluateReceivedRequest;
-            object[] parameters = new object[] { curActionDTO, curConfigurationEvaluator };
+            AuthorizationTokenDO authTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            object[] parameters = new object[] { curActionDO, curConfigurationEvaluator, authTokenDO };
 
             //Act
-            var result = await (Task<ActionDTO>) ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActionDO>) ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
-            Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO.Count, result.CrateStorage.CrateDTO.Count);
+            Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO.Count, result.CrateStorageDTO().CrateDTO.Count);
         }
 
 
@@ -62,18 +64,18 @@ namespace pluginBaseTests.BaseClasses
         public async void ProcessConfigurationRequest_ConfigurationRequestTypeIsFollowUp_ReturnsExistingCrateStorage()
         {
             //Arrange
-            ActionDO curAction = FixtureData.TestConfigurationSettingsDTO1();
-            ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
+            ActionDO curActionDO = FixtureData.TestConfigurationSettingsDTO1();
+            ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
             ConfigurationEvaluator curConfigurationEvaluator = EvaluateReceivedRequest;
-
-            object[] parameters = new object[] { curActionDTO, curConfigurationEvaluator };
+            AuthorizationTokenDO curAuthTokenDO = null;
+            object[] parameters = new object[] { curActionDO, curConfigurationEvaluator, curAuthTokenDO };
 
             //Act
-            var result = await (Task<ActionDTO>)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActionDO>)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
-            Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO.Count, result.CrateStorage.CrateDTO.Count);
-            Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO[0].ManifestType, result.CrateStorage.CrateDTO[0].ManifestType);
+            Assert.AreEqual(curActionDO.CrateStorageDTO().CrateDTO.Count, result.CrateStorageDTO().CrateDTO.Count);
+            Assert.AreEqual(curActionDO.CrateStorageDTO().CrateDTO[0].ManifestType, result.CrateStorageDTO().CrateDTO[0].ManifestType);
 
         }
 

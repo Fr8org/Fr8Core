@@ -1,4 +1,5 @@
-﻿using Data.Interfaces.DataTransferObjects;
+﻿using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Salesforce.Force;
@@ -15,15 +16,15 @@ namespace terminalSalesforce.Infrastructure
     {
         ForceClient client;     
 
-        public async Task CreateAccount(ActionDTO currentActionDTO)
+        public async Task CreateAccount(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
             
             string instanceUrl, apiVersion;
-            ParseAuthToken(currentActionDTO.AuthToken.AdditionalAttributes, out instanceUrl, out apiVersion);
-            client = new ForceClient(instanceUrl, currentActionDTO.AuthToken.Token, apiVersion);
+            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
+            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
             AccountDTO account = new AccountDTO();
             var curFieldList =
-               JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(currentActionDTO.CrateStorage.CrateDTO.First(field => field.Contents.Contains("accountName")).Contents);
+               JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(actionDO.CrateStorageDTO().CrateDTO.First(field => field.Contents.Contains("accountName")).Contents);
             account.Name = curFieldList.Controls.First(x => x.Name == "accountName").Value;           
             account.AccountNumber = curFieldList.Controls.First(x => x.Name == "accountNumber").Value;
             account.Phone = curFieldList.Controls.First(x => x.Name == "phone").Value;

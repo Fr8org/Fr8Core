@@ -22,7 +22,7 @@ namespace terminalTwilio.Actions
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
 	    }
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
             return await ProcessConfigurationRequest(curActionDO, actionDO => ConfigurationRequestType.Initial, authTokenDO);
         }
@@ -39,11 +39,11 @@ namespace terminalTwilio.Actions
                 return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
             if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDO.UpdateCrateStorageDTO(new CrateStorageDTO().CrateDTO);
+                curActionDO.UpdateCrateStorageDTO(new List<CrateDTO>());
             }
             curActionDO.CrateStorageDTO().CrateDTO.Add(PackCrate_ConfigurationControls());
             curActionDO.CrateStorageDTO().CrateDTO.Add(GetAvailableDataFields(curActionDO));
@@ -135,7 +135,7 @@ namespace terminalTwilio.Actions
             return crateDTO;
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO,AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO,AuthorizationTokenDO authTokenDO=null)
         {
             //not currently any requirements that need attention at FollowupConfigurationResponse
             return await Task.FromResult<ActionDO>(curActionDO);

@@ -88,9 +88,9 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public async Task<ActionDO> Configure(ActionDO curActionDO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
         public ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
@@ -122,9 +122,9 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
-            if (curActionDO.CrateStorage == null)
+            if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDO.CrateStorage = "";
+                curActionDO.CrateStorageDTO().CrateDTO.Add(new CrateDTO()); 
             }
 
             curActionDO.CrateStorageDTO().CrateDTO.Add(PackControls(new ActionUi()));

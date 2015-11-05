@@ -15,6 +15,7 @@ using Hub.Managers;
 using terminalExcel.Actions;
 using terminalExcel.Fixtures;
 using terminalExcel.Infrastructure;
+using AutoMapper;
 
 namespace pluginIntegrationTests
 {
@@ -58,7 +59,7 @@ namespace pluginIntegrationTests
 
             var curActionDTO = new ActionDTO()
             {
-                ContainerIdId = 1,
+                ContainerId = 1,
                 ParentRouteNodeId = 1,
                 CrateStorage = new CrateStorageDTO()
                 {
@@ -73,8 +74,10 @@ namespace pluginIntegrationTests
                     },
                 },
             };
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
 
-            var result = await new Load_Table_Data_v1().Run(curActionDTO);
+            var result = await new Load_Table_Data_v1().Run(curActionDO,curActionDTO.ContainerId,curAuthTokenDO);
             var payloadCrates = crate.GetCratesByManifestType(CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, result.CrateStorageDTO());
             var payloadDataMS = JsonConvert.DeserializeObject<StandardPayloadDataCM>(payloadCrates.First().Contents);
 

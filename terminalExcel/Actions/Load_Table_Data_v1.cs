@@ -265,7 +265,7 @@ namespace terminalExcel.Actions
 
             CreatePayloadCrate_ExcelRows(curActionDO, fileAsByteArray, headersArray, ext);
 
-            return curActionDO;
+            return await Task.FromResult(curActionDO);
         }
 
         private void CreatePayloadCrate_ExcelRows(ActionDO curActionDO, byte[] fileAsByteArray, string[] headersArray, string extension)

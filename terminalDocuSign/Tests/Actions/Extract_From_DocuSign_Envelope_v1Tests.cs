@@ -44,17 +44,17 @@ namespace terminalDocuSign.Tests.Actions
                 ActionDO curAction = FixtureData.ConfigureTestAction57();
                 ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
                 curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
-
+                var authTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
                 Extract_From_DocuSign_Envelope_v1_Proxy curExtract_From_DocuSign_Envelope_v1_For_Testing = new Extract_From_DocuSign_Envelope_v1_Proxy();
 
                 //Act
-                var result = await curExtract_From_DocuSign_Envelope_v1_For_Testing.Configure(curActionDTO);
+                var result = await curExtract_From_DocuSign_Envelope_v1_For_Testing.Configure(curAction, authTokenDO);
 
                 //Assert
-                Assert.IsNotNull(result.CrateStorage);
-                Assert.AreEqual(2, result.CrateStorage.CrateDTO.Count);
-                Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
-                Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[1].ManifestType);
+                Assert.IsNotNull(result.CrateStorageDTO());
+                Assert.AreEqual(2, result.CrateStorageDTO().CrateDTO.Count);
+                Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, result.CrateStorageDTO().CrateDTO[0].ManifestType);
+                Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorageDTO().CrateDTO[1].ManifestType);
             }
         }
 
@@ -79,7 +79,8 @@ namespace terminalDocuSign.Tests.Actions
             //Arrange
             ActionDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
             curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
-            object[] parameters = new object[] { curActionDTO };
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            object[] parameters = new object[] { curActionDO };
 
             //Act
             var result = (List<FieldDTO>)ClassMethod.Invoke(typeof(Receive_DocuSign_Envelope_v1), "GetFields", parameters);
@@ -98,9 +99,10 @@ namespace terminalDocuSign.Tests.Actions
             //Arrange
             ActionDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
             curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
-
+            var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
             //Act
-            var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDTO, "8fcb42d3-1572-44eb-acb1-0fffa4ca65de");
+            var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDO, curAuthTokenDO, "8fcb42d3-1572-44eb-acb1-0fffa4ca65de");
 
             //Assert
             Assert.AreEqual(3, result.Count);

@@ -33,7 +33,7 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x));
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
         }
 
         public object Activate(ActionDO curActionDO)
@@ -147,9 +147,9 @@ namespace terminalDocuSign.Actions
             template.Login = new DocuSignPackager()
                 .Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
-            if (curActionDO.CrateStorage == null)
+            if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDO.CrateStorage = "";
+                curActionDO.CrateStorageDTO().CrateDTO.Add(new CrateDTO());
             }
 
             // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings

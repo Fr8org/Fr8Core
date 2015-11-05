@@ -17,7 +17,7 @@ namespace terminalSalesforce.Actions
     {
         ISalesforceIntegration _salesforce = new SalesforceIntegration();
 
-        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
@@ -101,7 +101,7 @@ namespace terminalSalesforce.Actions
             var controls = PackControlsCrate(firstNameCrate, lastNAme, company);
             curActionDO.CrateStorageDTO().CrateDTO.Add(controls);
 
-            return await Task.FromResult<ActionDO>(curActionDO);
+            return await Task.FromResult(curActionDO);
         }
     }
 }

@@ -19,6 +19,7 @@ using terminalTwilio.Actions;
 using terminalTwilio.Services;
 using terminalTwilio.Tests.Fixtures;
 using terminalTwilio.Tests;
+using Data.Entities;
 
 namespace terminalTwilio.Tests.Actions
 {
@@ -58,12 +59,11 @@ namespace terminalTwilio.Tests.Actions
         public void Configure_ReturnsCrateDTO()
         {
             _twilioAction = new Send_Via_Twilio_v1();
-            var action = FixtureData.ConfigureTwilioAction();
-            ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
-            
-            var actionResult =_twilioAction.Configure(curActionDTO).Result;
+            var curActionDO = FixtureData.ConfigureTwilioAction();;
+            AuthorizationTokenDO curAuthTokenDO = FixtureData.AuthTokenDOTest1();
+            var actionResult = _twilioAction.Configure(curActionDO, curAuthTokenDO).Result;
 
-            var controlsCrate = actionResult.CrateStorage.CrateDTO.FirstOrDefault();
+            var controlsCrate = actionResult.CrateStorageDTO().CrateDTO[0];
 
             Assert.IsNotNull(controlsCrate);
         }
@@ -72,12 +72,12 @@ namespace terminalTwilio.Tests.Actions
         public void Configure_ReturnsCrateDTOStandardConfigurationControlsMS()
         {
             _twilioAction = new Send_Via_Twilio_v1();
-            var action = FixtureData.ConfigureTwilioAction();
-            ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
+            var curActionDO = FixtureData.ConfigureTwilioAction();
+           // ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
+            var curAuthTokenD0 = FixtureData.AuthTokenDOTest1();
+            var actionResult = _twilioAction.Configure(curActionDO, curAuthTokenD0).Result;
 
-            var actionResult = _twilioAction.Configure(curActionDTO).Result;
-
-            var controlsCrate = actionResult.CrateStorage.CrateDTO.FirstOrDefault();
+            var controlsCrate = actionResult.CrateStorageDTO().CrateDTO.FirstOrDefault();
             var standardControls = _crate.GetStandardConfigurationControls(controlsCrate);
 
             Assert.IsNotNull(standardControls);
@@ -87,12 +87,12 @@ namespace terminalTwilio.Tests.Actions
         public void Configure_ReturnsSMSAndSMSBodyFields()
         {
             _twilioAction = new Send_Via_Twilio_v1();
-            var action = FixtureData.ConfigureTwilioAction();
-            ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
+            var curActionDO = FixtureData.ConfigureTwilioAction();
+            //ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
 
-            var actionResult = _twilioAction.Configure(curActionDTO).Result;
+            var actionResult = _twilioAction.Configure(curActionDO, null).Result;
 
-            var controlsCrate = actionResult.CrateStorage.CrateDTO.FirstOrDefault();
+            var controlsCrate = actionResult.CrateStorageDTO().CrateDTO.FirstOrDefault();
             var standardControls = _crate.GetStandardConfigurationControls(controlsCrate);
 
 

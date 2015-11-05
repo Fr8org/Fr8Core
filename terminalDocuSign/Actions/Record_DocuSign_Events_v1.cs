@@ -23,14 +23,14 @@ namespace terminalDocuSign.Actions
         /// </summary>
         /// <param name="curActionDTO"></param>
         /// <returns></returns>
-        public async Task<ActionDO> Configure(ActionDO curActionDO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(curActionDO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDO, dto => ConfigurationRequestType.Initial);
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationRequestType.Initial,authTokenDO);
         }
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
@@ -112,14 +112,14 @@ namespace terminalDocuSign.Actions
             return true;
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO,int containerId, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(actionDO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var curProcessPayload = await GetProcessPayload(actionDO.ProcessId);
+            var curProcessPayload = await GetProcessPayload(containerId);
 
             var curEventReport = JsonConvert.DeserializeObject<EventReportCM>(curProcessPayload.CrateStorageDTO().CrateDTO[0].Contents);
 

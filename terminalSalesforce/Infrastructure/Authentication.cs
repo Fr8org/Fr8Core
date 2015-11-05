@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Utilities.Configuration.Azure;
+using Data.Entities;
 
 namespace terminalSalesforce.Infrastructure
 {
@@ -112,16 +113,16 @@ namespace terminalSalesforce.Infrastructure
             return url;
         }
 
-        public async Task<ActionDTO> RefreshAccessToken(ActionDTO currentActionDTO)
+        public async Task<AuthorizationTokenDO> RefreshAccessToken(AuthorizationTokenDO curAuthTokenDO)
         {
             var auth = new AuthenticationClient();
-            string authAttributes = currentActionDTO.AuthToken.AdditionalAttributes;
+            string authAttributes = curAuthTokenDO.AdditionalAttributes;
             string refreshToken = authAttributes.Substring(authAttributes.IndexOf("refresh_token"), authAttributes.IndexOf("instance_url") - 1);
             refreshToken = refreshToken.Replace("refresh_token=", "");
             await auth.TokenRefreshAsync(salesforceConsumerKey, refreshToken);
-            currentActionDTO.AuthToken.Token = auth.AccessToken;
-            currentActionDTO.AuthToken.AdditionalAttributes = "refresh_token=" + auth.RefreshToken + ";instance_url=" + auth.InstanceUrl + ";api_version=" + auth.ApiVersion;            
-            return currentActionDTO;
+            curAuthTokenDO.Token = auth.AccessToken;
+            curAuthTokenDO.AdditionalAttributes = "refresh_token=" + auth.RefreshToken + ";instance_url=" + auth.InstanceUrl + ";api_version=" + auth.ApiVersion;
+            return curAuthTokenDO;
         }
     }
 }

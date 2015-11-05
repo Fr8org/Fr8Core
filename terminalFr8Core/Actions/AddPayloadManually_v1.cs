@@ -121,7 +121,7 @@ namespace terminalFr8Core.Actions
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (curActionDO.CrateStorage == null
+            if (curActionDO.CrateStorageDTO() == null
                 || curActionDO.CrateStorageDTO().CrateDTO == null
                 || curActionDO.CrateStorageDTO().CrateDTO.Count == 0)
             {

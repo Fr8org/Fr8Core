@@ -13,6 +13,8 @@ using terminalFr8Core.Actions;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces;
 using terminalFr8Core.Interfaces;
+using AutoMapper;
+using Data.Entities;
 
 namespace terminalFr8CoreTests.Actions
 {
@@ -44,21 +46,22 @@ namespace terminalFr8CoreTests.Actions
         [Test]
         public async void Evaluate_IsValidJSONResponse_For_InitialRequest()
         {
-            ActionDTO actionDTO = FixtureData.TestActionDTOSelectFr8ObjectInitial();
-         
-
-            var action = await select_Fr8_Object_v1.Configure(actionDTO);
+            ActionDTO curActionDTO = FixtureData.TestActionDTOSelectFr8ObjectInitial();
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
+            var action = await select_Fr8_Object_v1.Configure(curActionDO,curAuthTokenDO);
 
             Assert.NotNull(action);
-            Assert.AreEqual(2, actionDTO.CrateStorage.CrateDTO.Count);
+            Assert.AreEqual(2, curActionDO.CrateStorageDTO().CrateDTO.Count);
         }
 
         [Test]
         public async void Evaluate_IsValidJSONResponse_For_FollowupRequest_RouteSelected()
         {
-            ActionDTO actionDTO = FixtureData.TestActionDTOSelectFr8ObjectFollowup("19");
-           
-            var action = await select_Fr8_Object_v1.Configure(actionDTO);
+            ActionDTO curActionDTO = FixtureData.TestActionDTOSelectFr8ObjectFollowup("19");
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
+            var action = await select_Fr8_Object_v1.Configure(curActionDO, curAuthTokenDO);
 
             Assert.NotNull(action);
            // Assert.AreEqual(2, actionDTO.CrateStorage.CrateDTO.Count);
@@ -67,9 +70,10 @@ namespace terminalFr8CoreTests.Actions
         [Test]
         public async void Evaluate_IsValidJSONResponse_For_FollowupRequest_ContainerSelected()
         {
-            ActionDTO actionDTO = FixtureData.TestActionDTOSelectFr8ObjectFollowup("21");
-          
-            var action = await select_Fr8_Object_v1.Configure(actionDTO);
+            ActionDTO curActionDTO = FixtureData.TestActionDTOSelectFr8ObjectFollowup("21");
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
+            var action = await select_Fr8_Object_v1.Configure(curActionDO, curAuthTokenDO);
 
 
             Assert.NotNull(action);

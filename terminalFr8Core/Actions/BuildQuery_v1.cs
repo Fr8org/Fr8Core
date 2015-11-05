@@ -21,7 +21,7 @@ namespace terminalFr8Core.Actions
         public override ConfigurationRequestType ConfigurationEvaluator(
             ActionDO curActionDO)
         {
-            if (curActionDO.CrateStorage == null
+            if (curActionDO.CrateStorageDTO() == null
                 || curActionDO.CrateStorageDTO().CrateDTO == null
                 || curActionDO.CrateStorageDTO().CrateDTO.Count == 0)
             {
