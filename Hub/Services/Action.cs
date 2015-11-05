@@ -338,22 +338,18 @@ namespace Hub.Services
             return curActionDO;
         }
 
-        public async Task<ActionDTO> ConfigureOnTheFly(string userId, ActionDO curActionDO)
+        public async Task<ActionDTO> Configure(string userId, ActionDO curActionDO, bool saveResult = true)
         {
             curActionDO = await CallActionConfigure(userId, curActionDO);
-            return Mapper.Map<ActionDTO>(curActionDO);
-        }
-
-        public async Task<ActionDTO> Configure(string userId, ActionDO curActionDO)
-        {
-            curActionDO = await CallActionConfigure(userId, curActionDO);
-
-            //save the received action as quickly as possible
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            if (saveResult)
             {
-                curActionDO = SaveOrUpdateAction(uow, curActionDO);
-                return Mapper.Map<ActionDTO>(curActionDO);
+                //save the received action as quickly as possible
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    curActionDO = SaveOrUpdateAction(uow, curActionDO);
+                }
             }
+            return Mapper.Map<ActionDTO>(curActionDO);
         }
 
         public ActionDO MapFromDTO(ActionDTO curActionDTO)

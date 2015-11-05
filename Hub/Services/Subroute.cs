@@ -158,13 +158,19 @@ namespace Hub.Services
                 crateDTO.Label == "Validation Errors" && crateDTO.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
         }
 
+        /// <summary>
+        /// This function gets called on first time user tries to delete an action
+        /// which tries to validate all downstream actions and carries on deletion
+        /// if there are validation errors on downstream crates it cancels deletion and returns false
+        /// </summary>
+        /// <param name="userId">current user id</param>
+        /// <param name="actionId">action to delete</param>
+        /// <returns>isActionDeleted</returns>
         protected async Task<bool> ValidateDownstreamActionsAndDelete(string userId, int actionId)
         {
             var validationErrors = new List<CrateDTO>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //we should backup this action to see it's effect to downstream actions on deletion
-                //with asNoTracking we can keep a copy of curAction on memory
                 var curAction = await uow.ActionRepository.GetQuery().SingleAsync(a => a.Id == actionId);
                 var downstreamActions = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
 
@@ -180,21 +186,21 @@ namespace Hub.Services
                 var configureTaskList = new List<Task<ActionDTO>>();
                 foreach (var downstreamAction in downstreamActions)
                 {
-                    configureTaskList.Add(_action.ConfigureOnTheFly(userId, downstreamAction));
+                    configureTaskList.Add(_action.Configure(userId, downstreamAction, false));
                 }
 
                 await Task.WhenAll(configureTaskList);
 
-                //collect plugin responses
+                //collect terminal responses
                 //all tasks are completed by now
-                var pluginResponseList = configureTaskList.Select(t => t.Result);
+                var terminalResponseList = configureTaskList.Select(t => t.Result);
 
-                foreach (var pluginResponse in pluginResponseList)
+                foreach (var terminalResponse in terminalResponseList)
                 {
-                    var pluginValidationError = GetValidationErrors(pluginResponse.CrateStorage);
-                    if (pluginValidationError != null)
+                    var terminalValidationError = GetValidationErrors(terminalResponse.CrateStorage);
+                    if (terminalValidationError != null)
                     {
-                        validationErrors.Add(pluginValidationError);
+                        validationErrors.Add(terminalValidationError);
                     }
                 }
 

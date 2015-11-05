@@ -184,9 +184,9 @@ module dockyard.controllers {
             self.ActionService.deleteById({ id: action.id, confirmed: false }).$promise.then((response) => {
                 self.reloadProcessTemplate();
             }, (error) => {
-                debugger;
+                //TODO check error status while completing DO-1335
                 this.uiHelperService
-                    .openConfirmationModal('There will be validation errors when you delete this action and you will have to reconfigure all downstream actions. Are you sure?')
+                    .openConfirmationModal('Are you sure you want to delete this Action? You will have to reconfigure all downstream Actions.')
                     .then(() => {
                     self.ActionService.deleteById({ id: action.id, confirmed: true }).$promise.then(() => {
                         self.reloadProcessTemplate();
