@@ -56,16 +56,25 @@ namespace terminalDocuSign.Actions
             return createDesignTimeFields;
         }
 
-        private void GetTemplateRecipientPickerValue(ActionDTO curActionDTO, out string selectedOption,
-                                                     out string selectedValue)
+        private void GetTemplateRecipientPickerValue(ActionDTO curActionDTO, out string selectedOption, out string selectedValue)
         {
-            //get the option which is selected from the Template/Recipient picker
-            var pickedControl = Crate.GetStorage(curActionDTO).FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls")
-                .Content.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.Single(r => r.Selected);
-            
-            //set the output values
-            selectedOption = pickedControl.Name;
-            selectedValue = pickedControl.Controls[0].Value;
+            var controls = Crate.GetStorage(curActionDTO).FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls");
+
+            var group = controls.Content.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().FirstOrDefault();
+            if (group == null)
+            {
+                selectedOption = "template";
+                selectedValue = controls.Content.Controls.OfType<DropDownListControlDefinitionDTO>().First().Value;
+            }
+            else
+            {
+                //get the option which is selected from the Template/Recipient picker
+                var pickedControl = group.Radios.Single(r => r.Selected);
+
+                //set the output values
+                selectedOption = pickedControl.Name;
+                selectedValue = pickedControl.Controls[0].Value;
+            }
         }
 
         public object Activate(ActionDTO curDataPackage)
