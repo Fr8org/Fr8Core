@@ -61,7 +61,7 @@ namespace terminalDocuSign.Actions
         {
             //get the option which is selected from the Template/Recipient picker
             var pickedControl = Crate.GetStorage(curActionDTO).FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls")
-                .Value.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.Single(r => r.Selected);
+                .Content.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.Single(r => r.Selected);
             
             //set the output values
             selectedOption = pickedControl.Name;
@@ -118,7 +118,7 @@ namespace terminalDocuSign.Actions
                 {
                     case "template":
                         //filter the incoming envelope by template value selected by the user
-                        var curAvailableTemplates = Crate.GetStorage(curActionDTO).CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").Single().Value;
+                        var curAvailableTemplates = Crate.GetStorage(curActionDTO).CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").Single().Content;
 
                         //if the incoming enveloped is prepared using selected template, get the envelope ID
                         if (curAvailableTemplates.Fields.Single(field => field.Value.Equals(curSelectedValue)).Value.Equals(curSelectedValue))
@@ -166,7 +166,7 @@ namespace terminalDocuSign.Actions
 
         private string GetValueForKey(PayloadDTO curPayloadDTO, string curKey)
         {
-            var eventReportMS = Crate.GetStorage(curPayloadDTO).CrateValuesOfType<EventReportCM>().FirstOrDefault();
+            var eventReportMS = Crate.GetStorage(curPayloadDTO).CrateContentsOfType<EventReportCM>().FirstOrDefault();
 
             if (eventReportMS == null)
             {
@@ -180,7 +180,7 @@ namespace terminalDocuSign.Actions
                 return null;
             }
 
-            var fields = crate.Value.AllValues().ToArray();
+            var fields = crate.Content.AllValues().ToArray();
             if (fields == null || fields.Length == 0) return null;
 
             var envelopeIdField = fields.SingleOrDefault(f => f.Key == curKey);
@@ -233,7 +233,7 @@ namespace terminalDocuSign.Actions
         {
             //get the config controls manifest
 
-            var curConfigControlsCrate = storage.CrateValuesOfType<StandardConfigurationControlsCM>().First();
+            var curConfigControlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
 
             //get selected check boxes (i.e. user wanted to subscribe these DocuSign events to monitor for)
             var curSelectedDocuSignEvents =

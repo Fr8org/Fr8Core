@@ -41,7 +41,7 @@ namespace terminalFr8Core.Actions
                 throw new ApplicationException("No control found with Type == \"filterPane\"");
             }
 
-            var valuesCrates = Crate.GetStorage(curPayloadDTO.CrateStorage).CrateValuesOfType<StandardPayloadDataCM>();
+            var valuesCrates = Crate.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>();
             var curValues = new List<FieldDTO>();
 
             foreach (var valuesCrate in valuesCrates)
@@ -316,7 +316,7 @@ namespace terminalFr8Core.Actions
                     break;
             }
 
-            return Crate.GetStorage(curActionDataPackageDTO.CrateStorage).Crates.FirstOrDefault(x =>
+            return Crate.FromDto(curActionDataPackageDTO.CrateStorage).FirstOrDefault(x =>
                 x.ManifestType.Type == curManifestType
                 && x.Label == curLabel);
 

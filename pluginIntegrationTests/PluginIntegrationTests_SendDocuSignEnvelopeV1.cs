@@ -66,7 +66,7 @@ namespace pluginIntegrationTests
 		{
 			// Fill values as it would be on front-end.
 			curActionDTO.ActivityTemplateId = _sendDocuSignEnvelopeActivityTemplate.Id;
-		    curActionDTO.CrateStorage = _crateManager.EmptyStorageAsJtoken();
+		    curActionDTO.CrateStorage = new CrateStorageDTO();
 
 			// Send initial configure request.
 			var curActionController = CreateActionController();
@@ -92,13 +92,13 @@ namespace pluginIntegrationTests
 			// Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
             var availableTemplatesCrateDTO = curCrateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(x => x.Label == "Available Templates");
 
-		    var fieldsMS = availableTemplatesCrateDTO.Value;
+		    var fieldsMS = availableTemplatesCrateDTO.Content;
 
 			// Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
 
             var configurationControlsCrateDTO = curCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single(x => x.Label == "Configuration_Controls");
 
-            var controlsMS = configurationControlsCrateDTO.Value;
+            var controlsMS = configurationControlsCrateDTO.Content;
 
 			// Modify value of Selected_DocuSign_Template field and push it back to crate,
 			// exact same way we do on front-end.

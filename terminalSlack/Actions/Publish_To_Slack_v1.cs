@@ -69,12 +69,12 @@ namespace terminalSlack.Actions
 
         private List<FieldDTO> ExtractPayloadFields(PayloadDTO processPayload)
         {
-            var payloadDataCrates = Crate.GetStorage(processPayload.CrateStorage).CratesOfType<StandardPayloadDataCM>();
+            var payloadDataCrates = Crate.FromDto(processPayload.CrateStorage).CratesOfType<StandardPayloadDataCM>();
 
             var result = new List<FieldDTO>();
             foreach (var payloadDataCrate in payloadDataCrates)
             {
-                result.AddRange(payloadDataCrate.Value.AllValues());
+                result.AddRange(payloadDataCrate.Content.AllValues());
             }
 
             return result;
@@ -112,6 +112,7 @@ namespace terminalSlack.Actions
 
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
+                updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(crateControls);
                 updater.CrateStorage.Add(crateAvailableChannels);
                 updater.CrateStorage.Add(crateAvailableFields);

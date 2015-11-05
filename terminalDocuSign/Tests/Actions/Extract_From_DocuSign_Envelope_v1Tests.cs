@@ -135,7 +135,7 @@ namespace terminalDocuSign.Tests.Actions
 
                 foreach (var curAction in upstreamActions)
                 {
-                    curCrates.AddRange(Crate.GetStorage(curAction.CrateStorage).Where(x=>x.ManifestType.Type == manifestType).ToList());
+                    curCrates.AddRange(Crate.FromDto(curAction.CrateStorage).Where(x=>x.ManifestType.Type == manifestType).ToList());
                 }
 
                 return await Task.FromResult(curCrates);

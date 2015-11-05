@@ -34,7 +34,7 @@ namespace pluginBaseTests.Infrastructure
             //verify that the post call is made to Fr8 Event Controller
             restClientMock.Verify(
                 client => client.PostAsync(new Uri(CloudConfigurationManager.GetSetting("EventWebServerUrl"), UriKind.Absolute), 
-                    It.IsAny<CrateSerializationProxy>()), Times.Exactly(1));
+                    It.IsAny<CrateDTO>()), Times.Exactly(1));
 
             restClientMock.VerifyAll();
         }

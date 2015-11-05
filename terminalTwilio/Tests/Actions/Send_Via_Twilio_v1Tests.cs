@@ -63,7 +63,7 @@ namespace terminalTwilio.Tests.Actions
             
             var actionResult =_twilioAction.Configure(curActionDTO).Result;
 
-            var controlsCrate =  _crate.GetStorage(actionResult.CrateStorage).FirstOrDefault();
+            var controlsCrate =  _crate.FromDto(actionResult.CrateStorage).FirstOrDefault();
 
             Assert.IsNotNull(controlsCrate);
         }
@@ -77,7 +77,7 @@ namespace terminalTwilio.Tests.Actions
 
             var actionResult = _twilioAction.Configure(curActionDTO).Result;
 
-            var controlsCrate = _crate.GetStorage(actionResult.CrateStorage).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsCrate = _crate.FromDto(actionResult.CrateStorage).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             Assert.IsNotNull(controlsCrate);
         }
@@ -91,7 +91,7 @@ namespace terminalTwilio.Tests.Actions
 
             var actionResult = _twilioAction.Configure(curActionDTO).Result;
 
-            var standardControls = _crate.GetStorage(actionResult.CrateStorage).CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var standardControls = _crate.FromDto(actionResult.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var smsNumberTextField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "SMS_Number").Count();
             var smsNumberUpstreamField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "upstream_crate").Count();
             var smsBodyFields = standardControls.FindByName("SMS_Body");

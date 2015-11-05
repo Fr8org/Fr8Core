@@ -27,13 +27,13 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Route("dockyard_events")]
-        public async Task<IHttpActionResult> ProcessDockyardEvents(CrateSerializationProxy raw)
+        public async Task<IHttpActionResult> ProcessDockyardEvents(CrateDTO raw)
         {
             //check if its not null
             if (raw == null)
                 throw new ArgumentNullException("Parameter Standard Event Report is null.");
 
-            var curCrateStandardEventReport = _crate.Deserialize(raw);
+            var curCrateStandardEventReport = _crate.FromDto(raw);
 
             //check if Standard Event Report inside CrateDTO
             if (curCrateStandardEventReport.ManifestType.Type != null && !curCrateStandardEventReport.ManifestType.Type.Equals("Standard Event Report", StringComparison.OrdinalIgnoreCase))

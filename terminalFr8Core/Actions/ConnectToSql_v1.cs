@@ -39,6 +39,7 @@ namespace terminalFr8Core.Actions
 
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
+                updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
             }
 
@@ -110,7 +111,7 @@ namespace terminalFr8Core.Actions
 
         private string ExtractConnectionString(ActionDTO curActionDTO)
         {
-            var configControls = Crate.GetStorage(curActionDTO).CrateValuesOfType<StandardConfigurationControlsCM>().First();
+            var configControls = Crate.GetStorage(curActionDTO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
             var connectionStringControl = configControls.FindByName("ConnectionString");
 
             return connectionStringControl.Value;

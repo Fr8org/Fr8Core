@@ -249,7 +249,7 @@ namespace pluginIntegrationTests
             // Fill values as it would be on front-end.
             curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(_waitForDocuSignEventActivityTemplate);
             curActionDTO.ActivityTemplateId = _waitForDocuSignEventActivityTemplate.Id;
-            curActionDTO.CrateStorage = _crateManager.EmptyStorageAsJtoken();
+            curActionDTO.CrateStorage = new CrateStorageDTO();
 
             // Send initial configure request.
             var curActionController = CreateActionController();
@@ -290,11 +290,11 @@ namespace pluginIntegrationTests
             // Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
             var availableTemplatesCrate = curCrateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(x => x.Label == "Available Templates");
 
-            var fieldsMS = availableTemplatesCrate.Value;
+            var fieldsMS = availableTemplatesCrate.Content;
 
             // Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
             var configurationControlsCrate = curCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single(x => x.Label == "Configuration_Controls");
-            var controlsMS = configurationControlsCrate.Value;
+            var controlsMS = configurationControlsCrate.Content;
             
             controlsMS.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.ForEach(r => r.Selected = false);
 
@@ -333,7 +333,7 @@ namespace pluginIntegrationTests
         {
             // Fill values as it would be on front-end.
             curActionDTO.ActivityTemplateId = _filterUsingRunTimeDataActivityTemplate.Id;
-            curActionDTO.CrateStorage = _crateManager.EmptyStorageAsJtoken();
+            curActionDTO.CrateStorage = new CrateStorageDTO();
 
             // Send initial configure request.
             var curActionController = CreateActionController();
@@ -356,7 +356,7 @@ namespace pluginIntegrationTests
         {
             curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(_writeToSqlServerActivityTemplate);
             curActionDTO.ActivityTemplateId = _writeToSqlServerActivityTemplate.Id;
-            curActionDTO.CrateStorage = _crateManager.EmptyStorageAsJtoken();
+            curActionDTO.CrateStorage = new CrateStorageDTO();
             
             var curActionController = CreateActionController();
             var result = await curActionController.Configure(curActionDTO) as OkNegotiatedContentResult<ActionDTO>;
@@ -375,7 +375,7 @@ namespace pluginIntegrationTests
 
         private void WriteToSqlServer_InputConnectionString(CrateStorage curCrateStorage)
         {
-            var controlsMS =curCrateStorage.CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS =curCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             // Modify value of Selected_DocuSign_Template field and push it back to crate,
             // exact same way we do on front-end.

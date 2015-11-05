@@ -70,7 +70,7 @@ namespace pluginIntegrationTests
             var result = await new Load_Table_Data_v1().Run(curActionDTO);
 
             var payloadCrates = _crateManager.GetStorage(result).CratesOfType<StandardPayloadDataCM>();
-            var payloadDataMS = payloadCrates.First().Value;
+            var payloadDataMS = payloadCrates.First().Content;
 
             Assert.IsNotNull(result.CrateStorage);
             Assert.IsNotNull(payloadCrates);

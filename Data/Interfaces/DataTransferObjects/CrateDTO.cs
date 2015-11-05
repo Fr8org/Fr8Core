@@ -1,33 +1,33 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-//    public class CrateDTO
-//    {
-//        public CrateDTO()
-//        {
-//            this.CreateTime = DateTime.Now;
-//        }
-//
-//        public string Id { get; set; }
-//
-//        public string Label { get; set; }
-//
-//        public string Contents { get; set; }
-//
-//        public string ParentCrateId { get; set; }
-//
-//        public string ManifestType { get; set; }
-//
-//        public int ManifestId { get; set; }
-//
-//        public ManufacturerDTO Manufacturer { get; set; }
-//
-//        public DateTime CreateTime { get; set; }
-//    }
+    public class CrateDTO
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("label")]
+        public string Label { get; set; }
+
+        [JsonProperty("contents")]
+        public JToken Contents { get; set; }
+
+        [JsonProperty("parentCrateId")]
+        public string ParentCrateId { get; set; }
+
+        [JsonProperty("manifestType")]
+        public string ManifestType { get; set; }
+
+        [JsonProperty("manifestId")]
+        public int ManifestId { get; set; }
+
+        [JsonProperty("manufacturer")]
+        public ManufacturerDTO Manufacturer { get; set; }
+
+        [JsonProperty("createTime")]
+        public DateTime CreateTime { get; set; }
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using Data.Constants;
 using Data.Crates;
+using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.Manifests
@@ -10,9 +11,7 @@ namespace Data.Interfaces.Manifests
         public string EventNames { get; set; }
         public string ContainerDoId { get; set; }
         public string ExternalAccountId { get; set; }
-        //public List<CrateDTO> EventPayload { get; set; }
         public CrateStorage EventPayload { get; set; }
-
 
         public string Source { get; set; }
 
@@ -32,7 +31,7 @@ namespace Data.Interfaces.Manifests
             public string EventNames { get; set; }
             public string ContainerDoId { get; set; }
             public string ExternalAccountId { get; set; }
-            public JToken EventPayload { get; set; }
+            public CrateStorageDTO EventPayload { get; set; }
             public string Source { get; set; }
         }
 
@@ -46,7 +45,7 @@ namespace Data.Interfaces.Manifests
         public object Deserialize(JToken crateContent)
         {
             var proxy = crateContent.ToObject<EventReportCMSerializationProxy>();
-            var storage = _storageSerizlier.Load(proxy.EventPayload);
+            var storage = _storageSerizlier.ConvertFromProxy(proxy.EventPayload);
 
             return new EventReportCM
             {
@@ -68,7 +67,7 @@ namespace Data.Interfaces.Manifests
                 ContainerDoId = e.ContainerDoId,
                 ExternalAccountId = e.ExternalAccountId,
                 Source = e.EventNames,
-                EventPayload = _storageSerizlier.SaveToJson(e.EventPayload)
+                EventPayload = _storageSerizlier.ConvertToProxy(e.EventPayload)
             };
 
             return JToken.FromObject(proxy);

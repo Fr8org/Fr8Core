@@ -21,7 +21,7 @@ namespace terminalFr8Core.Actions
         {
             var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
 
-            var controlsMS = Crate.GetStorage(curActionDTO.CrateStorage).CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = Crate.FromDto(curActionDTO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {
@@ -78,7 +78,7 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            var controlsMS = Crate.GetStorage(curActionDTO.CrateStorage).CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = Crate.FromDto(curActionDTO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {

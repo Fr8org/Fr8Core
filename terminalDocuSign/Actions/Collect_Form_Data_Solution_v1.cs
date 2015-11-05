@@ -129,6 +129,7 @@ namespace terminalDocuSign.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
+                updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
                 updater.CrateStorage.AddRange(await PackSources());
             }
@@ -140,7 +141,7 @@ namespace terminalDocuSign.Actions
         {
             var controls = new ActionUi();
             
-            controls.ClonePropertiesFrom(Crate.GetStorage(curActionDTO).CrateValuesOfType<StandardConfigurationControlsCM>().First());
+            controls.ClonePropertiesFrom(Crate.GetStorage(curActionDTO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
             
             var action = Mapper.Map<ActionDO>(curActionDTO);
 

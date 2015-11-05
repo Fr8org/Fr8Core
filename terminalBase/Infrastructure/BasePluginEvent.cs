@@ -46,7 +46,7 @@ namespace TerminalBase.Infrastructure
             var restClient = PrepareRestClient();
             const string eventWebServerUrl = "EventWebServerUrl";
             string url = CloudConfigurationManager.GetSetting(eventWebServerUrl);
-            var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingData
+            var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
             {
                 ObjectId = pluginName,
                 CustomerId = "not_applicable",
@@ -58,7 +58,7 @@ namespace TerminalBase.Infrastructure
             //TODO inpect this
             //I am not sure what to supply for parameters eventName and palletId, so i passed pluginName and eventType
             return restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                _crateManager.SerializeToProxy(_eventReportCrateFactory.Create(eventType, pluginName, loggingDataCrate)));
+                _crateManager.ToDto(_eventReportCrateFactory.Create(eventType, pluginName, loggingDataCrate)));
 
         }
 
@@ -77,7 +77,7 @@ namespace TerminalBase.Infrastructure
             string url = CloudConfigurationManager.GetSetting(eventWebServerUrl);
 
             //create event logging data with required information
-            var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingData
+            var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
             {
                 ObjectId = pluginName,
                 CustomerId = "",
@@ -89,7 +89,7 @@ namespace TerminalBase.Infrastructure
 
             //return the response from the fr8's Event Controller
             return restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                _crateManager.SerializeToProxy(_eventReportCrateFactory.Create("Plugin Incident", pluginName, loggingDataCrate)));
+                _crateManager.ToDto(_eventReportCrateFactory.Create("Plugin Incident", pluginName, loggingDataCrate)));
         }
 
         /// <summary>

@@ -31,7 +31,7 @@ namespace HubWeb.Controllers
             var crate = _manifest.GetById(id);
             if (crate != null)
             {
-                return Ok(_crateManager.SerializeToProxy(crate));
+                return Ok(_crateManager.ToDto(crate));
             }
             return Ok();
         }

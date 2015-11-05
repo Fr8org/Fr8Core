@@ -587,7 +587,7 @@ namespace DockyardTest.Services
                 pluginClientMock.Setup(s => s.CallActionAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>()))
                                 .Returns(Task.FromResult(new PayloadDTO(containerDO.Id)
                                 {
-                                    CrateStorage = JsonConvert.DeserializeObject<JToken>(actionDo.CrateStorage)
+                                    CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(actionDo.CrateStorage)
                                 }));
                 ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
 

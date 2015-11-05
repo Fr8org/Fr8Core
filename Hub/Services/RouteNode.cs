@@ -316,7 +316,7 @@ namespace Hub.Services
 
                 foreach (var curAction in curActions)
                 {
-                    var storage = _crate.GetStorage(curAction.CrateStorage);
+                    var storage = _crate.FromDto(curAction.CrateStorage);
 
                     curCrates.AddRange(storage.CratesOfType<T>());
                 }
@@ -348,9 +348,9 @@ namespace Hub.Services
 
                 foreach (var curAction in curActions)
                 {
-                    var storage = _crate.GetStorage(curAction.CrateStorage);
+                    var storage = _crate.FromDto(curAction.CrateStorage);
 
-                    curCrates.AddRange(storage.Crates.Where(x => x.ManifestType.Type == manifestType));
+                    curCrates.AddRange(storage.Where(x => x.ManifestType.Type == manifestType));
                 }
 
                 return curCrates;

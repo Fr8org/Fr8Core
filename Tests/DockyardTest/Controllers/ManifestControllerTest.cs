@@ -68,7 +68,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 19;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
 
             var fieldsList = Deserialize(actionResult);
             ////Assert
@@ -90,7 +90,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 20;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
 
             var fieldsList = Deserialize(actionResult);
             ////Assert
@@ -109,7 +109,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 21;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
 
             var fieldsList = Deserialize(actionResult);
             ////Assert
@@ -128,7 +128,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 22;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -149,7 +149,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 23;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -166,7 +166,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 17;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -182,7 +182,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 18;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -205,7 +205,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 13;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -219,7 +219,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 16;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -234,7 +234,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 14;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -255,7 +255,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 15;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -274,7 +274,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 7;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -290,7 +290,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 8;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -305,7 +305,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 6;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -320,7 +320,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 10;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -337,7 +337,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 5;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -353,7 +353,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 11;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -371,7 +371,7 @@ namespace DockyardTest.Controllers
 
             //Act
             int id = 9;
-            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateSerializationProxy>;
+            var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
@@ -379,9 +379,9 @@ namespace DockyardTest.Controllers
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("FirstRowHeaders")), "FirstRowHeaders Not Found");
         }
 
-        private static StandardDesignTimeFieldsCM Deserialize(OkNegotiatedContentResult<CrateSerializationProxy> actionResult)
+        private static StandardDesignTimeFieldsCM Deserialize(OkNegotiatedContentResult<CrateDTO> actionResult)
         {
-            var crate = ObjectFactory.GetInstance<ICrateManager>().Deserialize(actionResult.Content);
+            var crate = ObjectFactory.GetInstance<ICrateManager>().FromDto(actionResult.Content);
 
             return crate.Get<StandardDesignTimeFieldsCM>();
         }

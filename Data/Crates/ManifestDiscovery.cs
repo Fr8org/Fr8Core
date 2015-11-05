@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Data.Interfaces.Manifests;
 
 namespace Data.Crates
 {
@@ -30,15 +31,15 @@ namespace Data.Crates
 
         public void ConfigureInitial()
         {
-            var manifest = typeof(Interfaces.Manifests.Manifest);
+            var manifest = typeof(Manifest);
 
             foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(x => manifest.IsAssignableFrom(x) || x.GetCustomAttribute<CrateManifestAttribute>() != null))
             {
-                if (type.IsAbstract)
+                if (type.IsAbstract || type == manifest)
                 {
                     continue;
                 }
-
+                
                 RegisterManifest(type);
             }
         }

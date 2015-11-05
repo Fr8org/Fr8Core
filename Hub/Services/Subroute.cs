@@ -170,7 +170,7 @@ namespace Hub.Services
 
                     using (var updater = _crate.UpdateStorage(() => currentActivity.CrateStorage))
                     {
-                        foreach (var configurationControls in updater.CrateStorage.CrateValuesOfType<StandardConfigurationControlsCM>())
+                        foreach (var configurationControls in updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
                     {
                             foreach (IResettable resettable in configurationControls.Controls)
                         {

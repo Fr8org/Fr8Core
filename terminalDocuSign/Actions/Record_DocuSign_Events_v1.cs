@@ -124,13 +124,13 @@ namespace terminalDocuSign.Actions
 
             var curProcessPayload = await GetProcessPayload(actionDto.ProcessId);
 
-            var curEventReport = Crate.GetStorage(curProcessPayload).CrateValuesOfType<EventReportCM>().First();
+            var curEventReport = Crate.GetStorage(curProcessPayload).CrateContentsOfType<EventReportCM>().First();
 
             if (curEventReport.EventNames.Contains("Envelope"))
             {
                 using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                   var  docuSignFields = curEventReport.EventPayload.CrateValuesOfType<StandardPayloadDataCM>().First().AllValues().ToArray();
+                   var  docuSignFields = curEventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().First().AllValues().ToArray();
 
                     DocuSignEnvelopeCM envelope = new DocuSignEnvelopeCM
                     {

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Data.Crates;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Data.Interfaces.DataTransferObjects;
 
-namespace Hub.Managers.Crates
+namespace Data.Crates
 {
     public partial class CrateStorageSerializer : ICrateStorageSerializer
     {
@@ -84,32 +82,11 @@ namespace Hub.Managers.Crates
 
         /**********************************************************************************/
 
-        public CrateStorage Load(JToken serializedStorage)
-        {
-            if (serializedStorage == null)
-            {
-                return new CrateStorage();
-            }
-
-            return Load(serializedStorage.ToObject<CrateStorageSerializationProxy>());
-        }
-
-        /**********************************************************************************/
-
-        public CrateStorage Load(string serializedStorage)
-        {
-            var rawStorage = JsonConvert.DeserializeObject<CrateStorageSerializationProxy>(serializedStorage);
-            return Load(rawStorage);
-        }
-
-
-        /**********************************************************************************/
-
-        private CrateStorage Load(CrateStorageSerializationProxy rawStorage)
+        public CrateStorage ConvertFromProxy(CrateStorageDTO rawStorage)
         {
             var storage = new CrateStorage();
 
-            if (rawStorage.Crates != null)
+            if (rawStorage != null && rawStorage.Crates != null)
             {
                 foreach (var crateDto in rawStorage.Crates)
                 {
@@ -122,16 +99,19 @@ namespace Hub.Managers.Crates
 
         /**********************************************************************************/
 
-        private CrateStorageSerializationProxy ConvertToProxy(CrateStorage storage)
+        public CrateStorageDTO ConvertToProxy(CrateStorage storage)
         {
-            var storageSerializationProxy = new CrateStorageSerializationProxy
+            var storageSerializationProxy = new CrateStorageDTO
             {
-                Crates = new List<CrateSerializationProxy>()
+                Crates = new CrateDTO[storage.Count]
             };
+
+            int id = 0;
 
             foreach (var crate in storage)
             {
-                storageSerializationProxy.Crates.Add(ConvertToProxy(crate));
+                storageSerializationProxy.Crates[id] = ConvertToProxy(crate);
+                id ++;
             }
 
             return storageSerializationProxy;
@@ -139,7 +119,7 @@ namespace Hub.Managers.Crates
 
         /**********************************************************************************/
 
-        private Crate ConvertFromProxy(CrateSerializationProxy proxy)
+        public Crate ConvertFromProxy(CrateDTO proxy)
         {
             var manifestType = new CrateManifestType(proxy.ManifestType, proxy.ManifestId);
             IManifestSerializer serializer = GetSerializer(manifestType);
@@ -168,10 +148,10 @@ namespace Hub.Managers.Crates
 
         /**********************************************************************************/
 
-        private CrateSerializationProxy ConvertToProxy(Crate crate)
+        public CrateDTO ConvertToProxy(Crate crate)
         {
             IManifestSerializer serializer = GetSerializer(crate.ManifestType);
-            CrateSerializationProxy crateSerializationProxy = new CrateSerializationProxy
+            CrateDTO crateDto = new CrateDTO
             {
                 Id = crate.Id,
                 Label = crate.Label,
@@ -181,65 +161,14 @@ namespace Hub.Managers.Crates
 
             if (serializer != null)
             {
-                crateSerializationProxy.Contents = serializer.Serialize(crate.Get<object>());
+                crateDto.Contents = serializer.Serialize(crate.Get<object>());
             }
             else
             {
-                crateSerializationProxy.Contents = crate.GetRaw();
+                crateDto.Contents = crate.GetRaw();
             }
 
-            return crateSerializationProxy;
-        }
-
-        /**********************************************************************************/
-
-        public JToken SaveToJson(Crate crate)
-        {
-            return JToken.FromObject(ConvertToProxy(crate));
-        }
-
-        /**********************************************************************************/
-
-        public CrateSerializationProxy SaveToProxy(Crate crate)
-        {
-            return ConvertToProxy(crate);
-        }
-        
-        /**********************************************************************************/
-
-        public string SaveToString(Crate crate)
-        {
-            return JsonConvert.SerializeObject(ConvertToProxy(crate));
-        }
-
-        /**********************************************************************************/
-
-        public Crate LoadCrate(string crate)
-        {
-            return ConvertFromProxy(JsonConvert.DeserializeObject<CrateSerializationProxy>(crate));
-        }
-
-        /**********************************************************************************/
-
-        public Crate LoadCrate(CrateSerializationProxy crate)
-        {
-            return ConvertFromProxy(crate);
-        }
-
-        /**********************************************************************************/
-
-        public string SaveToString(CrateStorage storage)
-        {
-            var storageSerializationProxy = ConvertToProxy(storage);
-            return JsonConvert.SerializeObject(storageSerializationProxy, Formatting.Indented);
-        }
-
-        /**********************************************************************************/
-
-        public JToken SaveToJson(CrateStorage storage)
-        {
-            var storageSerializationProxy = ConvertToProxy(storage);
-            return JToken.FromObject(storageSerializationProxy);
+            return crateDto;
         }
 
         /**********************************************************************************/

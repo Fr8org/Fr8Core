@@ -58,7 +58,7 @@ namespace terminalSlack.Actions
 
         private List<FieldDTO> ExtractPayloadFields(PayloadDTO processPayload)
         {
-            var eventReportMS = Crate.GetStorage(processPayload).CrateValuesOfType<EventReportCM>().SingleOrDefault();
+            var eventReportMS = Crate.GetStorage(processPayload).CrateContentsOfType<EventReportCM>().SingleOrDefault();
             if (eventReportMS == null)
             {
                 throw new ApplicationException("EventReportCrate is empty.");
@@ -70,7 +70,7 @@ namespace terminalSlack.Actions
                 throw new ApplicationException("EventReportMS.EventPayload is empty.");
             }
 
-            return eventReportMS.EventPayload.CrateValuesOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
+            return eventReportMS.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
@@ -105,6 +105,7 @@ namespace terminalSlack.Actions
 
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
+                updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(crateControls);
                 updater.CrateStorage.Add(crateDesignTimeFields);
                 updater.CrateStorage.Add(crateAvailableChannels);

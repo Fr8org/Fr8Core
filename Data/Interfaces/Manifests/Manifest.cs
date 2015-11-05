@@ -1,22 +1,17 @@
 ﻿using Data.Constants;
-using Data.Interfaces.DataTransferObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Utilities;
 
 namespace Data.Interfaces.Manifests
 {
-    public class Manifest
+    public abstract class Manifest
     {
         public MT ManifestType { get; private set; }
+      
         public int ManifestId
         {
             get { return (int)ManifestType; }
         }
+
         public string ManifestName
         {
             get
@@ -30,11 +25,7 @@ namespace Data.Interfaces.Manifests
             }
         }
 
-        public Manifest()
-        {
-        }
-
-        public Manifest(MT manifestType)
+        protected Manifest(MT manifestType)
         {
             ManifestType = manifestType;
         }

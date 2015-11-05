@@ -36,7 +36,7 @@ namespace terminalSalesforce.Infrastructure
 
             var storage = _crateManager.GetStorage(currentActionDTO);
 
-            var curFieldList = storage.CrateValuesOfType<StandardConfigurationControlsCM>().First();
+            var curFieldList = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
 
             lead.FirstName = curFieldList.Controls.First(x => x.Name == "firstName").Value;
             lead.LastName = curFieldList.Controls.First(x => x.Name == "lastName").Value;

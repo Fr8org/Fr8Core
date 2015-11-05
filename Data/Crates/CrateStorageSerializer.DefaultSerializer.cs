@@ -1,9 +1,8 @@
 ﻿using System;
-using Data.Crates;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Hub.Managers.Crates
+namespace Data.Crates
 {
     partial class CrateStorageSerializer
     {

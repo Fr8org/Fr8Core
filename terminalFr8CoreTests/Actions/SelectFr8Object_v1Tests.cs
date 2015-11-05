@@ -52,7 +52,7 @@ namespace terminalFr8CoreTests.Actions
             var action = await select_Fr8_Object_v1.Configure(actionDTO);
 
             Assert.NotNull(action);
-            Assert.AreEqual(2, ObjectFactory.GetInstance<ICrateManager>().GetStorage(action.CrateStorage).Count);
+            Assert.AreEqual(2, ObjectFactory.GetInstance<ICrateManager>().FromDto(action.CrateStorage).Count);
         }
 
         [Test]

@@ -44,6 +44,7 @@ namespace terminalTwilio.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
+                updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackCrate_ConfigurationControls());
                 updater.CrateStorage.Add(GetAvailableDataFields(curActionDTO));
             }

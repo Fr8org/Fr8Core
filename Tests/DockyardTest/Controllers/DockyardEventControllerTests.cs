@@ -42,7 +42,7 @@ namespace DockyardTest.Controllers
         public async Task dockyard_events_NotStandardEventReport_ThrowsException()
         {
             var dockyardEventController = new DockyardEventController();
-            var crateDTO = new CrateSerializationProxy();
+            var crateDTO = new CrateDTO();
 
 
             await dockyardEventController.ProcessDockyardEvents(crateDTO);

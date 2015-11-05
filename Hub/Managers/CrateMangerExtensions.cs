@@ -1,6 +1,7 @@
 ﻿using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 
 namespace Hub.Managers
 {
@@ -23,16 +24,27 @@ namespace Hub.Managers
 
         public static CrateStorage GetStorage(this ICrateManager crateManger, ActionDO action)
         {
-            return crateManger.GetStorage(action.CrateStorage);
+           return GetStorage(crateManger, action.CrateStorage);
         }
+
+        public static CrateStorage GetStorage(this ICrateManager crateManger, string crateStorageRaw)
+        {
+            if (string.IsNullOrWhiteSpace(crateStorageRaw))
+            {
+                return new CrateStorage();
+            }
+
+            return crateManger.FromDto(JsonConvert.DeserializeObject<CrateStorageDTO>(crateStorageRaw));
+        }
+
         public static CrateStorage GetStorage(this ICrateManager crateManger, ActionDTO action)
         {
-            return crateManger.GetStorage(action.CrateStorage);
+            return crateManger.FromDto(action.CrateStorage);
         }
 
         public static CrateStorage GetStorage(this ICrateManager crateManger, PayloadDTO payload)
         {
-            return crateManger.GetStorage(payload.CrateStorage);
+            return crateManger.FromDto(payload.CrateStorage);
         }
 
         public static bool IsStorageEmpty(this ICrateManager crateManager, ActionDTO action)
@@ -42,7 +54,19 @@ namespace Hub.Managers
 
         public static bool IsStorageEmpty(this ICrateManager crateManager, ActionDO action)
         {
-            return crateManager.IsEmptyStorage(action.CrateStorage);
+            if (string.IsNullOrWhiteSpace(action.CrateStorage))
+            {
+                return true;
+            }
+
+            var proxy = JsonConvert.DeserializeObject<CrateStorageDTO>(action.CrateStorage);
+            
+            if (proxy.Crates == null)
+            {
+                return true;
+            }
+
+            return proxy.Crates.Length == 0;
         }
     }
 }

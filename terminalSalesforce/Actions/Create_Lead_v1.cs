@@ -102,6 +102,7 @@ namespace terminalSalesforce.Actions
 
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
+                updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControlsCrate(firstNameCrate, lastNAme, company));
             }
 

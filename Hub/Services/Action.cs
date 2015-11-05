@@ -380,7 +380,7 @@ namespace Hub.Services
                     using (var updater = _crate.UpdateStorage(() => currentActivity.CrateStorage))
                     {
                         bool hasChanges = false;
-                        foreach (var configurationControls in updater.CrateStorage.CrateValuesOfType<StandardConfigurationControlsCM>())
+                        foreach (var configurationControls in updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
                         {
                             foreach (IResettable resettable in configurationControls.Controls)
                             {
@@ -438,7 +438,7 @@ namespace Hub.Services
                 {
                     using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
                     {
-                        updater.CrateStorage = _crate.GetStorage(payload.CrateStorage);
+                        updater.CrateStorage = _crate.FromDto(payload.CrateStorage);
                 }
                 //    curContainerDO.CrateStorage = payload.CrateStorage;
                 }
@@ -464,7 +464,7 @@ namespace Hub.Services
         //looks for the Configuration Controls Crate and Extracts the ManifestSchema
         public StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction)
         {
-            var control = _crate.GetStorage(curAction.CrateStorage).CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var control = _crate.GetStorage(curAction.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 //            var curCrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curAction.CrateStorage);
 //            var curControlsCrate =
 //                _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, curCrateStorage)

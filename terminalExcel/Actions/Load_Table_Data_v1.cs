@@ -97,7 +97,7 @@ namespace terminalExcel.Actions
             
             using (var updater = Crate.UpdateStorage(processPayload))
             {
-                updater.CrateStorage.Add(Crate.CreatePayloadDataCrateExcel("ExcelTableRow", "Excel Data", tableDataMS));
+                updater.CrateStorage.Add(Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS));
             }
             return processPayload;            
         }
@@ -113,7 +113,7 @@ namespace terminalExcel.Actions
                 return await GetUpstreamTableData(actionId, curCrateStorageDTO);
             }
 
-            return standardTableDataCrates.First().Value;
+            return standardTableDataCrates.First().Content;
         }
 
         private async Task<StandardTableDataCM> GetUpstreamTableData(int actionId, CrateStorage curCrateStorageDTO)
@@ -193,7 +193,7 @@ namespace terminalExcel.Actions
         {
             var storage = Crate.GetStorage(curActionDTO);
 
-            var filePathsFromUserSelection = storage.CrateValuesOfType<StandardConfigurationControlsCM>()
+            var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
                 .Where(x =>
                 {
                     var ui = new ActionUi(false);
@@ -215,7 +215,7 @@ namespace terminalExcel.Actions
         protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             var storage = Crate.GetStorage(curActionDTO);
-            var filePathsFromUserSelection = storage.CrateValuesOfType<StandardConfigurationControlsCM>()
+            var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
                 .Select(x =>
                 {
                     var ui = new ActionUi(false);

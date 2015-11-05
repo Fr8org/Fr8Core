@@ -177,7 +177,7 @@ namespace TerminalBase.BaseClasses
             foreach (var curCrate in curCrates)
             {
                 //extract the fields
-                StandardDesignTimeFieldsCM curStandardDesignTimeFieldsCrate = curCrate.Value;
+                StandardDesignTimeFieldsCM curStandardDesignTimeFieldsCrate = curCrate.Content;
 
                 //add them to the pile
                 tempMS.Fields.AddRange(curStandardDesignTimeFieldsCrate.Fields);
@@ -203,9 +203,9 @@ namespace TerminalBase.BaseClasses
 
         protected string ExtractControlFieldValue(ActionDTO curActionDto, string fieldName)
         {
-            var storage = Crate.GetStorage(curActionDto.CrateStorage);
+            var storage = Crate.FromDto(curActionDto.CrateStorage);
 
-            var controlsCrateMS = storage.CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsCrateMS = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
 //            var controlsCrate = curActionDto.CrateStorage.CrateDTO
 //                .FirstOrDefault(
@@ -390,7 +390,7 @@ namespace TerminalBase.BaseClasses
             CrateStorage runTimeCrateStorage,
             string controlName)
         {
-            var controls = designTimeCrateStorage.CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var control = controls.Controls.SingleOrDefault(c => c.Name == controlName);
 
             if (control as RadioButtonGroupControlDefinitionDTO != null)
@@ -456,7 +456,7 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         protected string ExtractDesignTimeFieldValue(CrateStorage crateStorage, string fieldKey)
         {
-            var crates = crateStorage.Crates.Where(x => x.ManifestType.Type == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME);
+            var crates = crateStorage.Where(x => x.ManifestType.Type == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME);
 
             var fieldValues = crates.SelectMany(x => x.Get<StandardPayloadDataCM>().GetValues(fieldKey))
                 .Where(s => !string.IsNullOrEmpty(s))
@@ -497,14 +497,14 @@ namespace TerminalBase.BaseClasses
         {
             var controlsCrate = EnsureControlsCrate(storage);
 
-            if (controlsCrate.Value == null) { return; }
+            if (controlsCrate.Content == null) { return; }
 
-            controlsCrate.Value.Controls.Add(control);
+            controlsCrate.Content.Controls.Add(control);
         }
 
         protected ControlDefinitionDTO FindControl(CrateStorage storage, string name)
         {
-            var controlsCrate = storage.CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsCrate == null) { return null; }
 
@@ -516,7 +516,7 @@ namespace TerminalBase.BaseClasses
 
         protected void RemoveControl(CrateStorage storage, string name)
         {
-            var controlsCrate = storage.CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsCrate == null) { return; }
 
@@ -554,8 +554,8 @@ namespace TerminalBase.BaseClasses
             }
             else
             {
-                crate.Value.Fields.Clear();
-                crate.Value.Fields.AddRange(fields);
+                crate.Content.Fields.Clear();
+                crate.Content.Fields.AddRange(fields);
             }
         }
     }

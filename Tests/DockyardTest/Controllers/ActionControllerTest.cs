@@ -334,7 +334,7 @@ namespace DockyardTest.Controllers
             {
                 Id = actionId,
                 Name = "WriteToAzureSql",
-                CrateStorage = ObjectFactory.GetInstance<ICrateManager>().EmptyStorageAsJtoken(),
+                CrateStorage = new CrateStorageDTO(),
                 ActivityTemplateId = 1,
                 ActivityTemplate = FixtureData.TestActionTemplateDTOV2()
                 //,ActionTemplate = FixtureData.TestActivityTemplateDO2()

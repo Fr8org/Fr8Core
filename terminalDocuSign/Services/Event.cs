@@ -52,7 +52,7 @@ namespace terminalDocuSign.Services
             var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
 
             string url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";
-            var response = await new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), _crate.SerializeToProxy(curEventReport));
+            var response = await new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), _crate.ToDto(curEventReport));
 
             var content = await response.Content.ReadAsStringAsync();
 

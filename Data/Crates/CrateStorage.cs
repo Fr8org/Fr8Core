@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Data.Crates
 {
+    [JsonConverter(typeof(DenySerizalitionConverter), "CrateStorage can't be directly serialized to JSON. Convert it to CrateStorageDTO.")]
     public class CrateStorage : IEnumerable<Crate>
     {
         /**********************************************************************************/
@@ -27,14 +29,7 @@ namespace Data.Crates
             get { return _crates[key]; }
             set { _crates[key] = value; }
         }
-        
-        /**********************************************************************************/
-
-        public ICollection<Crate> Crates
-        {
-            get { return _crates.Values; }
-        }
-
+     
         /**********************************************************************************/
         // Functions
         /**********************************************************************************/
@@ -59,39 +54,14 @@ namespace Data.Crates
                 _crates.Add(crate.Id, crate);
             }
         }
-
-        /**********************************************************************************/
-
-        public IEnumerator<Crate> GetEnumerator()
-        {
-            return _crates.Values.GetEnumerator();
-        }
-
-        /**********************************************************************************/
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable) _crates).GetEnumerator();
-        }
-
+        
         /**********************************************************************************/
 
         public void Add(Crate crate)
         {
             _crates.Add(crate.Id, crate);
         }
-
-        /**********************************************************************************/
-
-        public void Add(string label, object content)
-        {
-            var crate = Crate.FromContent(content);
-            
-            crate.Label = label;
-
-            Add(crate);
-        }
-
+        
         /**********************************************************************************/
 
         public void AddRange(IEnumerable<Crate> crates)
@@ -152,14 +122,14 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
-        public IEnumerable<T> CrateValuesOfType<T>()
+        public IEnumerable<T> CrateContentsOfType<T>()
         {
             return CratesOfType<T>().Select(x => x.Get<T>());
         }
 
         /**********************************************************************************/
 
-        public IEnumerable<T> CrateValuesOfType<T>(Predicate<Crate> predicate)
+        public IEnumerable<T> CrateContentsOfType<T>(Predicate<Crate> predicate)
         {
             return CratesOfType<T>().Where(x => predicate(x)).Select(x => x.Get<T>());
         }
@@ -278,6 +248,20 @@ namespace Data.Crates
         public bool TryGetValue(string key, out Crate value)
         {
             return _crates.TryGetValue(key, out value);
+        }
+
+        /**********************************************************************************/
+
+        public IEnumerator<Crate> GetEnumerator()
+        {
+            return _crates.Values.GetEnumerator();
+        }
+
+        /**********************************************************************************/
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)_crates).GetEnumerator();
         }
 
         /**********************************************************************************/

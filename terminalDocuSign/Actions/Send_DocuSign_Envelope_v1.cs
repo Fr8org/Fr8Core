@@ -69,7 +69,7 @@ namespace terminalDocuSign.Actions
 
         private string ExtractTemplateId(ActionDTO curActionDTO)
         {
-            var controls = Crate.GetStorage(curActionDTO).CrateValuesOfType<StandardConfigurationControlsCM>().First().Controls;
+            var controls = Crate.GetStorage(curActionDTO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
 
             var templateDropDown = controls.SingleOrDefault(x => x.Name == "target_docusign_template");
 
@@ -86,8 +86,8 @@ namespace terminalDocuSign.Actions
         {
             var curTemplateId = ExtractTemplateId(actionDTO);
             var curRecipientAddress = ExtractSpecificOrUpstreamValue(
-                Crate.GetStorage(actionDTO.CrateStorage),
-                Crate.GetStorage(processPayload.CrateStorage),
+                Crate.FromDto(actionDTO.CrateStorage),
+                Crate.FromDto(processPayload.CrateStorage),
                 "Recipient"
             );
 
@@ -114,7 +114,7 @@ namespace terminalDocuSign.Actions
             }
 
             // Try to find Configuration_Controls
-            var stdCfgControlMS = Crate.GetStorage(curActionDTO).CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var stdCfgControlMS = Crate.GetStorage(curActionDTO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (stdCfgControlMS == null)
             {
                 return ConfigurationRequestType.Initial;
@@ -193,7 +193,7 @@ namespace terminalDocuSign.Actions
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             
             // Try to find Configuration_Controls.
-                var stdCfgControlMS = updater.CrateStorage.CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+                var stdCfgControlMS = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (stdCfgControlMS == null)
             {
                 return curActionDTO;

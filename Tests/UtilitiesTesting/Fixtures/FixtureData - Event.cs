@@ -9,48 +9,42 @@ namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
     {
-        public static EventDTO TestEmptyEventDto()
+        public static EventCM TestEmptyEventDto()
         {
-            return new EventDTO { EventName = string.Empty };
+            return new EventCM { EventName = string.Empty };
         }
 
-        public static EventDTO TestPluginIncidentDto()
+        public static EventCM TestPluginIncidentDto()
         {
 
-            var loggingDataCrate = new LoggingDataCrateFactory().Create(new LoggingData
+            var loggingDataCrate = new LoggingDataCrateFactory().Create(new LoggingDataCm
                 {
                     PrimaryCategory = "Operations",
                     SecondaryCategory = "Action"
                 });
-            var eventDto = new EventDTO
+            var eventDto = new EventCM
             {
                 EventName = "Plugin Incident",
             };
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage((() => eventDto.CrateStorage)))
-            {
-                updater.CrateStorage.Add(loggingDataCrate);
-            }
+            eventDto.CrateStorage.Add(loggingDataCrate);
 
             return eventDto;
         }
 
-        public static EventDTO TestPluginEventDto()
+        public static EventCM TestPluginEventDto()
         {
-            var loggingDataCrate = new LoggingDataCrateFactory().Create(new LoggingData
+            var loggingDataCrate = new LoggingDataCrateFactory().Create(new LoggingDataCm
                 {
                     PrimaryCategory = "Operations",
                     SecondaryCategory = "Action"
                 });
-            var eventDto = new EventDTO
+            var eventDto = new EventCM
             {
                 EventName = "Plugin Event",
             };
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage((() => eventDto.CrateStorage)))
-            {
-                updater.CrateStorage.Add(loggingDataCrate);
-            }
+            eventDto.CrateStorage.Add(loggingDataCrate);
 
             return eventDto;
         }

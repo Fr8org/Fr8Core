@@ -43,12 +43,12 @@ namespace terminalFr8Core.Actions
                 var curProcessPayload = await GetProcessPayload(actionDto.ProcessId);
 
                 //get docu sign envelope crate from payload
-                var curDocuSignEnvelopeCrate = Crate.GetStorage(curProcessPayload.CrateStorage).CratesOfType<DocuSignEnvelopeCM>().Single(x => x.Label == "DocuSign Envelope Manifest");
+                var curDocuSignEnvelopeCrate = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<DocuSignEnvelopeCM>().Single(x => x.Label == "DocuSign Envelope Manifest");
                     
                 string curFr8AccountId = string.Empty;
                 if (curDocuSignEnvelopeCrate != null)
                 {
-                    DocuSignEnvelopeCM docuSignEnvelope = curDocuSignEnvelopeCrate.Value;
+                    DocuSignEnvelopeCM docuSignEnvelope = curDocuSignEnvelopeCrate.Content;
                     curFr8AccountId =
                         uow.AuthorizationTokenRepository.GetQuery()
                             .Single(auth => auth.ExternalAccountId.Equals(docuSignEnvelope.ExternalAccountId))
@@ -60,11 +60,11 @@ namespace terminalFr8Core.Actions
                 }
 
                 //get docu sign event crate from payload
-                var curDocuSignEventCrate = Crate.GetStorage(curProcessPayload.CrateStorage).CratesOfType<DocuSignEventCM>().Single(x => x.Label == "DocuSign Event Manifest");
+                var curDocuSignEventCrate = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<DocuSignEventCM>().Single(x => x.Label == "DocuSign Event Manifest");
 
                 if (curDocuSignEventCrate != null)
                 {
-                    DocuSignEventCM docuSignEvent = curDocuSignEventCrate.Value;
+                    DocuSignEventCM docuSignEvent = curDocuSignEventCrate.Content;
 
                     curFr8AccountId =
                         uow.AuthorizationTokenRepository.GetQuery()
@@ -102,12 +102,13 @@ namespace terminalFr8Core.Actions
 
             var curConfigurationControlsCrate = PackControlsCrate(fieldSelectObjectTypes);
 
-            FieldDTO[] curSelectedFields = curMergedUpstreamRunTimeObjects.Value.Fields.Select(field => new FieldDTO {Key = field.Key, Value = field.Value}).ToArray();
+            FieldDTO[] curSelectedFields = curMergedUpstreamRunTimeObjects.Content.Fields.Select(field => new FieldDTO {Key = field.Key, Value = field.Value}).ToArray();
 
             var curSelectedObjectType = Crate.CreateDesignTimeFieldsCrate("SelectedObjectTypes", curSelectedFields);
 
             using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
             {
+                updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(curMergedUpstreamRunTimeObjects);
                 updater.CrateStorage.Add(curConfigurationControlsCrate);
                 updater.CrateStorage.Add(curSelectedObjectType);

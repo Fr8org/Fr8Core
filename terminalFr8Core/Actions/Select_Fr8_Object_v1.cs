@@ -72,7 +72,7 @@ namespace terminalFr8Core.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
-                var confControls = updater.CrateStorage.CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+                var confControls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
                 
                 if (confControls != null )
                 {
@@ -139,9 +139,9 @@ namespace terminalFr8Core.Actions
                 + Int32.Parse(fr8Object);
             using (var response = await httpClient.GetAsync(url))
             {
-                var content = await response.Content.ReadAsAsync<CrateSerializationProxy>();
+                var content = await response.Content.ReadAsAsync<CrateDTO>();
                 
-                return Crate.Deserialize(content);
+                return Crate.FromDto(content);
             }
         }
 

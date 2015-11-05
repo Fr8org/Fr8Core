@@ -264,7 +264,6 @@ namespace UtilitiesTesting.Fixtures
             var containerDO = new ContainerDO()
             {
                 Id = 1,
-                CrateStorage = EnvelopeIdCrateJson(),
                 ContainerState = 1,
                 RouteId = processTemplateDo.Id,
                 Route = processTemplateDo
@@ -288,8 +287,17 @@ namespace UtilitiesTesting.Fixtures
                 Id = 1,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                CrateStorage = EnvelopeIdCrateJson()
             };
+
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(actionDo))
+            {
+                updater.CrateStorage.Add(GetEnvelopeIdCrate());
+            }
+
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(()=>containerDO.CrateStorage))
+            {
+                updater.CrateStorage.Add(GetEnvelopeIdCrate());
+            }
 
             return actionDo;
         }
@@ -306,12 +314,7 @@ namespace UtilitiesTesting.Fixtures
 
             return Crate.FromJson("Event Data", JToken.FromObject(crateFields));
         }
-
-        public static string EnvelopeIdCrateJson()
-        {
-            return JsonConvert.SerializeObject(GetEnvelopeIdCrate());
-        }
-
+        
         public static ActionDO TestActionHealth1()
         {
             var actionDo = new ActionDO
@@ -342,7 +345,6 @@ namespace UtilitiesTesting.Fixtures
             var containerDO = new ContainerDO()
             {
                 Id = 1,
-                CrateStorage = EnvelopeIdCrateJson(),
                 ContainerState = 1,
                 RouteId = processTemplateDo.Id,
                 Route = processTemplateDo
@@ -356,6 +358,10 @@ namespace UtilitiesTesting.Fixtures
                 ParentRouteNode = processTemplateDo
             };
 
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
+            {
+                updater.CrateStorage.Add(GetEnvelopeIdCrate());
+            }
 
             return new ActionDO
             {
@@ -514,7 +520,7 @@ namespace UtilitiesTesting.Fixtures
             var crateStorageDTO = new CrateStorage();
             crateStorageDTO.AddRange(curCratesDTO);
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
-            string crateStorage = JsonConvert.SerializeObject(crateManager.CrateStorageToJson(crateStorageDTO));
+            string crateStorage = JsonConvert.SerializeObject(crateManager.ToDto(crateStorageDTO));
             
             ActionDO curAction = new ActionDO()
             {
@@ -687,7 +693,7 @@ namespace UtilitiesTesting.Fixtures
             var crateStorageDTO = new CrateStorage();
             crateStorageDTO.AddRange(curCratesDTO);
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
-            string crateStorage = JsonConvert.SerializeObject(crateManager.CrateStorageToJson(crateStorageDTO));
+            string crateStorage = JsonConvert.SerializeObject(crateManager.ToDto(crateStorageDTO));
             
 
 
@@ -939,7 +945,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var crateStorageDTO = new CrateStorage();
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
-            string crateStorage = JsonConvert.SerializeObject(crateManager.CrateStorageToJson(crateStorageDTO));
+            string crateStorage = JsonConvert.SerializeObject(crateManager.ToDto(crateStorageDTO));
 
 
             ActionDO curAction = new ActionDO()
@@ -1113,7 +1119,7 @@ namespace UtilitiesTesting.Fixtures
             var crateStorageDTO = new CrateStorage();
             crateStorageDTO.AddRange(curCratesDTO);
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
-            string crateStorage = JsonConvert.SerializeObject(crateManager.CrateStorageToJson(crateStorageDTO));
+            string crateStorage = JsonConvert.SerializeObject(crateManager.ToDto(crateStorageDTO));
             var curActionTemplate = FixtureData.ActionTemplate();
 
             ActionDO curAction = new ActionDO()

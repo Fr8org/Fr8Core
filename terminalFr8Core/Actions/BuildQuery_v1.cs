@@ -33,7 +33,7 @@ namespace terminalFr8Core.Actions
                 return ConfigurationRequestType.Initial;
             }
 
-            var hasSelectObjectDdl = controlsCrate.Value.Controls
+            var hasSelectObjectDdl = controlsCrate.Content.Controls
                 .Any(x => x.Name == "SelectObjectDdl");
 
             if (!hasSelectObjectDdl)
@@ -74,6 +74,7 @@ namespace terminalFr8Core.Actions
                 AddSelectObjectDdl(updater.CrateStorage);
                 AddLabelControl(updater.CrateStorage, "SelectObjectError", "No object selected", "Please select object from the list above.");
 
+                updater.CrateStorage.RemoveByLabel("Available Tables");
                 updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray()));
             }
             return curActionDTO;
@@ -223,7 +224,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private string ExtractSelectedObject(CrateStorage storage)
         {
-            var controls = storage.CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controls == null) { return null; }
             
@@ -240,12 +241,12 @@ namespace terminalFr8Core.Actions
         {
             var fields = storage.CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == "Selected Object");
             
-            if (fields == null || fields.Value.Fields.Count == 0)
+            if (fields == null || fields.Content.Fields.Count == 0)
             {
                 return null;
             }
 
-            return fields.Value.Fields[0].Key;
+            return fields.Content.Fields[0].Key;
         }
 
         /// <summary>

@@ -23,4 +23,19 @@ namespace Data.Infrastructure.AutoMapper
             return curObject;
         }
     }
+
+    public class StringToJsonConverterNoMagic<T> : ITypeConverter<string, T>
+        where T : class
+    {
+        public T Convert(ResolutionContext context)
+        {
+            var jsonString = context.SourceValue as string;
+            if (jsonString == null)
+            {
+                return null;
+            }
+
+            return JsonConvert.DeserializeObject<T>(jsonString);
+        }
+    }
 }

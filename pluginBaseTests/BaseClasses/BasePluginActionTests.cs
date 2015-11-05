@@ -60,7 +60,7 @@ namespace pluginBaseTests.BaseClasses
 
             
             //Assert
-            Assert.AreEqual(_crateManager.GetStorage(curActionDTO.CrateStorage).Count, _crateManager.GetStorage(result.CrateStorage).Count);
+            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).Count, _crateManager.FromDto(result.CrateStorage).Count);
         }
 
 
@@ -78,8 +78,8 @@ namespace pluginBaseTests.BaseClasses
             var result = await (Task<ActionDTO>)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
-            Assert.AreEqual(_crateManager.GetStorage(curActionDTO.CrateStorage).Count, _crateManager.GetStorage(result.CrateStorage).Count);
-            Assert.AreEqual(_crateManager.GetStorage(curActionDTO.CrateStorage).First().ManifestType, _crateManager.GetStorage(result.CrateStorage).First().ManifestType);
+            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).Count, _crateManager.FromDto(result.CrateStorage).Count);
+            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).First().ManifestType, _crateManager.FromDto(result.CrateStorage).First().ManifestType);
 
         }
 

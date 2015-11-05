@@ -79,7 +79,7 @@ namespace UtilitiesTesting.Fixtures
 
                var connectionStringFields = updater.CrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
                 
-                connectionStringFields.Value.Controls[0].Value = @"Data Source=s79ifqsqga.database.windows.net;Initial Catalog=demodb_health;User ID=alexeddodb;Password=Thales89";
+                connectionStringFields.Content.Controls[0].Value = @"Data Source=s79ifqsqga.database.windows.net;Initial Catalog=demodb_health;User ID=alexeddodb;Password=Thales89";
             }
             
             return curAction;

@@ -45,7 +45,7 @@ namespace terminalAzure.Actions
 
             var storage = Crate.GetStorage(curActionDTO);
 
-            var connectionStrings = storage.CratesOfType<StandardConfigurationControlsCM>().Select(x => x.Value.FindByName("connection_string")).Where(x => x != null && !string.IsNullOrWhiteSpace(x.Value)).ToArray();
+            var connectionStrings = storage.CratesOfType<StandardConfigurationControlsCM>().Select(x => x.Content.FindByName("connection_string")).Where(x => x != null && !string.IsNullOrWhiteSpace(x.Value)).ToArray();
 
             //if there are more than 2 return connection strings, something is wrong
             //if there are none or if there's one but it's value is "" the return initial else return followup
@@ -67,6 +67,7 @@ namespace terminalAzure.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
+                updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
             }
 
@@ -152,7 +153,7 @@ namespace terminalAzure.Actions
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
-            var confControls = storage.CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var confControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (confControls == null)
             {
@@ -230,7 +231,7 @@ namespace terminalAzure.Actions
 //            var mappedFields = mappedFieldsCrate.Value.AllValues();// JsonConvert.DeserializeObject<List<FieldDTO>>(mappedFieldsCrate.Contents);
 //            var values = JsonConvert.DeserializeObject<List<FieldDTO>>(valuesCrate.Contents);
 
-            return CreateTables(mappedFieldsCrate.Value.AllValues().ToList(), valuesCrate.Value.AllValues().ToList());
+            return CreateTables(mappedFieldsCrate.Content.AllValues().ToList(), valuesCrate.Content.AllValues().ToList());
         }
 
         private IEnumerable<Table> CreateTables(List<FieldDTO> fields, List<FieldDTO> values)

@@ -64,7 +64,7 @@ namespace Hub.Services
                             continue;
                         }
 
-                        if (crate.Value.Fields.Any(field => field.Key == data.FieldName))
+                        if (crate.Content.Fields.Any(field => field.Key == data.FieldName))
                         {
                             return true;
                         }

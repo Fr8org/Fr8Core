@@ -1,28 +1,10 @@
 using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Data.Crates
 {
-    public class Crate<T> : Crate
-    {
-        public T Value
-        {
-            get { return Get<T>(); }
-        }
-
-        public Crate(Crate crate) 
-            : base(crate.ManifestType, crate.Id)
-        {
-            Label = crate.Label;
-            Content = crate.Get<T>();
-        }
-
-        public static Crate<T> FromContent(string label, T content)
-        {
-            return new Crate<T>(Crate.FromContent(label, content));
-        }
-    }
-
+    [JsonConverter(typeof(DenySerizalitionConverter), "Crate can't be directly serialized to JSON. Convert it to CrateDTO.")]
     public class Crate
     {
         /**********************************************************************************/
@@ -30,7 +12,7 @@ namespace Data.Crates
         /**********************************************************************************/
 
         private readonly CrateManifestType _manifestType;
-        protected object Content;
+        protected object KnownContent;
         private JToken _rawContent;
 
         /**********************************************************************************/
@@ -49,7 +31,7 @@ namespace Data.Crates
 
         public bool IsKnownManifest
         {
-            get { return Content != null; }
+            get { return KnownContent != null; }
         }
 
         /**********************************************************************************/
@@ -83,7 +65,7 @@ namespace Data.Crates
         {
             return new Crate(GetManifest(content))
             {
-                Content = content
+                KnownContent = content
             };
         }
 
@@ -94,20 +76,10 @@ namespace Data.Crates
             return new Crate(GetManifest(content))
             {
                 Label =  label,
-                Content = content
+                KnownContent = content
             };
         }
-
-        /**********************************************************************************/
-
-        public static Crate FromContent(object content, string id)
-        {
-            return new Crate(GetManifest(content), id)
-            {
-                Content = content
-            };
-        }
-
+        
         /**********************************************************************************/
 
         public static Crate FromJson(string label, JToken content)
@@ -131,27 +103,24 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
-        public static Crate FromJson(CrateManifestType manifestType, string id, JToken content)
+        internal static Crate FromJson(CrateManifestType manifestType, string id, JToken content)
         {
             return new Crate(manifestType, id)
             {
                 _rawContent = content
             };
         }
-        
+
         /**********************************************************************************/
 
-        private static CrateManifestType GetManifest(object content)
+        internal static Crate FromContent(object content, string id)
         {
-            CrateManifestType manifestType;
-
-            if (!ManifestTypeCache.TryResolveManifest(content, out manifestType))
+            return new Crate(GetManifest(content), id)
             {
-                throw new ArgumentException("Content is not marked with CrateManifestAttribute", "content");
-            }
-
-            return manifestType;
+                KnownContent = content
+            };
         }
+      
 
         /**********************************************************************************/
 
@@ -162,7 +131,7 @@ namespace Data.Crates
                 throw new ArgumentException("Content manifest is not compatible with crate manifest", "content");
             }
 
-            Content = content;
+            KnownContent = content;
             _rawContent = null;
         }
 
@@ -177,7 +146,7 @@ namespace Data.Crates
 
         public T Get<T>() 
         {
-            return (T)Content;
+            return (T)KnownContent;
         }
 
         /**********************************************************************************/
@@ -185,6 +154,20 @@ namespace Data.Crates
         public override string ToString()
         {
             return string.Format("{1} [{0}]", Id, Label);
+        }
+
+        /**********************************************************************************/
+
+        private static CrateManifestType GetManifest(object content)
+        {
+            CrateManifestType manifestType;
+
+            if (!ManifestTypeCache.TryResolveManifest(content, out manifestType))
+            {
+                throw new ArgumentException("Content is not marked with CrateManifestAttribute", "content");
+            }
+
+            return manifestType;
         }
 
         /**********************************************************************************/

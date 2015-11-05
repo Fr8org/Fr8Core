@@ -6,6 +6,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Enums;
 using Hub.Interfaces;
+using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 using terminalDocuSign.DataTransferObjects;
@@ -92,11 +93,11 @@ namespace terminalDocuSign.Actions
 
         private List<FieldDTO> GetFields(ActionDTO curActionDO)
         {
-            var fieldsCrate = Crate.GetStorage(curActionDO.CrateStorage).CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == "DocuSignTemplateUserDefinedFields");
+            var fieldsCrate = Crate.FromDto(curActionDO.CrateStorage).CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == "DocuSignTemplateUserDefinedFields");
 
             if (fieldsCrate == null) return null;
 
-            var manifestSchema = fieldsCrate.Value;
+            var manifestSchema = fieldsCrate.Content;
 
             if (manifestSchema == null
                 || manifestSchema.Fields == null
@@ -110,7 +111,7 @@ namespace terminalDocuSign.Actions
 
         private string GetEnvelopeId(PayloadDTO curPayloadDTO)
         {
-            var standardPayload = Crate.GetStorage(curPayloadDTO.CrateStorage).CrateValuesOfType<StandardPayloadDataCM>().FirstOrDefault();
+            var standardPayload = Crate.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();
 
             if (standardPayload == null)
             {
@@ -129,7 +130,7 @@ namespace terminalDocuSign.Actions
             //get envelopeIdFromUpstreamActions
             var upstream = await _routeNode.GetCratesByDirection<StandardDesignTimeFieldsCM>(curActionDTO.Id, GetCrateDirection.Upstream);
 
-            var envelopeId = upstream.SelectMany(x => x.Value.Fields).FirstOrDefault(x => x.Key == "EnvelopeId");
+            var envelopeId = upstream.SelectMany(x => x.Content.Fields).FirstOrDefault(x => x.Key == "EnvelopeId");
 
             //In order to Receive a DocuSign Envelope as fr8, an upstream action needs to provide a DocuSign EnvelopeID.
             TextBlockControlDefinitionDTO textBlock;
@@ -152,12 +153,13 @@ namespace terminalDocuSign.Actions
                 };
             }
             
-            using (var updater = Crate.UpdateStorage(() => curActionDTO.CrateStorage))
+            using (var updater = Crate.UpdateStorage(curActionDTO))
             {
+                updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControlsCrate(textBlock));
             }
 
-            var templateId = upstream.SelectMany(x => x.Value.Fields).FirstOrDefault(x => x.Key == "TemplateId");
+            var templateId = upstream.SelectMany(x => x.Content.Fields).FirstOrDefault(x => x.Key == "TemplateId");
 
             // If DocuSignTemplate Id was found, then add design-time fields.
             if (templateId != null)

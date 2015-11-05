@@ -24,7 +24,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
-            var curControlsMS = Crate.GetStorage(actionDto.CrateStorage).CrateValuesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var curControlsMS = Crate.FromDto(actionDto.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (curControlsMS == null)
             {
@@ -45,7 +45,7 @@ namespace terminalFr8Core.Actions
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent(new StandardPayloadDataCM(mappedFields), "MappedFields"));
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(mappedFields)));
 //                var actionPayloadCrates = new List<CrateDTO>()
 //                {
 //                    Crate.Create("MappedFields",
@@ -156,13 +156,13 @@ namespace terminalFr8Core.Actions
             CrateStorage storage;
 
             // Check nullability for CrateStorage and Crates array length.
-            if (curAction.CrateStorage == null || (storage = Crate.GetStorage(curAction.CrateStorage)).Count == 0)
+            if (curAction.CrateStorage == null || (storage = Crate.FromDto(curAction.CrateStorage)).Count == 0)
             {
                 return true;
             }
 
-            var upStreamFields = storage.CrateValuesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Plugin-Provided Fields").FirstOrDefault();
-            var downStreamFields = storage.CrateValuesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Plugin-Provided Fields").FirstOrDefault();
+            var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Plugin-Provided Fields").FirstOrDefault();
+            var downStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Plugin-Provided Fields").FirstOrDefault();
 
 //            // Check nullability of Upstream and Downstream crates.
 //            var upStreamFieldsCrate = curAction.CrateStorage.CrateDTO.FirstOrDefault(

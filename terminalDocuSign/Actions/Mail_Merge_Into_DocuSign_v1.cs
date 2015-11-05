@@ -122,7 +122,7 @@ namespace terminalDocuSign.Actions
         private T GetStdConfigurationControl<T>(CrateStorage storage, string name)
             where T : ControlDefinitionDTO
         {
-            return (T) storage.CrateValuesOfType<StandardConfigurationControlsCM>().First().FindByName(name);
+            return (T) storage.CrateContentsOfType<StandardConfigurationControlsCM>().First().FindByName(name);
         }
 
         /// <summary>

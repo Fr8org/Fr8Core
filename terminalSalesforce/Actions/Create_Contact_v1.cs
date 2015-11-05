@@ -106,6 +106,7 @@ namespace terminalSalesforce.Actions
             var controls = PackControlsCrate(firstNameCrate, lastName, mobileNumber, email);
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
+                updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(controls);
             }
 

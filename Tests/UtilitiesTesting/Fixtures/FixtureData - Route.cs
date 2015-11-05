@@ -103,10 +103,15 @@ namespace UtilitiesTesting.Fixtures
                 var containerDO = new ContainerDO()
                 {
                     Id = 1,
-                    CrateStorage = EnvelopeIdCrateJson(),
                     RouteId = processTemplateDO.Id,
                     ContainerState = 1
                 };
+
+                using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
+                {
+                    updater.CrateStorage.Add(GetEnvelopeIdCrate());
+                }
+                
                 uow.ContainerRepository.Add(containerDO);
 
 

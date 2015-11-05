@@ -56,6 +56,7 @@ namespace terminalSendGrid.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
+                updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
                 updater.CrateStorage.Add(await GetAvailableDataFields(curActionDTO));
 
@@ -162,18 +163,18 @@ namespace terminalSendGrid.Actions
             var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
 
             var emailAddress = ExtractSpecificOrUpstreamValue(
-                Crate.GetStorage(curActionDTO.CrateStorage),
-                Crate.GetStorage(processPayload.CrateStorage),
+                Crate.FromDto(curActionDTO.CrateStorage),
+                Crate.FromDto(processPayload.CrateStorage),
                 "EmailAddress"
             );
             var emailSubject = ExtractSpecificOrUpstreamValue(
-                Crate.GetStorage(curActionDTO.CrateStorage),
-                Crate.GetStorage(processPayload.CrateStorage),
+                Crate.FromDto(curActionDTO.CrateStorage),
+                Crate.FromDto(processPayload.CrateStorage),
                 "EmailSubject"
             );
             var emailBody = ExtractSpecificOrUpstreamValue(
-                Crate.GetStorage(curActionDTO.CrateStorage),
-                Crate.GetStorage(processPayload.CrateStorage),
+                Crate.FromDto(curActionDTO.CrateStorage),
+                Crate.FromDto(processPayload.CrateStorage),
                 "EmailBody"
             );
 

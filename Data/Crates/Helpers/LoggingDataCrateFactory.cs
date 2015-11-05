@@ -4,9 +4,9 @@ namespace Data.Crates.Helpers
 {
     public class LoggingDataCrateFactory
     {
-        public Crate Create(LoggingData loggingData)
+        public Crate Create(LoggingDataCm loggingDataCm)
         {
-            return Crate.FromContent("Dockyard Plugin Event or Incident Report", loggingData);
+            return Crate.FromContent("Dockyard Plugin Event or Incident Report", loggingDataCm);
 
             // var serializer = new JsonSerializer();
             // var contents = serializer.Serialize(loggingData);

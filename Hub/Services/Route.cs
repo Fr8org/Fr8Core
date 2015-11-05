@@ -333,7 +333,7 @@ namespace Hub.Services
                 {
                     var storage = _crate.GetStorage(actionDO.CrateStorage);
 
-                    foreach (var subscriptionsList in storage.CrateValuesOfType<EventSubscriptionCM>())
+                    foreach (var subscriptionsList in storage.CrateContentsOfType<EventSubscriptionCM>())
                     {
                         bool hasEvents = subscriptionsList.Subscriptions
                             .Where(events => curEventReport.EventNames.ToUpper().Trim().Replace(" ", "").Contains(events.ToUpper().Trim().Replace(" ", "")))
