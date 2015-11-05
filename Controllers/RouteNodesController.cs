@@ -70,6 +70,7 @@ namespace HubWeb.Controllers
         // TODO: after DO-1214 is completed, this method must be removed.
         [Route("upstream_actions")]
         [ResponseType(typeof (List<ActionDTO>))]
+        [AllowAnonymous]
         public IHttpActionResult GetUpstreamActions(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -88,6 +89,7 @@ namespace HubWeb.Controllers
         // TODO: after DO-1214 is completed, this method must be removed.
         [Route("downstream_actions")]
         [ResponseType(typeof (List<ActionDTO>))]
+        [AllowAnonymous]
         public IHttpActionResult GetDownstreamActions(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
