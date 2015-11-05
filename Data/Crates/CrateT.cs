@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Data.Interfaces.Manifests;
+using Newtonsoft.Json;
 
 namespace Data.Crates
 {
@@ -19,8 +20,9 @@ namespace Data.Crates
 
         public static Crate<T> FromContent(string label, T content)
         {
-            return new Crate<T>(Crate.FromContent(label, content));
+            return new Crate<T>(FromContentUnsafe(label, content));
         }
+     
     }
 
 }

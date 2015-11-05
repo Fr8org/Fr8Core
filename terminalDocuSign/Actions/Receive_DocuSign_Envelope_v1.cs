@@ -72,7 +72,7 @@ namespace terminalDocuSign.Actions
             return processPayload;
         }
 
-        public IList<FieldDTO> CreateActionPayload(ActionDTO curActionDTO, string curEnvelopeId)
+        public StandardPayloadDataCM CreateActionPayload(ActionDTO curActionDTO, string curEnvelopeId)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
 
@@ -88,7 +88,7 @@ namespace terminalDocuSign.Actions
                 throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDTO.Id);
             }
 
-            return docusignEnvelope.ExtractPayload(fields, curEnvelopeId, curEnvelopeData);
+            return new StandardPayloadDataCM(docusignEnvelope.ExtractPayload(fields, curEnvelopeId, curEnvelopeData));
         }
 
         private List<FieldDTO> GetFields(ActionDTO curActionDO)

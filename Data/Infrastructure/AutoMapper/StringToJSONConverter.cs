@@ -30,7 +30,11 @@ namespace Data.Infrastructure.AutoMapper
         public CrateStorageDTO Convert(ResolutionContext context)
         {
             var jsonString = context.SourceValue as string;
-            
+            return Convert(jsonString);
+        }
+
+        public static CrateStorageDTO Convert(string jsonString)
+        {
             if (string.IsNullOrWhiteSpace(jsonString))
             {
                 return null;
@@ -46,7 +50,14 @@ namespace Data.Infrastructure.AutoMapper
                     var value = crateDto.Contents as JValue;
                     if (value != null && value.Value is string)
                     {
-                        crateDto.Contents = JsonConvert.DeserializeObject<JToken>((string)value.Value);
+                        try
+                        {
+                            crateDto.Contents = JsonConvert.DeserializeObject<JToken>((string) value.Value);
+                        }
+                        catch
+                        {
+                            // do nothing. We can't deserializer contents. May be it is just a string?
+                        }
                     }
                 }
             }

@@ -1,5 +1,6 @@
 ﻿using Data.Crates;
 using Data.Entities;
+using Data.Infrastructure.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 
@@ -34,7 +35,7 @@ namespace Hub.Managers
                 return new CrateStorage();
             }
 
-            return crateManger.FromDto(JsonConvert.DeserializeObject<CrateStorageDTO>(crateStorageRaw));
+            return crateManger.FromDto(CrateStorageFromStringConverter.Convert(crateStorageRaw));
         }
 
         public static CrateStorage GetStorage(this ICrateManager crateManger, ActionDTO action)

@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Data.Crates;
+using Data.Infrastructure.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -73,7 +74,7 @@ namespace Hub.Managers
             {
                 if (value is string)
                 {
-                    return CrateStorageSerializer.Default.ConvertFromDto(JsonConvert.DeserializeObject<CrateStorageDTO>((string)value));
+                    return CrateStorageSerializer.Default.ConvertFromDto(CrateStorageFromStringConverter.Convert((string)value));
                 }
 
                 if (value is CrateStorageDTO)

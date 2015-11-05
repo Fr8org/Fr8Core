@@ -1,4 +1,5 @@
 using System;
+using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -61,7 +62,7 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
-        public static Crate FromContent(object content)
+        public static Crate FromContentUnsafe(object content)
         {
             return new Crate(GetManifest(content))
             {
@@ -71,11 +72,22 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
-        public static Crate FromContent(string label, object content)
+        public static Crate FromContent(string label, Manifest content)
         {
             return new Crate(GetManifest(content))
             {
                 Label =  label,
+                KnownContent = content
+            };
+        }
+
+        /**********************************************************************************/
+
+        public static Crate FromContentUnsafe(string label, object content)
+        {
+            return new Crate(GetManifest(content))
+            {
+                Label = label,
                 KnownContent = content
             };
         }
