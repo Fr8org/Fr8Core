@@ -28,13 +28,13 @@ namespace Hub.Managers
 
         public CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0)
         {
-            var crateDTO = new CrateDTO() 
-            { 
-                Id = Guid.NewGuid().ToString(), 
-                Label = label, 
-                Contents = contents, 
-                ManifestType = manifestType, 
-                ManifestId = manifestId 
+            var crateDTO = new CrateDTO()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Label = label,
+                Contents = contents,
+                ManifestType = manifestType,
+                ManifestId = manifestId
             };
             return crateDTO;
         }
@@ -54,16 +54,16 @@ namespace Hub.Managers
         }
 
         public CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
-        {    
-            return Create(label, 
+        {
+            return Create(label,
                 JsonConvert.SerializeObject(new StandardDesignTimeFieldsCM() { Fields = fields.ToList() }),
-                manifestType: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, 
+                manifestType: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 manifestId: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
         }
 
         public CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
         {
-            return Create(label, 
+            return Create(label,
                 JsonConvert.SerializeObject(new StandardConfigurationControlsCM() { Controls = controls.ToList() }),
                 manifestType: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME,
                 manifestId: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
@@ -91,6 +91,11 @@ namespace Hub.Managers
                 JsonConvert.SerializeObject(new StandardTableDataCM() { Table = table.ToList(), FirstRowHeaders = firstRowHeaders }),
                 manifestType: CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME,
                 manifestId: CrateManifests.STANDARD_TABLE_DATA_MANIFEST_ID);
+        }
+
+        public CrateDTO CreateErrorCrate(string message)
+        {
+            return Create("Retry Crate", message);
         }
 
         public T GetContents<T>(CrateDTO crate)
@@ -177,19 +182,18 @@ namespace Hub.Managers
         {
             //remove existing crates with the manifest type
             RemoveCrateByManifestType(sourceCrates, manifestType);
-            
+
             //add the new content to the source crates
             newCratesContent.ToList().ForEach(sourceCrates.Add);
         }
 
         public void ReplaceCratesByLabel(IList<CrateDTO> sourceCrates, string label, IList<CrateDTO> newCratesContent)
         {
-            var curMatchedCrates = GetCratesByLabel(label, new CrateStorageDTO {CrateDTO = sourceCrates.ToList()});
+            //remove existing crates with the label
+            RemoveCrateByLabel(sourceCrates, label);
 
-            foreach (CrateDTO curMatchedCrate in curMatchedCrates)
-            {
-                ReplaceCratesByManifestType(sourceCrates, curMatchedCrate.ManifestType, newCratesContent);
-            }
+            //add the new content to the source crates
+            newCratesContent.ToList().ForEach(sourceCrates.Add);
         }
 
         public CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)
@@ -200,14 +204,14 @@ namespace Hub.Managers
                             manifestId: CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);
         }
 
-        public CrateDTO CreatePayloadDataCrate(List<KeyValuePair<string,string>> curFields)
-        {            
+        public CrateDTO CreatePayloadDataCrate(List<KeyValuePair<string, string>> curFields)
+        {
             List<FieldDTO> crateFields = new List<FieldDTO>();
-            foreach(var field in curFields)
+            foreach (var field in curFields)
             {
-                crateFields.Add(new FieldDTO() { Key = field.Key, Value = field.Value });             
+                crateFields.Add(new FieldDTO() { Key = field.Key, Value = field.Value });
             }
-            return Create("Payload Data", JsonConvert.SerializeObject(crateFields));            
+            return Create("Payload Data", JsonConvert.SerializeObject(crateFields));
         }
 
         private StandardPayloadDataCM TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataCM tableDataMS)

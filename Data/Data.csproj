@@ -385,6 +385,10 @@
     <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.Designer.cs">
       <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511040622414_AddedDocuSignFields.cs" />
+    <Compile Include="Migrations\201511040622414_AddedDocuSignFields.Designer.cs">
+      <DependentUpon>201511040622414_AddedDocuSignFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -403,11 +407,6 @@
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
-    <Compile Include="Entities\DocuSignEventDO.cs" />
-    <Compile Include="Entities\DocuSignParserModels\DocuSignEnvelopeInformation.cs" />
-    <Compile Include="Entities\DocuSignParserModels\EnvelopeStatus.cs" />
-    <Compile Include="Entities\DocuSignParserModels\RecipientStatus.cs" />
-    <Compile Include="Entities\DocuSignParserModels\RecipientStatuses.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\PluginDO.cs" />
@@ -661,6 +660,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510261339053_CreateWebServicesTable_Migration.resx">
       <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511040622414_AddedDocuSignFields.resx">
+      <DependentUpon>201511040622414_AddedDocuSignFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
