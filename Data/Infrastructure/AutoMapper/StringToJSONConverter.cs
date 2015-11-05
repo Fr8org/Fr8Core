@@ -31,7 +31,7 @@ namespace Data.Infrastructure.AutoMapper
         {
             var jsonString = context.SourceValue as string;
             
-            if (jsonString == null)
+            if (string.IsNullOrWhiteSpace(jsonString))
             {
                 return null;
             }
