@@ -117,6 +117,8 @@ namespace terminalFr8Core.Actions
                             }
                         );
                     }
+
+                    tableData.Add(payloadObject);
                 }
             }
 

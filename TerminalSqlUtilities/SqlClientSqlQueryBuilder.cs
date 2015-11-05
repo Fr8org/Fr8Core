@@ -18,7 +18,7 @@ namespace TerminalSqlUtilities
                 var paramNum = _paramNum;
                 ++_paramNum;
 
-                return ":param" + paramNum.ToString();
+                return "@param" + paramNum.ToString();
             }
         }
 

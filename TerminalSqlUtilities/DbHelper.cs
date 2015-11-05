@@ -10,7 +10,7 @@ namespace TerminalSqlUtilities
             var fieldNames = new List<string>();
             for (var i = 0; i < reader.FieldCount; ++i)
             {
-                fieldNames.Add(reader.GetName(0));
+                fieldNames.Add(reader.GetName(i));
             }
 
             var rows = new List<Row>();
