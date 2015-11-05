@@ -212,7 +212,9 @@
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
-    <Compile Include="Managers\CrateManager.StorageUpdater.cs" />
+    <Compile Include="Managers\CrateManager.StorageUpdater.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Managers\CrateMangerExtensions.cs" />
     <Compile Include="Managers\ICrateManager.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
