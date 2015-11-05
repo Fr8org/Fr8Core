@@ -12,6 +12,7 @@ using Hub.Enums;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
@@ -50,24 +51,24 @@ namespace terminalFr8Core.Actions
             {
                 RemoveControl(updater.CrateStorage, "UpstreamError");
 
-                var columnDefinitions = await ExtractColumnDefinitions(curActionDTO);
-                List<FieldDTO> tablesList = null;
+            var columnDefinitions = await ExtractColumnDefinitions(curActionDTO);
+            List<FieldDTO> tablesList = null;
 
-                if (columnDefinitions != null)
-                {
-                    tablesList = ExtractTableNames(columnDefinitions);
-                }
+            if (columnDefinitions != null)
+            {
+                tablesList = ExtractTableNames(columnDefinitions);
+            }
 
-                if (tablesList == null || tablesList.Count == 0)
-                {
-                    AddLabelControl(
+            if (tablesList == null || tablesList.Count == 0)
+            {
+                AddLabelControl(
                         updater.CrateStorage,
-                        "UpstreamError",
-                        "Unexpected error",
-                        "No upstream crates found to extract table definitions."
-                        );
-                    return curActionDTO;
-                }
+                    "UpstreamError",
+                    "Unexpected error",
+                    "No upstream crates found to extract table definitions."
+                );
+                return curActionDTO;
+            }
 
                 var controlsCrate = EnsureControlsCrate(updater.CrateStorage);
 
@@ -87,25 +88,25 @@ namespace terminalFr8Core.Actions
                 RemoveControl(updater.CrateStorage, "SelectObjectError");
 
                 var selectedObject = ExtractSelectedObject(updater.CrateStorage);
-                if (string.IsNullOrEmpty(selectedObject))
-                {
+            if (string.IsNullOrEmpty(selectedObject))
+            {
                     AddLabelControl(updater.CrateStorage, "SelectObjectError",
-                        "No object selected", "Please select object from the list above.");
+                    "No object selected", "Please select object from the list above.");
 
-                    return curActionDTO;
-                }
-                else
-                {
+                return curActionDTO;
+            }
+            else
+            {
                     var prevSelectedObject = ExtractPreviousSelectedObject(updater.CrateStorage);
-                    if (prevSelectedObject != selectedObject)
-                    {
+                if (prevSelectedObject != selectedObject)
+                {
                         RemoveControl(updater.CrateStorage, "SelectedQuery");
                         AddQueryBuilder(updater.CrateStorage);
 
                         UpdatePreviousSelectedObject(updater.CrateStorage, selectedObject);
                         await UpdateQueryableCriteria(updater.CrateStorage,  curActionDTO, selectedObject);
-                    }
                 }
+            }
             }
 
             return curActionDTO;
@@ -227,7 +228,7 @@ namespace terminalFr8Core.Actions
             var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controls == null) { return null; }
-            
+
             var selectObjectDdl = controls.Controls.FirstOrDefault(x => x.Name == "SelectObjectDdl");
             if (selectObjectDdl == null) { return null; }
 
@@ -238,9 +239,9 @@ namespace terminalFr8Core.Actions
         /// Exract previously stored valued of selected object type.
         /// </summary>
         private string ExtractPreviousSelectedObject(CrateStorage storage)
-        {
+            {
             var fields = storage.CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == "Selected Object");
-            
+
             if (fields == null || fields.Content.Fields.Count == 0)
             {
                 return null;
@@ -264,19 +265,14 @@ namespace terminalFr8Core.Actions
         private async Task<List<FieldDTO>> MatchColumnsForSelectedObject(
             ActionDTO actionDTO, string selectedObject)
         {
-            var columnDefinitions = await ExtractColumnDefinitions(actionDTO);
-            var columnTypes = await ExtractColumnTypes(actionDTO);
+            var findObjectHelper = new FindObjectHelper();
 
-            if (columnDefinitions == null || columnTypes == null)
+            var columnDefinitions = await ExtractColumnDefinitions(actionDTO);
+            var columnTypeMap = await findObjectHelper.ExtractColumnTypes(this, actionDTO);
+
+            if (columnDefinitions == null || columnTypeMap == null)
             {
                 columnDefinitions = new List<FieldDTO>();
-            }
-
-            // Create columnTypeMap dictionary.
-            var columnTypeMap = new Dictionary<string, DbType>();
-            foreach (var columnType in columnTypes)
-            {
-                columnTypeMap.Add(columnType.Key, (DbType)Enum.Parse(typeof(DbType), columnType.Value));
             }
 
             var supportedColumnTypes = new HashSet<DbType>() { DbType.String, DbType.Int32, DbType.Boolean };
@@ -354,7 +350,7 @@ namespace terminalFr8Core.Actions
                 throw new ApplicationException("No QueryBuilder control found.");
             }
 
-            var criteria = JsonConvert.DeserializeObject<List<CriteriaDTO>>(queryBuilder.Value);
+            var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(queryBuilder.Value);
 
             var sqlQueryCrate = CreateSqlQueryCrate(selectedObject, criteria);
 
@@ -366,7 +362,9 @@ namespace terminalFr8Core.Actions
             return processPayload;
         }
 
-        private Crate CreateSqlQueryCrate(string selectedObject, List<CriteriaDTO> criteria)
+        private Crate CreateSqlQueryCrate(
+            string selectedObject,
+            List<FilterConditionDTO> criteria)
         {
             var query = new QueryDTO()
             {

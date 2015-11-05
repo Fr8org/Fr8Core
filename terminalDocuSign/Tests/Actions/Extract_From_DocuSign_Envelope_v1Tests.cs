@@ -120,7 +120,7 @@ namespace terminalDocuSign.Tests.Actions
             _activity = ObjectFactory.GetInstance<IRouteNode>();
         }
 
-        protected async override Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        public async override Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

@@ -71,39 +71,50 @@ namespace terminalFr8Core.Actions
 
                 updater.CrateStorage.RemoveByLabel("Sql Table Definitions");
 
-                var connectionString = ExtractConnectionString(curActionDTO);
+            var connectionString = ExtractConnectionString(curActionDTO);
                 
-                if (!string.IsNullOrEmpty(connectionString))
+            if (!string.IsNullOrEmpty(connectionString))
+            {
+                try
                 {
-                    try
-                    {
-                        var tableDefinitions = RetrieveTableDefinitions(connectionString);
-                        var tableDefinitionCrate =
-                            Crate.CreateDesignTimeFieldsCrate(
-                                "Sql Table Definitions",
-                                tableDefinitions.ToArray()
-                                );
+                    var tableDefinitions = RetrieveTableDefinitions(connectionString);
+                    var tableDefinitionCrate = 
+                        Crate.CreateDesignTimeFieldsCrate(
+                            "Sql Table Definitions",
+                            tableDefinitions.ToArray()
+                        );
 
-                        var columnTypes = RetrieveColumnTypes(connectionString);
-                        var columnTypesCrate =
-                            Crate.CreateDesignTimeFieldsCrate(
-                                "Sql Column Types",
-                                columnTypes.ToArray()
-                                );
+                    var columnTypes = RetrieveColumnTypes(connectionString);
+                    var columnTypesCrate =
+                        Crate.CreateDesignTimeFieldsCrate(
+                            "Sql Column Types",
+                            columnTypes.ToArray()
+                        );
 
-                        updater.CrateStorage.Add(tableDefinitionCrate);
-                        updater.CrateStorage.Add(columnTypesCrate);
-                    }
-                    catch
+                    var connectionStringFieldList = new List<FieldDTO>()
                     {
-                        AddLabelControl(
-                            updater.CrateStorage,
-                            "ErrorLabel",
-                            "Unexpected error",
-                            "Error occured while trying to fetch columns from database specified."
-                            );
-                    }
+                        new FieldDTO() { Key = connectionString, Value = connectionString }
+                    };
+                    var connectionStringCrate =
+                        Crate.CreateDesignTimeFieldsCrate(
+                            "Sql Connection String",
+                            connectionStringFieldList.ToArray()
+                        );
+
+                    updater.CrateStorage.Add(tableDefinitionCrate);
+                    updater.CrateStorage.Add(columnTypesCrate);
+                    updater.CrateStorage.Add(connectionStringCrate);
                 }
+                catch
+                {
+                    AddLabelControl(
+                            updater.CrateStorage,
+                        "ErrorLabel",
+                        "Unexpected error",
+                        "Error occured while trying to fetch columns from database specified."
+                    );
+                }
+            }
             }
 
             return base.FollowupConfigurationResponse(curActionDTO);

@@ -154,7 +154,7 @@ namespace TerminalBase.BaseClasses
         }
 
         //wrapper for support test method
-        protected async virtual Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        public async virtual Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
         {
             return await Activity.GetCratesByDirection(activityId, manifestType, direction);
         }
@@ -381,7 +381,7 @@ namespace TerminalBase.BaseClasses
             return control;
         }
 
-        
+
         /// <summary>
         /// Extract value from RadioButtonGroup where specific value or upstream field was specified.
         /// </summary>
@@ -526,7 +526,7 @@ namespace TerminalBase.BaseClasses
             if (control != null)
             {
                 controlsCrate.Controls.Remove(control);
-           }
+            }
         }
 
         protected Crate<StandardConfigurationControlsCM> EnsureControlsCrate(CrateStorage storage)
