@@ -130,9 +130,8 @@ namespace HubWeb
         {
             var alertReporter = ObjectFactory.GetInstance<EventReporter>();
 
-            SetActivityTemplatesInactive();
             var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
-            int count = 0;
+            List<string> activityTemplateNames = new List<string>();
             var uri=string.Empty;
             foreach (string url in activityTemplateHosts)
             {
@@ -155,7 +154,7 @@ namespace HubWeb
                         try
                         {
                             new ActivityTemplate().Register(curItem);
-                            count++;
+                            activityTemplateNames.Add(curItem.Name);
                         }
                         catch (Exception ex)
                         {
@@ -177,10 +176,35 @@ namespace HubWeb
                 }
             }
 
-            alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
+            SetInactiveUndiscoveredActivityTemplates(activityTemplateNames);
+
+            alertReporter.ActivityTemplatesSuccessfullyRegistered(activityTemplateNames.Count);
         }
 
-        public void SetActivityTemplatesInactive()
+        public void SetInactiveUndiscoveredActivityTemplates(List<string> discoveredActivityTemplateNames)
+        {
+            try
+            {
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var undiscoveredTemplates = uow.ActivityTemplateRepository.
+                    GetQuery().
+                    Where(at => !discoveredActivityTemplateNames.Contains(at.Name));
+
+                    foreach (var activityTemplate in undiscoveredTemplates)
+                    {
+                        activityTemplate.ActivityTemplateState = Data.States.ActivityTemplateState.Inactive;
+                    }
+                    uow.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error setting undiscovered activity templates inactive ", e);
+            }
+        }
+
+        public void SetAllActivityTemplatesInactive()
         {
             try
             {
