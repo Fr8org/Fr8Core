@@ -52,7 +52,7 @@ namespace Data.Crates
 
                 if (ManifestDiscovery.Default.TryResolveType(type, out clrType))
                 {
-                    var manifestAttr = clrType.GetCustomAttribute<CrateManifestAttribute>();
+                    var manifestAttr = clrType.GetCustomAttribute<CrateManifestSerializerAttribute>();
 
                     if (manifestAttr == null || manifestAttr.Serializer == null)
                     {
@@ -82,7 +82,7 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
-        public CrateStorage ConvertFromProxy(CrateStorageDTO rawStorage)
+        public CrateStorage ConvertFromDto(CrateStorageDTO rawStorage)
         {
             var storage = new CrateStorage();
 
@@ -90,7 +90,7 @@ namespace Data.Crates
             {
                 foreach (var crateDto in rawStorage.Crates)
                 {
-                    storage.Add(ConvertFromProxy(crateDto));
+                    storage.Add(ConvertFromDto(crateDto));
                 }
             }
 
@@ -99,7 +99,7 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
-        public CrateStorageDTO ConvertToProxy(CrateStorage storage)
+        public CrateStorageDTO ConvertToDto(CrateStorage storage)
         {
             var storageSerializationProxy = new CrateStorageDTO
             {
@@ -110,7 +110,7 @@ namespace Data.Crates
 
             foreach (var crate in storage)
             {
-                storageSerializationProxy.Crates[id] = ConvertToProxy(crate);
+                storageSerializationProxy.Crates[id] = ConvertToDto(crate);
                 id ++;
             }
 
@@ -119,7 +119,7 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
-        public Crate ConvertFromProxy(CrateDTO proxy)
+        public Crate ConvertFromDto(CrateDTO proxy)
         {
             var manifestType = new CrateManifestType(proxy.ManifestType, proxy.ManifestId);
             IManifestSerializer serializer = GetSerializer(manifestType);
@@ -148,7 +148,7 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
-        public CrateDTO ConvertToProxy(Crate crate)
+        public CrateDTO ConvertToDto(Crate crate)
         {
             IManifestSerializer serializer = GetSerializer(crate.ManifestType);
             CrateDTO crateDto = new CrateDTO

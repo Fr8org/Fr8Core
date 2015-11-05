@@ -98,7 +98,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<CrateStorageDTO, string>()
                 .ConvertUsing<JsonToStringConverterNoMagic<CrateStorageDTO>>();
             Mapper.CreateMap<string, CrateStorageDTO>()
-                .ConvertUsing<StringToJsonConverterNoMagic<CrateStorageDTO>>();
+                .ConvertUsing<CrateStorageFromStringConverter>();
             Mapper.CreateMap<FileDO, FileDTO>();
 
             Mapper.CreateMap<ContainerDO, ContainerDTO>();

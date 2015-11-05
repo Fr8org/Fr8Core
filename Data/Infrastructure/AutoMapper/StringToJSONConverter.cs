@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
-using Utilities.Serializers.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Data.Infrastructure.AutoMapper
 {
@@ -24,18 +25,33 @@ namespace Data.Infrastructure.AutoMapper
         }
     }
 
-    public class StringToJsonConverterNoMagic<T> : ITypeConverter<string, T>
-        where T : class
+    public class CrateStorageFromStringConverter : ITypeConverter<string, CrateStorageDTO>
     {
-        public T Convert(ResolutionContext context)
+        public CrateStorageDTO Convert(ResolutionContext context)
         {
             var jsonString = context.SourceValue as string;
+            
             if (jsonString == null)
             {
                 return null;
             }
 
-            return JsonConvert.DeserializeObject<T>(jsonString);
+            var storageDto = JsonConvert.DeserializeObject<CrateStorageDTO>(jsonString);
+
+            if (storageDto.Crates != null)
+            {
+                foreach (var crateDto in storageDto.Crates)
+                {
+                    // looks like we found records id "old" format
+                    var value = crateDto.Contents as JValue;
+                    if (value != null && value.Value is string)
+                    {
+                        crateDto.Contents = JsonConvert.DeserializeObject<JToken>((string)value.Value);
+                    }
+                }
+            }
+
+            return storageDto;
         }
     }
 }

@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Data.Crates
 {
-    [JsonConverter(typeof(DenySerizalitionConverter), "CrateStorage can't be directly serialized to JSON. Convert it to CrateStorageDTO.")]
+    [JsonConverter(typeof(DenySerializationConverter), "CrateStorage can't be directly serialized to JSON. Convert it to CrateStorageDTO.")]
     public class CrateStorage : IEnumerable<Crate>
     {
         /**********************************************************************************/

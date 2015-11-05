@@ -33,7 +33,7 @@ namespace Data.Crates
         {
             var manifest = typeof(Manifest);
 
-            foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(x => manifest.IsAssignableFrom(x) || x.GetCustomAttribute<CrateManifestAttribute>() != null))
+            foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(x => manifest.IsAssignableFrom(x) || x.GetCustomAttribute<CrateManifestTypeAttribute>() != null))
             {
                 if (type.IsAbstract || type == manifest)
                 {

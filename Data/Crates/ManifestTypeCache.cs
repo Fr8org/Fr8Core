@@ -25,7 +25,7 @@ namespace Data.Crates
                     return manifestType != CrateManifestType.Unknown;
                 }
 
-                var manifestAttr = (CrateManifestAttribute)type.GetCustomAttribute(typeof(CrateManifestAttribute));
+                var manifestAttr = (CrateManifestTypeAttribute)type.GetCustomAttribute(typeof(CrateManifestTypeAttribute));
 
                 if (manifestAttr == null || manifestAttr.ManifestType == null)
                 {

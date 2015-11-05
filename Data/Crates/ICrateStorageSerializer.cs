@@ -4,9 +4,9 @@ namespace Data.Crates
 {
     public interface ICrateStorageSerializer
     {
-        CrateStorageDTO ConvertToProxy(CrateStorage storage);
-        CrateDTO ConvertToProxy(Crate crate);
-        CrateStorage ConvertFromProxy(CrateStorageDTO dto);
-        Crate ConvertFromProxy(CrateDTO dto);
+        CrateStorageDTO ConvertToDto(CrateStorage storage);
+        CrateDTO ConvertToDto(Crate crate);
+        CrateStorage ConvertFromDto(CrateStorageDTO dto);
+        Crate ConvertFromDto(CrateDTO dto);
     }
 }

@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.Manifests
 {
-    [CrateManifest(typeof(EventReportSerializer))]
+    [CrateManifestSerializer(typeof(EventReportSerializer))]
     public class EventReportCM : Manifest
     {
         public string EventNames { get; set; }
@@ -45,7 +45,7 @@ namespace Data.Interfaces.Manifests
         public object Deserialize(JToken crateContent)
         {
             var proxy = crateContent.ToObject<EventReportCMSerializationProxy>();
-            var storage = _storageSerizlier.ConvertFromProxy(proxy.EventPayload);
+            var storage = _storageSerizlier.ConvertFromDto(proxy.EventPayload);
 
             return new EventReportCM
             {
@@ -67,7 +67,7 @@ namespace Data.Interfaces.Manifests
                 ContainerDoId = e.ContainerDoId,
                 ExternalAccountId = e.ExternalAccountId,
                 Source = e.EventNames,
-                EventPayload = _storageSerizlier.ConvertToProxy(e.EventPayload)
+                EventPayload = _storageSerizlier.ConvertToDto(e.EventPayload)
             };
 
             return JToken.FromObject(proxy);

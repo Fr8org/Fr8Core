@@ -2,18 +2,21 @@ using System;
 
 namespace Data.Crates
 {
-    public class CrateManifestAttribute : Attribute
+    public class CrateManifestTypeAttribute : Attribute
     {
         public readonly Enum ManifestType;
-        public readonly Type Serializer;
         
-        public CrateManifestAttribute(object manifestId, Type serializer = null)
+        public CrateManifestTypeAttribute(object manifestId)
         {
-            Serializer = serializer;
             ManifestType = (Enum)manifestId;
         }
-
-        public CrateManifestAttribute(Type serializer)
+    }
+    
+    public class CrateManifestSerializerAttribute : Attribute
+    {
+        public readonly Type Serializer;
+        
+        public CrateManifestSerializerAttribute(Type serializer)
         {
             Serializer = serializer;
         }

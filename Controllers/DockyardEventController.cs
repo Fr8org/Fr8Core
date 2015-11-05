@@ -4,6 +4,7 @@ using System.Web.Http;
 using Data.Crates;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Hub.Interfaces;
 using Hub.Managers;
 using Newtonsoft.Json.Linq;
@@ -35,11 +36,15 @@ namespace HubWeb.Controllers
 
             var curCrateStandardEventReport = _crate.FromDto(raw);
 
+            
+
             //check if Standard Event Report inside CrateDTO
-            if (curCrateStandardEventReport.ManifestType.Type != null && !curCrateStandardEventReport.ManifestType.Type.Equals("Standard Event Report", StringComparison.OrdinalIgnoreCase))
+            if (!curCrateStandardEventReport.IsOfType<EventReportCM>())
                 throw new ArgumentNullException("CrateDTO passed is not a Standard Event Report.");
-            if (curCrateStandardEventReport.Get<object>() == null)
-                throw new ArgumentNullException("CrateDTO Content is empty.");
+
+            // This check is redundant as curCrateStandardEventReport.IsOfType<EventReportCM>() will be false in case of null content
+//            if (curCrateStandardEventReport.Get() == null)
+//                throw new ArgumentNullException("CrateDTO Content is empty.");
              
             await _dockyardEvent.ProcessInboundEvents(curCrateStandardEventReport);
 

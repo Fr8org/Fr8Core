@@ -13,22 +13,22 @@ namespace Hub.Managers
     {
         public CrateStorageDTO ToDto(CrateStorage storage)
         {
-            return CrateStorageSerializer.Default.ConvertToProxy(storage);
+            return CrateStorageSerializer.Default.ConvertToDto(storage);
         }
 
         public CrateDTO ToDto(Crate crate)
         {
-            return CrateStorageSerializer.Default.ConvertToProxy(crate);
+            return CrateStorageSerializer.Default.ConvertToDto(crate);
         }
 
         public Crate FromDto(CrateDTO crate)
         {
-            return CrateStorageSerializer.Default.ConvertFromProxy(crate);
+            return CrateStorageSerializer.Default.ConvertFromDto(crate);
         }
 
         public CrateStorage FromDto(CrateStorageDTO crateStorage)
         {
-            return CrateStorageSerializer.Default.ConvertFromProxy(crateStorage);
+            return CrateStorageSerializer.Default.ConvertFromDto(crateStorage);
         }
 
         public ICrateStorageUpdater UpdateStorage(Expression<Func<CrateStorageDTO>> storageAccessExpression)
@@ -53,7 +53,7 @@ namespace Hub.Managers
 
         public string EmptyStorageAsStr()
         {
-            return JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToProxy(new CrateStorage()));
+            return JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(new CrateStorage()));
         }
 
         public Crate CreateAuthenticationCrate(string label, AuthenticationMode mode)

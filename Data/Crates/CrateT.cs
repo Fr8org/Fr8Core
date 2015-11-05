@@ -2,7 +2,7 @@
 
 namespace Data.Crates
 {
-    [JsonConverter(typeof(DenySerizalitionConverter), "Crate can't be directly serialized to JSON. Convert it to CrateDTO.")]
+    [JsonConverter(typeof(DenySerializationConverter), "Crate can't be directly serialized to JSON. Convert it to CrateDTO.")]
     public class Crate<T> : Crate
     {
         public T Content

@@ -36,7 +36,7 @@ namespace Hub.Managers
                 var ce = (ConstantExpression)me.Expression;
                 var fieldInfo = ce.Value.GetType().GetField(me.Member.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
-                InitializeAccessors(memberExpr.Member, fieldInfo.GetValue(ce.Value), ReadStorage, x => CrateStorageSerializer.Default.ConvertToProxy(x));
+                InitializeAccessors(memberExpr.Member, fieldInfo.GetValue(ce.Value), ReadStorage, x => CrateStorageSerializer.Default.ConvertToDto(x));
             }
 
             public CrateStorageStorageUpdater(Expression<Func<string>> expr)
@@ -52,7 +52,7 @@ namespace Hub.Managers
                 var ce = (ConstantExpression)me.Expression;
                 var fieldInfo = ce.Value.GetType().GetField(me.Member.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
-                InitializeAccessors(memberExpr.Member, fieldInfo.GetValue(ce.Value), ReadStorage, x => JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToProxy(x)));
+                InitializeAccessors(memberExpr.Member, fieldInfo.GetValue(ce.Value), ReadStorage, x => JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(x)));
             }
             
             private void InitializeAccessors(MemberInfo memberInfo, object instance, Func<object, CrateStorage> readConverter, Func<CrateStorage, object> writeConverter)
@@ -73,12 +73,12 @@ namespace Hub.Managers
             {
                 if (value is string)
                 {
-                    return CrateStorageSerializer.Default.ConvertFromProxy(JsonConvert.DeserializeObject<CrateStorageDTO>((string)value));
+                    return CrateStorageSerializer.Default.ConvertFromDto(JsonConvert.DeserializeObject<CrateStorageDTO>((string)value));
                 }
 
                 if (value is CrateStorageDTO)
                 {
-                    return CrateStorageSerializer.Default.ConvertFromProxy((CrateStorageDTO)value);
+                    return CrateStorageSerializer.Default.ConvertFromDto((CrateStorageDTO)value);
                 }
 
                 return new CrateStorage();

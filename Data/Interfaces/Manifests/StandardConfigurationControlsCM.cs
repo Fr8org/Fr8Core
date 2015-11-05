@@ -8,7 +8,7 @@ using Data.Crates;
 
 namespace Data.Interfaces.Manifests
 {
-    [CrateManifest(typeof(StandardConfigurationControlsSerializer))]
+    [CrateManifestSerializer(typeof(StandardConfigurationControlsSerializer))]
     public class StandardConfigurationControlsCM : Manifest
     {
         public List<ControlDefinitionDTO> Controls { get; set; }

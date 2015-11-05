@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    [CrateManifest(typeof(EventSerializer))]
+    [CrateManifestSerializer(typeof(EventSerializer))]
     public class EventCM : Manifest
     {
         public string EventName { get; set; }
@@ -60,7 +60,7 @@ namespace Data.Interfaces.DataTransferObjects
         public object Deserialize(JToken crateContent)
         {
             var proxy = crateContent.ToObject<EventCMSerializationProxy>();
-            var storage = _storageSerizlier.ConvertFromProxy(proxy.CrateStorage);
+            var storage = _storageSerizlier.ConvertFromDto(proxy.CrateStorage);
 
             return new EventCM
             {
@@ -78,7 +78,7 @@ namespace Data.Interfaces.DataTransferObjects
             {
                 EventName = e.EventName,
                 PalletId = e.PalletId,
-                CrateStorage = _storageSerizlier.ConvertToProxy(e.CrateStorage)
+                CrateStorage = _storageSerizlier.ConvertToDto(e.CrateStorage)
             };
 
             return JToken.FromObject(proxy);

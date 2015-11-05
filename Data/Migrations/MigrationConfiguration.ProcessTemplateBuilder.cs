@@ -83,7 +83,7 @@ namespace Data.Migrations
                 container.RouteId = _ptId;
                 container.ContainerState = ContainerState.Executing;
                 
-                container.CrateStorage = JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToProxy(new CrateStorage(_crates)));
+                container.CrateStorage = JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(new CrateStorage(_crates)));
             }
 
             

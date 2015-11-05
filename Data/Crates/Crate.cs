@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Data.Crates
 {
-    [JsonConverter(typeof(DenySerizalitionConverter), "Crate can't be directly serialized to JSON. Convert it to CrateDTO.")]
+    [JsonConverter(typeof(DenySerializationConverter), "Crate can't be directly serialized to JSON. Convert it to CrateDTO.")]
     public class Crate
     {
         /**********************************************************************************/
@@ -144,9 +144,30 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
+        public bool IsOfType<T>()
+        {
+            CrateManifestType manifestType;
+
+            if (!ManifestTypeCache.TryResolveManifest(typeof(T), out manifestType))
+            {
+                return false;
+            }
+
+            return ManifestType == manifestType;
+        }
+
+        /**********************************************************************************/
+
         public T Get<T>() 
         {
             return (T)KnownContent;
+        }
+
+        /**********************************************************************************/
+
+        public object Get()
+        {
+            return KnownContent;
         }
 
         /**********************************************************************************/

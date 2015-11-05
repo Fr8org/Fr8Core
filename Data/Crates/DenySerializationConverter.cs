@@ -3,11 +3,11 @@ using Newtonsoft.Json;
 
 namespace Data.Crates
 {
-    public class DenySerizalitionConverter : JsonConverter
+    public class DenySerializationConverter : JsonConverter
     {
         private readonly string _message;
 
-        public DenySerizalitionConverter(string message)
+        public DenySerializationConverter(string message)
         {
             _message = message;
         }
