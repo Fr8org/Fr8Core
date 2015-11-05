@@ -250,13 +250,13 @@ namespace pluginIntegrationTests
             var curActionController = CreateActionController();
             var  actionDTO = await curActionController.Configure(curActionDTO) as OkNegotiatedContentResult<ActionDTO>;
 
-            
+
 
             // Assert initial configuration returned in CrateStorage.
             Assert.NotNull(actionDTO);
             Assert.NotNull(actionDTO.Content);
             Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
-            Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 4);
+            Assert.AreEqual(4, actionDTO.Content.CrateStorage.CrateDTO.Count);
             Assert.True((actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME)));
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO

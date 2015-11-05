@@ -38,11 +38,13 @@ namespace terminalFr8Core.Actions
         {
             if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDO.CrateStorageDTO().CrateDTO.Add(new CrateDTO());
+                curActionDO.UpdateCrateStorageDTO(new List<CrateDTO>());
             }
 
             var crateControls = CreateControlsCrate();
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateControls);
+            var curCrateDTOList = new List<CrateDTO>();
+            curCrateDTOList.Add(crateControls);
+            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
 
             return Task.FromResult<ActionDO>(curActionDO);
         }
@@ -90,9 +92,11 @@ namespace terminalFr8Core.Actions
                             "Sql Column Types",
                             columnTypes.ToArray()
                         );
+                    var curCrateDTOList = new List<CrateDTO>();
+                    curCrateDTOList.Add(tableDefinitionCrate);
+                    curCrateDTOList.Add(columnTypesCrate);
+                    curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
 
-                    curActionDO.CrateStorageDTO().CrateDTO.Add(tableDefinitionCrate);
-                    curActionDO.CrateStorageDTO().CrateDTO.Add(columnTypesCrate);
                 }
                 catch
                 {

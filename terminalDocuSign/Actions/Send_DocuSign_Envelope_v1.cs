@@ -149,7 +149,7 @@ namespace terminalDocuSign.Actions
 
             if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDO.CrateStorageDTO().CrateDTO.Add(new CrateDTO());
+                curActionDO.UpdateCrateStorageDTO(new List<CrateDTO>());
             }
 
             // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
@@ -178,7 +178,10 @@ namespace terminalDocuSign.Actions
                 .ToArray();
 
             curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(curUpstreamFieldsCrate);
+            var curCrateDTOList = new List<CrateDTO>();
+            curCrateDTOList.Add(curUpstreamFieldsCrate);
+            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
+
 
             return curActionDO;
         }
@@ -235,9 +238,11 @@ namespace terminalDocuSign.Actions
                 "DocuSignTemplateStandardFields",
                 standartFields.ToArray()
             );
-
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateUserDefinedDTO);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateStandardDTO);
+            var crateDTOList = new List<CrateDTO>();
+            crateDTOList.Add(crateUserDefinedDTO);
+            crateDTOList.Add(crateStandardDTO);
+            
+            curActionDO.UpdateCrateStorageDTO(crateDTOList);
 
             return await Task.FromResult(curActionDO);
         }

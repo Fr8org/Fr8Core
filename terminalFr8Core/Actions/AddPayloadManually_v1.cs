@@ -92,13 +92,13 @@ namespace terminalFr8Core.Actions
 
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
             userDefinedPayload.ForEach(x => x.Value = x.Key);
-
-            curActionDO.CrateStorageDTO().CrateDTO.Add(
-                Crate.CreateDesignTimeFieldsCrate(
+            var curCrateList = new List<CrateDTO>();
+            curCrateList.Add(Crate.CreateDesignTimeFieldsCrate(
                     "ManuallyAddedPayload",
                     userDefinedPayload.ToArray()
-                    )
-                );
+                    ));
+
+            curActionDO.UpdateCrateStorageDTO(curCrateList);
 
             return Task.FromResult(curActionDO);
         }

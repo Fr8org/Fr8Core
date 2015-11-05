@@ -113,10 +113,12 @@ namespace terminalSlack.Actions
             var crateDesignTimeFields = CreateDesignTimeFieldsCrate();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateEventSubscriptions = CreateEventSubscriptionCrate();
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateControls);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateDesignTimeFields);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateAvailableChannels);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateEventSubscriptions);
+            var curCrateDTOList = new List<CrateDTO>();
+            curCrateDTOList.Add(crateControls);
+            curCrateDTOList.Add(crateDesignTimeFields);
+            curCrateDTOList.Add(crateAvailableChannels);
+            curCrateDTOList.Add(crateEventSubscriptions);
+            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
 
             return await Task.FromResult<ActionDO>(curActionDO);
         }

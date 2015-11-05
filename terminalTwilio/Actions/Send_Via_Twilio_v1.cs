@@ -45,8 +45,10 @@ namespace terminalTwilio.Actions
             {
                 curActionDO.UpdateCrateStorageDTO(new List<CrateDTO>());
             }
-            curActionDO.CrateStorageDTO().CrateDTO.Add(PackCrate_ConfigurationControls());
-            curActionDO.CrateStorageDTO().CrateDTO.Add(GetAvailableDataFields(curActionDO));
+            var curCrateList = new List<CrateDTO>();
+            curCrateList.Add(PackCrate_ConfigurationControls());
+            curCrateList.Add(GetAvailableDataFields(curActionDO));
+            curActionDO.UpdateCrateStorageDTO(curCrateList);
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 

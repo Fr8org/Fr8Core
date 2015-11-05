@@ -221,7 +221,10 @@ namespace terminalExcel.Actions
             Crate.RemoveCrateByManifestType(curActionDO.CrateStorageDTO().CrateDTO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
             // Creating configuration control crate with a file picker and textblock
             var configControlsCrateDTO = CreateConfigurationControlsCrate(true);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(configControlsCrateDTO);
+            var curCrateDTOList = new List<CrateDTO>();
+            curCrateDTOList.Add(configControlsCrateDTO);
+
+            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
 
             if (filePathsFromUserSelection.Length > 0)
             {

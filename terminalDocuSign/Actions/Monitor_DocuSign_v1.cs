@@ -208,10 +208,13 @@ namespace terminalDocuSign.Actions
             var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             var eventFields = PackCrate_DocuSignEventFields();
+            var crateList = new List<CrateDTO>();
 
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateControls);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateDesignTimeFields);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(eventFields);
+            crateList.Add(crateControls);
+            crateList.Add(crateDesignTimeFields);
+            crateList.Add(eventFields);
+
+            curActionDO.UpdateCrateStorageDTO(crateList);
 
             var configurationFields = Crate.GetConfigurationControls(curActionDO);
 

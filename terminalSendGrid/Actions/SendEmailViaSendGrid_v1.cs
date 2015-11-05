@@ -58,11 +58,13 @@ namespace terminalSendGrid.Actions
         {
             if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDO.CrateStorageDTO().CrateDTO.Add(new CrateDTO());
+                curActionDO.UpdateCrateStorageDTO(new List<CrateDTO>());
             }
+            var curCrateDTOList = new List<CrateDTO>();
+            curCrateDTOList.Add(CreateControlsCrate());
+            curCrateDTOList.Add(await GetAvailableDataFields(curActionDO));
 
-            curActionDO.CrateStorageDTO().CrateDTO.Add(CreateControlsCrate());
-            curActionDO.CrateStorageDTO().CrateDTO.Add(await GetAvailableDataFields(curActionDO));
+            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
 
             return curActionDO;
         }

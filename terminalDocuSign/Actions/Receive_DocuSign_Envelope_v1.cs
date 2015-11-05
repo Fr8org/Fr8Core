@@ -174,7 +174,9 @@ namespace terminalDocuSign.Actions
 
             //add the text block crate
             var crateControls = PackControlsCrate(textBlock);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateControls);
+            var curCrateDTOList = new List<CrateDTO>();
+            curCrateDTOList.Add(crateControls);
+            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
 
             //get the template ID from the upstream actions
             string docuSignTemplateId = string.Empty;

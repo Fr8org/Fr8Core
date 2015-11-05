@@ -78,9 +78,12 @@ namespace terminalFr8Core.Actions
             AddLabelControl(curActionDO, "SelectObjectError",
                 "No object selected", "Please select object from the list above.");
 
-            curActionDO.CrateStorageDTO().CrateDTO.Add(
+            var curCrateDTOList = new List<CrateDTO>();
+            curCrateDTOList.Add(
                 Crate.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray())
             );
+
+            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
 
             return curActionDO;
         }

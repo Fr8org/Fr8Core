@@ -124,12 +124,12 @@ namespace terminalDocuSign.Actions
         {
             if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDO.CrateStorageDTO().CrateDTO.Add(new CrateDTO()); 
+                curActionDO.UpdateCrateStorageDTO(new List<CrateDTO>()); 
             }
-
-            curActionDO.CrateStorageDTO().CrateDTO.Add(PackControls(new ActionUi()));
-            curActionDO.CrateStorageDTO().CrateDTO.AddRange(await PackSources());
-
+            var curCrateDTOList = new List<CrateDTO>();
+            curCrateDTOList.Add(PackControls(new ActionUi()));
+            curCrateDTOList.AddRange(await PackSources());
+            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
             return curActionDO;
         }
 
@@ -139,9 +139,7 @@ namespace terminalDocuSign.Actions
             
             controls.ClonePropertiesFrom(Crate.GetStandardConfigurationControls(curActionDO.CrateStorageDTO().CrateDTO.First(x => x.ManifestId == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID)));
             
-            var action = Mapper.Map<ActionDO>(curActionDO);
-
-            action.ChildNodes = new List<RouteNodeDO>();
+            curActionDO.ChildNodes = new List<RouteNodeDO>();
 
             if (controls.UseTemplate.Selected)
             {
@@ -163,7 +161,7 @@ namespace terminalDocuSign.Actions
                     Name = "First action"
                 };
 
-                action.ChildNodes.Add(firstAction);
+                curActionDO.ChildNodes.Add(firstAction);
             }
 
             int finalActionTemplateId;
@@ -180,10 +178,10 @@ namespace terminalDocuSign.Actions
                     Name = "Final action"
                 };
 
-                action.ChildNodes.Add(finalAction);
+                curActionDO.ChildNodes.Add(finalAction);
             }
             
-            return action;
+            return curActionDO;
         }
         
         private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(Predicate<ActivityTemplateDO> query)

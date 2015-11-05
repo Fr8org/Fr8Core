@@ -113,9 +113,12 @@ namespace terminalSlack.Actions
             var crateControls = PackCrate_ConfigurationControls();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateAvailableFields = await CreateAvailableFieldsCrate(curActionDO);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateControls);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateAvailableChannels);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(crateAvailableFields);
+            var curCrateDTOList = new List<CrateDTO>();
+            curCrateDTOList.Add(crateControls);
+            curCrateDTOList.Add(crateAvailableChannels);
+            curCrateDTOList.Add(crateAvailableFields);
+            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
+
 
             return curActionDO;
         }

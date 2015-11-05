@@ -587,7 +587,9 @@ namespace TerminalBase.BaseClasses
             if (controlsCrate == null)
             {
                 controlsCrate = Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls");
-                actionDO.CrateStorageDTO().CrateDTO.Add(controlsCrate);
+                var curCrateList = new List<CrateDTO>();
+                curCrateList.Add(controlsCrate);
+                actionDO.UpdateCrateStorageDTO(curCrateList);
             }
 
             return controlsCrate;
@@ -602,8 +604,9 @@ namespace TerminalBase.BaseClasses
             if (crate == null)
             {
                 crate = Crate.CreateDesignTimeFieldsCrate(label, fields);
-
-                actionDO.CrateStorageDTO().CrateDTO.Add(crate);
+                var curCrateList = new List<CrateDTO>();
+                curCrateList.Add(crate);
+                actionDO.UpdateCrateStorageDTO(curCrateList);
             }
             else
             {

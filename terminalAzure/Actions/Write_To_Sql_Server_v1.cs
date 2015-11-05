@@ -74,7 +74,7 @@ namespace terminalAzure.Actions
         {
             if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDO.CrateStorageDTO().CrateDTO.Add(new CrateDTO());
+                curActionDO.UpdateCrateStorageDTO(new List<CrateDTO>());
             }
 
             var crateList = new List<CrateDTO>();
@@ -133,7 +133,7 @@ namespace terminalAzure.Actions
             }
 
             curCrateStorageDTO = curActionDO.CrateStorageDTO();
-            curActionDO.CrateStorageDTO().CrateDTO = curCrateStorageDTO.CrateDTO;
+            curActionDO.UpdateCrateStorageDTO(curCrateStorageDTO.CrateDTO);
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 

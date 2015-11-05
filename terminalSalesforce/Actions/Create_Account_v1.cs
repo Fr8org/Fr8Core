@@ -94,7 +94,9 @@ namespace terminalSalesforce.Actions
             };
 
             var controls = PackControlsCrate(accountName, accountNumber, phone);
-            curActionDO.CrateStorageDTO().CrateDTO.Add(controls);
+            var curCrateDTOList = new List<CrateDTO>();
+            curCrateDTOList.Add(controls);
+            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
 
             return await Task.FromResult(curActionDO);
         }

@@ -82,7 +82,7 @@ namespace terminalDocuSign.Actions
             CrateStorageDTO crateStrorageDTO;
             if (curActionDO.CrateStorageDTO() == null)
             {
-                curActionDO.CrateStorageDTO().CrateDTO.Add(new CrateDTO());
+                curActionDO.UpdateCrateStorageDTO(new List<CrateDTO>());
             }
 
             if (curActionDO.Id > 0)
