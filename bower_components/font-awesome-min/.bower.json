@@ -28,6 +28,6 @@
     "commit": "613d1f9284ba19d0f69ca87c59126a38a2d8c62d"
   },
   "_source": "git://github.com/tylerlong/font-awesome-min.git",
-  "_target": "~4.3.0",
+  "_target": "4.3.0",
   "_originalSource": "font-awesome-min"
 }

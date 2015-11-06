@@ -16,6 +16,7 @@ using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using terminalDocuSign.Actions;
+using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Tests.Fixtures;
 
 namespace terminalDocuSign.Tests.Actions
@@ -30,6 +31,8 @@ namespace terminalDocuSign.Tests.Actions
         {
             base.SetUp();
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
+
+            PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
 
             _extract_From_DocuSign_Envelope_v1 = new Receive_DocuSign_Envelope_v1();
         }

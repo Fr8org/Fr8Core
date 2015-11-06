@@ -159,12 +159,13 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Add(PackControlsCrate(textBlock));
             }
 
-            var templateId = upstream.SelectMany(x => x.Content.Fields).FirstOrDefault(x => x.Key == "TemplateId");
+            // var templateId = upstream.SelectMany(x => x.Content.Fields).FirstOrDefault(x => x.Key == "TemplateId");
+            var templateId = envelopeId.Value;
 
             // If DocuSignTemplate Id was found, then add design-time fields.
-            if (templateId != null)
+            if (!string.IsNullOrEmpty(templateId))
             {
-                _docuSignManager.ExtractFieldsAndAddToCrate(templateId.Value, docuSignAuthDTO, curActionDTO);
+                _docuSignManager.ExtractFieldsAndAddToCrate(templateId, docuSignAuthDTO, curActionDTO);
             }
 
             return curActionDTO;

@@ -11,7 +11,24 @@ namespace Data.Interfaces.Manifests
     [CrateManifestSerializer(typeof(StandardConfigurationControlsSerializer))]
     public class StandardConfigurationControlsCM : Manifest
     {
+        private static readonly HashSet<string> MembersToIgnore;
+
         public List<ControlDefinitionDTO> Controls { get; set; }
+
+        static StandardConfigurationControlsCM()
+        {
+            MembersToIgnore = new HashSet<string>();
+
+            foreach (var member in typeof(StandardConfigurationControlsCM).GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            {
+                MembersToIgnore.Add(member.Name);
+            }
+
+            foreach (var member in typeof(StandardConfigurationControlsCM).GetFields(BindingFlags.Instance | BindingFlags.Public))
+            {
+                MembersToIgnore.Add(member.Name);
+            }
+        }
 
         public StandardConfigurationControlsCM()
 			  :base(MT.StandardConfigurationControls)
@@ -46,19 +63,40 @@ namespace Data.Interfaces.Manifests
 
          public void ClonePropertiesFrom(StandardConfigurationControlsCM configurationControls)
          {
-             var props = GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.CanWrite && x.CanRead && x.Name != "Controls").ToArray();
+             var type = GetType();
 
-             foreach (var prop in props)
+             foreach (var prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
              {
-                 var control = configurationControls.FindByNameNested<object>(prop.Name);
-                 if (control != null)
+                 if (MembersToIgnore.Contains(prop.Name) || !prop.CanRead)
                  {
-                     ClonePrimitiveProperties(prop.GetValue(this), control);
+                     continue;
                  }
+
+                 ClonePropertiesForObject(prop.GetValue(this), prop.Name, configurationControls);
+             }
+
+             foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public))
+             {
+                 if (MembersToIgnore.Contains(field.Name))
+                 {
+                     continue;
+                 }
+
+                 ClonePropertiesForObject(field.GetValue(this), field.Name, configurationControls);
              }
          }
 
-         private static void ClonePrimitiveProperties(object target, object source)
+        private static void ClonePropertiesForObject(object target, string objectName, StandardConfigurationControlsCM configurationControls)
+        {
+            var control = configurationControls.FindByNameNested<object>(objectName);
+            
+            if (control != null)
+            {
+                ClonePrimitiveProperties(target, control);
+            }
+        }
+
+        private static void ClonePrimitiveProperties(object target, object source)
          {
              var properties = target.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => (x.PropertyType.IsValueType || x.PropertyType == typeof(string)) && x.CanWrite);
              var sourceTypeProp = source.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => (x.PropertyType.IsValueType || x.PropertyType == typeof(string)) && x.CanRead).ToDictionary(x => x.Name, x => x);
