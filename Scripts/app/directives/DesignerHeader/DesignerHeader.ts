@@ -4,10 +4,10 @@ module dockyard.directives.designerHeader {
     'use strict';
 
     export interface IDesignerHeaderScope extends ng.IScope {
-        onStateChange(): void;
+        editing: boolean;
         editTitle(): void;
         onTitleChange(): void;
-        route: model.RouteDTO
+        route: model.RouteDTO;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -36,44 +36,31 @@ module dockyard.directives.designerHeader {
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
 
-                $scope.onStateChange = () => {
-                    if ($scope.route.routeState === model.RouteState.Inactive) {
-                        RouteService.deactivate($scope.route);
-                    } else {
-                        RouteService.activate($scope.route);
-                    }
-                };
-
-                const editingClass = 'design-header-title-editing';
-                var $title = $($element).find('.designer-header-title');
                 $scope.editTitle = () => {
-                    $title.addClass(editingClass);
-                    $title.children('.design-header-title-editField').focus();
+                    $scope.editing = true;
                 };
 
                 $scope.onTitleChange = () => {
-                    $title.removeClass(editingClass);
+                    $scope.editing = false;
                     var result = RouteService.update({ id: $scope.route.id, name: $scope.route.name });
                     result.$promise.then(() => { });
                 };
 
-                var unregister = $scope.$watch(function () {
+                var currentState: number;
+                $scope.$watch('route.routeState', () => {
                     if ($scope.route) {
-                        var input: HTMLInputElement = <HTMLInputElement>$($element).find('input[data-bootstrap-switch]').get(0);
-                        $($element).find('[data-bootstrap-switch]').bootstrapSwitch({
-                            state: $scope.route.routeState === model.RouteState.Active,
-                            onSwitchChange: () => {
-                                if (input.checked) {
-                                    RouteService.activate($scope.route);
-                                } else {
-                                    RouteService.deactivate($scope.route);
-                                }
-                            }
-                        });
+                        if (currentState === undefined) currentState = $scope.route.routeState;
 
-                        unregister();
+                        if (currentState !== $scope.route.routeState) {
+                            if ($scope.route.routeState === model.RouteState.Inactive) {
+                                RouteService.deactivate($scope.route);
+                            } else if ($scope.route.routeState === model.RouteState.Active) {
+                                RouteService.activate($scope.route);
+                            }
+                        }
                     }
                 });
+
             };
         }
 

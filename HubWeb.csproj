@@ -743,6 +743,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\WebServiceFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\InputFocus.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilder.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextSource.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
