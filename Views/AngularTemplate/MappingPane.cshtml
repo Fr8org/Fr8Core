@@ -11,21 +11,18 @@
         <div class="row margin-top-15" ng-repeat="dataItem in dataItems">
             <div class="col-md-6">
                 <select ng-model="dataItem.selectedSource" class="form-control"
-                        ng-options="source.Key as source.Key for source in dataItem.sources"
+                        ng-options="source.key as source.key for source in dataItem.sources"
                         ng-change="uiDropDownChanged()" stop-click-propagation>
                     <option value="">Select Document Field</option>
                 </select>
             </div>
             <div class="col-md-6">
                 <select ng-model="dataItem.selectedTarget" class="form-control"
-                        ng-options="target.Value as target.Key for target in dataItem.targets"
+                        ng-options="target.value as target.key for target in dataItem.targets"
                         ng-change="uiDropDownChanged()" stop-click-propagation>
                     <option value="">Select Document Field</option>
                 </select>
             </div>
         </div>
-    </div>
-    <div ng-show="dataItems.length == 0">
-        Can't find any downstream fields. Try adding something.
     </div>
 </div>

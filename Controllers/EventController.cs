@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Web.Http;
+using Data.Constants;
+using Data.Crates;
 using StructureMap;
 using Data.Crates.Helpers;
 using Data.Infrastructure;
@@ -13,6 +15,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
+using Newtonsoft.Json;
 
 namespace HubWeb.Controllers
 {
@@ -25,7 +28,7 @@ namespace HubWeb.Controllers
         private readonly ICrateManager _crate;
       
 
-        private delegate void EventRouter(LoggingData loggingData);
+        private delegate void EventRouter(LoggingDataCm loggingDataCm);
 
         public EventController()
         {
@@ -34,44 +37,49 @@ namespace HubWeb.Controllers
             
         }
 
-        private EventRouter GetEventRouter(EventDTO eventDTO)
+        private EventRouter GetEventRouter(EventCM eventCm)
         {
-            if (eventDTO.EventName.Equals("Plugin Incident"))
+            if (eventCm.EventName.Equals("Plugin Incident"))
             {
                 return _event.HandlePluginIncident;
             }
 
-            if (eventDTO.EventName.Equals("Plugin Event"))
+            if (eventCm.EventName.Equals("Plugin Event"))
             {
                 return _event.HandlePluginEvent;
             }
 
-            throw new InvalidOperationException("Unknown EventDTO with name: " + eventDTO.EventName);
+            throw new InvalidOperationException("Unknown EventDTO with name: " + eventCm.EventName);
         }
 
         [HttpPost]
         public IHttpActionResult Post(CrateDTO submittedEventsCrate)
         {
+            var eventCm = _crate.FromDto(submittedEventsCrate).Get<EventCM>();
 
-            var eventDTO = _crate.GetContents<EventDTO>(submittedEventsCrate);
+            if (eventCm.CrateStorage == null)
+            {
+                return Ok();
+            }
 
             //Request of alex to keep things simple for now
-            if (eventDTO.CrateStorage.Count != 1)
+            if (eventCm.CrateStorage.Count != 1)
             {
                 throw new InvalidOperationException("Only single crate can be processed for now.");
             }
 
-            EventRouter currentRouter = GetEventRouter(eventDTO);
+            EventRouter currentRouter = GetEventRouter(eventCm);
 
             var errorMsgList = new List<string>();
-            foreach (var crateDTO in eventDTO.CrateStorage)
+            foreach (var crateDTO in eventCm.CrateStorage)
             {
-                if (crateDTO.ManifestType != "Dockyard Plugin Event or Incident Report")
+                if (crateDTO.ManifestType.Id != (int)MT.LoggingData)
                 {
-                    errorMsgList.Add("Don't know how to process an EventReport with the Contents: " + crateDTO.Contents);
+                    errorMsgList.Add("Don't know how to process an EventReport with the Contents: " +  JsonConvert.SerializeObject(_crate.ToDto(crateDTO)));
                     continue;
                 }
-                var loggingData =_crate.GetContents<LoggingData>(crateDTO);
+
+                var loggingData = crateDTO.Get<LoggingDataCm>();
                 currentRouter(loggingData);
             }
 

@@ -206,6 +206,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\Create_Account_v1.cs" />
+    <Compile Include="Actions\Create_Contact_v1.cs" />
     <Compile Include="Actions\Create_Lead_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
@@ -215,7 +217,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\Account.cs" />
+    <Compile Include="Infrastructure\AccountDTO.cs" />
     <Compile Include="Infrastructure\Authentication.cs" />
+    <Compile Include="Infrastructure\Contact.cs" />
+    <Compile Include="Infrastructure\ContactDTO.cs" />
     <Compile Include="Infrastructure\IEvent.cs" />
     <Compile Include="Infrastructure\ISalesforceIntegration.cs" />
     <Compile Include="Infrastructure\Lead.cs" />
@@ -296,15 +302,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
-          <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>51532</DevelopmentServerPort>
-          <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:51234/</IISUrl>
-          <NTLMAuthentication>False</NTLMAuthentication>
-          <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>http://test.dockyard.com:81</CustomServerUrl>
-          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
           <servers defaultServer="">
             <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:48024/" workingDir="" />
           </servers>

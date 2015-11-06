@@ -8,6 +8,8 @@ using Data.Entities;
 using Data.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using Data.Interfaces.Manifests;
+using Hub.Managers;
 
 namespace Hub.Services
 {
@@ -15,7 +17,7 @@ namespace Hub.Services
     /// File service
     /// </summary>
     public class Plugin : IPlugin
-    { 
+    {
         public IEnumerable<PluginDO> GetAll()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -24,14 +26,30 @@ namespace Hub.Services
             }
         }
 
-        public async Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
-        //    public IList<ActivityTemplateDO> GetAvailableActions(string uri)
+        public async Task<int> RegisterTerminals(string uri)
         {
-            // IList<ActionTemplateDO> actionTemplateList = null; ;
-            var restClient = new RestfulServiceClient();
-            return await restClient.GetAsync<IList<ActivityTemplateDO>>(new Uri(uri, UriKind.Absolute));
-            //var actionTemplateList = restClient.GetAsync<Task<IList<ActivityTemplateDO>>>(new Uri(uri, UriKind.Absolute)).Result;
+            int registeredTerminals = 0;
+            var eventReporter = ObjectFactory.GetInstance<EventReporter>();
+
+            var activityTemplateList = await GetAvailableActions(uri);
+            foreach (var activityTemplate in activityTemplateList)
+            {
+                try
+                {
+                    new ActivityTemplate().Register(activityTemplate);
+                    registeredTerminals++;
+                }
+                catch (Exception ex)
+                {
+                    eventReporter = ObjectFactory.GetInstance<EventReporter>();
+                    eventReporter.ActivityTemplatePluginRegistrationError(
+                        string.Format("Failed to register {0} terminal. Error Message: {1}", activityTemplate.Plugin.Name, ex.Message),
+                        ex.GetType().Name);
+                }
+            }
+            return registeredTerminals;
         }
+        
 
         /// <summary>
         /// Parses the required plugin service URL for the given action by Plugin Name and its version
@@ -49,7 +67,7 @@ namespace Hub.Services
                     uow.PluginRepository.FindOne(
                         plugin => plugin.Name.Equals(curPluginName) && plugin.Version.Equals(curPluginVersion));
 
-                
+
                 string curPluginUrl = string.Empty;
 
                 //if there is a valid plugin, prepare the URL with its endpoint and add the given action name
@@ -61,6 +79,13 @@ namespace Hub.Services
                 //return the pugin URL
                 return curPluginUrl;
             }
+        }
+
+        private async Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
+        {
+            var restClient = new RestfulServiceClient();
+            var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
+            return standardFr8TerminalCM.Actions;
         }
     }
 }

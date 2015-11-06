@@ -86,7 +86,8 @@ var dockyard;
                     this.$http = $http;
                     this.templateUrl = '/AngularTemplate/PaneConfigureAction';
                     this.scope = {
-                        currentAction: '='
+                        currentAction: '=',
+                        mode: '@'
                     };
                     this.restrict = 'E';
                     PaneConfigureAction.prototype.link = function (scope, element, attrs) {
@@ -213,14 +214,14 @@ var dockyard;
                             if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, 'Standard Authentication')) {
                                 var authCrate = crateHelper
                                     .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
-                                var authMS = angular.fromJson(authCrate.contents);
+                                var authMS = authCrate.contents;
                                 // Dockyard auth mode.
                                 if (authMS.Mode == 1) {
-                                    StartInternalAuthentication($scope.currentAction.activityTemplate.id);
+                                    startInternalAuthentication($scope.currentAction.activityTemplate.id);
                                 }
                                 else {
                                     // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                                    StartExternalAuthentication($scope.currentAction.activityTemplate.id);
+                                    startExternalAuthentication($scope.currentAction.activityTemplate.id);
                                 }
                                 return;
                             }
@@ -230,7 +231,7 @@ var dockyard;
                                 $scope.configurationWatchUnregisterer = $scope.$watch(function (scope) { return $scope.currentAction.configurationControls; }, $scope.onConfigurationChanged, true);
                             }, 1000);
                         }
-                        function StartInternalAuthentication(activityTemplateId) {
+                        function startInternalAuthentication(activityTemplateId) {
                             var self = this;
                             var modalScope = $scope.$new(true);
                             modalScope.activityTemplateId = activityTemplateId;
@@ -242,7 +243,7 @@ var dockyard;
                             })
                                 .result.then(function () { return loadConfiguration(); });
                         }
-                        function StartExternalAuthentication(activityTemplateId) {
+                        function startExternalAuthentication(activityTemplateId) {
                             var self = this;
                             var messageListener = function (event) {
                                 if (!self.$scope || !event.data || event.data != 'external-auth-success') {

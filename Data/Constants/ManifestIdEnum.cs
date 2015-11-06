@@ -12,12 +12,15 @@ namespace Data.Constants
         [Display(Name = "Standard Design-Time Fields")]
         StandardDesignTimeFields = 3,
 
+        [Display(Name = "Dockyard Plugin Event or Incident Report")]
+        EventOrIncidentReport = 2,
+
         [Display(Name = "Standard Payload Keys")]
         StandardPayloadKeys = 4,
 
         [Display(Name = "Standard Payload Data")]
         StandardPayloadData = 5,
-
+        
         [Display(Name = "Standard Configuration Controls")]
         StandardConfigurationControls = 6,
 
@@ -41,6 +44,9 @@ namespace Data.Constants
 
         [Display(Name = "Standard Logging Crate")]
         StandardLoggingCrate = 13,
+
+        [Display(Name = "Logging Data")]
+        LoggingData = 10013,
 
         [Display(Name = "Docusign Event")]
         DocuSignEvent = 14,
@@ -73,6 +79,9 @@ namespace Data.Constants
         StandardFr8Terminal = 23,
 
         [Display(Name = "Standard File List")]
-        StandardFileList = 24
+        StandardFileList = 24,
+
+        [Display(Name = "Docusign Recipient")]
+        DocuSignRecipient = 26
     }
 }

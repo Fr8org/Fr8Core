@@ -26,7 +26,7 @@ namespace Hub.Services
             var startTime = DateTimeOffset.Parse(startTimeStr);
             var endTime = DateTimeOffset.Parse(endTimeStr).AddDays(1);    //We need to add days - since the end time is in the morning (For example 8pm -> 4am).
                                                                     //Not adding the AddDays() would mean we're never in the time frame (after 8pm and before 4am on the same dame).
-            var currentTime = DateTimeOffset.Now;
+            var currentTime = DateTimeOffset.UtcNow;
             return (currentTime > startTime && currentTime < endTime);
         }
 

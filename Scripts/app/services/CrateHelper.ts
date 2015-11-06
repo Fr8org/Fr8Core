@@ -133,7 +133,7 @@
                 crateStorage, 'Standard Configuration Controls');
 
             // Overwrite contents of that crate with actual data in controlList.fields.
-            controlListCrate.contents = angular.toJson({ Controls: controlList.fields });
+            controlListCrate.contents = { Controls: controlList.fields };
         }
 
         private populateListItemsFromDataSource(fields: Array<model.ControlDefinitionDTO>, crateStorage: model.CrateStorage) {
@@ -153,7 +153,7 @@
                         continue;
                     }
 
-                    var listItems = <any> angular.fromJson(stdfCrate.contents);
+                    var listItems = <any> stdfCrate.contents;
                     dropdownListField.listItems = listItems.Fields;
                 }
 
@@ -169,12 +169,20 @@
             }
         }
 
+        private resetClickedFlag(fields: Array<any>) {
+            for (var field of fields) {
+                if (field.clicked) 
+                    field.clicked = false;
+            }
+        }
+
         public createControlListFromCrateStorage(crateStorage: model.CrateStorage): model.ControlsList {
             var crate = this.findByManifestType(
                 crateStorage, 'Standard Configuration Controls'
                 );
             var controlsList = new model.ControlsList();
-            controlsList.fields = angular.fromJson(crate.contents).Controls;
+            controlsList.fields = (<any>crate.contents).Controls;
+            this.resetClickedFlag(controlsList.fields); // Unset 'clicked' flag on buttons and other coontrols on which it exists
             this.populateListItemsFromDataSource(controlsList.fields, crateStorage);
             return controlsList;
         }

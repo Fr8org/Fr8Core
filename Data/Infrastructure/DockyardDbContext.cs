@@ -266,7 +266,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ActionDO>().ToTable("Actions");
             modelBuilder.Entity<ProcessNodeDO>().ToTable("ProcessNodes");
             modelBuilder.Entity<SubrouteDO>().ToTable("Subroutes");
-            modelBuilder.Entity<DocuSignEventDO>().ToTable("DocuSignEvents");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
             modelBuilder.Entity<MT_Field>().ToTable("MT_Fields");

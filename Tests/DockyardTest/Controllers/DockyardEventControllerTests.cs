@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Results;
 using AutoMapper;
+using Data.Crates;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -17,7 +18,6 @@ using HubWeb.Controllers;
 using HubWeb.ViewModels;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Web.Controllers;
 using Web.ViewModels;
 using Data.Interfaces.Manifests;
 
@@ -42,7 +42,7 @@ namespace DockyardTest.Controllers
         public async Task dockyard_events_NotStandardEventReport_ThrowsException()
         {
             var dockyardEventController = new DockyardEventController();
-            CrateDTO crateDTO = new CrateDTO();
+            var crateDTO = new CrateDTO();
 
 
             await dockyardEventController.ProcessDockyardEvents(crateDTO);

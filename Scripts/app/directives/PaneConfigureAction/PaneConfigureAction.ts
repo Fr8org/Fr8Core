@@ -65,6 +65,7 @@ module dockyard.directives.paneConfigureAction {
         mapFields: (scope: IPaneConfigureActionScope) => void;
         processing: boolean;
         configurationWatchUnregisterer: Function;
+        mode: string;
     }
 
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -76,7 +77,8 @@ module dockyard.directives.paneConfigureAction {
         public templateUrl = '/AngularTemplate/PaneConfigureAction';
         public controller: ($scope: IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
-            currentAction: '='
+            currentAction: '=',
+            mode: '@'
         };
         public restrict = 'E';
 
@@ -89,7 +91,6 @@ module dockyard.directives.paneConfigureAction {
             private $window: ng.IWindowService,
             private $http: ng.IHttpService
         ) {
-
             PaneConfigureAction.prototype.link = (
                 scope: IPaneConfigureActionScope,
                 element: ng.IAugmentedJQuery,
@@ -185,14 +186,12 @@ module dockyard.directives.paneConfigureAction {
                     }
                     else {
                         var fieldEvent = eventHandlerList[0];
-
                         if (fieldEvent.handler != null) {
                             crateHelper.mergeControlListCrate(
                                 scope.currentAction.configurationControls,
                                 scope.currentAction.crateStorage
                             );
                             scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
-                
                             loadConfiguration();
                         }
                     }
@@ -245,17 +244,17 @@ module dockyard.directives.paneConfigureAction {
                         var authCrate = crateHelper
                             .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
 
-                        var authMS = angular.fromJson(authCrate.contents);
+                        var authMS = <any>authCrate.contents;
 
                         // Dockyard auth mode.
                         if (authMS.Mode == 1) {
-                            StartInternalAuthentication($scope.currentAction.activityTemplate.id);
+                            startInternalAuthentication($scope.currentAction.activityTemplate.id);
                         }
 
                         // External auth mode.                           
                         else {
                             // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                            StartExternalAuthentication($scope.currentAction.activityTemplate.id);
+                            startExternalAuthentication($scope.currentAction.activityTemplate.id);
                         }
 
                         return;
@@ -272,7 +271,7 @@ module dockyard.directives.paneConfigureAction {
                     }, 1000);
                 }
 
-                function StartInternalAuthentication(activityTemplateId: number) {
+                function startInternalAuthentication(activityTemplateId: number) {
                     var self = this;
 
                     var modalScope = <any>$scope.$new(true);
@@ -280,14 +279,14 @@ module dockyard.directives.paneConfigureAction {
 
                     $modal.open({
                         animation: true,
-                        templateUrl: 'AngularTemplate/InternalAuthentication',
+                        templateUrl: '/AngularTemplate/InternalAuthentication',
                         controller: 'InternalAuthenticationController',
                         scope: modalScope
                     })
                         .result.then(() => loadConfiguration());
                 }
 
-                function StartExternalAuthentication(activityTemplateId: number) {
+                function startExternalAuthentication(activityTemplateId: number) {
                     var self = this;
 
                     var messageListener = function (event) {

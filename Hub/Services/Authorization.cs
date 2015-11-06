@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Constants;
 using StructureMap;
 using Newtonsoft.Json;
 using Data.Entities;
@@ -23,7 +24,7 @@ namespace Hub.Services
 
         public Authorization()
         {
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
+           _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         public string GetToken(string userId)
@@ -80,7 +81,7 @@ namespace Hub.Services
                     };
                     uow.AuthorizationTokenRepository.Add(tokenDO);
                 }
-                tokenDO.ExpiresAt = DateTime.Now.AddYears(100);
+				tokenDO.ExpiresAt = DateTime.UtcNow.AddYears(100);
                 tokenDO.Token = token;
                 uow.SaveChanges();
             }
@@ -328,39 +329,21 @@ namespace Hub.Services
             return externalAuthUrlDTO;
         }
 
-        private void AddAuthenticationCrate(
-            ActionDTO actionDTO, int authType)
+        private void AddAuthenticationCrate(ActionDTO actionDTO, int authType)
         {
-            if (actionDTO.CrateStorage == null)
+            using (var updater = _crate.UpdateStorage(() => actionDTO.CrateStorage))
             {
-                actionDTO.CrateStorage = new CrateStorageDTO()
-                {
-                    CrateDTO = new List<CrateDTO>()
-                };
+                var mode = authType == AuthenticationType.Internal ? AuthenticationMode.InternalMode : AuthenticationMode.ExternalMode;
+
+                updater.CrateStorage.Add(_crate.CreateAuthenticationCrate("RequiresAuthentication", mode));
             }
-
-            var mode = authType == AuthenticationType.Internal
-                ? AuthenticationMode.InternalMode
-                : AuthenticationMode.ExternalMode;
-
-            actionDTO.CrateStorage.CrateDTO.Add(
-                _crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
-            );
         }
 
         private void RemoveAuthenticationCrate(ActionDTO actionDTO)
         {
-            if (actionDTO.CrateStorage != null
-                && actionDTO.CrateStorage.CrateDTO != null)
+            using (var updater = _crate.UpdateStorage(() => actionDTO.CrateStorage))
             {
-                var authCrates = actionDTO.CrateStorage.CrateDTO
-                    .Where(x => x.ManifestType == CrateManifests.STANDARD_AUTHENTICATION_NAME)
-                    .ToList();
-
-                foreach (var authCrate in authCrates)
-                {
-                    actionDTO.CrateStorage.CrateDTO.Remove(authCrate);
-                }
+                updater.CrateStorage.RemoveByManifestId((int) MT.StandardAuthentication);
             }
         }
 

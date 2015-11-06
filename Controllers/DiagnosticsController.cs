@@ -174,7 +174,7 @@ namespace HubWeb.Controllers
 Test failed at {0}. Results:
 {1}.
 See more: {2}
-", DateTime.Now, results, Utilities.Server.ServerUrl);
+", DateTime.UtcNow, results, Utilities.Server.ServerUrl);
                     string subject = String.Format("Alert! Service test failed. Service: {0} Test: {1}", typeof (T).Name,
                         testName);
                     var curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, "ops@kwasant.com");
@@ -230,9 +230,9 @@ See more: {2}
             }
 
             bool success = false;
-            var startTime = DateTime.Now;
+			var startTime = DateTime.UtcNow;
             var endTime = startTime.Add(TimeSpan.FromMinutes(10));
-            while (!success && DateTime.Now < endTime)
+			while (!success && DateTime.UtcNow < endTime)
             {
                 if (messageReceived)
                 {

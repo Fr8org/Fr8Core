@@ -204,6 +204,21 @@
     <Compile Include="Constants\FieldValidationResult.cs" />
     <Compile Include="Constants\ActivityDirection.cs" />
     <Compile Include="Constants\ManifestIdEnum.cs" />
+    <Compile Include="Crates\Crate.cs" />
+    <Compile Include="Crates\CrateManifestAttribute.cs" />
+    <Compile Include="Crates\CrateManifestType.cs" />
+    <Compile Include="Crates\CrateManifestTypeDescriptionAttribute.cs" />
+    <Compile Include="Crates\CrateStorage.cs" />
+    <Compile Include="Crates\CrateStorageSerializer.cs" />
+    <Compile Include="Crates\CrateStorageSerializer.DefaultSerializer.cs" />
+    <Compile Include="Crates\CrateT.cs" />
+    <Compile Include="Crates\DenySerializationConverter.cs" />
+    <Compile Include="Crates\ICrateStorageSerializer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Crates\IManifestSerializer.cs" />
+    <Compile Include="Crates\ManifestDiscovery.cs" />
+    <Compile Include="Crates\ManifestTypeCache.cs" />
     <Compile Include="Entities\RouteNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
@@ -239,6 +254,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ExternalAuthenticationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalAuthUrlDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FilterConditionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\LogItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
@@ -252,7 +268,7 @@
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\EventCM.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDTO.cs" />
@@ -273,6 +289,7 @@
     <Compile Include="Interfaces\IMTFieldTypeRepository.cs" />
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
+    <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8RoutesCM .cs" />
     <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM.cs" />
@@ -383,6 +400,10 @@
     <Compile Include="Migrations\201510261339053_CreateWebServicesTable_Migration.Designer.cs">
       <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511040622414_AddedDocuSignFields.cs" />
+    <Compile Include="Migrations\201511040622414_AddedDocuSignFields.Designer.cs">
+      <DependentUpon>201511040622414_AddedDocuSignFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -401,11 +422,6 @@
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
-    <Compile Include="Entities\DocuSignEventDO.cs" />
-    <Compile Include="Entities\DocuSignParserModels\DocuSignEnvelopeInformation.cs" />
-    <Compile Include="Entities\DocuSignParserModels\EnvelopeStatus.cs" />
-    <Compile Include="Entities\DocuSignParserModels\RecipientStatus.cs" />
-    <Compile Include="Entities\DocuSignParserModels\RecipientStatuses.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\PluginDO.cs" />
@@ -563,7 +579,6 @@
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="States\UserState.cs" />
-    <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ContainerValidator.cs" />
@@ -659,6 +674,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510261339053_CreateWebServicesTable_Migration.resx">
       <DependentUpon>201510261339053_CreateWebServicesTable_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511040622414_AddedDocuSignFields.resx">
+      <DependentUpon>201511040622414_AddedDocuSignFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

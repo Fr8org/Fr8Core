@@ -5,6 +5,7 @@ using Data.Entities;
 using Data.States;
 using Hub.Services;
 using Utilities.Configuration.Azure;
+using Data.Interfaces.Manifests;
 
 namespace terminalFr8Core.Controllers
 {
@@ -17,7 +18,7 @@ namespace terminalFr8Core.Controllers
         /// </summary>
         [HttpGet]
         [Route("discover")]
-        [ResponseType(typeof(List<ActivityTemplateDO>))]
+        [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverPlugins()
         {
             var result = new List<ActivityTemplateDO>();
@@ -72,7 +73,50 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             });
 
-            return Json(result);    
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "Select_Fr8_Object",
+                Label = "Select Fr8 Object",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1",
+                MinPaneWidth = 330
+            });
+
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "ConnectToSql",
+                Label = "Connect To SQL",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1"
+            });
+
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "BuildQuery",
+                Label = "Build Query",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1"
+            });
+
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "ExecuteSql",
+                Label = "Execute Sql Query",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1"
+            });
+
+            var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            {
+                Definition = plugin,
+                Actions = result
+            };
+
+            return Json(curStandardFr8TerminalCM);
         }
     }
 }

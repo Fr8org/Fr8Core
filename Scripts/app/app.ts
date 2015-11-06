@@ -13,7 +13,9 @@ var app = angular.module("app", [
     "ngFileUpload",
     "textAngular",
     "ui.select",
-    "pusher-angular"
+    "pusher-angular",
+    "ngToast",
+    "frapontillo.bootstrap-switch"
 ]);
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
@@ -58,11 +60,6 @@ app.controller('HeaderController', ['$scope', function ($scope) {
     $scope.$on('$includeContentLoaded', function () {
         Layout.initHeader(); // init header
     });
-}]);
-
-/* Setup Layout Part - Sidebar */
-app.controller('PageHeadController', ['$scope', function ($scope) {
-
 }]);
 
 /* Setup Layout Part - Footer */
@@ -127,7 +124,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         .state('processBuilder', {
             url: "/processes/{id}/builder",
             templateUrl: "/AngularTemplate/ProcessBuilder",
-            data: { noTitle: true, noContainer: true },
+            data: { pageTitle: '' },
         })
 
         .state('showIncidents', {

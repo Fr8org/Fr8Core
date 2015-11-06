@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Data.Crates;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
@@ -10,6 +11,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
+using Hub.Managers;
 using Hub.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
@@ -212,11 +214,17 @@ namespace DockyardTest.Services
 
         private static string GetCrateStorageAsString()
         {
-            List<CrateDTO> curCratesDTO = FixtureData.TestCrateDTO1();
-            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
-            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
-            string crateStorage = JsonConvert.SerializeObject(crateStorageDTO);
-            return crateStorage;
+            var curCratesDTO = FixtureData.TestCrateDTO1();
+            
+            var tmp = new ActionDO();
+
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(tmp))
+            {
+                updater.CrateStorage.AddRange(curCratesDTO);
+            }
+
+            return tmp.CrateStorage;
+
         }	
 
     }

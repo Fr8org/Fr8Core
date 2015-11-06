@@ -37,6 +37,7 @@ namespace Data.Interfaces.DataTransferObjects
         public const string Button = "Button";
         public const string TextSource = "TextSource";
         public const string TextArea = "TextArea";
+        public const string QueryBuilder = "QueryBuilder";
     }
 
     public class CheckBoxControlDefinitionDTO : ControlDefinitionDTO
@@ -78,6 +79,14 @@ namespace Data.Interfaces.DataTransferObjects
         public TextBoxControlDefinitionDTO()
         {
             Type = ControlTypes.TextBox;
+        }
+    }
+
+    public class QueryBuilderControlDefinitionDTO : ControlDefinitionDTO
+    {
+        public QueryBuilderControlDefinitionDTO()
+        {
+            Type = ControlTypes.QueryBuilder;
         }
     }
 
@@ -202,12 +211,19 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
-    public class ButtonControlDefinisionDTO : ControlDefinitionDTO
+    public class ButtonControlDefinitionDTO : ControlDefinitionDTO
     {
         [JsonProperty("class")]
         public string CssClass;
 
-        public ButtonControlDefinisionDTO()
+        /// <summary>
+        /// Where the button was clicked before the current /configure request was sent.
+        /// Used to recognize 'click' event on server-side.
+        /// </summary>
+        [JsonProperty("clicked")]
+        public bool Clicked;
+
+        public ButtonControlDefinitionDTO()
         {
             Type = ControlTypes.Button;
         }
@@ -271,6 +287,14 @@ namespace Data.Interfaces.DataTransferObjects
 
     public class ControlEvent
     {
+        public static ControlEvent RequestConfig
+        {
+            get
+            {
+                 return new ControlEvent("onChange", "requestConfig");
+            }
+        }
+
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("handler")]

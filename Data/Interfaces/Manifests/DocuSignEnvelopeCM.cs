@@ -16,6 +16,8 @@ namespace Data.Interfaces.Manifests
         public string EnvelopeId { get; set; }
         public string ExternalAccountId { get; set; }
 
+        public string StatusChangedDateTime { get; set; }
+
         public DocuSignEnvelopeCM()
               : base(Constants.MT.DocuSignEnvelope)
         {
