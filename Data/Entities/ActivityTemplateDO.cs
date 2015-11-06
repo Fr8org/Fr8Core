@@ -8,6 +8,7 @@ using Data.Interfaces;
 using Data.States;
 using Data.States.Templates;
 using StructureMap;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -16,6 +17,7 @@ namespace Data.Entities
         public ActivityTemplateDO()
         {
             this.AuthenticationType = States.AuthenticationType.None;
+            this.ActivityTemplateState = States.ActivityTemplateState.Active;
         }
 
         public ActivityTemplateDO(string name, string label, string version, int pluginId) : this()
@@ -26,6 +28,7 @@ namespace Data.Entities
             /* We don't need to validate pluginId because of EF chack ForeignKey and if pluginId doesn't exist in table Plugins then 
              * EF will throw 'System.Data.Entity.Infrastructure.DbUpdateException'  */
             this.PluginID = pluginId;
+            this.ActivityTemplateState = States.ActivityTemplateState.Active;
         }
 
         /// <summary>
@@ -51,6 +54,7 @@ namespace Data.Entities
                 PluginStatus = PluginStatus.Active,
                 Endpoint = endPoint
             };
+            this.ActivityTemplateState = States.ActivityTemplateState.Active;
         }
 
         [Key]
@@ -71,6 +75,12 @@ namespace Data.Entities
         public virtual _AuthenticationTypeTemplate AuthenticationTypeTemplate { get; set; }
 
         public string ComponentActivities { get; set; }
+
+        [Required]
+        [ForeignKey("ActivityTemplateStateTemplate")]
+        public int ActivityTemplateState { get; set; }
+
+        public _ActivityTemplateStateTemplate ActivityTemplateStateTemplate { get; set; }
 
         [ForeignKey("Plugin")]
         public int PluginID { get; set; }

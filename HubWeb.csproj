@@ -16,7 +16,7 @@
     <AssemblyName>HubWeb</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>false</UseIISExpress>
+    <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort>44301</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
@@ -744,6 +744,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\WebServiceFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\InputFocus.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilder.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextSource.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
@@ -4051,6 +4052,7 @@
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-resource.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\bootstrap-switch\bootstrap-switch.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\Metronic.d.ts" />
@@ -4154,7 +4156,16 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:30643/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>

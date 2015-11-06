@@ -13,7 +13,8 @@ var app = angular.module("app", [
     "textAngular",
     "ui.select",
     "pusher-angular",
-    "ngToast"
+    "ngToast",
+    "frapontillo.bootstrap-switch"
 ]);
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
 app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
@@ -61,7 +62,7 @@ app.controller('FooterController', ['$scope', function ($scope) {
 /* Setup Rounting For All Pages */
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider, $urlRouterProvider, $httpProvider) {
         // Install a HTTP request interceptor that causes 'Processing...' message to display
-        $httpProvider.interceptors.push(function ($q) {
+        $httpProvider.interceptors.push(function ($q, $window) {
             return {
                 request: function (config) {
                     // Show page spinner If there is no request parameter suppressSpinner.
@@ -78,6 +79,10 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
                     return config;
                 },
                 responseError: function (config) {
+                    if (config.status === 403) {
+                        $window.location.href = $window.location.origin + '/DockyardAccount'
+                            + '?returnUrl=/Dashboard' + encodeURIComponent($window.location.hash);
+                    }
                     Metronic.stopPageLoading();
                     return $q.reject(config);
                 }

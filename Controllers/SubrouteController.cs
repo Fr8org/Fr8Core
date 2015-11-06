@@ -19,6 +19,7 @@ namespace HubWeb.Controllers
     /// Subroute web api controller to handle CRUD operations from frontend.
     /// </summary>
     [RoutePrefix("api/processNodeTemplate")]
+    [Fr8ApiAuthorize]
     public class ProcessNodeTemplateController : ApiController
     {
         /// <summary>

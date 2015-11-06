@@ -404,6 +404,10 @@
     <Compile Include="Migrations\201511040622414_AddedDocuSignFields.Designer.cs">
       <DependentUpon>201511040622414_AddedDocuSignFields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511062013473_AddActivityTemplateState.cs" />
+    <Compile Include="Migrations\201511062013473_AddActivityTemplateState.Designer.cs">
+      <DependentUpon>201511062013473_AddActivityTemplateState.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -418,6 +422,7 @@
     <Compile Include="Repositories\WebServiceRepository.cs" />
     <Compile Include="States\ActivityCategory.cs" />
     <Compile Include="States\AuthenticationType.cs" />
+    <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
@@ -488,6 +493,7 @@
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
     <Compile Include="States\Templates\_AuthenticationTypeTemplate.cs" />
+    <Compile Include="States\Templates\_ActivityTemplateStateTemplate.cs" />
     <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
@@ -677,6 +683,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511040622414_AddedDocuSignFields.resx">
       <DependentUpon>201511040622414_AddedDocuSignFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511062013473_AddActivityTemplateState.resx">
+      <DependentUpon>201511062013473_AddActivityTemplateState.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
