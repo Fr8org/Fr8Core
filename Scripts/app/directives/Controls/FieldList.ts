@@ -39,7 +39,6 @@ module dockyard.directives {
 
                     // Create new row.
                     $scope.addRow = function () {
-                        debugger;
 
                         var fieldListRow = new FieldListRow();
                         fieldListRow.field = '';

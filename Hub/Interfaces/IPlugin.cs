@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Data.Entities;
+using System.Threading.Tasks;
 
 namespace Hub.Interfaces
 {
@@ -15,5 +16,7 @@ namespace Hub.Interfaces
         /// <param name="curActionName">Required action</param>
         /// <returns>Parsed URl to the plugin for its action</returns>
         string ParsePluginUrlFor(string curPluginName, string curPluginVersion, string curActionName);
+
+        Task<IList<string>> RegisterTerminals(string uri);
     }
 }

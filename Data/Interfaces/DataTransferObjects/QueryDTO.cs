@@ -9,5 +9,7 @@ namespace Data.Interfaces.DataTransferObjects
     public class QueryDTO
     {
         public string Name { get; set; }
+
+        public List<FilterConditionDTO> Criteria { get; set; }
     }
 }

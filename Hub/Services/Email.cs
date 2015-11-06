@@ -108,7 +108,7 @@ namespace Hub.Services
 
             DateTimeOffset dateReceived;
             if (!DateTimeOffset.TryParse(strDateReceived, out dateReceived))
-                dateReceived = DateTimeOffset.Now;
+                dateReceived = DateTimeOffset.UtcNow;
 
             String strDateCreated = String.Empty;
             strDateCreated = mailMessage.Headers["Date"];

@@ -399,5 +399,18 @@ namespace HubWeb.Controllers
                 return Ok(userDTO);
             }
         }
+
+        [Route("api/user/getCurrent")]
+        [HttpGet]
+        public IHttpActionResult GetCurrent()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);
+                var userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
+                userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
+                return Ok(userDTO);
+            }
+        }
     }
 }

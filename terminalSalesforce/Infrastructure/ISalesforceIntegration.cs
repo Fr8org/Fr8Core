@@ -9,6 +9,10 @@ namespace terminalSalesforce.Infrastructure
 {
     public interface ISalesforceIntegration
     {
-        bool CreateLead(ActionDTO actionDTO);       
+        bool CreateLead(ActionDTO actionDTO);
+
+        bool CreateContact(ActionDTO actionDTO);
+
+        bool CreateAccount(ActionDTO actionDTO);
     }
 }

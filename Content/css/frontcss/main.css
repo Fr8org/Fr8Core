@@ -896,3 +896,11 @@ ul.bordered-list li:first-child {
 	padding-left: 2%;
 	padding-right: 2%;
 }
+
+.login-container {
+    margin-top: 60px;
+}
+
+.login-block {
+    border-right: 1px solid #A5A5A5;
+}

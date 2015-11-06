@@ -14,7 +14,7 @@
     <RootNamespace>terminalDocuSign</RootNamespace>
     <AssemblyName>terminalDocuSign</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <UseIISExpress>false</UseIISExpress>
+    <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -184,19 +184,26 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Mail_Merge_Into_DocuSign_v1.cs" />
     <Compile Include="Actions\Collect_Form_Data_Solution_v1.cs" />
+    <Compile Include="Actions\Mail_Merge_Into_DocuSign_v1.cs" />
     <Compile Include="Actions\Receive_DocuSign_Envelope_v1.cs" />
+    <Compile Include="Actions\Monitor_DocuSign_v1.cs" />
     <Compile Include="Actions\Record_DocuSign_Events_v1.cs" />
     <Compile Include="Actions\Send_DocuSign_Envelope_v1.cs" />
-    <Compile Include="Actions\Monitor_DocuSign_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\PluginController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="DataTransferObjects\DocuSignAuthDTO.cs" />
+    <Compile Include="DataTransferObjects\DocuSignEventDTO.cs" />
     <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatus.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatuses.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\DocuSignEnvelopeInformation.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\EnvelopeStatus.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatus.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatuses.cs" />
     <Compile Include="Infrastructure\IndexManager.cs" />
     <Compile Include="Infrastructure\PluginDataAutoMapperBootStrapper.cs" />
     <Compile Include="DataTransferObjects\RecipientDTO.cs" />

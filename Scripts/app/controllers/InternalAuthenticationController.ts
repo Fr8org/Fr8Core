@@ -25,7 +25,6 @@
                     return;
                 }
 
-                debugger;
 
                 var data = {
                     ActivityTemplateId: $scope.activityTemplateId,
@@ -35,7 +34,6 @@
 
                 $http.post('/authentication/token', data)
                     .then(function (res: any) {
-                        debugger;
 
                         if (res.data.error) {
                             $scope.authErrorText = res.data.error;

@@ -26,7 +26,6 @@ var dockyard;
                     };
                 }
                 //private ChangeSelection(route: model.Route) {
-                //    debugger;
                 //    this._$scope.route.selection = route.selection;
                 //    //route.selection
                 //}

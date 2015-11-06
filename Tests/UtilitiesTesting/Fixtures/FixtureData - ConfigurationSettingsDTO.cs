@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Data.Crates;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
@@ -12,21 +14,21 @@ namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
     {
-        public static CrateStorageDTO TestConfigurationSettings_healthdemo()
+        public static CrateStorage TestConfigurationSettings_healthdemo()
         {
             return CrateStorageDTO();
         }
 
-        public static CrateStorageDTO CrateStorageDTO()
+        public static CrateStorage CrateStorageDTO()
         {
             var fieldDTO = new TextBoxControlDefinitionDTO();
             fieldDTO.Name = "connection_string";
             fieldDTO.Required = true;
             fieldDTO.Label = "SQL Connection String";
 
-            CrateStorageDTO curCrateStorage = new CrateStorageDTO();
+            CrateStorage curCrateStorage = new CrateStorage();
             ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
-            curCrateStorage.CrateDTO.Add(crate.CreateStandardConfigurationControlsCrate("Configuration Data for WriteToAzureSqlServer", fieldDTO));
+            curCrateStorage.Add(crate.CreateStandardConfigurationControlsCrate("Configuration Data for WriteToAzureSqlServer", fieldDTO));
             return curCrateStorage;
         }
 
@@ -39,16 +41,15 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static CrateStorageDTO TestCrateStorage()
+        public static CrateStorage TestCrateStorage()
         {
             ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
-            var curConfigurationStore = new CrateStorageDTO
+            var curConfigurationStore = new CrateStorage
             {
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                CrateDTO = new List<CrateDTO>
-                {
+               
                     crate.CreateStandardConfigurationControlsCrate("AzureSqlServer Design-Time Fields", TestConnectionStringFieldDefinition())
-                }
+                
             };
 
             return curConfigurationStore;
@@ -68,14 +69,19 @@ namespace UtilitiesTesting.Fixtures
         public static ActionDO TestConfigurationSettingsDTO1()
         {
             ActionDO curAction = FixtureData.TestAction1();
+            ICrateManager crate = ObjectFactory.GetInstance<ICrateManager>();
 
             //create connection string value crates with a vald connection string
-            var connectionStringCrate = FixtureData.TestCrateStorage();
-            var connectionStringFields = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(connectionStringCrate.CrateDTO[0].Contents);
-            connectionStringFields.Controls[0].Value =
-                @"Data Source=s79ifqsqga.database.windows.net;Initial Catalog=demodb_health;User ID=alexeddodb;Password=Thales89";
-            connectionStringCrate.CrateDTO[0].Contents = JsonConvert.SerializeObject(connectionStringFields);
-            curAction.CrateStorage = JsonConvert.SerializeObject(connectionStringCrate);
+            
+            using (var updater = crate.UpdateStorage(curAction))
+            {
+               updater.CrateStorage = TestCrateStorage();
+
+               var connectionStringFields = updater.CrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+                
+                connectionStringFields.Content.Controls[0].Value = @"Data Source=s79ifqsqga.database.windows.net;Initial Catalog=demodb_health;User ID=alexeddodb;Password=Thales89";
+            }
+            
             return curAction;
 
         }

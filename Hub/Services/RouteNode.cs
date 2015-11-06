@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Crates;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
@@ -309,7 +310,7 @@ namespace Hub.Services
             return curActivityTemplates;
         }
 
-        public async Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        public async Task<List<Crate<T>>> GetCratesByDirection<T>(int activityId, GetCrateDirection direction)
         {
             var httpClient = new HttpClient();
 
@@ -328,11 +329,45 @@ namespace Hub.Services
                 var content = await response.Content.ReadAsStringAsync();
                 var curActions = JsonConvert.DeserializeObject<List<ActionDTO>>(content);
 
-                var curCrates = new List<CrateDTO>();
+                var curCrates = new List<Crate<T>>();
 
                 foreach (var curAction in curActions)
                 {
-                    curCrates.AddRange(_crate.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
+                    var storage = _crate.FromDto(curAction.CrateStorage);
+
+                    curCrates.AddRange(storage.CratesOfType<T>());
+                }
+
+                return curCrates;
+            }
+        }
+
+        public async Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        { 
+            var httpClient = new HttpClient();
+
+            // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
+            var directionSuffix = (direction == GetCrateDirection.Upstream)
+                ? "upstream_actions/"
+                : "downstream_actions/";
+
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "route_nodes/"
+                + directionSuffix
+                + "?id=" + activityId;
+
+            using (var response = await httpClient.GetAsync(url))
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var curActions = JsonConvert.DeserializeObject<List<ActionDTO>>(content);
+
+                var curCrates = new List<Crate>();
+
+                foreach (var curAction in curActions)
+                {
+                    var storage = _crate.FromDto(curAction.CrateStorage);
+
+                    curCrates.AddRange(storage.Where(x => x.ManifestType.Type == manifestType));
                 }
 
                 return curCrates;

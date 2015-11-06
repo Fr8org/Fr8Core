@@ -65,7 +65,7 @@ namespace HubWeb.Controllers
                 return Ok(result);
             };
         }  
-        
+              
         [Route("status")]
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
@@ -151,7 +151,9 @@ namespace HubWeb.Controllers
         }
 
         
-
+        
+        [HttpDelete]
+        [Route("{id:int}")]
         public IHttpActionResult Delete(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

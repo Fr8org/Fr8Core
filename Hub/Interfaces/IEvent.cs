@@ -13,12 +13,12 @@ namespace Hub.Interfaces
         /// <summary>
         /// Handles Plugin Incident
         /// </summary>
-        void HandlePluginIncident(LoggingData incident);
+        void HandlePluginIncident(LoggingDataCm incident);
         
         /// <summary>
         /// Handles Plugin Event 
         /// </summary>
-        void HandlePluginEvent(LoggingData eventData);
+        void HandlePluginEvent(LoggingDataCm eventDataCm);
 
         Task<string> RequestParsingFromPlugins(HttpRequestMessage result, string pluginName, string pluginVersion);
         Task<string> RequestParsingFromPluginsDebug(HttpRequestMessage result, string pluginName, string pluginVersion);
