@@ -95,19 +95,21 @@
 /* Process Builder */
 
 .designer-header {
-    background-color: white;
-    color: #58b8a9;
-    margin-bottom: 20px;
-    padding: 20px;
+    background: transparent;
+    width: 100%;
+}
+
+.designer-header-title.page-title {
+    height: 49px; 
+    padding: 0 0 19px 0;
 }
 
 .design-header-title-editField { 
     display: none;
-    font-size: 24px;
+    font-size: 22px;
     border: 0;
-    margin: 0 -5px;
+    margin: -3px -5px 0 -5px;
     padding: 0 5px;
-    font-weight: bold;
     width: 100%;
 }
 
@@ -120,16 +122,14 @@
 }
 
 .designer-header-glyphicon {
-    font-size: 18px;
-    line-height: 34px;
+    font-size: 22px;
+    line-height: 24px;
     margin-left: 20px;
     cursor: pointer;
 }
 
 .process-template-name {
     display: inline-block;
-    font-size: 24px;
-    font-weight: bold;
     vertical-align: top;
 }
 
@@ -140,6 +140,7 @@
 
 .designer-header-statusLabel {
     margin-right: 10px;
+    color: #697882;
 }
 
 .designer-header-status .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary {
