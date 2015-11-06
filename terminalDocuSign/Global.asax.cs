@@ -16,11 +16,11 @@ namespace terminalDocuSign
             formatters.Remove(formatters.XmlFormatter);
 
             GlobalConfiguration.Configure(WebApiConfig.Register);
-				DataAutoMapperBootStrapper.ConfigureAutoMapper();
-				PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
+			DataAutoMapperBootStrapper.ConfigureAutoMapper();
+			PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
             // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE);
-				PluginDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
+			PluginDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
         }
     }
 }
