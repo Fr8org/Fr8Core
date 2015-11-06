@@ -55,6 +55,11 @@ namespace HubWeb.Controllers
                 var curContainerDO = uow.ContainerRepository.GetByKey(id);
                 var curPayloadDTO = new PayloadDTO(id);
 
+                if (curContainerDO.CrateStorage == null)
+                {
+                    curContainerDO.CrateStorage = string.Empty;
+                }
+
                 curPayloadDTO.CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curContainerDO.CrateStorage);
 
                 EventManager.ProcessRequestReceived(curContainerDO);
