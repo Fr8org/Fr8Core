@@ -44,13 +44,13 @@ namespace terminalFr8Core.Actions
                         ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                     }
                 };
-                
+
                 Controls.Add(Selected_Fr8_Object);
             }
         }
 
         // configure the action will return the initial UI crate 
-        public async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO = null)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
         }
@@ -69,21 +69,21 @@ namespace terminalFr8Core.Actions
             return Task.FromResult(curActionDO);
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 var confControls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
-                if (confControls != null )
-        {
+                if (confControls != null)
+                {
                     var ui = new ActionUi();
 
                     // Clone properties of StandardConfigurationControlsCM to handy ActionUi
                     ui.ClonePropertiesFrom(confControls);
 
                     if (!string.IsNullOrWhiteSpace(ui.Selected_Fr8_Object.Value))
-            {
+                    {
                         var fr8ObjectCrateDTO = await GetDesignTimeFieldsCrateOfSelectedFr8Object(ui.Selected_Fr8_Object.Value);
 
                         const string designTimeControlName = "Select Fr8 Object Properties";
@@ -94,16 +94,16 @@ namespace terminalFr8Core.Actions
 
                         updater.CrateStorage.RemoveByLabel(designTimeControlName);
                         updater.CrateStorage.Add(fr8ObjectCrateDTO);
-            }
-        }
+                    }
                 }
+            }
 
             return await Task.FromResult(curActionDO);
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.GetStorage(curActionDO)==null)
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -141,7 +141,7 @@ namespace terminalFr8Core.Actions
             using (var response = await httpClient.GetAsync(url))
             {
                 var content = await response.Content.ReadAsAsync<CrateDTO>();
-                
+
                 return Crate.FromDto(content);
             }
         }

@@ -42,36 +42,36 @@ namespace terminalFr8Core.Actions
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
             }
-//
-//            var cratePayload = Crate.Create(
-//                "Manual Payload Data",
-//                JsonConvert.SerializeObject(userDefinedPayload),
-//                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
-//                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
-//                );
-//
-//            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { cratePayload });
+            //
+            //            var cratePayload = Crate.Create(
+            //                "Manual Payload Data",
+            //                JsonConvert.SerializeObject(userDefinedPayload),
+            //                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
+            //                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
+            //                );
+            //
+            //            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { cratePayload });
 
             return processPayload;
         }
 
-        public async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO = null)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
             }
-//
-//            var crateStrorageDTO = AssembleCrateStorage(configurationControlsCrate);
-//            curActionDTO.CrateStorage = crateStrorageDTO;
+            //
+            //            var crateStrorageDTO = AssembleCrateStorage(configurationControlsCrate);
+            //            curActionDTO.CrateStorage = crateStrorageDTO;
 
             return Task.FromResult(curActionDO);
         }
@@ -95,7 +95,7 @@ namespace terminalFr8Core.Actions
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
             userDefinedPayload.ForEach(x => x.Value = x.Key);
 
-            using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.RemoveByLabel("ManuallyAddedPayload");
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
