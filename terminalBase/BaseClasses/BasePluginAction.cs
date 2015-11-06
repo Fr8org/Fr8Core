@@ -201,7 +201,7 @@ namespace TerminalBase.BaseClasses
 
         protected string ExtractControlFieldValue(ActionDO curActionDO, string fieldName)
         {
-            var storage = Crate.FromDto(curActionDO.CrateStorage);
+            var storage = Crate.GetStorage(curActionDO);
 
             var controlsCrateMS = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 

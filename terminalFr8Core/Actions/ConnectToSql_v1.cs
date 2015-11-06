@@ -27,7 +27,7 @@ namespace terminalFr8Core.Actions
         public override ConfigurationRequestType ConfigurationEvaluator(
             ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -44,7 +44,7 @@ namespace terminalFr8Core.Actions
                 updater.CrateStorage.Add(CreateControlsCrate());
             }
 
-            return Task.FromResult<ActionDTO>(curActionDO);
+            return Task.FromResult<ActionDO>(curActionDO);
         }
 
         private Crate CreateControlsCrate()
@@ -91,10 +91,6 @@ namespace terminalFr8Core.Actions
                             "Sql Column Types",
                             columnTypes.ToArray()
                         );
-                    var curCrateDTOList = new List<CrateDTO>();
-                    curCrateDTOList.Add(tableDefinitionCrate);
-                    curCrateDTOList.Add(columnTypesCrate);
-                    curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
 
                     var connectionStringFieldList = new List<FieldDTO>()
                     {

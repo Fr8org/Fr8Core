@@ -44,7 +44,7 @@ namespace terminalSendGrid.Actions
         /// </summary>
         private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -58,7 +58,7 @@ namespace terminalSendGrid.Actions
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
-                updater.CrateStorage.Add(await GetAvailableDataFields(curActionDTO));
+                updater.CrateStorage.Add(await GetAvailableDataFields(curActionDO));
 
             }
 
@@ -163,17 +163,17 @@ namespace terminalSendGrid.Actions
             var processPayload = await GetProcessPayload(containerId);
 
             var emailAddress = ExtractSpecificOrUpstreamValue(
-                Crate.FromDto(curActionDO.CrateStorage),
+                Crate.GetStorage(curActionDO.CrateStorage),
                 Crate.FromDto(processPayload.CrateStorage),
                 "EmailAddress"
             );
             var emailSubject = ExtractSpecificOrUpstreamValue(
-                Crate.FromDto(curActionDO.CrateStorage),
+                Crate.GetStorage(curActionDO.CrateStorage),
                 Crate.FromDto(processPayload.CrateStorage),
                 "EmailSubject"
             );
             var emailBody = ExtractSpecificOrUpstreamValue(
-                Crate.FromDto(curActionDO.CrateStorage),
+                Crate.GetStorage(curActionDO.CrateStorage),
                 Crate.FromDto(processPayload.CrateStorage),
                 "EmailBody"
             );

@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
+using Data.Entities;
 
 namespace terminalFr8Core.Actions
 {
@@ -58,7 +59,7 @@ namespace terminalFr8Core.Actions
         {
             var crateDesignTimeFields = PackFr8ObjectCrate();
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
@@ -102,7 +103,7 @@ namespace terminalFr8Core.Actions
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDO.CrateStorage))
+            if (Crate.GetStorage(curActionDO)==null)
             {
                 return ConfigurationRequestType.Initial;
             }

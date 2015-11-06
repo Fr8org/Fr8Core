@@ -9,16 +9,17 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Enums;
 using TerminalBase.BaseClasses;
+using Data.Entities;
 
 namespace terminalFr8Core.Infrastructure
 {
     internal class FindObjectHelper
     {
         public async Task<Dictionary<string, DbType>> ExtractColumnTypes(
-            BasePluginAction action, ActionDTO actionDTO)
+            BasePluginAction action, ActionDO actionDO)
         {
             var upstreamCrates = await action.GetCratesByDirection(
-                actionDTO.Id,
+                actionDO.Id,
                 CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 GetCrateDirection.Upstream
             );

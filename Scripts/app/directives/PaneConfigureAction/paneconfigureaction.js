@@ -237,7 +237,7 @@ var dockyard;
                             modalScope.activityTemplateId = activityTemplateId;
                             $modal.open({
                                 animation: true,
-                                templateUrl: 'AngularTemplate/InternalAuthentication',
+                                templateUrl: '/AngularTemplate/InternalAuthentication',
                                 controller: 'InternalAuthenticationController',
                                 scope: modalScope
                             })

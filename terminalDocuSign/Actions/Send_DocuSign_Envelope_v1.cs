@@ -86,7 +86,7 @@ namespace terminalDocuSign.Actions
         {
             var curTemplateId = ExtractTemplateId(actionDO);
             var curRecipientAddress = ExtractSpecificOrUpstreamValue(
-                Crate.FromDto(actionDO.CrateStorage),
+                Crate.GetStorage(actionDO.CrateStorage),
                 Crate.FromDto(processPayload.CrateStorage),
                 "Recipient"
             );
@@ -108,7 +108,7 @@ namespace terminalDocuSign.Actions
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             // Do we have any crate? If no, it means that it's Initial configuration
-            if (Crate.IsEmptyStorage(curActionDO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -183,7 +183,7 @@ namespace terminalDocuSign.Actions
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 if (updater.CrateStorage.Count == 0)
             {

@@ -31,7 +31,7 @@ namespace terminalSalesforce.Infrastructure
             ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
             client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
             AccountDTO account = new AccountDTO();
-            var curFieldList = _crateManager.FromDto(currentActionDTO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var curFieldList = _crateManager.GetStorage(actionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
             account.Name = curFieldList.Controls.First(x => x.Name == "accountName").Value;           
             account.AccountNumber = curFieldList.Controls.First(x => x.Name == "accountNumber").Value;
             account.Phone = curFieldList.Controls.First(x => x.Name == "phone").Value;

@@ -24,7 +24,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO actionDO, int containerId, AuthorizationTokenDO authTokenDO=null)
         {
-            var curControlsMS = Crate.FromDto(actionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var curControlsMS = Crate.GetStorage(actionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (curControlsMS == null)
             {
@@ -121,7 +121,7 @@ namespace terminalFr8Core.Actions
                 getErrorMessageCrate = GetTextBoxControlForDisplayingError("MapFieldsErrorMessage",
                          "This action couldn't find either source fields or target fields (or both). " +
                         "Try configuring some Actions first, then try this page again.");
-                curActionDO.CurrentView = "MapFieldsErrorMessage";
+                curActionDO.currentView = "MapFieldsErrorMessage";
             }
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
@@ -131,7 +131,7 @@ namespace terminalFr8Core.Actions
             var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(downstreamFieldsCrate);
@@ -156,7 +156,7 @@ namespace terminalFr8Core.Actions
             CrateStorage storage;
 
             // Check nullability for CrateStorage and Crates array length.
-            if (curAction.CrateStorage == null || (storage = Crate.FromDto(curAction.CrateStorage)).Count == 0)
+            if (curAction.CrateStorage == null || (storage = Crate.GetStorage(curAction.CrateStorage)).Count == 0)
             {
                 return true;
             }

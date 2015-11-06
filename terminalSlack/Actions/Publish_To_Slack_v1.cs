@@ -93,7 +93,7 @@ namespace terminalSlack.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -110,7 +110,7 @@ namespace terminalSlack.Actions
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateAvailableFields = await CreateAvailableFieldsCrate(curActionDO);
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(crateControls);

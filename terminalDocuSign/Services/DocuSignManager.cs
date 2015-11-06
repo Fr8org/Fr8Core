@@ -86,7 +86,7 @@ namespace terminalDocuSign.Services
                         Value = f.Value
                     });
 
-                using (var updater = Crate.UpdateStorage(() => curActionDTO.CrateStorage))
+                using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
                     {
                     updater.CrateStorage.RemoveByManifestId((int) MT.StandardDesignTimeFields);
                     updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", fieldCollection.ToArray()));

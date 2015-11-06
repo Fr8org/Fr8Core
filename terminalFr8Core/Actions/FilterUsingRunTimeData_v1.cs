@@ -248,7 +248,7 @@ namespace terminalFr8Core.Actions
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDataPackageDO)
         {
-            if (Crate.IsEmptyStorage(curActionDataPackageDO.CrateStorage))
+            if (Crate.(curActionDataPackageDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -315,7 +315,7 @@ namespace terminalFr8Core.Actions
                     break;
             }
 
-            return Crate.FromDto(curActionDataPackageDO.CrateStorage).FirstOrDefault(x =>
+            return Crate.GetStorage(curActionDataPackageDO.CrateStorage).FirstOrDefault(x =>
                 x.ManifestType.Type == curManifestType
                 && x.Label == curLabel);
 

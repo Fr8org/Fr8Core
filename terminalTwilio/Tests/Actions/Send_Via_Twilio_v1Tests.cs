@@ -62,10 +62,8 @@ namespace terminalTwilio.Tests.Actions
             var curActionDO = FixtureData.ConfigureTwilioAction();;
             AuthorizationTokenDO curAuthTokenDO = FixtureData.AuthTokenDOTest1();
             var actionResult = _twilioAction.Configure(curActionDO, curAuthTokenDO).Result;
-            
-            var controlsCrate = actionResult.CrateStorageDTO().CrateDTO[0];
 
-            var controlsCrate =  _crate.FromDto(actionResult.CrateStorage).FirstOrDefault();
+            var controlsCrate = _crate.GetStorage(actionResult.CrateStorage).FirstOrDefault();
 
             Assert.IsNotNull(controlsCrate);
         }
@@ -79,7 +77,7 @@ namespace terminalTwilio.Tests.Actions
             var curAuthTokenD0 = FixtureData.AuthTokenDOTest1();
             var actionResult = _twilioAction.Configure(curActionDO, curAuthTokenD0).Result;
 
-            var controlsCrate = _crate.FromDto(actionResult.CrateStorage).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsCrate = _crate.GetStorage(actionResult.CrateStorage).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             Assert.IsNotNull(controlsCrate);
         }
@@ -93,7 +91,7 @@ namespace terminalTwilio.Tests.Actions
 
             var actionResult = _twilioAction.Configure(curActionDO, null).Result;
 
-            var standardControls = _crate.FromDto(actionResult.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var standardControls = _crate.GetStorage(actionResult.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var smsNumberTextField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "SMS_Number").Count();
             var smsNumberUpstreamField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "upstream_crate").Count();
             var smsBodyFields = standardControls.FindByName("SMS_Body");

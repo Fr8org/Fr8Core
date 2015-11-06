@@ -36,7 +36,7 @@ namespace terminalDocuSign.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -59,7 +59,7 @@ namespace terminalDocuSign.Actions
         private void GetTemplateRecipientPickerValue(ActionDO curActionDO, out string selectedOption,
                                                      out string selectedValue)
         {
-            GetTemplateRecipientPickerValue(Crate.GetStorage(curActionDTO), out selectedOption, out selectedValue);
+            GetTemplateRecipientPickerValue(Crate.GetStorage(curActionDO), out selectedOption, out selectedValue);
         }
 
         private void GetTemplateRecipientPickerValue(CrateStorage storage, out string selectedOption, out string selectedValue)
@@ -213,14 +213,9 @@ namespace terminalDocuSign.Actions
             var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             var eventFields = PackCrate_DocuSignEventFields();
-            var crateList = new List<CrateDTO>();
-
-            crateList.Add(crateControls);
-            crateList.Add(crateDesignTimeFields);
-            crateList.Add(eventFields);
 
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Add(crateControls);
                 updater.CrateStorage.Add(crateDesignTimeFields);

@@ -24,7 +24,7 @@ namespace terminalFr8Core.Actions
         public override ConfigurationRequestType ConfigurationEvaluator(
             ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -106,7 +106,7 @@ namespace terminalFr8Core.Actions
                         AddQueryBuilder(updater.CrateStorage);
 
                         UpdatePreviousSelectedObject(updater.CrateStorage, selectedObject);
-                        await UpdateQueryableCriteria(updater.CrateStorage,  curActionDTO, selectedObject);
+                        await UpdateQueryableCriteria(updater.CrateStorage,  curActionDO, selectedObject);
                 }
             }
             }
@@ -306,10 +306,10 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Update queryable criteria list.
         /// </summary>
-        private async Task UpdateQueryableCriteria(CrateStorage storage, ActionDTO actionDTO, string selectedObject)
+        private async Task UpdateQueryableCriteria(CrateStorage storage, ActionDO actionDO, string selectedObject)
         {
             var matchedColumns = await MatchColumnsForSelectedObject(actionDO, selectedObject);
-            UpdateDesignTimeCrateValue(actionDO, "Queryable Criteria", matchedColumns.ToArray());
+            UpdateDesignTimeCrateValue(Crate.GetStorage(actionDO), "Queryable Criteria", matchedColumns.ToArray());
         }
 
         /// <summary>
@@ -338,8 +338,8 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
-            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
-            var stroage = Crate.GetStorage(curActionDTO);
+            var processPayload = await GetProcessPayload(containerId);
+            var stroage = Crate.GetStorage(curActionDO);
             var selectedObject = ExtractSelectedObject(stroage);
             if (string.IsNullOrEmpty(selectedObject))
             {

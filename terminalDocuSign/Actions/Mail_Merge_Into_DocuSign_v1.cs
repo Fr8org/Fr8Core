@@ -82,7 +82,7 @@ namespace terminalDocuSign.Actions
         /// </summary>
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDTO.Id > 0)
+            if (curActionDO.Id > 0)
             {
                 using (var updater = Crate.UpdateStorage(curActionDO))
 
@@ -133,7 +133,7 @@ namespace terminalDocuSign.Actions
             // Do not tarsnfer to follow up when child actions are already present 
             if (curActionDO.ChildNodes.Count() > 0) return ConfigurationRequestType.Initial;
 
-            var storage = Crate.GetStorage(curActionDTO);
+            var storage = Crate.GetStorage(curActionDO);
 
             // "Follow up" phase is when Continue button is clicked 
             ButtonControlDefinitionDTO button = GetStdConfigurationControl<ButtonControlDefinitionDTO>(storage, "Continue");

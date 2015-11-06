@@ -61,7 +61,7 @@ namespace pluginBaseTests.BaseClasses
             var result = await (Task<ActionDO>) ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
-            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).Count, _crateManager.FromDto(result.CrateStorage).Count);
+            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).Count, _crateManager.GetStorage(result).Count);
         }
 
 
@@ -79,8 +79,8 @@ namespace pluginBaseTests.BaseClasses
             var result = await (Task<ActionDO>)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
-            Assert.AreEqual(_crateManager.FromDto(curActionDO.CrateStorage).Count, _crateManager.FromDto(result.CrateStorage).Count);
-            Assert.AreEqual(_crateManager.FromDto(curActionDO.CrateStorage).First().ManifestType, _crateManager.FromDto(result.CrateStorage).First().ManifestType);
+            Assert.AreEqual(_crateManager.GetStorage(curActionDO.CrateStorage).Count, _crateManager.GetStorage(result.CrateStorage).Count);
+            Assert.AreEqual(_crateManager.GetStorage(curActionDO.CrateStorage).First().ManifestType, _crateManager.GetStorage(result.CrateStorage).First().ManifestType);
 
         }
 
@@ -147,7 +147,7 @@ namespace pluginBaseTests.BaseClasses
 
         private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            if (_crateManager.IsEmptyStorage(curActionDO.CrateStorage))
+            if (_crateManager.IsStorageEmpty(curActionDO))
                 return ConfigurationRequestType.Initial;
             return ConfigurationRequestType.Followup;
         }

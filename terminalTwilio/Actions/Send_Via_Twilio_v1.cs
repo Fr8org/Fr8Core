@@ -34,7 +34,7 @@ namespace terminalTwilio.Actions
         //currently many actions have two stages of configuration, and this method determines which stage should be applied
         private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
                 return ConfigurationRequestType.Initial;
             else
                 return ConfigurationRequestType.Followup;
@@ -126,7 +126,7 @@ namespace terminalTwilio.Actions
             if (curUpstreamFields.Length == 0)
             {
                 crate = PackCrate_ErrorTextBox("Error_NoUpstreamLists", "No Upstream fr8 Lists Were Found.");
-                curActionDO.CurrentView = "Error_NoUpstreamLists";
+                curActionDO.currentView = "Error_NoUpstreamLists";
             }
             else
             {

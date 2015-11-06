@@ -14,6 +14,8 @@ using terminalDocuSign.Services;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using Data.Entities;
+
 
 namespace terminalDocuSign.Actions
 {
@@ -66,7 +68,7 @@ namespace terminalDocuSign.Actions
 
             using (var updater = Crate.UpdateStorage(() => processPayload.CrateStorage))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", CreateActionPayload(actionDO), envelopeId)));
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", CreateActionPayload(actionDO, authTokenDO, envelopeId)));
             }
 
             return processPayload;
@@ -93,7 +95,7 @@ namespace terminalDocuSign.Actions
 
         private List<FieldDTO> GetFields(ActionDO curActionDO)
         {
-            var fieldsCrate = Crate.FromDto(curActionDO.CrateStorage).CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == "DocuSignTemplateUserDefinedFields");
+            var fieldsCrate = Crate.GetStorage(curActionDO).CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == "DocuSignTemplateUserDefinedFields");
 
             if (fieldsCrate == null) return null;
 
@@ -163,7 +165,7 @@ namespace terminalDocuSign.Actions
             var templateId = envelopeId.Value;
 
             // If DocuSignTemplate Id was found, then add design-time fields.
-            _docuSignManager.ExtractFieldsAndAddToCrate(docuSignTemplateId, docuSignAuthDTO, curActionDO);
+            _docuSignManager.ExtractFieldsAndAddToCrate(templateId, docuSignAuthDTO, curActionDO);
 
             return curActionDO;
         }

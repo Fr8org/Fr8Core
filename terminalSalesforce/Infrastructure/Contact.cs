@@ -32,7 +32,7 @@ namespace terminalSalesforce.Infrastructure
             ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
             client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
             ContactDTO contact = new ContactDTO();
-            var curFieldList = _crateManager.FromDto(currentActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var curFieldList = _crateManager.GetStorage(currentActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().First();
                
             contact.FirstName = curFieldList.Controls.First(x => x.Name == "firstName").Value;
             contact.LastName = curFieldList.Controls.First(x => x.Name == "lastName").Value;
