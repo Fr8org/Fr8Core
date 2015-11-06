@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Crates;
 using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Hub.Enums;
 using Hub.Interfaces;
+using Hub.Managers;
 using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
 using UtilitiesTesting;
@@ -22,7 +26,7 @@ namespace pluginBaseTests.BaseClasses
     {
         IDisposable _coreServer;
         BasePluginAction _basePluginAction;
-
+        private ICrateManager _crateManager;
 
         [SetUp]
         public override void SetUp()
@@ -30,6 +34,7 @@ namespace pluginBaseTests.BaseClasses
             base.SetUp();
             _basePluginAction = new BasePluginAction();
             _coreServer = pluginBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         [TearDown]
@@ -56,7 +61,7 @@ namespace pluginBaseTests.BaseClasses
             var result = await (Task<ActionDO>) ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
-            Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO.Count, result.CrateStorageDTO().CrateDTO.Count);
+            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).Count, _crateManager.FromDto(result.CrateStorage).Count);
         }
 
 
@@ -74,8 +79,8 @@ namespace pluginBaseTests.BaseClasses
             var result = await (Task<ActionDO>)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
-            Assert.AreEqual(curActionDO.CrateStorageDTO().CrateDTO.Count, result.CrateStorageDTO().CrateDTO.Count);
-            Assert.AreEqual(curActionDO.CrateStorageDTO().CrateDTO[0].ManifestType, result.CrateStorageDTO().CrateDTO[0].ManifestType);
+            Assert.AreEqual(_crateManager.FromDto(curActionDO.CrateStorage).Count, _crateManager.FromDto(result.CrateStorage).Count);
+            Assert.AreEqual(_crateManager.FromDto(curActionDO.CrateStorage).First().ManifestType, _crateManager.FromDto(result.CrateStorage).First().ManifestType);
 
         }
 
@@ -86,11 +91,11 @@ namespace pluginBaseTests.BaseClasses
             object[] parameters = new object[] { FixtureData.FieldDefinitionDTO1() };
 
             //Act
-            var result = (CrateDTO)ClassMethod.Invoke(typeof(BasePluginAction), "PackControlsCrate", parameters);
+            var result = (Crate)ClassMethod.Invoke(typeof(BasePluginAction), "PackControlsCrate", parameters);
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, result.ManifestType);
+            Assert.IsTrue(result.Get<StandardConfigurationControlsCM>() != null);
         }
 
 
@@ -142,8 +147,7 @@ namespace pluginBaseTests.BaseClasses
 
         private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
-            if (curCrates.CrateDTO.Count == 0)
+            if (_crateManager.IsEmptyStorage(curActionDO.CrateStorage))
                 return ConfigurationRequestType.Initial;
             return ConfigurationRequestType.Followup;
         }

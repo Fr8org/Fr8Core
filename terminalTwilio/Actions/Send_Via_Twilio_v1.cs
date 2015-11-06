@@ -5,10 +5,13 @@ using terminalTwilio.Services;
 using StructureMap;
 using System;
 using System.Collections.Generic;
+using Hub.Managers;
 using System.Threading.Tasks;
 using System.Linq;
+using Data.Crates;
 using Data.Interfaces;
 using Data.Infrastructure;
+using Data.Interfaces.Manifests;
 using TerminalBase.BaseClasses;
 
 namespace terminalTwilio.Actions
@@ -31,9 +34,7 @@ namespace terminalTwilio.Actions
         //currently many actions have two stages of configuration, and this method determines which stage should be applied
         private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
-
-            if (curCrates.CrateDTO.Count == 0)
+            if (Crate.IsEmptyStorage(curActionDO.CrateStorage))
                 return ConfigurationRequestType.Initial;
             else
                 return ConfigurationRequestType.Followup;
@@ -41,18 +42,17 @@ namespace terminalTwilio.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
-            if (curActionDO.CrateStorageDTO() == null)
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                curActionDO.UpdateCrateStorageDTO(new List<CrateDTO>());
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(PackCrate_ConfigurationControls());
+                updater.CrateStorage.Add(GetAvailableDataFields(curActionDO));
             }
-            var curCrateList = new List<CrateDTO>();
-            curCrateList.Add(PackCrate_ConfigurationControls());
-            curCrateList.Add(GetAvailableDataFields(curActionDO));
-            curActionDO.UpdateCrateStorageDTO(curCrateList);
+
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 
-        private CrateDTO PackCrate_ConfigurationControls()
+        private Crate PackCrate_ConfigurationControls()
         {
             TextBoxControlDefinitionDTO smsNumberTextbox = new TextBoxControlDefinitionDTO()
             {
@@ -117,24 +117,23 @@ namespace terminalTwilio.Actions
             return phoneNumberFields;
         }
 
-        private CrateDTO GetAvailableDataFields(ActionDO curActionDO)
+        private Crate GetAvailableDataFields(ActionDO curActionDO)
         {
-            CrateDTO crateDTO = new CrateDTO();
+            Crate crate;
 
             var curUpstreamFields = GetRegisteredSenderNumbersData().ToArray();
 
             if (curUpstreamFields.Length == 0)
             {
-                crateDTO = PackCrate_ErrorTextBox("Error_NoUpstreamLists",
-                            "No Upstream fr8 Lists Were Found.");
-                curActionDO.currentView = "Error_NoUpstreamLists";
+                crate = PackCrate_ErrorTextBox("Error_NoUpstreamLists", "No Upstream fr8 Lists Were Found.");
+                curActionDO.CurrentView = "Error_NoUpstreamLists";
             }
             else
             {
-                crateDTO = Crate.CreateDesignTimeFieldsCrate("Available Fields", curUpstreamFields);
+                crate = Crate.CreateDesignTimeFieldsCrate("Available Fields", curUpstreamFields);
             }
 
-            return crateDTO;
+            return crate;
         }
 
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO,AuthorizationTokenDO authTokenDO=null)
@@ -158,7 +157,7 @@ namespace terminalTwilio.Actions
         {
             var processPayload = await GetProcessPayload(containerId);
 
-            var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO.FirstOrDefault();
+            var controlsCrate = Crate.GetStorage(curActionDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (controlsCrate == null)
                 return null;
 
@@ -192,13 +191,16 @@ namespace terminalTwilio.Actions
         /// </summary>
         /// <param name="crateDTO"></param>
         /// <returns>Key = SMS Number; Value = SMS Body</returns>
-        public KeyValuePair<string, string> ParseSMSNumberAndMsg(CrateDTO crateDTO)
+        public KeyValuePair<string, string> ParseSMSNumberAndMsg(Crate crateDTO)
         {
             KeyValuePair<string, string> smsInfo;
 
-            var standardControls = Crate.GetStandardConfigurationControls(crateDTO);
+            var standardControls = crateDTO.Get<StandardConfigurationControlsCM>();
+            
             if (standardControls == null)
+            {
                 throw new ArgumentException("CrateDTO is not a standard configuration controls");
+            }
 
             var smsBodyFields = standardControls.FindByName("SMS_Body");
 

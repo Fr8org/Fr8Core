@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using NUnit.Framework;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Managers;
+using StructureMap;
 using TerminalBase.BaseClasses;
 using Utilities.Configuration.Azure;
 using UtilitiesTesting;
@@ -19,14 +22,18 @@ namespace terminalAzure.Tests.Controllers
     public class ActionControllerTest : BaseTest
     {
         BasePluginController _basePluginController;
+        private ICrateManager _crateManager;
 
         [SetUp]
         public override void SetUp()
         {
+           
+
             base.SetUp();
 
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
 
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
             _basePluginController = new BasePluginController();
         }
 
@@ -40,7 +47,7 @@ namespace terminalAzure.Tests.Controllers
 
             var result = await (Task<ActionDTO>)_basePluginController.HandleFr8Request(curPlugin, curActionPath, curActionDTO);
 
-            Assert.AreEqual("Standard Configuration Controls", result.CrateStorage.CrateDTO[0].ManifestType);
+            Assert.AreEqual("Standard Configuration Controls", _crateManager.FromDto(result.CrateStorage).First().ManifestType.Type);
         }
     }
 }

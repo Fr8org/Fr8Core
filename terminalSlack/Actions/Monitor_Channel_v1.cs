@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Crates;
+using Hub.Managers;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -47,39 +49,29 @@ namespace terminalSlack.Actions
                 throw new ApplicationException("Unexpected channel-id.");
             }
 
-            var cratePayload = Crate.Create(
-                "Slack Payload Data",
-                JsonConvert.SerializeObject(payloadFields),
-                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
-                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
-                );
-
-            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { cratePayload });
+            using (var updater = Crate.UpdateStorage(processPayload))
+            {
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Slack Payload Data", new StandardPayloadDataCM(payloadFields)));
+            }
 
             return processPayload;
         }
 
         private List<FieldDTO> ExtractPayloadFields(PayloadDTO processPayload)
         {
-            var eventReportCrate = processPayload.CrateStorageDTO()
-                .CrateDTO
-                .SingleOrDefault();
-            if (eventReportCrate == null)
+            var eventReportMS = Crate.GetStorage(processPayload).CrateContentsOfType<EventReportCM>().SingleOrDefault();
+            if (eventReportMS == null)
             {
                 throw new ApplicationException("EventReportCrate is empty.");
             }
 
-            var eventReportMS = JsonConvert.DeserializeObject<EventReportCM>(
-                eventReportCrate.Contents);
             var eventFieldsCrate = eventReportMS.EventPayload.SingleOrDefault();
             if (eventFieldsCrate == null)
             {
                 throw new ApplicationException("EventReportMS.EventPayload is empty.");
             }
 
-            var payloadFields = JsonConvert.DeserializeObject<List<FieldDTO>>(eventFieldsCrate.Contents);
-
-            return payloadFields;
+            return eventReportMS.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -94,9 +86,7 @@ namespace terminalSlack.Actions
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            var crateStorage = curActionDO.CrateStorageDTO();
-
-            if (crateStorage.CrateDTO.Count == 0)
+            if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -113,17 +103,21 @@ namespace terminalSlack.Actions
             var crateDesignTimeFields = CreateDesignTimeFieldsCrate();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateEventSubscriptions = CreateEventSubscriptionCrate();
-            var curCrateDTOList = new List<CrateDTO>();
-            curCrateDTOList.Add(crateControls);
-            curCrateDTOList.Add(crateDesignTimeFields);
-            curCrateDTOList.Add(crateAvailableChannels);
-            curCrateDTOList.Add(crateEventSubscriptions);
-            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
+
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(crateControls);
+                updater.CrateStorage.Add(crateDesignTimeFields);
+                updater.CrateStorage.Add(crateAvailableChannels);
+                updater.CrateStorage.Add(crateEventSubscriptions);
+            }
+
 
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 
-        private CrateDTO PackCrate_ConfigurationControls()
+        private Crate PackCrate_ConfigurationControls()
         {
             var fieldSelectChannel = new DropDownListControlDefinitionDTO()
             {
@@ -144,7 +138,7 @@ namespace terminalSlack.Actions
             return PackControlsCrate(fieldSelectChannel);
         }
 
-        private CrateDTO CreateDesignTimeFieldsCrate()
+        private Crate CreateDesignTimeFieldsCrate()
         {
             var fields = new List<FieldDTO>()
             {
@@ -169,7 +163,7 @@ namespace terminalSlack.Actions
             return crate;
         }
 
-        private CrateDTO CreateAvailableChannelsCrate(IEnumerable<FieldDTO> channels)
+        private Crate CreateAvailableChannelsCrate(IEnumerable<FieldDTO> channels)
         {
             var crate =
                 Crate.CreateDesignTimeFieldsCrate(
@@ -180,7 +174,7 @@ namespace terminalSlack.Actions
             return crate;
         }
 
-        private CrateDTO CreateEventSubscriptionCrate()
+        private Crate CreateEventSubscriptionCrate()
         {
             var subscriptions = new string[] {
                 "Slack Outgoing Message"

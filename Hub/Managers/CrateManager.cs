@@ -1,215 +1,113 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Interfaces.Manifests;
-using AutoMapper;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using StructureMap;
-using Data.Interfaces;
-using Data.Constants;
-using Data.Entities;
+using System.Linq.Expressions;
+using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
-using Utilities;
-
-using JsonSerializer = Utilities.Serializers.Json.JsonSerializer;
-using Data.Crates.Helpers;
+using Data.Interfaces.Manifests;
+using Newtonsoft.Json;
 
 namespace Hub.Managers
 {
-    public class CrateManager : ICrateManager
+    public partial class CrateManager : ICrateManager
     {
-        public CrateManager()
+        public CrateStorageDTO ToDto(CrateStorage storage)
         {
+            return CrateStorageSerializer.Default.ConvertToDto(storage);
         }
 
-        public CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0)
+        public CrateDTO ToDto(Crate crate)
         {
-            var crateDTO = new CrateDTO() 
-            { 
-                Id = Guid.NewGuid().ToString(), 
-                Label = label, 
-                Contents = contents, 
-                ManifestType = manifestType, 
-                ManifestId = manifestId 
-            };
-            return crateDTO;
+            return CrateStorageSerializer.Default.ConvertToDto(crate);
         }
 
-        public CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode)
+        public Crate FromDto(CrateDTO crate)
         {
-            var manifestSchema = new StandardAuthenticationCM()
-            {
-                Mode = mode
-            };
-
-            return Create(
-                label,
-                JsonConvert.SerializeObject(manifestSchema),
-                manifestType: CrateManifests.STANDARD_AUTHENTICATION_NAME,
-                manifestId: CrateManifests.STANDARD_AUTHENTICATION_ID);
+            return CrateStorageSerializer.Default.ConvertFromDto(crate);
         }
 
-        public CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
-        {    
-            return Create(label, 
-                JsonConvert.SerializeObject(new StandardDesignTimeFieldsCM() { Fields = fields.ToList() }),
-                manifestType: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, 
-                manifestId: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
-        }
-
-        public CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
+        public CrateStorage FromDto(CrateStorageDTO crateStorage)
         {
-            return Create(label, 
-                JsonConvert.SerializeObject(new StandardConfigurationControlsCM() { Controls = controls.ToList() }),
-                manifestType: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME,
-                manifestId: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
+            return CrateStorageSerializer.Default.ConvertFromDto(crateStorage);
         }
-
-        public CrateDTO CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions)
+        /// <summary>
+        /// Use this method to edit CrateStorage repersented byt CrateStorageDTO property of some class instance. This method will return IDisposable updater.
+        /// On Dispose it will write changes to the property specified by the Expression. 
+        /// </summary>
+        /// <param name="storageAccessExpression"></param>
+        /// <returns></returns>
+        public ICrateStorageUpdater UpdateStorage(Expression<Func<CrateStorageDTO>> storageAccessExpression)
         {
-            return Create(label,
-                JsonConvert.SerializeObject(new EventSubscriptionCM() { Subscriptions = subscriptions.ToList() }),
-                manifestType: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
-                manifestId: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_ID);
-        }
-
-        public CrateDTO CreateStandardEventReportCrate(string label, EventReportCM eventReport)
-        {
-            return Create(label,
-                JsonConvert.SerializeObject(eventReport),
-                manifestType: CrateManifests.STANDARD_EVENT_REPORT_NAME,
-                manifestId: CrateManifests.STANDARD_EVENT_REPORT_ID);
-        }
-
-        public CrateDTO CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table)
-        {
-            return Create(label,
-                JsonConvert.SerializeObject(new StandardTableDataCM() { Table = table.ToList(), FirstRowHeaders = firstRowHeaders }),
-                manifestType: CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME,
-                manifestId: CrateManifests.STANDARD_TABLE_DATA_MANIFEST_ID);
-        }
-
-        public T GetContents<T>(CrateDTO crate)
-        {
-            return JsonConvert.DeserializeObject<T>(crate.Contents);
-        }
-
-        public StandardConfigurationControlsCM GetStandardConfigurationControls(CrateDTO crate)
-        {
-            return JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(crate.Contents, new ControlDefinitionDTOConverter());
-        }
-
-        public StandardDesignTimeFieldsCM GetStandardDesignTimeFields(CrateDTO crate)
-        {
-            return JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(crate.Contents);
+            return new CrateStorageStorageUpdater(storageAccessExpression);
         }
 
         /// <summary>
-        /// Retrieves all JObject elements that have a key field equal to a key value
+        /// Use this method to edit CrateStorage represented by string property of some class instance. This method will return IDisposable updater.
+        /// On Dispose it will write changes to the property specified by the Expression. 
         /// </summary>
-        /// <typeparam name="TKey"></typeparam>
-        /// <param name="searchCrates">Crates collection where to search through. CrateDTO.Contents property is used.</param>
-        /// <param name="key">Key field value to search</param>
-        /// <param name="keyFieldName">Key field name</param>
-        /// <returns>Returns JSON descendants with specified key field value.</returns>
-        /// <remarks>This method iterates through all JSON descendants (entire JSON tree).</remarks>
-        /// <example>
-        /// var crates = new[] { new CrateDTO { Contents: "[{key: 'example1', value: 'some value'}, {key: 'example2', value: 'another value'}, {name: 'example1', value: 'note there is no key field'}]" } };
-        /// var elements = GetElementByKey(crates, "example1", "key");
-        /// // elements will contain the only JObject: {key: 'example1', value: 'some value'}
-        /// </example>
-        public IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName)
+        /// <param name="storageAccessExpression"></param>
+        /// <returns></returns>
+        public ICrateStorageUpdater UpdateStorage(Expression<Func<string>> storageAccessExpression)
         {
-            List<JObject> resultsObjects = new List<JObject>();
-            foreach (var curCrate in searchCrates.Where(c => !string.IsNullOrEmpty(c.Contents)))
+            return new CrateStorageStorageUpdater(storageAccessExpression);
+        }
+
+        public bool IsEmptyStorage(CrateStorageDTO rawStorage)
+        {
+            if (rawStorage == null)
             {
-                JContainer curCrateJSON = JsonConvert.DeserializeObject<JContainer>(curCrate.Contents);
-                var results = curCrateJSON.Descendants()
-                    .OfType<JObject>()
-                    // where (object has a key field) && (key field value equals to key argument)
-                    .Where(x => x[keyFieldName] != null && Object.Equals(x[keyFieldName].Value<TKey>(), key));
-                resultsObjects.AddRange(results);
+                return true;
             }
-            return resultsObjects;
+
+            return FromDto(rawStorage).Count == 0;
         }
 
-        public void RemoveCrateByManifestId(IList<CrateDTO> crates, int manifestId)
+        public string EmptyStorageAsStr()
         {
-            var curCrates = crates.Where(c => c.ManifestId == manifestId).ToList();
-            if (curCrates.Count() > 0)
+            return JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(new CrateStorage()));
+        }
+
+        public Crate CreateAuthenticationCrate(string label, AuthenticationMode mode)
+        {
+            return Crate.FromContent(label, new StandardAuthenticationCM()
             {
-                foreach (CrateDTO crate in curCrates)
-                {
-                    crates.Remove(crate);
-                }
-            }
+                Mode = mode
+            });
         }
 
-        public void RemoveCrateByLabel(IList<CrateDTO> crates, string label)
+        public Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
         {
-            var curCrates = crates.Where(c => c.Label == label).ToList();
-            if (curCrates.Count() > 0)
-            {
-                foreach (CrateDTO crate in curCrates)
-                {
-                    crates.Remove(crate);
-                }
-            }
+            return Crate<StandardDesignTimeFieldsCM>.FromContent(label, new StandardDesignTimeFieldsCM() { Fields = fields.ToList() });
         }
 
-        public void RemoveCrateByManifestType(IList<CrateDTO> crates, string manifestType)
+        public Crate<StandardConfigurationControlsCM> CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
         {
-            var curCrates = crates.Where(c => c.ManifestType == manifestType).ToList();
-            if (curCrates.Count() > 0)
-            {
-                foreach (CrateDTO crate in curCrates)
-                {
-                    crates.Remove(crate);
-                }
-            }
+            return Crate<StandardConfigurationControlsCM>.FromContent(label, new StandardConfigurationControlsCM() { Controls = controls.ToList() });
         }
 
-        public void ReplaceCratesByManifestType(IList<CrateDTO> sourceCrates, string manifestType, IList<CrateDTO> newCratesContent)
+        public Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions)
         {
-            //remove existing crates with the manifest type
-            RemoveCrateByManifestType(sourceCrates, manifestType);
-            
-            //add the new content to the source crates
-            newCratesContent.ToList().ForEach(sourceCrates.Add);
+            return Crate.FromContent(label, new EventSubscriptionCM() {Subscriptions = subscriptions.ToList()});
         }
 
-        public void ReplaceCratesByLabel(IList<CrateDTO> sourceCrates, string label, IList<CrateDTO> newCratesContent)
+        
+        public Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport)
         {
-            //remove existing crates with the label
-            RemoveCrateByLabel(sourceCrates, label);
-
-            //add the new content to the source crates
-            newCratesContent.ToList().ForEach(sourceCrates.Add);
+            return Crate.FromContent(label, eventReport);
         }
 
-        public CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)
+        public Crate CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table)
         {
-            return Create(crateLabel,
-                            JsonConvert.SerializeObject(TransformStandardTableDataToStandardPayloadData(payloadDataObjectType, tableDataMS)),
-                            manifestType: CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
-                            manifestId: CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);
+            return Crate.FromContent(label, new StandardTableDataCM() { Table = table.ToList(), FirstRowHeaders = firstRowHeaders });
         }
 
-        public CrateDTO CreatePayloadDataCrate(List<KeyValuePair<string,string>> curFields)
-        {            
-            List<FieldDTO> crateFields = new List<FieldDTO>();
-            foreach(var field in curFields)
-            {
-                crateFields.Add(new FieldDTO() { Key = field.Key, Value = field.Value });             
-            }
-            return Create("Payload Data", JsonConvert.SerializeObject(crateFields));            
+
+        public Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)
+        {
+            return Crate.FromContent(crateLabel, TransformStandardTableDataToStandardPayloadDataExcel(payloadDataObjectType, tableDataMS));
         }
 
-        private StandardPayloadDataCM TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataCM tableDataMS)
+        private StandardPayloadDataCM TransformStandardTableDataToStandardPayloadDataExcel(string curObjectType, StandardTableDataCM tableDataMS)
         {
             var payloadDataMS = new StandardPayloadDataCM()
             {
@@ -238,126 +136,6 @@ namespace Hub.Managers
             }
 
             return payloadDataMS;
-        }
-
-        public IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO)
-        {
-            if (String.IsNullOrEmpty(curManifestType))
-                throw new ArgumentNullException("Parameter Manifest Type is empty");
-            if (curCrateStorageDTO == null)
-                throw new ArgumentNullException("Parameter CrateStorageDTO is null.");
-
-            IEnumerable<CrateDTO> crateDTO = null;
-
-            crateDTO = curCrateStorageDTO.CrateDTO.Where(crate => crate.ManifestType == curManifestType);
-
-            return crateDTO;
-        }
-
-        public IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO)
-        {
-            if (String.IsNullOrEmpty(curLabel))
-                throw new ArgumentNullException("Parameter Label is empty");
-            if (curCrateStorageDTO == null)
-                throw new ArgumentNullException("Parameter CrateStorageDTO is null.");
-
-            IEnumerable<CrateDTO> crateDTOList = null;
-
-            crateDTOList = curCrateStorageDTO.CrateDTO.Where(crate => crate.Label == curLabel);
-
-            return crateDTOList;
-        }
-
-        //-----------------------------------------------------------------------------------------------------
-
-        public void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists)
-        {
-            if (curCrateDTOLists == null)
-                throw new ArgumentNullException("CrateDTO is null");
-            if (curActionDO == null)
-                throw new ArgumentNullException("ActionDO is null");
-
-            if (curCrateDTOLists.Count > 0)
-            {
-                curActionDO.UpdateCrateStorageDTO(curCrateDTOLists);
-            }
-        }
-
-        public void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO)
-        {
-            AddCrate(curActionDO, new List<CrateDTO>() { curCrateDTO });
-        }
-
-        public void AddCrate(PayloadDTO payload, List<CrateDTO> curCrateDTOLists)
-        {
-            if (curCrateDTOLists == null)
-                throw new ArgumentNullException("CrateDTO is null");
-            if (payload == null)
-                throw new ArgumentNullException("PayloadDTO is null");
-
-            if (curCrateDTOLists.Count > 0)
-            {
-                payload.UpdateCrateStorageDTO(curCrateDTOLists);
-            }
-        }
-
-        public void AddCrate(PayloadDTO payload, CrateDTO curCrateDTO)
-        {
-            AddCrate(payload, new List<CrateDTO>() { curCrateDTO });
-        }
-
-        public void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO)
-        {
-            var existingCratesWithLabelInActionDO = GetCratesByLabel(label, curActionDO.CrateStorageDTO());
-            if (!existingCratesWithLabelInActionDO.Any()) // no existing crates with user provided label found, then add the crate
-            {
-                AddCrate(curActionDO, curCrateDTO);
-            }
-            else
-            {
-                // Remove the existing crate for this label
-                RemoveCrateByLabel(curActionDO.CrateStorageDTO().CrateDTO, label);
-
-                // Add the newly created crate for this label to action's crate storage
-                AddCrate(curActionDO, curCrateDTO);
-            }
-        }
-
-        public List<CrateDTO> GetCrates(ActionDO curActionDO)
-        {
-            return curActionDO.CrateStorageDTO().CrateDTO;
-        }
-
-        public StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO)
-        {
-            var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDO.CrateStorageDTO()).ToList();
-            if (confControls.Count() != 0 && confControls.Count() != 1)
-                throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
-            if (!confControls.Any())
-                return null;
-            var standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(confControls.First().Contents);
-            return standardCfgControlsMs;
-        }
-
-        public void AddLogMessage(string label, List<LogItemDTO> logItemList, ContainerDO containerDO)
-        {
-            if (String.IsNullOrEmpty(label))
-                throw new ArgumentException("Parameter Label is empty");
-            if (logItemList == null)
-                throw new ArgumentNullException("Parameter LogItemDTO list is null.");
-            if (containerDO == null)
-                throw new ArgumentNullException("Parameter ContainerDO is null.");
-            var curManifestSchema = new StandardLoggingCM()
-            {
-                Item = logItemList
-            };
-            var curLoggingCrate = Create(label,
-                            JsonConvert.SerializeObject(curManifestSchema),
-                            manifestType: CrateManifests.STANDARD_LOGGING_MANIFEST_NAME,
-                            manifestId: CrateManifests.STANDARD_LOGGING_MANIFEST_ID);
-            var curCrateList = new List<CrateDTO>();
-            curCrateList.Add(curLoggingCrate);
-            containerDO.UpdateCrateStorageDTO(curCrateList);
         }
 
     }

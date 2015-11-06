@@ -12,6 +12,8 @@ using Newtonsoft.Json.Serialization;
 using terminalFr8Core.Actions;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces;
+using Hub.Managers;
+using StructureMap;
 using terminalFr8Core.Interfaces;
 using AutoMapper;
 using Data.Entities;
@@ -50,9 +52,9 @@ namespace terminalFr8CoreTests.Actions
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
             AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             var action = await select_Fr8_Object_v1.Configure(curActionDO,curAuthTokenDO);
-
+         
             Assert.NotNull(action);
-            Assert.AreEqual(2, curActionDO.CrateStorageDTO().CrateDTO.Count);
+            Assert.AreEqual(2, ObjectFactory.GetInstance<ICrateManager>().FromDto(curActionDO.CrateStorage).Count);
         }
 
         [Test]

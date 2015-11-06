@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Data.Constants;
+using Data.Crates;
 using StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -20,7 +22,7 @@ namespace terminalDocuSign.Services
             Crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        public DropDownListControlDefinitionDTO CreateDocuSignTemplatePicker(
+        public static DropDownListControlDefinitionDTO CreateDocuSignTemplatePicker(
             bool addOnChangeEvent, 
             string name = "Selected_DocuSign_Template", 
             string label = "Select DocuSign Template")
@@ -48,7 +50,7 @@ namespace terminalDocuSign.Services
             return control;
         }
 
-        public CrateDTO PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
+        public Crate PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
         {
             var template = new DocuSignTemplate();
 
@@ -78,18 +80,17 @@ namespace terminalDocuSign.Services
                     .GetEnvelopeDataByTemplate(docuSignTemplateId);
 
                 var fieldCollection = userDefinedFields
-                    .Select(f => new FieldDTO()
+                    .Select(f => new FieldDTO
                     {
                         Key = f.Name,
                         Value = f.Value
                     });
 
-                Crate.ReplaceCratesByManifestType(curActionDO.CrateStorageDTO().CrateDTO,
-                    CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
-                    new List<CrateDTO>
+                using (var updater = Crate.UpdateStorage(() => curActionDTO.CrateStorage))
                     {
-                        Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", fieldCollection.ToArray())
-                    });
+                    updater.CrateStorage.RemoveByManifestId((int) MT.StandardDesignTimeFields);
+                    updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", fieldCollection.ToArray()));
+                }
             }
         }
     }

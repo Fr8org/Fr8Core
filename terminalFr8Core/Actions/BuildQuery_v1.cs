@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Enums;
+using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalFr8Core.Infrastructure;
 using Data.Entities;
 
 namespace terminalFr8Core.Actions
@@ -21,25 +24,19 @@ namespace terminalFr8Core.Actions
         public override ConfigurationRequestType ConfigurationEvaluator(
             ActionDO curActionDO)
         {
-            if (curActionDO.CrateStorageDTO() == null
-                || curActionDO.CrateStorageDTO().CrateDTO == null
-                || curActionDO.CrateStorageDTO().CrateDTO.Count == 0)
+            if (Crate.IsEmptyStorage(curActionDO.CrateStorage))
             {
                 return ConfigurationRequestType.Initial;
             }
 
-            var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+            var controlsCrate = Crate.GetStorage(curActionDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsCrate == null)
             {
                 return ConfigurationRequestType.Initial;
             }
 
-            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
-                controlsCrate.Contents);
-
-            var hasSelectObjectDdl = controls.Controls
+            var hasSelectObjectDdl = controlsCrate.Content.Controls
                 .Any(x => x.Name == "SelectObjectDdl");
 
             if (!hasSelectObjectDdl)
@@ -52,7 +49,9 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
-            RemoveControl(curActionDO, "UpstreamError");
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                RemoveControl(updater.CrateStorage, "UpstreamError");
 
             var columnDefinitions = await ExtractColumnDefinitions(curActionDO);
             List<FieldDTO> tablesList = null;
@@ -65,7 +64,7 @@ namespace terminalFr8Core.Actions
             if (tablesList == null || tablesList.Count == 0)
             {
                 AddLabelControl(
-                    curActionDO,
+                        updater.CrateStorage,
                     "UpstreamError",
                     "Unexpected error",
                     "No upstream crates found to extract table definitions."
@@ -73,44 +72,43 @@ namespace terminalFr8Core.Actions
                 return curActionDO;
             }
 
-            var controlsCrate = EnsureControlsCrate(curActionDO);
-            AddSelectObjectDdl(curActionDO);
-            AddLabelControl(curActionDO, "SelectObjectError",
-                "No object selected", "Please select object from the list above.");
+                var controlsCrate = EnsureControlsCrate(updater.CrateStorage);
 
-            var curCrateDTOList = new List<CrateDTO>();
-            curCrateDTOList.Add(
-                Crate.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray())
-            );
+                AddSelectObjectDdl(updater.CrateStorage);
+                AddLabelControl(updater.CrateStorage, "SelectObjectError", "No object selected", "Please select object from the list above.");
 
-            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
-
+                updater.CrateStorage.RemoveByLabel("Available Tables");
+                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray()));
+            }
             return curActionDO;
         }
 
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
-            RemoveControl(curActionDO, "SelectObjectError");
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                RemoveControl(updater.CrateStorage, "SelectObjectError");
 
-            var selectedObject = ExtractSelectedObject(curActionDO);
+                var selectedObject = ExtractSelectedObject(updater.CrateStorage);
             if (string.IsNullOrEmpty(selectedObject))
             {
-                AddLabelControl(curActionDO, "SelectObjectError",
+                    AddLabelControl(updater.CrateStorage, "SelectObjectError",
                     "No object selected", "Please select object from the list above.");
 
                 return curActionDO;
             }
             else
             {
-                var prevSelectedObject = ExtractPreviousSelectedObject(curActionDO);
+                    var prevSelectedObject = ExtractPreviousSelectedObject(updater.CrateStorage);
                 if (prevSelectedObject != selectedObject)
                 {
-                    RemoveControl(curActionDO, "SelectedQuery");
-                    AddQueryBuilder(curActionDO);
+                        RemoveControl(updater.CrateStorage, "SelectedQuery");
+                        AddQueryBuilder(updater.CrateStorage);
 
-                    UpdatePreviousSelectedObject(curActionDO, selectedObject);
-                    await UpdateQueryableCriteria(curActionDO, selectedObject);
+                        UpdatePreviousSelectedObject(updater.CrateStorage, selectedObject);
+                        await UpdateQueryableCriteria(updater.CrateStorage,  curActionDTO, selectedObject);
                 }
+            }
             }
 
             return curActionDO;
@@ -129,13 +127,11 @@ namespace terminalFr8Core.Actions
 
             if (upstreamCrates == null) { return null; }
 
-            var tablesDefinitionCrate = upstreamCrates
-                .FirstOrDefault(x => x.Label == "Sql Table Definitions");
+            var tablesDefinitionCrate = upstreamCrates.FirstOrDefault(x => x.Label == "Sql Table Definitions");
 
             if (tablesDefinitionCrate == null) { return null; }
 
-            var tablesDefinition = JsonConvert
-                .DeserializeObject<StandardDesignTimeFieldsCM>(tablesDefinitionCrate.Contents);
+            var tablesDefinition = tablesDefinitionCrate.Get<StandardDesignTimeFieldsCM>();
 
             if (tablesDefinition == null) { return null; }
 
@@ -157,8 +153,7 @@ namespace terminalFr8Core.Actions
 
             if (columnTypesCrate == null) { return null; }
 
-            var columnTypes = JsonConvert
-                .DeserializeObject<StandardDesignTimeFieldsCM>(columnTypesCrate.Contents);
+            var columnTypes = columnTypesCrate.Get<StandardDesignTimeFieldsCM>();
 
             if (columnTypes == null) { return null; }
 
@@ -205,10 +200,10 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Add SelectObject drop-down-list to controls crate.
         /// </summary>
-        private void AddSelectObjectDdl(ActionDO actionDO)
+        private void AddSelectObjectDdl(CrateStorage storage)
         {
             AddControl(
-                actionDO,
+                storage,
                 new DropDownListControlDefinitionDTO()
                 {
                     Label = "Select Object",
@@ -230,15 +225,11 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Extract SelectedObject from Action crates.
         /// </summary>
-        private string ExtractSelectedObject(ActionDO actionDO)
+        private string ExtractSelectedObject(CrateStorage storage)
         {
-            var controlsCrate = actionDO.CrateStorageDTO().CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+            var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
-            if (controlsCrate == null) { return null; }
-
-            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
-                controlsCrate.Contents);
+            if (controls == null) { return null; }
 
             var selectObjectDdl = controls.Controls.FirstOrDefault(x => x.Name == "SelectObjectDdl");
             if (selectObjectDdl == null) { return null; }
@@ -249,33 +240,25 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Exract previously stored valued of selected object type.
         /// </summary>
-        private string ExtractPreviousSelectedObject(ActionDO actionDO)
-        {
-            var crate = actionDO.CrateStorageDTO().CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
-                    && x.Label == "Selected Object");
+        private string ExtractPreviousSelectedObject(CrateStorage storage)
+            {
+            var fields = storage.CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == "Selected Object");
 
-            if (crate == null)
+            if (fields == null || fields.Content.Fields.Count == 0)
             {
                 return null;
             }
 
-            var fields = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(crate.Contents);
-            if (fields == null || fields.Fields.Count == 0)
-            {
-                return null;
-            }
-
-            return fields.Fields[0].Key;
+            return fields.Content.Fields[0].Key;
         }
 
         /// <summary>
         /// Update previously stored value of selected object type.
         /// </summary>
-        private void UpdatePreviousSelectedObject(ActionDO actionDO, string selectedObject)
+        private void UpdatePreviousSelectedObject(CrateStorage storage, string selectedObject)
         {
             UpdateDesignTimeCrateValue(
-                actionDO,
+                storage,
                 "Selected Object",
                 new FieldDTO() { Key = selectedObject, Value = selectedObject }
             );
@@ -284,19 +267,14 @@ namespace terminalFr8Core.Actions
         private async Task<List<FieldDTO>> MatchColumnsForSelectedObject(
             ActionDO actionDO, string selectedObject)
         {
-            var columnDefinitions = await ExtractColumnDefinitions(actionDO);
-            var columnTypes = await ExtractColumnTypes(actionDO);
+            var findObjectHelper = new FindObjectHelper();
 
-            if (columnDefinitions == null || columnTypes == null)
+            var columnDefinitions = await ExtractColumnDefinitions(actionDO);
+            var columnTypeMap = await findObjectHelper.ExtractColumnTypes(this, actionDO);
+
+            if (columnDefinitions == null || columnTypeMap == null)
             {
                 columnDefinitions = new List<FieldDTO>();
-            }
-
-            // Create columnTypeMap dictionary.
-            var columnTypeMap = new Dictionary<string, DbType>();
-            foreach (var columnType in columnTypes)
-            {
-                columnTypeMap.Add(columnType.Key, (DbType)Enum.Parse(typeof(DbType), columnType.Value));
             }
 
             var supportedColumnTypes = new HashSet<DbType>() { DbType.String, DbType.Int32, DbType.Boolean };
@@ -328,7 +306,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Update queryable criteria list.
         /// </summary>
-        private async Task UpdateQueryableCriteria(ActionDO actionDO, string selectedObject)
+        private async Task UpdateQueryableCriteria(CrateStorage storage, ActionDTO actionDTO, string selectedObject)
         {
             var matchedColumns = await MatchColumnsForSelectedObject(actionDO, selectedObject);
             UpdateDesignTimeCrateValue(actionDO, "Queryable Criteria", matchedColumns.ToArray());
@@ -337,7 +315,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Add query builder widget to action.
         /// </summary>
-        private void AddQueryBuilder(ActionDO actionDO)
+        private void AddQueryBuilder(CrateStorage storage)
         {
             var queryBuilder = new QueryBuilderControlDefinitionDTO()
             {
@@ -351,7 +329,7 @@ namespace terminalFr8Core.Actions
                 }
             };
 
-            AddControl(actionDO, queryBuilder);
+            AddControl(storage, queryBuilder);
         }
 
         #endregion Configuration.
@@ -360,30 +338,35 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
-            var processPayload = await GetProcessPayload(containerId);
-
-            var selectedObject = ExtractSelectedObject(curActionDO);
+            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+            var stroage = Crate.GetStorage(curActionDTO);
+            var selectedObject = ExtractSelectedObject(stroage);
             if (string.IsNullOrEmpty(selectedObject))
             {
                 throw new ApplicationException("No query object was selected.");
             }
 
-            var queryBuilder = FindControl(curActionDO, "SelectedQuery");
+            var queryBuilder = FindControl(stroage, "SelectedQuery");
             if (queryBuilder == null)
             {
                 throw new ApplicationException("No QueryBuilder control found.");
             }
 
-            var criteria = JsonConvert.DeserializeObject<List<CriteriaDTO>>(queryBuilder.Value);
+            var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(queryBuilder.Value);
 
             var sqlQueryCrate = CreateSqlQueryCrate(selectedObject, criteria);
 
-            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { sqlQueryCrate });
+            using (var updater = Crate.UpdateStorage(processPayload))
+            {
+                updater.CrateStorage.Add(sqlQueryCrate);
+            }
 
             return processPayload;
         }
 
-        private CrateDTO CreateSqlQueryCrate(string selectedObject, List<CriteriaDTO> criteria)
+        private Crate CreateSqlQueryCrate(
+            string selectedObject,
+            List<FilterConditionDTO> criteria)
         {
             var query = new QueryDTO()
             {
@@ -396,14 +379,7 @@ namespace terminalFr8Core.Actions
                 Queries = new List<QueryDTO>() { query }
             };
 
-            var sqlQueryCrate = Crate.Create(
-                "Sql Query",
-                JsonConvert.SerializeObject(standardQueryCM),
-                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
-                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
-            );
-
-            return sqlQueryCrate;
+            return Data.Crates.Crate.FromContent("Sql Query", standardQueryCM);
         }
 
         #endregion Execution.

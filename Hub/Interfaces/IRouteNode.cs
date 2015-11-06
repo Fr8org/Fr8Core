@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -25,7 +26,8 @@ namespace Hub.Interfaces
 
         IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups();
 
-	    Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction);
+	    Task<List<Crate<T>>> GetCratesByDirection<T>(int activityId, GetCrateDirection direction);
+	    Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction);
 
         IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount);
     }

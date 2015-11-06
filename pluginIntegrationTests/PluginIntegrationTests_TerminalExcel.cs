@@ -39,7 +39,7 @@ namespace pluginIntegrationTests
                 {
                     Id = 1,
                     Route = route,
-                    CrateStorage = JsonConvert.SerializeObject(new PayloadDTO("", 0)),
+                    CrateStorage = _crateManager.EmptyStorageAsStr(),
                     ContainerState = ContainerState.Executing
                 });
 
@@ -61,25 +61,19 @@ namespace pluginIntegrationTests
             {
                 ContainerId = 1,
                 ParentRouteNodeId = 1,
-                CrateStorage = new CrateStorageDTO()
-                {
-                    CrateDTO = new System.Collections.Generic.List<CrateDTO>() 
-                    { 
-                        new CrateDTO()
-                        {
-                            ManifestId = CrateManifests.STANDARD_TABLE_DATA_MANIFEST_ID,
-                            ManifestType = CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME,
-                            Contents = JsonConvert.SerializeObject(tableDataMS),
-                        },
-                    },
-                },
             };
+
+            using (var updater = _crateManager.UpdateStorage(curActionDTO))
+                {
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("", tableDataMS));
+            }
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
 
-            var result = await new Load_Table_Data_v1().Run(curActionDO,curActionDTO.ContainerId,curAuthTokenDO);
-            var payloadCrates = crate.GetCratesByManifestType(CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, result.CrateStorageDTO());
-            var payloadDataMS = JsonConvert.DeserializeObject<StandardPayloadDataCM>(payloadCrates.First().Contents);
+            var result = await new Load_Table_Data_v1().Run(curActionDO, curActionDTO.ContainerId, curAuthTokenDO);
+
+            var payloadCrates = _crateManager.GetStorage(result).CratesOfType<StandardPayloadDataCM>();
+            var payloadDataMS = payloadCrates.First().Content;
 
             Assert.IsNotNull(result.CrateStorage);
             Assert.IsNotNull(payloadCrates);

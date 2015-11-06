@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Crates;
+using Hub.Managers;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -34,9 +36,7 @@ namespace terminalDocuSign.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
-
-            if (curCrates.CrateDTO.Count == 0)
+            if (Crate.IsEmptyStorage(curActionDO.CrateStorage))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -44,7 +44,7 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected CrateDTO PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
+        protected Crate PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
         {
             var template = new DocuSignTemplate();
 
@@ -59,15 +59,28 @@ namespace terminalDocuSign.Actions
         private void GetTemplateRecipientPickerValue(ActionDO curActionDO, out string selectedOption,
                                                      out string selectedValue)
         {
+            GetTemplateRecipientPickerValue(Crate.GetStorage(curActionDTO), out selectedOption, out selectedValue);
+        }
+
+        private void GetTemplateRecipientPickerValue(CrateStorage storage, out string selectedOption, out string selectedValue)
+        {
+            var controls = storage.FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls");
+
+            var group = controls.Content.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().FirstOrDefault();
+            if (group == null)
+            {
+                selectedOption = "template";
+                selectedValue = controls.Content.Controls.OfType<DropDownListControlDefinitionDTO>().First().Value;
+            }
+            else
+            {
             //get the option which is selected from the Template/Recipient picker
-            var pickedControl =
-                Crate.GetStandardConfigurationControls(
-                    Crate.GetCratesByLabel("Configuration_Controls", curActionDO.CrateStorageDTO()).First())
-                    .Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.Single(r => r.Selected);
+                var pickedControl = group.Radios.Single(r => r.Selected);
 
             //set the output values
             selectedOption = pickedControl.Name;
             selectedValue = pickedControl.Controls[0].Value;
+        }
         }
 
         public object Activate(ActionDO curDataPackage)
@@ -120,8 +133,7 @@ namespace terminalDocuSign.Actions
                 {
                     case "template":
                         //filter the incoming envelope by template value selected by the user
-                        var curAvailableTemplates =
-                            Crate.GetStandardDesignTimeFields(Crate.GetCratesByLabel("Available Templates", curActionDO.CrateStorageDTO()).Single());
+                        var curAvailableTemplates = Crate.GetStorage(curActionDO).CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").Single().Content;
 
                         //if the incoming enveloped is prepared using selected template, get the envelope ID
                         if (curAvailableTemplates.Fields.Single(field => field.Value.Equals(curSelectedValue)).Value.Equals(curSelectedValue))
@@ -159,35 +171,32 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            var cratePayload = Crate.Create(
-                "DocuSign Envelope Payload Data",
-                JsonConvert.SerializeObject(fields),
-                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
-                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
-                );
-
-            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { cratePayload });
+            using (var updater = Crate.UpdateStorage(processPayload))
+            {
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
+            }
 
             return processPayload;
         }
 
         private string GetValueForKey(PayloadDTO curPayloadDTO, string curKey)
         {
-            var eventReportCrate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault();
-            if (eventReportCrate == null)
+            var eventReportMS = Crate.GetStorage(curPayloadDTO).CrateContentsOfType<EventReportCM>().FirstOrDefault();
+
+            if (eventReportMS == null)
             {
                 return null;
             }
 
-            var eventReportMS = JsonConvert.DeserializeObject<EventReportCM>(eventReportCrate.Contents);
-            var crate = eventReportMS.EventPayload.SingleOrDefault();
+            var crate = eventReportMS.EventPayload.CratesOfType<StandardPayloadDataCM>().First();
+            
             if (crate == null)
             {
                 return null;
             }
 
-            var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
-            if (fields == null || fields.Count == 0) return null;
+            var fields = crate.Content.AllValues().ToArray();
+            if (fields == null || fields.Length == 0) return null;
 
             var envelopeIdField = fields.SingleOrDefault(f => f.Key == curKey);
             if (envelopeIdField == null) return null;
@@ -200,10 +209,6 @@ namespace terminalDocuSign.Actions
             var docuSignAuthDTO = JsonConvert
                 .DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
-            if (curActionDO.CrateStorageDTO() == null)
-            {
-                curActionDO.UpdateCrateStorageDTO(new List<CrateDTO>());
-            }
 
             var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
@@ -214,35 +219,62 @@ namespace terminalDocuSign.Actions
             crateList.Add(crateDesignTimeFields);
             crateList.Add(eventFields);
 
-            curActionDO.UpdateCrateStorageDTO(crateList);
 
-            var configurationFields = Crate.GetConfigurationControls(curActionDO);
+            using (var updater = Crate.UpdateStorage(curActionDTO))
+            {
+                updater.CrateStorage.Add(crateControls);
+                updater.CrateStorage.Add(crateDesignTimeFields);
+                updater.CrateStorage.Add(eventFields);
 
             // Remove previously added crate of "Standard Event Subscriptions" schema
-
-            Crate.ReplaceCratesByManifestType(curActionDO.CrateStorageDTO().CrateDTO,
-                CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
-                new List<CrateDTO> { PackCrate_EventSubscriptions(configurationFields) });
-
-            return await Task.FromResult(curActionDO);
+                updater.CrateStorage.Remove<EventSubscriptionCM>();
+                updater.CrateStorage.Add(PackCrate_EventSubscriptions(crateControls.Get<StandardConfigurationControlsCM>()));
+            }
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
 
         protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
             //just update the user selected envelope events in the follow up configuration
-            UpdateSelectedEvents(curActionDO);
+
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                UpdateSelectedTemplateId(updater.CrateStorage);
+                UpdateSelectedEvents(updater.CrateStorage);
+            }
 
             return Task.FromResult(curActionDO);
+        }
+
+        private void UpdateSelectedTemplateId(CrateStorage storage)
+        {
+            string selectedOption, selectedValue;
+
+            GetTemplateRecipientPickerValue(storage, out selectedOption, out selectedValue);
+
+            if (selectedOption == "template")
+            {
+                var envelopeIdField = storage
+                    .CrateContentsOfType<StandardDesignTimeFieldsCM>()
+                    .SelectMany(x => x.Fields)
+                    .FirstOrDefault(x => x.Key == "EnvelopeId");
+
+                if (envelopeIdField != null)
+                {
+                    envelopeIdField.Value = selectedValue;
+                }
+            }
         }
 
         /// <summary>
         /// Updates event subscriptions list by user checked check boxes.
         /// </summary>
         /// <remarks>The configuration controls include check boxes used to get the selected DocuSign event subscriptions</remarks>
-        private void UpdateSelectedEvents(ActionDO curActionDO)
+        private void UpdateSelectedEvents(CrateStorage storage)
         {
             //get the config controls manifest
-            var curConfigControlsCrate = Crate.GetConfigurationControls(curActionDO);
+
+            var curConfigControlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
 
             //get selected check boxes (i.e. user wanted to subscribe these DocuSign events to monitor for)
             var curSelectedDocuSignEvents =
@@ -254,12 +286,11 @@ namespace terminalDocuSign.Actions
             var curEventSubscriptionCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions",
                 curSelectedDocuSignEvents.ToArray());
 
-            //replace the existing crate with new event subscription crate
-            Crate.ReplaceCratesByManifestType(curActionDO.CrateStorageDTO().CrateDTO,
-                CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME, new List<CrateDTO> {curEventSubscriptionCrate});
+            storage.Remove<EventSubscriptionCM>();
+            storage.Add(curEventSubscriptionCrate);
         }
 
-        private CrateDTO PackCrate_EventSubscriptions(StandardConfigurationControlsCM configurationFields)
+        private Crate PackCrate_EventSubscriptions(StandardConfigurationControlsCM configurationFields)
         {
             var subscriptions = new List<string>();
 
@@ -280,7 +311,7 @@ namespace terminalDocuSign.Actions
                 );
         }
 
-        private CrateDTO PackCrate_ConfigurationControls()
+        private Crate PackCrate_ConfigurationControls()
         {
             var fieldEnvelopeSent = new CheckBoxControlDefinitionDTO()
             {
@@ -382,7 +413,7 @@ namespace terminalDocuSign.Actions
             return templateRecipientPicker;
         }
 
-        private CrateDTO PackCrate_TemplateNames(DocuSignAuthDTO authDTO)
+        private Crate PackCrate_TemplateNames(DocuSignAuthDTO authDTO)
         {
             var template = new DocuSignTemplate();
 
@@ -394,7 +425,7 @@ namespace terminalDocuSign.Actions
             return createDesignTimeFields;
         }
 
-        private CrateDTO PackCrate_DocuSignEventFields()
+        private Crate PackCrate_DocuSignEventFields()
         {
             return Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields",
                 new FieldDTO {Key = "EnvelopeId", Value = string.Empty});

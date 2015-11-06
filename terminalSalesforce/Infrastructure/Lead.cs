@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Hub.Managers;
+using StructureMap;
 using terminalSalesforce.Services;
 
 namespace terminalSalesforce.Infrastructure
@@ -15,6 +17,15 @@ namespace terminalSalesforce.Infrastructure
     public class Lead
     {
         ForceClient client;       
+        private ICrateManager _crateManager;
+
+
+        public Lead()
+        {
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+        }
+
+
         public async Task CreateLead(ActionDO currentActionDO, AuthorizationTokenDO authTokenDO)
         {
             
@@ -22,8 +33,12 @@ namespace terminalSalesforce.Infrastructure
             ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
             client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
             LeadDTO lead = new LeadDTO();
-            var curFieldList =
-               JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(currentActionDO.CrateStorageDTO().CrateDTO.First(field => field.Contents.Contains("firstName")).Contents);
+
+
+            var storage = _crateManager.GetStorage(currentActionDO);
+
+            var curFieldList = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
+
             lead.FirstName = curFieldList.Controls.First(x => x.Name == "firstName").Value;
             lead.LastName = curFieldList.Controls.First(x => x.Name == "lastName").Value;
             lead.Company = curFieldList.Controls.First(x => x.Name == "companyName").Value;

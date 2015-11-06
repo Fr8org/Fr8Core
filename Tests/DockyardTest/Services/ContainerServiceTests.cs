@@ -80,7 +80,6 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var envelopeCrate = FixtureData.EnvelopeIdCrateJson();
                 var route = FixtureData.TestRouteWithStartingSubrouteAndActionList();
 
                 uow.RouteRepository.Add(route);

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
@@ -94,9 +95,12 @@ namespace terminalSalesforce.Actions
             };
 
             var controls = PackControlsCrate(accountName, accountNumber, phone);
-            var curCrateDTOList = new List<CrateDTO>();
-            curCrateDTOList.Add(controls);
-            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
+
+            using (var updater = Crate.UpdateStorage(curActionDTO))
+            {
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(controls);
+            }
 
             return await Task.FromResult(curActionDO);
         }

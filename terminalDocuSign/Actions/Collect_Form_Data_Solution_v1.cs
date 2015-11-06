@@ -5,12 +5,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Newtonsoft.Json;
+using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
@@ -20,10 +22,15 @@ namespace terminalDocuSign.Actions
     {
         private class ActionUi : StandardConfigurationControlsCM
         {
+            [JsonIgnore]
             public DropDownListControlDefinitionDTO FinalActionsList { get; set; }
+            [JsonIgnore]
             public RadioButtonOption UseTemplate { get; set; }
+            [JsonIgnore]
             public RadioButtonOption UseStandardForm { get; set; }
+            [JsonIgnore]
             public RadioButtonOption UseUploadedForm { get; set; }
+            [JsonIgnore]
             public DropDownListControlDefinitionDTO StandardFormsList { get; set; }
 
             public ActionUi()
@@ -95,9 +102,7 @@ namespace terminalDocuSign.Actions
 
         public ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
-
-            if (curCrates.CrateDTO.Count == 0)
+            if (Crate.IsEmptyStorage(curActionDO.CrateStorage))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -122,14 +127,13 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
-            if (curActionDO.CrateStorageDTO() == null)
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                curActionDO.UpdateCrateStorageDTO(new List<CrateDTO>()); 
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(PackControls(new ActionUi()));
+                updater.CrateStorage.AddRange(await PackSources());
             }
-            var curCrateDTOList = new List<CrateDTO>();
-            curCrateDTOList.Add(PackControls(new ActionUi()));
-            curCrateDTOList.AddRange(await PackSources());
-            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
+
             return curActionDO;
         }
 
@@ -137,8 +141,9 @@ namespace terminalDocuSign.Actions
         {
             var controls = new ActionUi();
             
-            controls.ClonePropertiesFrom(Crate.GetStandardConfigurationControls(curActionDO.CrateStorageDTO().CrateDTO.First(x => x.ManifestId == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID)));
-            
+            controls.ClonePropertiesFrom(Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
+
+
             curActionDO.ChildNodes = new List<RouteNodeDO>();
 
             if (controls.UseTemplate.Selected)
@@ -155,8 +160,8 @@ namespace terminalDocuSign.Actions
                 {
                     IsTempId = true,
                     ActivityTemplateId = firstActionTemplate.Id,
-                    CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
-                    CreateDate = DateTimeOffset.UtcNow,
+                    CrateStorage = Crate.EmptyStorageAsStr(),
+                    CreateDate = DateTime.Now,
                     Ordering = 1,
                     Name = "First action"
                 };
@@ -172,8 +177,8 @@ namespace terminalDocuSign.Actions
                 {
                     ActivityTemplateId = finalActionTemplateId,
                     IsTempId = true,
-                    CrateStorage = JsonConvert.SerializeObject(new CrateStorageDTO()),
-					CreateDate = DateTimeOffset.UtcNow,
+                    CrateStorage = Crate.EmptyStorageAsStr(),
+                    CreateDate = DateTime.Now,
                     Ordering = 2,
                     Name = "Final action"
                 };
@@ -194,9 +199,9 @@ namespace terminalDocuSign.Actions
                 .Select(Mapper.Map<ActivityTemplateDO>).Where(x => query(x));
         }
         
-        private async Task<IEnumerable<CrateDTO>> PackSources()
+        private async Task<IEnumerable<Crate>> PackSources()
         {
-            var sources = new List<CrateDTO>();
+            var sources = new List<Crate>();
 
             sources.Add(Crate.CreateDesignTimeFieldsCrate("AvailableForms", new FieldDTO("key", "value")));
 

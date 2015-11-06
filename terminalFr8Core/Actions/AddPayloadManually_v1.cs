@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -18,14 +19,12 @@ namespace terminalFr8Core.Actions
         {
             var processPayload = await GetProcessPayload(containerId);
 
-            var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO
-                .SingleOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
-            if (controlsCrate == null)
+            var controlsMS = Crate.FromDto(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
+            if (controlsMS == null)
             {
                 throw new ApplicationException("Could not find ControlsConfiguration crate.");
             }
-
-            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(controlsCrate.Contents);
 
             var fieldListControl = controlsMS.Controls
                 .SingleOrDefault(x => x.Type == ControlTypes.FieldList);
@@ -37,14 +36,19 @@ namespace terminalFr8Core.Actions
 
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
 
-            var cratePayload = Crate.Create(
-                "Manual Payload Data",
-                JsonConvert.SerializeObject(userDefinedPayload),
-                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
-                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
-                );
-
-            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { cratePayload });
+            using (var updater = Crate.UpdateStorage(() => processPayload.CrateStorage))
+            {
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
+            }
+//
+//            var cratePayload = Crate.Create(
+//                "Manual Payload Data",
+//                JsonConvert.SerializeObject(userDefinedPayload),
+//                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
+//                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
+//                );
+//
+//            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { cratePayload });
 
             return processPayload;
         }
@@ -59,51 +63,46 @@ namespace terminalFr8Core.Actions
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            var crateStrorageDTO = AssembleCrateStorage(configurationControlsCrate);
-            curActionDO.UpdateCrateStorageDTO(crateStrorageDTO.CrateDTO);
+            using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
+            {
+                updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
+            }
+//
+//            var crateStrorageDTO = AssembleCrateStorage(configurationControlsCrate);
+//            curActionDTO.CrateStorage = crateStrorageDTO;
 
             return Task.FromResult(curActionDO);
         }
 
         protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
-            var controlsCrate = curActionDO.CrateStorageDTO().CrateDTO
-                .SingleOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
-            if (controlsCrate == null)
+            var controlsMS = Crate.FromDto(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
+            if (controlsMS == null)
             {
                 throw new ApplicationException("Could not find ControlsConfiguration crate.");
             }
 
-            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(controlsCrate.Contents);
-
-            var fieldListControl = controlsMS.Controls
-                .SingleOrDefault(x => x.Type == ControlTypes.FieldList);
+            var fieldListControl = controlsMS.Controls.SingleOrDefault(x => x.Type == ControlTypes.FieldList);
 
             if (fieldListControl == null)
             {
                 throw new ApplicationException("Could not find FieldListControl.");
             }
 
-            Crate.RemoveCrateByLabel(
-                curActionDO.CrateStorageDTO().CrateDTO,
-                "ManuallyAddedPayload"
-                );
-
-
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
             userDefinedPayload.ForEach(x => x.Value = x.Key);
-            var curCrateList = new List<CrateDTO>();
-            curCrateList.Add(Crate.CreateDesignTimeFieldsCrate(
-                    "ManuallyAddedPayload",
-                    userDefinedPayload.ToArray()
-                    ));
 
-            curActionDO.UpdateCrateStorageDTO(curCrateList);
+            using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
+            {
+                updater.CrateStorage.RemoveByLabel("ManuallyAddedPayload");
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
+            }
 
             return Task.FromResult(curActionDO);
         }
 
-        private CrateDTO CreateControlsCrate()
+        private Crate CreateControlsCrate()
         {
             var fieldFilterPane = new FieldListControlDefinitionDTO
             {
@@ -121,9 +120,7 @@ namespace terminalFr8Core.Actions
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (curActionDO.CrateStorageDTO() == null
-                || curActionDO.CrateStorageDTO().CrateDTO == null
-                || curActionDO.CrateStorageDTO().CrateDTO.Count == 0)
+            if (Crate.IsEmptyStorage(curActionDO.CrateStorage))
             {
                 return ConfigurationRequestType.Initial;
             }

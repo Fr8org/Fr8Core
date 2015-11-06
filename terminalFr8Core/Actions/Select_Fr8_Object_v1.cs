@@ -1,16 +1,14 @@
-﻿using AutoMapper;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
+using Data.Crates;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
+using Hub.Managers;
+using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
@@ -20,6 +18,35 @@ namespace terminalFr8Core.Actions
     // The generic interface inheritance.
     public class Select_Fr8_Object_v1 : BasePluginAction
     {
+        public class ActionUi : StandardConfigurationControlsCM
+        {
+            [JsonIgnore]
+            public readonly DropDownListControlDefinitionDTO Selected_Fr8_Object;
+
+            public ActionUi()
+            {
+                Controls = new List<ControlDefinitionDTO>();
+
+                Selected_Fr8_Object = new DropDownListControlDefinitionDTO()
+                {
+                    Label = "Select Fr8 Object",
+                    Name = "Selected_Fr8_Object",
+                    Value = "",
+                    Required = true,
+                    Events = new List<ControlEvent>()
+                    {
+                        new ControlEvent("onChange", "requestConfig")
+                    },
+                    Source = new FieldSourceDTO
+                    {
+                        Label = "Select Fr8 Object",
+                        ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
+                    }
+                };
+                
+                Controls.Add(Selected_Fr8_Object);
+            }
+        }
 
         // configure the action will return the initial UI crate 
         public async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
@@ -29,73 +56,53 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            // build a controls crate to render the dropdown build
-            var configurationControlsCrate = CreateControlsCrate();
-
             var crateDesignTimeFields = PackFr8ObjectCrate();
-            var crateStrorageDTO = AssembleCrateStorage(configurationControlsCrate, crateDesignTimeFields);
-            curActionDO.UpdateCrateStorageDTO( crateStrorageDTO.CrateDTO);
+
+            using (var updater = Crate.UpdateStorage(curActionDTO))
+            {
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(PackControls(new ActionUi()));
+                updater.CrateStorage.Add(crateDesignTimeFields);
+            }
 
             return Task.FromResult(curActionDO);
         }
 
-        private string GetSelectedFr8Object(ActionDO curActionDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
         {
-            var controlsCrates = Crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME,
-                curActionDO.CrateStorageDTO());
-            var curFr8Selected_Object = Crate.GetElementByKey(controlsCrates, key: "Selected_Fr8_Object",
-                keyFieldName: "name")
-                .Select(e => (string)e["value"])
-                .FirstOrDefault(s => !string.IsNullOrEmpty(s));
-            return curFr8Selected_Object;
-        }
-
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authToken = null)
-        {
-
-            string curSelectedFr8Object = GetSelectedFr8Object(curActionDO);
-
-            if (!string.IsNullOrEmpty(curSelectedFr8Object))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                var fr8ObjectCrateDTO = await GetDesignTimeFieldsCrateOfSelectedFr8Object(curSelectedFr8Object);
+                var confControls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
-                // Change the label of the design time field crate in the current context.
-                var designTimeControlName = "Select Fr8 Object Properties";
-                fr8ObjectCrateDTO.Label = designTimeControlName;
-                Crate.AddOrReplaceCrate(designTimeControlName, curActionDO, fr8ObjectCrateDTO);
+                if (confControls != null )
+        {
+                    var ui = new ActionUi();
 
+                    // Clone properties of StandardConfigurationControlsCM to handy ActionUi
+                    ui.ClonePropertiesFrom(confControls);
+
+                    if (!string.IsNullOrWhiteSpace(ui.Selected_Fr8_Object.Value))
+            {
+                        var fr8ObjectCrateDTO = await GetDesignTimeFieldsCrateOfSelectedFr8Object(ui.Selected_Fr8_Object.Value);
+
+                        const string designTimeControlName = "Select Fr8 Object Properties";
+                        ui.Selected_Fr8_Object.Label = designTimeControlName;
+
+                        // Sync changes from ActionUi to StandardConfigurationControlsCM
+                        confControls.ClonePropertiesFrom(ui);
+
+                        updater.CrateStorage.RemoveByLabel(designTimeControlName);
+                        updater.CrateStorage.Add(fr8ObjectCrateDTO);
             }
-            return await Task.FromResult(curActionDO);
         }
-
-        private CrateDTO CreateControlsCrate()
-        {
-
-            var fieldSelectFr8Object = new DropDownListControlDefinitionDTO()
-            {
-                Label = "Select Fr8 Object",
-                Name = "Selected_Fr8_Object",
-                Value = "",
-                Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
-                Source = new FieldSourceDTO
-                {
-                    Label = "Select Fr8 Object",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 }
-            };
 
-            return PackControlsCrate(fieldSelectFr8Object);
+            return await Task.FromResult(curActionDO);
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (curActionDO.CrateStorageDTO() == null
-                || curActionDO.CrateStorageDTO().CrateDTO == null
-                || curActionDO.CrateStorageDTO().CrateDTO.Count == 0)
+            if (Crate.IsEmptyStorage(curActionDO.CrateStorage))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -103,7 +110,7 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        private CrateDTO PackFr8ObjectCrate()
+        private Crate PackFr8ObjectCrate()
         {
             var fields = new List<FieldDTO> {
                     new FieldDTO(){
@@ -123,10 +130,8 @@ namespace terminalFr8Core.Actions
         }
 
         // Get the Design time fields crate.
-        private async Task<CrateDTO> GetDesignTimeFieldsCrateOfSelectedFr8Object(string fr8Object)
+        private async Task<Crate> GetDesignTimeFieldsCrateOfSelectedFr8Object(string fr8Object)
         {
-            var fr8ObjectPropertiesList = new List<FieldDTO>();
-
             var httpClient = new HttpClient();
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
@@ -135,7 +140,8 @@ namespace terminalFr8Core.Actions
             using (var response = await httpClient.GetAsync(url))
             {
                 var content = await response.Content.ReadAsAsync<CrateDTO>();
-                return content;
+                
+                return Crate.FromDto(content);
             }
         }
 

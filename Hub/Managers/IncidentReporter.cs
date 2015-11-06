@@ -24,6 +24,7 @@ namespace Hub.Managers
         {
             EventManager.AlertEmailProcessingFailure += ProcessAlert_EmailProcessingFailure;
             EventManager.IncidentPluginConfigureFailed += ProcessIncidentPluginConfigureFailed;
+            EventManager.IncidentPluginRunFailed += ProcessIncidentPluginRunFailed;
             EventManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
             EventManager.IncidentPluginActionActivationFailed += ProcessIncidentPluginActionActivationFailed;
             //EventManager.IncidentPluginConfigureFailed += ProcessIncidentPluginConfigureFailed;
@@ -84,8 +85,20 @@ namespace Hub.Managers
             };
             SaveAndLogIncident(incident);
         }
-
-        private void LogPluginIncident(LoggingData incidentItem)
+        private void ProcessIncidentPluginRunFailed(string curPluginUrl, string curAction, string errorMessage)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = curPluginUrl + "      " + curAction + " " + errorMessage,
+                ObjectId = "unknown",
+                PrimaryCategory = "Plugin",
+                SecondaryCategory = "Configure",
+                Activity = "Configuration Failed"
+            };
+            SaveAndLogIncident(incident);
+        }
+        private void LogPluginIncident(LoggingDataCm incidentItem)
         {
             var currentIncident = new IncidentDO
             {

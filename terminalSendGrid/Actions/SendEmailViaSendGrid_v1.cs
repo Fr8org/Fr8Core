@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Data.Crates;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Enums;
+using Hub.Managers;
 using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
 using Utilities;
@@ -42,29 +44,23 @@ namespace terminalSendGrid.Actions
         /// </summary>
         private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            var curCrates = curActionDO.CrateStorageDTO();
-
-            if (curCrates == null || curCrates.CrateDTO.Count == 0)
+            if (Crate.IsEmptyStorage(curActionDO.CrateStorage))
             {
                 return ConfigurationRequestType.Initial;
             }
-            else
-            {
+
                 return ConfigurationRequestType.Followup;
             }
-        }
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.CrateStorageDTO() == null)
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                curActionDO.UpdateCrateStorageDTO(new List<CrateDTO>());
-            }
-            var curCrateDTOList = new List<CrateDTO>();
-            curCrateDTOList.Add(CreateControlsCrate());
-            curCrateDTOList.Add(await GetAvailableDataFields(curActionDO));
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(CreateControlsCrate());
+                updater.CrateStorage.Add(await GetAvailableDataFields(curActionDTO));
 
-            curActionDO.UpdateCrateStorageDTO(curCrateDTOList);
+            }
 
             return curActionDO;
         }
@@ -114,7 +110,7 @@ namespace terminalSendGrid.Actions
             return control;
         }
 
-        private CrateDTO CreateControlsCrate()
+        private Crate CreateControlsCrate()
         {
             var controls = new[]
             {
@@ -126,7 +122,7 @@ namespace terminalSendGrid.Actions
             return Crate.CreateStandardConfigurationControlsCrate("Send Grid", controls);
         }
 
-        private async Task<CrateDTO> GetAvailableDataFields(ActionDO curActionDO)
+        private async Task<Crate> GetAvailableDataFields(ActionDO curActionDO)
         {
             var curUpstreamFields =
                 (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream))
@@ -167,18 +163,18 @@ namespace terminalSendGrid.Actions
             var processPayload = await GetProcessPayload(containerId);
 
             var emailAddress = ExtractSpecificOrUpstreamValue(
-                curActionDO.CrateStorageDTO(),
-                processPayload.CrateStorageDTO(),
+                Crate.FromDto(curActionDO.CrateStorage),
+                Crate.FromDto(processPayload.CrateStorage),
                 "EmailAddress"
             );
             var emailSubject = ExtractSpecificOrUpstreamValue(
-                curActionDO.CrateStorageDTO(),
-                processPayload.CrateStorageDTO(),
+                Crate.FromDto(curActionDO.CrateStorage),
+                Crate.FromDto(processPayload.CrateStorage),
                 "EmailSubject"
             );
             var emailBody = ExtractSpecificOrUpstreamValue(
-                curActionDO.CrateStorageDTO(),
-                processPayload.CrateStorageDTO(),
+                Crate.FromDto(curActionDO.CrateStorage),
+                Crate.FromDto(processPayload.CrateStorage),
                 "EmailBody"
             );
 
