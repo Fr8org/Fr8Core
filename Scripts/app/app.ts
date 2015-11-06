@@ -73,7 +73,7 @@ app.controller('FooterController', ['$scope', function ($scope) {
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
 
     // Install a HTTP request interceptor that causes 'Processing...' message to display
-    $httpProvider.interceptors.push(($q: ng.IQService) => {
+    $httpProvider.interceptors.push(($q: ng.IQService, $window: ng.IWindowService) => {
         return {
             request: function (config: ng.IRequestConfig) {
                 // Show page spinner If there is no request parameter suppressSpinner.
@@ -90,7 +90,11 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
                 Metronic.stopPageLoading();
                 return config;
             },
-            responseError: function (config: ng.IRequestConfig) {
+            responseError: function (config) {
+                if (config.status === 403) {
+                    $window.location.href = $window.location.origin + '/DockyardAccount'
+                        + '?returnUrl=/Dashboard' + encodeURIComponent($window.location.hash);
+                }
                 Metronic.stopPageLoading();
                 return $q.reject(config);
             }
