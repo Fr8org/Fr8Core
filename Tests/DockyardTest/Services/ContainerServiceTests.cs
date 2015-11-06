@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
-using InternalInterface = Core.Interfaces;
-using Core.Interfaces;
+using InternalInterface = Hub.Interfaces;
+using Hub.Interfaces;
 // This alias is used to avoid ambiguity between StructureMap.Container and Core.Services.Container
-using InternalClass = Core.Services;
-using Core.Services;
+using InternalClass = Hub.Services;
+using Hub.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
@@ -18,6 +18,7 @@ using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
 using Moq;
 using Newtonsoft.Json;
+using Hub.Managers;
 
 
 namespace DockyardTest.Services
@@ -26,12 +27,13 @@ namespace DockyardTest.Services
     [Category("ContainerService")]
     public class ContainerServiceTests : BaseTest
     {
+        
         private InternalInterface.IContainer _container;
         //private IDocuSignNotification _docuSignNotificationService;
+        private EventReporter _eventReporter;
         private Fr8Account _userService;
         private string _testUserId = "testuser";
         private string xmlPayloadFullPath;
-        DocuSignEventDO docusignEventDO;
         ProcessNodeDO processNodeDO;
 
         [SetUp]
@@ -40,13 +42,13 @@ namespace DockyardTest.Services
             base.SetUp();
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _userService = ObjectFactory.GetInstance<Fr8Account>();
+            _eventReporter = new EventReporter();
             //_docuSignNotificationService = ObjectFactory.GetInstance<IDocuSignNotification>();
 
             xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
             if (xmlPayloadFullPath == string.Empty)
                 throw new Exception("XML payload file for testing DocuSign notification is not found.");
 
-            docusignEventDO = FixtureData.TestDocuSignEvent1();
             processNodeDO = FixtureData.TestProcessNode2();
         }
 
@@ -78,7 +80,6 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var envelopeCrate = FixtureData.EnvelopeIdCrateJson();
                 var route = FixtureData.TestRouteWithStartingSubrouteAndActionList();
 
                 uow.RouteRepository.Add(route);
@@ -163,8 +164,7 @@ namespace DockyardTest.Services
                 //Arrange
                 //Create a process template
                 var curRoute = FixtureData.TestRouteWithSubscribeEvent();
-                var curEvent = FixtureData.TestDocuSignEvent1();
-
+                
                 //Create activity mock to process the actions
                 Mock<IRouteNode> activityMock = new Mock<IRouteNode>(MockBehavior.Default);
                 activityMock.Setup(a => a.Process(1, It.IsAny<ContainerDO>())).Returns(Task.Delay(2));
@@ -172,7 +172,7 @@ namespace DockyardTest.Services
 
                 //Act
                 _container = new InternalClass.Container();
-                _container.Launch(curRoute, FixtureData.DocuSignEventToCrate(curEvent));
+                _container.Launch(curRoute, FixtureData.TestDocuSignEventCrate());
 
                 //Assert
                 //since we have only one action in the template, the process should be called exactly once
@@ -257,6 +257,8 @@ namespace DockyardTest.Services
         {
                 await _container.Execute(uow, FixtureData.TestContainerCurrentActivityNULL());
         }
+        }
+
         }
 //
 //        [Test]
@@ -390,4 +392,3 @@ namespace DockyardTest.Services
 //            Assert.IsNull(curProcess.NextActivity);
 //        }
     }
-}

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http.Description;
 using System.Web.Http;
-using Core.Services;
 using Data.Entities;
 using Data.States;
+using Hub.Services;
 using Utilities.Configuration.Azure;
+using Data.Interfaces.Manifests;
 
 namespace terminalFr8Core.Controllers
 {
@@ -17,7 +18,7 @@ namespace terminalFr8Core.Controllers
         /// </summary>
         [HttpGet]
         [Route("discover")]
-        [ResponseType(typeof(List<ActivityTemplateDO>))]
+        [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverPlugins()
         {
             var result = new List<ActivityTemplateDO>();
@@ -27,7 +28,6 @@ namespace terminalFr8Core.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 PluginStatus = PluginStatus.Active,
                 Name = "terminalFr8Core",
-                RequiresAuthentication = false,
                 Version = "1"
             };
 
@@ -37,7 +37,9 @@ namespace terminalFr8Core.Controllers
                 Label = "Filter Using Runtime Data",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
-                Version = "1"
+                AuthenticationType = AuthenticationType.None,
+                Version = "1",
+				MinPaneWidth = 330
             });
 
             result.Add(new ActivityTemplateDO
@@ -46,7 +48,9 @@ namespace terminalFr8Core.Controllers
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
-                Version = "1"
+                AuthenticationType = AuthenticationType.None,
+                Version = "1",
+				MinPaneWidth = 380
             });
 
             result.Add(new ActivityTemplateDO
@@ -55,10 +59,64 @@ namespace terminalFr8Core.Controllers
                 Label = "Add Payload Manually",
                 Category = ActivityCategory.Processors,
                 Plugin = plugin,
+                AuthenticationType = AuthenticationType.None,
+                Version = "1",
+				MinPaneWidth = 330
+            });
+
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "StoreMTData",
+                Label = "Store MT Data",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
                 Version = "1"
             });
 
-            return Json(result);    
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "Select_Fr8_Object",
+                Label = "Select Fr8 Object",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1",
+                MinPaneWidth = 330
+            });
+
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "ConnectToSql",
+                Label = "Connect To SQL",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1"
+            });
+
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "BuildQuery",
+                Label = "Build Query",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1"
+            });
+
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "ExecuteSql",
+                Label = "Execute Sql Query",
+                Category = ActivityCategory.Processors,
+                Plugin = plugin,
+                Version = "1"
+            });
+
+            var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            {
+                Definition = plugin,
+                Actions = result
+            };
+
+            return Json(curStandardFr8TerminalCM);
         }
     }
 }

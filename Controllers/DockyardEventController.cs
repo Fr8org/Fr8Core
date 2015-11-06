@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Data.Crates;
 using StructureMap;
-using Core.Interfaces;
-using Core.Managers;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
+using Hub.Interfaces;
+using Hub.Managers;
+using Newtonsoft.Json.Linq;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     public class DockyardEventController : ApiController
     {
@@ -25,19 +28,25 @@ namespace Web.Controllers
 
         [HttpPost]
         [Route("dockyard_events")]
-        public async Task<IHttpActionResult> ProcessDockyardEvents(CrateDTO curCrateStandardEventReport)
+        public async Task<IHttpActionResult> ProcessDockyardEvents(CrateDTO raw)
         {
             //check if its not null
-            if (curCrateStandardEventReport == null)
+            if (raw == null)
                 throw new ArgumentNullException("Parameter Standard Event Report is null.");
+
+            var curCrateStandardEventReport = _crate.FromDto(raw);
+
+            
+
             //check if Standard Event Report inside CrateDTO
-            if (String.IsNullOrEmpty(curCrateStandardEventReport.ManifestType) || !curCrateStandardEventReport.ManifestType.Equals("Standard Event Report", StringComparison.OrdinalIgnoreCase))
+            if (!curCrateStandardEventReport.IsOfType<EventReportCM>())
                 throw new ArgumentNullException("CrateDTO passed is not a Standard Event Report.");
-            if (String.IsNullOrEmpty(curCrateStandardEventReport.Contents))
-                throw new ArgumentNullException("CrateDTO Content is empty.");
+
+            // This check is redundant as curCrateStandardEventReport.IsOfType<EventReportCM>() will be false in case of null content
+//            if (curCrateStandardEventReport.Get() == null)
+//                throw new ArgumentNullException("CrateDTO Content is empty.");
              
             await _dockyardEvent.ProcessInboundEvents(curCrateStandardEventReport);
-           
 
             return Ok();
         }

@@ -1,20 +1,21 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Results;
-using Core.Services;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using AutoMapper;
+using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Services;
+using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Web.Controllers;
-using Moq;
-using System;
-using Core.Interfaces;
-using AutoMapper;
 
 namespace DockyardTest.Controllers
 {
@@ -44,11 +45,21 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var route = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(route);
+
+                var subroute = FixtureData.TestSubrouteDO1();
+                uow.RouteNodeRepository.Add(subroute);
+                uow.SaveChanges();
+
                 //Arrange is done with empty action list
 
                 //Act
                 var actualAction = CreateActionWithId(1);
 
+                actualAction.IsTempId = true;
+                actualAction.ParentRouteNodeId = subroute.Id;
+                
                 var controller = new ActionController();
                 controller.Save(actualAction);
 
@@ -67,14 +78,24 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var route = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(route);
+
+                var subroute = FixtureData.TestSubrouteDO1();
+                uow.RouteNodeRepository.Add(subroute);
+
                 //Arrange
                 //Add one test action
                 var action = FixtureData.TestAction1();
+                action.ParentRouteNodeId = subroute.Id;
+                
                 uow.ActionRepository.Add(action);
                 uow.SaveChanges();
 
                 //Act
                 var actualAction = CreateActionWithId(2);
+                actualAction.IsTempId = true;
+                actualAction.ParentRouteNodeId = subroute.Id;
 
                 var controller = new ActionController();
                 controller.Save(actualAction);
@@ -125,38 +146,38 @@ namespace DockyardTest.Controllers
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
         public async void ActionController_Configure_WithoutConnectionString_ShouldReturnOneEmptyConnectionString()
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //Arrange
-                //remvoe existing action templates
-                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
-                uow.SaveChanges();
-
-                //create action
-                var curAction = CreateActionWithV2ActionTemplate(uow);
-                curAction.CrateStorage = JsonConvert.SerializeObject(FixtureData.TestConfigurationStore());
-                uow.SaveChanges();
-
-                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
-                //Act
-                var result = await
-                    new ActionController(_action).Configure(curActionDesignDO) as
-                        OkNegotiatedContentResult<string>;
-
-                CrateStorageDTO resultantCrateStorageDto =
-                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
-
-                //Assert
-                Assert.IsNotNull(result, "Configure POST reqeust is failed");
-                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
-                Assert.IsTrue(resultantCrateStorageDto.CrateDTO.Count == 1, "Configure is not assuming this is the first request from the client");
-                //different V2 format
-                //Assert.AreEqual("connection_string", resultantCrateStorageDto.Fields[0].Name, "Configure does not return one connection string with empty value");
-                //Assert.IsEmpty(resultantCrateStorageDto.Fields[0].Value, "Configure returned some connectoin string when the first request made");
-                
-                ////There should be no data fields as this is the first request from the client
-                //Assert.IsTrue(resultantCrateStorageDto.DataFields.Count == 0, "Configure did not assume this is the first call from the client");
-            }
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                //Arrange
+//                //remvoe existing action templates
+//                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
+//                uow.SaveChanges();
+//
+//                //create action
+//                var curAction = CreateActionWithV2ActionTemplate(uow);
+//                curAction.CrateStorage = JsonConvert.SerializeObject(FixtureData.TestConfigurationStore());
+//                uow.SaveChanges();
+//
+//                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
+//                //Act
+//                var result = await
+//                    new ActionController(_action).Configure(curActionDesignDO) as
+//                        OkNegotiatedContentResult<string>;
+//
+//                CrateStorageDTO resultantCrateStorageDto =
+//                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
+//
+//                //Assert
+//                Assert.IsNotNull(result, "Configure POST reqeust is failed");
+//                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
+//                Assert.IsTrue(resultantCrateStorageDto.CrateDTO.Count == 1, "Configure is not assuming this is the first request from the client");
+//                //different V2 format
+//                //Assert.AreEqual("connection_string", resultantCrateStorageDto.Fields[0].Name, "Configure does not return one connection string with empty value");
+//                //Assert.IsEmpty(resultantCrateStorageDto.Fields[0].Value, "Configure returned some connectoin string when the first request made");
+//                
+//                ////There should be no data fields as this is the first request from the client
+//                //Assert.IsTrue(resultantCrateStorageDto.DataFields.Count == 0, "Configure did not assume this is the first call from the client");
+//            }
         }
 
         [Test]
@@ -164,74 +185,74 @@ namespace DockyardTest.Controllers
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
         public async void ActionController_Configure_WithConnectionString_ShouldReturnDataFields()
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //Arrange
-                //remvoe existing action templates
-                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
-                uow.SaveChanges();
-
-                //create action
-                var curAction = CreateActionWithV2ActionTemplate(uow);
-                var configurationStore = FixtureData.TestConfigurationStore();
-                //different V2 format
-                //configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
-                curAction.CrateStorage = JsonConvert.SerializeObject(configurationStore);
-                uow.SaveChanges();
-                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
-                //Act
-                var result = await
-                    new ActionController(_action).Configure(curActionDesignDO) as
-                        OkNegotiatedContentResult<string>;
-
-                CrateStorageDTO resultantCrateStorageDto =
-                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
-
-                //Assert
-                Assert.IsNotNull(result, "Configure POST reqeust is failed");
-                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
-                Assert.IsTrue(resultantCrateStorageDto.CrateDTO.Count == 3, "Configure returned invalid data fields");
-            }
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                //Arrange
+//                //remvoe existing action templates
+//                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
+//                uow.SaveChanges();
+//
+//                //create action
+//                var curAction = CreateActionWithV2ActionTemplate(uow);
+//                var configurationStore = FixtureData.TestConfigurationStore();
+//                //different V2 format
+//                //configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
+//                curAction.CrateStorage = JsonConvert.SerializeObject(configurationStore);
+//                uow.SaveChanges();
+//                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
+//                //Act
+//                var result = await
+//                    new ActionController(_action).Configure(curActionDesignDO) as
+//                        OkNegotiatedContentResult<string>;
+//
+//                CrateStorageDTO resultantCrateStorageDto =
+//                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
+//
+//                //Assert
+//                Assert.IsNotNull(result, "Configure POST reqeust is failed");
+//                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
+//                Assert.IsTrue(resultantCrateStorageDto.CrateDTO.Count == 3, "Configure returned invalid data fields");
+//            }
         }
 
         [Test]
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
         public async void ActionController_Configure_WithConnectionStringAndDataFields_ShouldReturnUpdatedDataFields()
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //Arrange
-                //remvoe existing action templates
-                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
-                uow.SaveChanges();
-
-                //create action
-                var curAction = CreateActionWithV2ActionTemplate(uow);
-                var configurationStore = FixtureData.TestConfigurationStore();
-                //V2 changes
-                //configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
-                //configurationStore.DataFields.Add("something");
-                //configurationStore.DataFields.Add("Wrong");
-                //configurationStore.DataFields.Add("data fields");
-                //configurationStore.DataFields.Add("data fields");
-                curAction.CrateStorage = JsonConvert.SerializeObject(configurationStore);
-                uow.SaveChanges();
-                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
-                //Act
-                var result = await
-                    new ActionController(_action).Configure(curActionDesignDO) as
-                        OkNegotiatedContentResult<string>;
-
-                CrateStorageDTO resultantCrateStorageDto =
-                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
-
-                //Assert
-                Assert.IsNotNull(result, "Configure POST reqeust is failed");
-                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
-                //V2 changes
-                //Assert.IsTrue(resultantCrateStorageDto.DataFields.Count != 4, "Since we already had 4 invalid data fields, the number of data fields should not be 4 now.");
-                //Assert.IsTrue(resultantCrateStorageDto.DataFields.Count == 3, "The new data field should be 3 data fields as with the update one.");
-            }
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                //Arrange
+//                //remvoe existing action templates
+//                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
+//                uow.SaveChanges();
+//
+//                //create action
+//                var curAction = CreateActionWithV2ActionTemplate(uow);
+//                var configurationStore = FixtureData.TestConfigurationStore();
+//                //V2 changes
+//                //configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
+//                //configurationStore.DataFields.Add("something");
+//                //configurationStore.DataFields.Add("Wrong");
+//                //configurationStore.DataFields.Add("data fields");
+//                //configurationStore.DataFields.Add("data fields");
+//                curAction.CrateStorage = JsonConvert.SerializeObject(configurationStore);
+//                uow.SaveChanges();
+//                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
+//                //Act
+//                var result = await
+//                    new ActionController(_action).Configure(curActionDesignDO) as
+//                        OkNegotiatedContentResult<string>;
+//
+//                CrateStorageDTO resultantCrateStorageDto =
+//                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
+//
+//                //Assert
+//                Assert.IsNotNull(result, "Configure POST reqeust is failed");
+//                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
+//                //V2 changes
+//                //Assert.IsTrue(resultantCrateStorageDto.DataFields.Count != 4, "Since we already had 4 invalid data fields, the number of data fields should not be 4 now.");
+//                //Assert.IsTrue(resultantCrateStorageDto.DataFields.Count == 3, "The new data field should be 3 data fields as with the update one.");
+//            }
         }
 
         [Test]

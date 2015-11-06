@@ -1,12 +1,15 @@
-﻿﻿using Core.Interfaces;
+﻿﻿using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+﻿using Data.Crates;
+﻿using Hub.Managers;
+﻿using StructureMap;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -18,50 +21,29 @@ namespace UtilitiesTesting.Fixtures
 
             EventReportCM curEventReportMS = new EventReportCM();
             curEventReportMS.EventNames = "DocuSign Envelope Sent";
-            curEventReportMS.EventPayload.Add(new CrateDTO()
+            curEventReportMS.EventPayload.Add(Crate.FromContent("Standard Event Report", new StandardPayloadDataCM(curFields)));
+            var payload = new PayloadDTO(1);
+
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(payload))
             {
-                Id = Guid.NewGuid().ToString(),
-                Label = "Standard Event Report",
-                ManifestType = CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
-                ManifestId = CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID,
-                Contents = JsonConvert.SerializeObject(curFields)
+                updater.CrateStorage.Add(Crate.FromContent("Standard Event Report", curEventReportMS));
+            }
 
-            });
-
-            CrateDTO curCrateDTO = new CrateDTO()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Label = "Standard Event Report",
-                ManifestType = "Standard Event Report",
-                Contents = JsonConvert.SerializeObject(curEventReportMS)
-            };
-
-            CrateStorageDTO curCrateStorageDTO = new CrateStorageDTO();
-            curCrateStorageDTO.CrateDTO.Add(curCrateDTO);
-            var curStorage = JsonConvert.SerializeObject(curCrateStorageDTO);
-
-
-            return new PayloadDTO(curStorage, 1);
+            return payload;
         }
 
         public static PayloadDTO PayloadDTO2()
         {
-            List<FieldDTO> curFields = new List<FieldDTO>() { new FieldDTO() { Key = "EnvelopeId", Value = "EnvelopeIdValue" } };
+            var standardPayload = new StandardPayloadDataCM(new List<FieldDTO>() {new FieldDTO() {Key = "EnvelopeId", Value = "EnvelopeIdValue"}});
 
-            CrateDTO curCrateDTO = new CrateDTO()
+            var payload = new PayloadDTO(49);
+
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(payload))
             {
-                Id = Guid.NewGuid().ToString(),
-                Label = "Standard Payload Data",
-                ManifestType = CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
-                Contents = JsonConvert.SerializeObject(curFields)
-            };
-
-            CrateStorageDTO curCrateStorageDTO = new CrateStorageDTO();
-            curCrateStorageDTO.CrateDTO.Add(curCrateDTO);
-            var curStorage = JsonConvert.SerializeObject(curCrateStorageDTO);
-
-
-            return new PayloadDTO(curStorage, 49);
+                updater.CrateStorage.Add(Crate.FromContent("Standard Payload Data", standardPayload));
+            }
+            
+            return payload;
         }
 
     }

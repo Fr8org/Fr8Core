@@ -88,6 +88,13 @@ var dockyard;
                 return FilePicker;
             })();
             app.directive('filePicker', FilePicker.Factory());
+            app.filter('formatInput', function () {
+                return function (input) {
+                    if (input) {
+                        return 'Selected File : ' + input.substring(input.lastIndexOf('/') + 1, input.length);
+                    }
+                };
+            });
             /*
                 General data persistance methods for FileDirective.
             */

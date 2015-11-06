@@ -5,6 +5,10 @@
         Remote service could not authenticate you.
     </p>
 
+    <p ng-show="authErrorText" class="bg-warning">
+        {{authErrorText}}
+    </p>
+
     <div class="form-group" ng-class="{ 'has-error': !form.username.$valid }">
         <label>User-name: </label>
         <input type="text" class="form-control" ng-model="formData.username" name="username" required />

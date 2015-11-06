@@ -4,20 +4,20 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using Core.Exceptions;
-using Core.Interfaces;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Microsoft.AspNet.Identity;
-using StructureMap;
+using Hub.Exceptions;
+using Hub.Interfaces;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
-    [RoutePrefix("api/route")]
+    [RoutePrefix("routes")]
     public class RouteController : ApiController
     {
         private readonly IRoute _route;
@@ -45,46 +45,28 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var route = uow.RouteRepository.GetByKey(id);
-                var result = MapRouteToDTO(route, uow);
+                var result = _route.MapRouteToDto(uow, route);
 
                 return Ok(result);
             };
         }
 
-        
-        // Manual mapping method to resolve DO-1164.
-        private RouteDTO MapRouteToDTO(RouteDO curRouteDO, IUnitOfWork uow)
+        [Route("getByAction/{id:int}")]
+        [ResponseType(typeof(RouteDTO))]
+        [HttpGet]
+        public IHttpActionResult GetByAction(int id)
         {
-            var subrouteDTOList = uow.SubrouteRepository
-                .GetQuery()
-                .Include(x => x.RouteNodes)
-                .Where(x => x.ParentRouteNodeId == curRouteDO.Id)
-                .OrderBy(x => x.Id)
-                .ToList()
-                .Select((SubrouteDO x) =>
-                {
-                    var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
-
-                    pntDTO.Actions = Enumerable.ToList(x.RouteNodes.Select(Mapper.Map<ActionDTO>));
-
-                    return pntDTO;
-                }).ToList();
-
-            RouteDTO result = new RouteDTO()
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Description = curRouteDO.Description,
-                Id = curRouteDO.Id,
-                Name = curRouteDO.Name,
-                RouteState = curRouteDO.RouteState,
-                StartingSubrouteId = curRouteDO.StartingSubrouteId,
-                Subroutes = subrouteDTOList
+                var action = uow.ActionRepository.GetByKey(id);
+                var route = _route.GetRoute(action);
+                var result = _route.MapRouteToDto(uow, route);
+
+                return Ok(result);
             };
-
-            return result;
-        }
-
-        
-        [Route("getactive")]
+        }  
+              
+        [Route("status")]
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
         {
@@ -128,7 +110,7 @@ namespace Web.Controllers
             return Ok();
         }
 
-        
+        [Route("~/routes")]
         public IHttpActionResult Post(RouteOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -169,7 +151,9 @@ namespace Web.Controllers
         }
 
         
-
+        
+        [HttpDelete]
+        [Route("{id:int}")]
         public IHttpActionResult Delete(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

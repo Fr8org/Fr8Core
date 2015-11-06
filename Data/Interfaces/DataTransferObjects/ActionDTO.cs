@@ -1,22 +1,15 @@
-﻿using Data.Entities;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
     public class ActionDTO : ActionDTOBase
     {
-        public ActionDTO() : base()
-        {
-            CrateStorage = new CrateStorageDTO();
-        }
-
         public int? ParentRouteNodeId { get; set; }
 
         public CrateStorageDTO CrateStorage { get; set; }
-
+        
         public int? ActivityTemplateId { get; set; }
-
-
+        
         public string Label { get; set; }
 
         [JsonProperty("activityTemplate")]
@@ -33,5 +26,7 @@ namespace Data.Interfaces.DataTransferObjects
         public int ProcessId { get; set; }
 
         public AuthTokenDTO AuthToken { get; set; }
+
+        public ActionDTO[] ChildrenActions { get; set; }
     }
 }

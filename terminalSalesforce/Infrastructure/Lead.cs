@@ -1,5 +1,5 @@
 ﻿using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Salesforce.Force;
 using System;
@@ -7,21 +7,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Hub.Managers;
+using StructureMap;
+using terminalSalesforce.Services;
 
 namespace terminalSalesforce.Infrastructure
 {
     public class Lead
     {
         ForceClient client;
+        private ICrateManager _crateManager;
+
+
+        public Lead()
+        {
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+        }
+
+
         public async Task CreateLead(ActionDTO currentActionDTO)
         {
             
             string instanceUrl, apiVersion;
-            ParseAuthToken(currentActionDTO.AuthToken.AdditionalAttributes,out instanceUrl,out apiVersion);
+            ParseAuthToken(currentActionDTO.AuthToken.AdditionalAttributes, out instanceUrl, out apiVersion);
             client = new ForceClient(instanceUrl, currentActionDTO.AuthToken.Token, apiVersion);
             LeadDTO lead = new LeadDTO();
-            var curFieldList =
-               JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(currentActionDTO.CrateStorage.CrateDTO.First(field => field.Contents.Contains("firstName")).Contents);
+
+
+            var storage = _crateManager.GetStorage(currentActionDTO);
+
+            var curFieldList = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
+
             lead.FirstName = curFieldList.Controls.First(x => x.Name == "firstName").Value;
             lead.LastName = curFieldList.Controls.First(x => x.Name == "lastName").Value;
             lead.Company = curFieldList.Controls.First(x => x.Name == "companyName").Value;
@@ -40,8 +56,5 @@ namespace terminalSalesforce.Infrastructure
             instanceUrl = instanceUrl.Replace("instance_url=", "");
             apiVersion = apiVersion.Replace("api_version=", "");
         }
-
-
-
     }
 }

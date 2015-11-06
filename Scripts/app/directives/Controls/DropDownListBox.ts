@@ -10,20 +10,20 @@ module dockyard.directives.dropDownListBox {
     }
 
     export function DropDownListBox(): ng.IDirective {
-        var controller = ['$scope', function ($scope: IDropDownListBoxScope) {
+        var controller = ['$scope', '$filter', function ($scope: IDropDownListBoxScope, $filter: any) {
             $scope.setSelectedItem = function (item: model.FieldDTO) {
-                $scope.field.value = item.Value;
+                $scope.field.value = item.value || (<any>item).Value;
                 $scope.selectedItem = item;
 
-                // Invoike onChange event handler
+                // Invoke onChange event handler
                 if ($scope.change != null && angular.isFunction($scope.change)) {
-                    $scope.change()($scope.field.name);
+                    $scope.change()($filter('validId')($scope.field.name));
                 }
             };
 
             var findAndSetSelectedItem = function () {
                 for (var i = 0; i < $scope.field.listItems.length; i++) {
-                    if ($scope.field.value == $scope.field.listItems[i].Value) {
+                    if ($scope.field.value == $scope.field.listItems[i].value || (<any>$scope.field.listItems[i]).Value) {
                         $scope.selectedItem = $scope.field.listItems[i];
                         break;
                     }

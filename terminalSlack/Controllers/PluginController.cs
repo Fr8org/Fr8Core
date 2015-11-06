@@ -5,6 +5,7 @@ using System.Web.Http;
 using Data.Entities;
 using Data.States;
 using Utilities.Configuration.Azure;
+using Data.Interfaces.Manifests;
 
 namespace terminalSlack.Controllers
 {
@@ -17,7 +18,7 @@ namespace terminalSlack.Controllers
         /// </summary>
         [HttpGet]
         [Route("discover")]
-        [ResponseType(typeof(List<ActivityTemplateDO>))]
+        [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverPlugins()
         {
             var plugin = new PluginDO
@@ -25,7 +26,6 @@ namespace terminalSlack.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 PluginStatus = PluginStatus.Active,
                 Name = "terminalSlack",
-                RequiresAuthentication = true,
                 Version = "1"
             };
 
@@ -35,16 +35,21 @@ namespace terminalSlack.Controllers
                 Label = "Monitor Channel",
                 Category = ActivityCategory.Monitors,
                 Plugin = plugin,
-                Version = "1"
+                AuthenticationType = AuthenticationType.External,
+                Version = "1",
+                MinPaneWidth = 330
             };
 
             var publishToSlackAction = new ActivityTemplateDO
             {
                 Name = "Publish_To_Slack",
                 Label = "Publish To Slack",
+                Tags = "Notifier",
                 Category = ActivityCategory.Forwarders,
                 Plugin = plugin,
-                Version = "1"
+                AuthenticationType = AuthenticationType.External,
+                Version = "1",
+                MinPaneWidth = 330
             };
 
             var result = new List<ActivityTemplateDO>()
@@ -53,7 +58,12 @@ namespace terminalSlack.Controllers
                 publishToSlackAction
             };
 
-            return Json(result);    
+            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            {
+                Definition = plugin,
+                Actions = result
+            };
+            return Json(curStandardFr8TerminalCM);
         }
     }
 }

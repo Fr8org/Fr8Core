@@ -4,8 +4,14 @@ using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Data.Crates;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
+using Newtonsoft.Json;
+using Hub.Managers;
+using Hub.Services;
+using StructureMap;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
 using TerminalBase.BaseClasses;
@@ -21,9 +27,12 @@ namespace terminalDocuSign.Actions
         /// <returns></returns>
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (ValidateAuthentication(curActionDTO, AuthenticationMode.InternalMode))
-                return await ProcessConfigurationRequest(curActionDTO, dto => ConfigurationRequestType.Initial);
-            return curActionDTO;
+            if (NeedsAuthentication(curActionDTO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            return await ProcessConfigurationRequest(curActionDTO, dto => ConfigurationRequestType.Initial);
         }
 
         protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
@@ -48,15 +57,14 @@ namespace terminalDocuSign.Actions
                 Crate.CreateDesignTimeFieldsCrate("Available Run-Time Objects", new FieldDTO[]
                 {
                     new FieldDTO {Key = "DocuSign Envelope", Value = string.Empty},
-                    new FieldDTO {Key = "DocuSign Event"}
+                    new FieldDTO {Key = "DocuSign Event", Value = string.Empty}
                 });
 
-            //update crate storage with standard event subscription crate
-            curActionDTO.CrateStorage = new CrateStorageDTO()
+            using (var updater = Crate.UpdateStorage(curActionDTO))
             {
-                CrateDTO = new List<CrateDTO> { curControlsCrate, curEventSubscriptionsCrate, curAvailableRunTimeObjectsDesignTimeCrate }
-            };
-
+                updater.CrateStorage = new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, curAvailableRunTimeObjectsDesignTimeCrate);
+            }
+            
             /*
              * Note: We should not call Activate at the time of Configuration. For this action, it may be valid use case.
              * Because this particular action will be used internally, it would be easy to execute the Process directly.
@@ -72,7 +80,7 @@ namespace terminalDocuSign.Actions
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
 
             if (curConnectProfile.configurations != null &&
-                !curConnectProfile.configurations.Any(config => config.name.Equals("MonitorAllDocuSignEvents")))
+                !curConnectProfile.configurations.Any(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")))
             {
                 var monitorConnectConfiguration = new DocuSign.Integrations.Client.Configuration
                 {
@@ -114,14 +122,46 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(actionDto.ProcessId);
+            var curProcessPayload = await GetProcessPayload(actionDto.ProcessId);
 
-            PayloadObjectDTO curPayload = new PayloadObjectDTO();
+            var curEventReport = Crate.GetStorage(curProcessPayload).CrateContentsOfType<EventReportCM>().First();
 
-            //TODO: Vas, Create DocuSign manifest objects on this execute method.
-            //Since the changes are with Sergey, I left this to-do with my name.
+            if (curEventReport.EventNames.Contains("Envelope"))
+            {
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                   var  docuSignFields = curEventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().First().AllValues().ToArray();
 
-            return null;
+                    DocuSignEnvelopeCM envelope = new DocuSignEnvelopeCM
+                    {
+                        CompletedDate = docuSignFields.First(field => field.Key.Equals("CompletedDate")).Value,
+                        CreateDate = docuSignFields.First(field => field.Key.Equals("CreateDate")).Value,
+                        DeliveredDate = docuSignFields.First(field => field.Key.Equals("DeliveredDate")).Value,
+                        EnvelopeId = docuSignFields.First(field => field.Key.Equals("EnvelopeId")).Value,
+                        ExternalAccountId = docuSignFields.First(field => field.Key.Equals("Email")).Value,
+                        SentDate = docuSignFields.First(field => field.Key.Equals("SentDate")).Value,
+                        Status = docuSignFields.First(field => field.Key.Equals("Status")).Value
+                    };
+
+                    DocuSignEventCM events = new DocuSignEventCM
+                    {
+                        EnvelopeId = docuSignFields.First(field => field.Key.Equals("EnvelopeId")).Value,
+                        EventId = docuSignFields.First(field => field.Key.Equals("EventId")).Value,
+                        Object = docuSignFields.First(field => field.Key.Equals("Object")).Value,
+                        RecepientId = docuSignFields.First(field => field.Key.Equals("RecipientId")).Value,
+                        Status = docuSignFields.First(field => field.Key.Equals("Status")).Value,
+                        ExternalAccountId = docuSignFields.First(field => field.Key.Equals("Email")).Value
+                    };
+
+                    using (var updater = Crate.UpdateStorage(curProcessPayload))
+                    {
+                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Manifest", envelope));
+                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event Manifest", events));
+                    }
+                }
+            }
+
+            return curProcessPayload;
         }
     }
 }

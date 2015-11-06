@@ -8,11 +8,11 @@ using System.Web.Http.Description;
 using AutoMapper;
 using Newtonsoft.Json;
 using StructureMap;
-using Core.Interfaces;
-using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using Hub.Managers;
 using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Controllers

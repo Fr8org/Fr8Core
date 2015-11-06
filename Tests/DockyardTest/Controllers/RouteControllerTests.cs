@@ -8,14 +8,14 @@ using System.Web.Http.Results;
 using NUnit.Framework;
 using StructureMap;
 using StructureMap.AutoMocking;
-using Core.Interfaces;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Web.Controllers;
 
 namespace DockyardTest.Controllers
 {
@@ -297,7 +297,7 @@ namespace DockyardTest.Controllers
             Assert.AreEqual(curRouteDO.Name, curRouteDTO.Name);
             Assert.AreEqual(curRouteDO.Description, curRouteDTO.Description);
             Assert.AreEqual(curRouteDO.Subroutes.Count(), 2);
-            Assert.AreEqual(curRouteDO.Subroutes.First().RouteNodes.Count, 1);
+            Assert.AreEqual(curRouteDO.Subroutes.First().ChildNodes.Count, 1);
 
         }
 

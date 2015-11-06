@@ -19,10 +19,10 @@ var dockyard;
                         var upStreamFields = [];
                         var downStreamFields = [];
                         if (upStreamCrate && upStreamCrate.contents) {
-                            upStreamFields = angular.fromJson(upStreamCrate.contents).Fields || [];
+                            upStreamFields = upStreamCrate.contents.Fields || [];
                         }
                         if (downStreamCrate && downStreamCrate.contents) {
-                            downStreamFields = angular.fromJson(downStreamCrate.contents).Fields || [];
+                            downStreamFields = downStreamCrate.contents.Fields || [];
                         }
                         $scope.dataItems = [];
                         if (upStreamFields.length && downStreamFields.length) {

@@ -1,15 +1,15 @@
-﻿using Core.StructureMap;
-using Data.Infrastructure.AutoMapper;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using StructureMap;
+using Data.Infrastructure.AutoMapper;
+using Hub.StructureMap;
 
 namespace TerminalBase.BaseClasses
 {

@@ -30,7 +30,8 @@ namespace Data.Entities
         public int PluginStatus { get; set; }
         public _PluginStatusTemplate PluginStatusTemplate { get; set; }
 
-        public bool RequiresAuthentication { get; set; }
+        // TODO: remove this, DO-1397
+        // public bool RequiresAuthentication { get; set; }
 
         //public string BaseEndPoint { get; set; }
 

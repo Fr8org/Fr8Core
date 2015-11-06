@@ -4,22 +4,23 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Owin;
+using Microsoft.Owin.Hosting;
 using Owin;
 using StructureMap;
-using Utilities.Configuration.Azure;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using Hub.Managers;
+using Hub.Services;
 using Utilities;
+using Utilities.Configuration.Azure;
 using Utilities.Logging;
-using Core.Services;
-using Core.Managers;
-using Microsoft.Owin.Hosting;
+using Hub.Interfaces;
 
-[assembly: OwinStartup(typeof(Web.Startup))]
+[assembly: OwinStartup(typeof(HubWeb.Startup))]
 
-namespace Web
+namespace HubWeb
 {
     public partial class Startup
     {
@@ -128,40 +129,32 @@ namespace Web
 
         public async Task RegisterPluginActions()
         {
-            var alertReporter = ObjectFactory.GetInstance<EventReporter>();
-            
+            int totalRegisteredTerminals = 0;
+            var eventReporter = ObjectFactory.GetInstance<EventReporter>();
             var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
-            int count = 0;
+            var uri = string.Empty;
             foreach (string url in activityTemplateHosts)
             {
                 try
                 {
-                    var uri = url.StartsWith("http") ? url : "http://" + url;
+                    uri = url.StartsWith("http") ? url : "http://" + url;
                     uri += "/plugins/discover";
 
-                    var pluginService = new Plugin();
-                    var activityTemplateList = await pluginService.GetAvailableActions(uri);
-                    // For discover serialization see:
-                    //   # pluginAzureSqlServer.Controllers.PluginController#DiscoverPlugins()
-                    //   # pluginDockyardCore.Controllers.PluginController#DiscoverPlugins()
-                    //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
-
-
-                    foreach (var curItem in activityTemplateList)
-                    {
-                        new ActivityTemplate().Register(curItem);
-                        count++;
-                    }
+                    var pluginService = ObjectFactory.GetInstance<IPlugin>(); ;
+                    totalRegisteredTerminals += await pluginService.RegisterTerminals(uri);
                 }
                 catch (Exception ex)
                 {
-                    alertReporter = ObjectFactory.GetInstance<EventReporter>();
-                    alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
+                    eventReporter = ObjectFactory.GetInstance<EventReporter>();
+                    eventReporter.ActivityTemplatePluginRegistrationError(
+                        string.Format("Failed terminal service: {0}. Error Message: {1} ", uri, ex.Message),
+                        ex.GetType().Name);
 
                 }
-             }
-                
-             alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
+            }
+            eventReporter.ActivityTemplatesSuccessfullyRegistered(totalRegisteredTerminals);
+
+
         }
 
         public bool CheckForActivityTemplate(string templateName)

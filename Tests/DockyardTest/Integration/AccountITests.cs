@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Core.Services;
-using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
+using Data.Interfaces;
+using Hub.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

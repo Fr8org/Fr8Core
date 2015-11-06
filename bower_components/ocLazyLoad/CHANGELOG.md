@@ -1,3 +1,61 @@
+<a name="1.0.8"></a>
+# 1.0.8 (2015-11-02)
+
+
+## Bug Fixes
+
+- better fix for $compile problems in IE
+ ([ed4d425b](https://github.com/ocombe/ocLazyLoad/commit/ed4d425bfcf746901e2b956172c6a0b71e237bae),
+ [#261](https://github.com/ocombe/ocLazyLoad/issues/261))
+
+
+<a name="1.0.7"></a>
+# 1.0.7 (2015-11-02)
+
+
+## Bug Fixes
+
+- requirejs error callback
+ ([11130942](https://github.com/ocombe/ocLazyLoad/commit/11130942ab3dbed497a64ab7eac5175e9b3597c4))
+- infinite loop in inject
+ ([70859980](https://github.com/ocombe/ocLazyLoad/commit/70859980d0537780c46e5a096d8c3c9cff86de83))
+- IE "Invalid calling object" error (attach to DOM and then compile)
+ ([d99ab925](https://github.com/ocombe/ocLazyLoad/commit/d99ab92533ef4bdfa334926307af9f32097592a3))
+
+
+<a name="1.0.6"></a>
+# 1.0.6 (2015-10-01)
+
+
+## Bug Fixes
+- calling inject from loaders should pass the "real" module param
+ ([953584e8](https://github.com/ocombe/ocLazyLoad/commit/953584e8989de7ed1c2166ca193c899bad8a3478),
+ [#221](https://github.com/ocombe/ocLazyLoad/issues/221))
+- directive compile original contents after dependency is loaded.
+ ([a48e3ceb](https://github.com/ocombe/ocLazyLoad/commit/a48e3ceba1945e74478a0a7f964f9aa84e027799),
+ [#168](https://github.com/ocombe/ocLazyLoad/issues/168),
+ [#194](https://github.com/ocombe/ocLazyLoad/issues/194))
+
+
+<a name="1.0.5"></a>
+# 1.0.5 (2015-09-11)
+
+
+## Bug Fixes
+- loading a module with dependencies with multiple oc-lazy-load directives
+ ([098e391b](https://github.com/ocombe/ocLazyLoad/commit/098e391b0e084997c95a3125e66a41484a257cc1),
+ [#213](https://github.com/ocombe/ocLazyLoad/issues/213))
+- changing semver dependency for Angular
+ ([30626401](https://github.com/ocombe/ocLazyLoad/commit/30626401664d1be8fc748bb53c88f39cb58742c0),
+ [#195](https://github.com/ocombe/ocLazyLoad/issues/195))
+
+
+## Features
+
+- optimise signature calls and onInvoke function
+ ([c56e727e](https://github.com/ocombe/ocLazyLoad/commit/c56e727ef832c591920c58a32646c5a8f05f655c))
+
+
 <a name="1.0.4"></a>
 # 1.0.4 (2015-07-30)
 

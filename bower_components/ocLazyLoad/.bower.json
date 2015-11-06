@@ -1,6 +1,6 @@
 {
   "name": "oclazyload",
-  "version": "1.0.4",
+  "version": "1.0.8",
   "description": "Load modules on demand (lazy load) with angularJS",
   "main": "dist/ocLazyLoad.js",
   "homepage": "https://github.com/ocombe/ocLazyLoad",
@@ -31,16 +31,16 @@
     "examples"
   ],
   "devDependencies": {
-    "angular-mocks": "~1.3.2"
+    "angular-mocks": ">=1.2.0"
   },
   "dependencies": {
-    "angular": ">=1.2.x <=1.4.x"
+    "angular": ">=1.2.0"
   },
-  "_release": "1.0.4",
+  "_release": "1.0.8",
   "_resolution": {
     "type": "version",
-    "tag": "1.0.4",
-    "commit": "833b967828867af41af0133aa273fb635488d224"
+    "tag": "1.0.8",
+    "commit": "53b7411273351ff1934ba19520df24886e956a60"
   },
   "_source": "git://github.com/ocombe/ocLazyLoad.git",
   "_target": "~1.0.2",

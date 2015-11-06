@@ -10,20 +10,24 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using Microsoft.AspNet.Identity;
 using StructureMap;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
-using InternalInterface = Core.Interfaces;
-using Core.Interfaces;
-using Core.Services;
+using Utilities;
+using InternalInterface = Hub.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Microsoft.AspNet.Identity;
-using Data.Infrastructure.StructureMap;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Services;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     // commented out by yakov.gnusin.
     // Please DO NOT put [Fr8ApiAuthorize] on class, this breaks process execution!
@@ -33,12 +37,13 @@ namespace Web.Controllers
     {
         private readonly InternalInterface.IContainer _container;
         private readonly ISecurityServices _security;
-
+       // private readonly ICrateManager _crateManager;
 
         public ContainerController()
         {
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
+      //      _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         [HttpGet]
@@ -48,7 +53,14 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curContainerDO = uow.ContainerRepository.GetByKey(id);
-                var curPayloadDTO = new PayloadDTO(curContainerDO.CrateStorage, id);
+                var curPayloadDTO = new PayloadDTO(id);
+
+                if (curContainerDO.CrateStorage == null)
+                {
+                    curContainerDO.CrateStorage = string.Empty;
+                }
+
+                curPayloadDTO.CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curContainerDO.CrateStorage);
 
                 EventManager.ProcessRequestReceived(curContainerDO);
 
@@ -77,7 +89,19 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var processTemplateDO = uow.RouteRepository.GetByKey(routeId);
+                var pusherNotifier = new PusherNotifier();
+                try
+                {
                 await _container.Launch(processTemplateDO, null);
+                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
+                    "fr8pusher_container_executed", String.Format("Route \"{0}\" executed", processTemplateDO.Name));
+                }
+                catch
+                {
+                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
+                    "fr8pusher_container_failed", String.Format("Route \"{0}\" failed", processTemplateDO.Name));
+                }
+                
 
                 return Ok();
             }

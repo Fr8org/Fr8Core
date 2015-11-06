@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Core.Interfaces;
-using Data.Entities;
-using Data.States;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
+using Data.Entities;
+using Data.States;
+using Hub.Interfaces;
 using UtilitiesTesting;
 
 namespace DockyardTest.Services

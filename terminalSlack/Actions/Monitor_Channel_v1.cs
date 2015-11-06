@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Crates;
+using Hub.Managers;
 using Newtonsoft.Json;
-using Core.Interfaces;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
@@ -46,54 +48,44 @@ namespace terminalSlack.Actions
                 throw new ApplicationException("Unexpected channel-id.");
             }
 
-            var cratePayload = Crate.Create(
-                "Slack Payload Data",
-                JsonConvert.SerializeObject(payloadFields),
-                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
-                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
-                );
-
-            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { cratePayload });
+            using (var updater = Crate.UpdateStorage(processPayload))
+            {
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Slack Payload Data", new StandardPayloadDataCM(payloadFields)));
+            }
 
             return processPayload;
         }
 
         private List<FieldDTO> ExtractPayloadFields(PayloadDTO processPayload)
         {
-            var eventReportCrate = processPayload.CrateStorageDTO()
-                .CrateDTO
-                .SingleOrDefault();
-            if (eventReportCrate == null)
+            var eventReportMS = Crate.GetStorage(processPayload).CrateContentsOfType<EventReportCM>().SingleOrDefault();
+            if (eventReportMS == null)
             {
                 throw new ApplicationException("EventReportCrate is empty.");
             }
 
-            var eventReportMS = JsonConvert.DeserializeObject<EventReportCM>(
-                eventReportCrate.Contents);
             var eventFieldsCrate = eventReportMS.EventPayload.SingleOrDefault();
             if (eventFieldsCrate == null)
             {
                 throw new ApplicationException("EventReportMS.EventPayload is empty.");
             }
 
-            var payloadFields = JsonConvert.DeserializeObject<List<FieldDTO>>(eventFieldsCrate.Contents);
-
-            return payloadFields;
+            return eventReportMS.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            if (ValidateAuthentication(curActionDTO, AuthenticationMode.ExternalMode))
-                return await ProcessConfigurationRequest(curActionDTO,
-                x => ConfigurationEvaluator(x));
-            return curActionDTO;
+            if (NeedsAuthentication(curActionDTO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
         {
-            var crateStorage = curActionDTO.CrateStorage;
-
-            if (crateStorage.CrateDTO.Count == 0)
+            if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -101,8 +93,7 @@ namespace terminalSlack.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(
-            ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             var oauthToken = curActionDTO.AuthToken.Token;
             var channels = await _slackIntegration.GetChannelList(oauthToken);
@@ -111,15 +102,21 @@ namespace terminalSlack.Actions
             var crateDesignTimeFields = CreateDesignTimeFieldsCrate();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateEventSubscriptions = CreateEventSubscriptionCrate();
-            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateAvailableChannels);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateEventSubscriptions);
 
+            using (var updater = Crate.UpdateStorage(curActionDTO))
+            {
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(crateControls);
+                updater.CrateStorage.Add(crateDesignTimeFields);
+                updater.CrateStorage.Add(crateAvailableChannels);
+                updater.CrateStorage.Add(crateEventSubscriptions);
+            }
+
+            
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
-        private CrateDTO PackCrate_ConfigurationControls()
+        private Crate PackCrate_ConfigurationControls()
         {
             var fieldSelectChannel = new DropDownListControlDefinitionDTO()
             {
@@ -140,7 +137,7 @@ namespace terminalSlack.Actions
             return PackControlsCrate(fieldSelectChannel);
         }
 
-        private CrateDTO CreateDesignTimeFieldsCrate()
+        private Crate CreateDesignTimeFieldsCrate()
         {
             var fields = new List<FieldDTO>()
             {
@@ -165,7 +162,7 @@ namespace terminalSlack.Actions
             return crate;
         }
 
-        private CrateDTO CreateAvailableChannelsCrate(IEnumerable<FieldDTO> channels)
+        private Crate CreateAvailableChannelsCrate(IEnumerable<FieldDTO> channels)
         {
             var crate =
                 Crate.CreateDesignTimeFieldsCrate(
@@ -176,7 +173,7 @@ namespace terminalSlack.Actions
             return crate;
         }
 
-        private CrateDTO CreateEventSubscriptionCrate()
+        private Crate CreateEventSubscriptionCrate()
         {
             var subscriptions = new string[] {
                 "Slack Outgoing Message"

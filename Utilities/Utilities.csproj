@@ -72,6 +72,14 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PusherServer, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PusherServer.2.1.1.0\lib\net35\PusherServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RestSharp, Version=105.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="StructureMap, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
@@ -117,6 +125,7 @@
     <Compile Include="ParsedEmailAddress.cs" />
     <Compile Include="PersistableIntCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PusherNotifier.cs" />
     <Compile Include="ReflectionHelper.cs" />
     <Compile Include="RegexUtilities.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

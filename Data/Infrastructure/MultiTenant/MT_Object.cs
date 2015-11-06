@@ -1,6 +1,6 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +23,9 @@ namespace Data.Infrastructure.MultiTenant
         public Data.Entities.MT_Object GetOrCreateMT_Object(IUnitOfWork _uow, Manifest curManifest, Type curDataType)
         {
             var corFieldType = _mtFieldType.GetOrCreateMT_FieldType(_uow, curDataType);
+            _uow.SaveChanges();
 
-            var correspondingMTObject = _uow.MTObjectRepository.FindOne(a => a.ManifestId == curManifest.ManifestId && a.MT_FieldType == corFieldType);
+            var correspondingMTObject = _uow.MTObjectRepository.FindOne(a => a.ManifestId == curManifest.ManifestId && a.MT_FieldType != null && a.MT_FieldType.Id == corFieldType.Id);
             if (correspondingMTObject == null)
             {
                 correspondingMTObject = new Data.Entities.MT_Object() { Name = curManifest.ManifestName, MT_FieldType = corFieldType, ManifestId = curManifest.ManifestId };

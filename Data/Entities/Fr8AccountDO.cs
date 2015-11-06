@@ -24,8 +24,7 @@ namespace Data.Entities
 
         public Fr8AccountDO(EmailAddressDO curEmailAddress) : base()
         {
-            EmailAddress = curEmailAddress;
-           
+            EmailAddress = curEmailAddress;           
         }
 
         public String FirstName { get; set; }
@@ -58,7 +57,7 @@ namespace Data.Entities
         public void BeforeCreate()
         {
             if (CreateDate == default(DateTimeOffset))
-                CreateDate = DateTimeOffset.Now;
+                CreateDate = DateTimeOffset.UtcNow;
         }
 
         public void AfterCreate()
@@ -67,7 +66,7 @@ namespace Data.Entities
 
         public void BeforeSave()
         {
-            LastUpdated = DateTimeOffset.Now;
+            LastUpdated = DateTimeOffset.UtcNow;
         }
 
         public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
@@ -102,6 +101,7 @@ namespace Data.Entities
             return TimeZoneInfo.FindSystemTimeZoneById(TimeZoneID);
         }
 
+		// TODO: The logic in this method should be changed, because we won't store offsets anymore. For more information refer to DO-1355.
         public TimeZoneInfo GetOrGuessTimeZone()
         {
             var explicitTimeZone = GetExplicitTimeZone();
@@ -111,7 +111,7 @@ namespace Data.Entities
             var mostUsedOffset = EmailAddress.SentEmails.GroupBy(b => b.CreateDate.Offset).OrderByDescending(g => g.Count()).Select(k => (TimeSpan?)k.Key).FirstOrDefault();
             if (mostUsedOffset == null)
                 return null;
-            var potentialTimeZones = TimeZoneInfo.GetSystemTimeZones().Where(tzi => tzi.GetUtcOffset(DateTime.Now) == mostUsedOffset.Value);
+            var potentialTimeZones = TimeZoneInfo.GetSystemTimeZones().Where(tzi => tzi.GetUtcOffset(DateTime.UtcNow) == mostUsedOffset.Value);
             return potentialTimeZones.FirstOrDefault();
         }
 

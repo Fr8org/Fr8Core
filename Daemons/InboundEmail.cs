@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Net.Sockets;
-using Data.Infrastructure;
-using Core.ExternalServices;
-using Core.Interfaces;
-using Core.Managers;
 using S22.Imap;
 using StructureMap;
+using Data.Infrastructure;
+using Hub.ExternalServices;
+using Hub.Interfaces;
+using Hub.Managers;
 using Utilities;
 using Utilities.Logging;
-using IImapClient = Core.ExternalServices.IImapClient;
+using IImapClient = Hub.ExternalServices.IImapClient;
 
 namespace Daemons
 {
@@ -179,7 +179,7 @@ namespace Daemons
             }
             catch (SocketException ex) //we were getting strange socket errors after time, and it looks like a reset solves things
             {
-                EventManager.EmailProcessingFailure(DateTime.Now.to_S(), "Got that SocketException");
+                EventManager.EmailProcessingFailure(DateTime.UtcNow.to_S(), "Got that SocketException");
                 LogFail(ex, "Hit SocketException. Trying to reset the IMAP Client.");
                 RestartClient();
             }

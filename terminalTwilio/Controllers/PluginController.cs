@@ -4,15 +4,16 @@ using Data.Entities;
 using Data.States;
 using System.Web.Http.Description;
 using Utilities.Configuration.Azure;
+using Data.Interfaces.Manifests;
 
 namespace terminalTwilio.Controllers
-{    
+{
     [RoutePrefix("plugins")]
     public class PluginController : ApiController
     {
         [HttpGet]
         [Route("discover")]
-        [ResponseType(typeof(List<ActivityTemplateDO>))]
+        [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverPlugins()
         {
             var plugin = new PluginDO()
@@ -27,9 +28,12 @@ namespace terminalTwilio.Controllers
             {
                 Name = "Send_Via_Twilio",
                 Label = "Send Via Twilio",
+                Tags = "Twillio",
                 Category = ActivityCategory.Forwarders,
                 Version = "1",
-                Plugin = plugin
+                Plugin = plugin,
+                AuthenticationType = AuthenticationType.None,
+                MinPaneWidth = 330
             };
 
             var actionList = new List<ActivityTemplateDO>
@@ -37,7 +41,12 @@ namespace terminalTwilio.Controllers
                 sendViaTwilioTemplate
             };
 
-            return Json(actionList);   
+            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            {
+                Definition = plugin,
+                Actions = actionList
+            };
+            return Json(curStandardFr8TerminalCM);
         }
     }
 }

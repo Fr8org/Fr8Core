@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
-using Core.StructureMap;
-using Data.Infrastructure.AutoMapper;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Owin;
+using StructureMap;
+using Data.Infrastructure.AutoMapper;
+using Hub.StructureMap;
 using TerminalBase;
 using TerminalBase.BaseClasses;
-using StructureMap;
 
 [assembly: OwinStartup("PluginExcelConfiguration", typeof(terminalExcel.StartupPluginExcel))]
 
@@ -34,8 +34,8 @@ namespace terminalExcel
 
             //if (selfHost)
             //{
-            //    // Web API routes
-            //    _configuration.Services.Replace(typeof(IHttpControllerTypeResolver), new PluginControllerTypeResolver());
+            // Web API routes
+            _configuration.Services.Replace(typeof(IHttpControllerTypeResolver), new PluginControllerTypeResolver());
             //}
 
             //DataAutoMapperBootStrapper.ConfigureAutoMapper();
@@ -50,7 +50,18 @@ namespace terminalExcel
             }
         }
 
-        public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
+        //public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
+        //{
+        //    return new Type[] {
+        //            typeof(Controllers.ActionController),
+        //            typeof(Controllers.EventController),
+        //            typeof(Controllers.PluginController)
+        //        };
+        //}
+
+        public class PluginControllerTypeResolver : IHttpControllerTypeResolver
+        {
+            public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
         {
             return new Type[] {
                     typeof(Controllers.ActionController),
@@ -58,17 +69,6 @@ namespace terminalExcel
                     typeof(Controllers.PluginController)
                 };
         }
-
-        //public class PluginControllerTypeResolver : IHttpControllerTypeResolver
-        //{
-        //    public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-        //    {
-        //        return new Type[] {
-        //            typeof(Controllers.ActionController),
-        //            typeof(Controllers.EventController),
-        //            typeof(Controllers.PluginController)
-        //        };
-        //    }
-        //}
+        }
     }
 }

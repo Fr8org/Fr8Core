@@ -5,6 +5,7 @@ using System.Web.Http;
 using Data.Entities;
 using Data.States;
 using Utilities.Configuration.Azure;
+using Data.Interfaces.Manifests;
 
 namespace terminalAzure.Controllers
 {
@@ -17,17 +18,19 @@ namespace terminalAzure.Controllers
         /// </summary>
         [HttpGet]
         [Route("discover")]
-        [ResponseType(typeof(List<ActivityTemplateDO>))]
+        [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverPlugins()
         {
             var result = new List<ActivityTemplateDO>();
-            
+
             var template = new ActivityTemplateDO
             {
                 Name = "Write_To_Sql_Server",
                 Label = "Write to Azure Sql Server",
                 Category = ActivityCategory.Forwarders,
-                Version = "1"
+                AuthenticationType = AuthenticationType.None,
+                Version = "1",
+                MinPaneWidth = 330
             };
 
             var plugin = new PluginDO
@@ -35,15 +38,19 @@ namespace terminalAzure.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 PluginStatus = PluginStatus.Active,
                 Name = "terminalAzure",
-                RequiresAuthentication = false,
                 Version = "1"
             };
-            
+
             template.Plugin = plugin;
 
             result.Add(template);
 
-            return Json(result);    
+            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+             {
+                 Definition = plugin,
+                 Actions = result
+             };
+            return Json(curStandardFr8TerminalCM);
         }
     }
 }

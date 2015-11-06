@@ -24,6 +24,10 @@
         checked: boolean;
     }
 
+    export class ButtonControlDefinitionDTO extends ControlDefinitionDTO {
+        checked: boolean;
+    }
+
     export class TextBoxControlDefinitionDTO extends ControlDefinitionDTO {
         required: boolean;        
     }
@@ -45,17 +49,17 @@
     export class TextBlock extends ControlDefinitionDTO {
         class: string;
 
-        constructor(type: string, value: string, _class: string) {
+        constructor(value: string, _class: string) {
             super();
-            this.type = type;
+            this.type = 'TextBlock';
             this.value = value;
             this.class = _class;
         }
     }
 
     export class FieldDTO {
-        public Key: string;
-        public Value: string;
+        public key: string;
+        public value: string;
     }
 
     export class DropDownListItem extends FieldDTO {
@@ -72,11 +76,17 @@
         source: FieldSource;
     }
 
+    export class TextSource extends DropDownListControlDefinitionDTO {
+        initialLabel: string;
+        valueSource: string;
+    }
+
     export class TextBlockField extends ControlDefinitionDTO {
         public class: string;
     }
 
     export class TextAreaControlDefinitionDTO extends ControlDefinitionDTO {
+        isReadOnly:boolean;
     }
 
     export class MappingPaneControlDefinitionDTO extends ControlDefinitionDTO {

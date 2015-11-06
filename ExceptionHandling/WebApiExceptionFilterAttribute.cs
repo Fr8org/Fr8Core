@@ -4,15 +4,15 @@ using System.Net.Http;
 using System.Text;
 using System.Web;
 using System.Web.Http.Filters;
-using Core.Exceptions;
-using Core.Managers;
-using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
-using TerminalBase;
 using StructureMap;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Exceptions;
+using Hub.Managers;
+using TerminalBase;
 using Utilities;
 
-namespace Web.ExceptionHandling
+namespace HubWeb.ExceptionHandling
 {
     /// <summary>
     /// This exception filter handles any non-handled exception. Usually for such 

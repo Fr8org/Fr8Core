@@ -48,8 +48,6 @@ module dockyard.controllers {
             'ProcessBuilderService',
             'CrateHelper',
             '$filter',
-            '$modal',
-            '$window',
             'UIHelperService',
             'LayoutService'
         ];
@@ -65,8 +63,6 @@ module dockyard.controllers {
             private ProcessBuilderService: services.IProcessBuilderService,
             private CrateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
-            private $modal,
-            private $window: ng.IWindowService,
             private uiHelperService: services.IUIHelperService,
             private LayoutService: services.ILayoutService
             ) {
@@ -99,10 +95,6 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionRemoved],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
-            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_InternalAuthentication],
-                (event: ng.IAngularEvent, eventArgs: pca.InternalAuthenticationArgs) => this.PaneConfigureAction_InternalAuthentication(eventArgs));
-            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExternalAuthentication],
-                (event: ng.IAngularEvent, eventArgs: pca.InternalAuthenticationArgs) => this.PaneConfigureAction_ExternalAuthentication(eventArgs));
 
             //Process Select Action Pane events
             this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActivityTypeSelected],
@@ -209,6 +201,7 @@ module dockyard.controllers {
             action.label = activityTemplate.label;
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();
+            this.$scope.current.action.activityTemplate = activityTemplate;
             this.$scope.current.action.activityTemplateId = activityTemplate.id;
             this.$scope.actionGroups[0].actions.push(action);
 
@@ -267,8 +260,11 @@ module dockyard.controllers {
                 }
                 if (canBypassActionLoading) {
                     this.$scope.current.action = result.action;
-                    var actions = this.$scope.actionGroups[0].actions
+                    var actions = this.$scope.actionGroups[0].actions;
                     actions[actions.length - 1] = result.action;
+                    if (result.action.childrenActions.length) {
+                        this.$scope.actionGroups.push(new model.ActionGroup(result.action.childrenActions));
+                    }
                 }
                 else {
                     this.ActionService.get({ id: actionId }).$promise.then(action => {
@@ -306,7 +302,7 @@ module dockyard.controllers {
         */
         private PaneSelectAction_ActionTypeSelected(eventArgs: psa.ActionTypeSelectedEventArgs) {
             var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
-            var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(eventArgs.action.id, eventArgs.action.activityTemplateId);
+            var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(eventArgs.action.id, eventArgs.action.activityTemplate.id);
             this.$scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateActivityTemplateId], pwdEventArs);
         }
 
@@ -327,62 +323,6 @@ module dockyard.controllers {
                 );
         }
 
-        private PaneConfigureAction_InternalAuthentication(eventArgs: pca.InternalAuthenticationArgs) {
-            var self = this;
-
-            var modalScope = <any>this.$scope.$new(true);
-            modalScope.activityTemplateId = eventArgs.activityTemplateId;
-
-            this.$modal.open({
-                animation: true,
-                templateUrl: 'AngularTemplate/InternalAuthentication',
-                controller: 'InternalAuthenticationController',
-                scope: modalScope
-            })
-            .result
-            .then(function () {
-                self.$scope.$broadcast(
-                    pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]
-                );
-            });
-        }
-
-        private PaneConfigureAction_ExternalAuthentication(
-            eventArgs: pca.ExternalAuthenticationArgs) {
-
-            var self = this;
-
-            var messageListener = function (event) {
-                debugger;
-
-                if (!self.$scope || !event.data || event.data != 'external-auth-success') {
-                    return;
-                }
-
-                self.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);
-            };
-
-            this.$http
-                .get('/actions/auth_url?id=' + eventArgs.activityTemplateId)
-                .then(function (res) {
-                    var url = (<any>res.data).url;
-
-                    var childWindow = self.$window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
-
-                    window.addEventListener('message', messageListener);
-
-                    var isClosedHandler = function () {
-                        if (childWindow.closed) {
-                            window.removeEventListener('message', messageListener);
-                        }
-                        else {
-                            setTimeout(isClosedHandler, 500);
-                        }
-                    };
-                    
-                    setTimeout(isClosedHandler, 500);
-                });
-        }
     }
 
     app.run([
@@ -393,10 +333,11 @@ module dockyard.controllers {
                     configurationControls: new model.ControlsList(),
                     crateStorage: new model.CrateStorage(),
                     parentRouteNodeId: 1,
+                    activityTemplate: null,
                     activityTemplateId: 1,
                     id: 1,
                     isTempId: false,
-                    actionListId: 0
+                    childrenActions: null
                 };
 
             $httpBackend

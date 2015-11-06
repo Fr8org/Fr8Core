@@ -1,8 +1,8 @@
 ﻿using System;
-using Core.Interfaces;
-using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
+using Data.Interfaces;
+using Hub.Interfaces;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -34,7 +34,7 @@ namespace DockyardTest.Services
                 sampleNodeTemplate.ParentRouteNodeId = route.Id;
 
                 // Create
-                _subroute.Create(uow, sampleNodeTemplate);
+                _subroute.Store(uow, sampleNodeTemplate);
                 //will throw exception if it fails
 
                 if (uow.SubrouteRepository.GetByKey(sampleNodeTemplate.Id) == null)
@@ -58,7 +58,7 @@ namespace DockyardTest.Services
 
 
                 // Create
-                _subroute.Create(uow, sampleNodeTemplate);
+                _subroute.Store(uow, sampleNodeTemplate);
                 //will throw exception if it fails
 
                 sampleNodeTemplate.Name = "UpdateTest";
@@ -90,7 +90,7 @@ namespace DockyardTest.Services
                 sampleNodeTemplate.ParentRouteNodeId = route.Id;
 
                 // Create
-                _subroute.Create(uow, sampleNodeTemplate);
+                _subroute.Store(uow, sampleNodeTemplate);
                 //will throw exception if it fails
 
                 if (uow.RouteNodeRepository.GetByKey(sampleNodeTemplate.Id) == null)

@@ -18,7 +18,7 @@ module dockyard.services {
         public openConfirmationModal(message: string) {
             return this.$modal.open({
                 animation: true,
-                templateUrl: 'AngularTemplate/ConfirmationModal',
+                templateUrl: '/AngularTemplate/ConfirmationModal',
                 //this is a simple modal controller, so i didn't have an urge to seperate this
                 //but resolve is used to make future seperation easier
                 controller: ['$modalInstance', '$scope', 'modalMessage', ($modalInstance: any, $modalScope: any, modalMessage: string) => {

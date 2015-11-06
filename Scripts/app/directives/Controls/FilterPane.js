@@ -28,9 +28,9 @@ var dockyard;
                                 var crate = crateHelper.findByManifestTypeAndLabel(newValue.crateStorage, 'Standard Design-Time Fields', 'Queryable Criteria');
                                 $scope.fields = [];
                                 if (crate != null) {
-                                    var crateJson = angular.fromJson(crate.contents);
+                                    var crateJson = crate.contents;
                                     angular.forEach(crateJson.Fields, function (it) {
-                                        $scope.fields.push({ name: it.Key, key: it.Key });
+                                        $scope.fields.push({ name: it.key, key: it.key });
                                     });
                                 }
                             }
@@ -45,7 +45,7 @@ var dockyard;
                                 $scope.conditions = [
                                     new dockyard.model.Condition(null, $scope.defaultOperator, null)
                                 ];
-                                $scope.executionType = 1;
+                                $scope.executionType = 2;
                             }
                         });
                         var updateFieldValue = function () {

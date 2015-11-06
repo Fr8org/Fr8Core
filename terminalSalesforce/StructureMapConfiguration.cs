@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Web.Http;
-using Core.Interfaces;
-using Core.Services;
 using Microsoft.Owin.Hosting;
 using Owin;
-using StructureMap.Configuration.DSL;
-using terminalSalesforce.Infrastructure;
 using StructureMap;
-using terminalSalesforce.Services;
-using Core.StructureMap;
+using StructureMap.Configuration.DSL;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Hub.Interfaces;
+using Hub.Services;
+using Hub.StructureMap;
 using Utilities;
+using terminalSalesforce.Infrastructure;
+using terminalSalesforce.Services;
 
 
 
