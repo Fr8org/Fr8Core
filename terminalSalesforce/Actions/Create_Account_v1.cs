@@ -64,7 +64,7 @@ namespace terminalSalesforce.Actions
             return processPayload;
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             return ConfigurationRequestType.Initial;
         }
