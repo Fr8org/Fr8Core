@@ -455,9 +455,27 @@ namespace Hub.Services
                 throw new ArgumentNullException("curActionDO");
             }
 
-            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Run", curActionDO, curContainerDO.Id);
+            try {
+                var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Run", curActionDO, curContainerDO.Id);
+                return payloadDTO;
 
-            return payloadDTO;
+            }
+            catch (ArgumentException e)
+            {
+                EventManager.PluginRunFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO), e.Message);
+                throw;
+            }
+            catch (Exception e)
+            {
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects
+                };
+
+                var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null && curActionDO.ActivityTemplate.Plugin.Endpoint != null) ? curActionDO.ActivityTemplate.Plugin.Endpoint : "<no plugin url>";
+                EventManager.PluginRunFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
+                throw;
+            }
         }
 
 
