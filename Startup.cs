@@ -129,7 +129,7 @@ namespace HubWeb
 
         public async Task RegisterPluginActions()
         {
-            int totalRegisteredTerminals = 0;
+            List<string> totalRegisteredTerminalNames = new List<string>();
             var eventReporter = ObjectFactory.GetInstance<EventReporter>();
             var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
             var uri = string.Empty;
@@ -141,7 +141,7 @@ namespace HubWeb
                     uri += "/plugins/discover";
 
                     var pluginService = ObjectFactory.GetInstance<IPlugin>(); ;
-                    totalRegisteredTerminals += await pluginService.RegisterTerminals(uri);
+                    totalRegisteredTerminalNames.AddRange(await pluginService.RegisterTerminals(uri));
                 }
                 catch (Exception ex)
                 {
@@ -152,9 +152,53 @@ namespace HubWeb
 
                 }
             }
-            eventReporter.ActivityTemplatesSuccessfullyRegistered(totalRegisteredTerminals);
+            eventReporter.ActivityTemplatesSuccessfullyRegistered(totalRegisteredTerminalNames.Count);
 
+            SetInactiveUndiscoveredActivityTemplates(totalRegisteredTerminalNames);
+        }
 
+        public void SetInactiveUndiscoveredActivityTemplates(List<string> discoveredActivityTemplateNames)
+        {
+            try
+            {
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var undiscoveredTemplates = uow.ActivityTemplateRepository.
+                    GetQuery().
+                    Where(at => !discoveredActivityTemplateNames.Contains(at.Name));
+
+                    foreach (var activityTemplate in undiscoveredTemplates)
+                    {
+                        activityTemplate.ActivityTemplateState = Data.States.ActivityTemplateState.Inactive;
+                    }
+                    uow.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error setting undiscovered activity templates inactive ", e);
+            }
+        }
+
+        public void SetAllActivityTemplatesInactive()
+        {
+            try
+            {
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var activityTemplateList = uow.ActivityTemplateRepository.GetAll();
+                    foreach(var item in activityTemplateList)
+                    {
+                        item.ActivityTemplateState = ActivityTemplateState.Inactive;
+                    }
+
+                    uow.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error setting activity templates inactive ", e);
+            }
         }
 
         public bool CheckForActivityTemplate(string templateName)
@@ -167,7 +211,7 @@ namespace HubWeb
                     ActivityTemplateRepository activityTemplateRepositary = uow.ActivityTemplateRepository;
                     List<ActivityTemplateDO> activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
 
-                    if (activityTemplateRepositaryItems.Find(item => item.Name == templateName) == null)
+                    if (!activityTemplateRepositaryItems.Any(item => item.Name == templateName))
                     {
                         found = false;
                     }
@@ -176,7 +220,7 @@ namespace HubWeb
             }
             catch (Exception e)
             {
-                Logger.GetLogger().Error("Error checking for activity template ", e);
+                Logger.GetLogger().Error(String.Format("Error checking for activity template \"{0}\"", templateName), e);
             }
             return found;
         }
