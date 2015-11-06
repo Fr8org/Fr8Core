@@ -334,6 +334,10 @@ namespace Hub.Services
                     uow.EmailAddressRepository.GetOrCreateEmailAddress(userEmail));
                 emailDO.Subject = "Password Recovery Request";
                 emailDO.HTMLText = "Please reset your password by clicking this link: <a href=\"" + callbackUrl + "\">link</a>";
+
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("ForgotPassword_template"),
+                    new Dictionary<string, object>() {{"-callback_url-", callbackUrl}});
+                uow.SaveChanges();
                 
                await ObjectFactory.GetInstance<IEmailPackager>().Send(new EnvelopeDO {Email = emailDO});
             }
