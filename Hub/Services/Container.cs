@@ -100,14 +100,16 @@ namespace Hub.Services
                 {
                     await Execute(uow, curContainerDO);
                     curContainerDO.ContainerState = ContainerState.Completed;
-            }
+                }
                 catch
                 {
                     curContainerDO.ContainerState = ContainerState.Failed;
                     throw;
-        }
+                }
                 finally
                 {
+                    curContainerDO.CurrentRouteNode = null;
+                    curContainerDO.NextRouteNode = null;
                     uow.SaveChanges();
                 }
             }
