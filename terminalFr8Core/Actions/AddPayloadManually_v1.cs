@@ -10,6 +10,8 @@ using Data.Interfaces.Manifests;
 using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
 using Data.Entities;
+using StructureMap;
+using Hub.Managers;
 
 namespace terminalFr8Core.Actions
 {
@@ -19,7 +21,7 @@ namespace terminalFr8Core.Actions
         {
             var processPayload = await GetProcessPayload(containerId);
 
-            var controlsMS = Crate..FromDto(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = Crate.GetStorage(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {
@@ -76,7 +78,7 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
-            var controlsMS =  Crate(actionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {

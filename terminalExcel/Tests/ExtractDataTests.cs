@@ -58,6 +58,7 @@ namespace terminalExcel.PluginExcelTests
         [Test]
         public void ConfigEvaluatorInitialResponse_Test()
         {
+            var curActionDTO = new ActionDTO();
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
             var result = new Load_Table_Data_v1().ConfigurationEvaluator(curActionDO);
 

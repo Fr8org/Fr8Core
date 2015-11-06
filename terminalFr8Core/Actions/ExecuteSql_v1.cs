@@ -13,6 +13,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
 using terminalFr8Core.Infrastructure;
+using Data.Entities;
 
 namespace terminalFr8Core.Actions
 {
@@ -23,14 +24,14 @@ namespace terminalFr8Core.Actions
 
         #region Configuration
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             return ConfigurationRequestType.Initial;
         }
 
-        protected override Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 AddLabelControl(
 
@@ -41,7 +42,7 @@ namespace terminalFr8Core.Actions
                     );
             }
 
-            return Task.FromResult(curActionDTO);
+            return Task.FromResult(curActionDO);
         }
 
         #endregion Configuration
@@ -130,10 +131,10 @@ namespace terminalFr8Core.Actions
             return payloadCM;
         }
 
-        private async Task<string> ExtractConnectionString(ActionDTO actionDTO)
+        private async Task<string> ExtractConnectionString(ActionDO actionDO)
         {
             var upstreamCrates = await GetCratesByDirection(
-                actionDTO.Id,
+                actionDO.Id,
                 CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 GetCrateDirection.Upstream
             );
@@ -155,12 +156,12 @@ namespace terminalFr8Core.Actions
             return connectionStringFields[0].Key;
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
             var findObjectHelper = new FindObjectHelper();
-            var payload = await GetProcessPayload(curActionDTO.ProcessId);
+            var payload = await GetProcessPayload(containerId);
 
-            var columnTypes = await findObjectHelper.ExtractColumnTypes(this, curActionDTO);
+            var columnTypes = await findObjectHelper.ExtractColumnTypes(this, curActionDO);
             if (columnTypes == null)
             {
                 throw new ApplicationException("No column types crate found.");
@@ -172,7 +173,7 @@ namespace terminalFr8Core.Actions
                 throw new ApplicationException("No Sql Query payload crate found.");
             }
 
-            var connectionString = await ExtractConnectionString(curActionDTO);
+            var connectionString = await ExtractConnectionString(curActionDO);
 
             var query = BuildQuery(connectionString, queryPayloadValue, columnTypes);
 

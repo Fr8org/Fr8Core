@@ -69,7 +69,7 @@ namespace terminalFr8Core.Actions
             return Task.FromResult(curActionDO);
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
