@@ -15,7 +15,7 @@ namespace HubWeb
 
         protected override void HandleUnauthorizedRequest(HttpActionContext actionContext)
         {
-            var response = actionContext.Request.CreateResponse(HttpStatusCode.InternalServerError, ErrorDTO.AuthenticationError("Authorization has been denied for this request."));
+            var response = actionContext.Request.CreateResponse(HttpStatusCode.Forbidden, ErrorDTO.AuthenticationError("Authorization has been denied for this request."));
             actionContext.Response = response;
         }
     }

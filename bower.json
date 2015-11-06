@@ -37,7 +37,6 @@
     "angular-mocks": "~1.4.3",
     "jasmine": "~2.3.4",
     "underscore": "~1.8.3",
-    "fabric": "~1.5.0",
     "awesome-bootstrap-checkbox": "0.3.4",
     "font-awesome": "4.4.0",
     "spin.js": "2.3.2",
@@ -46,7 +45,9 @@
     "textAngular": "1.4.6",
     "pusher-angular": "~0.1.8",
     "pusher": "~3.0.0",
-    "ngToast": "ngtoast#~1.5.6"
+    "ngToast": "ngtoast#~1.5.6",
+    "bootstrap-switch": "~3.3.2",
+    "angular-bootstrap-switch": "~0.4.1"
   },
   "resolutions": {
     "angular": "~1.4.3"
