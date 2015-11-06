@@ -15,7 +15,8 @@ using HubWeb.ViewModels;
 namespace HubWeb.Controllers
 {
     [RoutePrefix("api/actionList")]
-	public class ActionListController: ApiController
+    [Fr8ApiAuthorize]
+    public class ActionListController: ApiController
 	{
         /// <summary>
         /// Retrieve ActionList by specifying Subroute.Id and ActionListType.

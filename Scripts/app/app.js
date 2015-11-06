@@ -13,7 +13,8 @@ var app = angular.module("app", [
     "textAngular",
     "ui.select",
     "pusher-angular",
-    "ngToast"
+    "ngToast",
+    "frapontillo.bootstrap-switch"
 ]);
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
 app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {

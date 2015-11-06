@@ -19,6 +19,7 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using terminalAzure;
 using terminalDocuSign;
+using terminalDocuSign.Tests.Fixtures;
 
 using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
 using terminalDocuSign.Infrastructure.StructureMap;

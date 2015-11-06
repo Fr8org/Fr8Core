@@ -58,7 +58,12 @@ namespace terminalDocuSign.Actions
 
         private void GetTemplateRecipientPickerValue(ActionDTO curActionDTO, out string selectedOption, out string selectedValue)
         {
-            var controls = Crate.GetStorage(curActionDTO).FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls");
+            GetTemplateRecipientPickerValue(Crate.GetStorage(curActionDTO), out selectedOption, out selectedValue);
+        }
+
+        private void GetTemplateRecipientPickerValue(CrateStorage storage, out string selectedOption, out string selectedValue)
+        {
+            var controls = storage.FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls");
 
             var group = controls.Content.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().FirstOrDefault();
             if (group == null)
@@ -228,10 +233,31 @@ namespace terminalDocuSign.Actions
 
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
+                UpdateSelectedTemplateId(updater.CrateStorage);
                 UpdateSelectedEvents(updater.CrateStorage);
             }
 
             return Task.FromResult(curActionDTO);
+        }
+
+        private void UpdateSelectedTemplateId(CrateStorage storage)
+        {
+            string selectedOption, selectedValue;
+
+            GetTemplateRecipientPickerValue(storage, out selectedOption, out selectedValue);
+
+            if (selectedOption == "template")
+            {
+                var envelopeIdField = storage
+                    .CrateContentsOfType<StandardDesignTimeFieldsCM>()
+                    .SelectMany(x => x.Fields)
+                    .FirstOrDefault(x => x.Key == "EnvelopeId");
+
+                if (envelopeIdField != null)
+                {
+                    envelopeIdField.Value = selectedValue;
+                }
+            }
         }
 
         /// <summary>

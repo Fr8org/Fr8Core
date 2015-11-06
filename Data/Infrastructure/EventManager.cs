@@ -26,6 +26,9 @@ namespace Data.Infrastructure
         public delegate void IncidentPluginConfigurePOSTFailureHandler(string pluginUrl, string curActionDTO, string errorMessage);
         public static event IncidentPluginConfigurePOSTFailureHandler IncidentPluginConfigureFailed;
 
+        public delegate void IncidentPluginRunPOSTFailureHandler(string pluginUrl, string curActionDTO, string errorMessage);
+        public static event IncidentPluginRunPOSTFailureHandler IncidentPluginRunFailed;
+
         public delegate void IncidentPluginActionActivationPOSTFailureHandler(string pluginUrl, string curActionDTO);
         public static event IncidentPluginActionActivationPOSTFailureHandler IncidentPluginActionActivationFailed;
 
@@ -144,6 +147,12 @@ namespace Data.Infrastructure
         public static void PluginConfigureFailed(string pluginUrl, string actionDTO, string errorMessage)
         {
             IncidentPluginConfigurePOSTFailureHandler handler = IncidentPluginConfigureFailed;
+            if (handler != null) handler(pluginUrl, actionDTO, errorMessage);
+        }
+
+        public static void PluginRunFailed(string pluginUrl, string actionDTO, string errorMessage)
+        {
+            IncidentPluginRunPOSTFailureHandler handler = IncidentPluginRunFailed;
             if (handler != null) handler(pluginUrl, actionDTO, errorMessage);
         }
 
