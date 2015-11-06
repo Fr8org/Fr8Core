@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Crates;
 using Excel;
 using Newtonsoft.Json;
 using StructureMap;
@@ -172,7 +173,7 @@ namespace terminalExcel.Infrastructure
             // Fetch rows in Excel file
             var rowsDictionary = ExcelUtils.GetTabularData(fileAsByteArray, ext);
 
-            CrateDTO curExcelPayloadRowsCrateDTO = null;
+            Crate curExcelPayloadRowsCrateDTO = null;
             
             if (rowsDictionary != null && rowsDictionary.Count > 0)
             {
@@ -184,7 +185,7 @@ namespace terminalExcel.Infrastructure
             }
 
             var curStandardTableDataMS = (curExcelPayloadRowsCrateDTO != null) ?
-                JsonConvert.DeserializeObject<StandardTableDataCM>(curExcelPayloadRowsCrateDTO.Contents)
+               curExcelPayloadRowsCrateDTO.Get<StandardTableDataCM>()
                 : new StandardTableDataCM();
 
             return curStandardTableDataMS;

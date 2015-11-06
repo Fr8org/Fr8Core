@@ -204,6 +204,21 @@
     <Compile Include="Constants\FieldValidationResult.cs" />
     <Compile Include="Constants\ActivityDirection.cs" />
     <Compile Include="Constants\ManifestIdEnum.cs" />
+    <Compile Include="Crates\Crate.cs" />
+    <Compile Include="Crates\CrateManifestAttribute.cs" />
+    <Compile Include="Crates\CrateManifestType.cs" />
+    <Compile Include="Crates\CrateManifestTypeDescriptionAttribute.cs" />
+    <Compile Include="Crates\CrateStorage.cs" />
+    <Compile Include="Crates\CrateStorageSerializer.cs" />
+    <Compile Include="Crates\CrateStorageSerializer.DefaultSerializer.cs" />
+    <Compile Include="Crates\CrateT.cs" />
+    <Compile Include="Crates\DenySerializationConverter.cs" />
+    <Compile Include="Crates\ICrateStorageSerializer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Crates\IManifestSerializer.cs" />
+    <Compile Include="Crates\ManifestDiscovery.cs" />
+    <Compile Include="Crates\ManifestTypeCache.cs" />
     <Compile Include="Entities\RouteNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
@@ -239,6 +254,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ExternalAuthenticationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalAuthUrlDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FilterConditionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\LogItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
@@ -252,7 +268,7 @@
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\EventCM.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDTO.cs" />
@@ -563,7 +579,6 @@
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="States\UserState.cs" />
-    <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ContainerValidator.cs" />

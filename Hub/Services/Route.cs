@@ -318,33 +318,23 @@ namespace Hub.Services
             //3. Get ActivityDO
 
         }
+        
 
-
-
-        public List<RouteDO> MatchEvents(List<RouteDO> curRoutes,
-            EventReportCM curEventReport)
+        public List<RouteDO> MatchEvents(List<RouteDO> curRoutes, EventReportCM curEventReport)
         {
             List<RouteDO> subscribingRoutes = new List<RouteDO>();
+          
             foreach (var curRoute in curRoutes)
             {
                 //get the 1st activity
                 var actionDO = GetFirstActivity(curRoute.Id) as ActionDO;
 
-                //Get the CrateStorage
-                if (actionDO != null && !string.IsNullOrEmpty(actionDO.CrateStorage))
+                if (actionDO != null)
                 {
-                    // Loop each CrateDTO in CrateStorage
-                    IEnumerable<CrateDTO> eventSubscriptionCrates = _crate
-                        .GetCratesByManifestType(
-                            CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
-                            actionDO.CrateStorageDTO()
-                        );
+                    var storage = _crate.GetStorage(actionDO.CrateStorage);
 
-                    foreach (var curEventSubscription in eventSubscriptionCrates)
+                    foreach (var subscriptionsList in storage.CrateContentsOfType<EventSubscriptionCM>())
                     {
-                        //Parse CrateDTO to EventReportMS and compare Event name then add the Route to the results
-                        EventSubscriptionCM subscriptionsList = _crate.GetContents<EventSubscriptionCM>(curEventSubscription);
-
                         bool hasEvents = subscriptionsList.Subscriptions
                             .Where(events => curEventReport.EventNames.ToUpper().Trim().Replace(" ", "").Contains(events.ToUpper().Trim().Replace(" ", "")))
                             .Any();
@@ -356,8 +346,8 @@ namespace Hub.Services
                     }
                 }
             }
-            return subscribingRoutes;
 
+            return subscribingRoutes;
         }
 
 

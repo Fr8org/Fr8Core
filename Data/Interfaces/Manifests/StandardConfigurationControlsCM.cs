@@ -4,9 +4,11 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Constants;
 using System.Linq;
 using System.Reflection;
+using Data.Crates;
 
 namespace Data.Interfaces.Manifests
 {
+    [CrateManifestSerializer(typeof(StandardConfigurationControlsSerializer))]
     public class StandardConfigurationControlsCM : Manifest
     {
         public List<ControlDefinitionDTO> Controls { get; set; }
@@ -16,7 +18,14 @@ namespace Data.Interfaces.Manifests
         {
             Controls = new List<ControlDefinitionDTO>();
         }
-		 public ControlDefinitionDTO FindByName(string name)
+
+        public StandardConfigurationControlsCM(IEnumerable<ControlDefinitionDTO> controls)
+            :this()
+        {
+            Controls.AddRange(controls);
+        }
+
+        public ControlDefinitionDTO FindByName(string name)
 		  {
 			  return Controls.SingleOrDefault(x => x.Name == name);
 		  }
@@ -132,6 +141,4 @@ namespace Data.Interfaces.Manifests
             return null;
         }
     }
-
-
 }

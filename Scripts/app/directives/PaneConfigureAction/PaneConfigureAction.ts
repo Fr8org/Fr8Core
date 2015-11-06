@@ -244,7 +244,7 @@ module dockyard.directives.paneConfigureAction {
                         var authCrate = crateHelper
                             .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
 
-                        var authMS = angular.fromJson(authCrate.contents);
+                        var authMS = <any>authCrate.contents;
 
                         // Dockyard auth mode.
                         if (authMS.Mode == 1) {
@@ -279,7 +279,7 @@ module dockyard.directives.paneConfigureAction {
 
                     $modal.open({
                         animation: true,
-                        templateUrl: 'AngularTemplate/InternalAuthentication',
+                        templateUrl: '/AngularTemplate/InternalAuthentication',
                         controller: 'InternalAuthenticationController',
                         scope: modalScope
                     })

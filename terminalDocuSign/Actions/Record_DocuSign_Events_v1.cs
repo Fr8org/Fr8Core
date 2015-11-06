@@ -4,10 +4,13 @@ using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Data.Crates;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
+using Hub.Managers;
+using Hub.Services;
 using StructureMap;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
@@ -57,12 +60,11 @@ namespace terminalDocuSign.Actions
                     new FieldDTO {Key = "DocuSign Event", Value = string.Empty}
                 });
 
-            //update crate storage with standard event subscription crate
-            curActionDTO.CrateStorage = new CrateStorageDTO()
+            using (var updater = Crate.UpdateStorage(curActionDTO))
             {
-                CrateDTO = new List<CrateDTO> { curControlsCrate, curEventSubscriptionsCrate, curAvailableRunTimeObjectsDesignTimeCrate }
-            };
-
+                updater.CrateStorage = new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, curAvailableRunTimeObjectsDesignTimeCrate);
+            }
+            
             /*
              * Note: We should not call Activate at the time of Configuration. For this action, it may be valid use case.
              * Because this particular action will be used internally, it would be easy to execute the Process directly.
@@ -122,14 +124,13 @@ namespace terminalDocuSign.Actions
 
             var curProcessPayload = await GetProcessPayload(actionDto.ProcessId);
 
-            var curEventReport = JsonConvert.DeserializeObject<EventReportCM>(curProcessPayload.CrateStorageDTO().CrateDTO[0].Contents);
+            var curEventReport = Crate.GetStorage(curProcessPayload).CrateContentsOfType<EventReportCM>().First();
 
             if (curEventReport.EventNames.Contains("Envelope"))
             {
                 using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    IList<KeyValuePair<string, string>> docuSignFields =
-                        Crate.GetContents<List<KeyValuePair<string, string>>>(curEventReport.EventPayload[0]);
+                   var  docuSignFields = curEventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().First().AllValues().ToArray();
 
                     DocuSignEnvelopeCM envelope = new DocuSignEnvelopeCM
                     {
@@ -152,11 +153,11 @@ namespace terminalDocuSign.Actions
                         ExternalAccountId = docuSignFields.First(field => field.Key.Equals("Email")).Value
                     };
 
-                    curProcessPayload.UpdateCrateStorageDTO(new List<CrateDTO>
+                    using (var updater = Crate.UpdateStorage(curProcessPayload))
                     {
-                        Crate.Create("DocuSign Envelope Manifest", JsonConvert.SerializeObject(envelope), envelope.ManifestName, envelope.ManifestId),
-                        Crate.Create("DocuSign Event Manifest", JsonConvert.SerializeObject(events), events.ManifestName, events.ManifestId)
-                    });
+                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Manifest", envelope));
+                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event Manifest", events));
+                    }
                 }
             }
 

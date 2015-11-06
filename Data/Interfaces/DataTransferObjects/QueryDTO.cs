@@ -10,6 +10,6 @@ namespace Data.Interfaces.DataTransferObjects
     {
         public string Name { get; set; }
 
-        public List<CriteriaDTO> Criteria { get; set; }
+        public List<FilterConditionDTO> Criteria { get; set; }
     }
 }
