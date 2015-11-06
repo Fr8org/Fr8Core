@@ -17,6 +17,6 @@ namespace Hub.Interfaces
         /// <returns>Parsed URl to the plugin for its action</returns>
         string ParsePluginUrlFor(string curPluginName, string curPluginVersion, string curActionName);
 
-        Task<int> RegisterTerminals(string uri);
+        Task<IList<string>> RegisterTerminals(string uri);
     }
 }

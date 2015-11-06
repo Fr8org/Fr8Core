@@ -230,7 +230,11 @@ namespace Hub.Services
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
 
-            curActivityTemplates = uow.ActivityTemplateRepository.GetAll().OrderBy(t => t.Category).ToList().Select(Mapper.Map<ActivityTemplateDTO>);
+            curActivityTemplates = uow.ActivityTemplateRepository
+                .GetAll()
+                .OrderBy(t => t.Category)
+                .ToList()
+                .Select(Mapper.Map<ActivityTemplateDTO>);
 
 
             //we're currently bypassing the subscription logic until we need it
@@ -250,14 +254,25 @@ namespace Hub.Services
         /// </summary>
         public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, Func<ActivityTemplateDO, bool>predicate)
         {
-            return uow.ActivityTemplateRepository.GetAll().Where(predicate).OrderBy(t => t.Category).ToList().Select(Mapper.Map<ActivityTemplateDTO>);
+            return uow.ActivityTemplateRepository
+                .GetAll()
+                .Where(predicate)
+                .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
+                .OrderBy(t => t.Category)
+                .ToList()
+                .Select(Mapper.Map<ActivityTemplateDTO>);
         }
 
         public IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount)
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
-            curActivityTemplates = uow.ActivityTemplateRepository.GetAll().
-                Where(at => at.Category == Data.States.ActivityCategory.Solution).OrderBy(t => t.Category).ToList().Select(Mapper.Map<ActivityTemplateDTO>);
+            curActivityTemplates = uow.ActivityTemplateRepository
+                .GetAll()
+                .Where(at => at.Category == Data.States.ActivityCategory.Solution 
+                    && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
+                .OrderBy(t => t.Category)
+                .ToList()
+                .Select(Mapper.Map<ActivityTemplateDTO>);
 
             //we're currently bypassing the subscription logic until we need it
             //we're bypassing the pluginregistration logic here because it's going away in V2
@@ -277,11 +292,13 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curActivityTemplates = uow.ActivityTemplateRepository.GetAll()
+                curActivityTemplates = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                     .GroupBy(t => t.Category)
                     .OrderBy(c => c.Key)
                     //lets load them all before memory processing
-                    .ToList()
+                    .AsEnumerable()
                     .Select(c => new ActivityTemplateCategoryDTO
                     {
                         Activities = c.Select(Mapper.Map<ActivityTemplateDTO>),

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Data.Entities;
+using Data.Interfaces;
+using Data.States;
+using StructureMap;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using StructureMap;
-using Data.Entities;
-using Data.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers;
 
@@ -50,11 +51,17 @@ namespace Hub.Services
                     uow.SaveChanges();
                 }
 
-                if (!uow.ActivityTemplateRepository.GetQuery().Any(t => t.Name == activityTemplateDO.Name))
+                var activity = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(t => t.Name == activityTemplateDO.Name);
+
+                if (activity == null)
                 {
                     uow.ActivityTemplateRepository.Add(activityTemplateDO);
-                    uow.SaveChanges();
                 }
+                else
+                {
+                    activity.ActivityTemplateState = ActivityTemplateState.Active;
+                }
+                uow.SaveChanges();
             }
         }
     }
