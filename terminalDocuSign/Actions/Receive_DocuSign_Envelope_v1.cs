@@ -68,13 +68,13 @@ namespace terminalDocuSign.Actions
 
             using (var updater = Crate.UpdateStorage(() => processPayload.CrateStorage))
             {
-                updater.CrateStorage.Add(Crate.FromContent("DocuSign Envelope Data", CreateActionPayload(actionDO, authTokenDO, envelopeId)));
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", CreateActionPayload(actionDO, authTokenDO, envelopeId)));
             }
 
             return processPayload;
         }
 
-        public IList<FieldDTO> CreateActionPayload(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId)
+        public StandardPayloadDataCM CreateActionPayload(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 

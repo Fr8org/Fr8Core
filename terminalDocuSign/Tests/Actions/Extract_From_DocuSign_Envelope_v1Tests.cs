@@ -109,7 +109,7 @@ namespace terminalDocuSign.Tests.Actions
             var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDO, curAuthTokenDO, "8fcb42d3-1572-44eb-acb1-0fffa4ca65de");
 
             //Assert
-            Assert.AreEqual(3, result.Count());
+            Assert.AreEqual(3, result..Count());
             Assert.AreEqual("Dohemann", result.FirstOrDefault(x => x.Key == "Doctor").Value);
             Assert.AreEqual("Gout", result.FirstOrDefault(x => x.Key == "Condition").Value);
             Assert.AreEqual("test", result.FirstOrDefault(x => x.Key == "Text 5").Value);
