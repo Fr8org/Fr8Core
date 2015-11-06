@@ -64,7 +64,7 @@ namespace TerminalBase.BaseClasses
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public object HandleFr8Request(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
+        public object HandleFr8Request(string curPlugin, string curActionPath, ActionDTO curActionDTO)
         {
             if (curActionDTO == null)
                 throw new ArgumentNullException("curActionDTO");

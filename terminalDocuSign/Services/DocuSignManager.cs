@@ -67,7 +67,7 @@ namespace terminalDocuSign.Services
         /// </summary>
         /// <param name="docuSignTemplateId">DocuSign TemplateId.</param>
         /// <param name="docuSignAuthDTO">DocuSign authentication token.</param>
-        /// <param name="curActionDTO">ActionDTO object representing the current action. The crate with extracted 
+        /// <param name="curActionDO">ActionDO object representing the current action. The crate with extracted 
         /// fields will be added to this Action replacing any older instances of that crate.</param>
         public void ExtractFieldsAndAddToCrate(string docuSignTemplateId, DocuSignAuthDTO docuSignAuthDTO, ActionDO curActionDO)
         {

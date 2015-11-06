@@ -24,9 +24,9 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// //For this action, both Initial and Followup configuration requests are same. Hence it returns Initial config request type always.
         /// </summary>
-        /// <param name="curActionDTO"></param>
+        /// <param name="curActionDO"></param>
         /// <returns></returns>
-        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {

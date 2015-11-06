@@ -51,13 +51,13 @@ namespace terminalAzure.Actions
             //if there are none or if there's one but it's value is "" the return initial else return followup
             var objCount = connectionStrings.Length;
             if (objCount > 1)
-                throw new ArgumentException("didn't expect to see more than one connectionStringObject with the name Connection String on this Action", "curActionDTO");
+                throw new ArgumentException("didn't expect to see more than one connectionStringObject with the name Connection String on this Action", "curActionDO");
             if (objCount == 0)
                 return ConfigurationRequestType.Initial;
             else
             {
                 //we should validate our data now
-                //CheckFields(curActionDTO, new List<ValidationDataTuple> { new ValidationDataTuple("connection_string", "test", GetCrateDirection.Upstream, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) });
+                //CheckFields(curActionDO, new List<ValidationDataTuple> { new ValidationDataTuple("connection_string", "test", GetCrateDirection.Upstream, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) });
                 return ConfigurationRequestType.Followup;
             }            
         }
@@ -143,8 +143,6 @@ namespace terminalAzure.Actions
 
         public List<string> GetFieldMappings(ActionDO curActionDO)
         {
-            //Get configuration settings and check for connection string
-            //CrateStorageDTO curCrates = curActionDTO.CrateStorage;
 
             var storage = Crate.GetStorage(curActionDO);
 

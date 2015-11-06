@@ -69,9 +69,6 @@ namespace terminalFr8Core.Actions
             {
                 updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
             }
-            //
-            //            var crateStrorageDTO = AssembleCrateStorage(configurationControlsCrate);
-            //            curActionDTO.CrateStorage = crateStrorageDTO;
 
             return Task.FromResult(curActionDO);
         }
