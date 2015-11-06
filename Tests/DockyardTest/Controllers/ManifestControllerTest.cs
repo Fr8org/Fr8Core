@@ -13,6 +13,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http.Results;
+using Data.Crates;
+using Hub.Managers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using HubWeb.Controllers;
@@ -54,6 +56,9 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();
             }
         }
+
+
+
 
         [Test]
         public void Check_StandardFr8RoutesCM()
@@ -376,7 +381,9 @@ namespace DockyardTest.Controllers
 
         private static StandardDesignTimeFieldsCM Deserialize(OkNegotiatedContentResult<CrateDTO> actionResult)
         {
-            return JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(actionResult.Content.Contents);
+            var crate = ObjectFactory.GetInstance<ICrateManager>().FromDto(actionResult.Content);
+
+            return crate.Get<StandardDesignTimeFieldsCM>();
         }
 
         private static ManifestController CreateManifestController()

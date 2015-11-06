@@ -5,6 +5,8 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Crates;
+using Data.Interfaces.Manifests;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -85,4 +87,31 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
+
+    public class StandardConfigurationControlsSerializer : IManifestSerializer
+    {
+        public void Initialize(ICrateStorageSerializer manager)
+        {
+        }
+
+        public object Deserialize(JToken crateContent)
+        {
+            var converter = new ControlDefinitionDTOConverter();
+
+            var serializer = JsonSerializer.Create(new JsonSerializerSettings()
+            {
+                Converters = new List<JsonConverter>
+                {
+                    converter
+                }
+            });
+
+            return crateContent.ToObject<StandardConfigurationControlsCM>(serializer);
+        }
+
+        public JToken Serialize(object content)
+        {
+            return JToken.FromObject(content);
+        }
+    }
 }

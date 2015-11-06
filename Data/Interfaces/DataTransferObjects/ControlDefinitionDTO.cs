@@ -287,6 +287,14 @@ namespace Data.Interfaces.DataTransferObjects
 
     public class ControlEvent
     {
+        public static ControlEvent RequestConfig
+        {
+            get
+            {
+                 return new ControlEvent("onChange", "requestConfig");
+            }
+        }
+
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("handler")]

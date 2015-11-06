@@ -12,6 +12,8 @@ using Newtonsoft.Json.Serialization;
 using terminalFr8Core.Actions;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces;
+using Hub.Managers;
+using StructureMap;
 using terminalFr8Core.Interfaces;
 
 namespace terminalFr8CoreTests.Actions
@@ -50,7 +52,7 @@ namespace terminalFr8CoreTests.Actions
             var action = await select_Fr8_Object_v1.Configure(actionDTO);
 
             Assert.NotNull(action);
-            Assert.AreEqual(2, actionDTO.CrateStorage.CrateDTO.Count);
+            Assert.AreEqual(2, ObjectFactory.GetInstance<ICrateManager>().FromDto(action.CrateStorage).Count);
         }
 
         [Test]

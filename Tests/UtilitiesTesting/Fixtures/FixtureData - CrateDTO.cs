@@ -7,6 +7,7 @@ using StructureMap;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Data.Crates;
 using Data.Interfaces.Manifests;
 
 namespace UtilitiesTesting.Fixtures
@@ -15,51 +16,30 @@ namespace UtilitiesTesting.Fixtures
     {
 
 
-        public static List<CrateDTO> TestCrateDTO1()
+        public static List<Crate<StandardDesignTimeFieldsCM>> TestCrateDTO1()
         {
             List<FieldDTO> fields = new List<FieldDTO>();
             fields.Add(new FieldDTO() { Key = "Medical_Form_v1", Value = Guid.NewGuid().ToString() });
             fields.Add(new FieldDTO() { Key = "Medical_Form_v2", Value = Guid.NewGuid().ToString() });
 
-            CrateDTO curCrateDTO = new CrateDTO()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Label = "Available Templates",
-                Contents = JsonConvert.SerializeObject(new StandardDesignTimeFieldsCM() { Fields = fields }),
-                ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
-                ManifestId = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID
-
-            };
-
-            return new List<CrateDTO>() { curCrateDTO };
-
+            return new List<Crate<StandardDesignTimeFieldsCM>>() { Crate<StandardDesignTimeFieldsCM>.FromContent("Available Templates", new StandardDesignTimeFieldsCM() { Fields = fields }) };
         }
 
-        public static List<CrateDTO> TestCrateDTO2()
+        public static List<Crate> TestCrateDTO2()
         {
             List<FieldDTO> fields = new List<FieldDTO>();
+            
             fields.Add(new FieldDTO() { Key = "Text 5", Value = Guid.NewGuid().ToString() });
             fields.Add(new FieldDTO() { Key = "Text 8", Value = Guid.NewGuid().ToString() });
             fields.Add(new FieldDTO() { Key = "Doctor", Value = Guid.NewGuid().ToString() });
             fields.Add(new FieldDTO() { Key = "Condition", Value = Guid.NewGuid().ToString() });
 
-
-            CrateDTO curCrateDTO = new CrateDTO()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Label = "DocuSignTemplateUserDefinedFields",
-                Contents = JsonConvert.SerializeObject(new StandardDesignTimeFieldsCM() { Fields = fields }),
-                ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
-                ManifestId = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID
-
-            };
-
-            return new List<CrateDTO>() { curCrateDTO };
+            return new List<Crate>() { Crate.FromContent("DocuSignTemplateUserDefinedFields", new StandardDesignTimeFieldsCM() { Fields = fields }) };
 
         }
 
 
-        public static CrateDTO CreateStandardConfigurationControls()
+        public static Crate CreateStandardConfigurationControls()
         {
             string templateId = "58521204-58af-4e65-8a77-4f4b51fef626";
             var fieldSelectDocusignTemplate = new DropDownListControlDefinitionDTO()
@@ -103,6 +83,7 @@ namespace UtilitiesTesting.Fixtures
                 Name = "Event_Recipient_Sent"
             };
 
+            
             return PackControlsCrate(
                 fieldSelectDocusignTemplate,
                 fieldEnvelopeSent,
@@ -111,7 +92,7 @@ namespace UtilitiesTesting.Fixtures
                 fieldEventRecipientSent);
         }
 
-        public static CrateDTO CreateStandardConfigurationControlSelectFr8Object(string selected)
+        public static Crate CreateStandardConfigurationControlSelectFr8Object(string selected)
         {
             var fieldSelectFr8Object = new DropDownListControlDefinitionDTO()
             {
@@ -135,40 +116,33 @@ namespace UtilitiesTesting.Fixtures
 
       
         #region Private Methods
-       
-        private static CrateDTO PackControlsCrate(params ControlDefinitionDTO[] controlsList)
-        {
-            var controlsCrate = CreateStandardConfigurationControlsCrate(
-                "Configuration_Controls", controlsList);
 
-            return controlsCrate;
+        private static Crate PackControlsCrate(params ControlDefinitionDTO[] controlsList)
+        {
+            return Crate.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(controlsList));
         }
 
-        private static CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
+        private static Crate CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
         {
-            return Create(label,
-                JsonConvert.SerializeObject(new StandardConfigurationControlsCM() { Controls = controls.ToList() }),
-                manifestType: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME,
-                manifestId: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
+            return Crate.FromContent(label, new StandardConfigurationControlsCM(controls));
         }
 
-        private static CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0)
-        {
-            var crateDTO = new CrateDTO()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Label = label,
-                Contents = contents,
-                ManifestType = manifestType,
-                ManifestId = manifestId
-            };
-            return crateDTO;
-        }
+//        private static CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0)
+//        {
+//            var crateDTO = new CrateDTO()
+//            {
+//                Id = Guid.NewGuid().ToString(),
+//                Label = label,
+//                Contents = contents,
+//                ManifestType = manifestType,
+//                ManifestId = manifestId
+//            };
+//            return crateDTO;
+//        }
 
 
 
-        private static CrateDTO CreateEventSubscriptionCrate(
-          StandardConfigurationControlsCM configurationFields)
+        private static Crate CreateEventSubscriptionCrate(StandardConfigurationControlsCM configurationFields)
         {
             var subscriptions = new List<string>();
 
@@ -189,12 +163,9 @@ namespace UtilitiesTesting.Fixtures
                 );
         }
 
-        private static CrateDTO CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions)
+        private static Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions)
         {
-            return Create(label,
-                JsonConvert.SerializeObject(new EventSubscriptionCM() { Subscriptions = subscriptions.ToList() }),
-                manifestType: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
-                manifestId: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_ID);
+            return Crate.FromContent(label, new EventSubscriptionCM() {Subscriptions = subscriptions.ToList()});
         }
 
         #endregion

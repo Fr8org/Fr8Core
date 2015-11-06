@@ -18,6 +18,7 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Plugin;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
+using Newtonsoft.Json.Linq;
 using TerminalBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
@@ -481,7 +482,10 @@ namespace DockyardTest.Services
         {
             ActionDO actionDO = FixtureData.TestAction23();
 
-            _crate.AddCrate(actionDO, FixtureData.CrateStorageDTO().CrateDTO);
+            using (var updater = _crate.UpdateStorage(actionDO))
+            {
+                updater.CrateStorage.AddRange(FixtureData.CrateStorageDTO());
+            }
 
             Assert.IsNotEmpty(actionDO.CrateStorage);
         }
@@ -576,11 +580,15 @@ namespace DockyardTest.Services
             ContainerDO containerDO = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
 
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var pluginClientMock = new Mock<IPluginTransmitter>();
                 pluginClientMock.Setup(s => s.CallActionAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>()))
-                                .Returns(Task.FromResult(new PayloadDTO(actionDo.CrateStorage, containerDO.Id)));
+                                .Returns(Task.FromResult(new PayloadDTO(containerDO.Id)
+                                {
+                                    CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(actionDo.CrateStorage)
+                                }));
                 ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
 
                 var count = uow.ActionRepository.GetAll().Count();
