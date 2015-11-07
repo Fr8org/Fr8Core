@@ -20,6 +20,7 @@ namespace terminalExcel.Controllers
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
             return await (Task<ActionDTO>) _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
+
         }
 
         [HttpPost]
