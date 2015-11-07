@@ -4,17 +4,17 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using Core.Exceptions;
-using Core.Interfaces;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Microsoft.AspNet.Identity;
-using StructureMap;
+using Hub.Exceptions;
+using Hub.Interfaces;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
     [RoutePrefix("routes")]
@@ -51,7 +51,21 @@ namespace Web.Controllers
             };
         }
 
-        
+        [Route("getByAction/{id:int}")]
+        [ResponseType(typeof(RouteDTO))]
+        [HttpGet]
+        public IHttpActionResult GetByAction(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var action = uow.ActionRepository.GetByKey(id);
+                var route = _route.GetRoute(action);
+                var result = _route.MapRouteToDto(uow, route);
+
+                return Ok(result);
+            };
+        }  
+              
         [Route("status")]
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
@@ -137,7 +151,9 @@ namespace Web.Controllers
         }
 
         
-
+        
+        [HttpDelete]
+        [Route("{id:int}")]
         public IHttpActionResult Delete(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

@@ -1,4 +1,4 @@
-﻿using Data.Interfaces.ManifestSchemas;
+﻿using Data.Interfaces.Manifests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +14,8 @@ namespace UtilitiesTesting.Fixtures
             return new DocuSignEnvelopeCM()
             {
                 EnvelopeId = "1",
-                CompletedDate = DateTime.Now.ToShortDateString(),
-                DeliveredDate = DateTime.Now.AddDays(1).ToShortDateString(),
+                CompletedDate = DateTime.UtcNow.ToShortDateString(),
+				DeliveredDate = DateTime.UtcNow.AddDays(1).ToShortDateString(),
                 Status = "delivered"
             };
         }

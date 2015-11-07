@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Web.Http.Controllers;
-using Core.Managers;
-using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using TerminalBase.BaseClasses;
+using Newtonsoft.Json;
 using StructureMap;
+using Hub.Managers;
+using TerminalBase.BaseClasses;
 using Utilities;
 
 namespace TerminalBase

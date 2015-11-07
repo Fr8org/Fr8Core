@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using terminalAzure.Infrastructure;
+using TerminalSqlUtilities;
 using Utilities.Logging;
+using terminalAzure.Infrastructure;
 
 namespace terminalAzure.Services
 {
@@ -15,7 +16,7 @@ namespace terminalAzure.Services
         public void WriteCommand(WriteCommandArgs args)
         {
             // Get corresponding provider.
-            var dbProvider = GetDbProvider(args.ProviderName);
+            var dbProvider = DbProvider.GetDbProvider(args.ProviderName);
             // Check that plugin knows how to work wih specified provider name.
             if (dbProvider == null)
             {
@@ -43,22 +44,6 @@ namespace terminalAzure.Services
         }
 
         /// <summary>
-        /// Get corresponding IDbProvider against ADO.NET connection provider string.
-        /// </summary>
-        /// <param name="provider">ADO.NET connection provider string.</param>
-        private IDbProvider GetDbProvider(string provider)
-        {
-            switch (provider)
-            {
-                case "System.Data.SqlClient":
-                    return new SqlClientDbProvider();
-
-                default:
-                    return null;
-            }
-        }
-
-        /// <summary>
         /// Try open database connection.
         /// </summary>
         private void OpenConnection(IDbConnection dbconn)
@@ -82,17 +67,21 @@ namespace terminalAzure.Services
         /// <param name="table">The table we're validating.</param>
         private void EnsureTableExists(IDbProvider dbProvider, IDbTransaction tx, Table table)
         {
-            if (!dbProvider.IsTableExisting(tx, table.SchemaName, table.TableName))
+            if (!dbProvider.IsTableExisting(tx, table.TableInfo.SchemaName, table.TableInfo.TableName))
             {
                 string message;
-                if (!string.IsNullOrEmpty(table.SchemaName))
+                if (!string.IsNullOrEmpty(table.TableInfo.SchemaName))
                 {
-                    message = string.Format("No table \"{0}.{1}\" found on remote database", table.SchemaName,
-                        table.TableName);
+                    message = string.Format(
+                        "No table \"{0}.{1}\" found on remote database",
+                        table.TableInfo.SchemaName,
+                        table.TableInfo.TableName);
                 }
                 else
                 {
-                    message = string.Format("No table \"{0}\" found on remote database", table.TableName);
+                    message = string.Format(
+                        "No table \"{0}\" found on remote database",
+                        table.TableInfo.TableName);
                 }
 
                 Logger.GetLogger().Error(message);
@@ -118,7 +107,8 @@ namespace terminalAzure.Services
                     // Insert rows.
                     foreach (var row in table.Rows)
                     {
-                        dbProvider.WriteRow(tx, table.SchemaName, table.TableName, row.Values);
+                        dbProvider.WriteRow(tx, table.TableInfo.SchemaName,
+                            table.TableInfo.TableName, row.Values);
                     }
                 }
 

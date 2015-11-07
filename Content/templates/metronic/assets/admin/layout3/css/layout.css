@@ -553,7 +553,23 @@ Page Header
       float: left;
       display: block;
       width: 255px;
-      height: 75px; }
+      height: 75px; 
+    }
+
+    /* Header Sticker */
+    .page-header .page-header-top .page-logo .page-sticker {
+        display: inline-block;
+    }
+    .page-header .page-header-top .page-logo .page-sticker p {
+        color:#171717;
+        font-family:'Berlin Sans FB';
+        font-weight:600;
+        font-size: 1.3em;
+        position:absolute; 
+        bottom:-0.8em;
+        margin-left: -15px;
+    }
+
       .page-header .page-header-top .page-logo .logo-default {
         margin: 10px 0 0 0; }
     .page-header .page-header-top .top-menu {

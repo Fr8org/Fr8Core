@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Core.Services;
-using Data.Interfaces;
+using Hub.Managers.APIManagers.Packagers;
+using Moq;
 using NUnit.Framework;
 using StructureMap;
+using Data.Interfaces;
+using Hub.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -30,6 +32,10 @@ namespace DockyardTest.Integration
                 email = userDO.EmailAddress.Address;
             }
 
+            //setup IEmailPackager
+            var curEmailPackager = new Mock<IEmailPackager>(MockBehavior.Default);
+            ObjectFactory.Container.Inject(typeof(IEmailPackager), curEmailPackager.Object);
+
             // EXECUTE
             // generate a forgot password email
             await account.ForgotPasswordAsync(email);
@@ -51,8 +57,12 @@ namespace DockyardTest.Integration
 		    var result = await account.ResetPasswordAsync(userId, code, "123456");
 
             // VERIFY
-		    Assert.AreEqual(id, userId);
+            Assert.AreEqual(id, userId);
 		    Assert.IsTrue(result.Succeeded, string.Join(", ", result.Errors));
+
+            //verify whether the external email is sent
+            curEmailPackager.Verify(packager => packager.Send(It.IsAny<IMailerDO>()), Times.Exactly(1));
+            curEmailPackager.VerifyAll();
         }
     }
 }

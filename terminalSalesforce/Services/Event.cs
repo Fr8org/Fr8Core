@@ -1,27 +1,16 @@
-﻿using Core.Interfaces;
-using Core.Managers;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
-using terminalSalesforce.Infrastructure;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Web;
-using System.Xml;
-using System.Xml.Serialization;
-using System.Xml.Linq;
-using System.Configuration;
-using System.Net.Http;
-using System.Text.RegularExpressions;
-using Data.Interfaces.ManifestSchemas;
-using Core.StructureMap;
+using Data.Crates;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
+using Hub.Managers;
+using StructureMap;
+using terminalSalesforce.Infrastructure;
 using TerminalBase.BaseClasses;
 
 namespace terminalSalesforce.Services
 {
-    public class Event : terminalSalesforce.Infrastructure.IEvent
+    public class Event : IEvent
     {
        
         private readonly ICrateManager _crate;        
@@ -34,7 +23,7 @@ namespace terminalSalesforce.Services
         }
 
 
-        public CrateDTO ProcessEvent(string curExternalEventPayload)
+        public Crate ProcessEvent(string curExternalEventPayload)
         {
             string leadId = string.Empty;
             string accountId = string.Empty;
@@ -45,15 +34,12 @@ namespace terminalSalesforce.Services
             {
                 EventNames = "Lead Created",
                 ContainerDoId = "",
-                EventPayload = ExtractEventPayload(leadId,accountId).ToList(),
+                EventPayload = new CrateStorage(ExtractEventPayload(leadId, accountId)),
                 ExternalAccountId = accountId,
                 Source = "Salesforce"
             };
 
-            CrateDTO curEventReport = ObjectFactory.GetInstance<ICrateManager>()
-                .Create("Lead Created", JsonConvert.SerializeObject(eventReportContent), "Standard Event Report", 7);
-
-            return curEventReport;
+            return Crate.FromContent("Lead Created", eventReportContent);
         }
 
         public void Parse(string xmlPayload, out string leadId, out string accountId)
@@ -80,19 +66,22 @@ namespace terminalSalesforce.Services
             }
         }
 
-        private IEnumerable<CrateDTO> ExtractEventPayload(string leadId, string accountId)
+        private IEnumerable<Crate> ExtractEventPayload(string leadId, string accountId)
         {
-            IList<CrateDTO> curEventPayloadData = new List<CrateDTO>();
-            var payLoadData = _crate.CreatePayloadDataCrate(CreateKeyValuePairList(leadId, accountId));
+            IList<Crate> curEventPayloadData = new List<Crate>();
+
+            var payLoadData = Crate.FromContent("", new StandardPayloadDataCM(CreateKeyValuePairList(leadId, accountId)));
             curEventPayloadData.Add(payLoadData);
+            
             return curEventPayloadData;
         }
 
-        private List<KeyValuePair<string,string>> CreateKeyValuePairList(string leadId,string accountId)
+        private List<FieldDTO> CreateKeyValuePairList(string leadId,string accountId)
         {
-            List<KeyValuePair<string, string>> returnList = new List<KeyValuePair<string, string>>();
-            returnList.Add(new KeyValuePair<string,string>("LeadID",leadId));
-            returnList.Add(new KeyValuePair<string,string>("AccountID",accountId));
+            var returnList = new List<FieldDTO>();
+
+            returnList.Add(new FieldDTO("LeadID", leadId));
+            returnList.Add(new FieldDTO("AccountID", accountId));
             return returnList;
         }
     }

@@ -4,22 +4,23 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Owin;
+using Microsoft.Owin.Hosting;
 using Owin;
 using StructureMap;
-using Utilities.Configuration.Azure;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using Hub.Managers;
+using Hub.Services;
 using Utilities;
+using Utilities.Configuration.Azure;
 using Utilities.Logging;
-using Core.Services;
-using Core.Managers;
-using Microsoft.Owin.Hosting;
+using Hub.Interfaces;
 
-[assembly: OwinStartup(typeof(Web.Startup))]
+[assembly: OwinStartup(typeof(HubWeb.Startup))]
 
-namespace Web
+namespace HubWeb
 {
     public partial class Startup
     {
@@ -128,11 +129,10 @@ namespace Web
 
         public async Task RegisterPluginActions()
         {
-            var alertReporter = ObjectFactory.GetInstance<EventReporter>();
-
+            List<string> totalRegisteredTerminalNames = new List<string>();
+            var eventReporter = ObjectFactory.GetInstance<EventReporter>();
             var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
-            int count = 0;
-            var uri=string.Empty;
+            var uri = string.Empty;
             foreach (string url in activityTemplateHosts)
             {
                 try
@@ -140,42 +140,65 @@ namespace Web
                     uri = url.StartsWith("http") ? url : "http://" + url;
                     uri += "/plugins/discover";
 
-                    var pluginService = new Plugin();
-                    var activityTemplateList = await pluginService.GetAvailableActions(uri);
-                    // For discover serialization see:
-                    //   # pluginAzureSqlServer.Controllers.PluginController#DiscoverPlugins()
-                    //   # pluginDockyardCore.Controllers.PluginController#DiscoverPlugins()
-                    //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
-
-
-                    foreach (var curItem in activityTemplateList)
-                    {
-                        try
-                        {
-                            new ActivityTemplate().Register(curItem);
-                            count++;
-                        }
-                        catch (Exception ex)
-                        {
-                            alertReporter = ObjectFactory.GetInstance<EventReporter>();
-                            alertReporter.ActivityTemplatePluginRegistrationError(
-                                string.Format("Failed to register {0} plugin. Error Message: {1}", curItem.Plugin.Name, ex.Message),
-                                ex.GetType().Name);
-                        }
-
-                    }
+                    var pluginService = ObjectFactory.GetInstance<IPlugin>(); ;
+                    totalRegisteredTerminalNames.AddRange(await pluginService.RegisterTerminals(uri));
                 }
                 catch (Exception ex)
                 {
-                    alertReporter = ObjectFactory.GetInstance<EventReporter>();
-                    alertReporter.ActivityTemplatePluginRegistrationError(
-                        string.Format("Failed plugin service: {0}. Error Message: {1} ", uri, ex.Message), 
+                    eventReporter = ObjectFactory.GetInstance<EventReporter>();
+                    eventReporter.ActivityTemplatePluginRegistrationError(
+                        string.Format("Failed terminal service: {0}. Error Message: {1} ", uri, ex.Message),
                         ex.GetType().Name);
 
                 }
             }
+            eventReporter.ActivityTemplatesSuccessfullyRegistered(totalRegisteredTerminalNames.Count);
 
-            alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
+            SetInactiveUndiscoveredActivityTemplates(totalRegisteredTerminalNames);
+        }
+
+        public void SetInactiveUndiscoveredActivityTemplates(List<string> discoveredActivityTemplateNames)
+        {
+            try
+            {
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var undiscoveredTemplates = uow.ActivityTemplateRepository.
+                    GetQuery().
+                    Where(at => !discoveredActivityTemplateNames.Contains(at.Name));
+
+                    foreach (var activityTemplate in undiscoveredTemplates)
+                    {
+                        activityTemplate.ActivityTemplateState = Data.States.ActivityTemplateState.Inactive;
+                    }
+                    uow.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error setting undiscovered activity templates inactive ", e);
+            }
+        }
+
+        public void SetAllActivityTemplatesInactive()
+        {
+            try
+            {
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var activityTemplateList = uow.ActivityTemplateRepository.GetAll();
+                    foreach(var item in activityTemplateList)
+                    {
+                        item.ActivityTemplateState = ActivityTemplateState.Inactive;
+                    }
+
+                    uow.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error setting activity templates inactive ", e);
+            }
         }
 
         public bool CheckForActivityTemplate(string templateName)
@@ -188,7 +211,7 @@ namespace Web
                     ActivityTemplateRepository activityTemplateRepositary = uow.ActivityTemplateRepository;
                     List<ActivityTemplateDO> activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
 
-                    if (activityTemplateRepositaryItems.Find(item => item.Name == templateName) == null)
+                    if (!activityTemplateRepositaryItems.Any(item => item.Name == templateName))
                     {
                         found = false;
                     }
@@ -197,7 +220,7 @@ namespace Web
             }
             catch (Exception e)
             {
-                Logger.GetLogger().Error("Error checking for activity template ", e);
+                Logger.GetLogger().Error(String.Format("Error checking for activity template \"{0}\"", templateName), e);
             }
             return found;
         }

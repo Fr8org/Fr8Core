@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
+using Data.Crates;
 using DocuSign.Integrations.Client;
 using StructureMap;
-using Core.Interfaces;
-using Core.Managers;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-
+using Hub.Interfaces;
+using Hub.Managers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -71,25 +73,22 @@ namespace UtilitiesTesting.Fixtures
             return curActionTemplate;
         }
 
-        public static CrateStorageDTO TestConfigurationSettings()
+        public static CrateStorage TestConfigurationSettings()
         {
             return FixtureData.CrateStorageDTO();
         }
 
-        public static CrateStorageDTO TestConfigurationStore()
+        public static CrateStorage TestConfigurationStore()
         {
-            ICrateManager _crate = ObjectFactory.GetInstance<ICrateManager>();
-            return new CrateStorageDTO
+            return new CrateStorage
             {
-                CrateDTO = new List<CrateDTO>
-	            {
-                    _crate.Create("SQL Connection String", "{type: 'textField', name: 'connection_string', required: true, fieldLabel: 'SQL Connection String'}"),
-                    _crate.Create("Custom SQL Query", "{type: 'textField', name: 'query', required: true, fieldLabel: 'Custom SQL Query'}"),
-	                _crate.Create("Log All Transactions", "{type: 'checkboxField', name: 'log_transactions', required: true, fieldLabel: 'Log All Transactions?'}"),
-	                _crate.Create("Log Some Transactions", "{type: 'checkboxField', name: 'log_transactions1', required: true, fieldLabel: 'Log Some Transactions?'}"),
-	                _crate.Create("Log No Transactions", "{type: 'checkboxField', name: 'log_transactions2', required: true, fieldLabel: 'Log No Transactions?'}"),
-                    _crate.Create("Log Failed Transactions", "{type: 'checkboxField', name: 'log_transactions3', required: true, fieldLabel: 'Log Failed Transactions?'}")
-	            }
+                Crate.FromJson("SQL Connection String", JsonConvert.DeserializeObject<JToken>("{type: 'textField', name: 'connection_string', required: true, fieldLabel: 'SQL Connection String'}")),
+                Crate.FromJson("SQL Connection String", JsonConvert.DeserializeObject<JToken>("{type: 'textField', name: 'connection_string', required: true, fieldLabel: 'SQL Connection String'}")),
+                Crate.FromJson("Custom SQL Query", JsonConvert.DeserializeObject<JToken>("{type: 'textField', name: 'query', required: true, fieldLabel: 'Custom SQL Query'}")),
+                Crate.FromJson("Log All Transactions", JsonConvert.DeserializeObject<JToken>("{type: 'checkboxField', name: 'log_transactions', required: true, fieldLabel: 'Log All Transactions?'}")),
+                Crate.FromJson("Log Some Transactions", JsonConvert.DeserializeObject<JToken>("{type: 'checkboxField', name: 'log_transactions1', required: true, fieldLabel: 'Log Some Transactions?'}")),
+                Crate.FromJson("Log No Transactions", JsonConvert.DeserializeObject<JToken>("{type: 'checkboxField', name: 'log_transactions2', required: true, fieldLabel: 'Log No Transactions?'}")),
+                Crate.FromJson("Log Failed Transactions", JsonConvert.DeserializeObject<JToken>("{type: 'checkboxField', name: 'log_transactions3', required: true, fieldLabel: 'Log Failed Transactions?'}"))
             };
         }
 

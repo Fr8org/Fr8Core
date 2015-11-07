@@ -85,6 +85,12 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Dev' ">
     <OutputPath>bin\Dev\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
   <!-- These SecondarySite items represent the collection of sites (other than the web application associated with the role) that need special packaging. -->
   <ItemGroup>
     <SecondarySite Include="..\terminalAzure\terminalAzure.csproj" />

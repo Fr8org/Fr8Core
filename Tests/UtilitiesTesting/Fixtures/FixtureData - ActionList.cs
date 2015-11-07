@@ -1,6 +1,8 @@
 ﻿using Data.Entities;
 using Data.States;
 using System.Collections.Generic;
+using Hub.Managers;
+using StructureMap;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -84,12 +86,16 @@ namespace UtilitiesTesting.Fixtures
             var containerDO = new ContainerDO
             {
                 Id = 1,
-                CrateStorage = EnvelopeIdCrateJson(),
                 ContainerState = 1,
                 Name = "test name",
                 RouteId = TestRouteHealthDemo().Id
             };
-//
+
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
+            {
+                updater.CrateStorage.Add(GetEnvelopeIdCrate());
+            }
+
             return new ActionListDO
             {
 //               Id = 88,

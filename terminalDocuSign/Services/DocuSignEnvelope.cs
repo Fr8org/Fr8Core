@@ -172,6 +172,8 @@ namespace terminalDocuSign.Services
 
             foreach (var signer in templateDetails["recipients"]["signers"])
             {
+                if (signer["tabs"] == null) { continue; }
+
                 if (signer["tabs"]["textTabs"] != null)
                 {
                     foreach (var textTab in signer["tabs"]["textTabs"])

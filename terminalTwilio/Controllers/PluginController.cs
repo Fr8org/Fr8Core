@@ -4,6 +4,7 @@ using Data.Entities;
 using Data.States;
 using System.Web.Http.Description;
 using Utilities.Configuration.Azure;
+using Data.Interfaces.Manifests;
 
 namespace terminalTwilio.Controllers
 {
@@ -12,7 +13,7 @@ namespace terminalTwilio.Controllers
     {
         [HttpGet]
         [Route("discover")]
-        [ResponseType(typeof(List<ActivityTemplateDO>))]
+        [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverPlugins()
         {
             var plugin = new PluginDO()
@@ -40,7 +41,12 @@ namespace terminalTwilio.Controllers
                 sendViaTwilioTemplate
             };
 
-            return Json(actionList);
+            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            {
+                Definition = plugin,
+                Actions = actionList
+            };
+            return Json(curStandardFr8TerminalCM);
         }
     }
 }

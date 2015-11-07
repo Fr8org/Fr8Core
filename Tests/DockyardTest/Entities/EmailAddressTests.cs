@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using Data.Entities;
-using Data.Interfaces;
-using Core.Interfaces;
 using NUnit.Framework;
 using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Hub.Interfaces;
 using Utilities;
 using UtilitiesTesting;
 

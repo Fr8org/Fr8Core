@@ -1,18 +1,20 @@
 ﻿using System;
-// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
-using InternalInterface = Core.Interfaces;
-using Core.Interfaces;
-using Core.Services;
-using Data.Entities;
-using Data.Interfaces;
-using Data.States;
+using System.Collections.Generic;
+using Data.Crates;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
+// This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
+using InternalInterface = Hub.Interfaces;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using Data.Interfaces.DataTransferObjects;
 
 namespace DockyardTest.Services
 {
@@ -212,11 +214,17 @@ namespace DockyardTest.Services
 
         private static string GetCrateStorageAsString()
         {
-            List<CrateDTO> curCratesDTO = FixtureData.TestCrateDTO1();
-            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
-            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
-            string crateStorage = JsonConvert.SerializeObject(crateStorageDTO);
-            return crateStorage;
+            var curCratesDTO = FixtureData.TestCrateDTO1();
+            
+            var tmp = new ActionDO();
+
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(tmp))
+            {
+                updater.CrateStorage.AddRange(curCratesDTO);
+            }
+
+            return tmp.CrateStorage;
+
         }	
 
     }

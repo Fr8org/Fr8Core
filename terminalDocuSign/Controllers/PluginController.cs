@@ -1,23 +1,26 @@
 using System;
-using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using AutoMapper;
-using Data.Entities;
-using Newtonsoft.Json;
-using System.Reflection;
-using TerminalBase.BaseClasses;
 using System.Collections.Generic;
-using Core.Services;
+using System.Reflection;
+using System.Web.Http;
+using AutoMapper;
+using Newtonsoft.Json;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Hub.Services;
+using TerminalBase.BaseClasses;
 using Utilities.Configuration.Azure;
+using System.Web.Http.Description;
+using Data.Interfaces.Manifests;
 
 namespace terminalDocuSign.Controllers
-{    
+{
     [RoutePrefix("plugins")]
     public class PluginController : ApiController
     {
         [HttpGet]
         [Route("discover")]
+        [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult Get()
         {
             var plugin = new PluginDO()
@@ -36,19 +39,19 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Monitors,
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.Internal,
-				MinPaneWidth = 330
+                MinPaneWidth = 330
             };
 
-			var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
-			{
-				Version = "1",
-				Name = "Send_DocuSign_Envelope",
+            var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
+            {
+                Version = "1",
+                Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
-				Plugin = plugin,
+                Plugin = plugin,
                 AuthenticationType = AuthenticationType.Internal,
-				MinPaneWidth = 330
-			};
+                MinPaneWidth = 330
+            };
 
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
             {
@@ -58,7 +61,7 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Receivers,
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.Internal,
-				MinPaneWidth = 330
+                MinPaneWidth = 330
             };
 
             var recordDocuSignEvents = new ActivityTemplateDO
@@ -69,7 +72,28 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Forwarders,
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.Internal,
-				MinPaneWidth = 330
+                MinPaneWidth = 330
+            };
+
+            var mailMergeActionTemplate = new ActivityTemplateDO
+            {
+                Name = "Mail_Merge_Into_DocuSign",
+                Label = "Mail Merge Into DocuSign",
+                Version = "1",
+                AuthenticationType = AuthenticationType.Internal,
+                Category = ActivityCategory.Solution,
+                Plugin = plugin,
+                MinPaneWidth = 500
+            };
+
+            var collectFormDataSolution = new ActivityTemplateDO
+            {
+                Name = "Collect_Form_Data_Solution",
+                Label = "Collect Form Data Solution",
+                Version = "1",
+                Category = ActivityCategory.Solution,
+                Plugin = plugin,
+                MinPaneWidth = 380
             };
 
             var actionList = new List<ActivityTemplateDO>()
@@ -77,10 +101,17 @@ namespace terminalDocuSign.Controllers
                 waitForDocusignEventActionTemplate,
                 extractDataFromEnvelopeActionTemplate,
                 sendDocuSignEnvelopeActionTemplate,
-                recordDocuSignEvents
+                recordDocuSignEvents,
+                mailMergeActionTemplate,
+                collectFormDataSolution
             };
 
-            return Ok(actionList);
+            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            {
+                Definition = plugin,
+                Actions = actionList
+            };
+            return Json(curStandardFr8TerminalCM);
         }
     }
 }

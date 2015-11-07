@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Web.Mvc;
+using Segment;
+using StructureMap;
 using Daemons;
 using Data.Entities;
 using Data.Interfaces;
-using Core.ExternalServices;
-using Core.Managers;
-using Core.Services;
-using Web.ViewModels;
-using Segment;
-using StructureMap;
+using Hub.ExternalServices;
+using Hub.Managers;
+using Hub.Services;
+using HubWeb.ViewModels;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
 	[ DockyardAuthorize( Roles = "Booker" ) ]
     public class DiagnosticsController : Controller
@@ -174,7 +174,7 @@ namespace Web.Controllers
 Test failed at {0}. Results:
 {1}.
 See more: {2}
-", DateTime.Now, results, Utilities.Server.ServerUrl);
+", DateTime.UtcNow, results, Utilities.Server.ServerUrl);
                     string subject = String.Format("Alert! Service test failed. Service: {0} Test: {1}", typeof (T).Name,
                         testName);
                     var curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, "ops@kwasant.com");
@@ -230,9 +230,9 @@ See more: {2}
             }
 
             bool success = false;
-            var startTime = DateTime.Now;
+			var startTime = DateTime.UtcNow;
             var endTime = startTime.Add(TimeSpan.FromMinutes(10));
-            while (!success && DateTime.Now < endTime)
+			while (!success && DateTime.UtcNow < endTime)
             {
                 if (messageReceived)
                 {

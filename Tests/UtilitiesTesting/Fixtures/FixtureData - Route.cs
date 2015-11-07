@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Core.Interfaces;
-using Core.Managers;
+using Data.Crates;
+using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using Data.States;
-using StructureMap;
+using Hub.Interfaces;
+using Hub.Managers;
 using Utilities.Serializers.Json;
 
 namespace UtilitiesTesting.Fixtures
@@ -102,10 +103,15 @@ namespace UtilitiesTesting.Fixtures
                 var containerDO = new ContainerDO()
                 {
                     Id = 1,
-                    CrateStorage = EnvelopeIdCrateJson(),
                     RouteId = processTemplateDO.Id,
                     ContainerState = 1
                 };
+
+                using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
+                {
+                    updater.CrateStorage.Add(GetEnvelopeIdCrate());
+                }
+                
                 uow.ContainerRepository.Add(containerDO);
 
 
@@ -140,10 +146,10 @@ namespace UtilitiesTesting.Fixtures
                 eventSubscriptionMS.Subscriptions.Add("DocuSign Envelope Sent");
                 eventSubscriptionMS.Subscriptions.Add("Write to SQL AZure");
 
-                var eventReportJSON = serializer.Serialize(eventSubscriptionMS);
-
-                CrateDTO crateDTO = crate.Create("Standard Event Subscriptions", eventReportJSON, "Standard Event Subscriptions");
-                actionDo.UpdateCrateStorageDTO(new List<CrateDTO>() { crateDTO });
+                using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(actionDo))
+                {
+                    updater.CrateStorage.Add(Crate.FromContent("Standard Event Subscriptions", eventSubscriptionMS));
+                }
 
                 uow.ActionRepository.Add(actionDo);
                 subrouteDO.ChildNodes.Add(actionDo);
@@ -313,6 +319,19 @@ namespace UtilitiesTesting.Fixtures
                 Fr8Account = FixtureData.TestDockyardAccount5()
             };
             return route;
+        }
+        public static RouteDO TestContainerCreateAddsLogs()
+        {
+            var curRouteDO = new RouteDO
+            {
+                Id = 1,
+                Description = "DO-1419 Container Create Adds Logs Test",
+                Name = "Container Create",
+                RouteState = RouteState.Active
+             
+            };
+
+            return curRouteDO;
         }
     }
 }

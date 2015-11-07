@@ -11,7 +11,10 @@ var app = angular.module("app", [
     "datatables",
     "ngFileUpload",
     "textAngular",
-    "ui.select"
+    "ui.select",
+    "pusher-angular",
+    "ngToast",
+    "frapontillo.bootstrap-switch"
 ]);
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
 app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
@@ -50,9 +53,6 @@ app.controller('HeaderController', ['$scope', function ($scope) {
             Layout.initHeader(); // init header
         });
     }]);
-/* Setup Layout Part - Sidebar */
-app.controller('PageHeadController', ['$scope', function ($scope) {
-    }]);
 /* Setup Layout Part - Footer */
 app.controller('FooterController', ['$scope', function ($scope) {
         $scope.$on('$includeContentLoaded', function () {
@@ -71,7 +71,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
                         delete (config.params.suppressSpinner);
                     }
                     else {
-                        Metronic.startPageLoading({ animate: true });
                     }
                     return config;
                 },
@@ -106,7 +105,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             .state('processBuilder', {
             url: "/processes/{id}/builder",
             templateUrl: "/AngularTemplate/ProcessBuilder",
-            data: { noTitle: true, noContainer: true },
+            data: { pageTitle: '' },
         })
             .state('showIncidents', {
             url: "/showIncidents",
@@ -131,7 +130,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             .state('accounts', {
             url: '/accounts',
             templateUrl: '/AngularTemplate/AccountList',
-            data: { pageTitle: 'Manage Dockyard Accounts', pageSubTitle: '' }
+            data: { pageTitle: 'Manage Accounts', pageSubTitle: '' }
         })
             .state('accountDetails', {
             url: '/accounts/{id}',
@@ -152,6 +151,11 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: "/containers",
             templateUrl: "/AngularTemplate/ContainerList",
             data: { pageTitle: 'Containers', pageSubTitle: 'This page displays all Containers ' },
+        })
+            .state('webservices', {
+            url: "/webservices",
+            templateUrl: "/AngularTemplate/WebServiceList",
+            data: { pageTitle: 'Web Services', pageSubTitle: '' }
         });
     }]);
 /* Init global settings and run the app */

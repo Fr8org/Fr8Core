@@ -7,9 +7,11 @@ module dockyard.services {
     export interface IRouteService extends ng.resource.IResourceClass<interfaces.IRouteVM> {
         getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IRouteVM>;
         getFull: (id: Object) => interfaces.IRouteVM;
+        getByAction: (id: { id: number }) => interfaces.IRouteVM;
         execute: (id: { id: number }) => void;
         activate: (processTemplate: model.RouteDTO) => void;
         deactivate: (processTemplate: model.RouteDTO) => void;
+        update: (data: { id: number, name: string}) => interfaces.IRouteVM;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -62,7 +64,7 @@ module dockyard.services {
     */
 
     app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
-        <IRouteService>$resource('/routes/:id', { id: '@id'},
+        <IRouteService>$resource('/routes/:id', { id: '@id' },
             {
                 'getFull': {
                     method: 'GET',
@@ -80,7 +82,14 @@ module dockyard.services {
                         status: '@status'
                     }
                 },
-               
+                'getByAction': {
+                    method: 'GET',
+                    isArray: false,
+                    url: '/routes/getByAction/:id',
+                    params: {
+                        id: '@id'
+                    }
+                },
                 'execute': {
                     method: 'POST',
                     isArray: false,
@@ -100,6 +109,13 @@ module dockyard.services {
                     url: '/routes/deactivate/',
                     params: {
                     }
+                },
+                'update': {
+                    method: 'POST',
+                    url: '/routes/',
+                    params: {
+
+                    }
                 }
             })
     ]);
@@ -116,6 +132,20 @@ module dockyard.services {
     */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
         <IDocuSignTriggerService>$resource('/route/triggersettings')
+    ]);
+
+    app.factory('ActionTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
+        <IActionService>$resource('/actiontemplates/', null,
+            {
+                'available': {
+                    method: 'GET',
+                    isArray: true,
+                    url: '/route_nodes/available',
+                    params: {
+                        tag: '@tag'
+                    }
+                }
+            })
     ]);
 
     /* 

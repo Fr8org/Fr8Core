@@ -4,6 +4,7 @@ using System;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using System.Data.Entity.Infrastructure;
 
 namespace Data.Infrastructure
 {
@@ -25,16 +26,19 @@ namespace Data.Infrastructure
         public delegate void IncidentPluginConfigurePOSTFailureHandler(string pluginUrl, string curActionDTO, string errorMessage);
         public static event IncidentPluginConfigurePOSTFailureHandler IncidentPluginConfigureFailed;
 
+        public delegate void IncidentPluginRunPOSTFailureHandler(string pluginUrl, string curActionDTO, string errorMessage);
+        public static event IncidentPluginRunPOSTFailureHandler IncidentPluginRunFailed;
+
         public delegate void IncidentPluginActionActivationPOSTFailureHandler(string pluginUrl, string curActionDTO);
         public static event IncidentPluginActionActivationPOSTFailureHandler IncidentPluginActionActivationFailed;
 
         public delegate void PluginActionActivatedHandler(ActionDO action);
         public static event PluginActionActivatedHandler PluginActionActivated;
-         
+
 
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
-   
+
         public delegate void CustomerCreatedHandler(Fr8AccountDO user);
         public static event CustomerCreatedHandler AlertCustomerCreated;
 
@@ -80,7 +84,7 @@ namespace Data.Infrastructure
         public static event OAuthEventHandler AlertTokenObtained;
         public static event OAuthEventHandler AlertTokenRevoked;
 
-        public delegate void PluginIncidentHandler(LoggingData incidentItem);
+        public delegate void PluginIncidentHandler(LoggingDataCm incidentItem);
         public static event PluginIncidentHandler PluginIncidentReported;
 
         public delegate void EventDocuSignNotificationReceivedHandler();
@@ -88,6 +92,18 @@ namespace Data.Infrastructure
 
         public delegate void EventContainerLaunchedHandler(ContainerDO launchedContainer);
         public static event EventContainerLaunchedHandler EventContainerLaunched;
+
+        public delegate void EventContainerCreatedHandler(ContainerDO containerDO);
+        public static event EventContainerCreatedHandler EventContainerCreated;
+
+        public delegate void EventContainerSentHandler(ContainerDO containerDO, ActionDO actionDO);
+        public static event EventContainerSentHandler EventContainerSent;
+
+        public delegate void EventContainerReceivedHandler(ContainerDO containerDO, ActionDO actionDO);
+        public static event EventContainerReceivedHandler EventContainerReceived;
+
+        public delegate void EventContainerStateChangedHandler(DbPropertyValues currentValues);
+        public static event EventContainerStateChangedHandler EventContainerStateChanged;
 
         public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
         public static event EventProcessNodeCreatedHandler EventProcessNodeCreated;
@@ -104,7 +120,7 @@ namespace Data.Infrastructure
         public delegate void EventActionDispatchedHandler(ActionDO curAction, int processId);
         public static event EventActionDispatchedHandler EventActionDispatched;
 
-        public delegate void PluginEventHandler(LoggingData eventData);
+        public delegate void PluginEventHandler(LoggingDataCm eventDataCm);
         public static event PluginEventHandler PluginEventReported;
 
         public delegate void ExternalEventReceivedHandler(string curEventPayload);
@@ -121,12 +137,22 @@ namespace Data.Infrastructure
 
         public delegate void IncidentTwilioSMSSendFailureHandler(string number, string message, string errorMsg);
         public static event IncidentTwilioSMSSendFailureHandler IncidentTwilioSMSSendFailure;
+
+
+
+
         #region Method
 
 
         public static void PluginConfigureFailed(string pluginUrl, string actionDTO, string errorMessage)
         {
             IncidentPluginConfigurePOSTFailureHandler handler = IncidentPluginConfigureFailed;
+            if (handler != null) handler(pluginUrl, actionDTO, errorMessage);
+        }
+
+        public static void PluginRunFailed(string pluginUrl, string actionDTO, string errorMessage)
+        {
+            IncidentPluginRunPOSTFailureHandler handler = IncidentPluginRunFailed;
             if (handler != null) handler(pluginUrl, actionDTO, errorMessage);
         }
 
@@ -142,7 +168,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(userid, message, expiresIn);
         }
 
-        public static void ReportPluginIncident(LoggingData incidentItem)
+        public static void ReportPluginIncident(LoggingDataCm incidentItem)
         {
             PluginIncidentHandler handler = PluginIncidentReported;
             if (handler != null) handler(incidentItem);
@@ -375,10 +401,10 @@ namespace Data.Infrastructure
             if (handler != null) handler(curAction, processId);
         }
 
-        public static void ReportPluginEvent(LoggingData eventData)
+        public static void ReportPluginEvent(LoggingDataCm eventDataCm)
         {
             PluginEventHandler handler = PluginEventReported;
-            if (handler != null) handler(eventData);
+            if (handler != null) handler(eventDataCm);
         }
 
         public static void ReportExternalEventReceived(string curEventPayload)
@@ -421,9 +447,31 @@ namespace Data.Infrastructure
             var handler = IncidentTwilioSMSSendFailure;
             if (handler != null) handler(number, message, errorMsg);
         }
-        #endregion
 
-        
+        public static void ContainerCreated(ContainerDO containerDO)
+        {
+            var handler = EventContainerCreated;
+            if (handler != null) handler(containerDO);
+        }
+
+        public static void ContainerSent(ContainerDO containerDO, ActionDO actionDO)
+        {
+            var handler = EventContainerSent;
+            if (handler != null) handler(containerDO, actionDO);
+        }
+
+        public static void ContainerReceived(ContainerDO containerDO, ActionDO actionDO)
+        {
+            var handler = EventContainerReceived;
+            if (handler != null) handler(containerDO, actionDO);
+        }
+        internal static void ContainerStateChanged(DbPropertyValues currentValues)
+        {
+            var handler = EventContainerStateChanged;
+            if (handler != null) handler(currentValues);
+        }
+
+        #endregion
     }
 
 }

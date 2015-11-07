@@ -50,5 +50,15 @@ namespace UtilitiesTesting.Fixtures
                 Version = "1"
             };
         }
+
+        public static ActivityTemplateDTO ActivityTemplateDTOSelectFr8Object()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 1,
+                Name = "Select Fr8 Object",
+                Version = "1"
+            };
+        }
     }
 }

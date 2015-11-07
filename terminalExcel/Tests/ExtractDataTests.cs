@@ -1,26 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
-using Core.Managers.APIManagers.Transmitters.Restful;
-using Data.Interfaces;
+using Data.Crates;
+using Moq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.Repositories;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.Manifests;
 using terminalExcel.Actions;
-using Core.Interfaces;
-using Newtonsoft.Json;
 using terminalExcel.Infrastructure;
-using Moq;
-using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
-using Data.Repositories;
 using terminalExcel.Fixtures;
-using Core.Managers;
 
 namespace terminalExcel.PluginExcelTests
 {
@@ -55,15 +56,9 @@ namespace terminalExcel.PluginExcelTests
         [Test]
         public void ConfigEvaluatorInitialResponse_Test()
         {
-            var curActionDTO = new ActionDTO()
-            {
-                CrateStorage = new CrateStorageDTO()
-                {
-                    CrateDTO = new System.Collections.Generic.List<CrateDTO>(),
-                },
-            };
+            var curActionDTO = new ActionDTO();
 
-            var result = new Extract_Data_v1().ConfigurationEvaluator(curActionDTO);
+            var result = new Load_Table_Data_v1().ConfigurationEvaluator(curActionDTO);
 
             Assert.AreEqual(result, TerminalBase.Infrastructure.ConfigurationRequestType.Initial);
         }

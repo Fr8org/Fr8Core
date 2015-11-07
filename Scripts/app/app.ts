@@ -12,7 +12,10 @@ var app = angular.module("app", [
     "datatables",
     "ngFileUpload",
     "textAngular",
-    "ui.select"
+    "ui.select",
+    "pusher-angular",
+    "ngToast",
+    "frapontillo.bootstrap-switch"
 ]);
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
@@ -59,11 +62,6 @@ app.controller('HeaderController', ['$scope', function ($scope) {
     });
 }]);
 
-/* Setup Layout Part - Sidebar */
-app.controller('PageHeadController', ['$scope', function ($scope) {
-
-}]);
-
 /* Setup Layout Part - Footer */
 app.controller('FooterController', ['$scope', function ($scope) {
     $scope.$on('$includeContentLoaded', function () {
@@ -75,7 +73,7 @@ app.controller('FooterController', ['$scope', function ($scope) {
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
 
     // Install a HTTP request interceptor that causes 'Processing...' message to display
-    $httpProvider.interceptors.push(($q: ng.IQService) => {
+    $httpProvider.interceptors.push(($q: ng.IQService, $window: ng.IWindowService) => {
         return {
             request: function (config: ng.IRequestConfig) {
                 // Show page spinner If there is no request parameter suppressSpinner.
@@ -84,7 +82,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
                     delete (config.params.suppressSpinner);
                 }
                 else {
-                    Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
+                 //   Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
                 }
                 return config;
             },
@@ -92,7 +90,11 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
                 Metronic.stopPageLoading();
                 return config;
             },
-            responseError: function (config: ng.IRequestConfig) {
+            responseError: function (config) {
+                if (config.status === 403) {
+                    $window.location.href = $window.location.origin + '/DockyardAccount'
+                        + '?returnUrl=/Dashboard' + encodeURIComponent($window.location.hash);
+                }
                 Metronic.stopPageLoading();
                 return $q.reject(config);
             }
@@ -126,7 +128,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         .state('processBuilder', {
             url: "/processes/{id}/builder",
             templateUrl: "/AngularTemplate/ProcessBuilder",
-            data: { noTitle: true, noContainer: true },
+            data: { pageTitle: '' },
         })
 
         .state('showIncidents', {
@@ -157,7 +159,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         .state('accounts', {
             url: '/accounts',
             templateUrl: '/AngularTemplate/AccountList',
-            data: { pageTitle: 'Manage Dockyard Accounts', pageSubTitle: '' }
+            data: { pageTitle: 'Manage Accounts', pageSubTitle: '' }
         })
 
         .state('accountDetails', {
@@ -182,7 +184,13 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: "/containers",
             templateUrl: "/AngularTemplate/ContainerList",
             data: { pageTitle: 'Containers', pageSubTitle: 'This page displays all Containers ' },
-        });
+        })
+
+		.state('webservices', {
+		    url: "/webservices",
+			templateUrl: "/AngularTemplate/WebServiceList",
+            data: { pageTitle: 'Web Services', pageSubTitle: '' }
+	    });
 }]);
 
 /* Init global settings and run the app */

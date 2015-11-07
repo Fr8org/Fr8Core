@@ -1,28 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Helpers;
 using AutoMapper;
-using Core.Interfaces;
-using Core.Managers;
-using Core.Managers.APIManagers.Transmitters.Plugin;
-using Core.Managers.APIManagers.Transmitters.Restful;
-using Core.Services;
+using Moq;
+using Newtonsoft.Json;
+using NUnit.Framework;
+using StructureMap;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Moq;
-using NUnit.Framework;
-using StructureMap;
+using Hub.Interfaces;
+using Hub.Managers;
+using Hub.Managers.APIManagers.Transmitters.Plugin;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using Hub.Services;
+using Newtonsoft.Json.Linq;
+using TerminalBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Action = Core.Services.Action;
-using System.Threading.Tasks;
-using System.Web.Helpers;
+using Action = Hub.Services.Action;
 
-using Newtonsoft.Json;
-using Data.Infrastructure;
-using TerminalBase.BaseClasses;
 
 namespace DockyardTest.Services
 {
@@ -120,32 +121,47 @@ namespace DockyardTest.Services
         public async void Action_Configure_WithNullActionTemplate_ThrowsArgumentNullException()
         {
             var _service = new Action();
-            await _service.Configure(null);
+            await _service.Configure(null, null);
         }
 
         [Test]
         public void CanCRUDActions()
         {
+            ActionDO origActionDO;
+
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IAction action = new Action();
-                var origActionDO = new FixtureData(uow).TestAction3();
+                var route = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(route);
 
-                //Add
-                action.SaveOrUpdateAction(origActionDO);
+                var subroute = FixtureData.TestSubrouteDO1();
+                uow.RouteNodeRepository.Add(subroute);
 
-                //Get
-                var actionDO = action.GetById(origActionDO.Id);
-                Assert.AreEqual(origActionDO.Name, actionDO.Name);
-                Assert.AreEqual(origActionDO.Id, actionDO.Id);
-                Assert.AreEqual(origActionDO.CrateStorage, actionDO.CrateStorage);
+                origActionDO = new FixtureData(uow).TestAction3();
 
-                Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
+                origActionDO.IsTempId = true;
+                origActionDO.ParentRouteNodeId = subroute.Id;
 
-                ISubroute subRoute = new Subroute();
-                //Delete
-                subRoute.DeleteAction(actionDO.Id);
+                uow.ActivityTemplateRepository.Add(origActionDO.ActivityTemplate);
+                uow.SaveChanges();
             }
+
+            IAction action = new Action();
+
+            //Add
+            action.SaveOrUpdateAction(origActionDO);
+
+            //Get
+            var actionDO = action.GetById(origActionDO.Id);
+            Assert.AreEqual(origActionDO.Name, actionDO.Name);
+            Assert.AreEqual(origActionDO.Id, actionDO.Id);
+            Assert.AreEqual(origActionDO.CrateStorage, actionDO.CrateStorage);
+
+            Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
+
+            ISubroute subRoute = new Subroute();
+            //Delete
+            subRoute.DeleteAction(actionDO.Id);
         }
 
         [Test]
@@ -159,7 +175,7 @@ namespace DockyardTest.Services
                 Visit(tree, x => uow.ActionRepository.Add(x));
                 Visit(updatedTree, x => x.Name = string.Format("We were here {0}", x.Id));
 
-                _action.Update(uow, updatedTree);
+                _action.SaveOrUpdateAction(uow, updatedTree);
 
                 var result = uow.ActionRepository.GetByKey(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
@@ -195,7 +211,7 @@ namespace DockyardTest.Services
                     removeCounter++;
                 });
 
-                _action.Update(uow, updatedTree);
+                _action.SaveOrUpdateAction(uow, updatedTree);
 
                 var result = uow.ActionRepository.GetByKey(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
@@ -260,7 +276,7 @@ namespace DockyardTest.Services
                     });
                 }
 
-                _action.Update(uow, updatedTree);
+                _action.SaveOrUpdateAction(uow, updatedTree);
 
                 var result = uow.ActionRepository.GetByKey(tree.Id);
                 Compare(updatedTree, result, (r, a) =>
@@ -466,7 +482,10 @@ namespace DockyardTest.Services
         {
             ActionDO actionDO = FixtureData.TestAction23();
 
-            _crate.AddCrate(actionDO, FixtureData.CrateStorageDTO().CrateDTO);
+            using (var updater = _crate.UpdateStorage(actionDO))
+            {
+                updater.CrateStorage.AddRange(FixtureData.CrateStorageDTO());
+            }
 
             Assert.IsNotEmpty(actionDO.CrateStorage);
         }
@@ -561,11 +580,15 @@ namespace DockyardTest.Services
             ContainerDO containerDO = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
 
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var pluginClientMock = new Mock<IPluginTransmitter>();
                 pluginClientMock.Setup(s => s.CallActionAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>()))
-                                .Returns(Task.FromResult(new PayloadDTO(actionDo.CrateStorage, containerDO.Id)));
+                                .Returns(Task.FromResult(new PayloadDTO(containerDO.Id)
+                                {
+                                    CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(actionDo.CrateStorage)
+                                }));
                 ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
 
                 var count = uow.ActionRepository.GetAll().Count();

@@ -1,20 +1,19 @@
-﻿
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http.Results;
-using Core.Interfaces;
-using Core.Managers;
-using Data.Crates.Helpers;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Moq;
 using NUnit.Framework;
 using StructureMap;
+using Data.Crates.Helpers;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
+using Hub.Managers;
+using HubWeb.Controllers;
 using Utilities.Serializers.Json;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Web.Controllers;
-using Data.Entities;
-using System.Collections.Generic;
-using Moq;
 
 namespace DockyardTest.Controllers
 {
@@ -50,7 +49,7 @@ namespace DockyardTest.Controllers
 
             //Act
 
-            var result = _eventController.Post(_eventReportCrateFactoryHelper.Create(eventDto));
+            var result = _eventController.Post(_crate.ToDto(_eventReportCrateFactoryHelper.Create(eventDto)));
 
             //Assert
             Assert.IsTrue(result is OkResult);
@@ -73,13 +72,13 @@ namespace DockyardTest.Controllers
                 var curEventDTO = FixtureData.TestPluginEventDto();
 
                 //Act
-                var result = _eventController.Post(_eventReportCrateFactoryHelper.Create(curEventDTO));
+                var result = _eventController.Post(_crate.ToDto(_eventReportCrateFactoryHelper.Create(curEventDTO)));
 
                 //Assert
                 Assert.IsTrue(result is OkResult);
                 List<FactDO> savedFactDoList = uow.FactRepository.GetAll().ToList();
                 Assert.AreEqual(1, savedFactDoList.Count());
-                var loggingData = _crate.GetContents<LoggingData>(curEventDTO.CrateStorage.First());
+                var loggingData = curEventDTO.CrateStorage.First().Get<LoggingDataCm>();
                 Assert.AreEqual(loggingData.PrimaryCategory, savedFactDoList[0].PrimaryCategory);
                 Assert.AreEqual(loggingData.SecondaryCategory, savedFactDoList[0].SecondaryCategory);
                 _eventReporter.UnsubscribeFromAlerts();

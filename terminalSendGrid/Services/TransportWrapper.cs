@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Core.ExternalServices;
 using SendGrid;
+using Hub.ExternalServices;
 
 namespace terminalSendGrid.Services
 {

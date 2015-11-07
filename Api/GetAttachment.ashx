@@ -1,1 +1,1 @@
-﻿<%@ WebHandler Language="C#" CodeBehind="GetAttachment.ashx.cs" Class="Web.Api.GetAttachment" %>
+﻿<%@ WebHandler Language="C#" CodeBehind="GetAttachment.ashx.cs" Class="HubWeb.Api.GetAttachment" %>

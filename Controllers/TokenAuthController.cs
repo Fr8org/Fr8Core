@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Data.Infrastructure.StructureMap;
-using Data.Interfaces;
-using Core.Interfaces;
-using Core.Services;
 using Newtonsoft.Json;
 using Segment;
 using Segment.Model;
 using StructureMap;
+using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
+using Hub.Interfaces;
+using Hub.Services;
 
-namespace Web.Controllers
+namespace HubWeb.Controllers
 {
     public class TokenAuthController : Controller
     {
@@ -23,7 +23,7 @@ namespace Web.Controllers
                 var validToken = uow.AuthorizationTokenRepository.GetQuery().FirstOrDefault(t => t.Id.ToString() == token);
                 if (validToken == null)
                     throw new HttpException(404, "Authorization token not found.");
-                if (validToken.ExpiresAt < DateTime.Now)
+				if (validToken.ExpiresAt < DateTime.UtcNow)
                     throw new HttpException(404, "Authorization token expired.");
 
                 ObjectFactory.GetInstance<ISecurityServices>().Login(uow, validToken.UserDO);

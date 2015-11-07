@@ -1,38 +1,23 @@
-﻿using Core.Interfaces;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Newtonsoft.Json;
-using StructureMap;
-using System.Collections.Generic;
-using System;
-using Data.Interfaces.ManifestSchemas;
-using Utilities.Serializers.Json;
+﻿using Data.Crates;
+using Data.Interfaces.Manifests;
 
 namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public static CrateDTO RawStandardEventReportFormat()
+        public static Crate RawStandardEventReportFormat()
         {
-            var serializer = new Utilities.Serializers.Json.JsonSerializer();
-            EventReportCM eventReportMS = new EventReportCM()
+            var eventReportMS = new EventReportCM()
             {
                 EventNames = "DocuSign Envelope Sent"
             };
-            var eventReportJSON = serializer.Serialize(eventReportMS);
-            return new CrateDTO()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Label = "Standard Event Report",
-                ManifestType = "Standard Event Report",
-                Contents = eventReportJSON
-            };
+
+            return Crate.FromContent("Standard Event Report", eventReportMS);
         }
 
         public static EventReportCM StandardEventReportFormat()
         {
-            return new EventReportCM()
+            return new EventReportCM
             {
                 EventNames = "DocuSign Envelope Sent"
             };

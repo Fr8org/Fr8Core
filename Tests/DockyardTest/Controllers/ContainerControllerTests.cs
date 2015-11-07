@@ -8,15 +8,15 @@ using System.Web.Http.Results;
 using NUnit.Framework;
 using StructureMap;
 using StructureMap.AutoMocking;
-using Core.Interfaces;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using Hub.Interfaces;
+using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Web.Controllers;
-using Data.States;
-using Data.Infrastructure.StructureMap;
 
 
 namespace DockyardTest.Controllers
@@ -27,7 +27,7 @@ namespace DockyardTest.Controllers
     {
         private Fr8AccountDO _testUserAccount;
 
-        private Core.Interfaces.IContainer _containerService;
+        private Hub.Interfaces.IContainer _containerService;
 
         [SetUp]
         public override void SetUp()
@@ -35,7 +35,7 @@ namespace DockyardTest.Controllers
             base.SetUp();
 
             _testUserAccount = FixtureData.TestDockyardAccount5();
-            _containerService = ObjectFactory.GetInstance<Core.Interfaces.IContainer>();
+            _containerService = ObjectFactory.GetInstance<Hub.Interfaces.IContainer>();
 
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
