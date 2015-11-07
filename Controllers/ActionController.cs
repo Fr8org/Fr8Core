@@ -24,6 +24,7 @@ using Hub.Managers;
 
 namespace HubWeb.Controllers
 {
+    [Fr8ApiAuthorize]
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
@@ -58,7 +59,6 @@ namespace HubWeb.Controllers
 
 
         [HttpPost]
-        //[Fr8ApiAuthorize]
         [Route("create")]
         public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
         {
@@ -83,7 +83,6 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [Fr8ApiAuthorize]
         [Route("create")]
         public async Task<IHttpActionResult> Create(string solutionName)
         {
@@ -91,8 +90,7 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplate = uow.ActivityTemplateRepository.GetAll().
-                    Where(at => at.Name == solutionName).FirstOrDefault();
+                var activityTemplate = uow.ActivityTemplateRepository.GetAll().FirstOrDefault(at => at.Name == solutionName);
                 if (activityTemplate == null)
                 {
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));

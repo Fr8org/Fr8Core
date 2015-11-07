@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -8,8 +9,8 @@ namespace Hub.Interfaces
 {
     public interface IContainer
     {
-        ContainerDO Create(IUnitOfWork uow, int processTemplateId, CrateDTO curEvent);
-        Task Launch(RouteDO curRoute, CrateDTO curEvent);
+        ContainerDO Create(IUnitOfWork uow, int processTemplateId, Crate curEvent);
+        Task Launch(RouteDO curRoute, Crate curEvent);
         Task Execute(IUnitOfWork uow, ContainerDO curContainerDO);
         //void SetProcessNextActivity(ProcessDO curProcessDO);
 

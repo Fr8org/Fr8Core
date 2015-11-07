@@ -11,6 +11,7 @@ module dockyard.services {
         execute: (id: { id: number }) => void;
         activate: (processTemplate: model.RouteDTO) => void;
         deactivate: (processTemplate: model.RouteDTO) => void;
+        update: (data: { id: number, name: string}) => interfaces.IRouteVM;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -107,6 +108,13 @@ module dockyard.services {
                     method: 'POST',
                     url: '/routes/deactivate/',
                     params: {
+                    }
+                },
+                'update': {
+                    method: 'POST',
+                    url: '/routes/',
+                    params: {
+
                     }
                 }
             })
@@ -238,14 +246,14 @@ module dockyard.services {
     ]);
 
     app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
-        <IActivityTemplateService>$resource('/api/activityTemplates/:id', { id: '@id' }, 
-        {
-            'getAvailableActivities': {
-                method: 'GET',
-                url: '/route_nodes/available/',
-                isArray: true
-            }
-        })
+        <IActivityTemplateService>$resource('/api/activityTemplates/:id', { id: '@id' },
+            {
+                'getAvailableActivities': {
+                    method: 'GET',
+                    url: '/route_nodes/available/',
+                    isArray: true
+                }
+            })
     ]);
 
     /*
@@ -272,61 +280,61 @@ module dockyard.services {
 
             // TODO: bypass save for unchanged entities
               
-                // Save processNodeTemplate if not null
-                if (currentState.subroute) {
-                    this.CriteriaServiceWrapper.addOrUpdate(currentState.subroute).promise
-                        .then((result: interfaces.ISubrouteVM) => {
-                            //new model.CriteriaDTO(result.criteria.id, false, result.criteria.id, model.CriteriaExecutionType.NoSet);
-                            newState.subroute = result;
+            // Save processNodeTemplate if not null
+            if (currentState.subroute) {
+                this.CriteriaServiceWrapper.addOrUpdate(currentState.subroute).promise
+                    .then((result: interfaces.ISubrouteVM) => {
+                        //new model.CriteriaDTO(result.criteria.id, false, result.criteria.id, model.CriteriaExecutionType.NoSet);
+                        newState.subroute = result;
 
-                            this.crateHelper.mergeControlListCrate(
-                                currentState.action.configurationControls,
-                                currentState.action.crateStorage
-                            );
+                        this.crateHelper.mergeControlListCrate(
+                            currentState.action.configurationControls,
+                            currentState.action.crateStorage
+                        );
 
-                            // If an Action is selected, save it
-                            if (currentState.action) {
-                                return this.ActionService.save({ id: currentState.action.id },
-                                    currentState.action, null, null);
-                            }
-                            else {
-                                return deferred.resolve(newState);
-                            }
-                        })
-                        .then((result: interfaces.IActionVM) => {
-                            newState.action = result;
+                        // If an Action is selected, save it
+                        if (currentState.action) {
+                            return this.ActionService.save({ id: currentState.action.id },
+                                currentState.action, null, null);
+                        }
+                        else {
                             return deferred.resolve(newState);
-                        })
-                        .catch((reason: any) => {
-                            return deferred.reject(reason);
-                        });
-                }
+                        }
+                    })
+                    .then((result: interfaces.IActionVM) => {
+                        newState.action = result;
+                        return deferred.resolve(newState);
+                    })
+                    .catch((reason: any) => {
+                        return deferred.reject(reason);
+                    });
+            }
 
-                //Save Action only
-                else if (currentState.action) {
-                    this.crateHelper.mergeControlListCrate(
-                        currentState.action.configurationControls,
-                        currentState.action.crateStorage
-                    );
+            //Save Action only
+            else if (currentState.action) {
+                this.crateHelper.mergeControlListCrate(
+                    currentState.action.configurationControls,
+                    currentState.action.crateStorage
+                );
 
-                    var promise = this.ActionService.save(
-                        { id: currentState.action.id },
-                        currentState.action,
-                        null,
-                        null).$promise;
-                    promise
-                        .then((result: interfaces.IActionVM) => {
-                            newState.action = result;
-                            return deferred.resolve(newState);
-                        })
-                        .catch((reason: any) => {
-                            return deferred.reject(reason);
-                        });
-                }
-                else {
-                    //Nothing to save
-                    deferred.resolve(newState);
-                }
+                var promise = this.ActionService.save(
+                    { id: currentState.action.id },
+                    currentState.action,
+                    null,
+                    null).$promise;
+                promise
+                    .then((result: interfaces.IActionVM) => {
+                        newState.action = result;
+                        return deferred.resolve(newState);
+                    })
+                    .catch((reason: any) => {
+                        return deferred.reject(reason);
+                    });
+            }
+            else {
+                //Nothing to save
+                deferred.resolve(newState);
+            }
             return deferred.promise;
         }
     }
@@ -486,5 +494,5 @@ module dockyard.services {
             return new CriteriaServiceWrapper(CriteriaService, SubrouteService, $q)
         }]);
 
-   
+
 }

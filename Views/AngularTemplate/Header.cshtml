@@ -7,7 +7,7 @@
             <!--BEGIN STICKER-->
             <div class="page-sticker">
                 <p>alpha</p>
-            </div>
+		</div>
             <!--END STICKER-->
         </div>
 
@@ -105,7 +105,7 @@
 												<a href="#/processes/add" class="iconify">
 												<i class="icon-paper-clip"></i>
 												Add </a>
-											</li>											
+											</li>
 										</ul>
 									</div>
 								
@@ -114,8 +114,10 @@
 						</li>
 					</ul>
 				</li>
-				<li class="menu-dropdown mega-menu-dropdown ">
-					<a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#" class="dropdown-toggle">
+                
+                @if (User.IsInRole("Admin")) {
+				<li class="menu-dropdown mega-menu-dropdown mega-menu-full ">
+					<a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">
 					Admin <i class="fa fa-angle-down"></i>
 					</a>
 					<ul class="dropdown-menu" style="min-width: 410px">
@@ -132,16 +134,16 @@
 													<i class="icon-puzzle"></i> Create Accounts
 												</a>
 											</li>
-											<li>
+											@*<li>
 												<a href="#/pickers">
 													<i class="icon-calendar"></i> Find Object
 												</a>
-											</li>
-											<li>
-												<a href="#/accounts">
-													<i class="icon-calendar"></i> Manage Dockyard Accounts
-												</a>
-											</li>
+											</li>*@
+                                            <li>
+                                                <a href="#/accounts">
+                                                    <i class="icon-calendar"></i> Manage Dockyard Accounts
+                                                </a>
+                                            </li>											
 											<li>
 												<a href="#/webservices">
 													<i class="icon-calendar"></i> Show Web Services
@@ -155,8 +157,9 @@
 						</li>
 					</ul>
 				</li>
-                <li class="menu-dropdown mega-menu-dropdown ">
-                    <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#" class="dropdown-toggle">
+                }
+                <li class="menu-dropdown mega-menu-dropdown mega-menu-full ">
+                    <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">
                         Reports <i class="fa fa-angle-down"></i>
                     </a>
                     <ul class="dropdown-menu" style="min-width: 410px">
@@ -166,13 +169,13 @@
                                     <div class="col-md-6">
                                         <ul class="mega-menu-submenu">
                                             <!--<li>
-                                                    <h3>jQuery Integration</h3>
-                                                </li>-->
-                                                                @*<li>
-                                                        <a href="#/showUsageReport">
-                                                            <i class="icon-puzzle"></i> Show Usage
-                                                        </a>
-                                                    </li>*@
+                                    <h3>jQuery Integration</h3>
+                                </li>-->
+                                            @*<li>
+                                                <a href="#/showUsageReport">
+                                                    <i class="icon-puzzle"></i> Show Usage
+                                                </a>
+                                            </li>*@
                                             <li>
                                                 <a href="#/showFacts">
                                                     <i class="icon-puzzle"></i> Show Facts
@@ -202,11 +205,16 @@
                                     <div class="col-md-6">
                                         <ul class="mega-menu-submenu">
                                             <!--<li>
-                                                    <h3>jQuery Integration</h3>
-                                                </li>-->
+                                    <h3>jQuery Integration</h3>
+                                </li>-->
                                             <li>
                                                 <a style="white-space: nowrap;" href="#/managefiles">
                                                     <i class="icon-puzzle"></i> Manage Files
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#/pickers">
+                                                    <i class="icon-calendar"></i> Find
                                                 </a>
                                             </li>
                                         </ul>

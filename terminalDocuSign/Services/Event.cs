@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Data.Crates;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
@@ -43,16 +44,15 @@ namespace terminalDocuSign.Services
             {
                 EventNames = "Envelope" + curDocuSignEnvelopeInfo.EnvelopeStatus.Status,
                 ContainerDoId = "",
-                EventPayload = ExtractEventPayload(curExternalEvents).ToList(),
+                EventPayload = ExtractEventPayload(curExternalEvents),
                 ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.ExternalAccountId
             };
 
             //prepare the event report
-            CrateDTO curEventReport = ObjectFactory.GetInstance<ICrateManager>()
-                .Create("Standard Event Report", JsonConvert.SerializeObject(eventReportContent), "Standard Event Report", 7);
+            var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
 
             string url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";
-            var response = await new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), curEventReport);
+            var response = await new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), _crate.ToDto(curEventReport));
 
             var content = await response.Content.ReadAsStringAsync();
 
@@ -111,39 +111,39 @@ namespace terminalDocuSign.Services
             }
         }
 
-        private IEnumerable<CrateDTO> ExtractEventPayload(IEnumerable<DocuSignEventDTO> curEvents)
+        private CrateStorage ExtractEventPayload(IEnumerable<DocuSignEventDTO> curEvents)
         {
-            IList<CrateDTO> curEventPayloadData = new List<CrateDTO>();
-
+            var stroage = new CrateStorage();
+            
             foreach (var curEvent in curEvents)
             {
-               var payloadCrate= _crate.CreatePayloadDataCrate(CreateKeyValuePairList(curEvent));
-               curEventPayloadData.Add(payloadCrate);
+                var payloadCrate = Data.Crates.Crate.FromContent("", new StandardPayloadDataCM(CreateKeyValuePairList(curEvent)));
+                stroage.Add(payloadCrate);
             }
-                   
-            return curEventPayloadData;
+
+            return stroage;
         }
 
-        private List<KeyValuePair<string, string>> CreateKeyValuePairList(DocuSignEventDTO curEvent)
+        private List<FieldDTO> CreateKeyValuePairList(DocuSignEventDTO curEvent)
         {
-            List<KeyValuePair<string, string>> returnList = new List<KeyValuePair<string, string>>();
-            returnList.Add(new KeyValuePair<string,string>("EnvelopeId",curEvent.EnvelopeId));
-            returnList.Add(new KeyValuePair<string,string>("ExternalEventType",curEvent.ExternalEventType.ToString()));
-            returnList.Add(new KeyValuePair<string,string>("RecipientId",curEvent.RecipientId));
-            returnList.Add(new KeyValuePair<string, string>("RecipientEmail", curEvent.RecipientEmail));
+            List<FieldDTO> returnList = new List<FieldDTO>();
+            returnList.Add(new FieldDTO("EnvelopeId",curEvent.EnvelopeId));
+            returnList.Add(new FieldDTO("ExternalEventType",curEvent.ExternalEventType.ToString()));
+            returnList.Add(new FieldDTO("RecipientId",curEvent.RecipientId));
+            returnList.Add(new FieldDTO("RecipientEmail", curEvent.RecipientEmail));
 
-            returnList.Add(new KeyValuePair<string, string>("DocumentName", curEvent.DocumentName));
-            returnList.Add(new KeyValuePair<string, string>("TemplateName", curEvent.TemplateName));
+            returnList.Add(new FieldDTO("DocumentName", curEvent.DocumentName));
+            returnList.Add(new FieldDTO("TemplateName", curEvent.TemplateName));
 
-            returnList.Add(new KeyValuePair<string, string>("Object", curEvent.DocuSignObject));
-            returnList.Add(new KeyValuePair<string, string>("Status", curEvent.Status));
-            returnList.Add(new KeyValuePair<string, string>("CreateDate", curEvent.CreateDate));
-            returnList.Add(new KeyValuePair<string, string>("SentDate", curEvent.SentDate));
+            returnList.Add(new FieldDTO("Object", curEvent.DocuSignObject));
+            returnList.Add(new FieldDTO("Status", curEvent.Status));
+            returnList.Add(new FieldDTO("CreateDate", curEvent.CreateDate));
+            returnList.Add(new FieldDTO("SentDate", curEvent.SentDate));
 
-            returnList.Add(new KeyValuePair<string, string>("DeliveredDate", curEvent.DeliveredDate));
-            returnList.Add(new KeyValuePair<string, string>("CompletedDate", curEvent.CompletedDate));
-            returnList.Add(new KeyValuePair<string, string>("Email", curEvent.Email));
-            returnList.Add(new KeyValuePair<string, string>("EventId", curEvent.EventId));
+            returnList.Add(new FieldDTO("DeliveredDate", curEvent.DeliveredDate));
+            returnList.Add(new FieldDTO("CompletedDate", curEvent.CompletedDate));
+            returnList.Add(new FieldDTO("Email", curEvent.Email));
+            returnList.Add(new FieldDTO("EventId", curEvent.EventId));
 
             return returnList;
             }

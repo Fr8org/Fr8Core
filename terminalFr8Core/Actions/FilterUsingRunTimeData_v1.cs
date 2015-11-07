@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using System.Web.Razor.Generator;
+using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Hub.Enums;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -31,25 +34,19 @@ namespace terminalFr8Core.Actions
 
             ActionDO curAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             var controlsMS = Action.GetControlsManifest(curAction);
-            
+
             ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane);
             if (filterPaneControl == null)
             {
                 throw new ApplicationException("No control found with Type == \"filterPane\"");
             }
 
-            var valuesCrates = curPayloadDTO.CrateStorageDTO()
-                .CrateDTO
-                .Where(x => x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME)
-                .ToList();
-
+            var valuesCrates = Crate.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>();
             var curValues = new List<FieldDTO>();
+
             foreach (var valuesCrate in valuesCrates)
             {
-                var singleCrateValues = JsonConvert
-                    .DeserializeObject<List<FieldDTO>>(valuesCrate.Contents);
-
-                curValues.AddRange(singleCrateValues);
+                curValues.AddRange(valuesCrate.AllValues());
             }
 
             // Prepare envelope data.
@@ -61,7 +58,7 @@ namespace terminalFr8Core.Actions
         }
 
         private bool Evaluate(string criteria, int processId, IEnumerable<FieldDTO> values)
-            {
+        {
             if (criteria == null)
                 throw new ArgumentNullException("criteria");
             if (criteria == string.Empty)
@@ -200,7 +197,7 @@ namespace terminalFr8Core.Actions
             return await ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
         }
 
-        private CrateDTO CreateControlsCrate()
+        private Crate CreateControlsCrate()
         {
             var fieldFilterPane = new FilterPaneControlDefinitionDTO()
             {
@@ -231,14 +228,15 @@ namespace terminalFr8Core.Actions
                     .ToArray();
 
                 //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-                CrateDTO queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
-                    "Queryable Criteria", curUpstreamFields);
-                    
-                //build a controls crate to render the pane
-                CrateDTO configurationControlsCrate = CreateControlsCrate();
+                var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
 
-                var crateStrorageDTO = AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
-                curActionDTO.CrateStorage = crateStrorageDTO;
+                //build a controls crate to render the pane
+                var configurationControlsCrate = CreateControlsCrate();
+
+                using (var updater = Crate.UpdateStorage(() => curActionDTO.CrateStorage))
+                {
+                    updater.CrateStorage = AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
+            }
             }
             else
             {
@@ -260,8 +258,7 @@ namespace terminalFr8Core.Actions
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDataPackageDTO)
         {
-            if (curActionDataPackageDTO.CrateStorage == null
-                && curActionDataPackageDTO.CrateStorage.CrateDTO == null)
+            if (Crate.IsEmptyStorage(curActionDataPackageDTO.CrateStorage))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -290,31 +287,33 @@ namespace terminalFr8Core.Actions
         /// <returns></returns>
         private bool HasValidConfiguration(ActionDTO curActionDataPackageDTO)
         {
-            CrateDTO crateDTO = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME);
+            // STANDARD_CONF_CONTROLS_NANIFEST_NAME can't be deseralized to RadioButtonOption.
 
-            if (crateDTO != null && !string.IsNullOrEmpty(crateDTO.Contents))
-            {
-                RadioButtonOption radioButtonOption = JsonConvert.DeserializeObject<RadioButtonOption>(crateDTO.Contents);
-                if (radioButtonOption != null)
-                {
-                    foreach (ControlDefinitionDTO controlDefinitionDTO in radioButtonOption.Controls)
-                    {
-                        if (!string.IsNullOrEmpty(controlDefinitionDTO.Value))
-                        {
-                            FilterDataDTO filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(controlDefinitionDTO.Value);
-                            return filterDataDTO.Conditions.Any(x =>
-                                  x.Field != null && x.Field != "" &&
-                                  x.Operator != null && x.Operator != "" &&
-                                  x.Value != null && x.Value != "");
-                        }
-                    }
-                }
-
-            }
+//            var crateDTO = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+//
+//            if (crateDTO != null)
+//            {
+//                RadioButtonOption radioButtonOption = JsonConvert.DeserializeObject<RadioButtonOption>(crateDTO.Contents);
+//                if (radioButtonOption != null)
+//                {
+//                    foreach (ControlDefinitionDTO controlDefinitionDTO in radioButtonOption.Controls)
+//                    {
+//                        if (!string.IsNullOrEmpty(controlDefinitionDTO.Value))
+//                        {
+//                            FilterDataDTO filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(controlDefinitionDTO.Value);
+//                            return filterDataDTO.Conditions.Any(x =>
+//                                  x.Field != null && x.Field != "" &&
+//                                  x.Operator != null && x.Operator != "" &&
+//                                  x.Value != null && x.Value != "");
+//                        }
+//                    }
+//                }
+//
+//            }
             return false;
         }
 
-        private CrateDTO GetCratesByManifestType(ActionDTO curActionDataPackageDTO, string curManifestType)
+        private Crate GetCratesByManifestType(ActionDTO curActionDataPackageDTO, string curManifestType)
         {
             string curLabel = string.Empty;
             switch (curManifestType)
@@ -327,8 +326,8 @@ namespace terminalFr8Core.Actions
                     break;
             }
 
-            return curActionDataPackageDTO.CrateStorage.CrateDTO.FirstOrDefault(x =>
-                x.ManifestType == curManifestType
+            return Crate.FromDto(curActionDataPackageDTO.CrateStorage).FirstOrDefault(x =>
+                x.ManifestType.Type == curManifestType
                 && x.Label == curLabel);
 
         }

@@ -8,11 +8,13 @@ using NUnit.Framework;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Constants;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Interfaces;
+using Hub.Managers;
 using HubWeb.Controllers;
 using Utilities;
 using UtilitiesTesting;
@@ -23,6 +25,8 @@ namespace pluginIntegrationTests
 {
 	public partial class PluginIntegrationTests : BaseTest
 	{
+	    
+
 		/// <summary>
 		/// Test Send_DocuSign_Envelope_v1 initial configuration.
 		/// </summary>
@@ -46,19 +50,23 @@ namespace pluginIntegrationTests
 
 			// Select first available DocuSign template.
 			SendDocuSignEnvelope_SelectFirstTemplate(initCrateStorageDTO);
-			savedActionDTO.CrateStorage = initCrateStorageDTO;
 
-            FixActionNavProps(savedActionDTO.Id);
+		    using (var updater = _crateManager.UpdateStorage(savedActionDTO))
+		    {
+                updater.CrateStorage = initCrateStorageDTO;
+		    }
+
+		    FixActionNavProps(savedActionDTO.Id);
 
 			// Call Configure FollowUp for SendDocuSignEnvelope action.
 			await SendDocuSignEnvelope_ConfigureFollowUp(savedActionDTO);
 
 		}
-		private async Task<CrateStorageDTO> SendDocuSignEnvelope_ConfigureInitial(ActionDTO curActionDTO)
+		private async Task<CrateStorage> SendDocuSignEnvelope_ConfigureInitial(ActionDTO curActionDTO)
 		{
 			// Fill values as it would be on front-end.
 			curActionDTO.ActivityTemplateId = _sendDocuSignEnvelopeActivityTemplate.Id;
-			curActionDTO.CrateStorage = new CrateStorageDTO();
+		    curActionDTO.CrateStorage = new CrateStorageDTO();
 
 			// Send initial configure request.
 			var curActionController = CreateActionController();
@@ -68,39 +76,37 @@ namespace pluginIntegrationTests
 			// Assert initial configuration returned in CrateStorage.
 			Assert.NotNull(actionDTO);
 			Assert.NotNull(actionDTO.Content);
-			Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
-			Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 3);
-			Assert.True((actionDTO.Content.CrateStorage.CrateDTO
-				 .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == MT.StandardConfigurationControls.GetEnumDisplayName())));
-			Assert.True(actionDTO.Content.CrateStorage.CrateDTO
-				 .Any(x => x.Label == "Available Templates" && x.ManifestType == MT.StandardDesignTimeFields.GetEnumDisplayName()));
+			Assert.NotNull(actionDTO.Content.CrateStorage);
 
-			return actionDTO.Content.CrateStorage;
+            var storage = _crateManager.GetStorage(actionDTO.Content);
+
+            Assert.AreEqual(storage.Count, 3);
+            Assert.True((storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls")));
+            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates")));
+
+			return storage;
 		}
-		private void SendDocuSignEnvelope_SelectFirstTemplate(CrateStorageDTO curCrateStorage)
+		
+        private void SendDocuSignEnvelope_SelectFirstTemplate(CrateStorage curCrateStorage)
 		{
 			// Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
-			var availableTemplatesCrateDTO = curCrateStorage.CrateDTO
-				 .Single(x => x.Label == "Available Templates" && x.ManifestType == MT.StandardDesignTimeFields.GetEnumDisplayName());
+            var availableTemplatesCrateDTO = curCrateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(x => x.Label == "Available Templates");
 
-			var fieldsMS = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(
-				 availableTemplatesCrateDTO.Contents);
+		    var fieldsMS = availableTemplatesCrateDTO.Content;
 
 			// Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
-			var configurationControlsCrateDTO = curCrateStorage.CrateDTO
-				 .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == MT.StandardConfigurationControls.GetEnumDisplayName());
 
-			var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
-				 configurationControlsCrateDTO.Contents);
+            var configurationControlsCrateDTO = curCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single(x => x.Label == "Configuration_Controls");
+
+            var controlsMS = configurationControlsCrateDTO.Content;
 
 			// Modify value of Selected_DocuSign_Template field and push it back to crate,
 			// exact same way we do on front-end.
 			var docuSignTemplateControlDTO = controlsMS.Controls.Single(x => x.Name == "target_docusign_template");
 			docuSignTemplateControlDTO.Value = fieldsMS.Fields.First().Value;
-
-			configurationControlsCrateDTO.Contents = JsonConvert.SerializeObject(controlsMS);
 		}
-		private async Task<CrateStorageDTO> SendDocuSignEnvelope_ConfigureFollowUp(ActionDTO curActionDTO)
+
+		private async Task<CrateStorage> SendDocuSignEnvelope_ConfigureFollowUp(ActionDTO curActionDTO)
 		{
 			var curActionController = CreateActionController();
 
@@ -110,13 +116,15 @@ namespace pluginIntegrationTests
 			// Assert FollowUp Configure result.
 			Assert.NotNull(actionDTO);
 			Assert.NotNull(actionDTO.Content);
-			Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
-			Assert.AreEqual(2, actionDTO.Content.CrateStorage.CrateDTO.Count);
-			Assert.True(actionDTO.Content.CrateStorage.CrateDTO
-				 .Any(x => x.Label == "DocuSignTemplateUserDefinedFields" && x.ManifestType == MT.StandardDesignTimeFields.GetEnumDisplayName()));
-			Assert.True(actionDTO.Content.CrateStorage.CrateDTO
-				 .Any(x => x.Label == "DocuSignTemplateStandardFields" && x.ManifestType == MT.StandardDesignTimeFields.GetEnumDisplayName()));
-			return actionDTO.Content.CrateStorage;
+			Assert.NotNull(actionDTO.Content.CrateStorage);
+
+            var storage = _crateManager.GetStorage(actionDTO.Content);
+
+            Assert.AreEqual(storage.Count, 2);
+            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSignTemplateUserDefinedFields")));
+            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSignTemplateStandardFields")));
+
+			return storage;
 		}
 	}
 }

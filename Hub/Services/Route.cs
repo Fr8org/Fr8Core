@@ -20,8 +20,8 @@ namespace Hub.Services
 {
     public class Route : IRoute
     {
-        
-        
+
+
         // private readonly IProcess _process;
         private readonly ISubroute _subroute;
         private readonly Fr8Account _dockyardAccount;
@@ -41,23 +41,23 @@ namespace Hub.Services
         }
 
         public IList<RouteDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, int? id = null, int? status = null)
-            {
+        {
             var queryableRepo = unitOfWork.RouteRepository.GetQuery().Include(pt => pt.ChildContainers); // whe have to include Activities as it is a real navigational property. Not Routes
 
-                if (isAdmin)
-                {
-                    queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
-                    return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
-                }
+            if (isAdmin)
+            {
+                queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
+                return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
+            }
 
-                queryableRepo = (id == null
-                    ? queryableRepo.Where(pt => pt.Fr8Account.Id == account.Id)
-                    : queryableRepo.Where(pt => pt.Id == id && pt.Fr8Account.Id == account.Id));
-                return (status == null
-                    ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
+            queryableRepo = (id == null
+                ? queryableRepo.Where(pt => pt.Fr8Account.Id == account.Id)
+                : queryableRepo.Where(pt => pt.Id == id && pt.Fr8Account.Id == account.Id));
+            return (status == null
+                ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
 
         }
-        
+
         public void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool updateChildEntities)
         {
             var creating = ptdo.Id == 0;
@@ -98,7 +98,7 @@ namespace Hub.Services
 
             route.RouteState = RouteState.Inactive;
             uow.RouteRepository.Add(route);
-        
+
             return route;
         }
 
@@ -129,7 +129,7 @@ namespace Hub.Services
                     var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
 
                     pntDTO.Actions = Enumerable.ToList(x.ChildNodes.Select(Mapper.Map<ActionDTO>));
-        
+
                     return pntDTO;
                 }).ToList();
 
@@ -160,7 +160,7 @@ namespace Hub.Services
             }
         }
 
-        
+
 
         private IEnumerable<TActivity> EnumerateActivities<TActivity>(RouteDO curRoute, bool allowOnlyOneNoteTemplate = true)
         {
@@ -185,7 +185,7 @@ namespace Hub.Services
             }
         }
 
-        
+
 
         public string Activate(RouteDO curRoute)
         {
@@ -201,7 +201,7 @@ namespace Hub.Services
                 try
                 {
                     _action.Activate(curActionDO).Wait();
-                    
+
                     result = "success";
                 }
                 catch (Exception ex)
@@ -219,7 +219,7 @@ namespace Hub.Services
             return result;
         }
 
-        
+
 
         public string Deactivate(RouteDO curRoute)
         {
@@ -230,7 +230,7 @@ namespace Hub.Services
                 try
                 {
                     _action.Deactivate(curActionDO).Wait();
-                    
+
                     result = "success";
                 }
                 catch (Exception ex)
@@ -248,38 +248,38 @@ namespace Hub.Services
             return result;
         }
 
-        
+
         // TODO: like some other methods, this assumes that there is only 1 action list in use. This is dangerous 
         //because the database allows N Activities.
         //we're waiting to reconcile this until we get some visibility into how the product is used by users
-//        public ActionListDO GetActionList(IUnitOfWork uow, int id)
-//        {
-//            // Get action list by process template first 
+        //        public ActionListDO GetActionList(IUnitOfWork uow, int id)
+        //        {
+        //            // Get action list by process template first 
         //            var currentRoute = uow.RouteRepository.GetQuery().Where(pt => pt.Id == id).ToArray();
-//
+        //
         //            if (currentRoute.Length == 0)
-//            {
-//                return null;
-//            }
-//
+        //            {
+        //                return null;
+        //            }
+        //
         //            if (currentRoute.Length > 1)
-//            {
-//                throw new Exception(string.Format("More than one action list exists in processtemplate {0}", id));
-//            }
-//
+        //            {
+        //                throw new Exception(string.Format("More than one action list exists in processtemplate {0}", id));
+        //            }
+        //
         //            var startingRoute = currentRoute[0].StartingSubroute;
         //            if (startingRoute == null)
-//            {
-//                return null;
-//            }
-//
+        //            {
+        //                return null;
+        //            }
+        //
         //            // Get Activities related to the Route
         //            var curActionList = startingRoute.Activities.SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
-//            return curActionList;
-//
-//        }
+        //            return curActionList;
+        //
+        //        }
 
-        
+
         /// <summary>
         /// Returns all actions created within a Process Template.
         /// </summary>
@@ -298,7 +298,7 @@ namespace Hub.Services
             }
         }
 
-        
+
 
         public IList<RouteDO> GetMatchingRoutes(string userId, EventReportCM curEventReport)
         {
@@ -319,32 +319,22 @@ namespace Hub.Services
 
         }
 
-        
 
-        public List<RouteDO> MatchEvents(List<RouteDO> curRoutes,
-            EventReportCM curEventReport)
+        public List<RouteDO> MatchEvents(List<RouteDO> curRoutes, EventReportCM curEventReport)
         {
             List<RouteDO> subscribingRoutes = new List<RouteDO>();
+          
             foreach (var curRoute in curRoutes)
             {
                 //get the 1st activity
                 var actionDO = GetFirstActivity(curRoute.Id) as ActionDO;
 
-                //Get the CrateStorage
-                if (actionDO != null && !string.IsNullOrEmpty(actionDO.CrateStorage))
+                if (actionDO != null)
                 {
-                    // Loop each CrateDTO in CrateStorage
-                    IEnumerable<CrateDTO> eventSubscriptionCrates = _crate
-                        .GetCratesByManifestType(
-                            CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
-                            actionDO.CrateStorageDTO()
-                        );
+                    var storage = _crate.GetStorage(actionDO.CrateStorage);
 
-                    foreach (var curEventSubscription in eventSubscriptionCrates)
+                    foreach (var subscriptionsList in storage.CrateContentsOfType<EventSubscriptionCM>())
                     {
-                        //Parse CrateDTO to EventReportMS and compare Event name then add the Route to the results
-                        EventSubscriptionCM subscriptionsList = _crate.GetContents<EventSubscriptionCM>(curEventSubscription);
-
                         bool hasEvents = subscriptionsList.Subscriptions
                             .Where(events => curEventReport.EventNames.ToUpper().Trim().Replace(" ", "").Contains(events.ToUpper().Trim().Replace(" ", "")))
                             .Any();
@@ -356,11 +346,11 @@ namespace Hub.Services
                     }
                 }
             }
-            return subscribingRoutes;
 
+            return subscribingRoutes;
         }
 
-        
+
 
         public RouteNodeDO GetFirstActivity(int curRouteId)
         {
@@ -370,7 +360,7 @@ namespace Hub.Services
             }
         }
 
-        
+
 
         public RouteNodeDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute)
         {

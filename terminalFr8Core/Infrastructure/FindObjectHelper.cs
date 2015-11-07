@@ -30,8 +30,7 @@ namespace terminalFr8Core.Infrastructure
 
             if (columnTypesCrate == null) { return null; }
 
-            var columnTypes = JsonConvert
-                .DeserializeObject<StandardDesignTimeFieldsCM>(columnTypesCrate.Contents);
+            var columnTypes = columnTypesCrate.Get<StandardDesignTimeFieldsCM>();
 
             if (columnTypes == null) { return null; }
 

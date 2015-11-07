@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Crates;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
@@ -229,7 +230,11 @@ namespace Hub.Services
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
 
-            curActivityTemplates = uow.ActivityTemplateRepository.GetAll().OrderBy(t => t.Category).ToList().Select(Mapper.Map<ActivityTemplateDTO>);
+            curActivityTemplates = uow.ActivityTemplateRepository
+                .GetAll()
+                .OrderBy(t => t.Category)
+                .ToList()
+                .Select(Mapper.Map<ActivityTemplateDTO>);
 
 
             //we're currently bypassing the subscription logic until we need it
@@ -249,14 +254,25 @@ namespace Hub.Services
         /// </summary>
         public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, Func<ActivityTemplateDO, bool>predicate)
         {
-            return uow.ActivityTemplateRepository.GetAll().Where(predicate).OrderBy(t => t.Category).ToList().Select(Mapper.Map<ActivityTemplateDTO>);
+            return uow.ActivityTemplateRepository
+                .GetAll()
+                .Where(predicate)
+                .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
+                .OrderBy(t => t.Category)
+                .ToList()
+                .Select(Mapper.Map<ActivityTemplateDTO>);
         }
 
         public IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount)
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
-            curActivityTemplates = uow.ActivityTemplateRepository.GetAll().
-                Where(at => at.Category == Data.States.ActivityCategory.Solution).OrderBy(t => t.Category).ToList().Select(Mapper.Map<ActivityTemplateDTO>);
+            curActivityTemplates = uow.ActivityTemplateRepository
+                .GetAll()
+                .Where(at => at.Category == Data.States.ActivityCategory.Solution 
+                    && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
+                .OrderBy(t => t.Category)
+                .ToList()
+                .Select(Mapper.Map<ActivityTemplateDTO>);
 
             //we're currently bypassing the subscription logic until we need it
             //we're bypassing the pluginregistration logic here because it's going away in V2
@@ -276,11 +292,13 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curActivityTemplates = uow.ActivityTemplateRepository.GetAll()
+                curActivityTemplates = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                     .GroupBy(t => t.Category)
                     .OrderBy(c => c.Key)
                     //lets load them all before memory processing
-                    .ToList()
+                    .AsEnumerable()
                     .Select(c => new ActivityTemplateCategoryDTO
                     {
                         Activities = c.Select(Mapper.Map<ActivityTemplateDTO>),
@@ -292,7 +310,7 @@ namespace Hub.Services
             return curActivityTemplates;
         }
 
-        public async Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        public async Task<List<Crate<T>>> GetCratesByDirection<T>(int activityId, GetCrateDirection direction)
         {
             var httpClient = new HttpClient();
 
@@ -311,11 +329,45 @@ namespace Hub.Services
                 var content = await response.Content.ReadAsStringAsync();
                 var curActions = JsonConvert.DeserializeObject<List<ActionDTO>>(content);
 
-                var curCrates = new List<CrateDTO>();
+                var curCrates = new List<Crate<T>>();
 
                 foreach (var curAction in curActions)
                 {
-                    curCrates.AddRange(_crate.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
+                    var storage = _crate.FromDto(curAction.CrateStorage);
+
+                    curCrates.AddRange(storage.CratesOfType<T>());
+                }
+
+                return curCrates;
+            }
+        }
+
+        public async Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        { 
+            var httpClient = new HttpClient();
+
+            // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
+            var directionSuffix = (direction == GetCrateDirection.Upstream)
+                ? "upstream_actions/"
+                : "downstream_actions/";
+
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "route_nodes/"
+                + directionSuffix
+                + "?id=" + activityId;
+
+            using (var response = await httpClient.GetAsync(url))
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var curActions = JsonConvert.DeserializeObject<List<ActionDTO>>(content);
+
+                var curCrates = new List<Crate>();
+
+                foreach (var curAction in curActions)
+                {
+                    var storage = _crate.FromDto(curAction.CrateStorage);
+
+                    curCrates.AddRange(storage.Where(x => x.ManifestType.Type == manifestType));
                 }
 
                 return curCrates;

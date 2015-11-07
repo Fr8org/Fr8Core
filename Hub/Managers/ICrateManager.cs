@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Crates;
 using Newtonsoft.Json.Linq;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -10,43 +12,33 @@ using Data.Interfaces.Manifests;
 
 namespace Hub.Managers
 {
+    public interface ICrateStorageUpdater : IDisposable
+    {
+        CrateStorage  CrateStorage { get; set; }
+        void DiscardChanges();
+    }
+
     public interface ICrateManager
     {
-        CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0);
-        T GetContents<T>(CrateDTO crate);
-        StandardConfigurationControlsCM GetStandardConfigurationControls(CrateDTO crate);
-        StandardDesignTimeFieldsCM GetStandardDesignTimeFields(CrateDTO crate);
-        IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
-        IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO);
+        CrateDTO ToDto(Crate crate);
+        CrateStorageDTO ToDto(CrateStorage storage);
 
-        IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName);
-        CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode);
-        CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
-        CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls);
-        CrateDTO CreateStandardEventReportCrate(string label, EventReportCM eventReport);
-        CrateDTO CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);
-        CrateDTO CreatePayloadDataCrate(List<KeyValuePair<string, string>> curFields);
-        CrateDTO CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table);
-        CrateDTO CreateErrorCrate(string message);
-        void AddLogMessage(string label, List<LogItemDTO> logItemList, ContainerDO containerDO);
-        void RemoveCrateByManifestId(IList<CrateDTO> crates, int manifestId);
-        void RemoveCrateByManifestType(IList<CrateDTO> crates, string manifestType);
-        void RemoveCrateByLabel(IList<CrateDTO> crates, string label);
+        CrateStorage FromDto(CrateStorageDTO storageDto);
+        Crate FromDto(CrateDTO proxy);
 
-        void ReplaceCratesByManifestType(IList<CrateDTO> sourceCrates, string manifestType,
-                                         IList<CrateDTO> newCratesContent);
+        ICrateStorageUpdater UpdateStorage(Expression<Func<CrateStorageDTO>> storageAccessExpression);
+        ICrateStorageUpdater UpdateStorage(Expression<Func<string>> storageAccessExpression);
 
-        void ReplaceCratesByLabel(IList<CrateDTO> sourceCrates, string label, IList<CrateDTO> newCratesContent);
+        bool IsEmptyStorage(CrateStorageDTO storageDto);
+        string EmptyStorageAsStr();
 
-        //StandardPayloadDataMS CreatePayloadDataCrate(string curObjectType);
-        CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
-
-        void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
-        void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO);
-        void AddCrate(PayloadDTO payload, List<CrateDTO> curCrateDTO);
-        void AddCrate(PayloadDTO payload, CrateDTO curCrateDTO);
-        void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO);
-        StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO);
-        List<CrateDTO> GetCrates(ActionDO curActionDO);
+        Crate CreateAuthenticationCrate(string label, AuthenticationMode mode);
+        Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
+        Crate<StandardConfigurationControlsCM> CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls);
+        Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport);
+        Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);
+        Crate CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table);
+        Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
+        
     }
 }

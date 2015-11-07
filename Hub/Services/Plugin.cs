@@ -26,18 +26,19 @@ namespace Hub.Services
             }
         }
 
-        public async Task<int> RegisterTerminals(string uri)
+        public async Task<IList<string>> RegisterTerminals(string uri)
         {
-            int registeredTerminals = 0;
             var eventReporter = ObjectFactory.GetInstance<EventReporter>();
 
             var activityTemplateList = await GetAvailableActions(uri);
+
+            List<string> activityTemplateNames = new List<string>(); 
             foreach (var activityTemplate in activityTemplateList)
             {
                 try
                 {
                     new ActivityTemplate().Register(activityTemplate);
-                    registeredTerminals++;
+                    activityTemplateNames.Add(activityTemplate.Name);
                 }
                 catch (Exception ex)
                 {
@@ -47,7 +48,8 @@ namespace Hub.Services
                         ex.GetType().Name);
                 }
             }
-            return registeredTerminals;
+
+            return activityTemplateNames;
         }
         
 

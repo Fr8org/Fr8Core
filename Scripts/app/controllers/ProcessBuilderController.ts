@@ -268,7 +268,7 @@ module dockyard.controllers {
                 }
                 if (canBypassActionLoading) {
                     this.$scope.current.action = result.action;
-                    var actions = this.$scope.actionGroups[0].actions
+                    var actions = this.$scope.actionGroups[0].actions;
                     actions[actions.length - 1] = result.action;
                     if (result.action.childrenActions.length) {
                         this.$scope.actionGroups.push(new model.ActionGroup(result.action.childrenActions));

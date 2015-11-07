@@ -774,16 +774,16 @@ namespace Hub.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogPluginEvent(LoggingData eventData)
+        private void LogPluginEvent(LoggingDataCm eventDataCm)
         {
             var fact = new FactDO
             {
-                ObjectId = eventData.ObjectId,
-                CustomerId = eventData.CustomerId,
-                Data = eventData.Data,
-                PrimaryCategory = eventData.PrimaryCategory,
-                SecondaryCategory = eventData.SecondaryCategory,
-                Activity = eventData.Activity
+                ObjectId = eventDataCm.ObjectId,
+                CustomerId = eventDataCm.CustomerId,
+                Data = eventDataCm.Data,
+                PrimaryCategory = eventDataCm.PrimaryCategory,
+                SecondaryCategory = eventDataCm.SecondaryCategory,
+                Activity = eventDataCm.Activity
             };
 
             SaveAndLogFact(fact);

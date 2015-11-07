@@ -33,11 +33,11 @@ namespace Data.Entities
         public virtual RouteDO Route { get; set; }
 
         public virtual ICollection<ProcessNodeDO> ProcessNodes { get; set; }
-            
+
         [Required]
         [ForeignKey("ContainerStateTemplate")]
         public int ContainerState { get; set; }
-              
+
         public virtual _ContainerStateTemplate ContainerStateTemplate { get; set; }
 
         [ForeignKey("CurrentRouteNode")]
@@ -50,24 +50,24 @@ namespace Data.Entities
 
         public string CrateStorage { get; set; }
 
-        public CrateStorageDTO CrateStorageDTO()
-        {
-            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
-        }
-
-        public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
-        {
-            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
-
-            if (!string.IsNullOrEmpty(CrateStorage))
-            {
-                crateStorageDTO = this.CrateStorageDTO();
-            }
-
-            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
-
-            this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
-        }
+//        public CrateStorageDTO CrateStorageDTO()
+//        {
+//            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
+//        }
+//
+//        public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
+//        {
+//            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
+//
+//            if (!string.IsNullOrEmpty(CrateStorage))
+//            {
+//                crateStorageDTO = this.CrateStorageDTO();
+//            }
+//
+//            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
+//
+//            this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+//        }
 
         public override void BeforeSave()
         {

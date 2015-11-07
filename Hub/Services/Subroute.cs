@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using Newtonsoft.Json;
-using StructureMap;
-using System.Threading.Tasks;
 using Data.Entities;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
+using StructureMap;
 
 namespace Hub.Services
 {
@@ -179,7 +175,7 @@ namespace Hub.Services
                 int? parentRouteNodeIdBackup = curAction.ParentRouteNodeId;
                 curAction.ActivityTemplateId = null;
                 curAction.ParentRouteNodeId = null;
-                uow.SaveChanges();
+            uow.SaveChanges();
 
 
                 //lets start multithreaded calls
@@ -187,7 +183,7 @@ namespace Hub.Services
                 foreach (var downstreamAction in downstreamActions)
                 {
                     configureTaskList.Add(_action.Configure(userId, downstreamAction, false));
-                }
+        }
 
                 await Task.WhenAll(configureTaskList);
 
@@ -259,21 +255,24 @@ namespace Hub.Services
 
                 foreach (var downStreamActivity in downStreamActivities)
                 {
-                    var crateStorage = downStreamActivity.CrateStorageDTO();
-                    var cratesToReset = _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, crateStorage).ToList();
-                    foreach (var crateDTO in cratesToReset)
+                    var currentActivity = downStreamActivity;
+                    bool somethingToReset = false;
+
+                    using (var updater = _crate.UpdateStorage(() => currentActivity.CrateStorage))
                     {
-                        var configurationControls = _crate.GetStandardConfigurationControls(crateDTO);
-                        foreach (var controlDefinitionDTO in configurationControls.Controls)
+                        foreach (var configurationControls in updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
+                    {
+                            foreach (IResettable resettable in configurationControls.Controls)
                         {
-                            (controlDefinitionDTO as IResettable).Reset();
+                                resettable.Reset();
+                                somethingToReset = true;
                         }
-                        crateDTO.Contents = JsonConvert.SerializeObject(configurationControls);
                     }
 
-                    if (cratesToReset.Any())
+                        if (!somethingToReset)
                     {
-                        downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
+                            updater.DiscardChanges();
+                        }
                     }
                 }
 
