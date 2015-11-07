@@ -17,6 +17,7 @@ namespace HubWeb.Controllers
     /// Critera web api controller to handle operations from frontend.
     /// </summary>
     [RoutePrefix("api/criteria")]
+    [Fr8ApiAuthorize]
     public class CriteriaController : ApiController
     {
         /// <summary>
