@@ -107,6 +107,7 @@ namespace HubWeb.Controllers
 
         [Route("available")]
         [ResponseType(typeof (IEnumerable<ActivityTemplateCategoryDTO>))]
+        [AllowAnonymous]
         public IHttpActionResult GetAvailableActivities()
         {
             var categoriesWithActivities = _activity.GetAvailableActivitiyGroups();
@@ -116,6 +117,7 @@ namespace HubWeb.Controllers
 
         [Route("available")]
         [ResponseType(typeof (IEnumerable<ActivityTemplateCategoryDTO>))]
+        [AllowAnonymous]
         public IHttpActionResult GetAvailableActivities(string tag)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
