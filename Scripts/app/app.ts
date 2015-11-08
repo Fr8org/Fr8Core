@@ -159,7 +159,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         .state('accounts', {
             url: '/accounts',
             templateUrl: '/AngularTemplate/AccountList',
-            data: { pageTitle: 'Manage Dockyard Accounts', pageSubTitle: '' }
+            data: { pageTitle: 'Manage Accounts', pageSubTitle: '' }
         })
 
         .state('accountDetails', {
