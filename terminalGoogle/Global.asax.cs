@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.Http;
-using Core.StructureMap;
 using Data.Infrastructure.AutoMapper;
+using Hub.StructureMap;
 
 namespace terminalGoogle
 {

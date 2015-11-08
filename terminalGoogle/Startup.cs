@@ -1,10 +1,10 @@
 ﻿using Microsoft.Owin;
 using Owin;
-using Core.StructureMap;
+using terminalGoogle;
 
-[assembly: OwinStartup(typeof(terminalFr8Core.Startup))]
+[assembly: OwinStartup(typeof(Startup))]
 
-namespace terminalFr8Core
+namespace terminalGoogle
 {
     public class Startup
     {

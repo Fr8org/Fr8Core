@@ -2,6 +2,7 @@
 using System.Web.Http;
 using System.Web.Http.Description;
 using Data.Entities;
+using Data.Interfaces.Manifests;
 using Data.States;
 using Utilities.Configuration.Azure;
 
@@ -16,11 +17,9 @@ namespace terminalGoogle.Controllers
         /// </summary>
         [HttpGet]
         [Route("discover")]
-        [ResponseType(typeof(List<ActivityTemplateDO>))]
+        [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverPlugins()
         {
-            var result = new List<ActivityTemplateDO>();
-            
             var plugin = new PluginDO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
@@ -29,7 +28,7 @@ namespace terminalGoogle.Controllers
                 Version = "1"
             };
 
-            result.Add(new ActivityTemplateDO
+            var extractDataAction = new ActivityTemplateDO
             {
                 Name = "Extract_Spreadsheet_Data",
                 Label = "Extract Spreadsheet Data",
@@ -37,9 +36,17 @@ namespace terminalGoogle.Controllers
                 Category = ActivityCategory.Receivers,
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.External,
-                MinPaneWidth = 210
-            });
-            return Json(result);    
+                MinPaneWidth = 300
+            };
+
+            return Json(new StandardFr8TerminalCM()
+            {
+                Definition = plugin,
+                Actions = new List<ActivityTemplateDO>
+                {
+                    extractDataAction
+                }
+            });    
         }
     }
 }

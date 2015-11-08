@@ -46,7 +46,7 @@ namespace TerminalBase.BaseClasses
             _authorizationToken = new Authorization();
         }
 
-        protected bool NeedsAuthentication(ActionDTO actionDTO)
+        protected virtual bool NeedsAuthentication(ActionDTO actionDTO)
         {
             if (actionDTO == null
                 || actionDTO.AuthToken == null

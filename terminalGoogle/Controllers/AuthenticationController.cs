@@ -28,7 +28,7 @@ namespace terminalGoogle.Controllers
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var externalStateToken = Guid.NewGuid().ToString();
-            var url = _google.CreateOAuth2AuthorizationUrl();
+            var url = _google.CreateOAuth2AuthorizationUrl(externalStateToken);
 
             var externalAuthUrlDTO = new ExternalAuthUrlDTO()
             {

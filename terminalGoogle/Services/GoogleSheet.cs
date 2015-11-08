@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Core.Managers.APIManagers.Authorizers;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.ManifestSchemas;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Google.GData.Client;
 using Google.GData.Spreadsheets;
 using StructureMap;
@@ -22,7 +22,8 @@ namespace terminalGoogle.Services
         private OAuth2Parameters CreateOAuth2Parameters(
             string accessCode = null,
             string accessToken = null,
-            string refreshToken = null)
+            string refreshToken = null,
+            string state = null)
         {
             return new OAuth2Parameters
             {
@@ -33,6 +34,9 @@ namespace terminalGoogle.Services
                 AccessCode = accessCode,
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
+                State = state,
+                AccessType = "offline",
+                ApprovalPrompt = "force"
             };
         }
 
@@ -56,9 +60,9 @@ namespace terminalGoogle.Services
             return feed.Entries.Cast<SpreadsheetEntry>();
         }
 
-        public string CreateOAuth2AuthorizationUrl()
+        public string CreateOAuth2AuthorizationUrl(string state = null)
         {
-            var parameters = CreateOAuth2Parameters();
+            var parameters = CreateOAuth2Parameters(state: state);
             return OAuthUtil.CreateOAuth2AuthorizationUrl(parameters);
         }
 
@@ -80,13 +84,15 @@ namespace terminalGoogle.Services
                 .ToDictionary(entry => entry.Id.AbsoluteUri, entry => entry.Title.Text);
         }
 
+        private SpreadsheetEntry FindSpreadsheet(string spreadsheetUri, GoogleAuthDTO authDTO)
+        {
+            var spreadsheets = EnumerateSpreadsheets(authDTO);
+            return spreadsheets.SingleOrDefault(ae => string.Equals(ae.Id.AbsoluteUri, spreadsheetUri));
+        }
+
         private IEnumerable<ListEntry> EnumerateRows(string spreadsheetUri, GoogleAuthDTO authDTO)
         {
-            if (spreadsheetUri == null)
-                throw new ArgumentNullException("spreadsheetUri");
-            var spreadsheets = EnumerateSpreadsheets(authDTO);
-
-            SpreadsheetEntry spreadsheet = spreadsheets.SingleOrDefault(ae => string.Equals(ae.Id.AbsoluteUri, spreadsheetUri));
+            SpreadsheetEntry spreadsheet = FindSpreadsheet(spreadsheetUri, authDTO);
             if (spreadsheet == null)
                 throw new ArgumentException("Cannot find a spreadsheet", "spreadsheetUri");
             SpreadsheetsService service = (SpreadsheetsService)spreadsheet.Service;
@@ -104,17 +110,29 @@ namespace terminalGoogle.Services
             return listFeed.Entries.Cast<ListEntry>();
         } 
 
-        public IEnumerable<string> EnumerateColumnHeaders(string spreadsheetUri, GoogleAuthDTO authDTO)
+        public IDictionary<string, string> EnumerateColumnHeaders(string spreadsheetUri, GoogleAuthDTO authDTO)
         {
             var firstRow = EnumerateRows(spreadsheetUri, authDTO).FirstOrDefault();
             if (firstRow == null)
-                return Enumerable.Empty<string>();
-            return firstRow.Elements.Cast<ListEntry.Custom>().Select(e => e.Value);
+                return new Dictionary<string, string>();
+            return firstRow.Elements.Cast<ListEntry.Custom>().ToDictionary(e => e.LocalName, e => e.Value);
         }
 
         public IEnumerable<TableRowDTO> EnumerateDataRows(string spreadsheetUri, GoogleAuthDTO authDTO)
         {
-            throw new NotImplementedException();
+            foreach (var row in EnumerateRows(spreadsheetUri, authDTO))
+            {
+                yield return new TableRowDTO
+                {
+                    Row = row.Elements
+                        .Cast<ListEntry.Custom>()
+                        .Select(c => new TableCellDTO
+                        {
+                            Cell = new FieldDTO(c.LocalName, c.Value)
+                        })
+                        .ToList()
+                };
+            }
         }
 
         /// <summary>
