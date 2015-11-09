@@ -1,6 +1,7 @@
 using System.Net.Http.Formatting;
 using AutoMapper;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
+using Hub.Managers.APIManagers.Packagers.SendGrid;
 using InternalInterfaces = Hub.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -87,6 +88,7 @@ namespace Hub.StructureMap
                 For<IMappingEngine>().Use(Mapper.Engine);
 
                 For<IEmailAddress>().Use<EmailAddress>();
+                For<IEmailPackager>().Use<SendGridPackager>();
                 For<INotification>().Use<Hub.Services.Notification>();
 
                 For<ISecurityServices>().Use<SecurityServices>();
@@ -132,6 +134,7 @@ namespace Hub.StructureMap
                 For<IMappingEngine>().Use(Mapper.Engine);
 
                 For<IEmailAddress>().Use<EmailAddress>();
+                For<IEmailPackager>().Use<SendGridPackager>();
                 For<INotification>().Use<Hub.Services.Notification>();
 
                 For<ITracker>().Use<SegmentIO>();

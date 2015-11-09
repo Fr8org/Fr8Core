@@ -100,14 +100,14 @@ namespace TerminalBase.BaseClasses
             }
 
             return null;
-        }
+                }
 
         protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(ActionDTO curActionDTO, StandardDesignTimeFieldsCM designTimeFields)
         {
             var fields = designTimeFields.Fields;
             var validationList = fields.Select(f => new FieldValidationDTO(curActionDTO.Id, f.Key)).ToList();
             return Crate.ToDto(await ValidateFields(validationList));
-        }
+            }
 
         //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
         protected virtual async Task<CrateDTO> ValidateAction(ActionDTO curActionDTO)

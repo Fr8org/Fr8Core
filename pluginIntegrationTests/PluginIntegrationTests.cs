@@ -296,7 +296,7 @@ namespace pluginIntegrationTests
             // Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
             var configurationControlsCrate = curCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single(x => x.Label == "Configuration_Controls");
             var controlsMS = configurationControlsCrate.Content;
-
+            
             controlsMS.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.ForEach(r => r.Selected = false);
 
             // Modify value of Selected_DocuSign_Template field and push it back to crate,
