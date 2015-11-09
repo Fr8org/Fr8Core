@@ -33,28 +33,28 @@ namespace Hub.Managers.APIManagers.Transmitters.Plugin
                 throw new ArgumentOutOfRangeException("actionDTO", actionDTO.ActivityTemplateId, "ActivityTemplate must be specified either explicitly or by using ActivityTemplateId");
             }
 
-            int pluginId;
+            int terminalId;
 
             if (actionDTO.ActivityTemplate == null)
             {
                 var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>().GetByKey(actionDTO.ActivityTemplateId.Value);
                 actionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDO, ActivityTemplateDTO>(activityTemplate);
-                pluginId = activityTemplate.TerminalId;
+                terminalId = activityTemplate.TerminalId;
             }
             else
             {
-                pluginId = actionDTO.ActivityTemplate.TerminalId;
+                terminalId = actionDTO.ActivityTemplate.TerminalId;
             }
            
-            var plugin = ObjectFactory.GetInstance<ITerminal>().GetAll().FirstOrDefault(x => x.Id == pluginId);
+            var terminal = ObjectFactory.GetInstance<ITerminal>().GetAll().FirstOrDefault(x => x.Id == terminalId);
 
-            if (plugin == null || string.IsNullOrEmpty(plugin.Endpoint))
+            if (terminal == null || string.IsNullOrEmpty(terminal.Endpoint))
             {
                 BaseUri = null;
             }
             else
         {
-                BaseUri = new Uri(plugin.Endpoint.StartsWith("http") ? plugin.Endpoint : "http://" + plugin.Endpoint);
+                BaseUri = new Uri(terminal.Endpoint.StartsWith("http") ? terminal.Endpoint : "http://" + terminal.Endpoint);
             }
 
             var actionName = Regex.Replace(curActionType, @"[^-_\w\d]", "_");

@@ -23,13 +23,13 @@ namespace Data.Infrastructure
         public delegate void EntityStateChangedHandler(string entityName, object id, string stateName, string stateValue);
         public static event EntityStateChangedHandler AlertEntityStateChanged;
 
-        public delegate void IncidentTerminalConfigurePOSTFailureHandler(string pluginUrl, string curActionDTO, string errorMessage);
+        public delegate void IncidentTerminalConfigurePOSTFailureHandler(string terminalUrl, string curActionDTO, string errorMessage);
         public static event IncidentTerminalConfigurePOSTFailureHandler IncidentTerminalConfigureFailed;
 
-        public delegate void IncidentTerminalRunPOSTFailureHandler(string pluginUrl, string curActionDTO, string errorMessage);
+        public delegate void IncidentTerminalRunPOSTFailureHandler(string terminalUrl, string curActionDTO, string errorMessage);
         public static event IncidentTerminalRunPOSTFailureHandler IncidentTerminalRunFailed;
 
-        public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string pluginUrl, string curActionDTO);
+        public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string curActionDTO);
         public static event IncidentTerminalActionActivationPOSTFailureHandler IncidentTerminalActionActivationFailed;
 
         public delegate void TerminalActionActivatedHandler(ActionDO action);
@@ -144,22 +144,22 @@ namespace Data.Infrastructure
         #region Method
 
 
-        public static void TerminalConfigureFailed(string pluginUrl, string actionDTO, string errorMessage)
+        public static void TerminalConfigureFailed(string terminalUrl, string actionDTO, string errorMessage)
         {
             IncidentTerminalConfigurePOSTFailureHandler handler = IncidentTerminalConfigureFailed;
-            if (handler != null) handler(pluginUrl, actionDTO, errorMessage);
+            if (handler != null) handler(terminalUrl, actionDTO, errorMessage);
         }
 
-        public static void TerminalRunFailed(string pluginUrl, string actionDTO, string errorMessage)
+        public static void TerminalRunFailed(string terminalUrl, string actionDTO, string errorMessage)
         {
             IncidentTerminalRunPOSTFailureHandler handler = IncidentTerminalRunFailed;
-            if (handler != null) handler(pluginUrl, actionDTO, errorMessage);
+            if (handler != null) handler(terminalUrl, actionDTO, errorMessage);
         }
 
-        public static void TerminalActionActivationFailed(string pluginUrl, string actionDTO)
+        public static void TerminalActionActivationFailed(string terminalUrl, string actionDTO)
         {
             IncidentTerminalActionActivationPOSTFailureHandler handler = IncidentTerminalActionActivationFailed;
-            if (handler != null) handler(pluginUrl, actionDTO);
+            if (handler != null) handler(terminalUrl, actionDTO);
         }
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))

@@ -4,7 +4,7 @@ using Data.Interfaces;
 namespace Data.Repositories
 {
     /// <summary>
-    /// Repository to work with PluginDO entities.
+    /// Repository to work with TerminalDO entities.
     /// </summary>
     public class TerminalRepository : GenericRepository<TerminalDO>, ITerminalRepository
     {
@@ -15,7 +15,7 @@ namespace Data.Repositories
     }
 
     /// <summary>
-    /// Repository interface to work with PluginDO entities.
+    /// Repository interface to work with TerminalDO entities.
     /// </summary>
     public interface ITerminalRepository : IGenericRepository<TerminalDO>
     {

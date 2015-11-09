@@ -38,12 +38,12 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var existingPlugin = uow.TerminalRepository
+                var existingTerminal = uow.TerminalRepository
                     .FindOne(x => x.Name == activityTemplateDO.Terminal.Name);
 
-                if (existingPlugin != null)
+                if (existingTerminal != null)
                 {
-                    activityTemplateDO.Terminal = existingPlugin;
+                    activityTemplateDO.Terminal = existingTerminal;
                 }
                 else
                 {

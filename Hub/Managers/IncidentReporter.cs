@@ -40,12 +40,12 @@ namespace Hub.Managers
             EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
         }
 
-        private void ProcessIncidentTerminalActionActivationFailed(string pluginUrl, string curActionDTO)
+        private void ProcessIncidentTerminalActionActivationFailed(string terminalUrl, string curActionDTO)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
-                Data = pluginUrl + "      " + curActionDTO,
+                Data = terminalUrl + "      " + curActionDTO,
                 ObjectId = "unknown",
                 PrimaryCategory = "Action",
                 SecondaryCategory = "Activation",
@@ -72,12 +72,12 @@ namespace Hub.Managers
                 uow.SaveChanges();
             }
         }
-        private void ProcessIncidentTerminalConfigureFailed(string curPluginUrl, string curAction, string errorMessage)
+        private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string curAction, string errorMessage)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
-                Data = curPluginUrl + "      " + curAction + " " + errorMessage,
+                Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
                 ObjectId = "unknown",
                 PrimaryCategory = "Plugin",
                 SecondaryCategory = "Configure",
@@ -85,12 +85,12 @@ namespace Hub.Managers
             };
             SaveAndLogIncident(incident);
         }
-        private void ProcessIncidentTerminalRunFailed(string curPluginUrl, string curAction, string errorMessage)
+        private void ProcessIncidentTerminalRunFailed(string curTerminalUrl, string curAction, string errorMessage)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
-                Data = curPluginUrl + "      " + curAction + " " + errorMessage,
+                Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
                 ObjectId = "unknown",
                 PrimaryCategory = "Plugin",
                 SecondaryCategory = "Configure",

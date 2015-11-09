@@ -310,7 +310,7 @@ namespace Hub.Services
             }
             catch (ArgumentException e)
             {
-                EventManager.TerminalConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO), e.Message);
+                EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message);
                 throw;
             }
             catch (Exception e)
@@ -320,7 +320,7 @@ namespace Hub.Services
                         PreserveReferencesHandling = PreserveReferencesHandling.Objects
                     };
 
-                    var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no plugin url>";
+                    var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
                     EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
                 throw;
             }
@@ -465,7 +465,7 @@ namespace Hub.Services
             }
             catch (ArgumentException e)
             {
-                EventManager.TerminalRunFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO), e.Message);
+                EventManager.TerminalRunFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message);
                 throw;
             }
             catch (Exception e)
@@ -475,7 +475,7 @@ namespace Hub.Services
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects
                 };
 
-                var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no plugin url>";
+                var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
                 EventManager.TerminalRunFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
                 throw;
             }
@@ -511,7 +511,7 @@ namespace Hub.Services
             }
             catch (ArgumentException)
             {
-                EventManager.TerminalActionActivationFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO));
+                EventManager.TerminalActionActivationFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO));
                 throw;
             }
             catch

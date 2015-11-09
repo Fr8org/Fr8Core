@@ -50,12 +50,12 @@ namespace HubWeb.ExceptionHandling
             {
                 if (ex is TerminalCodedException) 
                 {
-                    var pluginEx = (TerminalCodedException)ex;
+                    var terminalEx = (TerminalCodedException)ex;
                     
                     errorDto.Details = new
                     {
-                        errorCode = pluginEx.ErrorCode, 
-                        message = pluginEx.ErrorCode.GetEnumDescription()
+                        errorCode = terminalEx.ErrorCode, 
+                        message = terminalEx.ErrorCode.GetEnumDescription()
                     };
                 }
                 else 

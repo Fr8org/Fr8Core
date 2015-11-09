@@ -17,7 +17,7 @@ namespace Data.Entities
             // If we manually set navigation property like this, EF will not be able to handle dynamic proxy navigation properties properly!.
             // It is ok to initialize collections, though.
             // Commented out by yakov.gnusin.
-            // Plugin = new PluginDO() { Name = "", Version = "1", PluginStatus = PluginStatus.Active };
+            // Terminal = new TerminalDO() { Name = "", Version = "1", TerminalStatus = TerminalStatus.Active };
         }
 
         public Guid Id { get; set; }

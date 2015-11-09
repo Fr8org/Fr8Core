@@ -9,13 +9,13 @@ namespace Hub.Interfaces
         IEnumerable<TerminalDO> GetAll();
 
         /// <summary>
-        /// Parses the required plugin service URL for the given action by Plugin Name and its version
+        /// Parses the required terminal service URL for the given action by Terminal Name and its version
         /// </summary>
-        /// <param name="curPluginName">Name of the required plugin</param>
-        /// <param name="curPluginVersion">Version of the required plugin</param>
+        /// <param name="curTerminalName">Name of the required terminal</param>
+        /// <param name="curTerminalVersion">Version of the required terminal</param>
         /// <param name="curActionName">Required action</param>
-        /// <returns>Parsed URl to the plugin for its action</returns>
-        string ParseTerminalUrlFor(string curPluginName, string curPluginVersion, string curActionName);
+        /// <returns>Parsed URl to the terminal for its action</returns>
+        string ParseTerminalUrlFor(string curTerminalName, string curTerminalVersion, string curActionName);
 
         Task<IList<string>> RegisterTerminals(string uri);
     }

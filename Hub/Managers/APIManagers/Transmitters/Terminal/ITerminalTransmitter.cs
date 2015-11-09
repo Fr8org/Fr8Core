@@ -8,7 +8,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Plugin
     public interface ITerminalTransmitter : IRestfulServiceClient
     {
         /// <summary>
-        /// Posts a DTO to plugin API
+        /// Posts a DTO to terminal API
         /// </summary>
         /// <param name="actionType">Action type</param>
         /// <param name="actionDTO">ActionDTO</param>

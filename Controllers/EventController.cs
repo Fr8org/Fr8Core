@@ -115,11 +115,11 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Route("events")]
         public async Task<IHttpActionResult> ProcessIncomingEvents(
-            [FromUri(Name = "dockyard_terminal")] string pluginName,
-            [FromUri(Name = "version")] string pluginVersion)
+            [FromUri(Name = "dockyard_terminal")] string terminalName,
+            [FromUri(Name = "version")] string terminalVersion)
         {
-            //if either or both of the plugin name and version are not available, the action in question did not inform the correct URL to the external service
-            if (string.IsNullOrEmpty(pluginName) || string.IsNullOrEmpty(pluginVersion))
+            //if either or both of the terminal name and version are not available, the action in question did not inform the correct URL to the external service
+            if (string.IsNullOrEmpty(terminalName) || string.IsNullOrEmpty(terminalVersion))
             {
                 EventManager.ReportUnparseableNotification(Request.RequestUri.AbsoluteUri, Request.Content.ReadAsStringAsync().Result);
             }
@@ -127,11 +127,11 @@ namespace HubWeb.Controllers
             //create a terminal event for event notification received
             EventManager.ReportExternalEventReceived(Request.Content.ReadAsStringAsync().Result);
             
-             var result =await _event.RequestParsingFromTerminals(Request, pluginName, pluginVersion);
+             var result =await _event.RequestParsingFromTerminals(Request, terminalName, terminalVersion);
 
 
             //Check if responding to Salesforce
-             if (pluginName == "terminalSalesforce")
+             if (terminalName == "terminalSalesforce")
             {
                 XmlDocument doc = new XmlDocument();
                 doc.LoadXml(result);
@@ -146,11 +146,11 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Route("eventsDebug")]
         public async Task<object> ProcessIncomingEventsDebug(
-            [FromUri(Name = "dockyard_terminal")] string pluginName,
-            [FromUri(Name = "version")] string pluginVersion)
+            [FromUri(Name = "dockyard_terminal")] string terminalName,
+            [FromUri(Name = "version")] string terminalVersion)
         {
-            //if either or both of the plugin name and version are not available, the action in question did not inform the correct URL to the external service
-            if (string.IsNullOrEmpty(pluginName) || string.IsNullOrEmpty(pluginVersion))
+            //if either or both of the terminal name and version are not available, the action in question did not inform the correct URL to the external service
+            if (string.IsNullOrEmpty(terminalName) || string.IsNullOrEmpty(terminalVersion))
             {
                 EventManager.ReportUnparseableNotification(Request.RequestUri.AbsoluteUri, Request.Content.ReadAsStringAsync().Result);
             }
@@ -158,7 +158,7 @@ namespace HubWeb.Controllers
             //create a terminal event for event notification received
             EventManager.ReportExternalEventReceived(Request.Content.ReadAsStringAsync().Result);
 
-            var result = await _event.RequestParsingFromTerminalsDebug(Request, pluginName, pluginVersion);
+            var result = await _event.RequestParsingFromTerminalsDebug(Request, terminalName, terminalVersion);
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
