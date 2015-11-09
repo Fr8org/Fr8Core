@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Web.Razor.Generator;
 using Data.Crates;
+using Hub.Managers;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Entities;
@@ -249,10 +250,7 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<CrateDTO> ValidateAction(ActionDTO curActionDTO)
         {
-            var queryableFields = curActionDTO.CrateStorage.Crates
-                .First(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
-                    && x.Label == "Queryable Criteria");
-            return await ValidateByStandartDesignTimeFields(curActionDTO, Crate.GetStandardDesignTimeFields(queryableFields));
+            return await ValidateByStandartDesignTimeFields(curActionDTO, Crate.GetStorage(curActionDTO).FirstCrate<StandardDesignTimeFieldsCM>(x => x.Label == "Queryable Criteria").Content);
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDataPackageDTO)

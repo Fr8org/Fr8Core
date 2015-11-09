@@ -57,13 +57,7 @@ namespace terminalExcel.PluginExcelTests
         public void ConfigEvaluatorInitialResponse_Test()
         {
             
-            var curActionDTO = new ActionDTO()
-            {
-                CrateStorage = new CrateStorageDTO()
-                {
-                    Crates = new System.Collections.Generic.List<CrateDTO>().ToArray()
-                }
-            };
+            var curActionDTO = new ActionDTO();
 
             var result = new Load_Table_Data_v1().ConfigurationEvaluator(curActionDTO);
 

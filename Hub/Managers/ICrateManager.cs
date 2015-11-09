@@ -39,8 +39,5 @@ namespace Hub.Managers
         Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);
         Crate CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table);
         Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
-
-        StandardDesignTimeFieldsCM GetStandardDesignTimeFields(CrateDTO crate);
-
     }
 }
