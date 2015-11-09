@@ -249,10 +249,10 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<CrateDTO> ValidateAction(ActionDTO curActionDTO)
         {
-            var queryableFields = curActionDTO.CrateStorage.CrateDTO
+            var queryableFields = curActionDTO.CrateStorage.Crates
                 .First(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
                     && x.Label == "Queryable Criteria");
-
+            Crate.
             return await ValidateByStandartDesignTimeFields(curActionDTO, Crate.GetStandardDesignTimeFields(queryableFields));
         }
 

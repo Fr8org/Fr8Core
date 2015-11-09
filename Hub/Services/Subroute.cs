@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -150,7 +153,7 @@ namespace Hub.Services
 
         protected CrateDTO GetValidationErrors(CrateStorageDTO crateStorage)
         {
-            return crateStorage.CrateDTO.FirstOrDefault(crateDTO => 
+            return crateStorage.Crates.FirstOrDefault(crateDTO => 
                 crateDTO.Label == "Validation Errors" && crateDTO.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
         }
 

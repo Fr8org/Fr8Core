@@ -106,7 +106,7 @@ namespace TerminalBase.BaseClasses
         {
             var fields = designTimeFields.Fields;
             var validationList = fields.Select(f => new FieldValidationDTO(curActionDTO.Id, f.Key)).ToList();
-            return await ValidateFields(validationList);
+            return Crate.ToDto(await ValidateFields(validationList));
         }
 
         //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
@@ -127,8 +127,7 @@ namespace TerminalBase.BaseClasses
                 var validationErrors = await ValidateAction(curActionDTO);
                 if (validationErrors != null)
                 {
-                    curActionDTO.CrateStorage.CrateDTO.Clear();
-                    curActionDTO.CrateStorage.CrateDTO.Add(validationErrors);
+                    curActionDTO.CrateStorage.Crates = new []{validationErrors};
                     return curActionDTO;
                 }
                 return await FollowupConfigurationResponse(curActionDTO);
