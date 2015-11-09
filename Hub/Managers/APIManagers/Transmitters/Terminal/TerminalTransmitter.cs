@@ -10,7 +10,7 @@ using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
 
-namespace Hub.Managers.APIManagers.Transmitters.Plugin
+namespace Hub.Managers.APIManagers.Transmitters.Terminal
 {
     public class TerminalTransmitter : RestfulServiceClient, ITerminalTransmitter
     {

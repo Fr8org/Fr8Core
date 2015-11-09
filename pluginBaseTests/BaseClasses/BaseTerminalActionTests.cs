@@ -17,7 +17,7 @@ using TerminalBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
-namespace pluginBaseTests.BaseClasses
+namespace TerminalBaseTests.BaseClasses
 {
 
     [TestFixture]
@@ -33,7 +33,7 @@ namespace pluginBaseTests.BaseClasses
         {
             base.SetUp();
             _baseTerminalAction = new BaseTerminalAction();
-            _coreServer = pluginBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
+            _coreServer = TerminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 

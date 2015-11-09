@@ -15,7 +15,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Plugin;
+using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
 using Newtonsoft.Json.Linq;

@@ -3,7 +3,7 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 
-namespace Hub.Managers.APIManagers.Transmitters.Plugin
+namespace Hub.Managers.APIManagers.Transmitters.Terminal
 {
     public interface ITerminalTransmitter : IRestfulServiceClient
     {

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using Hub.Enums;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Plugin;
+using Hub.Managers.APIManagers.Transmitters.Terminal;
 
 namespace Hub.Services
 {

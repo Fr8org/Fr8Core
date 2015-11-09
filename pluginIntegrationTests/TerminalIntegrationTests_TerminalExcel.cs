@@ -16,7 +16,7 @@ using terminalExcel.Actions;
 using terminalExcel.Fixtures;
 using terminalExcel.Infrastructure;
 
-namespace pluginIntegrationTests
+namespace terminalIntegrationTests
 {
     public partial class TerminalIntegrationTests
     {

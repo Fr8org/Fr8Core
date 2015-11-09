@@ -10,7 +10,7 @@ using Hub.Managers.APIManagers.Authorizers.Docusign;
 using Hub.Managers.APIManagers.Authorizers.Google;
 using Hub.Managers.APIManagers.Packagers;
 using Hub.Managers.APIManagers.Packagers.SegmentIO;
-using Hub.Managers.APIManagers.Transmitters.Plugin;
+using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using InternalClass = Hub.Services;

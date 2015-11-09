@@ -7,7 +7,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using UtilitiesTesting;
 using Utilities.Configuration.Azure;
 
-namespace pluginBaseTests.Infrastructure
+namespace TerminalBaseTests.Infrastructure
 {
     [TestFixture]
     [Category("BaseTerminalEvent")]

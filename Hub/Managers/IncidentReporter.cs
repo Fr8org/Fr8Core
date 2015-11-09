@@ -79,7 +79,7 @@ namespace Hub.Managers
                 CustomerId = "unknown",
                 Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
                 ObjectId = "unknown",
-                PrimaryCategory = "Plugin",
+                PrimaryCategory = "Terminal",
                 SecondaryCategory = "Configure",
                 Activity = "Configuration Failed"
             };
@@ -92,7 +92,7 @@ namespace Hub.Managers
                 CustomerId = "unknown",
                 Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
                 ObjectId = "unknown",
-                PrimaryCategory = "Plugin",
+                PrimaryCategory = "Terminal",
                 SecondaryCategory = "Configure",
                 Activity = "Configuration Failed"
             };
