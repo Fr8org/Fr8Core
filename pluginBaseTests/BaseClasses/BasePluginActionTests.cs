@@ -48,7 +48,7 @@ namespace pluginBaseTests.BaseClasses
         }
 
         [Test]
-        public async void ProcessConfigurationRequest_CrateStroageIsNull_ShouldNotCrateStorage()
+        public async void ProcessConfigurationRequest_CrateStroageIsNull_ShouldCrateNullStorage()
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
@@ -60,7 +60,7 @@ namespace pluginBaseTests.BaseClasses
 
             
             //Assert
-            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).Count, _crateManager.FromDto(result.CrateStorage).Count);
+            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage), _crateManager.FromDto(result.CrateStorage));
         }
 
 

@@ -151,7 +151,7 @@ namespace HubWeb.Controllers
         }
 
         
-        
+
         [HttpDelete]
         [Route("{id:int}")]
         public IHttpActionResult Delete(int id)

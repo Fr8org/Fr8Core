@@ -14,7 +14,7 @@ using Data.Interfaces.Manifests;
 
 namespace terminalSalesforce.Controllers
 {
-    [RoutePrefix("plugins")]
+     [RoutePrefix("plugins")]
     public class PluginController : ApiController
     {
         [HttpGet]

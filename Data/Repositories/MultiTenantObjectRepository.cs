@@ -121,21 +121,21 @@ namespace Data.Repositories
         {
             MT_Data curMTData = null;
             if (curMTObject != null)
-            {
-                var correspondingDTFields = _uow.MTFieldRepository.FindList(a => a.MT_ObjectId == curMTObject.Id);
-                var keyMTField = correspondingDTFields.Where(a => a.Name == leftOperand.Name).FirstOrDefault();
-                var corrMTDataProperty = typeof(MT_Data).GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
-                    .Where(a => a.Name == "Value" + keyMTField.FieldColumnOffset).FirstOrDefault();
+        {
+            var correspondingDTFields = _uow.MTFieldRepository.FindList(a => a.MT_ObjectId == curMTObject.Id);
+            var keyMTField = correspondingDTFields.Where(a => a.Name == leftOperand.Name).FirstOrDefault();
+            var corrMTDataProperty = typeof(MT_Data).GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
+                .Where(a => a.Name == "Value" + keyMTField.FieldColumnOffset).FirstOrDefault();
 
                 var possibleDatas = _uow.MTDataRepository.FindList(a => a.MT_ObjectId == curMTObject.Id && a.fr8AccountId == curFr8AccountId);
 
-                foreach (var data in possibleDatas)
-                {
-                    if (data.IsDeleted) continue;
-                    var val = corrMTDataProperty.GetValue(data);
-                    if ((bool)equalMethod.Invoke(val, new object[] { val, rightOperand }))
-                        curMTData = data;
-                }
+            foreach (var data in possibleDatas)
+            {
+                if (data.IsDeleted) continue;
+                var val = corrMTDataProperty.GetValue(data);
+                if ((bool)equalMethod.Invoke(val, new object[] { val, rightOperand }))
+                    curMTData = data;
+            }
             }
             return curMTData;
         }
@@ -184,7 +184,7 @@ namespace Data.Repositories
             MT_Object curMTObject = null;
             if (ManifestId == -1)
             {
-                //We assume that there must be a single MTObject                
+                //We assume that there must be a single MTObject
                 curMTObject = _uow.MTObjectRepository.GetQuery().Where(a => a.MT_FieldType.Id == curMTObjectTypeField.Id).SingleOrDefault();
                 if (curMTObject != null)
                     curMTObject.Fields = _uow.MTFieldRepository.GetQuery().Where(a => a.MT_ObjectId == curMTObject.Id).ToList();
@@ -228,21 +228,21 @@ namespace Data.Repositories
 
             if (correspondingDTFields != null)
             {
-                foreach (var DTField in correspondingDTFields)
+            foreach (var DTField in correspondingDTFields)
+            {
+                var correspondingProperty = properties.Where(a => a.Name == DTField.Name).FirstOrDefault();
+                var valueCell = dataValueCells.Where(a => a.Name == "Value" + DTField.FieldColumnOffset).FirstOrDefault();
+
+                object val = null;
+                if (!correspondingProperty.PropertyType.IsValueType)
+                    val = valueCell.GetValue(data);
+                else
                 {
-                    var correspondingProperty = properties.Where(a => a.Name == DTField.Name).FirstOrDefault();
-                    var valueCell = dataValueCells.Where(a => a.Name == "Value" + DTField.FieldColumnOffset).FirstOrDefault();
-
-                    object val = null;
-                    if (!correspondingProperty.PropertyType.IsValueType)
-                        val = valueCell.GetValue(data);
-                    else
-                    {
-                        object boxedObject = RuntimeHelpers.GetObjectValue(correspondingProperty);
-                    }
-
-                    correspondingProperty.SetValue(obj, val);
+                    object boxedObject = RuntimeHelpers.GetObjectValue(correspondingProperty);
                 }
+
+                correspondingProperty.SetValue(obj, val);
+            }
             }
             return (T)obj;
         }
