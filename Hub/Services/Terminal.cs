@@ -54,32 +54,32 @@ namespace Hub.Services
         
 
         /// <summary>
-        /// Parses the required plugin service URL for the given action by Plugin Name and its version
+        /// Parses the required terminal service URL for the given action by Terminal Name and its version
         /// </summary>
-        /// <param name="curPluginName">Name of the required plugin</param>
-        /// <param name="curPluginVersion">Version of the required plugin</param>
+        /// <param name="curTerminalName">Name of the required terminal</param>
+        /// <param name="curTerminalVersion">Version of the required terminal</param>
         /// <param name="curActionName">Required action</param>
-        /// <returns>Parsed URl to the plugin for its action</returns>
-        public string ParseTerminalUrlFor(string curPluginName, string curPluginVersion, string curActionName)
+        /// <returns>Parsed URl to the terminal for its action</returns>
+        public string ParseTerminalUrlFor(string curTerminalName, string curTerminalVersion, string curActionName)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //get the plugin by name and version
-                ITerminalDO curPlugin =
+                //get the terminal by name and version
+                ITerminalDO curTerminal =
                     uow.TerminalRepository.FindOne(
-                        plugin => plugin.Name.Equals(curPluginName) && plugin.Version.Equals(curPluginVersion));
+                        terminal => terminal.Name.Equals(curTerminalName) && terminal.Version.Equals(curTerminalVersion));
 
 
-                string curPluginUrl = string.Empty;
+                string curTerminalUrl = string.Empty;
 
-                //if there is a valid plugin, prepare the URL with its endpoint and add the given action name
-                if (curPlugin != null)
+                //if there is a valid terminal, prepare the URL with its endpoint and add the given action name
+                if (curTerminal != null)
                 {
-                    curPluginUrl += @"http://" + curPlugin.Endpoint + "/" + curActionName;
+                    curTerminalUrl += @"http://" + curTerminal.Endpoint + "/" + curActionName;
                 }
 
                 //return the pugin URL
-                return curPluginUrl;
+                return curTerminalUrl;
             }
         }
 

@@ -13,8 +13,8 @@ namespace terminalFr8Core.Controllers
     public class TerminalController : ApiController
     {
         /// <summary>
-        /// Plugin discovery infrastructure.
-        /// Action returns list of supported actions by plugin.
+        /// Terminal discovery infrastructure.
+        /// Action returns list of supported actions by terminal.
         /// </summary>
         [HttpGet]
         [Route("discover")]
@@ -23,7 +23,7 @@ namespace terminalFr8Core.Controllers
         {
             var result = new List<ActivityTemplateDO>();
             
-            var plugin = new TerminalDO
+            var terminal = new TerminalDO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
@@ -36,7 +36,7 @@ namespace terminalFr8Core.Controllers
                 Name = "FilterUsingRunTimeData",
                 Label = "Filter Using Runtime Data",
                 Category = ActivityCategory.Processors,
-                Terminal = plugin,
+                Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 330
@@ -47,7 +47,7 @@ namespace terminalFr8Core.Controllers
                 Name = "MapFields",
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
-                Terminal = plugin,
+                Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 380
@@ -58,7 +58,7 @@ namespace terminalFr8Core.Controllers
                 Name = "AddPayloadManually",
                 Label = "Add Payload Manually",
                 Category = ActivityCategory.Processors,
-                Terminal = plugin,
+                Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 330
@@ -69,7 +69,7 @@ namespace terminalFr8Core.Controllers
                 Name = "StoreMTData",
                 Label = "Store MT Data",
                 Category = ActivityCategory.Processors,
-                Terminal = plugin,
+                Terminal = terminal,
                 Version = "1"
             });
 
@@ -78,7 +78,7 @@ namespace terminalFr8Core.Controllers
                 Name = "Select_Fr8_Object",
                 Label = "Select Fr8 Object",
                 Category = ActivityCategory.Processors,
-                Terminal = plugin,
+                Terminal = terminal,
                 Version = "1",
                 MinPaneWidth = 330
             });
@@ -88,7 +88,7 @@ namespace terminalFr8Core.Controllers
                 Name = "ConnectToSql",
                 Label = "Connect To SQL",
                 Category = ActivityCategory.Processors,
-                Terminal = plugin,
+                Terminal = terminal,
                 Version = "1"
             });
 
@@ -97,7 +97,7 @@ namespace terminalFr8Core.Controllers
                 Name = "BuildQuery",
                 Label = "Build Query",
                 Category = ActivityCategory.Processors,
-                Terminal = plugin,
+                Terminal = terminal,
                 Version = "1"
             });
 
@@ -106,13 +106,13 @@ namespace terminalFr8Core.Controllers
                 Name = "ExecuteSql",
                 Label = "Execute Sql Query",
                 Category = ActivityCategory.Processors,
-                Terminal = plugin,
+                Terminal = terminal,
                 Version = "1"
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
-                Definition = plugin,
+                Definition = terminal,
                 Actions = result
             };
 

@@ -146,7 +146,7 @@ namespace TerminalBase.BaseClasses
 
         /// <summary>
         /// This method "evaluates" as to what configuration should be called. 
-        /// Every plugin action will have its own decision making; hence this method must be implemented in the relevant child class.
+        /// Every terminal action will have its own decision making; hence this method must be implemented in the relevant child class.
         /// </summary>
         /// <param name="curActionDTO"></param>
         /// <returns></returns>

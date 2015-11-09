@@ -13,8 +13,8 @@ namespace terminalAzure.Controllers
     public class TerminalController : ApiController
     {
         /// <summary>
-        /// Plugin discovery infrastructure.
-        /// Action returns list of supported actions by plugin.
+        /// Terminal discovery infrastructure.
+        /// Action returns list of supported actions by terminal.
         /// </summary>
         [HttpGet]
         [Route("discover")]
@@ -33,7 +33,7 @@ namespace terminalAzure.Controllers
                 MinPaneWidth = 330
             };
 
-            var plugin = new TerminalDO
+            var terminal = new TerminalDO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
@@ -41,13 +41,13 @@ namespace terminalAzure.Controllers
                 Version = "1"
             };
 
-            template.Terminal = plugin;
+            template.Terminal = terminal;
 
             result.Add(template);
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
              {
-                 Definition = plugin,
+                 Definition = terminal,
                  Actions = result
              };
             return Json(curStandardFr8TerminalCM);

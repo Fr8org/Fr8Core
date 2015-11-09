@@ -5,13 +5,13 @@ namespace TerminalBase.BaseClasses
 {
     public static class BaseTerminalWebApiConfig
     {
-        public static void Register(HttpConfiguration curPluginConfiguration)
+        public static void Register(HttpConfiguration curTerminalConfiguration)
         {
             //map attribute routes
-            curPluginConfiguration.MapHttpAttributeRoutes();
+            curTerminalConfiguration.MapHttpAttributeRoutes();
 
             //add Web API Exception Filter
-            curPluginConfiguration.Filters.Add(new WebApiExceptionFilterAttribute());
+            curTerminalConfiguration.Filters.Add(new WebApiExceptionFilterAttribute());
         }
     }
 }

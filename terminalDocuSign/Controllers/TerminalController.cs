@@ -23,7 +23,7 @@ namespace terminalDocuSign.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult Get()
         {
-            var plugin = new TerminalDO()
+            var terminal = new TerminalDO()
             {
                 Name = "terminalDocuSign",
                 TerminalStatus = TerminalStatus.Active,
@@ -37,7 +37,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Monitor_DocuSign",
                 Label = "Monitor DocuSign",
                 Category = ActivityCategory.Monitors,
-                Terminal = plugin,
+                Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,
                 MinPaneWidth = 330
             };
@@ -48,7 +48,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
-                Terminal = plugin,
+                Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,
                 MinPaneWidth = 330
             };
@@ -59,7 +59,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Receive_DocuSign_Envelope",
                 Label = "Receive DocuSign Envelope",
                 Category = ActivityCategory.Receivers,
-                Terminal = plugin,
+                Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,
                 MinPaneWidth = 330
             };
@@ -70,7 +70,7 @@ namespace terminalDocuSign.Controllers
                 Label = "Record DocuSign Events",
                 Version = "1",
                 Category = ActivityCategory.Forwarders,
-                Terminal = plugin,
+                Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,
                 MinPaneWidth = 330
             };
@@ -82,7 +82,7 @@ namespace terminalDocuSign.Controllers
                 Version = "1",
                 AuthenticationType = AuthenticationType.Internal,
                 Category = ActivityCategory.Solution,
-                Terminal = plugin,
+                Terminal = terminal,
                 MinPaneWidth = 500
             };
 
@@ -92,7 +92,7 @@ namespace terminalDocuSign.Controllers
                 Label = "Collect Form Data Solution",
                 Version = "1",
                 Category = ActivityCategory.Solution,
-                Terminal = plugin,
+                Terminal = terminal,
                 MinPaneWidth = 380
             };
 
@@ -108,7 +108,7 @@ namespace terminalDocuSign.Controllers
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
-                Definition = plugin,
+                Definition = terminal,
                 Actions = actionList
             };
             return Json(curStandardFr8TerminalCM);

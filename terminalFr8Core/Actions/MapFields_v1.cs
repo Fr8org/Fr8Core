@@ -125,8 +125,8 @@ namespace terminalFr8Core.Actions
             }
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
-            var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Plugin-Provided Fields", curDownstreamFields);
-            var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+            var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields);
+            var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
 
             var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 
@@ -161,8 +161,8 @@ namespace terminalFr8Core.Actions
                 return true;
             }
 
-            var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Plugin-Provided Fields").FirstOrDefault();
-            var downStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Plugin-Provided Fields").FirstOrDefault();
+            var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();
+            var downStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").FirstOrDefault();
 
 //            // Check nullability of Upstream and Downstream crates.
 //            var upStreamFieldsCrate = curAction.CrateStorage.CrateDTO.FirstOrDefault(

@@ -295,7 +295,7 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plugin = new TerminalDO()
+                var terminal = new TerminalDO()
                 {
                     TerminalStatus = TerminalStatus.Active,
                     Endpoint = "ep",
@@ -303,10 +303,10 @@ namespace DockyardTest.Services
                     Name = "Terminal",
                 };
 
-                uow.TerminalRepository.Add(plugin);
+                uow.TerminalRepository.Add(terminal);
                 uow.SaveChanges();
 
-                var template = new ActivityTemplateDO("Template1", "label", "1", plugin.Id);
+                var template = new ActivityTemplateDO("Template1", "label", "1", terminal.Id);
                 uow.ActivityTemplateRepository.Add(template);
                 var parent = new ActionDO();
                 uow.ActionRepository.Add(parent);
@@ -583,13 +583,13 @@ namespace DockyardTest.Services
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var pluginClientMock = new Mock<ITerminalTransmitter>();
-                pluginClientMock.Setup(s => s.CallActionAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>()))
+                var terminalClientMock = new Mock<ITerminalTransmitter>();
+                terminalClientMock.Setup(s => s.CallActionAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>()))
                                 .Returns(Task.FromResult(new PayloadDTO(containerDO.Id)
                                 {
                                     CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(actionDo.CrateStorage)
                                 }));
-                ObjectFactory.Configure(cfg => cfg.For<ITerminalTransmitter>().Use(pluginClientMock.Object));
+                ObjectFactory.Configure(cfg => cfg.For<ITerminalTransmitter>().Use(terminalClientMock.Object));
 
                 var count = uow.ActionRepository.GetAll().Count();
                 await _action.PrepareToExecute(actionDo, containerDO, uow);

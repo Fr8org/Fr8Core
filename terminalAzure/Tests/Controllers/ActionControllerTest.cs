@@ -38,13 +38,13 @@ namespace terminalAzure.Tests.Controllers
         [Test]
         public async void HandleDockyardRequest_TerminalTypeIsAzureSqlServer_ResponseInitialConfiguration()
         {
-            string curPlugin = "terminalAzure";
+            string curTerminal  = "terminalAzure";
             string curActionPath = "Configure";
 
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
 
             ActionDTO actionDTO = await (Task<ActionDTO>)_baseTerminalController
-                .HandleDockyardRequest(curPlugin, curActionPath, curActionDTO);
+                .HandleDockyardRequest(curTerminal, curActionPath, curActionDTO);
 
             Assert.AreEqual("Standard Configuration Controls", _crateManager.FromDto(actionDTO.CrateStorage).First().ManifestType.Type);
         }

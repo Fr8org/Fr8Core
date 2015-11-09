@@ -170,8 +170,8 @@ namespace Hub.StructureMap
                 //For<IProcessService>().Use(mockProcess.Object);
                 //For<Mock<IProcessService>>().Use(mockProcess);
 
-                var pluginTransmitterMock = new Mock<ITerminalTransmitter>();
-                For<ITerminalTransmitter>().Use(pluginTransmitterMock.Object).Singleton();
+                var terminalTransmitterMock = new Mock<ITerminalTransmitter>();
+                For<ITerminalTransmitter>().Use(terminalTransmitterMock.Object).Singleton();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IEvent>().Use<Event>();
                 //For<ITemplate>().Use<Services.Template>();

@@ -56,7 +56,7 @@ namespace terminalAzure.Controllers
             //var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
             return
-                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this plugin. For more" +
+                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this terminal. For more" +
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
 
         }
@@ -91,7 +91,7 @@ namespace terminalAzure.Controllers
             //);
 
             return
-                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this plugin. For more" +
+                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this terminal. For more" +
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
 
         }

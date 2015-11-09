@@ -20,7 +20,7 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
-        /// Reports Plugin Error incident
+        /// Reports Terminal Error incident
         /// </summary>
         [HttpGet]
         public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError)
@@ -32,37 +32,37 @@ namespace TerminalBase.BaseClasses
         /// <summary>
         /// Reports start up incident
         /// </summary>
-        /// <param name="pluginName">Name of the plugin which is starting up</param>
+        /// <param name="terminalName">Name of the terminal which is starting up</param>
         [HttpGet]
-        public IHttpActionResult AfterStartup(string pluginName)
+        public IHttpActionResult AfterStartup(string terminalName)
         {
             return null;
 
             //TODO: Commented during development only. So that app loads fast.
-            //return Json(ReportStartUp(pluginName));
+            //return Json(ReportStartUp(terminalName));
         }
 
         /// <summary>
         /// Reports start up event by making a Post request
         /// </summary>
-        /// <param name="pluginName"></param>
-        private Task<string> ReportStartUp(string pluginName)
+        /// <param name="terminalName"></param>
+        private Task<string> ReportStartUp(string terminalName)
         {
-            return _baseTerminalEvent.SendEventOrIncidentReport(pluginName, "Terminal Incident");
+            return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Incident");
         }
 
         
         /// <summary>
         /// Reports event when process an action
         /// </summary>
-        /// <param name="pluginName"></param>
-        private Task<string> ReportEvent(string pluginName)
+        /// <param name="terminalName"></param>
+        private Task<string> ReportEvent(string terminalName)
         {
-            return _baseTerminalEvent.SendEventOrIncidentReport(pluginName, "Terminal Event");
+            return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Event");
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public object HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
+        public object HandleDockyardRequest(string curterminal, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
         {
             if (curActionDTO == null)
                 throw new ArgumentNullException("curActionDTO");
@@ -70,14 +70,14 @@ namespace TerminalBase.BaseClasses
                 throw new ArgumentException("ActivityTemplate is null", "curActionDTO");
             if (dataObject == null) dataObject = curActionDTO;
 
-            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
+            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curterminal, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
 
-            Type calledType = Type.GetType(curAssemblyName + ", " + curPlugin);
+            Type calledType = Type.GetType(curAssemblyName + ", " + curterminal);
             if (calledType == null)
-                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} plugin.", 
+                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} terminal.", 
                     curActionDTO.ActivityTemplate.Name,
                     curActionDTO.ActivityTemplate.Version, 
-                    curPlugin), "curActionDTO");
+                    curterminal), "curActionDTO");
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
             var response = (object)curMethodInfo.Invoke(curObject, new Object[] { dataObject });
