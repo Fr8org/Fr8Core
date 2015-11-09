@@ -24,7 +24,7 @@ namespace Hub.Managers
         CrateStorageDTO ToDto(CrateStorage storage);
 
         CrateStorage FromDto(CrateStorageDTO storageDto);
-        Crate FromDto(CrateDTO proxy);
+        Crate FromDto(CrateDTO crateDto);
 
         ICrateStorageUpdater UpdateStorage(Expression<Func<CrateStorageDTO>> storageAccessExpression);
         ICrateStorageUpdater UpdateStorage(Expression<Func<string>> storageAccessExpression);

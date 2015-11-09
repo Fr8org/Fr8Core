@@ -1,17 +1,14 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Hub.Managers;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Constants;
 using Data.Crates;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Hub.Managers;
 using Hub.StructureMap;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 using StructureMap;
 
 namespace HubTests.Managers
@@ -109,7 +106,7 @@ namespace HubTests.Managers
         }
 
         [Test]
-        public void GetCrateStorage_KnownManifests()
+        public void GetCrateStorageFromDto_KnownManifests()
         {
             var storageDto = GetKnownManifestsStorageDto();
             var storage = _crateManager.FromDto(storageDto);
@@ -128,7 +125,7 @@ namespace HubTests.Managers
         }
 
         [Test]
-        public void GetCrateStorage_UnknownManifests()
+        public void GetCrateStorageFromDto_UnknownManifests()
         {
             var storageDto = GetUnknownManifestsStorageDto();
             var storage = _crateManager.FromDto(storageDto);
@@ -147,7 +144,34 @@ namespace HubTests.Managers
         }
 
         [Test]
-        public void UpdateStorageStorageRewrite_Works()
+        public void GetCrateFromDto_UnknownManifest()
+        {
+            var crateDto = TestUnknownCrateDto("id1", "value");
+            var crate = _crateManager.FromDto(crateDto);
+
+            Assert.AreEqual(crate.Id, crateDto.Id);
+            Assert.AreEqual(crate.Label, crateDto.Label);
+            Assert.AreEqual(crate.ManifestType.Type, crateDto.ManifestType);
+            Assert.AreEqual(crate.ManifestType.Id, crateDto.ManifestId);
+            Assert.AreEqual(crate.GetRaw(), (JToken)"value");
+        }
+
+        [Test]
+        public void GetCrateFromDto_KnownManifest()
+        {
+            var crateDto = TestKnownCrateDto("id1", "value");
+            var crate = _crateManager.FromDto(crateDto);
+
+            Assert.AreEqual(crate.Id, crateDto.Id);
+            Assert.AreEqual(crate.Label, crateDto.Label);
+            Assert.AreEqual(crate.ManifestType.Type, crateDto.ManifestType);
+            Assert.AreEqual(crate.ManifestType.Id, crateDto.ManifestId);
+            Assert.AreEqual(crate.Get<StandardDesignTimeFieldsCM>().Fields[0].Key, "key");
+            Assert.AreEqual(crate.Get<StandardDesignTimeFieldsCM>().Fields[0].Value, "value");
+        }
+
+        [Test]
+        public void UpdateStorageDtoRewrite_Works()
         {
             var actionDto = new ActionDTO();
             
@@ -167,6 +191,29 @@ namespace HubTests.Managers
             }
 
             CheckStorageDTOs(newCrateStorageDto, actionDto.CrateStorage);
+        }
+
+        [Test]
+        public void UpdateStorageStringRewrite_Works()
+        {
+            var actionDo = new ActionDO();
+
+            actionDo.CrateStorage = JsonConvert.SerializeObject(GetKnownManifestsStorageDto());
+
+            var newCrateStorageDto = GetKnownManifestsStorageDto("newValue");
+            var newCrateStorage = _crateManager.FromDto(newCrateStorageDto);
+
+            using (var updater = _crateManager.UpdateStorage(actionDo))
+            {
+                updater.CrateStorage.Clear();
+
+                foreach (var crates in newCrateStorage)
+                {
+                    updater.CrateStorage.Add(crates);
+                }
+            }
+
+            CheckStorageDTOs(newCrateStorageDto, JsonConvert.DeserializeObject<CrateStorageDTO>(actionDo.CrateStorage));
         }
 
         private static void CheckStorageDTOs(CrateStorageDTO a, CrateStorageDTO b)
