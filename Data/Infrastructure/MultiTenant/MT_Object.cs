@@ -25,10 +25,10 @@ namespace Data.Infrastructure.MultiTenant
             var corFieldType = _mtFieldType.GetOrCreateMT_FieldType(_uow, curDataType);
             _uow.SaveChanges();
 
-            var correspondingMTObject = _uow.MTObjectRepository.FindOne(a => a.ManifestId == curManifest.ManifestId && a.MT_FieldType != null && a.MT_FieldType.Id == corFieldType.Id);
+            var correspondingMTObject = _uow.MTObjectRepository.FindOne(a => a.ManifestId == curManifest.ManifestType.Id && a.MT_FieldType != null && a.MT_FieldType.Id == corFieldType.Id);
             if (correspondingMTObject == null)
             {
-                correspondingMTObject = new Data.Entities.MT_Object() { Name = curManifest.ManifestName, MT_FieldType = corFieldType, ManifestId = curManifest.ManifestId };
+                correspondingMTObject = new Data.Entities.MT_Object() { Name = curManifest.ManifestType.Type, MT_FieldType = corFieldType, ManifestId = curManifest.ManifestType.Id };
                 _uow.MTObjectRepository.Add(correspondingMTObject);
             }
             return correspondingMTObject;

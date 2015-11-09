@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.Interfaces
 {
+    // TODO: This class should be eliminated in favour of using ManifestDiscovery
+    [Obsolete]
     public static class CrateManifests
     {
         public const int STANDARD_PAYLOAD_MANIFEST_ID = 5;
@@ -62,97 +60,5 @@ namespace Data.Interfaces
         public const string STANDARD_FR8_TERMINAL_MANIFEST_NAME = "Standard Fr8 Terminal";
         public const int STANDARD_FILE_LIST_MANIFEST_ID = 24;
         public const string STANDARD_FILE_LIST_MANIFEST_NAME = "Standard File List";
-
-
-        public static Dictionary<int, string> MANIFEST_CLASS_MAPPING_DICTIONARY = new Dictionary<int, string>
-        {  
-            {
-                3, 
-                "StandardDesignTimeFieldsCM"
-            },
-            {
-                5, 
-                "StandardPayloadDataCM"
-            },
-             {
-                6, 
-                "StandardRoutingDirectiveCM"
-            }
-            ,
-             {
-                7, 
-                "EventReportCM"
-            }
-            ,
-             {
-                8, 
-                "EventSubscriptionCM"
-            },
-             {
-                9, 
-                "StandardTableDataCM"
-            },
-            {
-                10, 
-                "StandardFileHandleMS"
-            },
-             {
-                11, 
-                "StandardRoutingDirectiveCM"
-            },
-            {
-                12, 
-                "StandardAuthenticationCM"
-            },
-            {
-                13, 
-                "StandardLoggingCM"
-            },
-            {
-                14, 
-                "DocuSignEnvelopeCM"
-            },
-            {
-                15, 
-                "DocuSignEventCM"
-            },
-            {
-                16, 
-                "StandardSecurityCM"
-            },
-            {
-                17, 
-                "StandardQueryCM"
-            },
-            {
-                18, 
-                "StandardEmailMessageCM"
-            },
-            {
-                19, 
-                "StandardFr8RoutesCM"
-            },
-            {
-                20, 
-                "StandardFr8HubsCM"
-            },
-            {
-                21, 
-                "StandardFr8ContainersCM"
-            },
-            {
-                22, 
-                "StandardParsingRecordCM"
-            },
-            {
-                23, 
-                "StandardFr8TerminalCM"
-            },
-            {
-                24, 
-                "StandardFileListCM"
-            },
-        };
-
     }
 }
