@@ -13,7 +13,7 @@ namespace Hub.Managers
     {
         public CrateStorageDTO ToDto(CrateStorage storage)
         {
-            return storage != null ? CrateStorageSerializer.Default.ConvertToDto(storage) : null;
+            return CrateStorageSerializer.Default.ConvertToDto(storage);
         }
 
         public CrateDTO ToDto(Crate crate)
@@ -28,7 +28,7 @@ namespace Hub.Managers
 
         public CrateStorage FromDto(CrateStorageDTO crateStorage)
         {
-            return crateStorage != null ? CrateStorageSerializer.Default.ConvertFromDto(crateStorage) : null;
+            return CrateStorageSerializer.Default.ConvertFromDto(crateStorage);
         }
         /// <summary>
         /// Use this method to edit CrateStorage repersented byt CrateStorageDTO property of some class instance. This method will return IDisposable updater.
@@ -137,11 +137,5 @@ namespace Hub.Managers
 
             return payloadDataMS;
         }
-
-        public StandardDesignTimeFieldsCM GetStandardDesignTimeFields(CrateDTO crate)
-        {
-            return FromDto(crate).Get<StandardDesignTimeFieldsCM>();
-        }
-
     }
 }
