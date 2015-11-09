@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Hub.Managers.APIManagers.Packagers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
@@ -332,11 +333,13 @@ namespace Hub.Services
                 emailDO.AddEmailRecipient(EmailParticipantType.To,
                     uow.EmailAddressRepository.GetOrCreateEmailAddress(userEmail));
                 emailDO.Subject = "Password Recovery Request";
+                emailDO.HTMLText = "Please reset your password by clicking this link: <a href=\"" + callbackUrl + "\">link</a>";
 
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("ForgotPassword_template"),
-                  new Dictionary<string, object>()
-                 {{"-callback_url-", callbackUrl}});
+                    new Dictionary<string, object>() {{"-callback_url-", callbackUrl}});
                 uow.SaveChanges();
+                
+               await ObjectFactory.GetInstance<IEmailPackager>().Send(new EnvelopeDO {Email = emailDO});
             }
         }
 
