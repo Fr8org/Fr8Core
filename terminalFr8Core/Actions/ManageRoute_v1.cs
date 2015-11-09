@@ -5,11 +5,17 @@ using Data.Interfaces.DataTransferObjects;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
     public class ManageRoute_v1 : BasePluginAction
     {
+        private readonly FindObjectHelper _findObjectHelper = new FindObjectHelper();
+
+
+        #region Configuration.
+
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
         {
             if (curActionDTO.CrateStorage == null 
@@ -44,7 +50,7 @@ namespace terminalFr8Core.Actions
             });
         }
 
-        protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
@@ -56,10 +62,29 @@ namespace terminalFr8Core.Actions
 
                 if (runNowButton.Clicked)
                 {
+                    var routeId = await GetRouteId(curActionDTO);
+                    if (routeId == 0)
+                    {
+                        throw new ApplicationException("No route found for current Action.");
+                    }
+
+                    await _findObjectHelper.LaunchContainer(routeId);
                 }
             }
 
-            return Task.FromResult(curActionDTO);
+            return curActionDTO;
         }
+
+        #endregion Configuration.
+
+
+        #region Execution.
+
+        public Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        {
+            return Task.FromResult<PayloadDTO>(null);
+        }
+
+        #endregion Execution.
     }
 }

@@ -16,7 +16,6 @@ using Hub.Interfaces;
 
 namespace HubWeb.Controllers
 {
-    [Fr8ApiAuthorize]
     [RoutePrefix("routes")]
     public class RouteController : ApiController
     {
@@ -36,7 +35,7 @@ namespace HubWeb.Controllers
             _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
-        
+        [Fr8ApiAuthorize]
         [Route("full/{id:int}")]
         [ResponseType(typeof(RouteDTO))]
         [HttpGet]
@@ -54,6 +53,7 @@ namespace HubWeb.Controllers
         [Route("getByAction/{id:int}")]
         [ResponseType(typeof(RouteDTO))]
         [HttpGet]
+        [Fr8ApiAuthorize]
         public IHttpActionResult GetByAction(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -64,8 +64,23 @@ namespace HubWeb.Controllers
 
                 return Ok(result);
             };
-        }  
-              
+        }
+
+        [Route("getIdByAction/{id:int}")]
+        [ResponseType(typeof(int))]
+        [HttpGet]
+        public IHttpActionResult GetIdByAction(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var action = uow.ActionRepository.GetByKey(id);
+                var route = _route.GetRoute(action);
+
+                return Ok(route.Id);
+            };
+        }
+
+        [Fr8ApiAuthorize]
         [Route("status")]
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
@@ -86,6 +101,7 @@ namespace HubWeb.Controllers
 
         
         // GET api/<controller>
+        [Fr8ApiAuthorize]
         public IHttpActionResult Get(int? id = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -111,6 +127,7 @@ namespace HubWeb.Controllers
         }
 
         [Route("~/routes")]
+        [Fr8ApiAuthorize]
         public IHttpActionResult Post(RouteOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -144,6 +161,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Route("action")]
         [ActionName("action")]
+        [Fr8ApiAuthorize]
         public IHttpActionResult PutAction(ActionDTO actionDto)
         {
             //A stub until the functionaltiy is ready
@@ -154,6 +172,7 @@ namespace HubWeb.Controllers
         
         [HttpDelete]
         [Route("{id:int}")]
+        [Fr8ApiAuthorize]
         public IHttpActionResult Delete(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -167,6 +186,7 @@ namespace HubWeb.Controllers
 
         
         [Route("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
+        [Fr8ApiAuthorize]
         public IHttpActionResult GetTriggerSettings()
         {
             return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
@@ -174,6 +194,7 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Route("activate")]
+        [Fr8ApiAuthorize]
         public IHttpActionResult Activate(RouteDO curRoute)
         {
             return Ok(_route.Activate(curRoute));
@@ -181,6 +202,7 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Route("deactivate")]
+        [Fr8ApiAuthorize]
         public IHttpActionResult Deactivate(RouteDO curRoute)
         {
             return Ok(_route.Deactivate(curRoute));
