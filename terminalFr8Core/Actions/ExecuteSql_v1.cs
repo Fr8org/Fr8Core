@@ -32,13 +32,13 @@ namespace terminalFr8Core.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
-                AddLabelControl(
+            AddLabelControl(
 
                     updater.CrateStorage,
-                    "NoConfigLabel",
-                    "No configuration",
-                    "This action does not require any configuration."
-                    );
+                "NoConfigLabel",
+                "No configuration",
+                "This action does not require any configuration."
+            );
             }
 
             return Task.FromResult(curActionDTO);

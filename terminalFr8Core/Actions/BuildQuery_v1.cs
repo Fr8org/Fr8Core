@@ -84,7 +84,7 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             using (var updater = Crate.UpdateStorage(curActionDTO))
-            {
+        {
                 RemoveControl(updater.CrateStorage, "SelectObjectError");
 
                 var selectedObject = ExtractSelectedObject(updater.CrateStorage);
@@ -106,7 +106,7 @@ namespace terminalFr8Core.Actions
                         UpdatePreviousSelectedObject(updater.CrateStorage, selectedObject);
                         await UpdateQueryableCriteria(updater.CrateStorage,  curActionDTO, selectedObject);
                 }
-            }
+                }
             }
 
             return curActionDTO;
@@ -239,7 +239,7 @@ namespace terminalFr8Core.Actions
         /// Exract previously stored valued of selected object type.
         /// </summary>
         private string ExtractPreviousSelectedObject(CrateStorage storage)
-            {
+        {
             var fields = storage.CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == "Selected Object");
 
             if (fields == null || fields.Content.Fields.Count == 0)

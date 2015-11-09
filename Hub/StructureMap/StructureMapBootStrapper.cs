@@ -112,6 +112,7 @@ namespace Hub.StructureMap
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
                 For<ISubroute>().Use<Subroute>();
+                For<IField>().Use<Field>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
@@ -163,6 +164,7 @@ namespace Hub.StructureMap
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IRoute>().Use<Route>();
                 For<ISubroute>().Use<Subroute>();
+                For<IField>().Use<Field>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);

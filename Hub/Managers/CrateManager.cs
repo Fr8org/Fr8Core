@@ -18,12 +18,12 @@ namespace Hub.Managers
 
         public CrateDTO ToDto(Crate crate)
         {
-            return CrateStorageSerializer.Default.ConvertToDto(crate);
+            return crate != null ? CrateStorageSerializer.Default.ConvertToDto(crate) : null;
         }
 
         public Crate FromDto(CrateDTO crate)
         {
-            return CrateStorageSerializer.Default.ConvertFromDto(crate);
+            return crate != null ? CrateStorageSerializer.Default.ConvertFromDto(crate) : null;
         }
 
         public CrateStorage FromDto(CrateStorageDTO crateStorage)
@@ -137,6 +137,5 @@ namespace Hub.Managers
 
             return payloadDataMS;
         }
-
     }
 }
