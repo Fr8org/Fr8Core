@@ -36,15 +36,12 @@ namespace HubWeb.Controllers
 
             var curCrateStandardEventReport = _crate.FromDto(raw);
 
-            
-
             //check if Standard Event Report inside CrateDTO
             if (!curCrateStandardEventReport.IsOfType<EventReportCM>())
                 throw new ArgumentNullException("CrateDTO passed is not a Standard Event Report.");
 
-            // This check is redundant as curCrateStandardEventReport.IsOfType<EventReportCM>() will be false in case of null content
-//            if (curCrateStandardEventReport.Get() == null)
-//                throw new ArgumentNullException("CrateDTO Content is empty.");
+            if (curCrateStandardEventReport.Get() == null)
+                throw new ArgumentNullException("CrateDTO Content is empty.");
              
             await _dockyardEvent.ProcessInboundEvents(curCrateStandardEventReport);
 
