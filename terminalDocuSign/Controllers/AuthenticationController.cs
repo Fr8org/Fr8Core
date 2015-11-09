@@ -14,7 +14,7 @@ namespace terminalDocuSign.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController : BaseTerminalController
     {
-        private const string curPlugin = "terminalDocuSign";
+        private const string curTerminal = "terminalDocuSign";
 
 
         [HttpPost]
@@ -48,7 +48,7 @@ namespace terminalDocuSign.Controllers
             }
             catch (Exception ex)
             {
-                ReportPluginError(curPlugin, ex);
+                ReportTerminalError(curTerminal, ex);
 
                 return new AuthTokenDTO()
                 {

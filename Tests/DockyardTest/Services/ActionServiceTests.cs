@@ -38,7 +38,7 @@ namespace DockyardTest.Services
         private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
         private readonly IEnumerable<ActivityTemplateDO> _pr2Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "SQL Read", Version = "1.0" } };
         private bool _eventReceived;
-        private BaseTerminalAction _basePluginAction;
+        private BaseTerminalAction _baseTerminalAction;
         private ITerminal _terminal;
         private Mock<ITerminalTransmitter> TerminalTransmitterMock
         {
@@ -54,7 +54,7 @@ namespace DockyardTest.Services
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
             _eventReceived = false;
-            _basePluginAction = new BaseTerminalAction();
+            _baseTerminalAction = new BaseTerminalAction();
             _terminal = ObjectFactory.GetInstance<Terminal>();
         }
         

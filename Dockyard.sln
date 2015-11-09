@@ -36,7 +36,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalFr8Core", "terminal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSlack", "terminalSlack\terminalSlack.csproj", "{990DB8CB-AAD6-42FE-940D-3A731DF56ABE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalIntegrationTests", "pluginIntegrationTests\terminalIntegrationTests.csproj", "{579BA25F-1DF5-474A-8A3E-0447FF75711C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalsIntegrationTests", "pluginIntegrationTests\terminalsIntegrationTests.csproj", "{579BA25F-1DF5-474A-8A3E-0447FF75711C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSalesforce", "terminalSalesforce\terminalSalesforce.csproj", "{85CB0215-96DF-4C38-A022-1BE6C952813B}"
 EndProject
@@ -52,7 +52,7 @@ Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "terminalCloudService", "ter
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalWebRole", "terminalWebRole\terminalWebRole.csproj", "{8C7F0CB5-9CD8-40D8-A539-51F451CCB29E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalBaseTests", "pluginBaseTests\terminalBaseTests.csproj", "{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalsBaseTests", "pluginBaseTests\terminalsBaseTests.csproj", "{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalFr8CoreTests", "terminalFr8CoreTests\terminalFr8CoreTests.csproj", "{6C3090FC-50D2-4A7E-9B29-EAB9D8802F42}"
 EndProject

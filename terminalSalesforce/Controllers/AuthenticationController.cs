@@ -10,7 +10,7 @@ namespace terminalSalesforce.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController : BaseTerminalController
     {
-        private const string curPlugin = "terminalSalesforce";
+        private const string curTerminal = "terminalSalesforce";
         
         private Authentication _authentication = new Authentication();
 
@@ -33,7 +33,7 @@ namespace terminalSalesforce.Controllers
             }
             catch (Exception ex)
             {
-                ReportPluginError(curPlugin, ex);
+                ReportTerminalError(curTerminal, ex);
 
                 return Task.FromResult(
                     new AuthTokenDTO()

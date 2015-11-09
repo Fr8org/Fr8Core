@@ -21,7 +21,7 @@ namespace TerminalBase
             var pluginName = GetTerminalName(actionExecutedContext.ActionContext.ControllerContext.Controller);
 
             //POST event to fr8 about this plugin error
-            new BaseTerminalController().ReportPluginError(pluginName, curPluginError);
+            new BaseTerminalController().ReportTerminalError(pluginName, curPluginError);
 
             //prepare the response JSON based on the exception type
             actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);

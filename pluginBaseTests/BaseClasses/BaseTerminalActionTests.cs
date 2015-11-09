@@ -25,14 +25,14 @@ namespace pluginBaseTests.BaseClasses
     public class BaseTerminalActionTests : BaseTest
     {
         IDisposable _coreServer;
-        BaseTerminalAction _basePluginAction;
+        BaseTerminalAction _baseTerminalAction;
         private ICrateManager _crateManager;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _basePluginAction = new BaseTerminalAction();
+            _baseTerminalAction = new BaseTerminalAction();
             _coreServer = pluginBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
@@ -101,7 +101,7 @@ namespace pluginBaseTests.BaseClasses
         [Test]
         public void MergeContentFields_ReturnsStandardDesignTimeFieldsMS()
         {
-            var result = _basePluginAction.MergeContentFields(FixtureData.TestCrateDTO1());
+            var result = _baseTerminalAction.MergeContentFields(FixtureData.TestCrateDTO1());
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Fields.Count);
         }
@@ -119,7 +119,7 @@ namespace pluginBaseTests.BaseClasses
 
                 ActionDO curAction = FixtureData.TestAction57();
 
-                var result = await _basePluginAction.GetDesignTimeFields(
+                var result = await _baseTerminalAction.GetDesignTimeFields(
                     curAction.Id, GetCrateDirection.Upstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(16, result.Fields.Count);
@@ -136,7 +136,7 @@ namespace pluginBaseTests.BaseClasses
 
                 ActionDO curAction = FixtureData.TestAction57();
 
-                var result = await _basePluginAction.GetDesignTimeFields(
+                var result = await _baseTerminalAction.GetDesignTimeFields(
                     curAction.Id, GetCrateDirection.Downstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(18, result.Fields.Count);

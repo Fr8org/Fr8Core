@@ -41,7 +41,7 @@ namespace DockyardTest.Controllers
 
         [Test]
         [Category("Controllers.EventController.Event")]
-        public void EventController_Event_WithPluginIncident_ReturnsOK()
+        public void EventController_Event_WithTerminalIncident_ReturnsOK()
         {
             //Arrange with plugin incident
             _incidentReporter.SubscribeToAlerts();
@@ -62,7 +62,7 @@ namespace DockyardTest.Controllers
 
         [Test]
         [Category("Controllers.EventController.Event")]
-        public void EventController_Post_WithPluginEvent_ReturnsOK()
+        public void EventController_Post_WithTerminalEvent_ReturnsOK()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

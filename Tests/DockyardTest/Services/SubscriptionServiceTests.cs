@@ -26,7 +26,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void CanRetrievePluginRegistrations()
+        public void CanRetrieveTerminalRegistrations()
         {
             /*
              * TODO: Subscription logic should be changed in V2

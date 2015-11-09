@@ -11,7 +11,7 @@ namespace terminalSlack.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController : BaseTerminalController
     {
-        private const string curPlugin = "terminalSlack";
+        private const string curTerminal = "terminalSlack";
 
         private readonly ISlackIntegration _slackIntegration;
 
@@ -66,7 +66,7 @@ namespace terminalSlack.Controllers
             }
             catch (Exception ex)
             {
-                ReportPluginError(curPlugin, ex);
+                ReportTerminalError(curTerminal, ex);
 
                 return new AuthTokenDTO()
                 {

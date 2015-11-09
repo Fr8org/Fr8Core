@@ -13,20 +13,20 @@ namespace TerminalBase.BaseClasses
     //we can generate instances of this.
     public class BaseTerminalController : ApiController
     {
-        private readonly BaseTerminalEvent _basePluginEvent;
+        private readonly BaseTerminalEvent _baseTerminalEvent;
         public BaseTerminalController()
         {
-            _basePluginEvent = new BaseTerminalEvent();
+            _baseTerminalEvent = new BaseTerminalEvent();
         }
 
         /// <summary>
         /// Reports Plugin Error incident
         /// </summary>
         [HttpGet]
-        public IHttpActionResult ReportPluginError(string pluginName, Exception pluginError)
+        public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError)
         {
-            var exceptionMessage = string.Format("{0}\r\n{1}", pluginError.Message, pluginError.StackTrace);
-            return Json(_basePluginEvent.SendTerminalErrorIncident(pluginName, exceptionMessage, pluginError.GetType().Name));
+            var exceptionMessage = string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
+            return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name));
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace TerminalBase.BaseClasses
         /// <param name="pluginName"></param>
         private Task<string> ReportStartUp(string pluginName)
         {
-            return _basePluginEvent.SendEventOrIncidentReport(pluginName, "Plugin Incident");
+            return _baseTerminalEvent.SendEventOrIncidentReport(pluginName, "Plugin Incident");
         }
 
         
@@ -58,7 +58,7 @@ namespace TerminalBase.BaseClasses
         /// <param name="pluginName"></param>
         private Task<string> ReportEvent(string pluginName)
         {
-            return _basePluginEvent.SendEventOrIncidentReport(pluginName, "Plugin Event");
+            return _baseTerminalEvent.SendEventOrIncidentReport(pluginName, "Plugin Event");
         }
 
         // For /Configure and /Activate actions that accept ActionDTO

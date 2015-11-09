@@ -13,14 +13,14 @@ namespace pluginBaseTests.BaseClasses
     public class BaseTerminalControllerTests : BaseTest
     {
         IDisposable _coreServer;
-        BaseTerminalController _basePluginController;
+        BaseTerminalController _baseTerminalController;
 
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _basePluginController = new BaseTerminalController();
+            _baseTerminalController = new BaseTerminalController();
             _coreServer = pluginBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
         }
 

@@ -19,7 +19,7 @@ namespace terminalAzure.Tests.Controllers
     [TestFixture]
     public class ActionControllerTest : BaseTest
     {
-        BaseTerminalController _basePluginController;
+        BaseTerminalController _baseTerminalController;
         private ICrateManager _crateManager;
 
         [SetUp]
@@ -32,18 +32,18 @@ namespace terminalAzure.Tests.Controllers
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
             
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-            _basePluginController = new BaseTerminalController();
+            _baseTerminalController = new BaseTerminalController();
         }
 
         [Test]
-        public async void HandleDockyardRequest_PluginTypeIsAzureSqlServer_ResponseInitialConfiguration()
+        public async void HandleDockyardRequest_TerminalTypeIsAzureSqlServer_ResponseInitialConfiguration()
         {
             string curPlugin = "terminalAzure";
             string curActionPath = "Configure";
 
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
 
-            ActionDTO actionDTO = await (Task<ActionDTO>)_basePluginController
+            ActionDTO actionDTO = await (Task<ActionDTO>)_baseTerminalController
                 .HandleDockyardRequest(curPlugin, curActionPath, curActionDTO);
 
             Assert.AreEqual("Standard Configuration Controls", _crateManager.FromDto(actionDTO.CrateStorage).First().ManifestType.Type);

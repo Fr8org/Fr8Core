@@ -19,7 +19,7 @@ namespace terminalExcel.Controllers
         [HttpGet]
         [Route("discover")]
         [ResponseType(typeof(StandardFr8TerminalCM))]
-        public IHttpActionResult DiscoverPlugins()
+        public IHttpActionResult DiscoverTerminals()
         {
             var result = new List<ActivityTemplateDO>();
 

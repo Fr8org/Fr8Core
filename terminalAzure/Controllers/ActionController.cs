@@ -12,37 +12,37 @@ namespace terminalAzure.Controllers
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private const string curPlugin = "terminalAzure";
-        private BaseTerminalController _basePluginController = new BaseTerminalController();
+        private const string curTerminal = "terminalAzure";
+        private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
         [HttpPost]
         [Route("configure")]
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>) _basePluginController
-                .HandleDockyardRequest(curPlugin, "Configure", curActionDTO);           
+            return await (Task<ActionDTO>) _baseTerminalController
+                .HandleDockyardRequest(curTerminal, "Configure", curActionDTO);           
         }
        
         [HttpPost]
         [Route("activate")]
         public ActionDTO Activate(ActionDTO curActionDataPackage)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Activate", curActionDataPackage);
+            return (ActionDTO)_baseTerminalController.HandleDockyardRequest(curTerminal, "Activate", curActionDataPackage);
         }
 
         [HttpPost]
         [Route("deactivate")]
         public ActionDTO Deactivate(ActionDTO curActionDataPackage)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Deactivate", curActionDataPackage);
+            return (ActionDTO)_baseTerminalController.HandleDockyardRequest(curTerminal, "Deactivate", curActionDataPackage);
         }
 
         [HttpPost]
         [Route("run")]
         public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
-            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(
-                curPlugin, "Run", actionDto);
+            return await (Task<PayloadDTO>)_baseTerminalController.HandleDockyardRequest(
+                curTerminal, "Run", actionDto);
         }
 
         //----------------------------------------------------------
