@@ -16,7 +16,7 @@ namespace terminalTwilio.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverTerminals()
         {
-            var plugin = new TerminalDO()
+            var terminal = new TerminalDO()
             {
                 Name = "terminalTwilio",
                 TerminalStatus = TerminalStatus.Active,
@@ -31,7 +31,7 @@ namespace terminalTwilio.Controllers
                 Tags = "Twillio",
                 Category = ActivityCategory.Forwarders,
                 Version = "1",
-                Terminal = plugin,
+                Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
                 MinPaneWidth = 330
             };
@@ -43,7 +43,7 @@ namespace terminalTwilio.Controllers
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
-                Definition = plugin,
+                Definition = terminal,
                 Actions = actionList
             };
             return Json(curStandardFr8TerminalCM);

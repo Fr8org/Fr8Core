@@ -376,7 +376,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO TestActionAuthenticate1()
         {
-            TerminalDO curPluginDO = new TerminalDO()
+            TerminalDO curTerminalDO = new TerminalDO()
             {
                 Id = 1,
                 Name = "AzureSqlServer",
@@ -391,7 +391,7 @@ namespace UtilitiesTesting.Fixtures
                 //ParentPluginRegistration = "pluginAzureSqlServer",
                 Version = "v1",
                 AuthenticationType = AuthenticationType.None,
-                Terminal = curPluginDO,
+                Terminal = curTerminalDO,
                 TerminalId = 1,
             };
 

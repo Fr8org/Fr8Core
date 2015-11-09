@@ -99,7 +99,7 @@ namespace UtilitiesTesting.Fixtures
                 Name = "Select Upstream Crate",
                 Source = new FieldSourceDTO
                 {
-                    Label = "Upstream Plugin-Provided Fields",
+                    Label = "Upstream Terminal-Provided Fields",
                     ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
                 }
             });
@@ -180,7 +180,7 @@ namespace UtilitiesTesting.Fixtures
                 },
                 Source = new FieldSourceDTO
                 {
-                    Label = "Upstream Plugin-Provided Fields",
+                    Label = "Upstream Terminal-Provided Fields",
                     ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
                 }
             });

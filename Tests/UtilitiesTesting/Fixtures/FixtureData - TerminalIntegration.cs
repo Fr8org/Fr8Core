@@ -85,10 +85,10 @@ namespace UtilitiesTesting.Fixtures
 
         public static TerminalDO TestTerminal_ExtractData()
         {
-            var pluginDO = TestTerminal_Excel();
-            pluginDO.Endpoint = TestTerminal_ExtractData_EndPoint;
+            var TerminalDO = TestTerminal_Excel();
+            TerminalDO.Endpoint = TestTerminal_ExtractData_EndPoint;
 
-            return pluginDO;
+            return TerminalDO;
         }
 
         public static TerminalDO TestTerminal_Excel()

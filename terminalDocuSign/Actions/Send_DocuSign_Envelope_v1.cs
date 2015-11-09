@@ -161,7 +161,7 @@ namespace terminalDocuSign.Actions
             // Build a crate with the list of available upstream fields
                 var curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c =>
                                                                                     c.ManifestType.Id == (int) MT.StandardDesignTimeFields
-                && c.Label == "Upstream Plugin-Provided Fields");
+                && c.Label == "Upstream Terminal-Provided Fields");
 
             if (curUpstreamFieldsCrate != null)
             {
@@ -172,7 +172,7 @@ namespace terminalDocuSign.Actions
                 .Fields
                 .ToArray();
 
-            curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+            curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
                 updater.CrateStorage.Add(curUpstreamFieldsCrate);
             }
 
@@ -262,7 +262,7 @@ namespace terminalDocuSign.Actions
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
-                new TextSourceControlDefinitionDTO("For the Email Address Use", "Upstream Plugin-Provided Fields", "Recipient")
+                new TextSourceControlDefinitionDTO("For the Email Address Use", "Upstream Terminal-Provided Fields", "Recipient")
             };
 
             var controls = new StandardConfigurationControlsCM()

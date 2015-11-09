@@ -12,7 +12,7 @@ using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
 using Data.Interfaces.Manifests;
 
-namespace pluginSalesforce.Controllers
+namespace terminalSalesforce.Controllers
 {
     [RoutePrefix("terminals")]
     public class TerminalController : ApiController
@@ -22,7 +22,7 @@ namespace pluginSalesforce.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult Get()
         {
-            var plugin = new TerminalDO()
+            var terminal = new TerminalDO()
             {
                 Name = "terminalSendGrid",
                 TerminalStatus = TerminalStatus.Active,
@@ -36,7 +36,7 @@ namespace pluginSalesforce.Controllers
                 Label = "Send Email Vie Send Grid",
                 Version = "1",
                 Tags = "Notifier",
-                Terminal = plugin,
+                Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330
@@ -49,7 +49,7 @@ namespace pluginSalesforce.Controllers
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
-                Definition = plugin,
+                Definition = terminal,
                 Actions = actionList
             };
             return Json(curStandardFr8TerminalCM);

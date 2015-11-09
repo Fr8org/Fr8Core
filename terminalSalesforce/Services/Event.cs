@@ -61,7 +61,7 @@ namespace terminalSalesforce.Services
             }
             catch (ArgumentException e)
             {
-                _baseTerminalController.ReportTerminalError("pluginSalesforce", e);               
+                _baseTerminalController.ReportTerminalError("terminalSalesforce", e);               
                 throw new ArgumentException();
             }
         }

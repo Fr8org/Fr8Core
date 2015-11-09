@@ -15,7 +15,7 @@ using Hub.StructureMap;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 
-[assembly: OwinStartup("PluginExcelConfiguration", typeof(terminalExcel.StartupTerminalExcel))]
+[assembly: OwinStartup("TerminalExcelConfiguration", typeof(terminalExcel.StartupTerminalExcel))]
 
 namespace terminalExcel
 {
@@ -46,7 +46,7 @@ namespace terminalExcel
 
             if (!selfHost)
             {
-                StartHosting("plugin_excel");
+                StartHosting("terminal_excel");
             }
         }
 

@@ -74,7 +74,7 @@ namespace terminalSendGrid.Actions
             var control = CreateSpecificOrUpstreamValueChooser(
                 "For the Email Address, use",
                 "EmailAddress",
-                "Upstream Plugin-Provided Fields"
+                "Upstream Terminal-Provided Fields"
             );
 
             return control;
@@ -89,7 +89,7 @@ namespace terminalSendGrid.Actions
             var control = CreateSpecificOrUpstreamValueChooser(
                 "For the Email Subject, use",
                 "EmailSubject",
-                "Upstream Plugin-Provided Fields"
+                "Upstream Terminal-Provided Fields"
             );
 
             return control;
@@ -104,7 +104,7 @@ namespace terminalSendGrid.Actions
             var control = CreateSpecificOrUpstreamValueChooser(
                 "For the Email Body, use",
                 "EmailBody",
-                "Upstream Plugin-Provided Fields"
+                "Upstream Terminal-Provided Fields"
             );
 
             return control;
@@ -130,7 +130,7 @@ namespace terminalSendGrid.Actions
                     .ToArray();
 
             var crateDTO = Crate.CreateDesignTimeFieldsCrate(
-                "Upstream Plugin-Provided Fields",
+                "Upstream Terminal-Provided Fields",
                 curUpstreamFields
             );
 

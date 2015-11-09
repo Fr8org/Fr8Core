@@ -9,7 +9,7 @@ namespace terminalExcel.Services
     {
         public void Process(string curExternalEventPayload)
         {
-            //Process external event payload from plugin
+            //Process external event payload from Terminal
 
         }
     }

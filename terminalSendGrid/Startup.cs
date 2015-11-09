@@ -16,7 +16,7 @@ namespace terminalSendGrid
     {
         public void Configuration(IAppBuilder app)
         {
-            StartHosting("plugin_sendgrid");
+            StartHosting("terminal_sendgrid");
         }
     }
 }

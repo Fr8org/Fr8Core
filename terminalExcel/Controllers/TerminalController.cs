@@ -13,8 +13,8 @@ namespace terminalExcel.Controllers
     public class TerminalController : ApiController
     {
         /// <summary>
-        /// Plugin discovery infrastructure.
-        /// Action returns list of supported actions by plugin.
+        /// Terminal discovery infrastructure.
+        /// Action returns list of supported actions by terminal.
         /// </summary>
         [HttpGet]
         [Route("discover")]
@@ -23,7 +23,7 @@ namespace terminalExcel.Controllers
         {
             var result = new List<ActivityTemplateDO>();
 
-            var plugin = new TerminalDO
+            var terminal = new TerminalDO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
@@ -37,7 +37,7 @@ namespace terminalExcel.Controllers
                 Label = "Load Table Data",
                 Version = "1",
                 Category = ActivityCategory.Receivers,
-                Terminal = plugin,
+                Terminal = terminal,
                 Tags = "Table Data Generator",
                 MinPaneWidth = 210
             });
@@ -45,7 +45,7 @@ namespace terminalExcel.Controllers
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
-                Definition = plugin,
+                Definition = terminal,
                 Actions = result
             };
             return Json(curStandardFr8TerminalCM);

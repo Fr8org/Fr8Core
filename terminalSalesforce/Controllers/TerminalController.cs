@@ -22,7 +22,7 @@ namespace terminalSalesforce.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult Get()
         {
-            var plugin = new TerminalDO()
+            var terminal = new TerminalDO()
             {
                 Name = "terminalSalesforce",
                 TerminalStatus = TerminalStatus.Active,
@@ -35,7 +35,7 @@ namespace terminalSalesforce.Controllers
                 Version = "1",
                 Name = "Create_Lead",
                 Label = "Create Lead",
-                Terminal = plugin,
+                Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330
@@ -46,7 +46,7 @@ namespace terminalSalesforce.Controllers
                 Version = "1",
                 Name = "Create_Contact",
                 Label = "Create Contact",
-                Terminal = plugin,
+                Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330
@@ -57,7 +57,7 @@ namespace terminalSalesforce.Controllers
                 Version = "1",
                 Name = "Create_Account",
                 Label = "Create Account",
-                Terminal = plugin,
+                Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330
@@ -70,7 +70,7 @@ namespace terminalSalesforce.Controllers
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
-                Definition = plugin,
+                Definition = terminal,
                 Actions = actionList
             };
             return Json(curStandardFr8TerminalCM);
