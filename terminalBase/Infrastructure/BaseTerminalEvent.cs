@@ -63,7 +63,7 @@ namespace TerminalBase.Infrastructure
         }
 
         /// <summary>
-        /// Sends "Plugin Incident" to report Plugin Error
+        /// Sends "Terminal Incident" to report Plugin Error
         /// </summary>
         /// <param name="pluginName">Name of the plugin where the exception occured</param>
         /// <param name="exceptionMessage">Exception Message</param>
@@ -89,7 +89,7 @@ namespace TerminalBase.Infrastructure
 
             //return the response from the fr8's Event Controller
             return restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                _crateManager.ToDto(_eventReportCrateFactory.Create("Plugin Incident", pluginName, loggingDataCrate)));
+                _crateManager.ToDto(_eventReportCrateFactory.Create("Terminal Incident", pluginName, loggingDataCrate)));
         }
 
         /// <summary>

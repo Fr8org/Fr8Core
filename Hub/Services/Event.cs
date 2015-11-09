@@ -44,7 +44,7 @@ namespace Hub.Services
             var result = await new HttpClient().PostAsync(new Uri(curPluginUrl, UriKind.Absolute), request.Content);
 
             //Salesforce response needs to be acknowledge
-            if (pluginName=="pluginSalesforce")
+            if (pluginName == "terminalSalesforce")
             {
                 string xmlResponse = result.Content.ReadAsAsync<string>().Result;
                 return xmlResponse;

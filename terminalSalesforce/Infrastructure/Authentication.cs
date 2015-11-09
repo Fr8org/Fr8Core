@@ -95,7 +95,7 @@ namespace terminalSalesforce.Infrastructure
         {
             var auth = new AuthenticationClient();
             code = code.Replace("%3D", "=");
-            string redirectUrl = SalesforceAuthCallbackURLDomain + "/AuthenticationCallback/ProcessSuccessfulOAuthResponse?dockyard_plugin=terminalSalesforce&version=1";
+            string redirectUrl = SalesforceAuthCallbackURLDomain + "/AuthenticationCallback/ProcessSuccessfulOAuthResponse?dockyard_terminal=terminalSalesforce&version=1";
             await auth.WebServerAsync(salesforceConsumerKey, salesforceConsumerSecret, redirectUrl, code, tokenRequestEndpointUrl);
             return auth;
         }
@@ -103,7 +103,7 @@ namespace terminalSalesforce.Infrastructure
 
         public string CreateAuthUrl(string exteranalStateValue)
         {
-            string redirectUrl = SalesforceAuthCallbackURLDomain + "/AuthenticationCallback/ProcessSuccessfulOAuthResponse?dockyard_plugin=terminalSalesforce&version=1";
+            string redirectUrl = SalesforceAuthCallbackURLDomain + "/AuthenticationCallback/ProcessSuccessfulOAuthResponse?dockyard_terminal=terminalSalesforce&version=1";
             string url = Common.FormatAuthUrl(
                 salesforceAuthUrl, Salesforce.Common.Models.ResponseTypes.Code,
                 salesforceConsumerKey,

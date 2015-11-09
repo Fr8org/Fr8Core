@@ -43,7 +43,7 @@ namespace DockyardTest.Controllers
         [Category("Controllers.EventController.Event")]
         public void EventController_Event_WithTerminalIncident_ReturnsOK()
         {
-            //Arrange with plugin incident
+            //Arrange with terminal incident
             _incidentReporter.SubscribeToAlerts();
             var eventDto = FixtureData.TestTerminalIncidentDto();
 
@@ -66,7 +66,7 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //Arrange with plugin event
+                //Arrange with terminal event
                 _eventReporter.SubscribeToAlerts();
 
                 var curEventDTO = FixtureData.TestTerminalEventDto();

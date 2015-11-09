@@ -48,7 +48,7 @@ namespace TerminalBase.BaseClasses
         /// <param name="pluginName"></param>
         private Task<string> ReportStartUp(string pluginName)
         {
-            return _baseTerminalEvent.SendEventOrIncidentReport(pluginName, "Plugin Incident");
+            return _baseTerminalEvent.SendEventOrIncidentReport(pluginName, "Terminal Incident");
         }
 
         
@@ -58,7 +58,7 @@ namespace TerminalBase.BaseClasses
         /// <param name="pluginName"></param>
         private Task<string> ReportEvent(string pluginName)
         {
-            return _baseTerminalEvent.SendEventOrIncidentReport(pluginName, "Plugin Event");
+            return _baseTerminalEvent.SendEventOrIncidentReport(pluginName, "Terminal Event");
         }
 
         // For /Configure and /Activate actions that accept ActionDTO

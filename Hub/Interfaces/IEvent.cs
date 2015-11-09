@@ -11,12 +11,12 @@ namespace Hub.Interfaces
     public interface IEvent
     {
         /// <summary>
-        /// Handles Plugin Incident
+        /// Handles Terminal Incident
         /// </summary>
         void HandleTerminalIncident(LoggingDataCm incident);
         
         /// <summary>
-        /// Handles Plugin Event 
+        /// Handles Terminal Event 
         /// </summary>
         void HandleTerminalEvent(LoggingDataCm eventDataCm);
 

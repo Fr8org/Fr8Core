@@ -24,7 +24,7 @@ namespace UtilitiesTesting.Fixtures
                 });
             var eventDto = new EventCM
             {
-                EventName = "Plugin Incident",
+                EventName = "Terminal Incident",
             };
 
             eventDto.CrateStorage.Add(loggingDataCrate);
@@ -41,7 +41,7 @@ namespace UtilitiesTesting.Fixtures
                 });
             var eventDto = new EventCM
             {
-                EventName = "Plugin Event",
+                EventName = "Terminal Event",
             };
 
             eventDto.CrateStorage.Add(loggingDataCrate);
