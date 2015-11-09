@@ -100,7 +100,7 @@ namespace TerminalBase.BaseClasses
             }
 
             return null;
-                }
+        }
 
         protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(ActionDTO curActionDTO, StandardDesignTimeFieldsCM designTimeFields)
         {

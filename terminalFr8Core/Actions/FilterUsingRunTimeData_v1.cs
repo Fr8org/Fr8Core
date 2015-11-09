@@ -252,7 +252,6 @@ namespace terminalFr8Core.Actions
             var queryableFields = curActionDTO.CrateStorage.Crates
                 .First(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
                     && x.Label == "Queryable Criteria");
-            Crate.
             return await ValidateByStandartDesignTimeFields(curActionDTO, Crate.GetStandardDesignTimeFields(queryableFields));
         }
 
@@ -267,7 +266,7 @@ namespace terminalFr8Core.Actions
 
             var hasQueryFieldsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) != null;
 
-            if (hasControlsCrate && hasQueryFieldsCrate && HasValidConfiguration(curActionDataPackageDTO))
+            if (hasControlsCrate && hasQueryFieldsCrate)
             {
                 
                 return ConfigurationRequestType.Followup;

@@ -347,6 +347,7 @@ namespace Hub.Services
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     curActionDO = SaveOrUpdateAction(uow, curActionDO);
+                    return Mapper.Map<ActionDTO>(curActionDO);
                 }
             }
             return Mapper.Map<ActionDTO>(curActionDO);
