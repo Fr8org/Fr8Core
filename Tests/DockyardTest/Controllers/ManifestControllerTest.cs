@@ -233,7 +233,7 @@ namespace DockyardTest.Controllers
             var manifestController = CreateManifestController();
 
             //Act
-            int id = 14;
+            int id = 15;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
@@ -254,7 +254,7 @@ namespace DockyardTest.Controllers
             var manifestController = CreateManifestController();
 
             //Act
-            int id = 15;
+            int id = 14;
             var actionResult = manifestController.Get(id) as OkNegotiatedContentResult<CrateDTO>;
             var fieldsList = Deserialize(actionResult);
             ////Assert
