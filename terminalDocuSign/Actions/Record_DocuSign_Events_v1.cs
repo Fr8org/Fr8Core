@@ -18,7 +18,7 @@ using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {
-    public class Record_DocuSign_Events_v1 : BasePluginAction
+    public class Record_DocuSign_Events_v1 : BaseTerminalAction
     {
         /// <summary>
         /// //For this action, both Initial and Followup configuration requests are same. Hence it returns Initial config request type always.

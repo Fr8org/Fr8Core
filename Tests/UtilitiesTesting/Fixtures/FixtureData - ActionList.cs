@@ -336,7 +336,7 @@ namespace UtilitiesTesting.Fixtures
               {
                   Id = 1,
                   Version = "1",
-                  Plugin = FixtureData.PluginFive(),
+                  Terminal = FixtureData.TerminalFive(),
                   Name = "Monitor_DocuSign"
               };
            ActionListDO al_1 = new ActionListDO()
@@ -365,7 +365,7 @@ namespace UtilitiesTesting.Fixtures
               {
                   Id = 1,
                   Version = "1",
-                  Plugin = FixtureData.PluginFive(),
+                  Terminal = FixtureData.TerminalFive(),
                   Name = "Monitor_DocuSign"
               };
              ActionListDO al_1 = new ActionListDO() { ParentActivityId = 12 };

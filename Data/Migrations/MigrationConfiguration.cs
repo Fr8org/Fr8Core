@@ -145,9 +145,9 @@ namespace Data.Migrations
                 token.ExternalAccountId = "docusign_developer@dockyard.company";
                 token.Token = "";
                 token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
-                var docuSignPlugin = uow.PluginRepository.FindOne(p => p.Name == "pluginDocuSign");
-                token.Plugin = docuSignPlugin;
-                token.PluginID = docuSignPlugin.Id;
+                var docuSignPlugin = uow.TerminalRepository.FindOne(p => p.Name == "pluginDocuSign");
+                token.Terminal = docuSignPlugin;
+                token.TerminalID = docuSignPlugin.Id;
 				token.ExpiresAt = DateTime.UtcNow.AddDays(10);
 
                 uow.AuthorizationTokenRepository.Add(token);
@@ -398,11 +398,11 @@ namespace Data.Migrations
                 uow.UserRepository.AddDefaultProfile(user);
         }
 
-        private void AddSubscription(IUnitOfWork uow, Fr8AccountDO curAccount, PluginDO curPlugin, int curAccessLevel)
+        private void AddSubscription(IUnitOfWork uow, Fr8AccountDO curAccount, TerminalDO curPlugin, int curAccessLevel)
         {
             var curSub = new SubscriptionDO()
             {
-                Plugin = curPlugin,
+                Terminal = curPlugin,
                 DockyardAccount = curAccount,
                 AccessLevel = curAccessLevel
             };
@@ -410,7 +410,7 @@ namespace Data.Migrations
             uow.SubscriptionRepository.Add(curSub);
         }
 
-        private void AddPlugins(IUnitOfWork uow)
+        private void AddTerminals(IUnitOfWork uow)
         {
             // Create test DockYard account for plugin subscription.
             // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
@@ -419,36 +419,36 @@ namespace Data.Migrations
             // AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1", true);
             // AddPlugins(uow, "pluginExcel", "localhost:47011", "1", false);
             // AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1", true);
-            AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1");
-            AddPlugins(uow, "pluginExcel", "localhost:47011", "1");
-            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1");
+            AddTerminals(uow, "pluginDocuSign", "localhost:53234", "1");
+            AddTerminals(uow, "pluginExcel", "localhost:47011", "1");
+            AddTerminals(uow, "pluginSalesforce", "localhost:51234", "1");
             uow.SaveChanges();
         }
 
         // TODO: remove this, DO-1397
         // private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint,
         //     string version, bool requiresAuthentication)
-        private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint,
+        private static void AddTerminals(IUnitOfWork uow, string pluginName, string endPoint,
             string version)
         {
             // Check that plugin does not exist yet.
-            var pluginExists = uow.PluginRepository.GetQuery().Any(x => x.Name == pluginName);
+            var pluginExists = uow.TerminalRepository.GetQuery().Any(x => x.Name == pluginName);
 
             // Add new plugin and subscription to repository, if plugin doesn't exist.
             if (!pluginExists)
             {
                 // Create plugin instance.
-                var pluginDO = new PluginDO()
+                var pluginDO = new TerminalDO()
                 {
                     Name = pluginName,
-                    PluginStatus = PluginStatus.Active,
+                    TerminalStatus = TerminalStatus.Active,
                     Endpoint = endPoint,
                     Version = version,
                     // TODO: remove this, DO-1397
                     // RequiresAuthentication = requiresAuthentication
                 };
 
-                uow.PluginRepository.Add(pluginDO);
+                uow.TerminalRepository.Add(pluginDO);
             }
         }
 

@@ -17,7 +17,7 @@ namespace terminalSalesforce.Controllers
     public class ActionController:ApiController
     {
         private const string curPlugin = "terminalSalesforce";
-        private BasePluginController _basePluginController = new BasePluginController();
+        private BaseTerminalController _basePluginController = new BaseTerminalController();
         private ISalesforceIntegration _salesforceIntegration = new SalesforceIntegration();
 
         [HttpPost]

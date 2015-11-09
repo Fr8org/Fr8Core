@@ -19,11 +19,11 @@ namespace terminalSlack.Controllers
     public class ActionController : ApiController
     {
         private const string curPlugin = "terminalSlack";
-        private readonly BasePluginController _basePluginController;
+        private readonly BaseTerminalController _basePluginController;
 
         public ActionController()
         {
-            _basePluginController = new BasePluginController();
+            _basePluginController = new BaseTerminalController();
         }
 
         [HttpPost]

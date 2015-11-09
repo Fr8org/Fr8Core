@@ -27,7 +27,7 @@ namespace HubWeb.Controllers
 
         [HttpGet]
         public async Task<ActionResult> ProcessSuccessfulOAuthResponse(
-            [Bind(Prefix="dockyard_plugin")] string pluginName,
+            [Bind(Prefix = "dockyard_terminal")] string pluginName,
             [Bind(Prefix = "version")] string pluginVersion)
         {
             if (string.IsNullOrEmpty(pluginName) || string.IsNullOrEmpty(pluginVersion))
@@ -41,11 +41,11 @@ namespace HubWeb.Controllers
                 requestQueryString = requestQueryString.Substring(1);
             }
 
-            PluginDO plugin;
+            TerminalDO plugin;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                plugin = uow.PluginRepository
+                plugin = uow.TerminalRepository
                     .FindOne(x => x.Name == pluginName && x.Version == pluginVersion);
                 if (plugin == null)
                 {

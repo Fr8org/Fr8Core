@@ -17,7 +17,7 @@ using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Actions
 {
-    public class MapFields_v1 : BasePluginAction
+    public class MapFields_v1 : BaseTerminalAction
     {
         /// <summary>
         /// Action processing infrastructure.

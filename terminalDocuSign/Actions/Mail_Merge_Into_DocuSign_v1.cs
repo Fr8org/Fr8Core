@@ -20,7 +20,7 @@ using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Mail_Merge_Into_DocuSign_v1 : BasePluginAction
+    public class Mail_Merge_Into_DocuSign_v1 : BaseTerminalAction
     {
         readonly DocuSignManager _docuSignManager;
         string _dataSourceValue;

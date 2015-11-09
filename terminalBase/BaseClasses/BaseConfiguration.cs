@@ -50,7 +50,7 @@ namespace TerminalBase.BaseClasses
         {
             Task.Run(() =>
             {
-                BasePluginController curController = new BasePluginController();
+                BaseTerminalController curController = new BaseTerminalController();
                 curController.AfterStartup(pluginName);
             });
         }

@@ -14,7 +14,7 @@ namespace UtilitiesTesting.Fixtures
             return new EventCM { EventName = string.Empty };
         }
 
-        public static EventCM TestPluginIncidentDto()
+        public static EventCM TestTerminalIncidentDto()
         {
 
             var loggingDataCrate = new LoggingDataCrateFactory().Create(new LoggingDataCm
@@ -32,7 +32,7 @@ namespace UtilitiesTesting.Fixtures
             return eventDto;
         }
 
-        public static EventCM TestPluginEventDto()
+        public static EventCM TestTerminalEventDto()
         {
             var loggingDataCrate = new LoggingDataCrateFactory().Create(new LoggingDataCm
                 {

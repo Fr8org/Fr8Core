@@ -683,7 +683,7 @@
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
     <Content Include="Scripts\lib\jpattern.js" />
-    <Content Include="Scripts\tests\integration\PluginActionExecuteTest.js" />
+    <Content Include="Scripts\tests\integration\TerminalActionExecuteTest.js" />
     <Content Include="Scripts\tests\integration\ContainerControllerTests.js" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />
@@ -804,7 +804,7 @@
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
     <TypeScriptCompile Include="Scripts\tests\integration\DockyardAccountControllerTests\DockyardAccountControllerTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\integration\PluginDocuSignTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\TerminalDocuSignTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ProcessTemplateControllerTests.ts" />
     <Content Include="Scripts\tests\.gitignore" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
@@ -1075,8 +1075,8 @@
     <Content Include="Content\templates\metronic\assets\global\css\components-md.css" />
     <Content Include="Content\templates\metronic\assets\global\css\components-rounded.css" />
     <Content Include="Content\templates\metronic\assets\global\css\components.css" />
-    <Content Include="Content\templates\metronic\assets\global\css\plugins-md.css" />
-    <Content Include="Content\templates\metronic\assets\global\css\plugins.css" />
+    <Content Include="Content\templates\metronic\assets\global\css\terminals-md.css" />
+    <Content Include="Content\templates\metronic\assets\global\css\terminals.css" />
     <Content Include="Content\templates\metronic\assets\global\img\accordion-plusminus.png" />
     <Content Include="Content\templates\metronic\assets\global\img\ajax-loading.gif" />
     <Content Include="Content\templates\metronic\assets\global\img\ajax-modal-loading.gif" />
@@ -4076,6 +4076,12 @@
     <Folder Include="Content\fonts\" />
     <Folder Include="Content\img\forms\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
+    <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\terminals\" />
+    <Folder Include="Content\templates\metronic\assets\global\plugins\ckeditor\samples\terminals\" />
+    <Folder Include="Content\templates\metronic\assets\global\plugins\ckeditor\terminals\" />
+    <Folder Include="Content\templates\metronic\assets\global\plugins\countdown\terminals\" />
+    <Folder Include="Content\templates\metronic\assets\global\plugins\datatables\terminals\" />
+    <Folder Include="Content\templates\metronic\assets\global\plugins\slider-revolution-slider\rs-terminal\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
     <Folder Include="Scripts\app\directives\filters\" />

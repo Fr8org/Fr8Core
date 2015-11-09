@@ -8,7 +8,7 @@ using terminalSalesforce.Infrastructure;
 namespace terminalSalesforce.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BasePluginController
+    public class AuthenticationController : BaseTerminalController
     {
         private const string curPlugin = "terminalSalesforce";
         

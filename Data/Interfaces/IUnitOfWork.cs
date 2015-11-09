@@ -66,7 +66,7 @@ namespace Data.Interfaces
 
         MultiTenantObjectRepository MultiTenantObjectRepository { get; }
 
-        IPluginRepository PluginRepository { get; }
+        ITerminalRepository TerminalRepository { get; }
         ISubscriptionRepository SubscriptionRepository { get; }
 		IWebServiceRepository WebServiceRepository { get; }
 

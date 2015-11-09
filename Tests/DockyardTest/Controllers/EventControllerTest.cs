@@ -45,7 +45,7 @@ namespace DockyardTest.Controllers
         {
             //Arrange with plugin incident
             _incidentReporter.SubscribeToAlerts();
-            var eventDto = FixtureData.TestPluginIncidentDto();
+            var eventDto = FixtureData.TestTerminalIncidentDto();
 
             //Act
 
@@ -69,7 +69,7 @@ namespace DockyardTest.Controllers
                 //Arrange with plugin event
                 _eventReporter.SubscribeToAlerts();
 
-                var curEventDTO = FixtureData.TestPluginEventDto();
+                var curEventDTO = FixtureData.TestTerminalEventDto();
 
                 //Act
                 var result = _eventController.Post(_crate.ToDto(_eventReportCrateFactoryHelper.Create(curEventDTO)));

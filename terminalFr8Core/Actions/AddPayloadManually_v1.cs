@@ -12,7 +12,7 @@ using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Actions
 {
-    public class AddPayloadManually_v1 : BasePluginAction
+    public class AddPayloadManually_v1 : BaseTerminalAction
     {
 
 

@@ -16,7 +16,7 @@ using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
-    public class BuildQuery_v1 : BasePluginAction
+    public class BuildQuery_v1 : BaseTerminalAction
     {
         #region Configuration.
 

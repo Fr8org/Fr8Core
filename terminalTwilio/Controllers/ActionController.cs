@@ -9,7 +9,7 @@ namespace terminalTwilio.Controllers
     public class ActionController : ApiController
     {
         private const string curPlugin = "terminalTwilio";
-        private readonly BasePluginController _basePluginController = new BasePluginController();
+        private readonly BaseTerminalController _basePluginController = new BaseTerminalController();
 
         [HttpPost]
         [Route("configure")]

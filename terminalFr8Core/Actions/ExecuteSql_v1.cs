@@ -16,7 +16,7 @@ using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
-    public class ExecuteSql_v1 : BasePluginAction
+    public class ExecuteSql_v1 : BaseTerminalAction
     {
         private const string DefaultDbProvider = "System.Data.SqlClient";
 

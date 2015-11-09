@@ -13,7 +13,7 @@ namespace terminalAzure.Controllers
     public class ActionController : ApiController
     {
         private const string curPlugin = "terminalAzure";
-        private BasePluginController _basePluginController = new BasePluginController();
+        private BaseTerminalController _basePluginController = new BaseTerminalController();
 
         [HttpPost]
         [Route("configure")]

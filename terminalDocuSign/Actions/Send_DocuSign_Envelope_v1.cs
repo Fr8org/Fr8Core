@@ -22,7 +22,7 @@ using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {
-    public class Send_DocuSign_Envelope_v1 : BasePluginAction
+    public class Send_DocuSign_Envelope_v1 : BaseTerminalAction
     {
         public Send_DocuSign_Envelope_v1()
         {

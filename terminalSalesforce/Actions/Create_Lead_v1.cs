@@ -14,7 +14,7 @@ using System;
 
 namespace terminalSalesforce.Actions
 {
-    public class Create_Lead_v1 : BasePluginAction
+    public class Create_Lead_v1 : BaseTerminalAction
     {
         ISalesforceIntegration _salesforce = new SalesforceIntegration();
 

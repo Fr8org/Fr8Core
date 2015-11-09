@@ -14,7 +14,7 @@ using terminalSendGrid.Infrastructure;
 
 namespace terminalSendGrid.Actions
 {
-    public class SendEmailViaSendGrid_v1 : BasePluginAction
+    public class SendEmailViaSendGrid_v1 : BaseTerminalAction
     {
         // moved the EmailPackager ObjectFactory here since the basepluginAction will be called by others and the dependency is defiend in pluginsendGrid
         private IConfigRepository _configRepository;
@@ -178,7 +178,7 @@ namespace terminalSendGrid.Actions
                 "EmailBody"
             );
 
-            var mailerDO = new PluginMailerDO()
+            var mailerDO = new TerminalMailerDO()
             {
                 Email = new EmailDO()
                 {

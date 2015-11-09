@@ -19,7 +19,7 @@ namespace terminalAzure.Tests.Controllers
     [TestFixture]
     public class ActionControllerTest : BaseTest
     {
-        BasePluginController _basePluginController;
+        BaseTerminalController _basePluginController;
         private ICrateManager _crateManager;
 
         [SetUp]
@@ -32,7 +32,7 @@ namespace terminalAzure.Tests.Controllers
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
             
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-            _basePluginController = new BasePluginController();
+            _basePluginController = new BaseTerminalController();
         }
 
         [Test]

@@ -257,7 +257,7 @@
     <Compile Include="Interfaces\DataTransferObjects\FilterConditionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\LogItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\TerminalDiscoveryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionProcessResultDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionNameDTO.cs" />
@@ -417,7 +417,7 @@
     <Compile Include="Repositories\MTFieldTypeRepository.cs" />
     <Compile Include="Repositories\MTObjectRepository.cs" />
     <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
-    <Compile Include="Repositories\PluginRepository.cs" />
+    <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="Repositories\WebServiceRepository.cs" />
     <Compile Include="States\ActivityCategory.cs" />
@@ -429,7 +429,7 @@
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
-    <Compile Include="Entities\PluginDO.cs" />
+    <Compile Include="Entities\TerminalDO.cs" />
     <Compile Include="Entities\ContainerDO.cs" />
     <Compile Include="Entities\ProcessNodeDO.cs" />
     <Compile Include="Entities\RouteDO.cs" />
@@ -452,7 +452,7 @@
     <Compile Include="Interfaces\IEmailDO.cs" />
     <Compile Include="Interfaces\IHistoryItemDO.cs" />
     <Compile Include="Interfaces\IMailerDO.cs" />
-    <Compile Include="Interfaces\IPluginDO.cs" />
+    <Compile Include="Interfaces\ITerminalDO.cs" />
     <Compile Include="Interfaces\ISubscriptionDO.cs" />
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
@@ -476,7 +476,7 @@
     <Compile Include="Repositories\ProfileNodeRepository.cs" />
     <Compile Include="Repositories\UserStatusRepository.cs" />
     <Compile Include="States\AccessLevel.cs" />
-    <Compile Include="States\PluginStatus.cs" />
+    <Compile Include="States\TerminalStatus.cs" />
     <Compile Include="States\ProcessNodeState.cs" />
     <Compile Include="States\ContainerState.cs" />
     <Compile Include="States\BookingRequestAvailability.cs" />
@@ -496,7 +496,7 @@
     <Compile Include="States\Templates\_ActivityTemplateStateTemplate.cs" />
     <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
-    <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
+    <Compile Include="States\Templates\_TerminalStatusTemplate.cs" />
     <Compile Include="Entities\SubrouteDO.cs" />
     <Compile Include="States\Templates\_ProcessNodeStatusTemplate.cs" />
     <Compile Include="States\Templates\_ContainerStateTemplate.cs" />

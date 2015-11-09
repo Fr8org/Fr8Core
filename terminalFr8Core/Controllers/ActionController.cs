@@ -21,7 +21,7 @@ namespace terminalFr8Core.Controllers
     public class ActionController : ApiController
     {
         private const string curPlugin = "terminalFr8Core";
-        private BasePluginController _basePluginController = new BasePluginController();
+        private BaseTerminalController _basePluginController = new BaseTerminalController();
 
         [HttpPost]
         [Route("configure")]

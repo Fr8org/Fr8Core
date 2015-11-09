@@ -20,14 +20,14 @@ namespace Data.Entities
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
         }
 
-        public ActivityTemplateDO(string name, string label, string version, int pluginId) : this()
+        public ActivityTemplateDO(string name, string label, string version, int terminalId) : this()
         {
             this.Name = name;
             this.Label = label;
             this.Version = version;
             /* We don't need to validate pluginId because of EF chack ForeignKey and if pluginId doesn't exist in table Plugins then 
              * EF will throw 'System.Data.Entity.Infrastructure.DbUpdateException'  */
-            this.PluginID = pluginId;
+            this.TerminalId = terminalId;
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
         }
 
@@ -48,10 +48,10 @@ namespace Data.Entities
             this.Label = label;
             this.Version = version;
 
-            this.Plugin = new PluginDO()
+            this.Terminal = new TerminalDO()
             {
                 Name = pluginName,
-                PluginStatus = PluginStatus.Active,
+                TerminalStatus = TerminalStatus.Active,
                 Endpoint = endPoint
             };
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
@@ -82,10 +82,10 @@ namespace Data.Entities
 
         public _ActivityTemplateStateTemplate ActivityTemplateStateTemplate { get; set; }
 
-        [ForeignKey("Plugin")]
-        public int PluginID { get; set; }
-        
-        public virtual PluginDO Plugin { get; set; }
+        [ForeignKey("Terminal")]
+        public int TerminalId { get; set; }
+
+        public virtual TerminalDO Terminal { get; set; }
 
         [Required]
         public ActivityCategory Category { get; set; }

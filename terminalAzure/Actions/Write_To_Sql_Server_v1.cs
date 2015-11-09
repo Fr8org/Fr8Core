@@ -21,7 +21,7 @@ using terminalAzure.Services;
 namespace terminalAzure.Actions
 {
 
-    public class Write_To_Sql_Server_v1 : BasePluginAction
+    public class Write_To_Sql_Server_v1 : BaseTerminalAction
     {
 
         //================================================================================
@@ -150,20 +150,20 @@ namespace terminalAzure.Actions
 
             if (storage.Count == 0)
             {
-                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
             var confControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (confControls == null)
             {
-                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
             var connStringField = confControls.Controls.First();
             if (connStringField == null || String.IsNullOrEmpty(connStringField.Value))
             {
-                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
             var curProvider = ObjectFactory.GetInstance<IDbProvider>();

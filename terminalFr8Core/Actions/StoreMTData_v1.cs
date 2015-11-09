@@ -16,7 +16,7 @@ using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
-    public class StoreMTData_v1 : BasePluginAction
+    public class StoreMTData_v1 : BaseTerminalAction
     {
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {

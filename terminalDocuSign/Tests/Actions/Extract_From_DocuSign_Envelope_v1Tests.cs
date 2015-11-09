@@ -32,7 +32,7 @@ namespace terminalDocuSign.Tests.Actions
             base.SetUp();
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
 
-            PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
+            TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
 
             _extract_From_DocuSign_Envelope_v1 = new Receive_DocuSign_Envelope_v1();
         }
@@ -82,7 +82,7 @@ namespace terminalDocuSign.Tests.Actions
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
-            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
+            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
             object[] parameters = new object[] { curActionDTO };
 
             //Act
@@ -101,7 +101,7 @@ namespace terminalDocuSign.Tests.Actions
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
-            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
+            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
 
             //Act
             var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDTO, "8fcb42d3-1572-44eb-acb1-0fffa4ca65de");

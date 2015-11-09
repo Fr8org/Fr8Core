@@ -14,7 +14,7 @@ namespace terminalSendGrid.Controllers
     public class ActionController : ApiController
     {
         private const string curPlugin = "terminalSendGrid";
-        private BasePluginController _basePluginController = new BasePluginController();
+        private BaseTerminalController _basePluginController = new BaseTerminalController();
 
         [HttpPost]
         [Route("configure")]

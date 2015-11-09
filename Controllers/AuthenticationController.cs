@@ -37,7 +37,7 @@ namespace HubWeb.Controllers
             {
                 activityTemplate = uow.ActivityTemplateRepository
                     .GetQuery()
-                    .Include(x => x.Plugin)
+                    .Include(x => x.Terminal)
                     .SingleOrDefault(x => x.Id == credentials.ActivityTemplateId);
 
                 if (activityTemplate == null)
@@ -70,7 +70,7 @@ namespace HubWeb.Controllers
             {
                 activityTemplate = uow.ActivityTemplateRepository
                     .GetQuery()
-                    .Include(x => x.Plugin)
+                    .Include(x => x.Terminal)
                     .SingleOrDefault(x => x.Id == activityTemplateId);
 
                 if (activityTemplate == null)

@@ -21,7 +21,7 @@ namespace terminalDocuSign.Controllers
     public class ActionController : ApiController
     {
         private const string curPlugin = "terminalDocuSign";
-        private BasePluginController _basePluginController = new BasePluginController();
+        private BaseTerminalController _basePluginController = new BaseTerminalController();
 
 
         [HttpPost]

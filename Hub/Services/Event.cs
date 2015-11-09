@@ -16,28 +16,28 @@ namespace Hub.Services
     public class Event : IEvent
     {
 
-        private readonly IPlugin _plugin;
+        private readonly ITerminal _terminal;
 
         public Event()
         {
  
-            _plugin = ObjectFactory.GetInstance<IPlugin>();
+            _terminal = ObjectFactory.GetInstance<ITerminal>();
         }
-        /// <see cref="IEvent.HandlePluginIncident"/>
-        public void HandlePluginIncident(LoggingDataCm incident)
+        /// <see cref="IEvent.HandleTerminalIncident"/>
+        public void HandleTerminalIncident(LoggingDataCm incident)
         {
-            EventManager.ReportPluginIncident(incident);
+            EventManager.ReportTerminalIncident(incident);
         }
 
-        public void HandlePluginEvent(LoggingDataCm eventDataCm)
+        public void HandleTerminalEvent(LoggingDataCm eventDataCm)
         {
-            EventManager.ReportPluginEvent(eventDataCm);
+            EventManager.ReportTerminalEvent(eventDataCm);
         }
 
-        public async Task<string> RequestParsingFromPlugins(HttpRequestMessage request, string pluginName, string pluginVersion)
+        public async Task<string> RequestParsingFromTerminals(HttpRequestMessage request, string pluginName, string pluginVersion)
         {
             //get required plugin URL by plugin name and its version
-            string curPluginUrl = _plugin.ParsePluginUrlFor(pluginName, pluginVersion, "events");
+            string curPluginUrl = _terminal.ParseTerminalUrlFor(pluginName, pluginVersion, "events");
 
 
             //make POST with request content
@@ -53,10 +53,10 @@ namespace Hub.Services
             return "ok";
         }
 
-        public async Task<string> RequestParsingFromPluginsDebug(HttpRequestMessage request, string pluginName, string pluginVersion)
+        public async Task<string> RequestParsingFromTerminalsDebug(HttpRequestMessage request, string pluginName, string pluginVersion)
         {
             //get required plugin URL by plugin name and its version
-            string curPluginUrl = _plugin.ParsePluginUrlFor(pluginName, pluginVersion, "events");
+            string curPluginUrl = _terminal.ParseTerminalUrlFor(pluginName, pluginVersion, "events");
 
 
             //make POST with request content

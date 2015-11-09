@@ -20,7 +20,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Write to Sql Server",
-                Plugin = PluginOne(),
+                Terminal = TerminalOne(),
                 Version = "v3"
             };
             return activityTemplateDo;
@@ -41,7 +41,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Type1",
-                Plugin = PluginTwo(),
+                Terminal = TerminalTwo(),
                 Version = "1"
             };
             return curActivityDO;
@@ -52,8 +52,8 @@ namespace UtilitiesTesting.Fixtures
             var curActionTemplate = new ActivityTemplateDO
             {
                 Id = 1,
-                Name = "plugin_azure_sql_server",
-                Plugin = PluginThree(),
+                Name = "terminal_azure_sql_server",
+                Terminal = TerminalThree(),
                 Version = "1"
             };
 
@@ -65,9 +65,9 @@ namespace UtilitiesTesting.Fixtures
             var curActionTemplate = new ActivityTemplateDTO
             {
                 Id = 1,
-                Name = "plugin_azure_sql_server",
+                Name = "terminal_azure_sql_server",
                 Version = "1",
-                PluginID = 1
+                TerminalId = 1
             };
 
             return curActionTemplate;
@@ -98,7 +98,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Write to SQL",
-                Plugin = PluginFour(),
+                Terminal = TerminalFour(),
                 Version = "1"
             };
 

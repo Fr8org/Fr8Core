@@ -12,7 +12,7 @@ using terminalDocuSign.DataTransferObjects;
 namespace terminalDocuSign.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BasePluginController
+    public class AuthenticationController : BaseTerminalController
     {
         private const string curPlugin = "terminalDocuSign";
 

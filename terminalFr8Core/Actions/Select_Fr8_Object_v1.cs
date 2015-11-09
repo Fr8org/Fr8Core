@@ -16,7 +16,7 @@ using Utilities.Configuration.Azure;
 namespace terminalFr8Core.Actions
 {
     // The generic interface inheritance.
-    public class Select_Fr8_Object_v1 : BasePluginAction
+    public class Select_Fr8_Object_v1 : BaseTerminalAction
     {
         public class ActionUi : StandardConfigurationControlsCM
         {

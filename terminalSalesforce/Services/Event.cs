@@ -14,7 +14,7 @@ namespace terminalSalesforce.Services
     {
        
         private readonly ICrateManager _crate;        
-        private BasePluginController _basePluginController = new BasePluginController();
+        private BaseTerminalController _basePluginController = new BaseTerminalController();
        
 
         public Event()

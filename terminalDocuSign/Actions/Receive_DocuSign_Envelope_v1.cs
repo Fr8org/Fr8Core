@@ -17,7 +17,7 @@ using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Receive_DocuSign_Envelope_v1 : BasePluginAction
+    public class Receive_DocuSign_Envelope_v1 : BaseTerminalAction
     {
         private readonly DocuSignManager _docuSignManager;
         private readonly IRouteNode _routeNode;
@@ -61,7 +61,7 @@ namespace terminalDocuSign.Actions
             string envelopeId = GetEnvelopeId(processPayload);
             if (envelopeId == null)
             {
-                throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
             }
 
             using (var updater = Crate.UpdateStorage(() => processPayload.CrateStorage))

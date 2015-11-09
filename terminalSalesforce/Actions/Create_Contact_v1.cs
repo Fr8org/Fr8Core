@@ -13,7 +13,7 @@ using terminalSalesforce.Services;
 
 namespace terminalSalesforce.Actions
 {
-    public class Create_Contact_v1 : BasePluginAction
+    public class Create_Contact_v1 : BaseTerminalAction
     {
         ISalesforceIntegration _salesforce = new SalesforceIntegration();
 

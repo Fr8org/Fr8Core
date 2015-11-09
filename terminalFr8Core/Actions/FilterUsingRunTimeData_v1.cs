@@ -19,7 +19,7 @@ using terminalFr8Core.Interfaces;
 
 namespace terminalFr8Core.Actions
 {
-    public class FilterUsingRunTimeData_v1 : BasePluginAction
+    public class FilterUsingRunTimeData_v1 : BaseTerminalAction
     {
 
         public FilterUsingRunTimeData_v1()

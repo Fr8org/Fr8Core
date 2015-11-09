@@ -20,7 +20,7 @@ using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {
-    public class Monitor_DocuSign_v1 : BasePluginAction
+    public class Monitor_DocuSign_v1 : BaseTerminalAction
     {
         DocuSignManager _docuSignManager = new DocuSignManager();
 
@@ -158,7 +158,7 @@ namespace terminalDocuSign.Actions
 
             // Make sure that it exists
             if (String.IsNullOrEmpty(envelopeId))
-                throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
 
             //Create a field
             var fields = new List<FieldDTO>()

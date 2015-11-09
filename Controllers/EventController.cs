@@ -41,12 +41,12 @@ namespace HubWeb.Controllers
         {
             if (eventCm.EventName.Equals("Plugin Incident"))
             {
-                return _event.HandlePluginIncident;
+                return _event.HandleTerminalIncident;
             }
 
             if (eventCm.EventName.Equals("Plugin Event"))
             {
-                return _event.HandlePluginEvent;
+                return _event.HandleTerminalEvent;
             }
 
             throw new InvalidOperationException("Unknown EventDTO with name: " + eventCm.EventName);
@@ -127,7 +127,7 @@ namespace HubWeb.Controllers
             //create a plugin event for event notification received
             EventManager.ReportExternalEventReceived(Request.Content.ReadAsStringAsync().Result);
             
-             var result =await _event.RequestParsingFromPlugins(Request, pluginName, pluginVersion);
+             var result =await _event.RequestParsingFromTerminals(Request, pluginName, pluginVersion);
 
 
             //Check if responding to Salesforce
@@ -158,7 +158,7 @@ namespace HubWeb.Controllers
             //create a plugin event for event notification received
             EventManager.ReportExternalEventReceived(Request.Content.ReadAsStringAsync().Result);
 
-            var result = await _event.RequestParsingFromPluginsDebug(Request, pluginName, pluginVersion);
+            var result = await _event.RequestParsingFromTerminalsDebug(Request, pluginName, pluginVersion);
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {

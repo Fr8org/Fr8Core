@@ -27,7 +27,7 @@ namespace DockyardTest.Entities
                 Assert.NotNull(savedActivityTemplateDO);
 
                 Assert.AreEqual(activityTemplateDO.Name, savedActivityTemplateDO.Name);
-                Assert.AreEqual(activityTemplateDO.Plugin.Endpoint, savedActivityTemplateDO.Plugin.Endpoint);
+                Assert.AreEqual(activityTemplateDO.Terminal.Endpoint, savedActivityTemplateDO.Terminal.Endpoint);
 
             }
         }

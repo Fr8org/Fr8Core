@@ -17,7 +17,7 @@ using TerminalSqlUtilities;
 
 namespace terminalFr8Core.Actions
 {
-    public class ConnectToSql_v1 : BasePluginAction
+    public class ConnectToSql_v1 : BaseTerminalAction
     {
         #region Configuration.
 

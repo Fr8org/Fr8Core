@@ -39,9 +39,9 @@ namespace Data.Entities
         public String UserID { get; set; }
         public virtual Fr8AccountDO UserDO { get; set; }
 
-        [ForeignKey("Plugin")]
-        public int PluginID { get; set; }
-        public virtual PluginDO Plugin { get; set; }
+        [ForeignKey("Terminal")]
+        public int TerminalID { get; set; }
+        public virtual TerminalDO Terminal { get; set; }
 
         [ForeignKey("AuthorizationTokenStateTemplate")]
         public int? AuthorizationTokenState { get; set; }

@@ -15,7 +15,7 @@ namespace terminalFr8Core.Infrastructure
     internal class FindObjectHelper
     {
         public async Task<Dictionary<string, DbType>> ExtractColumnTypes(
-            BasePluginAction action, ActionDTO actionDTO)
+            BaseTerminalAction action, ActionDTO actionDTO)
         {
             var upstreamCrates = await action.GetCratesByDirection(
                 actionDTO.Id,

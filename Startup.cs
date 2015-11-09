@@ -29,7 +29,7 @@ namespace HubWeb
             //ConfigureDaemons();
             ConfigureAuth(app);
 
-            await RegisterPluginActions();
+            await RegisterTerminalActions();
 
             app.Use(async (context, next) =>
             {
@@ -127,7 +127,7 @@ namespace HubWeb
         //    }
         //}
 
-        public async Task RegisterPluginActions()
+        public async Task RegisterTerminalActions()
         {
             List<string> totalRegisteredTerminalNames = new List<string>();
             var eventReporter = ObjectFactory.GetInstance<EventReporter>();
@@ -138,15 +138,15 @@ namespace HubWeb
                 try
                 {
                     uri = url.StartsWith("http") ? url : "http://" + url;
-                    uri += "/plugins/discover";
+                    uri += "/terminals/discover";
 
-                    var pluginService = ObjectFactory.GetInstance<IPlugin>(); ;
-                    totalRegisteredTerminalNames.AddRange(await pluginService.RegisterTerminals(uri));
+                    var terminalService = ObjectFactory.GetInstance<ITerminal>(); ;
+                    totalRegisteredTerminalNames.AddRange(await terminalService.RegisterTerminals(uri));
                 }
                 catch (Exception ex)
                 {
                     eventReporter = ObjectFactory.GetInstance<EventReporter>();
-                    eventReporter.ActivityTemplatePluginRegistrationError(
+                    eventReporter.ActivityTemplateTerminalRegistrationError(
                         string.Format("Failed terminal service: {0}. Error Message: {1} ", uri, ex.Message),
                         ex.GetType().Name);
 

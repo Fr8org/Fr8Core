@@ -14,7 +14,7 @@ namespace terminalDocuSign
     {
         public static void Register(HttpConfiguration config)
         {
-            BasePluginWebApiConfig.Register(config);
+            BaseTerminalWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
                 name: "PluginDocuSign",

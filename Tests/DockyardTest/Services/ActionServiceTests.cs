@@ -38,11 +38,11 @@ namespace DockyardTest.Services
         private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
         private readonly IEnumerable<ActivityTemplateDO> _pr2Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "SQL Read", Version = "1.0" } };
         private bool _eventReceived;
-        private BasePluginAction _basePluginAction;
-        private IPlugin _plugin;
-        private Mock<IPluginTransmitter> PluginTransmitterMock
+        private BaseTerminalAction _basePluginAction;
+        private ITerminal _terminal;
+        private Mock<ITerminalTransmitter> TerminalTransmitterMock
         {
-            get { return Mock.Get(ObjectFactory.GetInstance<IPluginTransmitter>()); }
+            get { return Mock.Get(ObjectFactory.GetInstance<ITerminalTransmitter>()); }
         }
 
         [SetUp]
@@ -54,8 +54,8 @@ namespace DockyardTest.Services
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
             _eventReceived = false;
-            _basePluginAction = new BasePluginAction();
-            _plugin = ObjectFactory.GetInstance<Plugin>();
+            _basePluginAction = new BaseTerminalAction();
+            _terminal = ObjectFactory.GetInstance<Terminal>();
         }
         
         // DO-1214
@@ -295,15 +295,15 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plugin = new PluginDO()
+                var plugin = new TerminalDO()
                 {
-                    PluginStatus = PluginStatus.Active,
+                    TerminalStatus = TerminalStatus.Active,
                     Endpoint = "ep",
                     Version = "1",
-                    Name = "plugin",
+                    Name = "Terminal",
                 };
 
-                uow.PluginRepository.Add(plugin);
+                uow.TerminalRepository.Add(plugin);
                 uow.SaveChanges();
 
                 var template = new ActivityTemplateDO("Template1", "label", "1", plugin.Id);
@@ -451,7 +451,7 @@ namespace DockyardTest.Services
         {
             //Arrange
             ActionDO actionDo = FixtureData.TestActionUnstarted();
-            actionDo.ActivityTemplate.Plugin.Endpoint = "http://localhost:53234/actions/configure";
+            actionDo.ActivityTemplate.Terminal.Endpoint = "http://localhost:53234/actions/configure";
             actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO());
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -462,7 +462,7 @@ namespace DockyardTest.Services
             }
 
             ActionDTO actionDto = Mapper.Map<ActionDTO>(actionDo);
-            PluginTransmitterMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>()))
+            TerminalTransmitterMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>()))
                 .Returns(() => Task.FromResult<string>(JsonConvert.SerializeObject(actionDto)));
 
             ContainerDO containerDO = FixtureData.TestContainer1();
@@ -583,13 +583,13 @@ namespace DockyardTest.Services
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var pluginClientMock = new Mock<IPluginTransmitter>();
+                var pluginClientMock = new Mock<ITerminalTransmitter>();
                 pluginClientMock.Setup(s => s.CallActionAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>()))
                                 .Returns(Task.FromResult(new PayloadDTO(containerDO.Id)
                                 {
                                     CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(actionDo.CrateStorage)
                                 }));
-                ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
+                ObjectFactory.Configure(cfg => cfg.For<ITerminalTransmitter>().Use(pluginClientMock.Object));
 
                 var count = uow.ActionRepository.GetAll().Count();
                 await _action.PrepareToExecute(actionDo, containerDO, uow);
@@ -657,15 +657,15 @@ namespace DockyardTest.Services
 
     internal class TestActionService : Action
     {
-        private IPluginTransmitter _restfulServiceClient;
+        private ITerminalTransmitter _restfulServiceClient;
 
-        internal IPluginTransmitter RestfulServiceClient
+        internal ITerminalTransmitter RestfulServiceClient
         {
             get
             {
                 if (_restfulServiceClient == null)
                 {
-                    _restfulServiceClient = new Mock<IPluginTransmitter>(MockBehavior.Default).Object;
+                    _restfulServiceClient = new Mock<ITerminalTransmitter>(MockBehavior.Default).Object;
                 }
 
                 return _restfulServiceClient;

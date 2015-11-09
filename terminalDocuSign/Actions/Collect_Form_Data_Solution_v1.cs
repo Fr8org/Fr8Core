@@ -18,7 +18,7 @@ using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Collect_Form_Data_Solution_v1 : BasePluginAction
+    public class Collect_Form_Data_Solution_v1 : BaseTerminalAction
     {
         private class ActionUi : StandardConfigurationControlsCM
         {

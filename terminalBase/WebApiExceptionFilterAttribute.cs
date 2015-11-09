@@ -18,17 +18,17 @@ namespace TerminalBase
         {
             //get the plugin error details
             var curPluginError = actionExecutedContext.Exception;
-            var pluginName = GetPluginName(actionExecutedContext.ActionContext.ControllerContext.Controller);
+            var pluginName = GetTerminalName(actionExecutedContext.ActionContext.ControllerContext.Controller);
 
             //POST event to fr8 about this plugin error
-            new BasePluginController().ReportPluginError(pluginName, curPluginError);
+            new BaseTerminalController().ReportPluginError(pluginName, curPluginError);
 
             //prepare the response JSON based on the exception type
             actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
-            if (curPluginError is PluginCodedException)
+            if (curPluginError is TerminalCodedException)
             {
                 //if plugin error is Plugin Coded Exception, place the error code description in message
-                var pluginEx = (PluginCodedException) curPluginError;
+                var pluginEx = (TerminalCodedException) curPluginError;
                 var pluginError =
                     JsonConvert.SerializeObject(new {status = "plugin_error", message = pluginEx.ErrorCode.GetEnumDescription()});
                 actionExecutedContext.Response.Content = new StringContent(pluginError, Encoding.UTF8, "application/json");
@@ -42,7 +42,7 @@ namespace TerminalBase
             }
         }
 
-        private string GetPluginName(IHttpController curController)
+        private string GetTerminalName(IHttpController curController)
         {
             string assemblyName = curController.GetType().Assembly.FullName.Split(new char[] {','})[0];
             return assemblyName;

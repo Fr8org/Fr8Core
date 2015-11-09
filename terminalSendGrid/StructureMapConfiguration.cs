@@ -12,7 +12,7 @@ using terminalSendGrid.Services;
 
 namespace terminalSendGrid
 {
-    public class PluginSendGridStructureMapBootstrapper
+    public class TerminalSendGridStructureMapBootstrapper
     {
         public enum DependencyType
         {

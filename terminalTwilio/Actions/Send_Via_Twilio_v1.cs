@@ -16,7 +16,7 @@ using TerminalBase.BaseClasses;
 
 namespace terminalTwilio.Actions
 {
-    public class Send_Via_Twilio_v1 : BasePluginAction
+    public class Send_Via_Twilio_v1 : BaseTerminalAction
     {
         protected ITwilioService _twilio;
 

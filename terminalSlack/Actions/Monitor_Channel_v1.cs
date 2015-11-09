@@ -15,7 +15,7 @@ using TerminalBase.BaseClasses;
 
 namespace terminalSlack.Actions
 {
-    public class Monitor_Channel_v1 : BasePluginAction
+    public class Monitor_Channel_v1 : BaseTerminalAction
     {
         private readonly ISlackIntegration _slackIntegration;
 

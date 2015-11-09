@@ -56,8 +56,8 @@ namespace Hub.Managers
             EventManager.EventCriteriaEvaluationFinished += LogEventCriteriaEvaluationFinished;
             EventManager.EventActionStarted += LogEventActionStarted;
             EventManager.EventActionDispatched += LogEventActionDispatched;
-            EventManager.PluginEventReported += LogPluginEvent;
-            EventManager.PluginActionActivated += PluginActionActivated;
+            EventManager.TerminalEventReported += LogTerminalEvent;
+            EventManager.TerminalActionActivated += TerminalActionActivated;
             EventManager.EventProcessRequestReceived += EventManagerOnEventProcessRequestReceived;
             EventManager.EventContainerCreated += LogEventContainerCreated;
             EventManager.EventContainerSent += LogEventContainerSent;
@@ -98,8 +98,8 @@ namespace Hub.Managers
             EventManager.EventCriteriaEvaluationFinished -= LogEventCriteriaEvaluationFinished;
             EventManager.EventActionStarted -= LogEventActionStarted;
             EventManager.EventActionDispatched -= LogEventActionDispatched;
-            EventManager.PluginEventReported -= LogPluginEvent;
-            EventManager.PluginActionActivated -= PluginActionActivated;
+            EventManager.TerminalEventReported -= LogTerminalEvent;
+            EventManager.TerminalActionActivated -= TerminalActionActivated;
             EventManager.EventContainerCreated -= LogEventContainerCreated;
             EventManager.EventContainerSent -= LogEventContainerSent;
             EventManager.EventContainerReceived -= LogEventContainerReceived;
@@ -539,7 +539,7 @@ namespace Hub.Managers
             }
         }
 
-        public void ActivityTemplatePluginRegistrationError(string message, string exceptionType)
+        public void ActivityTemplateTerminalRegistrationError(string message, string exceptionType)
         {
             var incidentDO = new IncidentDO
             {
@@ -774,7 +774,7 @@ namespace Hub.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogPluginEvent(LoggingDataCm eventDataCm)
+        private void LogTerminalEvent(LoggingDataCm eventDataCm)
         {
             var fact = new FactDO
             {
@@ -790,7 +790,7 @@ namespace Hub.Managers
         }
 
         // Commented by Vladimir. DO-1214. If one action can have only one Process?
-        private void PluginActionActivated(ActionDO curAction)
+        private void TerminalActionActivated(ActionDO curAction)
         {
 //            ProcessDO processInExecution;
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -856,7 +856,7 @@ namespace Hub.Managers
                 };
                 if (actionDO != null)
                 {
-                    var terminalName = actionDO.ActivityTemplate.Plugin.Name;
+                    var terminalName = actionDO.ActivityTemplate.Terminal.Name;
                     curFact.Data = string.Format("Terminal: {0} - Action: {1}.", terminalName, actionDO.Name);
                 }
             

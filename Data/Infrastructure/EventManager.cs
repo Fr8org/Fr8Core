@@ -23,17 +23,17 @@ namespace Data.Infrastructure
         public delegate void EntityStateChangedHandler(string entityName, object id, string stateName, string stateValue);
         public static event EntityStateChangedHandler AlertEntityStateChanged;
 
-        public delegate void IncidentPluginConfigurePOSTFailureHandler(string pluginUrl, string curActionDTO, string errorMessage);
-        public static event IncidentPluginConfigurePOSTFailureHandler IncidentPluginConfigureFailed;
+        public delegate void IncidentTerminalConfigurePOSTFailureHandler(string pluginUrl, string curActionDTO, string errorMessage);
+        public static event IncidentTerminalConfigurePOSTFailureHandler IncidentTerminalConfigureFailed;
 
-        public delegate void IncidentPluginRunPOSTFailureHandler(string pluginUrl, string curActionDTO, string errorMessage);
-        public static event IncidentPluginRunPOSTFailureHandler IncidentPluginRunFailed;
+        public delegate void IncidentTerminalRunPOSTFailureHandler(string pluginUrl, string curActionDTO, string errorMessage);
+        public static event IncidentTerminalRunPOSTFailureHandler IncidentTerminalRunFailed;
 
-        public delegate void IncidentPluginActionActivationPOSTFailureHandler(string pluginUrl, string curActionDTO);
-        public static event IncidentPluginActionActivationPOSTFailureHandler IncidentPluginActionActivationFailed;
+        public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string pluginUrl, string curActionDTO);
+        public static event IncidentTerminalActionActivationPOSTFailureHandler IncidentTerminalActionActivationFailed;
 
-        public delegate void PluginActionActivatedHandler(ActionDO action);
-        public static event PluginActionActivatedHandler PluginActionActivated;
+        public delegate void TerminalActionActivatedHandler(ActionDO action);
+        public static event TerminalActionActivatedHandler TerminalActionActivated;
 
 
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
@@ -84,8 +84,8 @@ namespace Data.Infrastructure
         public static event OAuthEventHandler AlertTokenObtained;
         public static event OAuthEventHandler AlertTokenRevoked;
 
-        public delegate void PluginIncidentHandler(LoggingDataCm incidentItem);
-        public static event PluginIncidentHandler PluginIncidentReported;
+        public delegate void TerminalIncidentHandler(LoggingDataCm incidentItem);
+        public static event TerminalIncidentHandler TerminalIncidentReported;
 
         public delegate void EventDocuSignNotificationReceivedHandler();
         public static event EventDocuSignNotificationReceivedHandler EventDocuSignNotificationReceived;
@@ -120,8 +120,8 @@ namespace Data.Infrastructure
         public delegate void EventActionDispatchedHandler(ActionDO curAction, int processId);
         public static event EventActionDispatchedHandler EventActionDispatched;
 
-        public delegate void PluginEventHandler(LoggingDataCm eventDataCm);
-        public static event PluginEventHandler PluginEventReported;
+        public delegate void TerminalEventHandler(LoggingDataCm eventDataCm);
+        public static event TerminalEventHandler TerminalEventReported;
 
         public delegate void ExternalEventReceivedHandler(string curEventPayload);
         public static event ExternalEventReceivedHandler ExternalEventReceived;
@@ -144,21 +144,21 @@ namespace Data.Infrastructure
         #region Method
 
 
-        public static void PluginConfigureFailed(string pluginUrl, string actionDTO, string errorMessage)
+        public static void TerminalConfigureFailed(string pluginUrl, string actionDTO, string errorMessage)
         {
-            IncidentPluginConfigurePOSTFailureHandler handler = IncidentPluginConfigureFailed;
+            IncidentTerminalConfigurePOSTFailureHandler handler = IncidentTerminalConfigureFailed;
             if (handler != null) handler(pluginUrl, actionDTO, errorMessage);
         }
 
-        public static void PluginRunFailed(string pluginUrl, string actionDTO, string errorMessage)
+        public static void TerminalRunFailed(string pluginUrl, string actionDTO, string errorMessage)
         {
-            IncidentPluginRunPOSTFailureHandler handler = IncidentPluginRunFailed;
+            IncidentTerminalRunPOSTFailureHandler handler = IncidentTerminalRunFailed;
             if (handler != null) handler(pluginUrl, actionDTO, errorMessage);
         }
 
-        public static void PluginActionActivationFailed(string pluginUrl, string actionDTO)
+        public static void TerminalActionActivationFailed(string pluginUrl, string actionDTO)
         {
-            IncidentPluginActionActivationPOSTFailureHandler handler = IncidentPluginActionActivationFailed;
+            IncidentTerminalActionActivationPOSTFailureHandler handler = IncidentTerminalActionActivationFailed;
             if (handler != null) handler(pluginUrl, actionDTO);
         }
 
@@ -168,9 +168,9 @@ namespace Data.Infrastructure
             if (handler != null) handler(userid, message, expiresIn);
         }
 
-        public static void ReportPluginIncident(LoggingDataCm incidentItem)
+        public static void ReportTerminalIncident(LoggingDataCm incidentItem)
         {
-            PluginIncidentHandler handler = PluginIncidentReported;
+            TerminalIncidentHandler handler = TerminalIncidentReported;
             if (handler != null) handler(incidentItem);
         }
 
@@ -401,9 +401,9 @@ namespace Data.Infrastructure
             if (handler != null) handler(curAction, processId);
         }
 
-        public static void ReportPluginEvent(LoggingDataCm eventDataCm)
+        public static void ReportTerminalEvent(LoggingDataCm eventDataCm)
         {
-            PluginEventHandler handler = PluginEventReported;
+            TerminalEventHandler handler = TerminalEventReported;
             if (handler != null) handler(eventDataCm);
         }
 
@@ -426,7 +426,7 @@ namespace Data.Infrastructure
         }
         public static void ActionActivated(ActionDO action)
         {
-            var handler = PluginActionActivated;
+            var handler = TerminalActionActivated;
             if (handler != null) handler(action);
         }
 

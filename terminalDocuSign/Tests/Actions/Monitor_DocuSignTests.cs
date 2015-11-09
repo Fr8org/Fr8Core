@@ -27,8 +27,8 @@ namespace terminalDocuSign.Tests.Actions
         public Monitor_DocuSignTests()
         {
             base.SetUp();
-            PluginDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
-            PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
+            TerminalDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
+            TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
 
             _monitor_DocuSign = new Monitor_DocuSign_v1();
@@ -39,7 +39,7 @@ namespace terminalDocuSign.Tests.Actions
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
-            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
+            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
 
             //Act
             var result = await _monitor_DocuSign.Configure(curActionDTO);
@@ -79,7 +79,7 @@ namespace terminalDocuSign.Tests.Actions
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.TestActionDTO3();
-            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
+            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
 
             //Act
             var result = _monitor_DocuSign.Configure(curActionDTO);

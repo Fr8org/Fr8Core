@@ -17,7 +17,7 @@ using TerminalBase.BaseClasses;
 namespace terminalSlack.Actions
 {
 
-    public class Publish_To_Slack_v1 : BasePluginAction
+    public class Publish_To_Slack_v1 : BaseTerminalAction
     {
         private readonly ISlackIntegration _slackIntegration;
 
