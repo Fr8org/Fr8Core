@@ -416,12 +416,12 @@ namespace Data.Migrations
             // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
 
             // TODO: remove this, DO-1397
-            // AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1", true);
-            // AddPlugins(uow, "pluginExcel", "localhost:47011", "1", false);
-            // AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1", true);
-            AddTerminals(uow, "pluginDocuSign", "localhost:53234", "1");
-            AddTerminals(uow, "pluginExcel", "localhost:47011", "1");
-            AddTerminals(uow, "pluginSalesforce", "localhost:51234", "1");
+            // AddPlugins(uow, "terminalDocuSign", "localhost:53234", "1", true);
+            // AddPlugins(uow, "terminalExcel", "localhost:47011", "1", false);
+            // AddPlugins(uow, "terminalSalesforce", "localhost:51234", "1", true);
+            AddTerminals(uow, "terminalDocuSign", "localhost:53234", "1");
+            AddTerminals(uow, "terminalExcel", "localhost:47011", "1");
+            AddTerminals(uow, "terminalSalesforce", "localhost:51234", "1");
             uow.SaveChanges();
         }
 
