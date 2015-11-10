@@ -288,12 +288,12 @@ namespace DockyardTest
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IFileRepository fileRepository = new MockedFileRepository(uow);
+                var cloudFileManager = new MockedCloudFileManager();
                 // https://yardstore1.blob.core.windows.net/default-container-dev/SampleFile1.xlsx
                 var blobUrl = "https://yardstore1.blob.core.windows.net/default-container-dev/SampleFile1.xlsx";
                 try
                 {
-                    var byteArray = fileRepository.GetRemoteFile(blobUrl);
+                    var byteArray = cloudFileManager.GetRemoteFile(blobUrl);
                     var columns = ExcelUtils.GetColumnHeaders(byteArray, "xlsx");
                     Assert.IsNotNull(columns);
                     Assert.AreEqual(columns.Count(), 3);
@@ -311,12 +311,12 @@ namespace DockyardTest
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IFileRepository fileRepository = new MockedFileRepository(uow);
+                var cloudFileManager = new MockedCloudFileManager();
                 // https://yardstore1.blob.core.windows.net/default-container-dev/SampleFile1.xlsx
                 var blobUrl = "https://yardstore1.blob.core.windows.net/default-container-dev/SampleFile1.xlsx";
                 try
                 {
-                    var byteArray = fileRepository.GetRemoteFile(blobUrl);
+                    var byteArray = cloudFileManager.GetRemoteFile(blobUrl);
                     var rows = ExcelUtils.GetTabularData(byteArray, "xlsx");
                     Assert.IsNotNull(rows);
                     Assert.AreEqual(rows.Count(), 3);
@@ -336,13 +336,8 @@ namespace DockyardTest
     /// <summary>
     /// Had to write this class only for mocking out reading from CloudConfigurationManager as AppVeyor build mechanism is somehow failing to do so.
     /// </summary>
-    public class MockedFileRepository : FileRepository
+    public class MockedCloudFileManager : CloudFileManager
     {
-        public MockedFileRepository(IUnitOfWork uow)
-            : base(uow)
-        {
-        }
-
         protected override CloudBlobContainer GetDefaultBlobContainer()
         {
             const string azureStorageDefaultConnectionString = "AzureStorageDefaultConnectionString";

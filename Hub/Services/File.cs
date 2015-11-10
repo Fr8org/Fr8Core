@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using StructureMap;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Hub.Interfaces;
-
 
 namespace Hub.Services
 {
@@ -15,13 +15,16 @@ namespace Hub.Services
     /// </summary>
     public class File : IFile
     {
+        private readonly CloudFileManager _cloudFileManager
+            = ObjectFactory.GetInstance<CloudFileManager>();
+
         /// <summary>
         /// Stores the file into file repository
         /// </summary>
         /// <remarks>WARNING: THIS METHOD IS NOT TRANSACTIONAL. It is possible to successfuly save to the remote store and then have the FileDO update fail.</remarks>
         public void Store(IUnitOfWork uow, FileDO curFileDO, Stream curFile, string curFileName)
         {
-            string remoteFileUrl = uow.FileRepository.SaveRemoteFile(curFile, curFileName);
+            string remoteFileUrl = _cloudFileManager.SaveRemoteFile(curFile, curFileName);
 
             curFileDO.CloudStorageUrl = remoteFileUrl;
             curFileDO.OriginalFileName = curFileName;
@@ -31,33 +34,12 @@ namespace Hub.Services
 
         public byte[] Retrieve(FileDO curFile)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                return uow.FileRepository.GetRemoteFile(curFile.CloudStorageUrl);
-            }
+            return _cloudFileManager.GetRemoteFile(curFile.CloudStorageUrl);
         }
 
         public bool Delete(FileDO curFile)
         {
             return Delete(curFile.Id);
-
-            /*using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var file = uow.FileRepository.GetByKey(curFile.Id);
-                
-               bool isRemoteFileDeleted = uow.FileRepository.DeleteRemoteFile(curFile.CloudStorageUrl);
-
-                if (isRemoteFileDeleted)
-                {
-                    if(uow.Db.Entry(curFile).State  == System.Data.Entity.EntityState.Detached)
-                    //if(uow.Db.Entry<FileDO>(curFile).State == System.Data.Entity.EntityState.Detached)
-                        uow.Db.Set<FileDO>().Attach(curFile);
-                    uow.FileRepository.Remove(curFile);
-                    uow.SaveChanges();
-                    return true;
-                }
-                return false;
-            }*/
         }
 
         public bool Delete(int fileId)
@@ -68,7 +50,7 @@ namespace Hub.Services
 
                 if (null != file)
                 {
-                    bool isRemoteFileDeleted = uow.FileRepository.DeleteRemoteFile(file.CloudStorageUrl);
+                    bool isRemoteFileDeleted = _cloudFileManager.DeleteRemoteFile(file.CloudStorageUrl);
 
                     if (isRemoteFileDeleted)
                     {

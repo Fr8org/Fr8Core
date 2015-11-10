@@ -32,6 +32,7 @@ namespace Data.Infrastructure.StructureMap
             {
                 For<DbContext>().Use<DockyardDbContext>();
                 For<IDBContext>().Use<DockyardDbContext>();
+                For<CloudFileManager>().Use<CloudFileManager>();
 
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
@@ -42,6 +43,7 @@ namespace Data.Infrastructure.StructureMap
             public TestMode()
             {
                 For<IDBContext>().Use<MockedDBContext>();
+                For<CloudFileManager>().Use<CloudFileManager>();
 
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
