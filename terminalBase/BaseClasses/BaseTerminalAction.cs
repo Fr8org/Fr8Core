@@ -54,7 +54,7 @@ namespace TerminalBase.BaseClasses
             {
                 return true;
             }
-        
+
             return false;
         }
 
@@ -107,7 +107,7 @@ namespace TerminalBase.BaseClasses
             var fields = designTimeFields.Fields;
             var validationList = fields.Select(f => new FieldValidationDTO(curActionDTO.Id, f.Key)).ToList();
             return Crate.ToDto(await ValidateFields(validationList));
-            }
+        }
 
         //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
         protected virtual async Task<CrateDTO> ValidateAction(ActionDTO curActionDTO)
@@ -127,7 +127,7 @@ namespace TerminalBase.BaseClasses
                 var validationErrors = await ValidateAction(curActionDTO);
                 if (validationErrors != null)
                 {
-                    curActionDTO.CrateStorage.Crates = new []{validationErrors};
+                    curActionDTO.CrateStorage.Crates = new[] { validationErrors };
                     return curActionDTO;
                 }
                 return await FollowupConfigurationResponse(curActionDTO);
@@ -170,9 +170,9 @@ namespace TerminalBase.BaseClasses
         }
 
         //wrapper for support test method
-        public async virtual Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        public async virtual Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(int activityId, GetCrateDirection direction)
         {
-            return await Activity.GetCratesByDirection(activityId, manifestType, direction);
+            return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
         }
 
         public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(int activityId, GetCrateDirection direction)
@@ -180,7 +180,7 @@ namespace TerminalBase.BaseClasses
             //1) Build a merged list of the upstream design fields to go into our drop down list boxes
             StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
 
-            var curCrates = await Activity.GetCratesByDirection <StandardDesignTimeFieldsCM>(activityId,direction);
+            var curCrates = await Activity.GetCratesByDirection<StandardDesignTimeFieldsCM>(activityId, direction);
 
             mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);
 
@@ -211,7 +211,7 @@ namespace TerminalBase.BaseClasses
         {
             return PackControlsCrate(page.Controls.ToArray());
         }
-        
+
         protected Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
             return Crate<StandardConfigurationControlsCM>.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(controlsList));
@@ -223,20 +223,20 @@ namespace TerminalBase.BaseClasses
 
             var controlsCrateMS = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
-//            var controlsCrate = curActionDto.CrateStorage.CrateDTO
-//                .FirstOrDefault(
-//                    x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
-//                    && x.Label == "Configuration_Controls");
-//
-//            if (controlsCrate == null)
-//            {
-//                throw new ApplicationException("No Configuration_Controls crate found.");
-//            }
-//
-//            var controlsCrateMS = JsonConvert
-//                .DeserializeObject<StandardConfigurationControlsCM>(
-//                    controlsCrate.Contents
-//                );
+            //            var controlsCrate = curActionDto.CrateStorage.CrateDTO
+            //                .FirstOrDefault(
+            //                    x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+            //                    && x.Label == "Configuration_Controls");
+            //
+            //            if (controlsCrate == null)
+            //            {
+            //                throw new ApplicationException("No Configuration_Controls crate found.");
+            //            }
+            //
+            //            var controlsCrateMS = JsonConvert
+            //                .DeserializeObject<StandardConfigurationControlsCM>(
+            //                    controlsCrate.Contents
+            //                );
 
             var field = controlsCrateMS.Controls
                 .FirstOrDefault(x => x.Name == fieldName);
@@ -249,9 +249,9 @@ namespace TerminalBase.BaseClasses
             return field.Value;
         }
 
-        protected async virtual Task<List<Crate>> GetUpstreamFileHandleCrates(int curActionId)
+        protected async virtual Task<List<Crate<StandardFileHandleMS>>> GetUpstreamFileHandleCrates(int curActionId)
         {
-            return await Activity.GetCratesByDirection(curActionId, CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME, GetCrateDirection.Upstream);
+            return await Activity.GetCratesByDirection<StandardFileHandleMS>(curActionId, GetCrateDirection.Upstream);
         }
 
         protected async Task<Crate<StandardDesignTimeFieldsCM>> MergeUpstreamFields(int curActionDOId, string label)
@@ -330,16 +330,16 @@ namespace TerminalBase.BaseClasses
                 }
             };
 
-//            var controls = new StandardConfigurationControlsCM()
-//            {
-//                Controls = fields
-//            };
+            //            var controls = new StandardConfigurationControlsCM()
+            //            {
+            //                Controls = fields
+            //            };
 
             var crateControls = Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fields.ToArray());
-//                ,
-//                JsonConvert.SerializeObject(controls),
-//                CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
-//            );
+            //                ,
+            //                JsonConvert.SerializeObject(controls),
+            //                CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+            //            );
 
             return crateControls;
         }
@@ -386,7 +386,7 @@ namespace TerminalBase.BaseClasses
                                 Source = new FieldSourceDTO
                                 {
                                     Label = upstreamSourceLabel,
-                                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                                 }
                             }
                         }
@@ -472,9 +472,7 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         protected string ExtractDesignTimeFieldValue(CrateStorage crateStorage, string fieldKey)
         {
-            var crates = crateStorage.Where(x => x.ManifestType.Type == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME);
-
-            var fieldValues = crates.SelectMany(x => x.Get<StandardPayloadDataCM>().GetValues(fieldKey))
+            var fieldValues = crateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(fieldKey))
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
 
@@ -495,7 +493,7 @@ namespace TerminalBase.BaseClasses
             throw new ApplicationException("No field found with specified key.");
         }
 
-       protected void AddLabelControl(CrateStorage storage, string name, string label, string text)
+        protected void AddLabelControl(CrateStorage storage, string name, string label, string text)
         {
             AddControl(
                 storage,
