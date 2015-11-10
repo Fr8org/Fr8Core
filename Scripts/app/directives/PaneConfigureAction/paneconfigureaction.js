@@ -1,7 +1,8 @@
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    __.prototype = b.prototype;
+    d.prototype = new __();
 };
 /// <reference path="../../_all.ts" />
 var dockyard;
@@ -104,6 +105,7 @@ var dockyard;
                             loadConfiguration();
                         });
                         $scope.$on(MessageType[MessageType.PaneConfigureAction_RenderConfiguration], 
+                        //Allow some time for parent and current action instance to sync
                         //Allow some time for parent and current action instance to sync
                         function () { return $timeout(function () { return processConfiguration(); }, 300); });
                         // Get configuration settings template from the server if the current action does not contain those             
@@ -235,7 +237,7 @@ var dockyard;
                             modalScope.activityTemplateId = activityTemplateId;
                             $modal.open({
                                 animation: true,
-                                templateUrl: '/AngularTemplate/InternalAuthentication',
+                                templateUrl: 'AngularTemplate/InternalAuthentication',
                                 controller: 'InternalAuthenticationController',
                                 scope: modalScope
                             })
@@ -243,20 +245,17 @@ var dockyard;
                         }
                         function startExternalAuthentication(activityTemplateId) {
                             var self = this;
-                            var childWindow;
                             var messageListener = function (event) {
-                                debugger;
-                                if (!event.data || event.data != 'external-auth-success') {
+                                if (!self.$scope || !event.data || event.data != 'external-auth-success') {
                                     return;
                                 }
-                                childWindow.close();
                                 loadConfiguration();
                             };
                             $http
                                 .get('/authentication/initial_url?id=' + activityTemplateId)
                                 .then(function (res) {
                                 var url = res.data.url;
-                                childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
+                                var childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
                                 window.addEventListener('message', messageListener);
                                 var isClosedHandler = function () {
                                     if (childWindow.closed) {
