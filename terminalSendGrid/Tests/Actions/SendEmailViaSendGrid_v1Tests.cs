@@ -68,18 +68,38 @@ namespace terminalSendGrid.Tests.Actions
         }
 
         [Test]
-        [Ignore]
-        public void Configure_ReturnsCrateDTOStandardConfigurationControls()
+        public void Configure_ReturnsCrateDTOStandardConfigurationControlsMS()
         {
-            // Act
+            // Arrange
             var actionResult = GetActionResult();
-            var controlsCrates = actionResult.CrateStorage.Crates.FirstOrDefault();
-            //var standardControls = _crate.GetStandardConfigurationControls(controlsCrates);
 
-            //// Assert
-            //Assert.IsNotNull(standardControls);
-            //Assert.IsNotNull(standardControls.Controls);
-            //Assert.AreEqual(standardControls.Controls.Count, 3);
+            // Act
+            var controlsCrate = _crate.FromDto(actionResult.CrateStorage).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+
+            // Assert
+            Assert.IsNotNull(controlsCrate);
+            Assert.IsNotNull(controlsCrate.ManifestType);
+            Assert.IsNotNull(controlsCrate.Content);
+            Assert.AreEqual(controlsCrate.Content.Controls.Count, 3);
+        }
+
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(2)]
+        public void Configure_ReturnsEmailControls(int index)
+        {
+            // Arrange
+            var actionResult = GetActionResult();
+
+            // Act && Assert
+            var standardControls = _crate.FromDto(actionResult.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            Assert.IsNotNull(standardControls);
+
+            var specificValueTextField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[index]).Radios.SelectMany(c => c.Controls).Count(s => s.Name == "SpecificValue");
+            Assert.AreEqual(specificValueTextField, 1);
+
+            var upstreamCrateField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[index]).Radios.SelectMany(c => c.Controls).Count(s => s.Name == "UpstreamCrate");
+            Assert.AreEqual(upstreamCrateField, 1);
         }
 
         private ActionDTO GetActionResult()
