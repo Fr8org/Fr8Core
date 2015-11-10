@@ -17,9 +17,8 @@ namespace terminalFr8Core.Infrastructure
         public async Task<Dictionary<string, DbType>> ExtractColumnTypes(
             BasePluginAction action, ActionDTO actionDTO)
         {
-            var upstreamCrates = await action.GetCratesByDirection(
+            var upstreamCrates = await action.GetCratesByDirection<StandardDesignTimeFieldsCM>(
                 actionDTO.Id,
-                CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 GetCrateDirection.Upstream
             );
 
@@ -30,7 +29,7 @@ namespace terminalFr8Core.Infrastructure
 
             if (columnTypesCrate == null) { return null; }
 
-            var columnTypes = columnTypesCrate.Get<StandardDesignTimeFieldsCM>();
+            var columnTypes = columnTypesCrate.Content;
 
             if (columnTypes == null) { return null; }
 
