@@ -170,9 +170,9 @@ namespace TerminalBase.BaseClasses
         }
 
         //wrapper for support test method
-        public async virtual Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        public async virtual Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(int activityId, GetCrateDirection direction)
         {
-            return await Activity.GetCratesByDirection(activityId, manifestType, direction);
+            return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
         }
 
         public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(int activityId, GetCrateDirection direction)
@@ -249,9 +249,9 @@ namespace TerminalBase.BaseClasses
             return field.Value;
         }
 
-        protected async virtual Task<List<Crate>> GetUpstreamFileHandleCrates(int curActionId)
+        protected async virtual Task<List<Crate<StandardFileHandleMS>>> GetUpstreamFileHandleCrates(int curActionId)
         {
-            return await Activity.GetCratesByDirection(curActionId, CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME, GetCrateDirection.Upstream);
+            return await Activity.GetCratesByDirection<StandardFileHandleMS>(curActionId, GetCrateDirection.Upstream);
         }
 
         protected async Task<Crate<StandardDesignTimeFieldsCM>> MergeUpstreamFields(int curActionDOId, string label)
@@ -386,7 +386,7 @@ namespace TerminalBase.BaseClasses
                                 Source = new FieldSourceDTO
                                 {
                                     Label = upstreamSourceLabel,
-                                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                                 }
                             }
                         }
@@ -472,9 +472,7 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         protected string ExtractDesignTimeFieldValue(CrateStorage crateStorage, string fieldKey)
         {
-            var crates = crateStorage.Where(x => x.ManifestType.Type == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME);
-
-            var fieldValues = crates.SelectMany(x => x.Get<StandardPayloadDataCM>().GetValues(fieldKey))
+            var fieldValues = crateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(fieldKey))
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
 

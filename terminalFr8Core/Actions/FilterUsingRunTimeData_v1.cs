@@ -4,8 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Web.Razor.Generator;
+using AutoMapper;
 using Data.Crates;
-using Hub.Managers;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Entities;
@@ -13,6 +13,7 @@ using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Enums;
+using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalFr8Core.Interfaces;
@@ -208,7 +209,7 @@ namespace terminalFr8Core.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Queryable Criteria",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
 
@@ -248,11 +249,6 @@ namespace terminalFr8Core.Actions
             return curActionDTO;
         }
 
-        protected override async Task<CrateDTO> ValidateAction(ActionDTO curActionDTO)
-        {
-            return await ValidateByStandartDesignTimeFields(curActionDTO, Crate.GetStorage(curActionDTO).FirstCrate<StandardDesignTimeFieldsCM>(x => x.Label == "Queryable Criteria").Content);
-        }
-
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDataPackageDTO)
         {
             if (Crate.IsEmptyStorage(curActionDataPackageDTO.CrateStorage))
@@ -260,13 +256,12 @@ namespace terminalFr8Core.Actions
                 return ConfigurationRequestType.Initial;
             }
 
-            var hasControlsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME) != null;
+            var hasControlsCrate = GetCratesByManifestType<StandardConfigurationControlsCM>(curActionDataPackageDTO) != null;
 
-            var hasQueryFieldsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) != null;
+            var hasQueryFieldsCrate = GetCratesByManifestType<StandardDesignTimeFieldsCM>(curActionDataPackageDTO) != null;
 
-            if (hasControlsCrate && hasQueryFieldsCrate)
+            if (hasControlsCrate && hasQueryFieldsCrate && HasValidConfiguration(curActionDataPackageDTO))
             {
-                
                 return ConfigurationRequestType.Followup;
             }
             else
@@ -282,51 +277,48 @@ namespace terminalFr8Core.Actions
         /// </summary>
         /// <param name="curActionDataPackageDTO"></param>
         /// <returns></returns>
-//        private bool HasValidConfiguration(ActionDTO curActionDataPackageDTO)
-//        {
-//            // STANDARD_CONF_CONTROLS_NANIFEST_NAME can't be deseralized to RadioButtonOption.
+        private bool HasValidConfiguration(ActionDTO curActionDataPackageDTO)
+        {
+            // STANDARD_CONF_CONTROLS_NANIFEST_NAME can't be deseralized to RadioButtonOption.
 
-////            var crateDTO = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
-////
-////            if (crateDTO != null)
-////            {
-////                RadioButtonOption radioButtonOption = JsonConvert.DeserializeObject<RadioButtonOption>(crateDTO.Contents);
-////                if (radioButtonOption != null)
-////                {
-////                    foreach (ControlDefinitionDTO controlDefinitionDTO in radioButtonOption.Controls)
-////                    {
-////                        if (!string.IsNullOrEmpty(controlDefinitionDTO.Value))
-////                        {
-////                            FilterDataDTO filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(controlDefinitionDTO.Value);
-////                            return filterDataDTO.Conditions.Any(x =>
-////                                  x.Field != null && x.Field != "" &&
-////                                  x.Operator != null && x.Operator != "" &&
-////                                  x.Value != null && x.Value != "");
-////                        }
-////                    }
-////                }
-////
-////            }
-//            return false;
-//        }
+//            var crateDTO = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+//
+//            if (crateDTO != null)
+//            {
+//                RadioButtonOption radioButtonOption = JsonConvert.DeserializeObject<RadioButtonOption>(crateDTO.Contents);
+//                if (radioButtonOption != null)
+//                {
+//                    foreach (ControlDefinitionDTO controlDefinitionDTO in radioButtonOption.Controls)
+//                    {
+//                        if (!string.IsNullOrEmpty(controlDefinitionDTO.Value))
+//                        {
+//                            FilterDataDTO filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(controlDefinitionDTO.Value);
+//                            return filterDataDTO.Conditions.Any(x =>
+//                                  x.Field != null && x.Field != "" &&
+//                                  x.Operator != null && x.Operator != "" &&
+//                                  x.Value != null && x.Value != "");
+//                        }
+//                    }
+//                }
+//
+//            }
+            return false;
+        }
 
-        private Crate GetCratesByManifestType(ActionDTO curActionDataPackageDTO, string curManifestType)
+        private Crate<TManifest> GetCratesByManifestType<TManifest>(ActionDTO curActionDataPackageDTO)
         {
             string curLabel = string.Empty;
-            switch (curManifestType)
+
+            if (typeof(TManifest) == typeof (StandardDesignTimeFieldsCM))
             {
-                case CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME:
-                    curLabel = "Configuration_Controls";
-                    break;
-                case CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME:
-                    curLabel = "Queryable Criteria";
-                    break;
+                curLabel = "Queryable Criteria";
+            } 
+            else if (typeof (TManifest) == typeof (StandardConfigurationControlsCM))
+            {
+                curLabel = "Configuration_Controls";
             }
 
-            return Crate.FromDto(curActionDataPackageDTO.CrateStorage).FirstOrDefault(x =>
-                x.ManifestType.Type == curManifestType
-                && x.Label == curLabel);
-
+            return Crate.GetStorage(curActionDataPackageDTO).FirstCrateOrDefault<TManifest>(x => x.Label == curLabel);
         }
     }
 }

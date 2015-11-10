@@ -54,7 +54,7 @@ namespace UtilitiesTesting.Fixtures
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Templates",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 },
                 Value = templateId
             };
@@ -107,7 +107,7 @@ namespace UtilitiesTesting.Fixtures
                 Source = new FieldSourceDTO
                 {
                     Label = "Select Fr8 Object",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
 
