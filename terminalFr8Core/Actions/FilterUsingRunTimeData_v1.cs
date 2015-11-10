@@ -209,7 +209,7 @@ namespace terminalFr8Core.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Queryable Criteria",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
 
@@ -261,9 +261,9 @@ namespace terminalFr8Core.Actions
                 return ConfigurationRequestType.Initial;
             }
 
-            var hasControlsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME) != null;
+            var hasControlsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifestTypes.StandardConfigurationControls) != null;
 
-            var hasQueryFieldsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) != null;
+            var hasQueryFieldsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifestTypes.StandardDesignTimeFields) != null;
 
             if (hasControlsCrate && hasQueryFieldsCrate)
             {
@@ -316,10 +316,10 @@ namespace terminalFr8Core.Actions
             string curLabel = string.Empty;
             switch (curManifestType)
             {
-                case CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME:
+                case CrateManifestTypes.StandardConfigurationControls:
                     curLabel = "Configuration_Controls";
                     break;
-                case CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME:
+                case CrateManifestTypes.StandardDesignTimeFields:
                     curLabel = "Queryable Criteria";
                     break;
             }
