@@ -161,7 +161,7 @@ namespace DockyardTest.Services
 
             ISubroute subRoute = new Subroute();
             //Delete
-            subRoute.DeleteAction(actionDO.Id);
+            subRoute.DeleteAction(null, actionDO.Id, true);
         }
 
         [Test]

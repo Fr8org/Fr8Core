@@ -7,7 +7,7 @@ using Utilities.Configuration.Azure;
 using Data.Interfaces.Manifests;
 
 namespace terminalTwilio.Controllers
-{
+{    
     [RoutePrefix("plugins")]
     public class PluginController : ApiController
     {

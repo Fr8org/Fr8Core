@@ -175,7 +175,7 @@ namespace HubWeb.Controllers
         }
 
         
-        
+
         [HttpDelete]
         [Route("{id:int}")]
         [Fr8ApiAuthorize]

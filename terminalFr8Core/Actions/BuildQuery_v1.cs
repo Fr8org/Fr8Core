@@ -78,6 +78,7 @@ namespace terminalFr8Core.Actions
                 updater.CrateStorage.RemoveByLabel("Available Tables");
                 updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray()));
             }
+
             return curActionDTO;
         }
 
@@ -117,9 +118,8 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private async Task<List<FieldDTO>> ExtractColumnDefinitions(ActionDTO actionDTO)
         {
-            var upstreamCrates = await GetCratesByDirection(
+            var upstreamCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(
                 actionDTO.Id,
-                CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 GetCrateDirection.Upstream
             );
 
@@ -129,35 +129,13 @@ namespace terminalFr8Core.Actions
 
             if (tablesDefinitionCrate == null) { return null; }
 
-            var tablesDefinition = tablesDefinitionCrate.Get<StandardDesignTimeFieldsCM>();
+            var tablesDefinition = tablesDefinitionCrate.Content;
 
             if (tablesDefinition == null) { return null; }
 
             return tablesDefinition.Fields;
         }
-
-        private async Task<List<FieldDTO>> ExtractColumnTypes(ActionDTO actionDTO)
-        {
-            var upstreamCrates = await GetCratesByDirection(
-                actionDTO.Id,
-                CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
-                GetCrateDirection.Upstream
-            );
-
-            if (upstreamCrates == null) { return null; }
-
-            var columnTypesCrate = upstreamCrates
-                .FirstOrDefault(x => x.Label == "Sql Column Types");
-
-            if (columnTypesCrate == null) { return null; }
-
-            var columnTypes = columnTypesCrate.Get<StandardDesignTimeFieldsCM>();
-                
-            if (columnTypes == null) { return null; }
-
-            return columnTypes.Fields;
-        }
-
+        
         /// <summary>
         /// Returns distinct list of table names from Table Definitions list.
         /// </summary>
@@ -214,7 +192,7 @@ namespace terminalFr8Core.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = "Available Tables",
-                        ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 }
             );
@@ -239,7 +217,7 @@ namespace terminalFr8Core.Actions
         /// Exract previously stored valued of selected object type.
         /// </summary>
         private string ExtractPreviousSelectedObject(CrateStorage storage)
-            {
+        {
             var fields = storage.CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == "Selected Object");
 
             if (fields == null || fields.Content.Fields.Count == 0)
@@ -323,7 +301,7 @@ namespace terminalFr8Core.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Queryable Criteria",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
 

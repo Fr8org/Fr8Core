@@ -135,7 +135,7 @@ namespace terminalSlack.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Channels",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
 
@@ -151,7 +151,7 @@ namespace terminalSlack.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Fields",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
 

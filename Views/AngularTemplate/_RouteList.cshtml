@@ -11,39 +11,39 @@
 				</div>
 			</div>
 
-			<div class="portlet-body">
-				<div ng-show="ptvms.length == 0">You have no processes yet.</div>
-				<div class="table-scrollable table-scrollable-borderless">
-					<table class="row-border hover table table-hover table-light table-linkrows table-process-templates">
-						<thead>
-							<tr>
-								<th>Name</th>
-								<th>Description</th>
-								<th>Status</th>
-								<th style="text-align: right">Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr ng-repeat="processTemplate in activeProcessTemplates | filter: {routeState:2}">
-								<td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.name }}</td>
-								<td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.description }}</td>
-								<td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">
-									<span class="bold font-green-haze">{{processTemplate.routeState == 2 ? 'Active' : 'Inactive' }}</span>
-								</td>
-								<td>
-									<div>
-										<button type="button" class="btn btn-sm red" ng-click="deactivateProcessTemplate(processTemplate);">Deactivate</button>
-										<button type="button" class="btn btn-sm red" ng-click="deleteProcessTemplate(processTemplate.id, true);">Delete</button>
-										<button type="button" class="btn btn-sm green" ng-click="goToProcessTemplatePage(processTemplate.id);">Edit</button>
-										<button type="button" class="btn btn-sm btn-primary" ng-click="executeProcessTemplate(processTemplate.id);">Run Now</button>
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-
+            <div class="portlet-body">
+                <div ng-if="activeProcessTemplates.length == 0">No active routes found. To make a route active, click on the Activate button after your route is fully configured.</div>
+                <div ng-if="activeProcessTemplates.length > 0">
+                    <div class="table-scrollable table-scrollable-borderless">
+                        <table class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th style="text-align: right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="processTemplate in activeProcessTemplates | filter: {routeState:2}">
+                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.name }}</td>
+                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.description }}</td>
+                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">
+                                        <span class="bold font-green-haze">{{processTemplate.routeState == 2 ? 'Active' : 'Inactive' }}</span>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <button type="button" class="btn btn-sm red" ng-click="deactivateProcessTemplate(processTemplate);">Deactivate</button>
+                                            <button type="button" class="btn btn-sm red" ng-click="deleteProcessTemplate(processTemplate.id);">Delete</button>
+                                            <button type="button" class="btn btn-sm green" ng-click="goToProcessTemplatePage(processTemplate.id);">Edit</button>
+                                            <button type="button" class="btn btn-sm btn-primary" ng-click="executeProcessTemplate(processTemplate.id);">Run Now</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>                
 			<br />
 			<hr />
 
@@ -57,37 +57,39 @@
 				</div>
 			</div>
 
-			<div class="portlet-body">
-				<div ng-show="ptvms.length == 0">You have no processes yet.</div>
-				<div class="table-scrollable table-scrollable-borderless">
-					<table class="row-border hover table table-hover table-light table-linkrows table-process-templates">
-						<thead>
-							<tr>
-								<th>Name</th>
-								<th>Description</th>
-								<th>Status</th>
-								<th style="text-align: right">Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr ng-repeat="processTemplate in inActiveProcessTemplates | filter: {routeState:1}">
-								<td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.name }}</td>
-								<td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.description }}</td>
-								<td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">
-									<span class="bold font-green-haze">{{processTemplate.routeState == 2 ? 'Active' : 'Inactive' }}</span>
-								<td>
-									<div>
-										<button type="button" class="btn btn-sm red" ng-click="deleteProcessTemplate(processTemplate.id, false);">Delete</button>
-										<button type="button" class="btn btn-sm green" ng-click="goToProcessTemplatePage(processTemplate.id);">Edit</button>
-										<button type="button" class="btn btn-sm btn-primary" ng-click="executeProcessTemplate(processTemplate.id);">Run Now</button>
-										<button type="button" class="btn btn-sm green" ng-click="activateProcessTemplate(processTemplate);">Activate</button>
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
+                <div class="portlet-body">
+                    <div ng-if="inActiveProcessTemplates.length == 0">No inactive routes are found. To make a route inactive, click on the Deactivate button for an Active route you wish to disable.</div>
+                    <div ng-if="inActiveProcessTemplates.length > 0">
+                        <div class="table-scrollable table-scrollable-borderless">
+                            <table class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Status</th>
+                                        <th style="text-align: right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="processTemplate in inActiveProcessTemplates | filter: {routeState:1}">
+                                        <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.name }}</td>
+                                        <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.description }}</td>
+                                        <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">
+                                            <span class="bold font-green-haze">{{processTemplate.routeState == 2 ? 'Active' : 'Inactive' }}</span>
+                                        <td>
+                                            <div>
+                                                <button type="button" class="btn btn-sm red" ng-click="deleteProcessTemplate(processTemplate.id);">Delete</button>
+                                                <button type="button" class="btn btn-sm green" ng-click="goToProcessTemplatePage(processTemplate.id);">Edit</button>
+                                                <button type="button" class="btn btn-sm btn-primary" ng-click="executeProcessTemplate(processTemplate.id);">Run Now</button>
+                                                <button type="button" class="btn btn-sm green" ng-click="activateProcessTemplate(processTemplate);">Activate</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
 		</div>
 

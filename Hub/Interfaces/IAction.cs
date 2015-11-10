@@ -15,7 +15,7 @@ namespace Hub.Interfaces
         IEnumerable<TViewModel> GetAllActions<TViewModel>();
         ActionDO SaveOrUpdateAction(ActionDO currentActionDo);
         ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO currentActionDo);
-        Task<ActionDTO> Configure(string userId, ActionDO curActionDO);
+        Task<ActionDTO> Configure(string userId, ActionDO curActionDO, bool saveResult = true);
         //Task<ActionDO> SaveUpdateAndConfigure(IUnitOfWork uow, ActionDO submittedActionDo);
         ActionDO GetById(int id);
         ActionDO GetById(IUnitOfWork uow, int id);

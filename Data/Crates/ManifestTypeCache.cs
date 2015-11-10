@@ -32,7 +32,7 @@ namespace Data.Crates
                     if (typeof(Manifest).IsAssignableFrom(type))
                     {
                         var sampleManifest = ((Manifest)Activator.CreateInstance(type));
-                        manifestType = new CrateManifestType(sampleManifest.ManifestName, sampleManifest.ManifestId);
+                        manifestType = sampleManifest.ManifestType;
                     }
                     else
                     {
@@ -41,12 +41,12 @@ namespace Data.Crates
                 }
                 else
                 {
-                    manifestType = CrateManifestType.FromEnum(manifestAttr.ManifestType);
+                    manifestType = manifestAttr.ManifestType;
                 }
 
                 ManifestsCache.Add(type, manifestType);
 
-                return true;
+                return manifestType != CrateManifestType.Unknown;
             }
         }
 
@@ -69,7 +69,7 @@ namespace Data.Crates
                 {
                     if (!ManifestsCache.TryGetValue(type, out manifestType))
                     {
-                        manifestType = new CrateManifestType(manifest.ManifestName, (int) manifest.ManifestType);
+                        manifestType = manifest.ManifestType;
                         ManifestsCache.Add(type, manifestType);
                         return true;
                     }
