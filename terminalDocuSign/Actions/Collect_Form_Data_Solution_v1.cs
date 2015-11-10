@@ -61,7 +61,7 @@ namespace terminalDocuSign.Actions
                                     Source = new FieldSourceDTO
                                     {
                                         Label = "AvailableForms",
-                                        ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                                     },
                                     Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
                                 })
@@ -88,7 +88,7 @@ namespace terminalDocuSign.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = "AvailableActions",
-                        ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     },
                     Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
                 }));

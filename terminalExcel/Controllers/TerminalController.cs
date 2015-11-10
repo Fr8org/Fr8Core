@@ -33,8 +33,8 @@ namespace terminalExcel.Controllers
 
             result.Add(new ActivityTemplateDO
             {
-                Name = "Load_Table_Data",
-                Label = "Load Table Data",
+                Name = "Load_Excel_File",
+                Label = "Load Excel File",
                 Version = "1",
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,

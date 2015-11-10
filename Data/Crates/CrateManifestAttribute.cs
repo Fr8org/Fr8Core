@@ -7,11 +7,16 @@ namespace Data.Crates
     /// </summary>
     public class CrateManifestTypeAttribute : Attribute
     {
-        public readonly Enum ManifestType;
+        public readonly CrateManifestType ManifestType;
         
         public CrateManifestTypeAttribute(object manifestId)
         {
-            ManifestType = (Enum)manifestId;
+            ManifestType = CrateManifestType.FromEnum((Enum)manifestId);
+        }
+
+        public CrateManifestTypeAttribute(int manifestId, string manifestTypeName)
+        {
+            ManifestType = new CrateManifestType(manifestTypeName, manifestId);
         }
     }
     

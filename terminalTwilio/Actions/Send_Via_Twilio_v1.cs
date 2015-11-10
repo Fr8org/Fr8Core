@@ -80,7 +80,7 @@ namespace terminalTwilio.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Fields",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
 

@@ -143,9 +143,15 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
+<<<<<<< HEAD:pluginIntegrationTests/terminalIntegrationTests.csproj
     <Compile Include="TerminalIntegrationTests_SendDocuSignEnvelopeV1.cs" />
     <Compile Include="TerminalIntegrationTests.cs" />
     <Compile Include="TerminalIntegrationTests_TerminalExcel.cs" />
+=======
+    <Compile Include="PluginIntegrationTests_SendDocuSignEnvelopeV1.cs" />
+    <Compile Include="PluginIntegrationTests.cs" />
+    <Compile Include="PluginIntegrationTests_TerminalExcel.cs" />
+>>>>>>> dev:pluginIntegrationTests/pluginIntegrationTests.csproj
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

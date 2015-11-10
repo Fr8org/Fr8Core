@@ -40,7 +40,7 @@ namespace terminalFr8Core.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = "Select Fr8 Object",
-                        ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
                     }
                 };
                 

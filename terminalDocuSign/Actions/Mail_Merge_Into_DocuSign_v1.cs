@@ -134,6 +134,7 @@ namespace terminalDocuSign.Actions
             if (curActionDTO.ChildrenActions.Count() > 0) return ConfigurationRequestType.Initial;
 
             var storage = Crate.GetStorage(curActionDTO);
+            if (storage == null || storage.Count() == 0) return ConfigurationRequestType.Initial;
 
             // "Follow up" phase is when Continue button is clicked 
             ButtonControlDefinitionDTO button = GetStdConfigurationControl<ButtonControlDefinitionDTO>(storage, "Continue");

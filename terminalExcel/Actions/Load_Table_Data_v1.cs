@@ -43,7 +43,7 @@ namespace terminalExcel.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = "Select an Excel file",
-                        ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME
+                        ManifestType = CrateManifestTypes.StandardConfigurationControls
                     },
                 }));
 

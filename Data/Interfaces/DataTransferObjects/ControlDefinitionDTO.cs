@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Markup;
+using Data.Crates;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 
@@ -206,7 +207,7 @@ namespace Data.Interfaces.DataTransferObjects
             Source = new FieldSourceDTO
             {
                 Label = upstreamSourceLabel,
-                ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                ManifestType = CrateManifestTypes.StandardDesignTimeFields
             };
         }
     }

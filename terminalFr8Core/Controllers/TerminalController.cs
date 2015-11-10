@@ -9,16 +9,19 @@ using Data.Interfaces.Manifests;
 
 namespace terminalFr8Core.Controllers
 {
+
     [RoutePrefix("terminals")]
     public class TerminalController : ApiController
     {
         /// <summary>
         /// Terminal discovery infrastructure.
         /// Action returns list of supported actions by terminal.
+
         /// </summary>
         [HttpGet]
         [Route("discover")]
         [ResponseType(typeof(StandardFr8TerminalCM))]
+
         public IHttpActionResult DiscoverTerminals()
         {
             var result = new List<ActivityTemplateDO>();
@@ -37,6 +40,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Filter Using Runtime Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
+
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 330
@@ -48,6 +52,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
+
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 380
@@ -59,6 +64,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Add Payload Manually",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
+
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 330
@@ -70,6 +76,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Store MT Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
+
                 Version = "1"
             });
 
@@ -79,6 +86,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Select Fr8 Object",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
+
                 Version = "1",
                 MinPaneWidth = 330
             });
@@ -89,6 +97,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Connect To SQL",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
+
                 Version = "1"
             });
 
@@ -98,6 +107,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Build Query",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
+
                 Version = "1"
             });
 
