@@ -683,8 +683,8 @@
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
     <Content Include="Scripts\lib\jpattern.js" />
-    <Content Include="Scripts\tests\integration\TerminalActionExecuteTest.js" />
     <Content Include="Scripts\tests\integration\ContainerControllerTests.js" />
+    <Content Include="Scripts\tests\integration\TerminalActionExecuteTest.js" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />
     <Content Include="Views\AngularTemplate\ConfigurationControl.cshtml" />
