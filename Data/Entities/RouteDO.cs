@@ -88,6 +88,18 @@ namespace Data.Entities
                 return ChildNodes.OfType<SubrouteDO>();
             }
         }
+
+        public override RouteNodeDO Clone()
+        {
+            return new RouteDO()
+            {
+                Ordering = this.Ordering,
+                Name = this.Name,
+                Description = this.Description,
+                RouteState = this.RouteState,
+                Fr8Account = this.Fr8Account
+            };
+        }
         
         private class SmartNavigationalPropertyCollectionProxy<TBase, TDerived> : ICollection<TDerived>
             where TDerived : TBase

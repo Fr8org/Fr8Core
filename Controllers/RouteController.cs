@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Http;
@@ -76,16 +77,34 @@ namespace HubWeb.Controllers
             {
                 var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id, status);
 
-            if (curRoutes.Any())
-            {               
-                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>).ToArray());
-            }
+                if (curRoutes.Any())
+                {               
+                    return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>).ToArray());
+                }
             }
 
             return Ok();
-        
        }
 
+        [Fr8ApiAuthorize]
+        [Route("copy")]
+        [HttpPost]
+        public IHttpActionResult Copy(int id, string name)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curRouteDO = uow.RouteRepository.GetByKey(id);
+                if (curRouteDO == null)
+                {
+                    throw new ApplicationException("Unable to find route with specified id.");
+                }
+
+                var route = _route.Copy(uow, curRouteDO, name);
+                uow.SaveChanges();
+
+                return Ok(new { id = route.Id });
+            }
+        }
         
         // GET api/<controller>
         [Fr8ApiAuthorize]
