@@ -7,6 +7,7 @@ using Google.GData.Client;
 using Google.GData.Spreadsheets;
 using StructureMap;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Hub.Managers.APIManagers.Authorizers;
 using Utilities;
@@ -15,6 +16,10 @@ namespace Hub.Services
 {
     public class GoogleSheet
     {
+        private readonly CloudFileManager _cloudFileManager
+            = ObjectFactory.GetInstance<CloudFileManager>();
+
+
         private GOAuth2RequestFactory CreateRequestFactoryAsync(string userId)
         {
             var parameters = new OAuth2Parameters();
@@ -93,7 +98,7 @@ namespace Hub.Services
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     ms.Position = 0;
-                    var url = uow.FileRepository.SaveRemoteFile(ms,
+                    var url = _cloudFileManager.SaveRemoteFile(ms,
                         string.Format("GoogleSpreadsheets/{0}.csv",
                             spreadsheetUri.Substring(spreadsheetUri.LastIndexOf("/") + 1)));
                     try
@@ -107,7 +112,7 @@ namespace Hub.Services
                     }
                     catch (Exception)
                     {
-                        uow.FileRepository.DeleteRemoteFile(url);
+                        _cloudFileManager.DeleteRemoteFile(url);
                         throw;
                     }
                 }

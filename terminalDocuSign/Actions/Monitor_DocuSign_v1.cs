@@ -395,7 +395,7 @@ namespace terminalDocuSign.Actions
                                 Source = new FieldSourceDTO
                                 {
                                     Label = "Available Templates",
-                                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                                 },
                                 Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
                             }

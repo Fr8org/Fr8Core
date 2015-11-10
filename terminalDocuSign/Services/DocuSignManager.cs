@@ -7,6 +7,7 @@ using Data.Crates;
 using StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
 
@@ -34,7 +35,7 @@ namespace terminalDocuSign.Services
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Templates",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
 

@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using Hub.Services;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using StructureMap;
@@ -18,7 +21,6 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Services;
 
 namespace HubWeb.Controllers
 {
@@ -133,9 +135,14 @@ namespace HubWeb.Controllers
         /// </summary>
         [HttpDelete]
         [Route("{id:int}")]
-        public void Delete(int id)
+        public async Task<IHttpActionResult> Delete(int id, bool confirmed = false)
         {
-            _subRoute.DeleteAction(id);
+            var isDeleted = await _subRoute.DeleteAction(User.Identity.GetUserId(), id, confirmed);
+            if (!isDeleted)
+            {
+                return ResponseMessage(new HttpResponseMessage(System.Net.HttpStatusCode.PreconditionFailed));
+            }
+            return Ok();
         }
 
         /// <summary>

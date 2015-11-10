@@ -32,13 +32,13 @@ namespace terminalFr8Core.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
-                AddLabelControl(
+            AddLabelControl(
 
                     updater.CrateStorage,
-                    "NoConfigLabel",
-                    "No configuration",
-                    "This action does not require any configuration."
-                    );
+                "NoConfigLabel",
+                "No configuration",
+                "This action does not require any configuration."
+            );
             }
 
             return Task.FromResult(curActionDTO);
@@ -132,9 +132,8 @@ namespace terminalFr8Core.Actions
 
         private async Task<string> ExtractConnectionString(ActionDTO actionDTO)
         {
-            var upstreamCrates = await GetCratesByDirection(
+            var upstreamCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(
                 actionDTO.Id,
-                CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 GetCrateDirection.Upstream
             );
 
@@ -145,7 +144,7 @@ namespace terminalFr8Core.Actions
 
             if (connectionStringCrate == null) { return null; }
 
-            var connectionStringCM = connectionStringCrate.Get<StandardDesignTimeFieldsCM>();
+            var connectionStringCM = connectionStringCrate.Content;
 
             if (connectionStringCM == null) { return null; }
 

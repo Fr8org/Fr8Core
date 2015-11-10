@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Repositories;
@@ -21,7 +22,6 @@ namespace DockyardTest.Services
     public class FileTests : BaseTest
     {
         private FileStream _curBlobFile;
-        private IFile _file;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
 
@@ -30,7 +30,6 @@ namespace DockyardTest.Services
         {
             base.SetUp();
 
-            _file = ObjectFactory.GetInstance<IFile>();
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
 
@@ -104,12 +103,14 @@ namespace DockyardTest.Services
         [Test]
         public void File_Retrieve_CanRetrieveFile()
         {
+            var file = ObjectFactory.GetInstance<IFile>();
+
             //Arrange
             WriteRemoteFile();
             FileDO curFileDO = _uow.FileRepository.GetByKey(0);
 
             //Act
-            var curFile = _file.Retrieve(curFileDO);
+            var curFile = file.Retrieve(curFileDO);
 
             //Assert
             Assert.IsNotNull(curFile, "File is not uploaded. Read attempt is failed.");
@@ -128,10 +129,12 @@ namespace DockyardTest.Services
             FileDO curFileDO = _uow.FileRepository.GetByKey(0);
             MakeFileRepositoryTimeOut();
 
+            var file = ObjectFactory.GetInstance<IFile>();
+
             //Act
             try
             {
-                var curFile = _file.Retrieve(curFileDO);
+                var curFile = file.Retrieve(curFileDO);
             }
             catch (StorageException storageException)
             {
@@ -146,15 +149,17 @@ namespace DockyardTest.Services
         [ExpectedException(typeof(StorageException))]
         public void File_Retrieve_WithoutTargetFile_ShouldThrow404NotFound()
         {
+            var file = ObjectFactory.GetInstance<IFile>();
+
             //Arrange
             WriteRemoteFile();
             FileDO curFileDO = _uow.FileRepository.GetByKey(0);
-            _file.Delete(curFileDO);
+            file.Delete(curFileDO);
 
             //Act
             try
             {
-                var curFile = _file.Retrieve(curFileDO);
+                var curFile = file.Retrieve(curFileDO);
             }
             catch (StorageException storageException)
             {
@@ -168,12 +173,14 @@ namespace DockyardTest.Services
 
         public void File_Delete_CanDeleteFile()
         {
+            var file = ObjectFactory.GetInstance<IFile>();
+
             //Arrange
             WriteRemoteFile();
             FileDO curFileDO = _uow.FileRepository.GetByKey(0);
 
             //Act
-            bool isFileDeleted = _file.Delete(curFileDO);
+            bool isFileDeleted = file.Delete(curFileDO);
 
             //Assert
             Assert.IsTrue(isFileDeleted, "File is not deleted successfully");
@@ -183,44 +190,36 @@ namespace DockyardTest.Services
 
         private void WriteRemoteFile()
         {
+            var file = ObjectFactory.GetInstance<IFile>();
+
             FileDO curFileDO = _fixtureData.TestFile1();
             _curBlobFile = new FileStream(FixtureData.TestRealPdfFile1(), FileMode.Open);
             string curNameOfBlob = "small_pdf_file.pdf";
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _file.Store(uow, curFileDO, _curBlobFile, curNameOfBlob);
+                file.Store(uow, curFileDO, _curBlobFile, curNameOfBlob);
             }
         }
 
         private void MakeFileRepositoryTimeOut()
         {
-            var mockUow = new Mock<IUnitOfWork>(MockBehavior.Default);
-            mockUow.SetupGet(uow => uow.Db).Returns(new MockedDBContext());
+            var testCloudManager = new TestCloudFileManager();
+            testCloudManager.SetTimeOutRequired();
 
-            var testFileRepository = new TestFileRepository(mockUow.Object);
-            testFileRepository.SetTimeOutRequired();
-
-            mockUow.SetupGet(uow => uow.FileRepository).Returns(testFileRepository);
-            _uow = mockUow.Object;
-            ObjectFactory.Container.Inject(typeof(IUnitOfWork), mockUow.Object);
+            ObjectFactory.Container.Inject(typeof(CloudFileManager), testCloudManager);
         }
 
         private void MakeFileRepositoryInvalidLogin()
         {
-            var mockUow = new Mock<IUnitOfWork>(MockBehavior.Default);
-            mockUow.SetupGet(uow => uow.Db).Returns(new MockedDBContext());
+            var testCloudManager = new TestCloudFileManager();
+            testCloudManager.SetInvalidLoginRequired();
 
-            var testFileRepository = new TestFileRepository(mockUow.Object);
-            testFileRepository.SetInvalidLoginRequired();
-
-            mockUow.SetupGet(uow => uow.FileRepository).Returns(testFileRepository);
-            _uow = mockUow.Object;
-            ObjectFactory.Container.Inject(typeof(IUnitOfWork), mockUow.Object);
+            ObjectFactory.Container.Inject(typeof(CloudFileManager), testCloudManager);
         }
     }
 
-    public class TestFileRepository : FileRepository
+    public class TestCloudFileManager : CloudFileManager
     {
         private bool _isTimeOutRequired;
         private bool _isInvalidLoginRequired;
@@ -233,11 +232,6 @@ namespace DockyardTest.Services
         public void SetInvalidLoginRequired()
         {
             _isInvalidLoginRequired = true;
-        }
-
-        public TestFileRepository(IUnitOfWork uow) : base(uow)
-        {
-            
         }
 
         protected override CloudBlobContainer GetDefaultBlobContainer()

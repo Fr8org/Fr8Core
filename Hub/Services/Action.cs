@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Crates;
 using Hub.Enums;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -338,16 +339,19 @@ namespace Hub.Services
             return curActionDO;
         }
 
-        public async Task<ActionDTO> Configure(string userId, ActionDO curActionDO)
+        public async Task<ActionDTO> Configure(string userId, ActionDO curActionDO, bool saveResult = true)
         {
             curActionDO = await CallActionConfigure(userId, curActionDO);
-
-            //save the received action as quickly as possible
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            if (saveResult)
             {
-                curActionDO = SaveOrUpdateAction(uow, curActionDO);
-                return Mapper.Map<ActionDTO>(curActionDO);
+                //save the received action as quickly as possible
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    curActionDO = SaveOrUpdateAction(uow, curActionDO);
+                    return Mapper.Map<ActionDTO>(curActionDO);
+                }
             }
+            return Mapper.Map<ActionDTO>(curActionDO);
         }
 
         public ActionDO MapFromDTO(ActionDTO curActionDTO)
@@ -490,7 +494,7 @@ namespace Hub.Services
 
             if (control == null)
             {
-                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME));
+                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifestTypes.StandardConfigurationControls));
             }
 
 

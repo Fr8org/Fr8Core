@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -16,11 +20,13 @@ namespace Hub.Services
 
         private readonly ICrateManager _crate;
         private readonly IRouteNode _routeNode;
+        private readonly IAction _action;
 
         public Subroute()
         {
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
+            _action = ObjectFactory.GetInstance<IAction>();
         }
 
         /// <summary>
@@ -146,9 +152,96 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
-        public void DeleteAction(int id)
+        protected Crate<StandardDesignTimeFieldsCM> GetValidationErrors(CrateStorageDTO crateStorage)
         {
-            //we are using Kludge solution for now
+            return _crate.FromDto(crateStorage).FirstCrateOrDefault<StandardDesignTimeFieldsCM>(x => x.Label == "Validation Errors");
+        }
+
+        /// <summary>
+        /// This function gets called on first time user tries to delete an action
+        /// which tries to validate all downstream actions and carries on deletion
+        /// if there are validation errors on downstream crates it cancels deletion and returns false
+        /// </summary>
+        /// <param name="userId">current user id</param>
+        /// <param name="actionId">action to delete</param>
+        /// <returns>isActionDeleted</returns>
+        protected async Task<bool> ValidateDownstreamActionsAndDelete(string userId, int actionId)
+        {
+            var validationErrors = new List<Crate>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curAction = await uow.ActionRepository.GetQuery().SingleAsync(a => a.Id == actionId);
+                var downstreamActions = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
+
+                //set ActivityTemplate and parentRouteNode of current action to null -> to simulate a delete
+                int? templateIdBackup = curAction.ActivityTemplateId;
+                int? parentRouteNodeIdBackup = curAction.ParentRouteNodeId;
+                curAction.ActivityTemplateId = null;
+                curAction.ParentRouteNodeId = null;
+            uow.SaveChanges();
+
+
+                //lets start multithreaded calls
+                var configureTaskList = new List<Task<ActionDTO>>();
+                foreach (var downstreamAction in downstreamActions)
+                {
+                    configureTaskList.Add(_action.Configure(userId, downstreamAction, false));
+        }
+
+                await Task.WhenAll(configureTaskList);
+
+                //collect terminal responses
+                //all tasks are completed by now
+                var terminalResponseList = configureTaskList.Select(t => t.Result);
+
+                foreach (var terminalResponse in terminalResponseList)
+                {
+                    var terminalValidationError = GetValidationErrors(terminalResponse.CrateStorage);
+                    if (terminalValidationError != null)
+                    {
+                        validationErrors.Add(terminalValidationError);
+                    }
+                }
+
+                //if there are validation errors restore curActionBackup
+                if (validationErrors.Count > 0)
+                {
+                    //restore it
+                    curAction.ActivityTemplateId = templateIdBackup;
+                    curAction.ParentRouteNodeId = parentRouteNodeIdBackup;
+                    uow.SaveChanges();
+                }
+                else
+                {
+                    uow.ActionRepository.Remove(curAction);
+                    uow.SaveChanges();
+                    //TODO update ordering of downstream actions
+                }
+
+            }
+            return validationErrors.Count < 1;
+        }
+
+        //TODO find a better response type for this function
+        public async Task<bool> DeleteAction(string userId, int actionId, bool confirmed)
+        {
+            if (confirmed)
+            {
+                //we can assume that there has been some validation errors on previous call
+                //but user still wants to delete this action
+                //lets use kludge solution
+                DeleteActionKludge(actionId);
+            }
+            else
+            {
+                return await ValidateDownstreamActionsAndDelete(userId, actionId);
+            }
+            return true;
+        }
+
+        protected void DeleteActionKludge(int id)
+        {
+            //Kludge solution
             //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
