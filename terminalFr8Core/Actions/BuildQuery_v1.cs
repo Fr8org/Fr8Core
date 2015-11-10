@@ -51,24 +51,24 @@ namespace terminalFr8Core.Actions
             {
                 RemoveControl(updater.CrateStorage, "UpstreamError");
 
-            var columnDefinitions = await ExtractColumnDefinitions(curActionDTO);
-            List<FieldDTO> tablesList = null;
+                var columnDefinitions = await ExtractColumnDefinitions(curActionDTO);
+                List<FieldDTO> tablesList = null;
 
-            if (columnDefinitions != null)
-            {
-                tablesList = ExtractTableNames(columnDefinitions);
-            }
+                if (columnDefinitions != null)
+                {
+                    tablesList = ExtractTableNames(columnDefinitions);
+                }
 
-            if (tablesList == null || tablesList.Count == 0)
-            {
-                AddLabelControl(
-                        updater.CrateStorage,
-                    "UpstreamError",
-                    "Unexpected error",
-                    "No upstream crates found to extract table definitions."
-                );
-                return curActionDTO;
-            }
+                if (tablesList == null || tablesList.Count == 0)
+                {
+                    AddLabelControl(
+                            updater.CrateStorage,
+                        "UpstreamError",
+                        "Unexpected error",
+                        "No upstream crates found to extract table definitions."
+                    );
+                    return curActionDTO;
+                }
 
                 var controlsCrate = EnsureControlsCrate(updater.CrateStorage);
 
@@ -78,34 +78,35 @@ namespace terminalFr8Core.Actions
                 updater.CrateStorage.RemoveByLabel("Available Tables");
                 updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Available Tables", tablesList.ToArray()));
             }
+
             return curActionDTO;
         }
 
         protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             using (var updater = Crate.UpdateStorage(curActionDTO))
-        {
+            {
                 RemoveControl(updater.CrateStorage, "SelectObjectError");
 
                 var selectedObject = ExtractSelectedObject(updater.CrateStorage);
-            if (string.IsNullOrEmpty(selectedObject))
-            {
-                    AddLabelControl(updater.CrateStorage, "SelectObjectError",
-                    "No object selected", "Please select object from the list above.");
-
-                return curActionDTO;
-            }
-            else
-            {
-                    var prevSelectedObject = ExtractPreviousSelectedObject(updater.CrateStorage);
-                if (prevSelectedObject != selectedObject)
+                if (string.IsNullOrEmpty(selectedObject))
                 {
+                    AddLabelControl(updater.CrateStorage, "SelectObjectError",
+                        "No object selected", "Please select object from the list above.");
+
+                    return curActionDTO;
+                }
+                else
+                {
+                    var prevSelectedObject = ExtractPreviousSelectedObject(updater.CrateStorage);
+                    if (prevSelectedObject != selectedObject)
+                    {
                         RemoveControl(updater.CrateStorage, "SelectedQuery");
                         AddQueryBuilder(updater.CrateStorage);
 
                         UpdatePreviousSelectedObject(updater.CrateStorage, selectedObject);
                         await UpdateQueryableCriteria(updater.CrateStorage,  curActionDTO, selectedObject);
-                }
+                    }
                 }
             }
 

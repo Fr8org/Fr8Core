@@ -120,6 +120,15 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             });
 
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "ManageRoute",
+                Label = "Manage Route",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                Version = "1"
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,

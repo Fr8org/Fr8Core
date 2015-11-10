@@ -237,7 +237,7 @@ var dockyard;
                             modalScope.activityTemplateId = activityTemplateId;
                             $modal.open({
                                 animation: true,
-                                templateUrl: '/AngularTemplate/InternalAuthentication',
+                                templateUrl: 'AngularTemplate/InternalAuthentication',
                                 controller: 'InternalAuthenticationController',
                                 scope: modalScope
                             })
@@ -245,20 +245,17 @@ var dockyard;
                         }
                         function startExternalAuthentication(activityTemplateId) {
                             var self = this;
-                            var childWindow;
                             var messageListener = function (event) {
-                                debugger;
-                                if (!event.data || event.data != 'external-auth-success') {
+                                if (!self.$scope || !event.data || event.data != 'external-auth-success') {
                                     return;
                                 }
-                                childWindow.close();
                                 loadConfiguration();
                             };
                             $http
                                 .get('/authentication/initial_url?id=' + activityTemplateId)
                                 .then(function (res) {
                                 var url = res.data.url;
-                                childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
+                                var childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
                                 window.addEventListener('message', messageListener);
                                 var isClosedHandler = function () {
                                     if (childWindow.closed) {

@@ -29,5 +29,13 @@ namespace Data.Entities
         {
             ChildNodes = new List<RouteNodeDO>();
         }
+
+        public virtual RouteNodeDO Clone()
+        {
+            return new RouteNodeDO()
+            {
+                Ordering = this.Ordering
+            };
+        }
     }
 }
