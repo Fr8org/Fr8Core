@@ -409,9 +409,9 @@
     <Compile Include="Migrations\201511062013473_AddActivityTemplateState.Designer.cs">
       <DependentUpon>201511062013473_AddActivityTemplateState.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201511091734129_Renamed Plugin To Terminal.cs" />
-    <Compile Include="Migrations\201511091734129_Renamed Plugin To Terminal.Designer.cs">
-      <DependentUpon>201511091734129_Renamed Plugin To Terminal.cs</DependentUpon>
+    <Compile Include="Migrations\201511101246257_Renamed_Plugin_To_Terminal.cs" />
+    <Compile Include="Migrations\201511101246257_Renamed_Plugin_To_Terminal.Designer.cs">
+      <DependentUpon>201511101246257_Renamed_Plugin_To_Terminal.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -692,8 +692,8 @@
     <EmbeddedResource Include="Migrations\201511062013473_AddActivityTemplateState.resx">
       <DependentUpon>201511062013473_AddActivityTemplateState.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201511091734129_Renamed Plugin To Terminal.resx">
-      <DependentUpon>201511091734129_Renamed Plugin To Terminal.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201511101246257_Renamed_Plugin_To_Terminal.resx">
+      <DependentUpon>201511101246257_Renamed_Plugin_To_Terminal.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
