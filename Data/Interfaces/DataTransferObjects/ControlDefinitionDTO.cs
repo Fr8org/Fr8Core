@@ -38,6 +38,7 @@ namespace Data.Interfaces.DataTransferObjects
         public const string TextSource = "TextSource";
         public const string TextArea = "TextArea";
         public const string QueryBuilder = "QueryBuilder";
+        public const string ManageRoute = "ManageRoute";
     }
 
     public class CheckBoxControlDefinitionDTO : ControlDefinitionDTO

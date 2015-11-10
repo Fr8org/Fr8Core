@@ -17,6 +17,7 @@ using Hub.Interfaces;
 namespace HubWeb.Controllers
 {
     [RoutePrefix("routes")]
+    [Fr8ApiAuthorize]
     public class RouteController : ApiController
     {
         private readonly IRoute _route;
@@ -53,7 +54,7 @@ namespace HubWeb.Controllers
         [Route("getByAction/{id:int}")]
         [ResponseType(typeof(RouteDTO))]
         [HttpGet]
-        [Fr8ApiAuthorize]
+        
         public IHttpActionResult GetByAction(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -63,20 +64,6 @@ namespace HubWeb.Controllers
                 var result = _route.MapRouteToDto(uow, route);
 
                 return Ok(result);
-            };
-        }
-
-        [Route("getIdByAction/{id:int}")]
-        [ResponseType(typeof(int))]
-        [HttpGet]
-        public IHttpActionResult GetIdByAction(int id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var action = uow.ActionRepository.GetByKey(id);
-                var route = _route.GetRoute(action);
-
-                return Ok(route.Id);
             };
         }
 

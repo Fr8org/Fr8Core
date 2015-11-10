@@ -43,36 +43,14 @@ namespace terminalFr8Core.Actions
 
         private void AddRunNowButton(CrateStorage crateStorage)
         {
-            AddControl(crateStorage, new ButtonControlDefinitionDTO()
-            {
-                Name = "RunNowButton",
-                Label = "Run Now"
-            });
-        }
-
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
-        {
-            using (var updater = Crate.UpdateStorage(curActionDTO))
-            {
-                var runNowButton = FindControl(updater.CrateStorage, "RunNowButton") as ButtonControlDefinitionDTO;
-                if (runNowButton == null)
+            AddControl(
+                crateStorage,
+                new ControlDefinitionDTO(ControlTypes.ManageRoute)
                 {
-                    throw new ApplicationException("RunNowButton was not found.");
+                    Name = "ManageRoute",
+                    Label = "Manage Route"
                 }
-
-                if (runNowButton.Clicked)
-                {
-                    var routeId = await GetRouteId(curActionDTO);
-                    if (routeId == 0)
-                    {
-                        throw new ApplicationException("No route found for current Action.");
-                    }
-
-                    await _findObjectHelper.LaunchContainer(routeId);
-                }
-            }
-
-            return curActionDTO;
+            );
         }
 
         #endregion Configuration.

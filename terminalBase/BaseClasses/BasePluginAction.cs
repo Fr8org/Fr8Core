@@ -72,23 +72,6 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        protected async Task<int> GetRouteId(ActionDTO curActionDTO)
-        {
-            var httpClient = new HttpClient();
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "routes/getIdByAction/" + curActionDTO.Id;
-
-            using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
-            {
-                var content = await response.Content.ReadAsStringAsync();
-
-                int routeId = 0;
-                Int32.TryParse(content, out routeId);
-
-                return routeId;
-            }
-        }
-
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
         {
             var httpClient = new HttpClient();
