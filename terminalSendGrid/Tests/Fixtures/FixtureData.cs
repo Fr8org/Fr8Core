@@ -55,8 +55,6 @@ namespace terminalSendGrid.Tests.Fixtures
             get
             {
                 PayloadDTO payloadDTO = new PayloadDTO(1);
-                //CrateDTO[] crateDtos = { new CrateDTO() };
-                //payloadDTO.CrateStorage = new CrateStorageDTO { Crates = crateDtos };
                 return payloadDTO;
             }
         }
