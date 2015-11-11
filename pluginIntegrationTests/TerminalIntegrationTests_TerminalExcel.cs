@@ -58,7 +58,7 @@ namespace terminalIntegrationTests
 
             var curActionDTO = new ActionDTO()
             {
-                ProcessId = 1,
+                ContainerId = 1,
                 ParentRouteNodeId = 1,
             };
 
@@ -66,8 +66,8 @@ namespace terminalIntegrationTests
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("", tableDataMS));
             }
-
-            var result = await new Load_Table_Data_v1().Run(curActionDTO);
+            var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
+            var result = await new Load_Table_Data_v1().Run(curActionDO, curActionDTO.ContainerId);
 
             var payloadCrates = _crateManager.GetStorage(result).CratesOfType<StandardPayloadDataCM>();
             var payloadDataMS = payloadCrates.First().Content;
