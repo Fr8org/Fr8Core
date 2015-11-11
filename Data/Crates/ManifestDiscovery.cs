@@ -67,6 +67,20 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
+        public CrateManifestType GetManifestType<T>()
+        {
+            CrateManifestType manifestType;
+
+            if (!ManifestTypeCache.TryResolveManifest(typeof(T), out manifestType))
+            {
+                throw new ArgumentException("Type is not marked with CrateManifestAttribute or ManifestType is not set");
+            }
+
+            return manifestType;
+        }
+
+        /**********************************************************************************/
+
         public bool TryResolveType(CrateManifestType manifestType, out Type type)
         {
             lock (_typeMapping)

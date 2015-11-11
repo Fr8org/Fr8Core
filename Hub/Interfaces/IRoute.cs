@@ -24,5 +24,7 @@ namespace Hub.Interfaces
 	    RouteDTO MapRouteToDto(IUnitOfWork uow, RouteDO curRouteDO);
 	  //  ActionListDO GetActionList(IUnitOfWork uow, int id);
         List<RouteDO> MatchEvents(List<RouteDO> curRoutes, EventReportCM curEventReport);
+
+        RouteDO Copy(IUnitOfWork uow, RouteDO curRouteDO, string name);
 	}
 }

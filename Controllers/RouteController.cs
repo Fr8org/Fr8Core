@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Http;
@@ -16,8 +17,8 @@ using Hub.Interfaces;
 
 namespace HubWeb.Controllers
 {
-    [Fr8ApiAuthorize]
     [RoutePrefix("routes")]
+    [Fr8ApiAuthorize]
     public class RouteController : ApiController
     {
         private readonly IRoute _route;
@@ -36,7 +37,7 @@ namespace HubWeb.Controllers
             _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
-        
+        [Fr8ApiAuthorize]
         [Route("full/{id:int}")]
         [ResponseType(typeof(RouteDTO))]
         [HttpGet]
@@ -54,6 +55,7 @@ namespace HubWeb.Controllers
         [Route("getByAction/{id:int}")]
         [ResponseType(typeof(RouteDTO))]
         [HttpGet]
+        
         public IHttpActionResult GetByAction(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -64,8 +66,9 @@ namespace HubWeb.Controllers
 
                 return Ok(result);
             };
-        }  
-              
+        }
+
+        [Fr8ApiAuthorize]
         [Route("status")]
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
@@ -74,18 +77,37 @@ namespace HubWeb.Controllers
             {
                 var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id, status);
 
-            if (curRoutes.Any())
-            {               
-                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>).ToArray());
-            }
+                if (curRoutes.Any())
+                {               
+                    return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>).ToArray());
+                }
             }
 
             return Ok();
-        
        }
 
+        [Fr8ApiAuthorize]
+        [Route("copy")]
+        [HttpPost]
+        public IHttpActionResult Copy(int id, string name)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curRouteDO = uow.RouteRepository.GetByKey(id);
+                if (curRouteDO == null)
+                {
+                    throw new ApplicationException("Unable to find route with specified id.");
+                }
+
+                var route = _route.Copy(uow, curRouteDO, name);
+                uow.SaveChanges();
+
+                return Ok(new { id = route.Id });
+            }
+        }
         
         // GET api/<controller>
+        [Fr8ApiAuthorize]
         public IHttpActionResult Get(int? id = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -111,6 +133,7 @@ namespace HubWeb.Controllers
         }
 
         [Route("~/routes")]
+        [Fr8ApiAuthorize]
         public IHttpActionResult Post(RouteOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -144,6 +167,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Route("action")]
         [ActionName("action")]
+        [Fr8ApiAuthorize]
         public IHttpActionResult PutAction(ActionDTO actionDto)
         {
             //A stub until the functionaltiy is ready
@@ -154,6 +178,7 @@ namespace HubWeb.Controllers
 
         [HttpDelete]
         [Route("{id:int}")]
+        [Fr8ApiAuthorize]
         public IHttpActionResult Delete(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -167,6 +192,7 @@ namespace HubWeb.Controllers
 
         
         [Route("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
+        [Fr8ApiAuthorize]
         public IHttpActionResult GetTriggerSettings()
         {
             return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
@@ -174,6 +200,7 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Route("activate")]
+        [Fr8ApiAuthorize]
         public IHttpActionResult Activate(RouteDO curRoute)
         {
             return Ok(_route.Activate(curRoute));
@@ -181,6 +208,7 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Route("deactivate")]
+        [Fr8ApiAuthorize]
         public IHttpActionResult Deactivate(RouteDO curRoute)
         {
             return Ok(_route.Deactivate(curRoute));

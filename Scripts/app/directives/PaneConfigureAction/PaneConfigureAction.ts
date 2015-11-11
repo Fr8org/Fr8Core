@@ -256,12 +256,10 @@ module dockyard.directives.paneConfigureAction {
                             // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
                             startExternalAuthentication($scope.currentAction.activityTemplate.id);
                         }
-
-                        return;
                     }
 
                     $scope.currentAction.configurationControls =
-                    crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
+                        crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
 
                     $timeout(() => { // let the control list create, we don't want false change notification during creation process
                         $scope.configurationWatchUnregisterer = $scope.$watch<model.ControlsList>(

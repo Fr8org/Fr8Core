@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+﻿using Data.Crates;
+﻿using Data.Interfaces.Manifests;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -24,7 +26,7 @@ namespace UtilitiesTesting.Fixtures
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Templates",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
 

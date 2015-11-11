@@ -264,6 +264,22 @@
     position: absolute;
 }
 
+.pane-configure-action-returnToSolution {
+    height: 224px;
+    text-align: center;
+}
+
+.pane-configure-action-returnToSolution:before {
+    content: '';
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.pane-configure-action-returnToSolution .btn {
+    vertical-align: middle;
+}
+
 /* Select Action */
 .select-action-modal .modal-dialog {
     width: 1000px;
