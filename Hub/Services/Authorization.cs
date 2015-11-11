@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Data.Constants;
 using StructureMap;
 using Newtonsoft.Json;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -347,6 +348,52 @@ namespace Hub.Services
             }
         }
 
+        private void AddAuthenticationLabel(ActionDTO actionDTO)
+        {
+            using (var updater = _crate.UpdateStorage(actionDTO))
+            {
+                var controlsCrate = updater.CrateStorage
+                    .CratesOfType<StandardConfigurationControlsCM>()
+                    .FirstOrDefault();
+
+                if (controlsCrate == null)
+                {
+                    controlsCrate = Crate<StandardConfigurationControlsCM>
+                        .FromContent("Configuration_Controls", new StandardConfigurationControlsCM());
+
+                    updater.CrateStorage.Add(controlsCrate);
+                }
+
+                controlsCrate.Content.Controls.Add(
+                    new TextBlockControlDefinitionDTO()
+                    {
+                        Name = "AuthAwaitLabel",
+                        Value = "Waiting for authentication window..."
+                    });
+            }
+        }
+
+        private void RemoveAuthenticationLabel(ActionDTO actionDTO)
+        {
+            using (var updater = _crate.UpdateStorage(actionDTO))
+            {
+                var controlsCrate = updater.CrateStorage
+                    .CratesOfType<StandardConfigurationControlsCM>()
+                    .FirstOrDefault();
+                if (controlsCrate == null) { return; }
+
+                var authAwaitLabel = controlsCrate.Content.FindByName("AuthAwaitLabel");
+                if (authAwaitLabel == null) { return; }
+
+                controlsCrate.Content.Controls.Remove(authAwaitLabel);
+
+                if (controlsCrate.Content.Controls.Count == 0)
+                {
+                    updater.CrateStorage.Remove(controlsCrate);
+                }
+            }
+        }
+
         public bool ValidateAuthenticationNeeded(string userId, ActionDTO curActionDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -368,6 +415,9 @@ namespace Hub.Services
 
                 if (activityTemplate.AuthenticationType != AuthenticationType.None)
                 {
+                    RemoveAuthenticationCrate(curActionDTO);
+                    RemoveAuthenticationLabel(curActionDTO);
+
                     var authToken = uow.AuthorizationTokenRepository
                         .FindOne(x => x.Plugin.Id == activityTemplate.Plugin.Id
                             && x.UserDO.Id == account.Id);
@@ -375,11 +425,9 @@ namespace Hub.Services
                     if (authToken == null || string.IsNullOrEmpty(authToken.Token))
                     {
                         AddAuthenticationCrate(curActionDTO, activityTemplate.AuthenticationType);
+                        AddAuthenticationLabel(curActionDTO);
+
                         return true;
-                    }
-                    else
-                    {
-                        RemoveAuthenticationCrate(curActionDTO);
                     }
                 }
             }

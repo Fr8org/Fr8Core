@@ -2,8 +2,9 @@ namespace Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
-    public partial class AddActivityTemplateState : DbMigration
+    using Data.States;
+
+    public partial class AddActivityTemplateState : DockyardDbMigration
     {
         public override void Up()
         {
@@ -16,7 +17,12 @@ namespace Data.Migrations
                     })
                 .PrimaryKey(t => t.Id);
             
-            AddColumn("dbo.ActivityTemplate", "ActivityTemplateState", c => c.Int(nullable: false));
+            AddColumn("dbo.ActivityTemplate", "ActivityTemplateState", c => c.Int(nullable: true));
+            SeedConstants<ActivityTemplateState>("dbo._ActivityTemplateStateTemplate");
+
+            Sql(string.Format("UPDATE dbo.ActivityTemplate SET ActivityTemplateState = {0} WHERE ActivityTemplateState IS NULL", ActivityTemplateState.Active));
+
+            AlterColumn("dbo.ActivityTemplate", "ActivityTemplateState", c => c.Int(nullable: false));
             CreateIndex("dbo.ActivityTemplate", "ActivityTemplateState");
             AddForeignKey("dbo.ActivityTemplate", "ActivityTemplateState", "dbo._ActivityTemplateStateTemplate", "Id", cascadeDelete: true);
         }

@@ -33,7 +33,7 @@ namespace Data.Crates
         {
             var manifest = typeof(Manifest);
 
-            foreach (var type in Assembly.GetExecutingAssembly().GetTypes().Where(x => manifest.IsAssignableFrom(x) || x.GetCustomAttribute<CrateManifestTypeAttribute>() != null))
+            foreach (var type in ListAssemblyTypes(Assembly.GetExecutingAssembly()).Where(x => manifest.IsAssignableFrom(x) || x.GetCustomAttribute<CrateManifestTypeAttribute>() != null))
             {
                 if (type.IsAbstract || type == manifest)
                 {
@@ -46,9 +46,37 @@ namespace Data.Crates
 
         /**********************************************************************************/
 
+        private static IEnumerable<Type> ListAssemblyTypes(Assembly assembly)
+        {
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                return ex.Types.Where(type => type != null);
+            }
+        }
+
+        /**********************************************************************************/
+
         public void RegiserManifest<T>()
         {
             RegisterManifest(typeof(T));
+        }
+
+        /**********************************************************************************/
+
+        public CrateManifestType GetManifestType<T>()
+        {
+            CrateManifestType manifestType;
+
+            if (!ManifestTypeCache.TryResolveManifest(typeof(T), out manifestType))
+            {
+                throw new ArgumentException("Type is not marked with CrateManifestAttribute or ManifestType is not set");
+            }
+
+            return manifestType;
         }
 
         /**********************************************************************************/

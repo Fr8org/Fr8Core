@@ -27,7 +27,7 @@ namespace Hub.Services
         }
 
         public async Task<IList<string>> RegisterTerminals(string uri)
-        {            
+        {
             var eventReporter = ObjectFactory.GetInstance<EventReporter>();
 
             var activityTemplateList = await GetAvailableActions(uri);

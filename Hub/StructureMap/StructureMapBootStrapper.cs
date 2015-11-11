@@ -1,6 +1,7 @@
 using System.Net.Http.Formatting;
 using AutoMapper;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
+using Hub.Managers.APIManagers.Packagers.SendGrid;
 using InternalInterfaces = Hub.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -87,6 +88,7 @@ namespace Hub.StructureMap
                 For<IMappingEngine>().Use(Mapper.Engine);
 
                 For<IEmailAddress>().Use<EmailAddress>();
+                For<IEmailPackager>().Use<SendGridPackager>();
                 For<INotification>().Use<Hub.Services.Notification>();
 
                 For<ISecurityServices>().Use<SecurityServices>();
@@ -110,6 +112,7 @@ namespace Hub.StructureMap
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
                 For<ISubroute>().Use<Subroute>();
+                For<IField>().Use<Field>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
@@ -131,6 +134,7 @@ namespace Hub.StructureMap
                 For<IMappingEngine>().Use(Mapper.Engine);
 
                 For<IEmailAddress>().Use<EmailAddress>();
+                For<IEmailPackager>().Use<SendGridPackager>();
                 For<INotification>().Use<Hub.Services.Notification>();
 
                 For<ITracker>().Use<SegmentIO>();
@@ -160,6 +164,7 @@ namespace Hub.StructureMap
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IRoute>().Use<Route>();
                 For<ISubroute>().Use<Subroute>();
+                For<IField>().Use<Field>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);

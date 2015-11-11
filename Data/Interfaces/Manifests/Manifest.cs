@@ -1,33 +1,33 @@
 ﻿using Data.Constants;
+using Data.Crates;
+using Newtonsoft.Json;
 using Utilities;
 
 namespace Data.Interfaces.Manifests
 {
     public abstract class Manifest
     {
-        public MT ManifestType { get; private set; }
-      
-        public int ManifestId
-        {
-            get { return (int)ManifestType; }
-        }
+        private readonly CrateManifestType _manifestType;
 
-        public string ManifestName
+        [JsonIgnore]
+        public CrateManifestType ManifestType
         {
-            get
-            {
-                if (ManifestType == 0)
-                {
-                    return null;
-                }
-
-                return ManifestType.GetEnumDisplayName();
-            }
+            get { return _manifestType; }
         }
 
         protected Manifest(MT manifestType)
+            : this((int)manifestType, manifestType.GetEnumDisplayName())
         {
-            ManifestType = manifestType;
+        }
+
+        protected Manifest(int manifestType, string manifestName)
+            :this(new CrateManifestType(manifestName, manifestType))
+        {
+        }
+
+        protected Manifest(CrateManifestType manifestType)
+        {
+            _manifestType = manifestType;
         }
     }
 }

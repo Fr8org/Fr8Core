@@ -90,7 +90,7 @@ namespace Hub.Managers
             EventManager.AlertTokenRequestInitiated -= OnAlertTokenRequestInitiated;
             EventManager.AlertTokenObtained -= OnAlertTokenObtained;
             EventManager.AlertTokenRevoked -= OnAlertTokenRevoked;
-
+            
             EventManager.EventDocuSignNotificationReceived -= LogDocuSignNotificationReceived;
             EventManager.EventContainerLaunched -= LogEventProcessLaunched;
             EventManager.EventProcessNodeCreated -= LogEventProcessNodeCreated;
@@ -792,24 +792,24 @@ namespace Hub.Managers
         // Commented by Vladimir. DO-1214. If one action can have only one Process?
         private void PluginActionActivated(ActionDO curAction)
         {
-            //            ProcessDO processInExecution;
-            //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            //            {
-            //                int? processId = uow.ActionListRepository.GetByKey(curAction.ParentActivityId).ProcessID;
-            //                processInExecution = uow.ProcessRepository.GetByKey(processId);
-            //            }
-            //
-            //            var fact = new FactDO
-            //            {
-            //                CustomerId = processInExecution.DockyardAccountId,
-            //                Data = processInExecution.Id.ToStr(),
-            //                ObjectId = curAction.Id.ToStr(),
-            //                PrimaryCategory = "Action",
-            //                SecondaryCategory = "Activation",
-            //                Activity = "Completed"
-            //            };
-            //
-            //            SaveAndLogFact(fact);
+//            ProcessDO processInExecution;
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                int? processId = uow.ActionListRepository.GetByKey(curAction.ParentActivityId).ProcessID;
+//                processInExecution = uow.ProcessRepository.GetByKey(processId);
+//            }
+//
+//            var fact = new FactDO
+//            {
+//                CustomerId = processInExecution.DockyardAccountId,
+//                Data = processInExecution.Id.ToStr(),
+//                ObjectId = curAction.Id.ToStr(),
+//                PrimaryCategory = "Action",
+//                SecondaryCategory = "Activation",
+//                Activity = "Completed"
+//            };
+//
+//            SaveAndLogFact(fact);
         }
 
         private void LogEventContainerCreated(ContainerDO containerDO)
