@@ -134,7 +134,13 @@ namespace terminalSlack.Actions
                 }
             };
 
-            return PackControlsCrate(fieldSelectChannel);
+            var infoLabel = new TextBlockControlDefinitionDTO()
+            {
+                Name = "Info_Label",
+                Value = "Slack doesn't currently offer a way for us to automatically request events for this channel. You can do it manually here. use the following values: URL: <strong>http://www.fr8.company/events?dockyard_plugin=terminalSlack&version=1.0</strong>"
+            };
+
+            return PackControlsCrate(fieldSelectChannel, infoLabel);
         }
 
         private Crate CreateDesignTimeFieldsCrate()
