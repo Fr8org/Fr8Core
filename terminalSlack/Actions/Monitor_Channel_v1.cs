@@ -73,7 +73,7 @@ namespace terminalSlack.Actions
             return eventReportMS.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public override async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
             if (NeedsAuthentication(curActionDTO))
             {
@@ -83,7 +83,7 @@ namespace terminalSlack.Actions
             return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
         {
             if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
             {
@@ -98,7 +98,6 @@ namespace terminalSlack.Actions
             var oauthToken = curActionDTO.AuthToken.Token;
             var channels = await _slackIntegration.GetChannelList(oauthToken);
 
-            var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = CreateDesignTimeFieldsCrate();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateEventSubscriptions = CreateEventSubscriptionCrate();
@@ -106,41 +105,42 @@ namespace terminalSlack.Actions
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
                 updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(crateControls);
+                PackConfigurationControls(updater.CrateStorage);
                 updater.CrateStorage.Add(crateDesignTimeFields);
                 updater.CrateStorage.Add(crateAvailableChannels);
                 updater.CrateStorage.Add(crateEventSubscriptions);
             }
 
-            
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
-        private Crate PackCrate_ConfigurationControls()
+        private void PackConfigurationControls(CrateStorage crateStorage)
         {
-            var fieldSelectChannel = new DropDownListControlDefinitionDTO()
-            {
-                Label = "Select Slack Channel",
-                Name = "Selected_Slack_Channel",
-                Required = true,
-                Events = new List<ControlEvent>()
+            AddControl(
+                crateStorage,
+                new DropDownListControlDefinitionDTO()
                 {
-                    new ControlEvent("onChange", "requestConfig")
-                },
-                Source = new FieldSourceDTO
+                    Label = "Select Slack Channel",
+                    Name = "Selected_Slack_Channel",
+                    Required = true,
+                    Events = new List<ControlEvent>()
+                    {
+                        new ControlEvent("onChange", "requestConfig")
+                    },
+                    Source = new FieldSourceDTO
+                    {
+                        Label = "Available Channels",
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                    }
+                });
+
+            AddControl(
+                crateStorage,
+                new TextBlockControlDefinitionDTO()
                 {
-                    Label = "Available Channels",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                }
-            };
-
-            var infoLabel = new TextBlockControlDefinitionDTO()
-            {
-                Name = "Info_Label",
-                Value = "Slack doesn't currently offer a way for us to automatically request events for this channel. You can do it manually here. use the following values: URL: <strong>http://www.fr8.company/events?dockyard_plugin=terminalSlack&version=1.0</strong>"
-            };
-
-            return PackControlsCrate(fieldSelectChannel, infoLabel);
+                    Name = "Info_Label",
+                    Value = "Slack doesn't currently offer a way for us to automatically request events for this channel. You can do it manually here. use the following values: URL: <strong>http://www.fr8.company/events?dockyard_plugin=terminalSlack&version=1.0</strong>"
+                });
         }
 
         private Crate CreateDesignTimeFieldsCrate()
