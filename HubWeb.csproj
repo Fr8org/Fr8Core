@@ -811,6 +811,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ContainerControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBoxTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\PaneConfigurationActionTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDesignDTO.ts" />
@@ -4079,6 +4080,7 @@
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
     <Folder Include="Scripts\app\directives\filters\" />
+    <Folder Include="Scripts\tests\templates\" />
     <Folder Include="ViewModelServices\" />
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
