@@ -63,7 +63,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public async Task<ActionDO> Configure(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO actionDO, AuthorizationTokenDO authTokenDO=null)
         {
             return await ProcessConfigurationRequest(actionDO, ConfigurationEvaluator, authTokenDO);
         }

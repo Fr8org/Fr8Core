@@ -92,8 +92,7 @@ namespace TerminalBase.BaseClasses
                 case "Configure":
                     {
                         Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                        ActionDTO resultActionDTO = Mapper.Map<ActionDTO>(resutlActionDO.Result);
-                        return Task.FromResult<ActionDTO>(resultActionDTO);
+                        return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
                 case "Run":
                     {
@@ -103,14 +102,12 @@ namespace TerminalBase.BaseClasses
                 case "InitialConfigurationResponse":
                     {
                         Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                        ActionDTO resultActionDTO = Mapper.Map<ActionDTO>(resutlActionDO.Result);
-                        return Task.FromResult<ActionDTO>(resultActionDTO);
+                        return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
                 case "FollowupConfigurationResponse":
                     {
                         Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                        ActionDTO resultActionDTO = Mapper.Map<ActionDTO>(resutlActionDO.Result);
-                        return Task.FromResult<ActionDTO>(resultActionDTO);
+                        return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
                 default:
                     response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });

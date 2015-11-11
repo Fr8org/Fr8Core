@@ -14,8 +14,8 @@ var dockyard;
                 },
                 controller: ['$scope', 'CrateHelper',
                     function ($scope, crateHelper) {
-                        var upStreamCrate = crateHelper.findByLabel($scope.currentAction.crateStorage, 'Upstream Plugin-Provided Fields');
-                        var downStreamCrate = crateHelper.findByLabel($scope.currentAction.crateStorage, 'Downstream Plugin-Provided Fields');
+                        var upStreamCrate = crateHelper.findByLabel($scope.currentAction.crateStorage, 'Upstream Terminal-Provided Fields');
+                        var downStreamCrate = crateHelper.findByLabel($scope.currentAction.crateStorage, 'Downstream Terminal-Provided Fields');
                         var upStreamFields = [];
                         var downStreamFields = [];
                         if (upStreamCrate && upStreamCrate.contents) {
