@@ -27,8 +27,12 @@ namespace Data.Entities
             this.Version = version;
             /* We don't need to validate terminalId because of EF chack ForeignKey and if terminalId doesn't exist in table Terminals then 
              * EF will throw 'System.Data.Entity.Infrastructure.DbUpdateException'  */
+<<<<<<< HEAD
             this.TerminalId = terminalId;
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
+=======
+            this.TerminalID = terminalId;
+>>>>>>> DO-1441
         }
 
         /// <summary>
@@ -76,6 +80,7 @@ namespace Data.Entities
 
         public string ComponentActivities { get; set; }
 
+<<<<<<< HEAD
         [Required]
         [ForeignKey("ActivityTemplateStateTemplate")]
         public int ActivityTemplateState { get; set; }
@@ -86,6 +91,12 @@ namespace Data.Entities
         public int TerminalId { get; set; }
 
         public virtual TerminalDO Terminal { get; set; }
+=======
+        [ForeignKey("Plugin")]
+        public int TerminalID { get; set; }
+        
+        public virtual PluginDO Plugin { get; set; }
+>>>>>>> DO-1441
 
         [Required]
         public ActivityCategory Category { get; set; }

@@ -39,6 +39,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             {
                 var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>().GetByKey(actionDTO.ActivityTemplateId.Value);
                 actionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDO, ActivityTemplateDTO>(activityTemplate);
+<<<<<<< HEAD:Hub/Managers/APIManagers/Transmitters/Terminal/TerminalTransmitter.cs
                 terminalId = activityTemplate.TerminalId;
             }
             else
@@ -47,6 +48,16 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             }
            
             var terminal = ObjectFactory.GetInstance<ITerminal>().GetAll().FirstOrDefault(x => x.Id == terminalId);
+=======
+                terminalId = activityTemplate.TerminalID;
+            }
+            else
+            {
+                terminalId = actionDTO.ActivityTemplate.PluginID;
+            }
+           
+            var plugin = ObjectFactory.GetInstance<IPlugin>().GetAll().FirstOrDefault(x => x.Id == terminalId);
+>>>>>>> DO-1441:Hub/Managers/APIManagers/Transmitters/Plugin/PluginTransmitter.cs
 
             if (terminal == null || string.IsNullOrEmpty(terminal.Endpoint))
             {
