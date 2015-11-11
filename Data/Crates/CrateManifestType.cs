@@ -64,7 +64,7 @@ namespace Data.Crates
 
         public bool Equals(CrateManifestType other)
         {
-            return string.Equals(Type, other.Type) && Id == other.Id;
+            return /*string.Equals(Type, other.Type) &&*/ Id == other.Id;
         }
 
         /**********************************************************************************/
@@ -81,7 +81,7 @@ namespace Data.Crates
         {
             unchecked
             {
-                return ((Type != null ? Type.GetHashCode() : 0)*397) ^ Id;
+                return /*((Type != null ? Type.GetHashCode() : 0)*397) ^*/ Id;
             }
         }
 

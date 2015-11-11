@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -151,10 +152,9 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
-        protected CrateDTO GetValidationErrors(CrateStorageDTO crateStorage)
+        protected Crate<StandardDesignTimeFieldsCM> GetValidationErrors(CrateStorageDTO crateStorage)
         {
-            return crateStorage.Crates.FirstOrDefault(crateDTO => 
-                crateDTO.Label == "Validation Errors" && crateDTO.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
+            return _crate.FromDto(crateStorage).FirstCrateOrDefault<StandardDesignTimeFieldsCM>(x => x.Label == "Validation Errors");
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace Hub.Services
         /// <returns>isActionDeleted</returns>
         protected async Task<bool> ValidateDownstreamActionsAndDelete(string userId, int actionId)
         {
-            var validationErrors = new List<CrateDTO>();
+            var validationErrors = new List<Crate>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curAction = await uow.ActionRepository.GetQuery().SingleAsync(a => a.Id == actionId);

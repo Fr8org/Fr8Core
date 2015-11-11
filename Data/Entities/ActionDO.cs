@@ -27,6 +27,18 @@ namespace Data.Entities
 
         public string currentView { get; set; }
 
+        public override RouteNodeDO Clone()
+        {
+            return new ActionDO()
+            {
+                Ordering = this.Ordering,
+                Name = this.Name,
+                CrateStorage = this.CrateStorage,
+                Label = this.Label,
+                ActivityTemplateId = this.ActivityTemplateId
+            };
+        }
+
 //        public CrateStorageDTO CrateStorageDTO()
 //        {
 //            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);

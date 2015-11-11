@@ -9,9 +9,8 @@
             </div>
         </div>
     </div>
-    <div>
-        <a ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'Solution'"
-           class="btn btn-large btn-warning"
+    <div class="pane-configure-action-returnToSolution" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'Solution'">
+        <a class="btn btn-large btn-warning"
            stop-click-propagation href="{{'#/solution/' + currentAction.id}}">Return to Solution Page</a>
     </div>
 </div>

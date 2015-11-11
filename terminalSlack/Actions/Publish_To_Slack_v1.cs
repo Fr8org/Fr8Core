@@ -135,7 +135,7 @@ namespace terminalSlack.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Channels",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
 
@@ -151,7 +151,7 @@ namespace terminalSlack.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Fields",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
 
@@ -172,8 +172,9 @@ namespace terminalSlack.Actions
         private async Task<Crate> CreateAvailableFieldsCrate(ActionDTO actionDTO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(actionDTO.Id, GetCrateDirection.Upstream))
-                .Fields
+                (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDTO.Id, GetCrateDirection.Upstream))
+                .Where(x => x.Label != "Available Channels")
+                .SelectMany(x => x.Content.Fields)
                 .ToArray();
 
             var availableFieldsCrate =

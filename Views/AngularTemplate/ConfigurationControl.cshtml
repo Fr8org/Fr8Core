@@ -1,7 +1,7 @@
 ﻿<div class='form-group'>
     <!--
-        This fine contains a map of snippets which are rendered by Angular depending on field type
-        Type check occurs with help of the ng-if directive on the outermost <div> of the snippet.
+    This fine contains a map of snippets which are rendered by Angular depending on field type 
+    Type check occurs with help of the ng-if directive on the outermost <div> of the snippet.
     -->
 
 
@@ -10,8 +10,8 @@
         -->
     <div class='col-sm-offset-1' ng-if='field.type == "CheckBox"'>
         <div class='checkbox checkbox-primary'>
-            <input type='checkbox' ng-model='field.selected' ng-click="onChange($event)" data-field-name='{{::field.name}}'
-                   id='pca__chk__{{::field.name}}{{::currentAction.id}}' name='pca__chk__{{::field.name}}{{::currentAction.id}}'
+            <input type='checkbox' ng-model='field.selected' ng-click="onChange($event)" data-field-name='{{::field.name}}' 
+                   id='pca__chk__{{::field.name}}{{::currentAction.id}}' name='pca__chk__{{::field.name}}{{::currentAction.id}}' 
                    stop-click-propagation>
             <label for='pca__chk__{{::field.name}}{{::currentAction.id}}' stop-click-propagation>{{::field.label}}</label>
         </div>
@@ -22,8 +22,8 @@
         -->
     <div ng-if='field.type == "TextBox"'>
         <label class='control-label'>{{::field.label}}</label>
-        <input type='text' ng-model='field.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
-               ng-blur="onChange($event)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__txt__{{::field.name | validId}}'
+        <input type='text' ng-model='field.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }" 
+               ng-blur="onChange($event)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__txt__{{::field.name | validId}}' 
                class='form-control form-control-focus' name='pca__txt__{{::field.name | validId}}' stop-click-propagation>
     </div>
 
@@ -106,7 +106,7 @@
     </div>
 
     <!--
-        TextSource template
+    TextSource template
         -->
     <div ng-if='field.type == "TextSource"'>
         <text-source change="onChange" data-field-name='{{::field.name}}' field="field"></text-source>
@@ -118,6 +118,13 @@
     <div ng-if='field.type == "TextArea"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
         <text-area field='field'></text-area>
+    </div> 
+
+    <!--
+        ManageRoute template
+    -->
+    <div ng-if='field.type == "ManageRoute"'>
+        <manage-route current-action='currentAction'></manage-route>
     </div> 
 
     <!-- Add more configuration field templates below -->
