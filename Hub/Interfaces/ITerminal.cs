@@ -18,5 +18,6 @@ namespace Hub.Interfaces
         string ParseTerminalUrlFor(string curTerminalName, string curTerminalVersion, string curActionName);
 
         Task<IList<string>> RegisterTerminals(string uri);
+        Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri);
     }
 }

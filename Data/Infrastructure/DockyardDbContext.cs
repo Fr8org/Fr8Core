@@ -340,11 +340,8 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ActivityTemplateDO>()
                 .HasRequired(x => x.Terminal)
                 .WithMany()
-<<<<<<< HEAD
                 .HasForeignKey(x => x.TerminalId)
-=======
-                .HasForeignKey(x => x.TerminalID)
->>>>>>> DO-1441
+
                 .WillCascadeOnDelete(false);
 
 			modelBuilder.Entity<ActivityTemplateDO>()
