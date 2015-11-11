@@ -12,6 +12,7 @@ using Utilities.Logging;
 
 namespace HubWeb.Controllers
 {    
+    [Fr8ApiAuthorize]
     public class ReportController : ApiController
     {
         private IReport _report;        

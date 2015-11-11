@@ -7,7 +7,7 @@
             <!--BEGIN STICKER-->
             <div class="page-sticker">
                 <p>alpha</p>
-            </div>
+		</div>
             <!--END STICKER-->
         </div>
 
@@ -105,7 +105,7 @@
 												<a href="#/processes/add" class="iconify">
 												<i class="icon-paper-clip"></i>
 												Add </a>
-											</li>											
+											</li>
 										</ul>
 									</div>
 								
@@ -114,15 +114,17 @@
 						</li>
 					</ul>
 				</li>
+                
+                @if (User.IsInRole("Admin")) {
 				<li class="menu-dropdown mega-menu-dropdown mega-menu-full ">
 					<a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">
 					Admin <i class="fa fa-angle-down"></i>
 					</a>
-					<ul class="dropdown-menu">
+					<ul class="dropdown-menu" style="min-width: 410px">
 						<li>
 							<div class="mega-menu-content">
 								<div class="row">
-									<div class="col-md-3">
+									<div class="col-md-9">
 										<ul class="mega-menu-submenu">
 											<!--<li>
 												<h3>jQuery Integration</h3>
@@ -132,16 +134,16 @@
 													<i class="icon-puzzle"></i> Create Accounts
 												</a>
 											</li>
-											<li>
+											@*<li>
 												<a href="#/pickers">
 													<i class="icon-calendar"></i> Find Object
 												</a>
-											</li>
-											<li>
-												<a href="#/accounts">
-													<i class="icon-calendar"></i> Manage Dockyard Accounts
-												</a>
-											</li>
+											</li>*@
+                                            <li>
+                                                <a href="#/accounts">
+                                                    <i class="icon-calendar"></i> Manage Dockyard Accounts
+                                                </a>
+                                            </li>											
 											<li>
 												<a href="#/webservices">
 													<i class="icon-calendar"></i> Show Web Services
@@ -155,15 +157,16 @@
 						</li>
 					</ul>
 				</li>
+                }
                 <li class="menu-dropdown mega-menu-dropdown mega-menu-full ">
                     <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">
                         Reports <i class="fa fa-angle-down"></i>
                     </a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu" style="min-width: 410px">
                         <li>
                             <div class="mega-menu-content">
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-6">
                                         <ul class="mega-menu-submenu">
                                             <!--<li>
                                     <h3>jQuery Integration</h3>
@@ -191,11 +194,11 @@
                         </li>
                     </ul>
                 </li>
-                <li class="menu-dropdown mega-menu-dropdown  mega-menu-full ">
-                    <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">
+                <li class="menu-dropdown mega-menu-dropdown">
+                    <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#" class="dropdown-toggle">
                         Tools <i class="fa fa-angle-down"></i>
                     </a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu" style="min-width: 410px">
                         <li>
                             <div class="mega-menu-content">
                                 <div class="row">
@@ -207,6 +210,11 @@
                                             <li>
                                                 <a style="white-space: nowrap;" href="#/managefiles">
                                                     <i class="icon-puzzle"></i> Manage Files
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#/pickers">
+                                                    <i class="icon-calendar"></i> Find
                                                 </a>
                                             </li>
                                         </ul>

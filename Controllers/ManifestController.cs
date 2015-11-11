@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using AutoMapper;
+using Hub.Managers;
 
 namespace HubWeb.Controllers
 {
@@ -15,11 +16,12 @@ namespace HubWeb.Controllers
     public class ManifestController : ApiController
     {
         private IManifest _manifest;
+        private ICrateManager _crateManager;
 
         public ManifestController()
         {
             _manifest = ObjectFactory.GetInstance<IManifest>();
-
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         [HttpGet]
@@ -29,7 +31,7 @@ namespace HubWeb.Controllers
             var crate = _manifest.GetById(id);
             if (crate != null)
             {
-                return Ok(crate);
+                return Ok(_crateManager.ToDto(crate));
             }
             return Ok();
         }

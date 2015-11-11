@@ -26,14 +26,14 @@ namespace Hub.Services
             _plugin = ObjectFactory.GetInstance<IPlugin>();
         }
         /// <see cref="IEvent.HandlePluginIncident"/>
-        public void HandlePluginIncident(LoggingData incident)
+        public void HandlePluginIncident(LoggingDataCm incident)
         {
             EventManager.ReportPluginIncident(incident);
         }
 
-        public void HandlePluginEvent(LoggingData eventData)
+        public void HandlePluginEvent(LoggingDataCm eventDataCm)
         {
-            EventManager.ReportPluginEvent(eventData);
+            EventManager.ReportPluginEvent(eventDataCm);
         }
 
         public async Task<string> RequestParsingFromPlugins(HttpRequestMessage request, string pluginName, string pluginVersion)

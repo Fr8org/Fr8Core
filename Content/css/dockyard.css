@@ -95,17 +95,57 @@
 /* Process Builder */
 
 .designer-header {
-    background-color: #58b8a9;
-    margin-bottom: 20px;
-    padding: 20px;
+    background: transparent;
+    width: 100%;
+}
+
+.designer-header-title.page-title {
+    height: 49px; 
+    padding: 0 0 19px 0;
+}
+
+.design-header-title-editField { 
+    display: none;
+    font-size: 22px;
+    border: 0;
+    margin: -3px -5px 0 -5px;
+    padding: 0 5px;
+    width: 100%;
+}
+
+.designer-header-title.design-header-title-editing .design-header-title-editField { 
+    display: inline-block;
+}
+
+.designer-header-title.design-header-title-editing .process-template-name, .designer-header-title.design-header-title-editing .designer-header-glyphicon {
+    display: none;
+}
+
+.designer-header-glyphicon {
+    font-size: 22px;
+    line-height: 24px;
+    margin-left: 20px;
+    cursor: pointer;
 }
 
 .process-template-name {
     display: inline-block;
-    font-size: 24px;
-    font-weight: bold;
     vertical-align: top;
-    min-width: 300px;
+}
+
+.designer-header-status {
+    float: right;
+    text-align: right;
+}
+
+.designer-header-statusLabel {
+    margin-right: 10px;
+    color: #697882;
+}
+
+.designer-header-status .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary {
+    background-color: #58b8a9;
+    color: white;
 }
 
 .switch-btn {

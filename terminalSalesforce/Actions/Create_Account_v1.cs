@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
@@ -68,8 +69,7 @@ namespace terminalSalesforce.Actions
             return ConfigurationRequestType.Initial;
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(
-         ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             var accountName = new TextBoxControlDefinitionDTO()
             {
@@ -95,7 +95,12 @@ namespace terminalSalesforce.Actions
             };
 
             var controls = PackControlsCrate(accountName, accountNumber, phone);
-            curActionDTO.CrateStorage.CrateDTO.Add(controls);
+
+            using (var updater = Crate.UpdateStorage(curActionDTO))
+            {
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(controls);
+            }
 
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }

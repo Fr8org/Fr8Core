@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using Data.Crates;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -55,13 +56,7 @@ namespace terminalExcel.PluginExcelTests
         [Test]
         public void ConfigEvaluatorInitialResponse_Test()
         {
-            var curActionDTO = new ActionDTO()
-            {
-                CrateStorage = new CrateStorageDTO()
-                {
-                    CrateDTO = new System.Collections.Generic.List<CrateDTO>(),
-                },
-            };
+            var curActionDTO = new ActionDTO();
 
             var result = new Load_Table_Data_v1().ConfigurationEvaluator(curActionDTO);
 

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Crates;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -15,6 +16,7 @@ using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using terminalDocuSign.Actions;
+using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Tests.Fixtures;
 
 namespace terminalDocuSign.Tests.Actions
@@ -30,33 +32,35 @@ namespace terminalDocuSign.Tests.Actions
             base.SetUp();
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
 
+            PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
+
             _extract_From_DocuSign_Envelope_v1 = new Receive_DocuSign_Envelope_v1();
         }
 
-        [Test, Ignore("Vas, Introduced upstream actions logic to get the design time fields as part of DO-1300. This is invalid now")]
-        public async Task Configure_ConfigurationRequestTypeIsInitial_ShouldCrateStorage()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //Arrange
-                uow.RouteNodeRepository.Add(FixtureData.ConfigureTestActionTree());
-                uow.SaveChanges();
-                ActionDO curAction = FixtureData.ConfigureTestAction57();
-                ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
-                curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
-
-                Extract_From_DocuSign_Envelope_v1_Proxy curExtract_From_DocuSign_Envelope_v1_For_Testing = new Extract_From_DocuSign_Envelope_v1_Proxy();
-
-                //Act
-                var result = await curExtract_From_DocuSign_Envelope_v1_For_Testing.Configure(curActionDTO);
-
-                //Assert
-                Assert.IsNotNull(result.CrateStorage);
-                Assert.AreEqual(2, result.CrateStorage.CrateDTO.Count);
-                Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
-                Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[1].ManifestType);
-            }
-        }
+//        [Test, Ignore("Vas, Introduced upstream actions logic to get the design time fields as part of DO-1300. This is invalid now")]
+//        public async Task Configure_ConfigurationRequestTypeIsInitial_ShouldCrateStorage()
+//        {
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                //Arrange
+//                uow.RouteNodeRepository.Add(FixtureData.ConfigureTestActionTree());
+//                uow.SaveChanges();
+//                ActionDO curAction = FixtureData.ConfigureTestAction57();
+//                ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
+//                curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
+//
+//                Extract_From_DocuSign_Envelope_v1_Proxy curExtract_From_DocuSign_Envelope_v1_For_Testing = new Extract_From_DocuSign_Envelope_v1_Proxy();
+//
+//                //Act
+//                var result = await curExtract_From_DocuSign_Envelope_v1_For_Testing.Configure(curActionDTO);
+//
+//                //Assert
+//                Assert.IsNotNull(result.CrateStorage);
+//                Assert.AreEqual(2, result.CrateStorage.CrateDTO.Count);
+//                Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
+//                Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[1].ManifestType);
+//            }
+//        }
 
         [Test]
         public void GetEnvelopeId_ParameterAsPayloadDTO_ReturnsEnvelopeInformation()
@@ -103,10 +107,10 @@ namespace terminalDocuSign.Tests.Actions
             var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDTO, "8fcb42d3-1572-44eb-acb1-0fffa4ca65de");
 
             //Assert
-            Assert.AreEqual(3, result.Count);
-            Assert.AreEqual("Dohemann", result.FirstOrDefault(x => x.Key == "Doctor").Value);
-            Assert.AreEqual("Gout", result.FirstOrDefault(x => x.Key == "Condition").Value);
-            Assert.AreEqual("test", result.FirstOrDefault(x => x.Key == "Text 5").Value);
+            Assert.AreEqual(3, result.AllValues().Count());
+            Assert.AreEqual("Dohemann", result.AllValues().FirstOrDefault(x => x.Key == "Doctor").Value);
+            Assert.AreEqual("Gout", result.AllValues().FirstOrDefault(x => x.Key == "Condition").Value);
+            Assert.AreEqual("test", result.AllValues().FirstOrDefault(x => x.Key == "Text 5").Value);
         }
 
     }
@@ -119,7 +123,7 @@ namespace terminalDocuSign.Tests.Actions
             _activity = ObjectFactory.GetInstance<IRouteNode>();
         }
 
-        protected async override Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        public async override Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -130,11 +134,11 @@ namespace terminalDocuSign.Tests.Actions
                     .Select(x => Mapper.Map<ActionDTO>(x))
                     .ToList();
 
-                var curCrates = new List<CrateDTO>();
+                var curCrates = new List<Crate>();
 
                 foreach (var curAction in upstreamActions)
                 {
-                    curCrates.AddRange(Crate.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
+                    curCrates.AddRange(Crate.FromDto(curAction.CrateStorage).Where(x=>x.ManifestType.Type == manifestType).ToList());
                 }
 
                 return await Task.FromResult(curCrates);

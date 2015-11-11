@@ -30,5 +30,10 @@ namespace TerminalSqlUtilities
         /// </summary>
         void WriteRow(IDbTransaction tx, string schema, 
            string table, IEnumerable<FieldValue> values);
+
+        /// <summary>
+        /// Execute query against database, and return table result.
+        /// </summary>
+        Table ExecuteQuery(SelectQuery query);
     }
 }

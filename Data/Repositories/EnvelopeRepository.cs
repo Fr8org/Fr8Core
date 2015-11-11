@@ -75,13 +75,6 @@ namespace Data.Repositories
                 else
                     baseUrls = baseUrlList;
             }
-            foreach (var recipient in email.Recipients)
-            {
-                var userDO = UnitOfWork.UserRepository.GetOrCreateUser(recipient.EmailAddress);
-
-                var tokenURL = UnitOfWork.AuthorizationTokenRepository.GetAuthorizationTokenURL(Server.ServerUrl, userDO);
-                baseUrls.Add(tokenURL);
-            }
             mergeData[baseUrlKey] = baseUrls;
 
             foreach (var pair in mergeData)
