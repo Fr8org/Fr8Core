@@ -149,7 +149,7 @@ namespace Hub.Services
                     // If AuthToken is not empty, fill AuthToken property for ActionDTO.
                     if (authToken != null && !string.IsNullOrEmpty(authToken.Token))
                     {
-                        actionDTO.AuthToken = new AuthTokenDTO()
+                        actionDTO.AuthToken = new AuthorizationTokenDTO()
                         {
                             Token = authToken.Token,
                             AdditionalAttributes = authToken.AdditionalAttributes
@@ -185,7 +185,7 @@ namespace Hub.Services
                 credentialsDTO
             );
 
-            var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
+            var authTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(response);
             if (!string.IsNullOrEmpty(authTokenDTO.Error))
             {
                 return authTokenDTO.Error;
@@ -250,7 +250,7 @@ namespace Hub.Services
                 externalAuthDTO
             );
 
-            var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
+            var authTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(response);
             if (!string.IsNullOrEmpty(authTokenDTO.Error))
             {
                 return authTokenDTO.Error;
