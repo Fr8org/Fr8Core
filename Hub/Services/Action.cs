@@ -305,7 +305,6 @@ namespace Hub.Services
             {
                 curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
 
-<<<<<<< HEAD
             try
             {
                 tempActionDTO = await CallTerminalActionAsync<ActionDTO>("configure", curActionDO);
@@ -317,36 +316,17 @@ namespace Hub.Services
             }
             catch (Exception e)
             {
-=======
-                try
-                {
-                    tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
-                }
-                catch (ArgumentException e)
-                {
-                    EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO), e.Message);
-                    throw;
-                }
-                catch (Exception e)
-                {
->>>>>>> dev
+
                     JsonSerializerSettings settings = new JsonSerializerSettings
                     {
                         PreserveReferencesHandling = PreserveReferencesHandling.Objects
                     };
 
-<<<<<<< HEAD
                     var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
                     EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
                 throw;
             }
-=======
-                    var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null && curActionDO.ActivityTemplate.Plugin.Endpoint != null) ? curActionDO.ActivityTemplate.Plugin.Endpoint : "<no plugin url>";
-                    EventManager.PluginConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
 
-                    throw;
-                }
->>>>>>> dev
             }
 
             return Mapper.Map<ActionDO>(tempActionDTO);
