@@ -1,9 +1,6 @@
 ﻿using System;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json;
 
 namespace terminalSendGrid.Tests.Fixtures
 {
