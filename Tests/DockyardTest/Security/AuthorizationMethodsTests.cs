@@ -143,18 +143,6 @@ namespace DockyardTest.Security
             Assert.AreEqual(newToken, tokenDO.Token);
         }
 
-        [Test]
-        public void CanAddToken()
-        {
-            var userDO = CreateAndAddUserDO();
-
-            //TODO: ask about this method. TokenDO needs pluginID when create
-            _authorization.AddOrUpdateToken(userDO.Id, Token);
-
-            var testToken = _authorization.GetToken(userDO.Id);
-
-            Assert.AreEqual(Token, testToken);
-        }
 
         [Test]
         public void CanRemoveToken()
