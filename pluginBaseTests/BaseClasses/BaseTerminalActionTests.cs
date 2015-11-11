@@ -53,14 +53,16 @@ namespace TerminalBaseTests.BaseClasses
             //Arrange
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
             ConfigurationEvaluator curConfigurationEvaluator = EvaluateReceivedRequest;
-            object[] parameters = new object[] { curActionDTO, curConfigurationEvaluator };
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var curAuthTokenDO = curActionDTO.AuthToken;
+            object[] parameters = new object[] { curActionDO, curConfigurationEvaluator, curAuthTokenDO };
 
             //Act
-            var result = await (Task<ActionDTO>) ClassMethod.Invoke(typeof(BaseTerminalAction), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActionDO>) ClassMethod.Invoke(typeof(BaseTerminalAction), "ProcessConfigurationRequest", parameters);
 
             
             //Assert
-            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage), _crateManager.FromDto(result.CrateStorage));
+            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage), _crateManager.GetStorage(result));
         }
 
 
@@ -71,15 +73,16 @@ namespace TerminalBaseTests.BaseClasses
             ActionDO curAction = FixtureData.TestConfigurationSettingsDTO1();
             ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
             ConfigurationEvaluator curConfigurationEvaluator = EvaluateReceivedRequest;
-
-            object[] parameters = new object[] { curActionDTO, curConfigurationEvaluator };
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var curAuthTokenDO = curActionDTO.AuthToken;
+            object[] parameters = new object[] { curActionDO, curConfigurationEvaluator, curAuthTokenDO };
 
             //Act
-            var result = await (Task<ActionDTO>)ClassMethod.Invoke(typeof(BaseTerminalAction), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActionDO>)ClassMethod.Invoke(typeof(BaseTerminalAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
-            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).Count, _crateManager.FromDto(result.CrateStorage).Count);
-            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).First().ManifestType, _crateManager.FromDto(result.CrateStorage).First().ManifestType);
+            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).Count, _crateManager.GetStorage(result.CrateStorage).Count);
+            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).First().ManifestType, _crateManager.GetStorage(result.CrateStorage).First().ManifestType);
 
         }
 
@@ -144,9 +147,9 @@ namespace TerminalBaseTests.BaseClasses
         }
 
 
-        private ConfigurationRequestType EvaluateReceivedRequest(ActionDTO curActionDTO)
+        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            if (_crateManager.IsEmptyStorage(curActionDTO.CrateStorage))
+            if (_crateManager.IsStorageEmpty(curActionDO))
                 return ConfigurationRequestType.Initial;
             return ConfigurationRequestType.Followup;
         }
