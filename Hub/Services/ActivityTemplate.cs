@@ -50,6 +50,20 @@ namespace Hub.Services
                     uow.SaveChanges();
                 }
 
+	            if (activityTemplateDO.WebService != null)
+	            {
+					var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDO.WebService.Name);
+
+		            if (existingWebService != null)
+		            {
+			            activityTemplateDO.WebService = existingWebService;
+		            }
+		            else
+		            {
+						activityTemplateDO.WebService = null;
+		            }
+	            }
+
                 if (!uow.ActivityTemplateRepository.GetQuery().Any(t => t.Name == activityTemplateDO.Name))
                 {
                     uow.ActivityTemplateRepository.Add(activityTemplateDO);

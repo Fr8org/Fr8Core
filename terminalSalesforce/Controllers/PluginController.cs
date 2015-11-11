@@ -30,6 +30,11 @@ namespace terminalSalesforce.Controllers
                 Version = "1"
             };
 
+	        var webService = new WebServiceDO
+	        {
+				Name = "Salesforce"
+	        };
+
             var createLeadAction = new ActivityTemplateDO()
             {
                 Version = "1",
@@ -38,7 +43,8 @@ namespace terminalSalesforce.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.External,
                 Category = ActivityCategory.Forwarders,
-                MinPaneWidth = 330
+                MinPaneWidth = 330,
+				WebService = webService
             };
 
             var createContactAction = new ActivityTemplateDO()
@@ -49,7 +55,8 @@ namespace terminalSalesforce.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.External,
                 Category = ActivityCategory.Forwarders,
-                MinPaneWidth = 330
+                MinPaneWidth = 330,
+				WebService = webService
             };
 
             var createAccountAction = new ActivityTemplateDO()
@@ -60,7 +67,8 @@ namespace terminalSalesforce.Controllers
                 Plugin = plugin,
                 AuthenticationType = AuthenticationType.External,
                 Category = ActivityCategory.Forwarders,
-                MinPaneWidth = 330
+                MinPaneWidth = 330,
+				WebService = webService
             };
 
             var actionList = new List<ActivityTemplateDO>()

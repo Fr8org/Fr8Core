@@ -31,6 +31,11 @@ namespace terminalExcel.Controllers
                 Version = "1"
             };
 
+	        var webService = new WebServiceDO
+	        {
+				Name = "Excel"
+	        };
+
             result.Add(new ActivityTemplateDO
             {
                 Name = "Load_Table_Data",
@@ -39,7 +44,8 @@ namespace terminalExcel.Controllers
                 Category = ActivityCategory.Receivers,
                 Plugin = plugin,
                 Tags = "Table Data Generator",
-                MinPaneWidth = 210
+                MinPaneWidth = 210,
+				WebService = webService
             });
 
 
