@@ -1,6 +1,9 @@
 ﻿using System;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
+using Newtonsoft.Json;
 
 namespace terminalSendGrid.Tests.Fixtures
 {
@@ -16,7 +19,7 @@ namespace terminalSendGrid.Tests.Fixtures
                 Id = 333,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                CrateStorage = "",
+                CrateStorage = ""
             };
 
             return actionDO;
@@ -45,6 +48,15 @@ namespace terminalSendGrid.Tests.Fixtures
                 Manufacturer = new ManufacturerDTO(),
                 ParentCrateId = "ParentCrateId"
             };
+        }
+
+        public static PayloadDTO CratePayloadDTOForSendEmailViaSendGridConfiguration
+        {
+            get
+            {
+                PayloadDTO payloadDTO = new PayloadDTO(1);
+                return payloadDTO;
+            }
         }
     }
 }

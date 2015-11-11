@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -9,6 +10,7 @@ using Data.Interfaces.Manifests;
 using Hub.Enums;
 using Hub.Interfaces;
 using Hub.Managers;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.StructureMap;
 using Moq;
 using NUnit.Framework;
@@ -39,27 +41,28 @@ namespace terminalSendGrid.Tests.Actions
             StructureMapBootStrapper.ConfigureDependencies(dependencyType).SendGridConfigureDependencies(dependencyType);
             ObjectFactory.Configure(cfg => cfg.For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>())));
             ObjectFactory.Configure(cfg => cfg.For<IEmailPackager>().Use(new SendGridPackager()));
+            
+            var restfulServiceClient = new Mock<IRestfulServiceClient>();
+            restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>()))
+                .Returns(Task.FromResult(FixtureData.CratePayloadDTOForSendEmailViaSendGridConfiguration));
+            ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
 
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 
             var routeNode = new Mock<IRouteNode>();
-            routeNode.Setup(c => c.GetCratesByDirection(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<GetCrateDirection>()))
-                    .Returns(Task.FromResult(new List<Crate>()));
-
-            ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(routeNode.Object));
-
-            var routeNodeeneric = new Mock<IRouteNode>();
-            routeNodeeneric.Setup(c => c.GetCratesByDirection<StandardDesignTimeFieldsCM>(It.IsAny<int>(), It.IsAny<GetCrateDirection>()))
+            routeNode.Setup(c => c.GetCratesByDirection<StandardDesignTimeFieldsCM>(It.IsAny<int>(), It.IsAny<GetCrateDirection>()))
                     .Returns(Task.FromResult(new List<Crate<StandardDesignTimeFieldsCM>>()));
 
-            ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(routeNodeeneric.Object));
+            ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(routeNode.Object));
         }
 
         [Test]
         public void Configure_ReturnsCrateDTO()
         {
-            // Act
+            // Arrange
             var actionResult = GetActionResult();
+
+            // Act
             var controlsCrates = actionResult.CrateStorage.Crates;
 
             // Assert
@@ -113,19 +116,21 @@ namespace terminalSendGrid.Tests.Actions
         }
 
         [Test]
-        [Ignore("Moq cannot mock non virtual methods on classes. Cannot mock HttpClient")]
         public void Run_Returns_PayloadDTO()
         {
             // Arrange
+            var actionResult = GetActionResult();
+
             _gridAction = new SendEmailViaSendGrid_v1();
             var action = FixtureData.ConfigureSendEmailViaSendGridAction();
             ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
+            curActionDTO.CrateStorage = actionResult.CrateStorage;
 
-            //// Act
-            //var payloadDTOResult = _gridAction.Run(curActionDTO).Result;
+            // Act
+            var payloadDTOResult = _gridAction.Run(curActionDTO).Result;
 
-            //// Assert
-            //Assert.NotNull(payloadDTOResult);
+            // Assert
+            Assert.NotNull(payloadDTOResult);
         }
     }
 }
