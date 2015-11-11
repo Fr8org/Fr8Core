@@ -139,7 +139,7 @@ namespace terminalFr8Core.Actions
                 updater.CrateStorage.Add(curConfigurationControlsCrate);
 
                 if (getErrorMessageCrate != null)
-                {
+            {
                     updater.CrateStorage.Add(getErrorMessageCrate);
                 }
             }
@@ -148,11 +148,11 @@ namespace terminalFr8Core.Actions
         }
 
         /// <summary>
-                /// Check if initial configuration was requested.
-                /// </summary>
+        /// Check if initial configuration was requested.
+        /// </summary>
             private
             bool CheckIsInitialConfiguration(ActionDTO curAction)
-        {
+            {
             CrateStorage storage;
 
             // Check nullability for CrateStorage and Crates array length.

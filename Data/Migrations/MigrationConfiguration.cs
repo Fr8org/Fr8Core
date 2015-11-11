@@ -72,7 +72,7 @@ namespace Data.Migrations
             //AddAuthorizationTokens(uow);
             AddContainerDOForTestingApi(uow);
 
-            AddWebServices(uow);
+	        AddWebServices(uow);
         }
 
         //Method to let us seed into memory as well
@@ -148,7 +148,7 @@ namespace Data.Migrations
                 var docuSignPlugin = uow.PluginRepository.FindOne(p => p.Name == "pluginDocuSign");
                 token.Plugin = docuSignPlugin;
                 token.PluginID = docuSignPlugin.Id;
-                token.ExpiresAt = DateTime.UtcNow.AddDays(10);
+				token.ExpiresAt = DateTime.UtcNow.AddDays(10);
 
                 uow.AuthorizationTokenRepository.Add(token);
                 uow.SaveChanges();
@@ -476,39 +476,39 @@ namespace Data.Migrations
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
         }
 
-        private void AddWebServices(IUnitOfWork uow)
-        {
-            AddWebService(uow, "AWS", "/Content/icons/web_services/aws-icon-64x64.png");
-            AddWebService(uow, "Slack", "/Content/icons/web_services/slack-icon-64x64.png");
-            AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
+	    private void AddWebServices(IUnitOfWork uow)
+	    {
+			AddWebService(uow, "AWS", "/Content/icons/web_services/aws-icon-64x64.png");
+			AddWebService(uow, "Slack", "/Content/icons/web_services/slack-icon-64x64.png");
+			AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
 
-            uow.SaveChanges();
-        }
+			uow.SaveChanges();
+	    }
 
-        private void AddWebService(IUnitOfWork uow, string name, string iconPath)
-        {
-            var isWsExists = uow.WebServiceRepository.GetQuery().Any(x => x.Name == name);
+	    private void AddWebService(IUnitOfWork uow, string name, string iconPath)
+	    {
+		    var isWsExists = uow.WebServiceRepository.GetQuery().Any(x => x.Name == name);
 
-            if (!isWsExists)
-            {
-                var webServiceDO = new WebServiceDO
-                {
-                    Name = name,
-                    IconPath = iconPath
-                };
+		    if (!isWsExists)
+		    {
+				var webServiceDO = new WebServiceDO
+				{
+					Name = name,
+					IconPath = iconPath
+				};
 
-                uow.WebServiceRepository.Add(webServiceDO);
-            }
-        }
+				uow.WebServiceRepository.Add(webServiceDO);
+		    }
+	    }
 
 
         //Getting random working time within next 3 days
         private static DateTimeOffset GetRandomEventStartTime()
         {
-            TimeSpan timeSpan = DateTime.UtcNow.AddDays(3) - DateTime.UtcNow;
+			TimeSpan timeSpan = DateTime.UtcNow.AddDays(3) - DateTime.UtcNow;
             var randomTest = new Random();
             TimeSpan newSpan = new TimeSpan(0, randomTest.Next(0, (int)timeSpan.TotalMinutes), 0);
-            DateTime newDate = DateTime.UtcNow;
+			DateTime newDate = DateTime.UtcNow;
             while (newDate.TimeOfDay.Hours < 9)
             {
                 newDate = newDate.Add(new TimeSpan(1, 0, 0));

@@ -98,7 +98,7 @@ namespace terminalFr8Core.Actions
             using (var updater = Crate.UpdateStorage(() => curActionDTO.CrateStorage))
             {
                 updater.CrateStorage.RemoveByLabel("ManuallyAddedPayload");
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardDesignTimeFieldsCM() { Fields = userDefinedPayload }));
             }
 
             return Task.FromResult(curActionDTO);

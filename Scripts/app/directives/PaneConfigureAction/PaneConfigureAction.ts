@@ -288,11 +288,16 @@ module dockyard.directives.paneConfigureAction {
 
                 function startExternalAuthentication(activityTemplateId: number) {
                     var self = this;
+                    var childWindow;
 
                     var messageListener = function (event) {
-                        if (!self.$scope || !event.data || event.data != 'external-auth-success') {
+                        debugger;
+
+                        if (!event.data || event.data != 'external-auth-success') {
                             return;
                         }
+
+                        childWindow.close();
                         loadConfiguration();
                     };
 
@@ -300,8 +305,9 @@ module dockyard.directives.paneConfigureAction {
                         .get('/authentication/initial_url?id=' + activityTemplateId)
                         .then(res => {
                             var url = (<any>res.data).url;
-                            var childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
+                            childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
                             window.addEventListener('message', messageListener);
+
                             var isClosedHandler = function () {
                                 if (childWindow.closed) {
                                     window.removeEventListener('message', messageListener);

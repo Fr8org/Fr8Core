@@ -257,17 +257,18 @@ namespace DockyardTest.Controllers
 
         [Test]
 
-        public void ActionController_Delete()
+        public async void ActionController_Delete()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var subRouteMock = new Mock<ISubroute>();
-                subRouteMock.Setup(a => a.DeleteAction(It.IsAny<int>()));
+
+                subRouteMock.Setup(a => a.DeleteAction(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(true);
 
                 ActionDO actionDO = new FixtureData(uow).TestAction3();
                 var controller = new ActionController(subRouteMock.Object);
-                controller.Delete(actionDO.Id);
-                subRouteMock.Verify(a => a.DeleteAction(actionDO.Id));
+                await controller.Delete(actionDO.Id);
+                subRouteMock.Verify(a => a.DeleteAction(null, actionDO.Id, false));
             }
         }
 

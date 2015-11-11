@@ -60,5 +60,15 @@ namespace Data.Entities
             // SubroutetValidator curValidator = new SubroutetValidator();
             // curValidator.ValidateAndThrow(this);
         }
+
+        public override RouteNodeDO Clone()
+        {
+            return new SubrouteDO()
+            {
+                Ordering = this.Ordering,
+                Name = this.Name,
+                StartingSubroute = this.StartingSubroute
+            };
+        }
     }
 }

@@ -12,6 +12,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using Hub.Enums;
 using Hub.Interfaces;
+using Hub.Managers;
 using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
@@ -123,7 +124,7 @@ namespace terminalDocuSign.Tests.Actions
             _activity = ObjectFactory.GetInstance<IRouteNode>();
         }
 
-        public async override Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        public async override Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(int activityId, GetCrateDirection direction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -134,11 +135,11 @@ namespace terminalDocuSign.Tests.Actions
                     .Select(x => Mapper.Map<ActionDTO>(x))
                     .ToList();
 
-                var curCrates = new List<Crate>();
+                var curCrates = new List<Crate<TManifest>>();
 
                 foreach (var curAction in upstreamActions)
                 {
-                    curCrates.AddRange(Crate.FromDto(curAction.CrateStorage).Where(x=>x.ManifestType.Type == manifestType).ToList());
+                    curCrates.AddRange(Crate.GetStorage(curAction).CratesOfType<TManifest>().ToList());
                 }
 
                 return await Task.FromResult(curCrates);

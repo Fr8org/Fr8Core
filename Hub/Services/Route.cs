@@ -318,7 +318,7 @@ namespace Hub.Services
             //3. Get ActivityDO
 
         }
-        
+
 
         public List<RouteDO> MatchEvents(List<RouteDO> curRoutes, EventReportCM curEventReport)
         {
@@ -384,6 +384,41 @@ namespace Hub.Services
             return null;
         }
 
+        public RouteDO Copy(IUnitOfWork uow, RouteDO route, string name)
+        {
+            var root = (RouteDO) route.Clone();
+            root.Name = name;
+            uow.RouteNodeRepository.Add(root);
+
+            var queue = new Queue<Tuple<RouteNodeDO, int>>();
+            queue.Enqueue(new Tuple<RouteNodeDO, int>(root, route.Id));
+
+            while (queue.Count > 0)
+            {
+                var routeTuple = queue.Dequeue();
+                var routeNode = routeTuple.Item1;
+                var sourceRouteNodeId = routeTuple.Item2;
+
+                var sourceChildren = uow.RouteNodeRepository
+                    .GetQuery()
+                    .Where(x => x.ParentRouteNodeId == sourceRouteNodeId)
+                    .ToList();
+
+                foreach (var sourceChild in sourceChildren)
+                {
+                    var childCopy = sourceChild.Clone();
+                    
+                    childCopy.ParentRouteNode = routeNode;
+                    routeNode.ChildNodes.Add(childCopy);
+
+                    uow.RouteNodeRepository.Add(childCopy);
+
+                    queue.Enqueue(new Tuple<RouteNodeDO, int>(childCopy, sourceChild.Id));
+                }
+            }
+
+            return root;
+        }
 
         /// <summary>
         /// The function add/removes items on the current collection 

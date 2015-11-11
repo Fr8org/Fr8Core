@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Web.Razor.Generator;
+using AutoMapper;
 using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
@@ -12,6 +13,7 @@ using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Enums;
+using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalFr8Core.Interfaces;
@@ -207,7 +209,7 @@ namespace terminalFr8Core.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Queryable Criteria",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
 
@@ -254,9 +256,9 @@ namespace terminalFr8Core.Actions
                 return ConfigurationRequestType.Initial;
             }
 
-            var hasControlsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME) != null;
+            var hasControlsCrate = GetCratesByManifestType<StandardConfigurationControlsCM>(curActionDataPackageDTO) != null;
 
-            var hasQueryFieldsCrate = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME) != null;
+            var hasQueryFieldsCrate = GetCratesByManifestType<StandardDesignTimeFieldsCM>(curActionDataPackageDTO) != null;
 
             if (hasControlsCrate && hasQueryFieldsCrate && HasValidConfiguration(curActionDataPackageDTO))
             {
@@ -303,23 +305,20 @@ namespace terminalFr8Core.Actions
             return false;
         }
 
-        private Crate GetCratesByManifestType(ActionDTO curActionDataPackageDTO, string curManifestType)
+        private Crate<TManifest> GetCratesByManifestType<TManifest>(ActionDTO curActionDataPackageDTO)
         {
             string curLabel = string.Empty;
-            switch (curManifestType)
+
+            if (typeof(TManifest) == typeof (StandardDesignTimeFieldsCM))
             {
-                case CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_NAME:
-                    curLabel = "Configuration_Controls";
-                    break;
-                case CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME:
-                    curLabel = "Queryable Criteria";
-                    break;
+                curLabel = "Queryable Criteria";
+            } 
+            else if (typeof (TManifest) == typeof (StandardConfigurationControlsCM))
+            {
+                curLabel = "Configuration_Controls";
             }
 
-            return Crate.FromDto(curActionDataPackageDTO.CrateStorage).FirstOrDefault(x =>
-                x.ManifestType.Type == curManifestType
-                && x.Label == curLabel);
-
+            return Crate.GetStorage(curActionDataPackageDTO).FirstCrateOrDefault<TManifest>(x => x.Label == curLabel);
         }
     }
 }

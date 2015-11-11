@@ -24,7 +24,7 @@ namespace Hub.Managers
         CrateStorageDTO ToDto(CrateStorage storage);
 
         CrateStorage FromDto(CrateStorageDTO storageDto);
-        Crate FromDto(CrateDTO proxy);
+        Crate FromDto(CrateDTO crateDto);
 
         ICrateStorageUpdater UpdateStorage(Expression<Func<CrateStorageDTO>> storageAccessExpression);
         ICrateStorageUpdater UpdateStorage(Expression<Func<string>> storageAccessExpression);
@@ -39,6 +39,5 @@ namespace Hub.Managers
         Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);
         Crate CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table);
         Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
-        
     }
 }
