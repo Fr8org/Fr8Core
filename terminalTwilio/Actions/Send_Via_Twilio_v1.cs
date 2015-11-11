@@ -54,48 +54,50 @@ namespace terminalTwilio.Actions
 
         private Crate PackCrate_ConfigurationControls()
         {
-            TextBoxControlDefinitionDTO smsNumberTextbox = new TextBoxControlDefinitionDTO()
-            {
-                Label = "SMS Number",
-                Name = "SMS_Number",
-                Required = true
-            };
-            RadioButtonOption specificNumberOption = new RadioButtonOption()
-            {
-                Selected = true,
-                Name = "SMSNumberOption",
-                Controls = new List<ControlDefinitionDTO> { smsNumberTextbox }
-            };
-
-
-            //get data for combobox for upstream data
-            var fieldSMSNumberLists = new DropDownListControlDefinitionDTO()
-            {
-                Label = "a value from Upstream Crate:",
-                Name = "upstream_crate",
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Fields",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                }
-            };
-
-            RadioButtonOption upstreamOption = new RadioButtonOption()
-            {
-                Selected = false,
-                Name = "SMSNumberOption",
-                Controls = new List<ControlDefinitionDTO> { fieldSMSNumberLists }
-            };
-
             RadioButtonGroupControlDefinitionDTO radioGroup = new RadioButtonGroupControlDefinitionDTO()
             {
                 GroupName = "SMSNumber_Group",
                 Label = "For the SMS Number use:",
-                Radios = new List<RadioButtonOption>() { specificNumberOption, upstreamOption }
+                Radios = new List<RadioButtonOption>() 
+                {
+                    new RadioButtonOption()
+                    {
+                        Selected = true,
+                        Name = "SMSNumberOption",
+                        Value = "SMS Number",
+                        Controls = new List<ControlDefinitionDTO> 
+                        {
+                            new TextBoxControlDefinitionDTO()
+                            {
+                                Name = "SMS_Number",
+                                Required = true
+                            }
+                        }
+                    },
+                    
+                    new RadioButtonOption()
+                    {
+                        Selected = true,
+                        Name = "SMSNumberOption",
+                        Value = "A value from Upstream Crate",
+                        Controls = new List<ControlDefinitionDTO> 
+                        {
+                            new DropDownListControlDefinitionDTO()
+                            {
+                                Name = "upstream_crate",
+                                Events = new List<ControlEvent>()
+                                {
+                                    new ControlEvent("onChange", "requestConfig")
+                                },
+                                Source = new FieldSourceDTO
+                                {
+                                    Label = "Available Fields",
+                                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                                }
+                            }
+                        }
+                    } 
+                }
             };
 
             TextBoxControlDefinitionDTO smsBody = new TextBoxControlDefinitionDTO()
