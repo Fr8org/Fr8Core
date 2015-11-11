@@ -249,7 +249,7 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityTemplateCategoryDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\AuthTokenDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\AuthorizationTokenDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CredentialsDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalAuthenticationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalAuthUrlDTO.cs" />

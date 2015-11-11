@@ -25,7 +25,7 @@ namespace Data.Interfaces.DataTransferObjects
 
         public int ContainerId { get; set; }
 
-        public AuthTokenDTO AuthToken { get; set; }
+        public AuthorizationTokenDTO AuthToken { get; set; }
 
         public ActionDTO[] ChildrenActions { get; set; }
     }

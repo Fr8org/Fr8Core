@@ -70,7 +70,7 @@ namespace terminalSalesforce.Infrastructure
             }
         }
 
-        public AuthTokenDTO Authenticate(
+        public AuthorizationTokenDTO Authenticate(
             ExternalAuthenticationDTO externalAuthDTO)
         {
             string code;
@@ -82,7 +82,7 @@ namespace terminalSalesforce.Infrastructure
 
             AuthenticationClient oauthToken = (AuthenticationClient)Task.Run(() => GetAuthToken(code)).Result;         
           
-            return new AuthTokenDTO()
+            return new AuthorizationTokenDTO()
             {
                 Token = oauthToken.AccessToken,
                 ExternalAccountId = oauthToken.Id.Substring(oauthToken.Id.LastIndexOf("/")+1,oauthToken.Id.Length-(oauthToken.Id.LastIndexOf("/")+1)),

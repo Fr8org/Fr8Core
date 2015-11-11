@@ -102,7 +102,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<FileDO, FileDTO>();
 
             Mapper.CreateMap<ContainerDO, ContainerDTO>();
-            Mapper.CreateMap<AuthTokenDTO, AuthorizationTokenDO>();
+            Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>();
         }
 
         private static List<RouteNodeDO> MapActions(IEnumerable<ActionDTO> actions)

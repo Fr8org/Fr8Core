@@ -19,7 +19,7 @@ namespace terminalDocuSign.Controllers
 
         [HttpPost]
         [Route("internal")]
-        public async Task<AuthTokenDTO> GenerateInternalOAuthToken(CredentialsDTO curCredentials)
+        public async Task<AuthorizationTokenDTO> GenerateInternalOAuthToken(CredentialsDTO curCredentials)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace terminalDocuSign.Controllers
 
                 if (string.IsNullOrEmpty(oauthToken))
                 {
-                    return new AuthTokenDTO()
+                    return new AuthorizationTokenDTO()
                     {
                         Error = "Unable to authenticate in DocuSign service, invalid login name or password."
                     };
@@ -40,7 +40,7 @@ namespace terminalDocuSign.Controllers
                     ApiPassword = oauthToken
                 };
 
-                return new AuthTokenDTO()
+                return new AuthorizationTokenDTO()
                 {
                     Token = JsonConvert.SerializeObject(docuSignAuthDTO),
                     ExternalAccountId = curCredentials.Username
@@ -50,7 +50,7 @@ namespace terminalDocuSign.Controllers
             {
                 ReportPluginError(curPlugin, ex);
 
-                return new AuthTokenDTO()
+                return new AuthorizationTokenDTO()
                 {
                     Error = "An error occured while trying to authenticate, please try again later."
                 };

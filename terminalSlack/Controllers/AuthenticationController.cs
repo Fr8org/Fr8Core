@@ -39,7 +39,7 @@ namespace terminalSlack.Controllers
 
         [HttpPost]
         [Route("token")]
-        public async Task<AuthTokenDTO> GenerateOAuthToken(
+        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(
             ExternalAuthenticationDTO externalAuthDTO)
         {
             try
@@ -57,7 +57,7 @@ namespace terminalSlack.Controllers
                 var oauthToken = await _slackIntegration.GetOAuthToken(code);
                 var userId = await _slackIntegration.GetUserId(oauthToken);
 
-                return new AuthTokenDTO()
+                return new AuthorizationTokenDTO()
                 {
                     Token = oauthToken,
                     ExternalAccountId = userId,
@@ -68,7 +68,7 @@ namespace terminalSlack.Controllers
             {
                 ReportPluginError(curPlugin, ex);
 
-                return new AuthTokenDTO()
+                return new AuthorizationTokenDTO()
                 {
                     Error = "An error occured while trying to authenticate, please try again later."
                 };
