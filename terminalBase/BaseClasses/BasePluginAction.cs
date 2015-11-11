@@ -118,7 +118,7 @@ namespace TerminalBase.BaseClasses
         {
             if (configurationEvaluationResult(curActionDO) == ConfigurationRequestType.Initial)
             {
-                return await InitialConfigurationResponse(curActionDO,null);
+                return await InitialConfigurationResponse(curActionDO, authToken);
             }
 
             else if (configurationEvaluationResult(curActionDO) == ConfigurationRequestType.Followup)
@@ -140,7 +140,7 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         public virtual async Task<ActionDO> Configure(ActionDO actionDO, AuthorizationTokenDO authTokenDO=null)
         {
-            return await ProcessConfigurationRequest(actionDO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(actionDO, ConfigurationEvaluator, authTokenDO);
         }
 
         /// <summary>

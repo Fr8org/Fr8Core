@@ -256,9 +256,9 @@ namespace terminalFr8Core.Actions
                 return ConfigurationRequestType.Initial;
             }
 
-            var hasControlsCrate = GetCratesByManifestType(curActionDataPackageDO, CrateManifestTypes.StandardConfigurationControls	) != null;
+            var hasControlsCrate = GetCratesByManifestType<StandardConfigurationControlsCM>(curActionDataPackageDO) != null;
 
-            var hasQueryFieldsCrate = GetCratesByManifestType(curActionDataPackageDO, CrateManifestTypes.StandardConfigurationControls) != null;
+            var hasQueryFieldsCrate = GetCratesByManifestType<StandardDesignTimeFieldsCM>(curActionDataPackageDO) != null;
 
             if (hasControlsCrate && hasQueryFieldsCrate && HasValidConfiguration(curActionDataPackageDO))
             {
@@ -281,41 +281,41 @@ namespace terminalFr8Core.Actions
         {
             // STANDARD_CONF_CONTROLS_NANIFEST_NAME can't be deseralized to RadioButtonOption.
 
-//            var crateDTO = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
-//
-//            if (crateDTO != null)
-//            {
-//                RadioButtonOption radioButtonOption = JsonConvert.DeserializeObject<RadioButtonOption>(crateDTO.Contents);
-//                if (radioButtonOption != null)
-//                {
-//                    foreach (ControlDefinitionDTO controlDefinitionDTO in radioButtonOption.Controls)
-//                    {
-//                        if (!string.IsNullOrEmpty(controlDefinitionDTO.Value))
-//                        {
-//                            FilterDataDTO filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(controlDefinitionDTO.Value);
-//                            return filterDataDTO.Conditions.Any(x =>
-//                                  x.Field != null && x.Field != "" &&
-//                                  x.Operator != null && x.Operator != "" &&
-//                                  x.Value != null && x.Value != "");
-//                        }
-//                    }
-//                }
-//
-//            }
+            //            var crateDTO = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+            //
+            //            if (crateDTO != null)
+            //            {
+            //                RadioButtonOption radioButtonOption = JsonConvert.DeserializeObject<RadioButtonOption>(crateDTO.Contents);
+            //                if (radioButtonOption != null)
+            //                {
+            //                    foreach (ControlDefinitionDTO controlDefinitionDTO in radioButtonOption.Controls)
+            //                    {
+            //                        if (!string.IsNullOrEmpty(controlDefinitionDTO.Value))
+            //                        {
+            //                            FilterDataDTO filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(controlDefinitionDTO.Value);
+            //                            return filterDataDTO.Conditions.Any(x =>
+            //                                  x.Field != null && x.Field != "" &&
+            //                                  x.Operator != null && x.Operator != "" &&
+            //                                  x.Value != null && x.Value != "");
+            //                        }
+            //                    }
+            //                }
+            //
+            //            }
             return false;
         }
 
-        private Crate GetCratesByManifestType(ActionDO curActionDataPackageDO, string curManifestType)
+        private Crate<TManifest> GetCratesByManifestType<TManifest>(ActionDO curActionDataPackageDO)
         {
             string curLabel = string.Empty;
 
-            if (typeof(TManifest) == typeof (StandardDesignTimeFieldsCM))
+            if (typeof(TManifest) == typeof(StandardDesignTimeFieldsCM))
             {
                 curLabel = "Queryable Criteria";
-            } 
-            else if (typeof (TManifest) == typeof (StandardConfigurationControlsCM))
+            }
+            else if (typeof(TManifest) == typeof(StandardConfigurationControlsCM))
             {
-                    curLabel = "Configuration_Controls";
+                curLabel = "Configuration_Controls";
             }
 
             return Crate.GetStorage(curActionDataPackageDO).FirstCrateOrDefault<TManifest>(x => x.Label == curLabel);

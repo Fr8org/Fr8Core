@@ -204,7 +204,7 @@ namespace terminalDocuSign.Actions
             return envelopeIdField.Value;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
             var docuSignAuthDTO = JsonConvert
                 .DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
