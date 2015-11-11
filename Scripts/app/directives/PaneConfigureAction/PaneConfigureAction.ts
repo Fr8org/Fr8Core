@@ -244,7 +244,7 @@ module dockyard.directives.paneConfigureAction {
                         var authCrate = crateHelper
                             .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
 
-                        var authMS = angular.fromJson(authCrate.contents);
+                        var authMS = <any>authCrate.contents;
 
                         // Dockyard auth mode.
                         if (authMS.Mode == 1) {
@@ -256,12 +256,10 @@ module dockyard.directives.paneConfigureAction {
                             // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
                             startExternalAuthentication($scope.currentAction.activityTemplate.id);
                         }
-
-                        return;
                     }
 
                     $scope.currentAction.configurationControls =
-                    crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
+                        crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
 
                     $timeout(() => { // let the control list create, we don't want false change notification during creation process
                         $scope.configurationWatchUnregisterer = $scope.$watch<model.ControlsList>(
@@ -279,7 +277,7 @@ module dockyard.directives.paneConfigureAction {
 
                     $modal.open({
                         animation: true,
-                        templateUrl: 'AngularTemplate/InternalAuthentication',
+                        templateUrl: '/AngularTemplate/InternalAuthentication',
                         controller: 'InternalAuthenticationController',
                         scope: modalScope
                     })
@@ -288,11 +286,16 @@ module dockyard.directives.paneConfigureAction {
 
                 function startExternalAuthentication(activityTemplateId: number) {
                     var self = this;
+                    var childWindow;
 
                     var messageListener = function (event) {
-                        if (!self.$scope || !event.data || event.data != 'external-auth-success') {
+                        debugger;
+
+                        if (!event.data || event.data != 'external-auth-success') {
                             return;
                         }
+
+                        childWindow.close();
                         loadConfiguration();
                     };
 
@@ -300,8 +303,9 @@ module dockyard.directives.paneConfigureAction {
                         .get('/authentication/initial_url?id=' + activityTemplateId)
                         .then(res => {
                             var url = (<any>res.data).url;
-                            var childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
+                            childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
                             window.addEventListener('message', messageListener);
+
                             var isClosedHandler = function () {
                                 if (childWindow.closed) {
                                     window.removeEventListener('message', messageListener);

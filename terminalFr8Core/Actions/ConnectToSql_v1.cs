@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Razor.Generator;
 using AutoMapper;
+using Data.Crates;
 using Newtonsoft.Json;
 using Data.Entities;
+using Hub.Managers;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -21,12 +24,9 @@ namespace terminalFr8Core.Actions
         private const string DefaultDbProvider = "System.Data.SqlClient";
 
 
-        public override ConfigurationRequestType ConfigurationEvaluator(
-            ActionDTO curActionDTO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
         {
-            if (curActionDTO.CrateStorage == null
-                || curActionDTO.CrateStorage.CrateDTO == null
-                || curActionDTO.CrateStorage.CrateDTO.Count == 0)
+            if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -34,21 +34,19 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override Task<ActionDTO> InitialConfigurationResponse(
-            ActionDTO curActionDTO)
+        protected override Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            if (curActionDTO.CrateStorage == null)
-            {
-                curActionDTO.CrateStorage = new CrateStorageDTO();
-            }
 
-            var crateControls = CreateControlsCrate();
-            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+            using (var updater = Crate.UpdateStorage(curActionDTO))
+            {
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(CreateControlsCrate());
+            }
 
             return Task.FromResult<ActionDTO>(curActionDTO);
         }
 
-        private CrateDTO CreateControlsCrate()
+        private Crate CreateControlsCrate()
         {
             var control = new TextBoxControlDefinitionDTO()
             {
@@ -66,14 +64,15 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            RemoveControl(curActionDTO, "ErrorLabel");
+            using (var updater = Crate.UpdateStorage(curActionDTO))
+            {
+                RemoveControl(updater.CrateStorage, "ErrorLabel");
 
-            Crate.RemoveCrateByLabel(
-                curActionDTO.CrateStorage.CrateDTO,
-                "Sql Table Definitions"
-            );
+
+                updater.CrateStorage.RemoveByLabel("Sql Table Definitions");
 
             var connectionString = ExtractConnectionString(curActionDTO);
+                
             if (!string.IsNullOrEmpty(connectionString))
             {
                 try
@@ -92,18 +91,30 @@ namespace terminalFr8Core.Actions
                             columnTypes.ToArray()
                         );
 
-                    curActionDTO.CrateStorage.CrateDTO.Add(tableDefinitionCrate);
-                    curActionDTO.CrateStorage.CrateDTO.Add(columnTypesCrate);
+                    var connectionStringFieldList = new List<FieldDTO>()
+                    {
+                        new FieldDTO() { Key = connectionString, Value = connectionString }
+                    };
+                    var connectionStringCrate =
+                        Crate.CreateDesignTimeFieldsCrate(
+                            "Sql Connection String",
+                            connectionStringFieldList.ToArray()
+                        );
+
+                    updater.CrateStorage.Add(tableDefinitionCrate);
+                    updater.CrateStorage.Add(columnTypesCrate);
+                    updater.CrateStorage.Add(connectionStringCrate);
                 }
                 catch
                 {
                     AddLabelControl(
-                        curActionDTO,
+                            updater.CrateStorage,
                         "ErrorLabel",
                         "Unexpected error",
                         "Error occured while trying to fetch columns from database specified."
                     );
                 }
+            }
             }
 
             return base.FollowupConfigurationResponse(curActionDTO);
@@ -111,7 +122,7 @@ namespace terminalFr8Core.Actions
 
         private string ExtractConnectionString(ActionDTO curActionDTO)
         {
-            var configControls = Crate.GetConfigurationControls(Mapper.Map<ActionDO>(curActionDTO));
+            var configControls = Crate.GetStorage(curActionDTO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
             var connectionStringControl = configControls.FindByName("ConnectionString");
 
             return connectionStringControl.Value;

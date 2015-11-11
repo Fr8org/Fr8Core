@@ -54,7 +54,7 @@ namespace Data.Repositories
             var coorespondingMTFieldType = _mtFieldType.GetOrCreateMT_FieldType(_uow, curManifestType);
             _uow.SaveChanges();
             var currentMTObject =
-                _uow.MTObjectRepository.GetQuery().FirstOrDefault(a => a.ManifestId == curManifest.ManifestId &&
+                _uow.MTObjectRepository.GetQuery().FirstOrDefault(a => a.ManifestId == curManifest.ManifestType.Id &&
                                                                        a.MT_FieldType != null &&
                                                                        a.MT_FieldType.Id == coorespondingMTFieldType.Id);
             if (currentMTObject != null)
@@ -85,11 +85,11 @@ namespace Data.Repositories
             var curManifestType = typeof(T);
             var curDTOObjectFieldType = _mtFieldType.GetOrCreateMT_FieldType(_uow, curManifestType);
 
-            var correspondingDTObject = _uow.MTObjectRepository.FindOne(a => a.ManifestId == curManifest.ManifestId && a.MT_FieldType == curDTOObjectFieldType);
+            var correspondingDTObject = _uow.MTObjectRepository.FindOne(a => a.ManifestId == curManifest.ManifestType.Id && a.MT_FieldType == curDTOObjectFieldType);
             var correspondingDTFields = _uow.MTFieldRepository.FindList(a => a.MT_ObjectId == correspondingDTObject.Id);
 
             MT_Data correspondingMTData = FindMT_DataByKeyField(_uow, curFr8AccountId, curManifest, correspondingDTObject, correspondingDTFields, keyPropertyInfo);
-            if (correspondingMTData == null) throw new Exception(String.Format("MT_Data wasn't found for {0} with {1} == {2}", curManifest.ManifestName, keyPropertyInfo.Name));
+            if (correspondingMTData == null) throw new Exception(String.Format("MT_Data wasn't found for {0} with {1} == {2}", curManifest.ManifestType.Type, keyPropertyInfo.Name));
 
 			correspondingMTData.UpdatedAt = DateTime.UtcNow;
             var curDataProperties = curManifestType.GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();

@@ -27,21 +27,33 @@ namespace Data.Entities
 
         public string currentView { get; set; }
 
-        public CrateStorageDTO CrateStorageDTO()
+        public override RouteNodeDO Clone()
         {
-            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
+            return new ActionDO()
+            {
+                Ordering = this.Ordering,
+                Name = this.Name,
+                CrateStorage = this.CrateStorage,
+                Label = this.Label,
+                ActivityTemplateId = this.ActivityTemplateId
+            };
         }
 
-        public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
-        {
-            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
-
-            if(!String.IsNullOrEmpty(CrateStorage))//if crateStorage is not empty deserialize it
-                crateStorageDTO = CrateStorageDTO();
-
-            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
-
-            this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
-        }
+//        public CrateStorageDTO CrateStorageDTO()
+//        {
+//            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
+//        }
+//
+//        public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
+//        {
+//            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
+//
+//            if(!String.IsNullOrEmpty(CrateStorage))//if crateStorage is not empty deserialize it
+//                crateStorageDTO = CrateStorageDTO();
+//
+//            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
+//
+//            this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+//        }
     }
 }

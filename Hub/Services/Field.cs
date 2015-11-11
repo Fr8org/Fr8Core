@@ -9,6 +9,7 @@ using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Hub.Enums;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -38,14 +39,14 @@ namespace Hub.Services
                 switch (data.Direction)
                 {
                     case ActivityDirection.Up:
-                        routeNodes = (List<ActionDO>)_routeNode.GetUpstreamActivities(uow, curAction).OfType<ActionDO>();
+                        routeNodes = _routeNode.GetUpstreamActivities(uow, curAction).OfType<ActionDO>().ToList();
                         break;
                     case ActivityDirection.Down:
-                        routeNodes = (List<ActionDO>)_routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
+                        routeNodes = _routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>().ToList();
                     break;
                     case ActivityDirection.Both:
-                        routeNodes = (List<ActionDO>)_routeNode.GetUpstreamActivities(uow, curAction).OfType<ActionDO>();
-                        routeNodes.AddRange(_routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>());
+                    routeNodes = _routeNode.GetUpstreamActivities(uow, curAction).OfType<ActionDO>().ToList();
+                    routeNodes.AddRange(_routeNode.GetDownstreamActivities(uow, curAction).OfType<ActionDO>().ToList());
                     break;
                     default:
                     throw new InvalidEnumArgumentException("Unknown ActivityDirection type");
@@ -54,16 +55,16 @@ namespace Hub.Services
 
                 foreach (var upstreamRouteNode in routeNodes)
                 {
-                    var crates = _crate.GetCratesByManifestType(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, upstreamRouteNode.CrateStorageDTO());
-                    foreach (var crate in crates)
+                    //var crates = _crate.GetCratesByManifestType(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, upstreamRouteNode.CrateStorageDTO());
+
+                    foreach (var crate in _crate.GetStorage(upstreamRouteNode.CrateStorage).CratesOfType<StandardDesignTimeFieldsCM>())
                     {
                         if (data.CrateLabel != null && data.CrateLabel != crate.Label)
                         {
                             continue;
                         }
 
-                        var designTimeFieldsCM = _crate.GetStandardDesignTimeFields(crate);
-                        if (designTimeFieldsCM.Fields.Any(field => field.Key == data.FieldName))
+                        if (crate.Content.Fields.Any(field => field.Key == data.FieldName))
                         {
                             return true;
                         }

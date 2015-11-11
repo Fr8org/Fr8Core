@@ -25,6 +25,6 @@
     "commit": "a38c1cece7991390e5bfe6f14adfa6064bec5397"
   },
   "_source": "git://github.com/CWSpear/twitter-bootstrap-hover-dropdown.git",
-  "_target": "~2.1.3",
+  "_target": "2.1.3",
   "_originalSource": "bootstrap-hover-dropdown"
 }

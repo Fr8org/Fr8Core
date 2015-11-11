@@ -50,24 +50,24 @@ namespace Data.Entities
 
         public string CrateStorage { get; set; }
 
-        public CrateStorageDTO CrateStorageDTO()
-        {
-            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
-        }
-
-        public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
-        {
-            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
-
-            if (!string.IsNullOrEmpty(CrateStorage))
-            {
-                crateStorageDTO = this.CrateStorageDTO();
-            }
-
-            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
-
-            this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
-        }
+//        public CrateStorageDTO CrateStorageDTO()
+//        {
+//            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
+//        }
+//
+//        public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
+//        {
+//            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
+//
+//            if (!string.IsNullOrEmpty(CrateStorage))
+//            {
+//                crateStorageDTO = this.CrateStorageDTO();
+//            }
+//
+//            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
+//
+//            this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+//        }
 
         public override void BeforeSave()
         {

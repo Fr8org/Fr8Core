@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using Hub.Services;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using StructureMap;
@@ -18,10 +21,10 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Services;
 
 namespace HubWeb.Controllers
 {
+    [Fr8ApiAuthorize]
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
@@ -56,7 +59,6 @@ namespace HubWeb.Controllers
 
 
         [HttpPost]
-        //[Fr8ApiAuthorize]
         [Route("create")]
         public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
         {
@@ -81,7 +83,6 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [Fr8ApiAuthorize]
         [Route("create")]
         public async Task<IHttpActionResult> Create(string solutionName)
         {
@@ -89,8 +90,7 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplate = uow.ActivityTemplateRepository.GetAll().
-                    Where(at => at.Name == solutionName).FirstOrDefault();
+                var activityTemplate = uow.ActivityTemplateRepository.GetAll().FirstOrDefault(at => at.Name == solutionName);
                 if (activityTemplate == null)
                 {
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
@@ -135,9 +135,14 @@ namespace HubWeb.Controllers
         /// </summary>
         [HttpDelete]
         [Route("{id:int}")]
-        public void Delete(int id)
+        public async Task<IHttpActionResult> Delete(int id, bool confirmed = false)
         {
-            _subRoute.DeleteAction(id);
+            var isDeleted = await _subRoute.DeleteAction(User.Identity.GetUserId(), id, confirmed);
+            if (!isDeleted)
+            {
+                return ResponseMessage(new HttpResponseMessage(System.Net.HttpStatusCode.PreconditionFailed));
+            }
+            return Ok();
         }
 
         /// <summary>

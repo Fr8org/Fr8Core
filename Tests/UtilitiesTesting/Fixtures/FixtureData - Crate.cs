@@ -7,44 +7,46 @@ using Data.States;
 using StructureMap;
 using System;
 using System.Collections.Generic;
+using Data.Crates;
+using Newtonsoft.Json;
 using Utilities;
 
 namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
     {
-        public static CrateDTO CrateDTO1()
-        {
-            return new CrateDTO()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Label = "Label 1",
-                Contents = "Contents 1",
-                ParentCrateId = ""
-            };
-        }
-
-        public static CrateDTO CrateDTO2()
-        {
-            return new CrateDTO()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Label = "Label 2",
-                Contents = "Contents 2",
-                ParentCrateId = ""
-            };
-        }
-
-        public static CrateDTO CrateDTO3()
-        {
-            return new CrateDTO()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Label = "Test",
-                Contents = "Container Created Test",
-                ParentCrateId = ""
-            };
-        }
+//        public static Crate CrateDTO1()
+//        {
+//            return new Crate()
+//            {
+//                Id = Guid.NewGuid().ToString(),
+//                Label = "Label 1",
+//                Contents = "Contents 1",
+//                ParentCrateId = ""
+//            };
+//        }
+//
+//        public static CrateDTO CrateDTO2()
+//        {
+//            return new CrateDTO()
+//            {
+//                Id = Guid.NewGuid().ToString(),
+//                Label = "Label 2",
+//                Contents = "Contents 2",
+//                ParentCrateId = ""
+//            };
+//        }
+//
+//        public static CrateDTO CrateDTO3()
+//        {
+//            return new CrateDTO()
+//            {
+//                Id = Guid.NewGuid().ToString(),
+//                Label = "Test",
+//                Contents = "Container Created Test",
+//                ParentCrateId = ""
+//            };
+//        }
 
         public static List<ControlDefinitionDTO> SampleConfigurationControls()
         {
@@ -217,7 +219,7 @@ namespace UtilitiesTesting.Fixtures
                 Source = new FieldSourceDTO
                 {
                     Label = "Queryable Criteria",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
 
@@ -251,14 +253,11 @@ namespace UtilitiesTesting.Fixtures
             return fieldsDTO;
         }
 
-        public static CrateDTO CrateDTOForTwilioConfiguration()
+        public static Crate CrateDTOForTwilioConfiguration()
         {
-            return new CrateDTO()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Label = "Configuration_Controls",
-                Contents = "{\"Controls\":[{\"groupName\":\"SMSNumber_Group\",\"radios\":[{\"selected\":false,\"name\":\"SMSNumberOption\",\"value\":null,\"controls\":[{\"name\":\"SMS_Number\",\"required\":true,\"value\":null,\"label\":\"SMS Number\",\"type\":\"TextBox\",\"selected\":false,\"events\":null,\"source\":null}]},{\"selected\":true,\"name\":\"SMSNumberOption\",\"value\":null,\"controls\":[{\"listItems\":[{\"Key\":\"+15005550006\",\"Value\":\"+15005550006\"}],\"name\":\"upstream_crate\",\"required\":false,\"value\":\"+15005550006\",\"label\":\"a value from Upstream Crate:\",\"type\":\"DropDownList\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":{\"manifestType\":\"Standard Design-Time Fields\",\"label\":\"Available Fields\"}}]}],\"name\":null,\"required\":false,\"value\":null,\"label\":\"For the SMS Number use:\",\"type\":\"RadioButtonGroup\",\"selected\":false,\"events\":null,\"source\":null},{\"name\":\"SMS_Body\",\"required\":true,\"value\":\"DocuSign Sent\",\"label\":\"SMS Body\",\"type\":\"TextBox\",\"selected\":false,\"events\":null,\"source\":null}]}",
-            };
+            var controls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>("{\"Controls\":[{\"groupName\":\"SMSNumber_Group\",\"radios\":[{\"selected\":false,\"name\":\"SMSNumberOption\",\"value\":null,\"controls\":[{\"name\":\"SMS_Number\",\"required\":true,\"value\":null,\"label\":\"SMS Number\",\"type\":\"TextBox\",\"selected\":false,\"events\":null,\"source\":null}]},{\"selected\":true,\"name\":\"SMSNumberOption\",\"value\":null,\"controls\":[{\"listItems\":[{\"Key\":\"+15005550006\",\"Value\":\"+15005550006\"}],\"name\":\"upstream_crate\",\"required\":false,\"value\":\"+15005550006\",\"label\":\"a value from Upstream Crate:\",\"type\":\"DropDownList\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":{\"manifestType\":\"Standard Design-Time Fields\",\"label\":\"Available Fields\"}}]}],\"name\":null,\"required\":false,\"value\":null,\"label\":\"For the SMS Number use:\",\"type\":\"RadioButtonGroup\",\"selected\":false,\"events\":null,\"source\":null},{\"name\":\"SMS_Body\",\"required\":true,\"value\":\"DocuSign Sent\",\"label\":\"SMS Body\",\"type\":\"TextBox\",\"selected\":false,\"events\":null,\"source\":null}]}", new ControlDefinitionDTOConverter());
+
+            return Data.Crates.Crate.FromContent("Configuration_Controls", controls);
         }
         public static List<LogItemDTO> LogItemDTOList()
         {

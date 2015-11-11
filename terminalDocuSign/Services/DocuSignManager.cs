@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Data.Constants;
+using Data.Crates;
 using StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
 
@@ -19,7 +22,7 @@ namespace terminalDocuSign.Services
             Crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        public DropDownListControlDefinitionDTO CreateDocuSignTemplatePicker(
+        public static DropDownListControlDefinitionDTO CreateDocuSignTemplatePicker(
             bool addOnChangeEvent, 
             string name = "Selected_DocuSign_Template", 
             string label = "Select DocuSign Template")
@@ -32,7 +35,7 @@ namespace terminalDocuSign.Services
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Templates",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             };
 
@@ -47,7 +50,7 @@ namespace terminalDocuSign.Services
             return control;
         }
 
-        public CrateDTO PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
+        public Crate PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
         {
             var template = new DocuSignTemplate();
 
@@ -77,18 +80,17 @@ namespace terminalDocuSign.Services
                     .GetEnvelopeDataByTemplate(docuSignTemplateId);
 
                 var fieldCollection = userDefinedFields
-                    .Select(f => new FieldDTO()
+                    .Select(f => new FieldDTO
                     {
                         Key = f.Name,
                         Value = f.Value
                     });
 
-                Crate.ReplaceCratesByManifestType(curActionDTO.CrateStorage.CrateDTO,
-                    CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
-                    new List<CrateDTO>
-                    {
-                        Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", fieldCollection.ToArray())
-                    });
+                using (var updater = Crate.UpdateStorage(() => curActionDTO.CrateStorage))
+                {
+                    updater.CrateStorage.RemoveByManifestId((int) MT.StandardDesignTimeFields);
+                    updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", fieldCollection.ToArray()));
+                }
             }
         }
     }

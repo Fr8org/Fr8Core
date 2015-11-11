@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Constants;
 using StructureMap;
 using Newtonsoft.Json;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -23,7 +25,7 @@ namespace Hub.Services
 
         public Authorization()
         {
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
+           _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         public string GetToken(string userId)
@@ -328,38 +330,66 @@ namespace Hub.Services
             return externalAuthUrlDTO;
         }
 
-        private void AddAuthenticationCrate(
-            ActionDTO actionDTO, int authType)
+        private void AddAuthenticationCrate(ActionDTO actionDTO, int authType)
         {
-            if (actionDTO.CrateStorage == null)
+            using (var updater = _crate.UpdateStorage(() => actionDTO.CrateStorage))
             {
-                actionDTO.CrateStorage = new CrateStorageDTO()
-                {
-                    CrateDTO = new List<CrateDTO>()
-                };
+                var mode = authType == AuthenticationType.Internal ? AuthenticationMode.InternalMode : AuthenticationMode.ExternalMode;
+
+                updater.CrateStorage.Add(_crate.CreateAuthenticationCrate("RequiresAuthentication", mode));
             }
-
-            var mode = authType == AuthenticationType.Internal
-                ? AuthenticationMode.InternalMode
-                : AuthenticationMode.ExternalMode;
-
-            actionDTO.CrateStorage.CrateDTO.Add(
-                _crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
-            );
         }
 
         private void RemoveAuthenticationCrate(ActionDTO actionDTO)
         {
-            if (actionDTO.CrateStorage != null
-                && actionDTO.CrateStorage.CrateDTO != null)
+            using (var updater = _crate.UpdateStorage(() => actionDTO.CrateStorage))
             {
-                var authCrates = actionDTO.CrateStorage.CrateDTO
-                    .Where(x => x.ManifestType == CrateManifests.STANDARD_AUTHENTICATION_NAME)
-                    .ToList();
+                updater.CrateStorage.RemoveByManifestId((int) MT.StandardAuthentication);
+            }
+        }
 
-                foreach (var authCrate in authCrates)
+        private void AddAuthenticationLabel(ActionDTO actionDTO)
+        {
+            using (var updater = _crate.UpdateStorage(actionDTO))
+            {
+                var controlsCrate = updater.CrateStorage
+                    .CratesOfType<StandardConfigurationControlsCM>()
+                    .FirstOrDefault();
+
+                if (controlsCrate == null)
                 {
-                    actionDTO.CrateStorage.CrateDTO.Remove(authCrate);
+                    controlsCrate = Crate<StandardConfigurationControlsCM>
+                        .FromContent("Configuration_Controls", new StandardConfigurationControlsCM());
+
+                    updater.CrateStorage.Add(controlsCrate);
+                }
+
+                controlsCrate.Content.Controls.Add(
+                    new TextBlockControlDefinitionDTO()
+                    {
+                        Name = "AuthAwaitLabel",
+                        Value = "Waiting for authentication window..."
+                    });
+            }
+        }
+
+        private void RemoveAuthenticationLabel(ActionDTO actionDTO)
+        {
+            using (var updater = _crate.UpdateStorage(actionDTO))
+            {
+                var controlsCrate = updater.CrateStorage
+                    .CratesOfType<StandardConfigurationControlsCM>()
+                    .FirstOrDefault();
+                if (controlsCrate == null) { return; }
+
+                var authAwaitLabel = controlsCrate.Content.FindByName("AuthAwaitLabel");
+                if (authAwaitLabel == null) { return; }
+
+                controlsCrate.Content.Controls.Remove(authAwaitLabel);
+
+                if (controlsCrate.Content.Controls.Count == 0)
+                {
+                    updater.CrateStorage.Remove(controlsCrate);
                 }
             }
         }
@@ -385,6 +415,9 @@ namespace Hub.Services
 
                 if (activityTemplate.AuthenticationType != AuthenticationType.None)
                 {
+                    RemoveAuthenticationCrate(curActionDTO);
+                    RemoveAuthenticationLabel(curActionDTO);
+
                     var authToken = uow.AuthorizationTokenRepository
                         .FindOne(x => x.Plugin.Id == activityTemplate.Plugin.Id
                             && x.UserDO.Id == account.Id);
@@ -392,11 +425,9 @@ namespace Hub.Services
                     if (authToken == null || string.IsNullOrEmpty(authToken.Token))
                     {
                         AddAuthenticationCrate(curActionDTO, activityTemplate.AuthenticationType);
+                        AddAuthenticationLabel(curActionDTO);
+
                         return true;
-                    }
-                    else
-                    {
-                        RemoveAuthenticationCrate(curActionDTO);
                     }
                 }
             }

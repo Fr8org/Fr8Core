@@ -1,0 +1,111 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Data.Interfaces.Manifests;
+
+namespace Data.Crates
+{
+    public class ManifestDiscovery
+    {
+        /**********************************************************************************/
+        // Declarations
+        /**********************************************************************************/
+
+        public static readonly ManifestDiscovery Default = new ManifestDiscovery();
+
+        /**********************************************************************************/
+        
+        private readonly Dictionary<CrateManifestType, Type> _typeMapping = new Dictionary<CrateManifestType, Type>();
+        
+        /**********************************************************************************/
+        // Functions
+        /**********************************************************************************/
+
+        private ManifestDiscovery()
+        {
+            ConfigureInitial();
+        }
+
+        /**********************************************************************************/
+
+        public void ConfigureInitial()
+        {
+            var manifest = typeof(Manifest);
+
+            foreach (var type in ListAssemblyTypes(Assembly.GetExecutingAssembly()).Where(x => manifest.IsAssignableFrom(x) || x.GetCustomAttribute<CrateManifestTypeAttribute>() != null))
+            {
+                if (type.IsAbstract || type == manifest)
+                {
+                    continue;
+                }
+                
+                RegisterManifest(type);
+            }
+        }
+
+        /**********************************************************************************/
+
+        private static IEnumerable<Type> ListAssemblyTypes(Assembly assembly)
+        {
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                return ex.Types.Where(type => type != null);
+            }
+        }
+
+        /**********************************************************************************/
+
+        public void RegiserManifest<T>()
+        {
+            RegisterManifest(typeof(T));
+        }
+
+        /**********************************************************************************/
+
+        public CrateManifestType GetManifestType<T>()
+        {
+            CrateManifestType manifestType;
+
+            if (!ManifestTypeCache.TryResolveManifest(typeof(T), out manifestType))
+            {
+                throw new ArgumentException("Type is not marked with CrateManifestAttribute or ManifestType is not set");
+            }
+
+            return manifestType;
+        }
+
+        /**********************************************************************************/
+
+        public bool TryResolveType(CrateManifestType manifestType, out Type type)
+        {
+            lock (_typeMapping)
+            {
+                return _typeMapping.TryGetValue(manifestType, out type);
+            }
+        }
+
+        /**********************************************************************************/
+
+        public void RegisterManifest(Type type)
+        {
+            CrateManifestType manifestType;
+
+            if (!ManifestTypeCache.TryResolveManifest(type, out manifestType))
+            {
+                throw new ArgumentException("Type is not marked with CrateManifestAttribute or ManifestType is not set");
+            }
+
+            lock (_typeMapping)
+            {
+                _typeMapping[manifestType] = type;
+            }
+        }
+
+        /**********************************************************************************/
+    }
+}

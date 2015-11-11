@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Markup;
+using Data.Crates;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 
@@ -38,6 +39,7 @@ namespace Data.Interfaces.DataTransferObjects
         public const string TextSource = "TextSource";
         public const string TextArea = "TextArea";
         public const string QueryBuilder = "QueryBuilder";
+        public const string ManageRoute = "ManageRoute";
     }
 
     public class CheckBoxControlDefinitionDTO : ControlDefinitionDTO
@@ -206,7 +208,7 @@ namespace Data.Interfaces.DataTransferObjects
             Source = new FieldSourceDTO
             {
                 Label = upstreamSourceLabel,
-                ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                ManifestType = CrateManifestTypes.StandardDesignTimeFields
             };
         }
     }
@@ -287,6 +289,14 @@ namespace Data.Interfaces.DataTransferObjects
 
     public class ControlEvent
     {
+        public static ControlEvent RequestConfig
+        {
+            get
+            {
+                 return new ControlEvent("onChange", "requestConfig");
+            }
+        }
+
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("handler")]

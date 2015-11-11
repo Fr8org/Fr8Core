@@ -171,21 +171,29 @@ module dockyard.controllers {
             });
         }
 
+        private reloadProcessTemplate() {
+            this.$scope.actionGroups = [];
+            this.$scope.current = new model.ProcessBuilderState();
+            this.loadProcessTemplate();
+        }
+
         private deleteAction(action: model.ActionDTO) {
             //TODO -> should we generate an event for delete event?
+
             var self = this;
-            this.uiHelperService
-                .openConfirmationModal('Are you sure you want to delete this Action? You will have to reconfigure all downstream Actions.')
-                .then(() => {
-
-                self.ActionService.deleteById({ id: action.id }).$promise.then(() => {
-                    //lets reload process template
-                    self.$scope.actionGroups = [];
-                    self.$scope.current = new model.ProcessBuilderState();
-                    self.loadProcessTemplate();
+            self.ActionService.deleteById({ id: action.id, confirmed: false }).$promise.then((response) => {
+                self.reloadProcessTemplate();
+            }, (error) => {
+                //TODO check error status while completing DO-1335
+                this.uiHelperService
+                    .openConfirmationModal('Are you sure you want to delete this Action? You will have to reconfigure all downstream Actions.')
+                    .then(() => {
+                    self.ActionService.deleteById({ id: action.id, confirmed: true }).$promise.then(() => {
+                        self.reloadProcessTemplate();
+                    });
                 });
-
             });
+            
             
         }
 
@@ -260,7 +268,7 @@ module dockyard.controllers {
                 }
                 if (canBypassActionLoading) {
                     this.$scope.current.action = result.action;
-                    var actions = this.$scope.actionGroups[0].actions
+                    var actions = this.$scope.actionGroups[0].actions;
                     actions[actions.length - 1] = result.action;
                     if (result.action.childrenActions.length) {
                         this.$scope.actionGroups.push(new model.ActionGroup(result.action.childrenActions));

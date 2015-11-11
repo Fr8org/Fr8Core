@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -14,30 +15,20 @@ namespace Data.Migrations
         private class RouteBuilder
         {
             private readonly string _name;
-            
-            
-
-            private readonly List<CrateDTO> _crates = new List<CrateDTO>();
+            private readonly List<Crate> _crates = new List<Crate>();
             private int _ptId;
-
-            
-            
 
             public RouteBuilder(string name)
             {
                 _name = name;
             }
 
-            
-
-            public RouteBuilder AddCrate(CrateDTO crateDto)
+            public RouteBuilder AddCrate(Crate crateDto)
             {
                 _crates.Add(crateDto);
                 return this;
             }
-
             
-
             public void Store(IUnitOfWork uow)
             {
                 StoreTemplate(uow);
@@ -86,18 +77,13 @@ namespace Data.Migrations
                 _ptId = route.Id;
             }
 
-            
-
             private void ConfigureProcess(ContainerDO container)
             {
                 container.Name = _name;
                 container.RouteId = _ptId;
                 container.ContainerState = ContainerState.Executing;
-
-                container.CrateStorage = JsonConvert.SerializeObject(new
-                {
-                    crates = _crates
-                });
+                
+                container.CrateStorage = JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(new CrateStorage(_crates)));
             }
 
             

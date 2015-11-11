@@ -15,7 +15,7 @@ namespace Hub.Interfaces
         IEnumerable<TViewModel> GetAllActions<TViewModel>();
         ActionDO SaveOrUpdateAction(ActionDO currentActionDo);
         ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO currentActionDo);
-        Task<ActionDTO> Configure(string userId, ActionDO curActionDO);
+        Task<ActionDTO> Configure(string userId, ActionDO curActionDO, bool saveResult = true);
         //Task<ActionDO> SaveUpdateAndConfigure(IUnitOfWork uow, ActionDO submittedActionDo);
         ActionDO GetById(int id);
         ActionDO GetById(IUnitOfWork uow, int id);
@@ -38,8 +38,10 @@ namespace Hub.Interfaces
         //Task AuthenticateInternal(Fr8AccountDO user, PluginDO plugin, string username, string password);
         //Task<ExternalAuthUrlDTO> GetExternalAuthUrl(Fr8AccountDO user, PluginDO plugin);
         //Task AuthenticateExternal(PluginDO plugin, ExternalAuthenticationDTO externalAuthenticateDTO);
-        
 
-        Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Data.Interfaces.Manifests.Manifest curSchema, string key, string fieldName = "name", GetCrateDirection direction = GetCrateDirection.None);
+        //Task<IEnumerable<T>> FindCratesByManifestType<T>(ActionDO curActionDO, GetCrateDirection direction = GetCrateDirection.None);
+
+
+//        Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Data.Interfaces.Manifests.Manifest curSchema, string key, string fieldName = "name", GetCrateDirection direction = GetCrateDirection.None);
     }
 }

@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers;
-using Data.Interfaces;
-using Data.Interfaces.Manifests;
 using System.Reflection;
+using Data.Crates;
+using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
-using Newtonsoft.Json;
+using Hub.Managers;
 using StructureMap;
 using Utilities;
 
@@ -18,40 +13,28 @@ namespace Hub.Services
     public class Manifest : IManifest
     {
         private readonly ICrateManager _curCrateManager;
-        private readonly Dictionary<int, string> _curManifestDictionary;
 
         public Manifest()
         {
             _curCrateManager = ObjectFactory.GetInstance<ICrateManager>();
-            _curManifestDictionary = CrateManifests.MANIFEST_CLASS_MAPPING_DICTIONARY;
         }
 
         // Use the reflection and get the properties of manifest class. 
         // Create the designTime fields from fetched properties and send it to client.
-        public CrateDTO GetById(int id)
+        public Crate GetById(int id)
         {
-            CrateDTO crateDTO = null;
-            string manifestAssemblyName = null;
+            Crate crateDto = null;
+            Type clrManifestType;
 
-            _curManifestDictionary.TryGetValue(id, out manifestAssemblyName);
-
-            if (!String.IsNullOrWhiteSpace(manifestAssemblyName))
+            if (ManifestDiscovery.Default.TryResolveType(new CrateManifestType(null, id), out clrManifestType))
             {
-                var curAssemblyName = "Data";
-                string fullyQualifiedName = string.Format("{0}.Interfaces.Manifests.{1}", curAssemblyName, manifestAssemblyName);
-                Assembly assembly = Assembly.Load(curAssemblyName);
-                Type cuAssemblyType = assembly.GetType(fullyQualifiedName);
+                var propertyInfo = ReflectionHelper.GetProperties(clrManifestType);
+                var curFieldDto = ConvertPropertyToFields(propertyInfo);
 
-                if (cuAssemblyType == null)
-                    throw new ArgumentException(manifestAssemblyName);
-
-                PropertyInfo[] propertyInfo = ReflectionHelper.GetProperties(cuAssemblyType);
-                List<FieldDTO> curFieldDTO = ConvertPropertyToFields(propertyInfo);
-
-                crateDTO = _curCrateManager.CreateDesignTimeFieldsCrate(manifestAssemblyName, curFieldDTO.ToArray());
+                crateDto = _curCrateManager.CreateDesignTimeFieldsCrate(clrManifestType.Name, curFieldDto.ToArray());
             }
 
-            return crateDTO;
+            return crateDto;
         }
 
         // Convert all properties to FieldDTO

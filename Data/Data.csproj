@@ -204,6 +204,21 @@
     <Compile Include="Constants\FieldValidationResult.cs" />
     <Compile Include="Constants\ActivityDirection.cs" />
     <Compile Include="Constants\ManifestIdEnum.cs" />
+    <Compile Include="Crates\Crate.cs" />
+    <Compile Include="Crates\CrateManifestAttribute.cs" />
+    <Compile Include="Crates\CrateManifestType.cs" />
+    <Compile Include="Crates\CrateManifestTypeDescriptionAttribute.cs" />
+    <Compile Include="Crates\CrateStorage.cs" />
+    <Compile Include="Crates\CrateStorageSerializer.cs" />
+    <Compile Include="Crates\CrateStorageSerializer.DefaultSerializer.cs" />
+    <Compile Include="Crates\CrateT.cs" />
+    <Compile Include="Crates\DenySerializationConverter.cs" />
+    <Compile Include="Crates\ICrateStorageSerializer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Crates\IManifestSerializer.cs" />
+    <Compile Include="Crates\ManifestDiscovery.cs" />
+    <Compile Include="Crates\ManifestTypeCache.cs" />
     <Compile Include="Entities\RouteNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
@@ -215,6 +230,7 @@
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Entities\ActivityTemplateDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
+    <Compile Include="Infrastructure\CloudFileManager.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Data.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Field.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_FieldType.cs" />
@@ -223,7 +239,6 @@
     <Compile Include="Infrastructure\MultiTenant\MT_Field.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_FieldType.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_Object.cs" />
-    <Compile Include="Interfaces\CrateManifests.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
@@ -239,6 +254,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ExternalAuthenticationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalAuthUrlDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FilterConditionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\LogItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
@@ -252,7 +268,7 @@
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\EventCM.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDTO.cs" />
@@ -274,6 +290,7 @@
     <Compile Include="Interfaces\IMTFieldTypeRepository.cs" />
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
+    <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8RoutesCM .cs" />
@@ -389,6 +406,10 @@
     <Compile Include="Migrations\201511040622414_AddedDocuSignFields.Designer.cs">
       <DependentUpon>201511040622414_AddedDocuSignFields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511062013473_AddActivityTemplateState.cs" />
+    <Compile Include="Migrations\201511062013473_AddActivityTemplateState.Designer.cs">
+      <DependentUpon>201511062013473_AddActivityTemplateState.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -403,6 +424,7 @@
     <Compile Include="Repositories\WebServiceRepository.cs" />
     <Compile Include="States\ActivityCategory.cs" />
     <Compile Include="States\AuthenticationType.cs" />
+    <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
@@ -473,6 +495,7 @@
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
     <Compile Include="States\Templates\_AuthenticationTypeTemplate.cs" />
+    <Compile Include="States\Templates\_ActivityTemplateStateTemplate.cs" />
     <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
@@ -564,7 +587,6 @@
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="States\UserState.cs" />
-    <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ContainerValidator.cs" />
@@ -663,6 +685,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511040622414_AddedDocuSignFields.resx">
       <DependentUpon>201511040622414_AddedDocuSignFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511062013473_AddActivityTemplateState.resx">
+      <DependentUpon>201511062013473_AddActivityTemplateState.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

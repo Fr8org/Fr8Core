@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Web;
+using Data.Crates;
+using AutoMapper;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
@@ -47,14 +49,11 @@ namespace terminalSlack.Services
                 ExternalAccountId = slackToken.Value
             };
 
-            var curEventReport = _crate.Create(
-                "Standard Event Report",
-                JsonConvert.SerializeObject(eventReportContent),
-                "Standard Event Report",
-                7);
-            
+            var curEventReport = Data.Crates.Crate.FromContent("Standard Event Report", eventReportContent);
+            var curEventReportDTO = _crate.ToDto(curEventReport);
+
             var url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";
-            new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), curEventReport);
+            new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), curEventReportDTO);
         }
 
         private List<FieldDTO> ParseSlackPayloadData(string message)
@@ -84,12 +83,10 @@ namespace terminalSlack.Services
             return payloadFields;
         }
 
-        private List<CrateDTO> WrapPayloadDataCrate(List<FieldDTO> payloadFields)
+        private CrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
         {
-            var fieldsCrate = _crate.Create("Payload Data",
-                JsonConvert.SerializeObject(payloadFields));
 
-            return new List<CrateDTO>() { fieldsCrate };
+            return new CrateStorage(Data.Crates.Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
         }
     }
 }

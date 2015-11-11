@@ -11,6 +11,7 @@ module dockyard.services {
         execute: (id: { id: number }) => void;
         activate: (processTemplate: model.RouteDTO) => void;
         deactivate: (processTemplate: model.RouteDTO) => void;
+        update: (data: { id: number, name: string}) => interfaces.IRouteVM;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -19,7 +20,7 @@ module dockyard.services {
         create: (args: { actionTemplateId: number, name: string, label: string, parentNideId: number, createRoute: boolean }) => ng.resource.IResource<model.RouteDTO | model.ActionDTO>;
         createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.RouteDTO>;
         //TODO make resource class do this operation
-        deleteById: (id: { id: number }) => ng.resource.IResource<void>;
+        deleteById: (id: { id: number; confirmed: boolean }) => ng.resource.IResource<string>;
         
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
@@ -43,7 +44,7 @@ module dockyard.services {
         add: (curProcessNodeTemplate: model.SubrouteDTO) => ng.IPromise<model.SubrouteDTO>;
         update: (curProcessNodeTemplate: model.SubrouteDTO) => ng.IPromise<model.SubrouteDTO>;
         addOrUpdate(curProcessNodeTemplate: model.SubrouteDTO): {
-            actionType: ActionTypeEnum,
+            actionType: ActionTypeEnum;
             promise: ng.IPromise<model.SubrouteDTO>
         }
     }
@@ -107,6 +108,13 @@ module dockyard.services {
                     method: 'POST',
                     url: '/routes/deactivate/',
                     params: {
+                    }
+                },
+                'update': {
+                    method: 'POST',
+                    url: '/routes/',
+                    params: {
+
                     }
                 }
             })
@@ -179,7 +187,8 @@ module dockyard.services {
                     isArray: true
                 },
                 'deleteById': {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    url: '/actions/:id?confirmed=:confirmed'
                 },
                 'create': {
                     method: 'POST',

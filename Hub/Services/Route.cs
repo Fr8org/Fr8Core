@@ -320,31 +320,21 @@ namespace Hub.Services
         }
 
 
-
-        public List<RouteDO> MatchEvents(List<RouteDO> curRoutes,
-            EventReportCM curEventReport)
+        public List<RouteDO> MatchEvents(List<RouteDO> curRoutes, EventReportCM curEventReport)
         {
             List<RouteDO> subscribingRoutes = new List<RouteDO>();
+          
             foreach (var curRoute in curRoutes)
             {
                 //get the 1st activity
                 var actionDO = GetFirstActivity(curRoute.Id) as ActionDO;
 
-                //Get the CrateStorage
-                if (actionDO != null && !string.IsNullOrEmpty(actionDO.CrateStorage))
+                if (actionDO != null)
                 {
-                    // Loop each CrateDTO in CrateStorage
-                    IEnumerable<CrateDTO> eventSubscriptionCrates = _crate
-                        .GetCratesByManifestType(
-                            CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
-                            actionDO.CrateStorageDTO()
-                        );
+                    var storage = _crate.GetStorage(actionDO.CrateStorage);
 
-                    foreach (var curEventSubscription in eventSubscriptionCrates)
+                    foreach (var subscriptionsList in storage.CrateContentsOfType<EventSubscriptionCM>())
                     {
-                        //Parse CrateDTO to EventReportMS and compare Event name then add the Route to the results
-                        EventSubscriptionCM subscriptionsList = _crate.GetContents<EventSubscriptionCM>(curEventSubscription);
-
                         bool hasEvents = subscriptionsList.Subscriptions
                             .Where(events => curEventReport.EventNames.ToUpper().Trim().Replace(" ", "").Contains(events.ToUpper().Trim().Replace(" ", "")))
                             .Any();
@@ -356,8 +346,8 @@ namespace Hub.Services
                     }
                 }
             }
-            return subscribingRoutes;
 
+            return subscribingRoutes;
         }
 
 
@@ -394,6 +384,41 @@ namespace Hub.Services
             return null;
         }
 
+        public RouteDO Copy(IUnitOfWork uow, RouteDO route, string name)
+        {
+            var root = (RouteDO) route.Clone();
+            root.Name = name;
+            uow.RouteNodeRepository.Add(root);
+
+            var queue = new Queue<Tuple<RouteNodeDO, int>>();
+            queue.Enqueue(new Tuple<RouteNodeDO, int>(root, route.Id));
+
+            while (queue.Count > 0)
+            {
+                var routeTuple = queue.Dequeue();
+                var routeNode = routeTuple.Item1;
+                var sourceRouteNodeId = routeTuple.Item2;
+
+                var sourceChildren = uow.RouteNodeRepository
+                    .GetQuery()
+                    .Where(x => x.ParentRouteNodeId == sourceRouteNodeId)
+                    .ToList();
+
+                foreach (var sourceChild in sourceChildren)
+                {
+                    var childCopy = sourceChild.Clone();
+                    
+                    childCopy.ParentRouteNode = routeNode;
+                    routeNode.ChildNodes.Add(childCopy);
+
+                    uow.RouteNodeRepository.Add(childCopy);
+
+                    queue.Enqueue(new Tuple<RouteNodeDO, int>(childCopy, sourceChild.Id));
+                }
+            }
+
+            return root;
+        }
 
         /// <summary>
         /// The function add/removes items on the current collection 
