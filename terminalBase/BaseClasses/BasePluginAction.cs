@@ -49,7 +49,7 @@ namespace TerminalBase.BaseClasses
             _authorizationToken = new Authorization();
         }
 
-        protected bool NeedsAuthentication(ActionDTO actionDTO)
+        protected virtual bool NeedsAuthentication(ActionDTO actionDTO)
         {
             if (actionDTO == null
                 || actionDTO.AuthToken == null
@@ -69,7 +69,7 @@ namespace TerminalBase.BaseClasses
 
             var payloadDTO = await _restfulServiceClient.GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute));
             return payloadDTO;
-        }
+            }
 
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
         {
