@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{579BA25F-1DF5-474A-8A3E-0447FF75711C}</ProjectGuid>
+    <ProjectGuid>{98E58994-8DEF-4EB3-B1FC-F638D4859282}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>pluginIntegrationTests</RootNamespace>
@@ -146,7 +146,6 @@
     <Compile Include="TerminalIntegrationTests_SendDocuSignEnvelopeV1.cs" />
     <Compile Include="TerminalIntegrationTests.cs" />
     <Compile Include="TerminalIntegrationTests_TerminalExcel.cs" />
-
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

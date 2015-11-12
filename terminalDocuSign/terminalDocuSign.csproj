@@ -193,11 +193,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
-<<<<<<< HEAD
     <Compile Include="Controllers\TerminalController.cs" />
-=======
-    <Compile Include="Controllers\PluginController.cs" />
->>>>>>> dev
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="DataTransferObjects\DocuSignAuthDTO.cs" />
     <Compile Include="DataTransferObjects\DocuSignEventDTO.cs" />
@@ -209,11 +205,7 @@
     <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatus.cs" />
     <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatuses.cs" />
     <Compile Include="Infrastructure\IndexManager.cs" />
-<<<<<<< HEAD
-    <Compile Include="Infrastructure\TerminalDataAutoMapperBootStrapper.cs" />
-=======
     <Compile Include="Infrastructure\PluginDataAutoMapperBootStrapper.cs" />
->>>>>>> dev
     <Compile Include="DataTransferObjects\RecipientDTO.cs" />
     <Compile Include="DataTransferObjects\RecipientsDTO.cs" />
     <Compile Include="DocuSignUtils.cs" />
@@ -234,11 +226,7 @@
     <Compile Include="Services\Event.cs" />
     <Compile Include="Interfaces\IDocuSignTemplate.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
-<<<<<<< HEAD
     <Compile Include="Infrastructure\TerminalDocuSignMapBootstrapper.cs" />
-=======
-    <Compile Include="Infrastructure\PluginDocuSignMapBootstrapper.cs" />
->>>>>>> dev
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -246,21 +234,12 @@
     <Compile Include="Tests\Actions\Monitor_DocuSignTests.cs" />
     <Compile Include="Tests\DocusignApiHelper.cs" />
     <Compile Include="Tests\Fixtures\AppSettingsFixture.cs" />
-<<<<<<< HEAD
     <Compile Include="Tests\Fixtures\TerminalFixtureData - DocusignAccount.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - Recipient.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - Signer.cs" />
     <Compile Include="Tests\IDocusignApiHelper.cs" />
     <Compile Include="Tests\Infrastructure\DocusignConnectParserTests.cs" />
     <Compile Include="Tests\Infrastructure\DocuSignTemplateTests.cs" />
-=======
-    <Compile Include="Tests\Fixtures\PluginFixtureData - Recipient.cs" />
-    <Compile Include="Tests\Fixtures\PluginFixtureData - Signer.cs" />
-    <Compile Include="Tests\IDocusignApiHelper.cs" />
-    <Compile Include="Tests\Infrastructure\DocusignConnectParserTests.cs" />
-    <Compile Include="Tests\Infrastructure\DocuSignTemplateTests.cs" />
-    <Compile Include="Tests\Fixtures\PluginFixtureData - DocusignAccount.cs" />
->>>>>>> dev
     <Compile Include="Tests\Infrastructure\IndexManagerTests.cs" />
     <Compile Include="Tests\Services\EnvelopeServiceTests.cs" />
   </ItemGroup>
