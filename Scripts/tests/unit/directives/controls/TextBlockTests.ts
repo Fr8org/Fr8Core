@@ -1,6 +1,6 @@
 ﻿/// <reference path="../../../../app/_all.ts" />
 /// <reference path="../../../../typings/angularjs/angular-mocks.d.ts" />
-/*
+
 module dockyard.tests.unit.directives.controls {
     import fx = utils.fixtures; // just an alias
 
@@ -62,4 +62,4 @@ module dockyard.tests.unit.directives.controls {
             expect(getLabelArea().find('span').length).toBe(1);
         });
     });
-} */
+} 
