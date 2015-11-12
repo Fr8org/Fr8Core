@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 ﻿
+=======
+>>>>>>> dev
 ﻿using System;
 using Data.Repositories;
 using StructureMap;
@@ -67,7 +70,11 @@ namespace Data.Interfaces
 
         MultiTenantObjectRepository MultiTenantObjectRepository { get; }
 
+<<<<<<< HEAD
         ITerminalRepository TerminalRepository { get; }
+=======
+        IPluginRepository PluginRepository { get; }
+>>>>>>> dev
         ISubscriptionRepository SubscriptionRepository { get; }
 		IWebServiceRepository WebServiceRepository { get; }
 
@@ -105,4 +112,8 @@ namespace Data.Interfaces
         bool IsEntityModified<TEntity>(TEntity entity)
             where TEntity : class;
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> dev

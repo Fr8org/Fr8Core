@@ -12,7 +12,11 @@ namespace Data.Constants
         [Display(Name = "Standard Design-Time Fields")]
         StandardDesignTimeFields = 3,
 
+<<<<<<< HEAD
         [Display(Name = "Dockyard Terminal Event or Incident Report")]
+=======
+        [Display(Name = "Dockyard Plugin Event or Incident Report")]
+>>>>>>> dev
         EventOrIncidentReport = 2,
 
         [Display(Name = "Standard Payload Keys")]
@@ -84,4 +88,8 @@ namespace Data.Constants
         [Display(Name = "Docusign Recipient")]
         DocuSignRecipient = 26
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> dev

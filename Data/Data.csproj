@@ -715,5 +715,9 @@
   </Target>
   <Target Name="AfterBuild">
   </Target>
+<<<<<<< HEAD
   -->
+=======
+  -->
+>>>>>>> dev
 </Project>

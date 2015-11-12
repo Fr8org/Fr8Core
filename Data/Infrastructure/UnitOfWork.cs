@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿﻿using System;
+=======
+﻿using System;
+>>>>>>> dev
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
@@ -525,6 +529,7 @@ namespace Data.Infrastructure
         }
 
 
+<<<<<<< HEAD
         private TerminalRepository _terminalRepository;
 
         public ITerminalRepository TerminalRepository
@@ -532,6 +537,15 @@ namespace Data.Infrastructure
             get
             {
                 return _terminalRepository ?? (_terminalRepository = new TerminalRepository(this));
+=======
+        private PluginRepository _pluginRepository;
+
+        public IPluginRepository PluginRepository
+        {
+            get
+            {
+                return _pluginRepository ?? (_pluginRepository = new PluginRepository(this));
+>>>>>>> dev
             }
         }
 
@@ -678,4 +692,8 @@ namespace Data.Infrastructure
             Entities = entities;
         }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> dev
