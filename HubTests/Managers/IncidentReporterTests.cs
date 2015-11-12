@@ -37,14 +37,8 @@ namespace HubTests.Managers
             EventManager.TerminalRunFailed(terminalUrl, actionDTO, errorMessage);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var list = uow.IncidentRepository.GetAll();
-                foreach (var item in list)
-                {
-                    System.Diagnostics.Trace.WriteLine(item.ToString());
-                }
+            {   
                 var foundItem = uow.IncidentRepository.FindOne(item => item.Data == data);
-
                 Assert.IsNotNull(foundItem);
             }
         }
