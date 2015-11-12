@@ -3,9 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using Data.Entities;
 using Data.Interfaces;
+<<<<<<< HEAD
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Utilities.Configuration.Azure;
+=======
+using Utilities.Configuration.Azure;
+using Microsoft.WindowsAzure;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+>>>>>>> dev
 
 namespace Data.Repositories
 {
