@@ -1,0 +1,35 @@
+<<<<<<< HEAD
+﻿
+=======
+>>>>>>> dev
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Http;
+using TerminalBase;
+using TerminalBase.BaseClasses;
+
+namespace terminalFr8Core
+{
+    public static class WebApiConfig
+    {
+        public static void Register(HttpConfiguration config)
+        {
+<<<<<<< HEAD
+            BaseTerminalWebApiConfig.Register(config);
+=======
+            BasePluginWebApiConfig.Register(config);
+>>>>>>> dev
+
+            config.Routes.MapHttpRoute(
+                name: "TerminalFr8CoreServer",
+                routeTemplate: "terminalFr8Core/{controller}/{id}"
+            );
+        }
+<<<<<<< HEAD
+    }
+=======
+    }
+>>>>>>> dev
+}
