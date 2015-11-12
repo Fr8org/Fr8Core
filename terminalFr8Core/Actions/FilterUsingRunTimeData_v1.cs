@@ -260,7 +260,7 @@ namespace terminalFr8Core.Actions
 
             var hasQueryFieldsCrate = GetCratesByManifestType<StandardDesignTimeFieldsCM>(curActionDataPackageDTO) != null;
 
-            if (hasControlsCrate && hasQueryFieldsCrate && HasValidConfiguration(curActionDataPackageDTO))
+            if (hasControlsCrate && hasQueryFieldsCrate)
             {
                 return ConfigurationRequestType.Followup;
             }
@@ -270,40 +270,43 @@ namespace terminalFr8Core.Actions
             }
         }
 
-
+        protected override async Task<CrateDTO> ValidateAction(ActionDTO curActionDTO)
+        {
+            return await ValidateByStandartDesignTimeFields(curActionDTO, Crate.GetStorage(curActionDTO).FirstCrate<StandardDesignTimeFieldsCM>(x => x.Label == "Queryable Criteria").Content);
+        }
 
         /// <summary>
         ///  Returns true, if at least one row has been fully configured.
         /// </summary>
         /// <param name="curActionDataPackageDTO"></param>
         /// <returns></returns>
-        private bool HasValidConfiguration(ActionDTO curActionDataPackageDTO)
-        {
-            // STANDARD_CONF_CONTROLS_NANIFEST_NAME can't be deseralized to RadioButtonOption.
+//        private bool HasValidConfiguration(ActionDTO curActionDataPackageDTO)
+//        {
+//            // STANDARD_CONF_CONTROLS_NANIFEST_NAME can't be deseralized to RadioButtonOption.
 
-//            var crateDTO = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
-//
-//            if (crateDTO != null)
-//            {
-//                RadioButtonOption radioButtonOption = JsonConvert.DeserializeObject<RadioButtonOption>(crateDTO.Contents);
-//                if (radioButtonOption != null)
-//                {
-//                    foreach (ControlDefinitionDTO controlDefinitionDTO in radioButtonOption.Controls)
-//                    {
-//                        if (!string.IsNullOrEmpty(controlDefinitionDTO.Value))
-//                        {
-//                            FilterDataDTO filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(controlDefinitionDTO.Value);
-//                            return filterDataDTO.Conditions.Any(x =>
-//                                  x.Field != null && x.Field != "" &&
-//                                  x.Operator != null && x.Operator != "" &&
-//                                  x.Value != null && x.Value != "");
-//                        }
-//                    }
-//                }
-//
-//            }
-            return false;
-        }
+////            var crateDTO = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+////
+////            if (crateDTO != null)
+////            {
+////                RadioButtonOption radioButtonOption = JsonConvert.DeserializeObject<RadioButtonOption>(crateDTO.Contents);
+////                if (radioButtonOption != null)
+////                {
+////                    foreach (ControlDefinitionDTO controlDefinitionDTO in radioButtonOption.Controls)
+////                    {
+////                        if (!string.IsNullOrEmpty(controlDefinitionDTO.Value))
+////                        {
+////                            FilterDataDTO filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(controlDefinitionDTO.Value);
+////                            return filterDataDTO.Conditions.Any(x =>
+////                                  x.Field != null && x.Field != "" &&
+////                                  x.Operator != null && x.Operator != "" &&
+////                                  x.Value != null && x.Value != "");
+////                        }
+////                    }
+////                }
+////
+////            }
+//            return false;
+//        }
 
         private Crate<TManifest> GetCratesByManifestType<TManifest>(ActionDTO curActionDataPackageDTO)
         {
