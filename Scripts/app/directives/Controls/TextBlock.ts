@@ -3,7 +3,7 @@ module dockyard.directives.button {
     'use strict';
 
     export interface ITextBlockScope extends ng.IScope {
-        field: model.TextBlockField;
+        field: model.TextBlock;
     }
 
     //More detail on creating directives in TypeScript: 
