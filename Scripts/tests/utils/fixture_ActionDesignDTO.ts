@@ -20,6 +20,18 @@ module dockyard.tests.utils.fixtures {
 
         public static textBlock: model.TextBlock = new model.TextBlock('<span>teststs</span>', 'well well-lg');
 
+        public static dropDownListBox: model.DropDownListControlDefinitionDTO = {
+            listItems: [{ key: 'test1', value: 'value1' }, { key: 'test2', value: 'value2' }, { key: 'test3', value: 'value3' }],
+            source: {
+                manifestType: 'testManifest',
+                label: 'testLabel'
+            },
+            type: 'DropDownList',
+            fieldLabel: 'DropDownList Test',
+            name: 'DropDownList',
+            events: [],
+            value: 'value3'
+        };
 
         public static configurationControls = {
             "fields":
