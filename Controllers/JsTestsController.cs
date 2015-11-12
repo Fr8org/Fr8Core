@@ -17,7 +17,7 @@ namespace HubWeb.Controllers
 
         public ActionResult Integration()
         {
-            ViewBag.TestType = "Integration";
+            ViewBag.TestType = "integration";
             return View("tests");
         }
     }

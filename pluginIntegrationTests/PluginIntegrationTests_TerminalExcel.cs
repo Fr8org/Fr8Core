@@ -12,6 +12,9 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using Moq;
+using pluginIntegrationTests.Fixtures;
 using terminalExcel.Actions;
 using terminalExcel.Fixtures;
 using terminalExcel.Infrastructure;
@@ -66,6 +69,12 @@ namespace pluginIntegrationTests
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("", tableDataMS));
             }
+
+            var restfulServiceClient = new Mock<IRestfulServiceClient>();
+            restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>()))
+                .Returns(Task.FromResult(FixtureData.CratePayloadDTOForSendEmailViaSendGridConfiguration));
+            ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
+
 
             var result = await new Load_Table_Data_v1().Run(curActionDTO);
 

@@ -369,7 +369,7 @@ namespace terminalDocuSign.Actions
                     {
                         Selected = true,
                         Name = "recipient",
-                        Value = "Are sent to the recipient:",
+                        Value = "Are sent to the recipient",
                         Controls = new List<ControlDefinitionDTO>
                         {
                             new TextBoxControlDefinitionDTO()
@@ -385,7 +385,7 @@ namespace terminalDocuSign.Actions
                     {
                         Selected = false,
                         Name = "template",
-                        Value = "Use the template:",
+                        Value = "Use the template",
                         Controls = new List<ControlDefinitionDTO>
                         {
                             new DropDownListControlDefinitionDTO()

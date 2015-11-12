@@ -432,6 +432,19 @@ input[type=radio]:checked ~ div.nested-controls {
 
 .radio-button-group-content {
     margin-left: 20px;
+    margin-bottom: 5px;
+}
+
+.radio-button-option-label {
+    display: inline;
+}
+
+.control-label-hidden {
+    display: none;
+}
+
+input[type=radio]:checked ~ label .control-label-hidden {
+    display: inline;
 }
 
 .readOnlyTextArea .ta-scroll-window.form-control {
