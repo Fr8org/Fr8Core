@@ -50,5 +50,6 @@ app.factory('delayHTTP', ($q, $timeout) => {
 })
 // delay HTTP
     .config(['$httpProvider', 'urlPrefix', ($httpProvider, urlPrefix) => {
-        $httpProvider.interceptors.push('delayHTTP');
+        //i don't know why this is here.
+        //$httpProvider.interceptors.push('delayHTTP');
     }]);
