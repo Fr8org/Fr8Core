@@ -198,18 +198,12 @@ namespace terminalGoogle.Actions
                     .Where(d => d != null)
                     .Select(d => d.Value)
                     .Where(v => !string.IsNullOrEmpty(v))
-<<<<<<< HEAD
                     .ToArray();
 
 
             var hasDesignTimeFields = Crate.GetStorage(curActionDO)
                 .Any(x => x.IsOfType<StandardConfigurationControlsCM>()
-=======
-                    .ToArray();
 
-            var hasDesignTimeFields = curActionDTO.CrateStorage.Crates
-                .Any(x => x.ManifestType == CrateManifestTypes.StandardDesignTimeFields
->>>>>>> dev
                     && x.Label == "Worksheet Column Headers");
 
             if (spreadsheetsFromUserSelection.Any() || hasDesignTimeFields)
@@ -224,7 +218,6 @@ namespace terminalGoogle.Actions
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
             var spreadsheetsFromUserSelection =
-<<<<<<< HEAD
                 Action.GetControlsManifest(curActionDO).FindByName("select_spreadsheet").Value;
 
             // Creating configuration control crate with a file picker and textblock
@@ -236,19 +229,7 @@ namespace terminalGoogle.Actions
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
-=======
-                Action.GetControlsManifest(curActionDO).FindByName("select_spreadsheet").Value;
 
-            // Creating configuration control crate with a file picker and textblock
-            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(curActionDTO.AuthToken.Token);
-            var spreadsheets = _google.EnumerateSpreadsheetsUris(authDTO);
-            var configControlsCrate = CreateConfigurationControlsCrate(spreadsheets, spreadsheetsFromUserSelection);
-
-            // Remove previously created configuration control crate
-            using (var updater = Crate.UpdateStorage(curActionDTO))
-            {
-                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
->>>>>>> dev
                 updater.CrateStorage.Add(configControlsCrate);
             }
 
