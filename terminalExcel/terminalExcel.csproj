@@ -180,7 +180,7 @@
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Controllers\EventController.cs" />
-    <Compile Include="Controllers\PluginController.cs" />
+    <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -193,7 +193,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Tests\Controllers\ActionControllerTest.cs" />
     <Compile Include="Tests\ExtractDataTests.cs" />
-    <Compile Include="Tests\Fixtures\PluginFixtureData - ExcelData.cs" />
+    <Compile Include="Tests\Fixtures\TerminalFixtureData - ExcelData.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

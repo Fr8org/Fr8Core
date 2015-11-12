@@ -17,7 +17,7 @@ namespace terminalTwilio
                 return new[] {
                     typeof(ActionController),
                     typeof(EventController),
-                    typeof(PluginController)
+                    typeof(TerminalController)
                 };
             }
         }

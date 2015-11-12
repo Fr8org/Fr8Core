@@ -1,4 +1,5 @@
-﻿using Data.Interfaces.DataTransferObjects;
+﻿using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Salesforce.Force;
@@ -15,7 +16,7 @@ namespace terminalSalesforce.Infrastructure
 {
     public class Lead
     {
-        ForceClient client;
+        ForceClient client;       
         private ICrateManager _crateManager;
 
 
@@ -25,16 +26,16 @@ namespace terminalSalesforce.Infrastructure
         }
 
 
-        public async Task CreateLead(ActionDTO currentActionDTO)
+        public async Task CreateLead(ActionDO currentActionDO, AuthorizationTokenDO authTokenDO)
         {
             
             string instanceUrl, apiVersion;
-            ParseAuthToken(currentActionDTO.AuthToken.AdditionalAttributes, out instanceUrl, out apiVersion);
-            client = new ForceClient(instanceUrl, currentActionDTO.AuthToken.Token, apiVersion);
+            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
+            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
             LeadDTO lead = new LeadDTO();
 
 
-            var storage = _crateManager.GetStorage(currentActionDTO);
+            var storage = _crateManager.GetStorage(currentActionDO);
 
             var curFieldList = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
 

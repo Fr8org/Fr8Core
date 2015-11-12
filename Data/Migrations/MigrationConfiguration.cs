@@ -67,7 +67,8 @@ namespace Data.Migrations
             AddDockyardAccounts(uow);
             AddProfiles(uow);
 
-            //AddPlugins(uow);
+            //Addterminals(uow);
+
 
             //AddAuthorizationTokens(uow);
             AddContainerDOForTestingApi(uow);
@@ -134,20 +135,23 @@ namespace Data.Migrations
 
         private static void AddDocusignAuthToken(IUnitOfWork uow)
         {
-            // Check that plugin does not exist yet.
+            // Check that terminal does not exist yet.
             var docusignAuthToken = uow.AuthorizationTokenRepository.GetQuery()
                 .Any(x => x.ExternalAccountId == "docusign_developer@dockyard.company");
 
-            // Add new plugin and subscription to repository, if plugin doesn't exist.
+            // Add new terminal and subscription to repository, if terminal doesn't exist.
+
             if (!docusignAuthToken)
             {
                 var token = new AuthorizationTokenDO();
                 token.ExternalAccountId = "docusign_developer@dockyard.company";
                 token.Token = "";
                 token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
-                var docuSignPlugin = uow.PluginRepository.FindOne(p => p.Name == "pluginDocuSign");
-                token.Plugin = docuSignPlugin;
-                token.PluginID = docuSignPlugin.Id;
+
+                var docuSignTerminal = uow.TerminalRepository.FindOne(p => p.Name == "terminalDocuSign");
+                token.Terminal = docuSignTerminal;
+                token.TerminalID = docuSignTerminal.Id;
+
 				token.ExpiresAt = DateTime.UtcNow.AddDays(10);
 
                 uow.AuthorizationTokenRepository.Add(token);
@@ -398,11 +402,12 @@ namespace Data.Migrations
                 uow.UserRepository.AddDefaultProfile(user);
         }
 
-        private void AddSubscription(IUnitOfWork uow, Fr8AccountDO curAccount, PluginDO curPlugin, int curAccessLevel)
+        private void AddSubscription(IUnitOfWork uow, Fr8AccountDO curAccount, TerminalDO curTerminal, int curAccessLevel)
         {
             var curSub = new SubscriptionDO()
             {
-                Plugin = curPlugin,
+                Terminal = curTerminal,
+
                 DockyardAccount = curAccount,
                 AccessLevel = curAccessLevel
             };
@@ -410,45 +415,49 @@ namespace Data.Migrations
             uow.SubscriptionRepository.Add(curSub);
         }
 
-        private void AddPlugins(IUnitOfWork uow)
+
+        private void AddTerminals(IUnitOfWork uow)
         {
-            // Create test DockYard account for plugin subscription.
+            // Create test DockYard account for terminal subscription.
             // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
 
             // TODO: remove this, DO-1397
-            // AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1", true);
-            // AddPlugins(uow, "pluginExcel", "localhost:47011", "1", false);
-            // AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1", true);
-            AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1");
-            AddPlugins(uow, "pluginExcel", "localhost:47011", "1");
-            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1");
+            // AddTerminals(uow, "terminalDocuSign", "localhost:53234", "1", true);
+            // AddTerminals(uow, "terminalExcel", "localhost:47011", "1", false);
+            // AddTerminals(uow, "terminalSalesforce", "localhost:51234", "1", true);
+            AddTerminals(uow, "terminalDocuSign", "localhost:53234", "1");
+            AddTerminals(uow, "terminalExcel", "localhost:47011", "1");
+            AddTerminals(uow, "terminalSalesforce", "localhost:51234", "1");
+
             uow.SaveChanges();
         }
 
         // TODO: remove this, DO-1397
-        // private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint,
+
+        // private static void AddTerminals(IUnitOfWork uow, string terminalName, string endPoint,
         //     string version, bool requiresAuthentication)
-        private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint,
+        private static void AddTerminals(IUnitOfWork uow, string terminalName, string endPoint,
             string version)
         {
-            // Check that plugin does not exist yet.
-            var pluginExists = uow.PluginRepository.GetQuery().Any(x => x.Name == pluginName);
+            // Check that terminal does not exist yet.
+            var terminalExists = uow.TerminalRepository.GetQuery().Any(x => x.Name == terminalName);
 
-            // Add new plugin and subscription to repository, if plugin doesn't exist.
-            if (!pluginExists)
+            // Add new terminal and subscription to repository, if terminal doesn't exist.
+            if (!terminalExists)
             {
-                // Create plugin instance.
-                var pluginDO = new PluginDO()
+                // Create terminal instance.
+                var terminalDO = new TerminalDO()
                 {
-                    Name = pluginName,
-                    PluginStatus = PluginStatus.Active,
+                    Name = terminalName,
+                    TerminalStatus = TerminalStatus.Active,
                     Endpoint = endPoint,
                     Version = version,
                     // TODO: remove this, DO-1397
                     // RequiresAuthentication = requiresAuthentication
                 };
 
-                uow.PluginRepository.Add(pluginDO);
+                uow.TerminalRepository.Add(terminalDO);
+
             }
         }
 
@@ -465,7 +474,8 @@ namespace Data.Migrations
         private void AddActionTemplate(IUnitOfWork uow, string name, string endPoint, string version)
         {
             var existingActivityTemplateDO = uow.ActivityTemplateRepository
-                .GetQuery().Include("Plugin")
+                .GetQuery().Include("Terminal")
+
                 .SingleOrDefault(x => x.Name == name);
 
             if (existingActivityTemplateDO != null)

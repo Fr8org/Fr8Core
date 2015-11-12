@@ -16,35 +16,35 @@ namespace Hub.Services
     public class Event : IEvent
     {
 
-        private readonly IPlugin _plugin;
+        private readonly ITerminal _terminal;
 
         public Event()
         {
  
-            _plugin = ObjectFactory.GetInstance<IPlugin>();
+            _terminal = ObjectFactory.GetInstance<ITerminal>();
         }
-        /// <see cref="IEvent.HandlePluginIncident"/>
-        public void HandlePluginIncident(LoggingDataCm incident)
+        /// <see cref="IEvent.HandleTerminalIncident"/>
+        public void HandleTerminalIncident(LoggingDataCm incident)
         {
-            EventManager.ReportPluginIncident(incident);
-        }
-
-        public void HandlePluginEvent(LoggingDataCm eventDataCm)
-        {
-            EventManager.ReportPluginEvent(eventDataCm);
+            EventManager.ReportTerminalIncident(incident);
         }
 
-        public async Task<string> RequestParsingFromPlugins(HttpRequestMessage request, string pluginName, string pluginVersion)
+        public void HandleTerminalEvent(LoggingDataCm eventDataCm)
         {
-            //get required plugin URL by plugin name and its version
-            string curPluginUrl = _plugin.ParsePluginUrlFor(pluginName, pluginVersion, "events");
+            EventManager.ReportTerminalEvent(eventDataCm);
+        }
+
+        public async Task<string> RequestParsingFromTerminals(HttpRequestMessage request, string terminalName, string terminalVersion)
+        {
+            //get required terminal URL by terminal name and its version
+            string curTerminalUrl = _terminal.ParseTerminalUrlFor(terminalName, terminalVersion, "events");
 
 
             //make POST with request content
-            var result = await new HttpClient().PostAsync(new Uri(curPluginUrl, UriKind.Absolute), request.Content);
+            var result = await new HttpClient().PostAsync(new Uri(curTerminalUrl, UriKind.Absolute), request.Content);
 
             //Salesforce response needs to be acknowledge
-            if (pluginName=="pluginSalesforce")
+            if (terminalName == "terminalSalesforce")
             {
                 string xmlResponse = result.Content.ReadAsAsync<string>().Result;
                 return xmlResponse;
@@ -53,14 +53,14 @@ namespace Hub.Services
             return "ok";
         }
 
-        public async Task<string> RequestParsingFromPluginsDebug(HttpRequestMessage request, string pluginName, string pluginVersion)
+        public async Task<string> RequestParsingFromTerminalsDebug(HttpRequestMessage request, string terminalName, string terminalVersion)
         {
-            //get required plugin URL by plugin name and its version
-            string curPluginUrl = _plugin.ParsePluginUrlFor(pluginName, pluginVersion, "events");
+            //get required terminal URL by terminal name and its version
+            string curTerminalUrl = _terminal.ParseTerminalUrlFor(terminalName, terminalVersion, "events");
 
 
             //make POST with request content
-            var result = await new HttpClient().PostAsync(new Uri(curPluginUrl, UriKind.Absolute), request.Content);
+            var result = await new HttpClient().PostAsync(new Uri(curTerminalUrl, UriKind.Absolute), request.Content);
             return  await result.Content.ReadAsStringAsync();
         }
     }

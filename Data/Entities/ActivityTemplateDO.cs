@@ -20,15 +20,16 @@ namespace Data.Entities
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
         }
 
-        public ActivityTemplateDO(string name, string label, string version, int pluginId) : this()
+        public ActivityTemplateDO(string name, string label, string version, int terminalId) : this()
         {
             this.Name = name;
             this.Label = label;
             this.Version = version;
-            /* We don't need to validate pluginId because of EF chack ForeignKey and if pluginId doesn't exist in table Plugins then 
+            /* We don't need to validate terminalId because of EF chack ForeignKey and if terminalId doesn't exist in table Terminals then 
              * EF will throw 'System.Data.Entity.Infrastructure.DbUpdateException'  */
-            this.PluginID = pluginId;
+            this.TerminalId = terminalId;
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
+
         }
 
         /// <summary>
@@ -37,21 +38,21 @@ namespace Data.Entities
         /// <param name="name"></param>
         /// <param name="version"></param>
         ///<param name="label"></param>
-        /// <param name="pluginName">Name of the new PluginDO</param>
-        /*<param name="baseEndPoint">New PluginDO base end point</param>*/
-        /// <param name="Endpoint">New PluginDO end point</param>
+        /// <param name="terminalName">Name of the new TerminalDO</param>
+        /*<param name="baseEndPoint">New TerminalDO base end point</param>*/
+        /// <param name="Endpoint">New TerminalDO end point</param>
         public ActivityTemplateDO(string name, string version,
-            string pluginName, string endPoint, string label = "") : this()
+            string terminalName, string endPoint, string label = "") : this()
         {
 
             this.Name = name;
             this.Label = label;
             this.Version = version;
 
-            this.Plugin = new PluginDO()
+            this.Terminal = new TerminalDO()
             {
-                Name = pluginName,
-                PluginStatus = PluginStatus.Active,
+                Name = terminalName,
+                TerminalStatus = TerminalStatus.Active,
                 Endpoint = endPoint
             };
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
@@ -82,10 +83,10 @@ namespace Data.Entities
 
         public _ActivityTemplateStateTemplate ActivityTemplateStateTemplate { get; set; }
 
-        [ForeignKey("Plugin")]
-        public int PluginID { get; set; }
-        
-        public virtual PluginDO Plugin { get; set; }
+        [ForeignKey("Terminal")]
+        public int TerminalId { get; set; }
+
+        public virtual TerminalDO Terminal { get; set; }
 
         [Required]
         public ActivityCategory Category { get; set; }

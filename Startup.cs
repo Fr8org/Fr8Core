@@ -29,7 +29,7 @@ namespace HubWeb
             //ConfigureDaemons();
             ConfigureAuth(app);
 
-            await RegisterPluginActions();
+            await RegisterTerminalActions();
 
             app.Use(async (context, next) =>
             {
@@ -127,79 +127,55 @@ namespace HubWeb
         //    }
         //}
 
-        public async Task RegisterPluginActions()
+        public async Task RegisterTerminalActions()
         {
-            List<string> totalRegisteredTerminalNames = new List<string>();
-            var eventReporter = ObjectFactory.GetInstance<EventReporter>();
+            var listRegisteredActivityTemplates = new List<ActivityTemplateDO>();
+            var alertReporter = ObjectFactory.GetInstance<EventReporter>();
+
             var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
+            int count = 0;
             var uri = string.Empty;
             foreach (string url in activityTemplateHosts)
             {
                 try
                 {
                     uri = url.StartsWith("http") ? url : "http://" + url;
-                    uri += "/plugins/discover";
+                    uri += "/terminals/discover";
 
-                    var pluginService = ObjectFactory.GetInstance<IPlugin>(); ;
-                    totalRegisteredTerminalNames.AddRange(await pluginService.RegisterTerminals(uri));
+                    var terminalService = ObjectFactory.GetInstance<ITerminal>(); ;
+                    var activityTemplateList = await terminalService.GetAvailableActions(uri);
+                    foreach (var curItem in activityTemplateList)
+                    {
+                        try
+                        {
+                            new ActivityTemplate().Register(curItem);
+                            listRegisteredActivityTemplates.Add(curItem);
+                            count++;
+                        }
+                        catch (Exception ex)
+                        {
+                            alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                            alertReporter.ActivityTemplateTerminalRegistrationError(
+                                string.Format("Failed to register {0} plugin. Error Message: {1}", curItem.Terminal.Name, ex.Message),
+                                ex.GetType().Name);
+                        }
+
+                    }
                 }
                 catch (Exception ex)
                 {
-                    eventReporter = ObjectFactory.GetInstance<EventReporter>();
-                    eventReporter.ActivityTemplatePluginRegistrationError(
-                        string.Format("Failed terminal service: {0}. Error Message: {1} ", uri, ex.Message),
+                    alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                    alertReporter.ActivityTemplateTerminalRegistrationError(
+                        string.Format("Failed plugin service: {0}. Error Message: {1} ", uri, ex.Message),
                         ex.GetType().Name);
 
                 }
             }
-            eventReporter.ActivityTemplatesSuccessfullyRegistered(totalRegisteredTerminalNames.Count);
 
-            SetInactiveUndiscoveredActivityTemplates(totalRegisteredTerminalNames);
+            UpdateActivityTemplates(listRegisteredActivityTemplates);
+            alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
         }
 
-        public void SetInactiveUndiscoveredActivityTemplates(List<string> discoveredActivityTemplateNames)
-        {
-            try
-            {
-                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var undiscoveredTemplates = uow.ActivityTemplateRepository.
-                    GetQuery().
-                    Where(at => !discoveredActivityTemplateNames.Contains(at.Name));
-
-                    foreach (var activityTemplate in undiscoveredTemplates)
-                    {
-                        activityTemplate.ActivityTemplateState = Data.States.ActivityTemplateState.Inactive;
-                    }
-                    uow.SaveChanges();
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.GetLogger().Error("Error setting undiscovered activity templates inactive ", e);
-            }
-        }
-
-        public void SetAllActivityTemplatesInactive()
-        {
-            try
-            {
-                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var activityTemplateList = uow.ActivityTemplateRepository.GetAll();
-                    foreach(var item in activityTemplateList)
-                    {
-                        item.ActivityTemplateState = ActivityTemplateState.Inactive;
-                    }
-
-                    uow.SaveChanges();
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.GetLogger().Error("Error setting activity templates inactive ", e);
-            }
-        }
 
         public bool CheckForActivityTemplate(string templateName)
         {
@@ -229,5 +205,84 @@ namespace HubWeb
         {
             return WebApp.Start<Startup>(url: url);
         }
+
+        private void UpdateActivityTemplates(List<ActivityTemplateDO> listRegisteredItems)
+        {
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var needSave = false;
+                var repository = uow.ActivityTemplateRepository;
+                var listRepositaryItems = repository.GetAll().ToList();
+                foreach (var repositaryItem in listRepositaryItems)
+                {
+                    var registeredItem = listRegisteredItems.FirstOrDefault(x => x.Name.ToLower().Equals(repositaryItem.Name.ToLower()));
+                    if (!object.Equals(registeredItem, default(ActivityTemplateDO)))
+                    {
+                        if (repositaryItem.Label != repositaryItem.Label)
+                        {
+                            repositaryItem.Label = registeredItem.Label;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.MinPaneWidth != registeredItem.MinPaneWidth)
+                        {
+                            repositaryItem.MinPaneWidth = registeredItem.MinPaneWidth;
+                            needSave = true;
+                        }
+
+                        if (registeredItem.WebServiceId != null && 
+                            repositaryItem.WebServiceId != registeredItem.WebServiceId)
+                        {   
+                            repositaryItem.WebServiceId = registeredItem.WebServiceId;
+                            needSave = true;
+                        }
+
+                        if (registeredItem.TerminalId > 0 &&
+                            repositaryItem.TerminalId != registeredItem.TerminalId)
+                        {
+                            repositaryItem.TerminalId = registeredItem.TerminalId;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.Version != registeredItem.Version)
+                        {
+                            repositaryItem.Version = registeredItem.Version;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.Category != registeredItem.Category)
+                        {
+                            repositaryItem.Category = registeredItem.Category;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.AuthenticationType != registeredItem.AuthenticationType)
+                        {
+                            repositaryItem.AuthenticationType = registeredItem.AuthenticationType;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.ComponentActivities != registeredItem.ComponentActivities)
+                        {
+                            repositaryItem.ComponentActivities = registeredItem.ComponentActivities;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.Tags != registeredItem.Tags)
+                        {
+                            repositaryItem.Tags = registeredItem.Tags;
+                            needSave = true;
+                        }
+                        
+                    }
+                }
+
+                if (needSave)
+                {
+                    uow.SaveChanges();
+                }
+            }
+        }
+
     }
 }

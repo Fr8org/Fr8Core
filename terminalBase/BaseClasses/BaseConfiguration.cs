@@ -17,14 +17,14 @@ namespace TerminalBase.BaseClasses
     {
         protected HttpConfiguration _configuration = new HttpConfiguration();
 
-        protected virtual void ConfigureProject(bool selfHost, Action<ConfigurationExpression> pluginStructureMapRegistryConfigExpression)
+        protected virtual void ConfigureProject(bool selfHost, Action<ConfigurationExpression> terminalStructureMapRegistryConfigExpression)
         {
             if (!selfHost)
             {
                 ObjectFactory.Initialize();
                 ObjectFactory.Configure(StructureMapBootStrapper.LiveConfiguration);
             }
-            ObjectFactory.Configure(pluginStructureMapRegistryConfigExpression);
+            ObjectFactory.Configure(terminalStructureMapRegistryConfigExpression);
 
             if (selfHost)
             {
@@ -46,12 +46,12 @@ namespace TerminalBase.BaseClasses
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }
 
-        protected virtual void StartHosting(string pluginName)
+        protected virtual void StartHosting(string terminalName)
         {
             Task.Run(() =>
             {
-                BasePluginController curController = new BasePluginController();
-                curController.AfterStartup(pluginName);
+                BaseTerminalController curController = new BaseTerminalController();
+                curController.AfterStartup(terminalName);
             });
         }
 

@@ -17,7 +17,7 @@ using terminalSalesforce.Services;
 
 namespace terminalSalesforce
 {
-    public class PluginSalesforceStructureMapBootstrapper
+    public class TerminalSalesforceStructureMapBootstrapper
     {
          public enum DependencyType
          {
