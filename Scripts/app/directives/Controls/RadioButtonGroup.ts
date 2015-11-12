@@ -63,7 +63,7 @@ module dockyard.directives.radioButtonGroup {
 
     export interface IRadioButtonOptionScope extends ng.IScope {
         field: model.RadioButtonOption;
-        groupName: string,
+        groupName: string;
         changeSelection: (radio: model.RadioButtonOption) => void;
     }
 

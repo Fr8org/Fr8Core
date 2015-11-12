@@ -43,6 +43,35 @@
         </div>
     </div>
     <!-- END MAIN CONTENT -->
+    
+    <div class="well well-lg">
+        <drop-down-list-box field='testField1' data-field-name='{{::testField1.name}}'></drop-down-list-box>
+        <hr />
+        <drop-down-list-box field='testField2' data-field-name='{{::testField2.name}}'></drop-down-list-box>
+    </div>
+    <div class="well well-lg">
+        <label class='control-label'>{{::textField1.label}}</label>
+        <input type='text' ng-model='textField1.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
+                ng-required='textField1.required' data-field-name='{{::textField1.name}}' id='pca__txt__{{::textField1.name | validId}}'
+                class='form-control form-control-focus' name='pca__txt__{{::textField1.name | validId}}' stop-click-propagation>
+        <hr />
 
+        <label class='control-label'>{{::textField2.label}}</label>
+        <input type='text' ng-model='textField2.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
+                ng-required='textField2.required' data-field-name='{{::textField2.name}}' id='pca__txt__{{::textField2.name | validId}}'
+                class='form-control form-control-focus' name='pca__txt__{{::textField2.name | validId}}' stop-click-propagation>
+
+    </div>
+    <div class="well well-lg">
+        <text-source data-field-name='{{::textSource1.name}}' field="textSource1"></text-source>
+        <hr />
+        <text-source data-field-name='{{::textSource2.name}}' field="textSource2"></text-source>
+    </div>
+
+    <div class="well well-lg">
+        <file-picker field='filePicker1'></file-picker>
+        <hr />
+        <file-picker field='filePicker2'></file-picker>
+    </div>
     <pane-select-action></pane-select-action>
 </div>

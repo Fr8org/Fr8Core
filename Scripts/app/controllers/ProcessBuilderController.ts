@@ -23,6 +23,18 @@ module dockyard.controllers {
         addAction(): void;
         deleteAction: (action: model.ActionDTO) => void;
         selectAction(action): void;
+
+        testField1: model.DropDownListControlDefinitionDTO;
+        testField2: model.DropDownListControlDefinitionDTO;
+
+        textField1: model.TextBoxControlDefinitionDTO;
+        textField2: model.TextBoxControlDefinitionDTO;
+
+        textSource1: model.TextSource;
+        textSource2: model.TextSource;
+
+        filePicker1: model.FileControlDefinitionDTO;
+        filePicker2: model.FileControlDefinitionDTO;
     }
 
     //Setup aliases
@@ -84,6 +96,95 @@ module dockyard.controllers {
                 if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
                     this.selectAction(action);
             }
+
+            $scope.testField1 = {
+                listItems: [{ key: 'd1', value: 'd1' }, { key: 'd2', value: 'd2' }, { key: 'd3', value: 'd3' }],
+                source: {
+                    manifestType: 'testManifest',
+                    label: 'testLabel'
+                },
+                type: 'DropDownList',
+                fieldLabel: 'DropDownList Test',
+                name: 'DropDownList',
+                events: [],
+                value: 'd3'
+            };
+            $scope.testField2 = {
+                listItems: [{ key: 'dd1', value: 'dd1' }, { key: 'dd2', value: 'dd2' }, { key: 'dd3', value: 'dd3' }],
+                source: {
+                    manifestType: 'testManifest',
+                    label: 'testLabel'
+                },
+                type: 'DropDownList',
+                fieldLabel: 'DropDownList Test',
+                name: 'DropDownList',
+                events: [],
+                value: 'dd3'
+            };
+
+            $scope.textField1 = {
+                required: true,
+                type: 'TextBox',
+                fieldLabel: 'test',
+                name: 'test',
+                events: [],
+                value: 'textbox1'
+            };
+
+            $scope.textField2 = {
+                required: true,
+                type: 'TextBox2',
+                fieldLabel: 'test2',
+                name: 'test',
+                events: [],
+                value: 'textbox2'
+            };
+
+            $scope.textSource1 = {
+                listItems: [{ key: 'ts1', value: 'ts1' }, { key: 'ts2', value: 'ts2' }, { key: 'ts3', value: 'ts3' }],
+                source: {
+                    manifestType: 'testManifest',
+                    label: 'testLabel'
+                },
+                type: 'DropDownList',
+                fieldLabel: 'DropDownList Test',
+                name: 'DropDownList',
+                events: [],
+                value: 'ts2',
+                initialLabel: 'test',
+                valueSource: 'asdasds'
+            };
+
+            $scope.textSource2 = {
+                listItems: [{ key: 'tts1', value: 'tts1' }, { key: 'tts2', value: 'tts2' }, { key: 'tts3', value: 'tts3' }],
+                source: {
+                    manifestType: 'testManifest',
+                    label: 'testLabel'
+                },
+                type: 'DropDownList',
+                fieldLabel: 'DropDownList Test',
+                name: 'DropDownList',
+                events: [],
+                value: 'tts3',
+                initialLabel: 'test',
+                valueSource: 'asdasd23'
+            };
+
+            $scope.filePicker1 = {
+                type: 'FilePicker',
+                fieldLabel: 'File Test1',
+                name: 'fileTest1',
+                events: [],
+                value: ''
+            };
+
+            $scope.filePicker2 = {
+                type: 'FilePicker',
+                fieldLabel: 'File Test1',
+                name: 'fileTest1',
+                events: [],
+                value: ''
+            };
         }
 
         /*
