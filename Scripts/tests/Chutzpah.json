@@ -82,6 +82,9 @@
             "Path": "../../bower_components/angular-mocks/angular-mocks.js"
         },
         {
+            "Path": "../../bower_components/sinon/lib/sinon.js"
+        },
+        {
             "Path": "../app/e2ehttpBackend.js"
         },
         {
