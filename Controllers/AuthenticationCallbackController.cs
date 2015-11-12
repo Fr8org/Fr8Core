@@ -27,18 +27,11 @@ namespace HubWeb.Controllers
 
         [HttpGet]
         public async Task<ActionResult> ProcessSuccessfulOAuthResponse(
-<<<<<<< HEAD
-            [Bind(Prefix = "dockyard_terminal")] string terminalName,
-            [Bind(Prefix = "version")] string terminalVersion)
+            string terminalName,
+            string terminalVersion)
         {
+
             if (string.IsNullOrEmpty(terminalName) || string.IsNullOrEmpty(terminalVersion))
-=======
-            string pluginName,
-            string pluginVersion)
-        {
-            
-            if (string.IsNullOrEmpty(pluginName) || string.IsNullOrEmpty(pluginVersion))
->>>>>>> dev
             {
                 throw new ApplicationException("TerminalName or TerminalVersion is not specified.");
             }

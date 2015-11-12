@@ -10,10 +10,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
-<<<<<<< HEAD
 using Data.Entities;
-=======
->>>>>>> dev
 
 namespace terminalDocuSign.Services
 {
@@ -71,15 +68,10 @@ namespace terminalDocuSign.Services
         /// </summary>
         /// <param name="docuSignTemplateId">DocuSign TemplateId.</param>
         /// <param name="docuSignAuthDTO">DocuSign authentication token.</param>
-<<<<<<< HEAD
         /// <param name="curActionDO">ActionDO object representing the current action. The crate with extracted 
         /// fields will be added to this Action replacing any older instances of that crate.</param>
         public void ExtractFieldsAndAddToCrate(string docuSignTemplateId, DocuSignAuthDTO docuSignAuthDTO, ActionDO curActionDO)
-=======
-        /// <param name="curActionDTO">ActionDTO object representing the current action. The crate with extracted 
-        /// fields will be added to this Action replacing any older instances of that crate.</param>
-        public void ExtractFieldsAndAddToCrate(string docuSignTemplateId, DocuSignAuthDTO docuSignAuthDTO, ActionDTO curActionDTO)
->>>>>>> dev
+
         {
             if (!string.IsNullOrEmpty(docuSignTemplateId))
             {
@@ -96,11 +88,8 @@ namespace terminalDocuSign.Services
                         Value = f.Value
                     });
 
-<<<<<<< HEAD
                 using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
-=======
-                using (var updater = Crate.UpdateStorage(() => curActionDTO.CrateStorage))
->>>>>>> dev
+
                 {
                     updater.CrateStorage.RemoveByManifestId((int) MT.StandardDesignTimeFields);
                     updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", fieldCollection.ToArray()));

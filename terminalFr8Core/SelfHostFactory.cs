@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-﻿
-=======
->>>>>>> dev
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
@@ -20,11 +16,8 @@ namespace terminalFr8Core
                 return new Type[] {
                     typeof(Controllers.ActionController),
                     typeof(Controllers.EventController),
-<<<<<<< HEAD
                     typeof(Controllers.TerminalController)
-=======
-                    typeof(Controllers.PluginController)
->>>>>>> dev
+
                 };
             }
         }
@@ -39,13 +32,8 @@ namespace terminalFr8Core
                 config.MapHttpAttributeRoutes();
 
                 config.Routes.MapHttpRoute(
-<<<<<<< HEAD
                     name: "TerminalDocuSign",
                     routeTemplate: "terminal_docusign/{controller}/{id}",
-=======
-                    name: "PluginDocuSign",
-                    routeTemplate: "plugin_docusign/{controller}/{id}",
->>>>>>> dev
                     defaults: new { id = RouteParameter.Optional }
                 );
 

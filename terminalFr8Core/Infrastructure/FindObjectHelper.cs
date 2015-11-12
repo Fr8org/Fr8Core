@@ -4,16 +4,13 @@ using System.Data;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Data.Entities;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Enums;
 using TerminalBase.BaseClasses;
-<<<<<<< HEAD
-using Data.Entities;
-=======
->>>>>>> dev
 using Utilities.Configuration.Azure;
 
 namespace terminalFr8Core.Infrastructure

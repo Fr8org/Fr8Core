@@ -14,7 +14,7 @@ using Data.States;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Moq;
-using pluginIntegrationTests.Fixtures;
+using terminalIntegrationTests.Fixtures;
 using terminalExcel.Actions;
 using terminalExcel.Fixtures;
 using terminalExcel.Infrastructure;

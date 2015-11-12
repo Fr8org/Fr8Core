@@ -270,9 +270,9 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        protected override async Task<CrateDTO> ValidateAction(ActionDTO curActionDTO)
+        protected async Task<CrateDTO> ValidateAction(ActionDO curActionDO)
         {
-            return await ValidateByStandartDesignTimeFields(curActionDTO, Crate.GetStorage(curActionDTO).FirstCrate<StandardDesignTimeFieldsCM>(x => x.Label == "Queryable Criteria").Content);
+            return await ValidateByStandartDesignTimeFields(curActionDO, Crate.GetStorage(curActionDO).FirstCrate<StandardDesignTimeFieldsCM>(x => x.Label == "Queryable Criteria").Content);
         }
 
         /// <summary>

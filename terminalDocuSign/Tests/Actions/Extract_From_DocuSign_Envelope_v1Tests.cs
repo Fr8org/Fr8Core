@@ -105,10 +105,11 @@ namespace terminalDocuSign.Tests.Actions
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
-            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
-            
+            curActionDTO.AuthToken = new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             //Act
-            var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDO,curActionDTO.AuthToken, "6ef29903-e405-4a24-8b92-a3a3ae8d1824");
+            var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDO, curAuthTokenDO, "6ef29903-e405-4a24-8b92-a3a3ae8d1824");
 
             //Assert
             Assert.AreEqual(2, result.AllValues().Count());

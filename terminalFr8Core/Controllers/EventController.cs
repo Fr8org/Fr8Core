@@ -9,11 +9,8 @@ namespace terminalFr8Core.Controllers
         [Route("events")]
         public void ProcessIncomingNotification()
         {
-<<<<<<< HEAD
             //Implement the processing logic of dockyard core terminal
-=======
-            //Implement the processing logic of dockyard core plugin
->>>>>>> dev
+
         }
     }
 }

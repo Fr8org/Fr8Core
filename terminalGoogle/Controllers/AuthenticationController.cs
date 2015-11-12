@@ -11,7 +11,7 @@ using TerminalBase.BaseClasses;
 namespace terminalGoogle.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BasePluginController
+    public class AuthenticationController : BaseTerminalController
     {
         private const string curPlugin = "terminalGoogle";
 

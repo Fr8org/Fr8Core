@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-﻿
-=======
->>>>>>> dev
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,20 +12,11 @@ namespace terminalFr8Core
     {
         public static void Register(HttpConfiguration config)
         {
-<<<<<<< HEAD
             BaseTerminalWebApiConfig.Register(config);
-=======
-            BasePluginWebApiConfig.Register(config);
->>>>>>> dev
-
             config.Routes.MapHttpRoute(
                 name: "TerminalFr8CoreServer",
                 routeTemplate: "terminalFr8Core/{controller}/{id}"
             );
         }
-<<<<<<< HEAD
     }
-=======
     }
->>>>>>> dev
-}

@@ -205,7 +205,7 @@
     <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatus.cs" />
     <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatuses.cs" />
     <Compile Include="Infrastructure\IndexManager.cs" />
-    <Compile Include="Infrastructure\PluginDataAutoMapperBootStrapper.cs" />
+    <Compile Include="Infrastructure\TerminalDataAutoMapperBootStrapper.cs" />
     <Compile Include="DataTransferObjects\RecipientDTO.cs" />
     <Compile Include="DataTransferObjects\RecipientsDTO.cs" />
     <Compile Include="DocuSignUtils.cs" />

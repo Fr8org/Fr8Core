@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Data.Entities;
 using Data.Interfaces.Manifests;
 using Data.States;
+using Google.GData.Extensions;
 using Utilities.Configuration.Azure;
 
 namespace terminalGoogle.Controllers
 {
-    [RoutePrefix("plugins")]
-    public class PluginController : ApiController
+    [RoutePrefix("terminals")]
+    public class TerminalController : ApiController
     {
         /// <summary>
         /// Plugin discovery infrastructure.
@@ -18,12 +20,12 @@ namespace terminalGoogle.Controllers
         [HttpGet]
         [Route("discover")]
         [ResponseType(typeof(StandardFr8TerminalCM))]
-        public IHttpActionResult DiscoverPlugins()
+        public IHttpActionResult DiscoverTerminals()
         {
-            var plugin = new PluginDO
+            var terminal = new TerminalDO()
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
-                PluginStatus = PluginStatus.Active,
+                TerminalStatus = TerminalStatus.Active,
                 Name = "terminalGoogle",
                 Version = "1"
             };
@@ -34,14 +36,14 @@ namespace terminalGoogle.Controllers
                 Label = "Extract Spreadsheet Data",
                 Version = "1",
                 Category = ActivityCategory.Receivers,
-                Plugin = plugin,
+                Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
                 MinPaneWidth = 300
             };
 
             return Json(new StandardFr8TerminalCM()
             {
-                Definition = plugin,
+                Definition = terminal,
                 Actions = new List<ActivityTemplateDO>
                 {
                     extractDataAction
