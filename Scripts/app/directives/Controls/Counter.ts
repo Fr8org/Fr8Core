@@ -29,7 +29,7 @@ module dockyard.directives.counter {
 
         private minValue: number;
 
-        constructor($parse: ng.IParseService) {
+        constructor() {
             Counter.prototype.link = (
                 scope: ICounterScope,
                 element: ng.IAugmentedJQuery,
@@ -61,11 +61,11 @@ module dockyard.directives.counter {
 
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {
-            var directive = ($parse: ng.IParseService) => {
-                return new Counter($parse);
+            var directive = () => {
+                return new Counter();
             };
 
-            directive['$inject'] = ['$parse'];
+            directive['$inject'] = [];
             return directive;
         }
     }

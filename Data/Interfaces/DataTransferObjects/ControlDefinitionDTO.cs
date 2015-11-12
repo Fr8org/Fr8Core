@@ -234,12 +234,6 @@ namespace Data.Interfaces.DataTransferObjects
 
     public class DurationControlDefinitionDTO : ControlDefinitionDTO
     {
-        ///TODO
-        /// <summary>
-        /// Where the button was clicked before the current /configure request was sent.
-        /// Used to recognize 'click' event on server-side.
-        /// </summary>
-
         public DurationControlDefinitionDTO()
         {
             Type = ControlTypes.Duration;
