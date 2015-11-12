@@ -20,6 +20,7 @@ module dockyard.tests.utils.fixtures {
 
         public static textBlock: model.TextBlock = new model.TextBlock('<span>teststs</span>', 'well well-lg');
 
+
         public static configurationControls = {
             "fields":
             [
