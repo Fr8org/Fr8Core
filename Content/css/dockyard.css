@@ -477,5 +477,5 @@ input[type=radio]:checked ~ label .control-label-hidden {
 }
 
 .counter-input {
-    width: 40px;
+    width: 42px;
 }
