@@ -9,5 +9,6 @@ namespace Data.Interfaces
     /// </summary>
     public interface IFileRepository : IGenericRepository<FileDO>
     {
+
     }
 }
