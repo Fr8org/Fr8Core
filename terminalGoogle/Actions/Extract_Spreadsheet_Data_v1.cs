@@ -139,7 +139,7 @@ namespace terminalGoogle.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Select a Google Spreadsheet",
-                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 },
                 ListItems = spreadsheets
                     .Select(pair => new ListItem()
@@ -204,7 +204,7 @@ namespace terminalGoogle.Actions
                     .ToArray();
 
             var hasDesignTimeFields = curActionDTO.CrateStorage.Crates
-                .Any(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                .Any(x => x.ManifestType == CrateManifestTypes.StandardDesignTimeFields
                     && x.Label == "Worksheet Column Headers");
 
             if (spreadsheetsFromUserSelection.Any() || hasDesignTimeFields)
@@ -228,10 +228,10 @@ namespace terminalGoogle.Actions
             var spreadsheets = _google.EnumerateSpreadsheetsUris(authDTO);
             var configControlsCrate = CreateConfigurationControlsCrate(spreadsheets, spreadsheetsFromUserSelection);
 
-            // RFemove previously created configuration control crate
+            // Remove previously created configuration control crate
             using (var updater = Crate.UpdateStorage(curActionDTO))
             {
-                updater.CrateStorage.RemoveByManifestId(CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
+                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
                 updater.CrateStorage.Add(configControlsCrate);
             }
 
