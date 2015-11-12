@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using Data.Entities;
 using Data.Interfaces;
-using System.IO;
-using System;
+using Utilities.Configuration.Azure;
+using Microsoft.WindowsAzure;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Data.Repositories
 {
@@ -10,17 +14,51 @@ namespace Data.Repositories
     {
         public FileRepository(IUnitOfWork uow) : base(uow)
         {
+
         }
 
-        public string SaveRemoteFile(MemoryStream ms, string v)
+        public string SaveRemoteFile(Stream curRemoteFile, string curFileName)
         {
-            throw new NotImplementedException();
+            var blobContainer = GetDefaultBlobContainer();
+            CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(curFileName);
+            blockBlob.UploadFromStream(curRemoteFile);
+
+            return blockBlob.Uri.AbsoluteUri;
         }
 
-        public void DeleteRemoteFile(string url)
+        public byte[] GetRemoteFile(string curBlobUrl)
         {
-            throw new NotImplementedException();
+            CloudBlobClient curCloudBlobClient = GetDefaultBlobContainer().ServiceClient;
+            var curBlob = new CloudBlockBlob(new Uri(curBlobUrl), curCloudBlobClient.Credentials);
+            curBlob.FetchAttributes();
+
+            byte[] content = new byte[curBlob.Properties.Length];
+            curBlob.DownloadToByteArray(content, 0, options: curCloudBlobClient.DefaultRequestOptions);
+
+            return content;
+        }
+
+        public bool DeleteRemoteFile(string curBlobUrl)
+        {
+            var curBlob = new CloudBlockBlob(new Uri(curBlobUrl), GetDefaultBlobContainer().ServiceClient.Credentials);
+            return curBlob.DeleteIfExists();
+        }
+
+        protected virtual CloudBlobContainer GetDefaultBlobContainer()
+        {
+            const string azureStorageDefaultConnectionString = "AzureStorageDefaultConnectionString";
+            const string defaultAzureStorageContainer = "DefaultAzureStorageContainer";
+
+            string containerName = CloudConfigurationManager.GetSetting(defaultAzureStorageContainer);
+
+            CloudStorageAccount storageAccount =
+                CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting(azureStorageDefaultConnectionString));
+
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
+
+            return container;
         }
     }
 }
- 
