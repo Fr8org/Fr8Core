@@ -202,7 +202,7 @@ namespace terminalGoogle.Actions
 
 
             var hasDesignTimeFields = Crate.GetStorage(curActionDO)
-                .Any(x => x.ManifestType == CrateManifestTypes.StandardDesignTimeFields
+                .Any(x => x.IsOfType<StandardConfigurationControlsCM>()
                     && x.Label == "Worksheet Column Headers");
 
             if (spreadsheetsFromUserSelection.Any() || hasDesignTimeFields)
@@ -227,13 +227,13 @@ namespace terminalGoogle.Actions
             // RFemove previously created configuration control crate
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                updater.CrateStorage.RemoveByManifestId(CrateManifestTypes.StandardConfigurationControls);
+                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
                 updater.CrateStorage.Add(configControlsCrate);
             }
 
             if (!string.IsNullOrEmpty(spreadsheetsFromUserSelection))
             {
-                return await TransformSpreadsheetDataToStandardTableDataCrate(curActionDO, spreadsheetsFromUserSelection);
+                return await TransformSpreadsheetDataToStandardTableDataCrate(curActionDO, authTokenDO, spreadsheetsFromUserSelection);
             }
             else
             {

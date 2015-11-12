@@ -168,7 +168,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
-    <Compile Include="Controllers\PluginController.cs" />
+    <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="DataTransferObjects\GoogleAuthDTO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
