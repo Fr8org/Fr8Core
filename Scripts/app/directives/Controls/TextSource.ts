@@ -6,11 +6,15 @@ module dockyard.directives.textSource {
         field: model.TextSource;
         change: () => (fieldName: string) => void;
         onChange: any;
-
+        uniqueDirectiveId: number;
     }
 
+    
     export function TextSource(): ng.IDirective {
-        var controller = ['$scope', function ($scope: ITextSourceScope) {
+        
+        var uniqueDirectiveId = 1;
+        var controller = ['$scope', ($scope: ITextSourceScope) => {
+            $scope.uniqueDirectiveId = ++uniqueDirectiveId;
             $scope.onChange = (fieldName: string) => {
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field.name);

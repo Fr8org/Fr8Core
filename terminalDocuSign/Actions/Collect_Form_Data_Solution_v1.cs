@@ -52,7 +52,7 @@ namespace terminalDocuSign.Actions
                         (UseStandardForm = new RadioButtonOption
                         {
                             Name = "UseStandardForm",
-                            Value = "Use standard form:",
+                            Value = "Use standard form",
                             Controls = new List<ControlDefinitionDTO>
                             {
                                 (StandardFormsList = new DropDownListControlDefinitionDTO
@@ -84,7 +84,7 @@ namespace terminalDocuSign.Actions
                 {
                     Name = "FinalActionsList",
                     Required = true,
-                    Label = "2:  After the forms are completed, where do you want to collect the data?",
+                    Label = "2.  After the forms are completed, where do you want to collect the data?",
                     Source = new FieldSourceDTO
                     {
                         Label = "AvailableActions",

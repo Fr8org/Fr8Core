@@ -105,13 +105,12 @@ namespace terminalDocuSign.Tests.Actions
             curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
 
             //Act
-            var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDTO, "8fcb42d3-1572-44eb-acb1-0fffa4ca65de");
+            var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDTO, "6ef29903-e405-4a24-8b92-a3a3ae8d1824");
 
             //Assert
-            Assert.AreEqual(3, result.AllValues().Count());
+            Assert.AreEqual(2, result.AllValues().Count());
             Assert.AreEqual("Dohemann", result.AllValues().FirstOrDefault(x => x.Key == "Doctor").Value);
             Assert.AreEqual("Gout", result.AllValues().FirstOrDefault(x => x.Key == "Condition").Value);
-            Assert.AreEqual("test", result.AllValues().FirstOrDefault(x => x.Key == "Text 5").Value);
         }
 
     }
