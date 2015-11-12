@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Data.Entities;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -17,10 +18,10 @@ namespace terminalFr8Core.Infrastructure
     internal class FindObjectHelper
     {
         public async Task<Dictionary<string, DbType>> ExtractColumnTypes(
-            BasePluginAction action, ActionDTO actionDTO)
+            BaseTerminalAction action, ActionDO actionDO)
         {
             var upstreamCrates = await action.GetCratesByDirection<StandardDesignTimeFieldsCM>(
-                actionDTO.Id,
+                actionDO.Id,
                 GetCrateDirection.Upstream
             );
 

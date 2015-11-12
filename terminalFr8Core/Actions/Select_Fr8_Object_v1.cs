@@ -12,11 +12,12 @@ using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
+using Data.Entities;
 
 namespace terminalFr8Core.Actions
 {
     // The generic interface inheritance.
-    public class Select_Fr8_Object_v1 : BasePluginAction
+    public class Select_Fr8_Object_v1 : BaseTerminalAction
     {
         public class ActionUi : StandardConfigurationControlsCM
         {
@@ -43,38 +44,38 @@ namespace terminalFr8Core.Actions
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields,
                     }
                 };
-                
+
                 Controls.Add(Selected_Fr8_Object);
             }
         }
 
         // configure the action will return the initial UI crate 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO = null)
         {
-            return await ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        protected override Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var crateDesignTimeFields = PackFr8ObjectCrate();
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
                 updater.CrateStorage.Add(crateDesignTimeFields);
             }
 
-            return Task.FromResult(curActionDTO);
+            return Task.FromResult(curActionDO);
         }
 
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 var confControls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-                
-                if (confControls != null )
+
+                if (confControls != null)
                 {
                     var ui = new ActionUi();
 
@@ -97,12 +98,12 @@ namespace terminalFr8Core.Actions
                 }
             }
 
-            return await Task.FromResult(curActionDTO);
+            return await Task.FromResult(curActionDO);
         }
-        
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -140,7 +141,7 @@ namespace terminalFr8Core.Actions
             using (var response = await httpClient.GetAsync(url))
             {
                 var content = await response.Content.ReadAsAsync<CrateDTO>();
-                
+
                 return Crate.FromDto(content);
             }
         }

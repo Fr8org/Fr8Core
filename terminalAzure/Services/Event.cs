@@ -9,7 +9,7 @@ namespace terminalAzure.Services
     {
         public void Process(string curExternalEventPayload)
         {
-            //Process external event payload from Azure Sql Server plugin
+            //Process external event payload from Azure Sql Server terminal
 
         }
     }

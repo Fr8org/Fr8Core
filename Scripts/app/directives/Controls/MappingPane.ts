@@ -21,12 +21,12 @@ module dockyard.directives {
                 function ($scope: IMappingPaneScope, crateHelper: services.CrateHelper) {
                     var upStreamCrate = crateHelper.findByLabel(
                         $scope.currentAction.crateStorage,
-                        'Upstream Plugin-Provided Fields'
+                        'Upstream Terminal-Provided Fields'
                         );
 
                     var downStreamCrate = crateHelper.findByLabel(
                         $scope.currentAction.crateStorage,
-                        'Downstream Plugin-Provided Fields'
+                        'Downstream Terminal-Provided Fields'
                         );
 
                     var upStreamFields = [];

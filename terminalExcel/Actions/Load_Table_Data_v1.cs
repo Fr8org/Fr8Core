@@ -20,7 +20,7 @@ using terminalExcel.Infrastructure;
 
 namespace terminalExcel.Actions
 {
-    public class Load_Table_Data_v1 : BasePluginAction
+    public class Load_Table_Data_v1 : BaseTerminalAction
     {
         private class ActionUi : StandardConfigurationControlsCM
         {
@@ -70,16 +70,14 @@ namespace terminalExcel.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
-            return await CreateStandardPayloadDataFromStandardTableData(curActionDTO);
+            return await CreateStandardPayloadDataFromStandardTableData(curActionDO, containerId);
         }
 
-        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDTO curActionDTO)
+        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, int containerId)
         {
-            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
-
-            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var processPayload = await GetProcessPayload(containerId);
 
             var tableDataMS = await GetTargetTableData(
                 curActionDO.Id,
@@ -162,16 +160,15 @@ namespace terminalExcel.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
-            if (curActionDTO.Id > 0)
+            if (curActionDO.Id > 0)
             {
-                ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
                 //Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
                 Crate upstreamFieldsCrate = await MergeUpstreamFields(curActionDO.Id, "Select Excel File");
 
-                using (var updater = Crate.UpdateStorage(curActionDTO))
+                using (var updater = Crate.UpdateStorage(curActionDO))
                 {
                     updater.CrateStorage.Clear();
                     updater.CrateStorage.Add(upstreamFieldsCrate);
@@ -182,16 +179,15 @@ namespace terminalExcel.Actions
             {
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
             }
-
-            return curActionDTO;
+            return curActionDO;
         }
 
         /// <summary>
         /// If there's a value in select_file field of the crate, then it is a followup call.
         /// </summary>
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            var storage = Crate.GetStorage(curActionDTO);
+            var storage = Crate.GetStorage(curActionDO);
 
             var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
                 .Where(x =>
@@ -212,9 +208,9 @@ namespace terminalExcel.Actions
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
-            var storage = Crate.GetStorage(curActionDTO);
+            var storage = Crate.GetStorage(curActionDO);
             var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
                 .Select(x =>
                 {
@@ -229,7 +225,7 @@ namespace terminalExcel.Actions
                 throw new AmbiguityException();
             }
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
                 updater.CrateStorage.Add(PackControls(new ActionUi(true)));
@@ -240,7 +236,7 @@ namespace terminalExcel.Actions
                     TransformExcelFileDataToStandardTableDataCrate(storage, selectedFilePath);
             }
 
-                return curActionDTO;
+                return curActionDO;
             }
         }
 

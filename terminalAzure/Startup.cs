@@ -28,7 +28,7 @@ namespace terminalAzure
 
         public void Configuration(IAppBuilder app, bool selfHost)
         {
-            ConfigureProject(selfHost, PluginAzureSqlServerStructureMapRegistries.LiveConfiguration);
+            ConfigureProject(selfHost, TerminalAzureSqlServerStructureMapRegistries.LiveConfiguration);
             
             RoutesConfig.Register(_configuration);
             //if (selfHost)
@@ -48,7 +48,7 @@ namespace terminalAzure
 
             if (!selfHost)
             {
-                StartHosting("plugin_azure_sql_server");
+                StartHosting("terminal_azure_sql_server");
             }
         }
 
@@ -57,7 +57,7 @@ namespace terminalAzure
             return new Type[] {
                     typeof(Controllers.ActionController),
                     typeof(Controllers.EventController),
-                    typeof(Controllers.PluginController)
+                    typeof(Controllers.TerminalController)
                 };
         }
 

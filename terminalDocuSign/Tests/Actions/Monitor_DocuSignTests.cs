@@ -14,6 +14,8 @@ using terminalDocuSign.Tests.Fixtures;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using Utilities.Configuration.Azure;
+using AutoMapper;
+using Data.Entities;
 
 
 namespace terminalDocuSign.Tests.Actions
@@ -27,8 +29,8 @@ namespace terminalDocuSign.Tests.Actions
         public Monitor_DocuSignTests()
         {
             base.SetUp();
-            PluginDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
-            PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
+            TerminalDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
+            TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
 
             _monitor_DocuSign = new Monitor_DocuSign_v1();
@@ -39,10 +41,11 @@ namespace terminalDocuSign.Tests.Actions
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
-            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
-
+            curActionDTO.AuthToken = new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
+            AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
             //Act
-            var result = await _monitor_DocuSign.Configure(curActionDTO);
+            var result = await _monitor_DocuSign.Configure(curActionDO,curAuthTokenDO);
 
             //Assert
             var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
@@ -79,10 +82,11 @@ namespace terminalDocuSign.Tests.Actions
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.TestActionDTO3();
-            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
-
+            curActionDTO.AuthToken = new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
+            AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
             //Act
-            var result = _monitor_DocuSign.Configure(curActionDTO);
+            var result = _monitor_DocuSign.Configure(curActionDO,curAuthTokenDO);
 
             //Assert
 //            Assert.AreEqual(result.Result.CrateStorage.CrateDTO.Count, result.Result.CrateStorage.CrateDTO.Count);

@@ -13,21 +13,21 @@ namespace terminalSendGrid.Controllers
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private const string curPlugin = "terminalSendGrid";
-        private BasePluginController _basePluginController = new BasePluginController();
+        private const string curTerminal = "terminalSendGrid";
+        private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
         [HttpPost]
         [Route("configure")]
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
+            return await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, "Configure", curActionDTO);
         }
 
         [HttpPost]
         [Route("run")]
         public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
-            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Run", curActionDTO);
+            return await (Task<PayloadDTO>)_baseTerminalController.HandleFr8Request(curTerminal, "Run", curActionDTO);
         }
     }
 }

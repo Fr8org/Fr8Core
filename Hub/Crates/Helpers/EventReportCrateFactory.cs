@@ -22,13 +22,13 @@ namespace Data.Crates.Helpers
             };
 
             eventDTO.CrateStorage.AddRange(crates);
-            
-            return Crate.FromContent("Dockyard Plugin Event or Incident Report", eventDTO);
+
+            return Crate.FromContent("Dockyard Terminal Event or Incident Report", eventDTO);
         }
 
         public Crate Create(EventCM eventCm)
         {
-            return Crate.FromContent("Dockyard Plugin Event or Incident Report", eventCm);
+            return Crate.FromContent("Dockyard Terminal Event or Incident Report", eventCm);
 //
 //            var eventDTOContent = JsonConvert.SerializeObject(eventDTO);
 //            return new CrateDTO()
