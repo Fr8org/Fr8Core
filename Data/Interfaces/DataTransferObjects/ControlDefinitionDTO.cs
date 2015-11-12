@@ -40,6 +40,7 @@ namespace Data.Interfaces.DataTransferObjects
         public const string TextArea = "TextArea";
         public const string QueryBuilder = "QueryBuilder";
         public const string ManageRoute = "ManageRoute";
+        public const string Duration = "Duration";
     }
 
     public class CheckBoxControlDefinitionDTO : ControlDefinitionDTO
@@ -229,6 +230,30 @@ namespace Data.Interfaces.DataTransferObjects
         {
             Type = ControlTypes.Button;
         }
+    }
+
+    public class DurationControlDefinitionDTO : ControlDefinitionDTO
+    {
+        ///TODO
+        /// <summary>
+        /// Where the button was clicked before the current /configure request was sent.
+        /// Used to recognize 'click' event on server-side.
+        /// </summary>
+
+        public DurationControlDefinitionDTO()
+        {
+            Type = ControlTypes.Duration;
+        }
+
+        [JsonProperty("days")]
+        public Int32 Days { get; set; }
+
+        [JsonProperty("hours")]
+        public Int32 Hours { get; set; }
+
+        [JsonProperty("minutes")]
+        public Int32 Minutes { get; set; }
+
     }
 
 

@@ -461,3 +461,21 @@ input[type=radio]:checked ~ label .control-label-hidden {
     min-height: initial !important;
     padding: initial !important;
 }
+
+.duration-control-label {
+    vertical-align: middle;
+}
+
+.counter-control {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.counter-control > * {
+    display: block;
+    text-align: center;
+}
+
+.counter-input {
+    width: 40px;
+}
