@@ -15,9 +15,9 @@ module dockyard.services {
 
     var strings: IStringService = {
         processTemplate: {
-            error404: "Sorry, the Process Template was not found. Perhaps it has been deleted.",
+            error404: "Sorry, the Route was not found. Perhaps it has been deleted.",
             error400: "Some of the specified data were invalid. Please verify your entry and try again.",
-            error: "Process Template cannot be saved. Please try again in a few minutes."
+            error: "Route cannot be saved. Please try again in a few minutes."
         }
     };
 

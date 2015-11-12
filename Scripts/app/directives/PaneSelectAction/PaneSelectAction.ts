@@ -159,7 +159,7 @@ module dockyard.directives.paneSelectAction {
 
 			this.$modal.open({
 				animation: true,
-				templateUrl: 'AngularTemplate/PaneSelectActionModal',
+				templateUrl: '/AngularTemplate/PaneSelectActionModal',
 				controller: 'RouteActionsDialogController'
 			})
 			.result.then((selectedActivity: interfaces.IActivityTemplateVM) => {

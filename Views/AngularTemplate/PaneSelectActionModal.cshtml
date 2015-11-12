@@ -10,7 +10,7 @@
 			<td>
 				<div class="checkbox" data-ng-repeat="actionCategory in actionCategories">
 					<input type="checkbox" id="checkbox_{{actionCategory.id}}" style="margin-right: 12px;" data-ng-model="actionCategories[$index].checked" data-ng-click="toggleFilter()">
-					<label for="checkbox_{{actionCategory.id}}">{{actionCategory.name}} - {{actionCategory.description}}</label>
+					<label for="checkbox_{{actionCategory.id}}">{{actionCategory.name}} &ndash; {{actionCategory.description}}</label>
 				</div>
 			</td>
 		</tr>
@@ -27,12 +27,12 @@
 			</td>
 			<td style="width: 300px;">
 				<div style="border-top: 1px solid #e5e5e5; border-left: 1px solid #e5e5e5; border-right: 1px solid #e5e5e5; cursor: pointer;">
-					<div style="border-bottom: 1px solid #e5e5e5; padding: 4px 0;" data-ng-repeat="action in webServiceAction.actions" data-ng-click="selectAction(action)">{{action.name}}</div>
+					<div style="border-bottom: 1px solid #e5e5e5; padding: 4px 0;" data-ng-repeat="action in webServiceAction.actions" data-ng-click="selectAction(action)">{{action.label}}</div>
 				</div>
 			</td>
 		</tr>
 	</table>
 </div>
 <div class="modal-footer">
-	<button class="btn btn-warning" type="button" data-ng-click="close()">Cancel</button>
+	<button class="btn btn-warning" type="button" data-ng-click="close()">Close</button>
 </div>
