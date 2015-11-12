@@ -200,7 +200,8 @@ namespace terminalGoogle.Actions
                     .Where(v => !string.IsNullOrEmpty(v))
                     .ToArray();
 
-            var hasDesignTimeFields = curActionDO.CrateStorage.Crates
+
+            var hasDesignTimeFields = Crate.GetStorage(curActionDO)
                 .Any(x => x.ManifestType == CrateManifestTypes.StandardDesignTimeFields
                     && x.Label == "Worksheet Column Headers");
 
@@ -213,20 +214,18 @@ namespace terminalGoogle.Actions
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
-
             var spreadsheetsFromUserSelection =
                 Action.GetControlsManifest(curActionDO).FindByName("select_spreadsheet").Value;
 
             // Creating configuration control crate with a file picker and textblock
-            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(curActionDTO.AuthToken.Token);
+            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             var spreadsheets = _google.EnumerateSpreadsheetsUris(authDTO);
             var configControlsCrate = CreateConfigurationControlsCrate(spreadsheets, spreadsheetsFromUserSelection);
 
             // RFemove previously created configuration control crate
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.RemoveByManifestId(CrateManifestTypes.StandardConfigurationControls);
                 updater.CrateStorage.Add(configControlsCrate);
@@ -234,19 +233,17 @@ namespace terminalGoogle.Actions
 
             if (!string.IsNullOrEmpty(spreadsheetsFromUserSelection))
             {
-                return await TransformSpreadsheetDataToStandardTableDataCrate(curActionDTO, spreadsheetsFromUserSelection);
+                return await TransformSpreadsheetDataToStandardTableDataCrate(curActionDO, spreadsheetsFromUserSelection);
             }
             else
             {
-                return curActionDTO;
+                return curActionDO;
             }
         }
 
-        private async Task<ActionDTO> TransformSpreadsheetDataToStandardTableDataCrate(ActionDTO curActionDTO, string spreadsheetUri)
+        private async Task<ActionDO> TransformSpreadsheetDataToStandardTableDataCrate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, string spreadsheetUri)
         {
-            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
-
-            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(curActionDTO.AuthToken.Token);
+            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             // Fetch column headers in Excel file and assign them to the action's crate storage as Design TIme Fields crate
             var headers = _google.EnumerateColumnHeaders(spreadsheetUri, authDTO);
             if (headers.Any())
@@ -265,7 +262,7 @@ namespace terminalGoogle.Actions
 
             CreatePayloadCrate_SpreadsheetRows(curActionDO, spreadsheetUri, authDTO, headers);
 
-            return AutoMapper.Mapper.Map<ActionDTO>(curActionDO);
+            return curActionDO;
         }
 
         private void CreatePayloadCrate_SpreadsheetRows(ActionDO curActionDO, string spreadsheetUri, GoogleAuthDTO authDTO, IDictionary<string, string> headers)

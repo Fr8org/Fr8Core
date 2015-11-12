@@ -8,7 +8,7 @@ namespace terminalGoogle.Controllers
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private const string curPlugin = "terminalGoogle";
+        private const string curTerminal = "terminalGoogle";
         private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
         [HttpPost]
@@ -16,21 +16,21 @@ namespace terminalGoogle.Controllers
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
             return await (Task<ActionDTO>) _baseTerminalController
-                .HandleFr8Request(curPlugin, "Configure", curActionDTO);
+                .HandleFr8Request(curTerminal, "Configure", curActionDTO);
         }
 
         [HttpPost]
         [Route("activate")]
         public ActionDTO Activate(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_baseTerminalController.HandleFr8Request(curPlugin, "Activate", curActionDTO);
+            return (ActionDTO)_baseTerminalController.HandleFr8Request(curTerminal, "Activate", curActionDTO);
         }
 
         [HttpPost]
         [Route("deactivate")]
         public ActionDTO Deactivate(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_baseTerminalController.HandleFr8Request(curPlugin, "Deactivate", curActionDTO);
+            return (ActionDTO)_baseTerminalController.HandleFr8Request(curTerminal, "Deactivate", curActionDTO);
         }
 
         [HttpPost]
@@ -38,7 +38,7 @@ namespace terminalGoogle.Controllers
         public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
             return await (Task<PayloadDTO>)_baseTerminalController.HandleFr8Request(
-                curPlugin, "Run", actionDto);
+                curTerminal, "Run", actionDto);
         }
     }
 }
