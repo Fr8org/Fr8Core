@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Data.Crates;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
@@ -73,6 +74,28 @@ namespace Hub.Managers
             {
                 Mode = mode
             });
+        }
+
+        public void AddLogMessage(string label, List<LogItemDTO> logItemList, ContainerDO containerDO)
+        {
+            if (String.IsNullOrEmpty(label))
+                throw new ArgumentException("Parameter Label is empty");
+            
+            if (logItemList == null)
+                throw new ArgumentNullException("Parameter LogItemDTO list is null.");
+            
+            if (containerDO == null)
+                throw new ArgumentNullException("Parameter ContainerDO is null.");
+            
+            var curManifestSchema = new StandardLoggingCM()
+            {
+                Item = logItemList
+            };
+
+            using (var updater = UpdateStorage(() => containerDO.CrateStorage))
+            {
+                updater.CrateStorage.Add(Crate.FromContent(label, curManifestSchema));
+            }
         }
 
         public Crate<StandardDesignTimeFieldsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
