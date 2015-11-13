@@ -39,7 +39,7 @@ namespace terminalIntegrationTests
 
                 uow.ContainerRepository.Add(new ContainerDO()
                 {
-                    Id = 1,
+                    Id = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
                     Route = route,
                     CrateStorage = _crateManager.EmptyStorageAsStr(),
                     ContainerState = ContainerState.Executing
@@ -61,7 +61,7 @@ namespace terminalIntegrationTests
 
             var curActionDTO = new ActionDTO()
             {
-                ContainerId = 1,
+                ContainerId = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
                 ParentRouteNodeId = 1,
             };
 
@@ -77,7 +77,7 @@ namespace terminalIntegrationTests
 
 
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
-            var result = await new Load_Table_Data_v1().Run(curActionDO, curActionDTO.ContainerId);
+            var result = await new Load_Table_Data_v1().Run(curActionDO, curActionDTO.ContainerId, null);
 
             var payloadCrates = _crateManager.GetStorage(result).CratesOfType<StandardPayloadDataCM>();
             var payloadDataMS = payloadCrates.First().Content;

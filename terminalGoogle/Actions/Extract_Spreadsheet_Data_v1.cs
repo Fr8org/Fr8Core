@@ -38,19 +38,20 @@ namespace terminalGoogle.Actions
                     !string.IsNullOrEmpty(token.RefreshToken));
         }
 
-        public override Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
+        public override Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
-            return base.Configure(curActionDO);
+            return base.Configure(curActionDO, authTokenDO);
         }
 
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO=null)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId,
+            AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
@@ -59,7 +60,8 @@ namespace terminalGoogle.Actions
             return await CreateStandardPayloadDataFromStandardTableData(curActionDO,containerId);
         }
 
-        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, int containerId )
+        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(
+            ActionDO curActionDO, Guid containerId)
         {
             var processPayload = await GetProcessPayload(containerId);
 
@@ -163,7 +165,7 @@ namespace terminalGoogle.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (curActionDO.Id > 0)
             {
@@ -215,7 +217,7 @@ namespace terminalGoogle.Actions
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var spreadsheetsFromUserSelection =
                 Action.GetControlsManifest(curActionDO).FindByName("select_spreadsheet").Value;

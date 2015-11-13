@@ -30,16 +30,22 @@ namespace terminalSalesforce.Controllers
                 Version = "1"
             };
 
+	        var webService = new WebServiceDO
+	        {
+		        Name = "SendGrid"
+	        };
+
             var action = new ActivityTemplateDO()
             {
                 Name = "SendEmailViaSendGrid",
-                Label = "Send Email Vie Send Grid",
+                Label = "Send Email Via Send Grid",
                 Version = "1",
                 Tags = "Notifier",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
                 Category = ActivityCategory.Forwarders,
-                MinPaneWidth = 330
+                MinPaneWidth = 330,
+				WebService = webService
             };
 
             var actionList = new List<ActivityTemplateDO>()

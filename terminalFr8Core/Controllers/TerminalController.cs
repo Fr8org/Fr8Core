@@ -34,6 +34,11 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             };
 
+	        var webService = new WebServiceDO
+	        {
+		        Name = "fr8 Core"
+	        };
+
             result.Add(new ActivityTemplateDO
             {
                 Name = "FilterUsingRunTimeData",
@@ -43,7 +48,8 @@ namespace terminalFr8Core.Controllers
 
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
-				MinPaneWidth = 330
+				MinPaneWidth = 330,
+				WebService = webService
             });
 
             result.Add(new ActivityTemplateDO
@@ -55,7 +61,8 @@ namespace terminalFr8Core.Controllers
 
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
-				MinPaneWidth = 380
+				MinPaneWidth = 380,
+				WebService = webService
             });
 
             result.Add(new ActivityTemplateDO
@@ -67,7 +74,8 @@ namespace terminalFr8Core.Controllers
 
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
-				MinPaneWidth = 330
+				MinPaneWidth = 330,
+				WebService = webService
             });
 
             result.Add(new ActivityTemplateDO
@@ -76,7 +84,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Store MT Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
+                WebService = webService,
                 Version = "1"
             });
 
@@ -86,7 +94,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Select Fr8 Object",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
+                WebService = webService,
                 Version = "1",
                 MinPaneWidth = 330
             });
@@ -97,7 +105,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Connect To SQL",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
+                WebService = webService,
                 Version = "1"
             });
 

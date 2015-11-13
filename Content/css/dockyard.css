@@ -462,6 +462,11 @@ input[type=radio]:checked ~ label .control-label-hidden {
     padding: initial !important;
 }
 
+.drop-down-list-box-container { 
+    height: 26px;
+    width: 100%;
+}
+
 .duration-control-label {
     vertical-align: middle;
 }
