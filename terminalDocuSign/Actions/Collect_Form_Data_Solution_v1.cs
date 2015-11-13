@@ -217,7 +217,7 @@ namespace terminalDocuSign.Actions
 
             var templates = catagories != null ? catagories.Activities : new ActivityTemplateDTO[0];
 
-            sources.Add(Crate.CreateDesignTimeFieldsCrate("AvailableActions", templates.Select(x => new FieldDTO(x.Name, x.Id.ToString())).ToArray()));
+            sources.Add(Crate.CreateDesignTimeFieldsCrate("AvailableActions", templates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()));
 
             return sources;
         }
