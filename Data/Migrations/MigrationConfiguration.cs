@@ -74,6 +74,7 @@ namespace Data.Migrations
             AddContainerDOForTestingApi(uow);
 
 	        AddWebServices(uow);
+
         }
 
         //Method to let us seed into memory as well
@@ -488,10 +489,49 @@ namespace Data.Migrations
 
 	    private void AddWebServices(IUnitOfWork uow)
 	    {
-			AddWebService(uow, "AWS", "/Content/icons/web_services/aws-icon-64x64.png");
-			AddWebService(uow, "Slack", "/Content/icons/web_services/slack-icon-64x64.png");
-			AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
+	        var terminalToWs = new Dictionary<string, string>
+	        {
+	            {"terminalSalesforce", "Salesforce"},
+	            {"terminalFr8Core", "fr8 Core"},
+	            {"terminalDocuSign", "DocuSign"},
+	            {"terminalSlack", "Slack"},
+	            {"terminalTwilio", "Twilio"},
+	            {"terminalAzure", "Microsoft Azure"},
+	            {"terminalExcel", "Excel"},
+	        };
 
+	        var wsToId = new Dictionary<string, int>();
+
+            AddWebService(uow, "AWS", "/Content/icons/web_services/aws-icon-64x64.png");
+            AddWebService(uow, "Slack", "/Content/icons/web_services/slack-icon-64x64.png");
+            AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
+			AddWebService(uow, "Microsoft Azure", "/Content/icons/web_services/ms-azure-icon-64x64.png");
+			AddWebService(uow, "Excel", "/Content/icons/web_services/ms-excel-icon-64x64.png");
+			AddWebService(uow, "fr8 Core", "/Content/icons/web_services/fr8-core-icon-64x64.png");
+			AddWebService(uow, "Salesforce", "/Content/icons/web_services/salesforce-icon-64x64.png");
+			AddWebService(uow, "SendGrid", "/Content/icons/web_services/sendgrid-icon-64x64.png");
+			AddWebService(uow, "Twilio", "/Content/icons/web_services/twilio-icon-64x64.png");
+            AddWebService(uow, "UnknownService", "/Content/icons/web_services/unknown-service.png");
+
+	        foreach (var webServiceDo in uow.WebServiceRepository.GetAll())
+	        {
+	            if (webServiceDo.Name != null)
+	            {
+	                wsToId[webServiceDo.Name] = webServiceDo.Id;
+	            }
+	        }
+
+	        foreach (var activity in uow.ActivityTemplateRepository.GetQuery().Include(x => x.Terminal))
+	        {
+	            string wsName;
+	            int wsId;
+
+                if (terminalToWs.TryGetValue(activity.Terminal.Name, out wsName) && wsToId.TryGetValue(wsName, out wsId))
+                {
+                    activity.WebServiceId = wsId;
+                }
+	        }
+           
 			uow.SaveChanges();
 	    }
 

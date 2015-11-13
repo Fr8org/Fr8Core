@@ -47,7 +47,7 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
@@ -83,7 +83,7 @@ namespace terminalFr8Core.Actions
             return curActionDO;
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
@@ -313,7 +313,7 @@ namespace terminalFr8Core.Actions
 
         #region Execution.
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
             var processPayload = await GetProcessPayload(containerId);
             var stroage = Crate.GetStorage(curActionDO);

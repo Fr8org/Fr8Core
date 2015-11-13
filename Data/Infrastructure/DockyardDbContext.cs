@@ -345,7 +345,7 @@ namespace Data.Infrastructure
                 .WillCascadeOnDelete(false);
 
 			modelBuilder.Entity<ActivityTemplateDO>()
-				.HasRequired(x => x.WebService)
+				.HasOptional(x => x.WebService) // was HasRequired. In reality this relationship looks like to be optional.
 				.WithMany()
 				.HasForeignKey(x => x.WebServiceId)
 				.WillCascadeOnDelete(false);
