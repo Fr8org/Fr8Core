@@ -39,7 +39,7 @@ namespace terminalSalesforce.Actions
             return "Deactivated";
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             PayloadDTO processPayload = null;
 
@@ -64,7 +64,7 @@ namespace terminalSalesforce.Actions
             return processPayload;
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             return ConfigurationRequestType.Initial;
         }

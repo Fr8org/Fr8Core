@@ -100,7 +100,7 @@ namespace terminalDocuSign.Actions
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (Crate.IsStorageEmpty(curActionDO))
             {
@@ -120,7 +120,7 @@ namespace terminalDocuSign.Actions
             return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO = null)
         {
             return await GetProcessPayload(containerId);
         }

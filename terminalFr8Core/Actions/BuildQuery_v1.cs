@@ -313,7 +313,7 @@ namespace terminalFr8Core.Actions
 
         #region Execution.
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO = null)
         {
             var processPayload = await GetProcessPayload(containerId);
             var stroage = Crate.GetStorage(curActionDO);

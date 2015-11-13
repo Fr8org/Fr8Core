@@ -17,12 +17,15 @@ namespace UtilitiesTesting.Fixtures
     {
         public static PayloadDTO PayloadDTO1()
         {
-            List<FieldDTO> curFields = new List<FieldDTO>() { new FieldDTO() { Key = "EnvelopeId", Value = "EnvelopeIdValue" } };
+            List<FieldDTO> curFields = new List<FieldDTO>()
+            {
+                new FieldDTO() { Key = "EnvelopeId", Value = "EnvelopeIdValue" }
+            };
 
             EventReportCM curEventReportMS = new EventReportCM();
             curEventReportMS.EventNames = "DocuSign Envelope Sent";
             curEventReportMS.EventPayload.Add(Crate.FromContent("Standard Event Report", new StandardPayloadDataCM(curFields)));
-            var payload = new PayloadDTO(1);
+            var payload = new PayloadDTO(TestContainer_Id_1());
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(payload))
             {
@@ -34,9 +37,14 @@ namespace UtilitiesTesting.Fixtures
 
         public static PayloadDTO PayloadDTO2()
         {
-            var standardPayload = new StandardPayloadDataCM(new List<FieldDTO>() {new FieldDTO() {Key = "EnvelopeId", Value = "EnvelopeIdValue"}});
+            var standardPayload = new StandardPayloadDataCM(
+                new List<FieldDTO>()
+                {
+                    new FieldDTO() { Key = "EnvelopeId", Value = "EnvelopeIdValue" }
+                }
+            );
 
-            var payload = new PayloadDTO(49);
+            var payload = new PayloadDTO(TestContainer_Id_49());
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(payload))
             {

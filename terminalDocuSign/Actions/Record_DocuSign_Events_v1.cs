@@ -116,7 +116,7 @@ namespace terminalDocuSign.Actions
             return true;
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO,int containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {

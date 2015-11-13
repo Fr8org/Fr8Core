@@ -307,7 +307,7 @@ namespace Hub.Services
 
             try
             {
-                tempActionDTO = await CallTerminalActionAsync<ActionDTO>("configure", curActionDO);
+                tempActionDTO = await CallTerminalActionAsync<ActionDTO>("configure", curActionDO, Guid.Empty);
             }
             catch (ArgumentException e)
             {
@@ -508,7 +508,7 @@ namespace Hub.Services
         {
             try
             {
-                var result = await CallTerminalActionAsync<ActionDTO>("activate", curActionDO);
+                var result = await CallTerminalActionAsync<ActionDTO>("activate", curActionDO, Guid.Empty);
                 EventManager.ActionActivated(curActionDO);
                 return result;
             }
@@ -526,10 +526,10 @@ namespace Hub.Services
 
         public async Task<ActionDTO> Deactivate(ActionDO curActionDO)
         {
-            return await CallTerminalActionAsync<ActionDTO>("deactivate", curActionDO);
+            return await CallTerminalActionAsync<ActionDTO>("deactivate", curActionDO, Guid.Empty);
         }
 
-        private Task<TResult> CallTerminalActionAsync<TResult>(string actionName, ActionDO curActionDO, int containerId = 0)
+        private Task<TResult> CallTerminalActionAsync<TResult>(string actionName, ActionDO curActionDO, Guid containerId)
         {
             if (actionName == null) throw new ArgumentNullException("actionName");
             if (curActionDO == null) throw new ArgumentNullException("curActionDO");
@@ -540,7 +540,7 @@ namespace Hub.Services
 
             EventManager.ActionDispatched(curActionDO, containerId);
 
-            if (containerId != 0)
+            if (containerId != Guid.Empty)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {

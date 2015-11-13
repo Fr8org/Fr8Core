@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
@@ -48,7 +49,7 @@ namespace DockyardTest.Services
             //string envelopeId = "fake envelopeID";
             //var envelopeDataList = FixtureData.TestEnvelopeDataList1();
             mockCriteria
-                .Setup(c => c.Evaluate(It.IsAny<string>(), It.IsAny<int>(), (List<EnvelopeDataDTO>)It.IsAny<object>()))
+                .Setup(c => c.Evaluate(It.IsAny<string>(), It.IsAny<Guid>(), (List<EnvelopeDataDTO>)It.IsAny<object>()))
                 .Returns(true);
             ObjectFactory.Configure(cfg => cfg.For<ICriteria>().Use(mockCriteria.Object));
             _processNode = ObjectFactory.GetInstance<IProcessNode>();

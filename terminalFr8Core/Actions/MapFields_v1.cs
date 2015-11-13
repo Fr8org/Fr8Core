@@ -22,7 +22,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDO actionDO, int containerId, AuthorizationTokenDO authTokenDO=null)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO=null)
         {
             var curControlsMS = Crate.GetStorage(actionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 

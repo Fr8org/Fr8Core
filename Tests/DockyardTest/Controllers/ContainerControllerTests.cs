@@ -72,7 +72,7 @@ namespace DockyardTest.Controllers
             //Act
             var containerController = CreateContainerController();
             Addcontainer();
-            int? id = 55;
+            Guid? id = FixtureData.TestContainer_Id_55();
             var actionResult = containerController.Get(id);
             //Assert
             Assert.IsNull(actionResult as OkNegotiatedContentResult<ContainerDO>);
@@ -86,7 +86,7 @@ namespace DockyardTest.Controllers
             Addcontainer();
 
             //Act
-            int? id = null;
+            Guid? id = null;
             var actionResult = containerController.Get(id) as OkNegotiatedContentResult<IEnumerable<ContainerDTO>>;
 
             ////Assert
@@ -102,7 +102,7 @@ namespace DockyardTest.Controllers
             Addcontainer();
 
             //Act
-            int? id = 1;
+            Guid? id = FixtureData.TestContainer_Id_1();
             var actionResult = containerController.Get(id) as OkNegotiatedContentResult<ContainerDTO>;
 
             ////Assert
