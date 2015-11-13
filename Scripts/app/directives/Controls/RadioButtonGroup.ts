@@ -5,60 +5,42 @@ module dockyard.directives.radioButtonGroup {
     export interface IRadioButtonGroupScope extends ng.IScope {
         field: model.RadioButtonGroupControlDefinitionDTO;
         changeSelection: (radio: model.RadioButtonOption) => void;
+        uniqueDirectiveId: number;
     }
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
-    class RadioButtonGroup implements ng.IDirective {
-        public link: (scope: IRadioButtonGroupScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public template = '<div ng-repeat="radio in field.radios"><div class="radio-button-group-content"> <radio-button-option group-name="{{field.groupName}}" change-selection="changeSelection(radio)" currentAction="currentAction" field="radio"></radio-button-option></div></div>';
-        public controller: ($scope: IRadioButtonGroupScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public scope = {
-            currentAction: '=',
-            field: '=',
-            changeSelection: '&'
-        };
-        public restrict = 'E';
-
-        constructor() {
-            RadioButtonGroup.prototype.link = (
-                scope: IRadioButtonGroupScope,
-                element: ng.IAugmentedJQuery,
-                attrs: ng.IAttributes) => {
-
-                //Link function goes here
-            };
-
-            RadioButtonGroup.prototype.controller = (
-                $scope: IRadioButtonGroupScope,
-                $element: ng.IAugmentedJQuery,
-                $attrs: ng.IAttributes) => {
-                //<(radio: model.RadioButtonOption) => void>
-                $scope.changeSelection = (radio: model.RadioButtonOption) => {
-                    var radios = $scope.field.radios
-                    for (var i = 0; i < radios.length; i++) {
-                        if (radios[i] === radio) {
-                            radios[i].selected = true;
-                        } else {
-                            radios[i].selected = false;
-                        }
+    export function RadioButtonGroup(): ng.IDirective {
+        var uniqueDirectiveId = 1;
+        var template = '<div ng-repeat="radio in field.radios"><div class="radio-button-group-content"> <radio-button-option group-name="{{field.groupName+\'_rgb_\'+uniqueDirectiveId}}" change-selection="changeSelection(radio)" currentAction="currentAction" field="radio"></radio-button-option></div></div>';
+        var controller = ($scope: IRadioButtonGroupScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => {
+            $scope.uniqueDirectiveId = ++uniqueDirectiveId;
+            $scope.changeSelection = (radio: model.RadioButtonOption) => {
+                var radios = $scope.field.radios
+                for (var i = 0; i < radios.length; i++) {
+                    if (radios[i] === radio) {
+                        radios[i].selected = true;
+                    } else {
+                        radios[i].selected = false;
                     }
-                    $scope.field.value = radio.value;
                 }
-            };
-        }
+                $scope.field.value = radio.value;
+            }
+        };
 
-        //The factory function returns Directive object as per Angular requirements
-        public static Factory() {
-            var directive = () => {
-                return new RadioButtonGroup();
-            };
-
-            directive['$inject'] = [];
-            return directive;
-        }
+        return {
+            restrict: 'E',
+            template: template,
+            controller: controller,
+            scope: {
+                currentAction: '=',
+                field: '=',
+                changeSelection: '&'
+            }
+        };
+        
     }
-    app.directive('radioButtonGroup', RadioButtonGroup.Factory());
+    app.directive('radioButtonGroup', RadioButtonGroup);
 
 
     export interface IRadioButtonOptionScope extends ng.IScope {
@@ -67,55 +49,27 @@ module dockyard.directives.radioButtonGroup {
         changeSelection: (radio: model.RadioButtonOption) => void;
     }
 
-    class RadioButtonOption implements ng.IDirective {
-        public link: (scope: IRadioButtonOptionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public templateUrl = '/AngularTemplate/RadioButtonOption';
-        public controller: ($scope: IRadioButtonOptionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public scope = {
-            currentAction: '=',
-            field: '=',
-            changeSelection: '&',
-            groupName: '@'
+    export function RadioButtonOption($compile: ng.ICompileService): ng.IDirective {
+        var link = (scope: IRadioButtonOptionScope, element: ng.IAugmentedJQuery,attrs: ng.IAttributes) => {
+            if (angular.isArray(scope.field.controls) || scope.field.controls.length > 0) {
+                $compile('<div ng-repeat="control in field.controls"><configuration-control current-action="currentAction" field="control" /></div>')(scope, function (cloned, scope) {
+                    element.find('.nested-controls').append(cloned);
+                });
+            }
         };
-        public restrict = 'E';
-        private _$element: ng.IAugmentedJQuery;
-        private _$scope: IRadioButtonOptionScope;
-
-        constructor(
-            private $compile: ng.ICompileService) {
-
-            RadioButtonOption.prototype.link = (
-                scope: IRadioButtonOptionScope,
-                element: ng.IAugmentedJQuery,
-                attrs: ng.IAttributes) => {
-
-                if (angular.isArray(scope.field.controls) || scope.field.controls.length > 0) {
-                    $compile('<div ng-repeat="control in field.controls"><configuration-control current-action="currentAction" field="control" /></div>')(scope, function (cloned, scope) {
-                        element.find('.nested-controls').append(cloned);
-                    });
-                }
-            };
-
-            RadioButtonOption.prototype.controller = (
-                $scope: IRadioButtonOptionScope,
-                $element: ng.IAugmentedJQuery,
-                $attrs: ng.IAttributes) => {
-                this._$element = $element;
-                this._$scope = $scope;
-
-            };
-        }
-
-        //The factory function returns Directive object as per Angular requirements
-        public static Factory() {
-            var directive = ($compile: ng.ICompileService) => {
-                return new RadioButtonOption($compile);
-            };
-
-            directive['$inject'] = ['$compile'];
-            return directive;
-        }
+        
+        return {
+            restrict: 'E',
+            templateUrl: '/AngularTemplate/RadioButtonOption',
+            link: link,
+            scope: {
+                currentAction: '=',
+                field: '=',
+                changeSelection: '&',
+                groupName: '@'
+            }
+        };
     }
-    app.directive('radioButtonOption', RadioButtonOption.Factory());
+    app.directive('radioButtonOption', ['$compile', RadioButtonOption]);
 }
 
