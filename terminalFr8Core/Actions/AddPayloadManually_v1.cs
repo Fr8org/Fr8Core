@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,19 +9,19 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
+using Data.Entities;
+using StructureMap;
+using Hub.Managers;
 
 namespace terminalFr8Core.Actions
 {
-    public class AddPayloadManually_v1 : BasePluginAction
+    public class AddPayloadManually_v1 : BaseTerminalAction
     {
-
-
-
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
 
-            var controlsMS = Crate.FromDto(curActionDTO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = Crate.GetStorage(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {
@@ -55,30 +55,27 @@ namespace terminalFr8Core.Actions
             return processPayload;
         }
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        protected override Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 
-            using (var updater = Crate.UpdateStorage(() => curActionDTO.CrateStorage))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
             }
-//
-//            var crateStrorageDTO = AssembleCrateStorage(configurationControlsCrate);
-//            curActionDTO.CrateStorage = crateStrorageDTO;
 
-            return Task.FromResult(curActionDTO);
+            return Task.FromResult(curActionDO);
         }
 
-        protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var controlsMS = Crate.FromDto(curActionDTO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {
@@ -95,13 +92,13 @@ namespace terminalFr8Core.Actions
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
             userDefinedPayload.ForEach(x => x.Value = x.Key);
 
-            using (var updater = Crate.UpdateStorage(() => curActionDTO.CrateStorage))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.RemoveByLabel("ManuallyAddedPayload");
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardDesignTimeFieldsCM() { Fields = userDefinedPayload }));
             }
 
-            return Task.FromResult(curActionDTO);
+            return Task.FromResult(curActionDO);
         }
 
         private Crate CreateControlsCrate()
@@ -120,9 +117,9 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(fieldFilterPane);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }

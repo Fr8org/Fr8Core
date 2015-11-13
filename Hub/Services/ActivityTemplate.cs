@@ -38,18 +38,32 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var existingPlugin = uow.PluginRepository
-                    .FindOne(x => x.Name == activityTemplateDO.Plugin.Name);
+                var existingTerminal = uow.TerminalRepository
+                    .FindOne(x => x.Name == activityTemplateDO.Terminal.Name);
 
-                if (existingPlugin != null)
+                if (existingTerminal != null)
                 {
-                    activityTemplateDO.Plugin = existingPlugin;
+                    activityTemplateDO.Terminal = existingTerminal;
                 }
                 else
                 {
-                    uow.PluginRepository.Add(activityTemplateDO.Plugin);
+                    uow.TerminalRepository.Add(activityTemplateDO.Terminal);
                     uow.SaveChanges();
                 }
+
+	            if (activityTemplateDO.WebService != null)
+	            {
+					var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDO.WebService.Name);
+
+		            if (existingWebService != null)
+		            {
+			            activityTemplateDO.WebService = existingWebService;
+		            }
+		            else
+		            {
+						activityTemplateDO.WebService = null;
+		            }
+	            }
 
                 var activity = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(t => t.Name == activityTemplateDO.Name);
 

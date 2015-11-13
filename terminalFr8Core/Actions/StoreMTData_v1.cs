@@ -16,35 +16,35 @@ using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
-    public class StoreMTData_v1 : BasePluginAction
+    public class StoreMTData_v1 : BaseTerminalAction
     {
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDTO, actionDTO => ConfigurationRequestType.Initial);
+            return await ProcessConfigurationRequest(curActionDO, actionDO => ConfigurationRequestType.Initial, authTokenDO);
         }
 
-        public Task<object> Activate(ActionDTO curActionDTO)
+        public Task<object> Activate(ActionDO curActionDO)
         {
             //No activation logic decided yet
             return null;
         }
 
-        public Task<object> Deactivate(ActionDTO curDataPackage)
+        public Task<object> Deactivate(ActionDO curDataPackage)
         {
             //No deactivation logic decided yet
             return null;
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //get the process payload
-                var curProcessPayload = await GetProcessPayload(actionDto.ProcessId);
+                var curProcessPayload = await GetProcessPayload(containerId);
 
                 //get docu sign envelope crate from payload
                 var curDocuSignEnvelopeCrate = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<DocuSignEnvelopeCM>().Single(x => x.Label == "DocuSign Envelope Manifest");
-                    
+
                 string curFr8AccountId = string.Empty;
                 if (curDocuSignEnvelopeCrate != null)
                 {
@@ -80,10 +80,8 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
             var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO.Id, "Available Run-Time Objects");
 
@@ -114,7 +112,7 @@ namespace terminalFr8Core.Actions
                 updater.CrateStorage.Add(curSelectedObjectType);
             }
 
-            return Mapper.Map<ActionDTO>(curActionDO);
+            return curActionDO;
         }
     }
 }

@@ -22,6 +22,8 @@ using Data.Interfaces.Manifests;
 using terminalExcel.Actions;
 using terminalExcel.Infrastructure;
 using terminalExcel.Fixtures;
+using AutoMapper;
+using Data.Entities;
 
 namespace terminalExcel.PluginExcelTests
 {
@@ -58,8 +60,8 @@ namespace terminalExcel.PluginExcelTests
         {
             
             var curActionDTO = new ActionDTO();
-
-            var result = new Load_Table_Data_v1().ConfigurationEvaluator(curActionDTO);
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var result = new Load_Table_Data_v1().ConfigurationEvaluator(curActionDO);
 
             Assert.AreEqual(result, TerminalBase.Infrastructure.ConfigurationRequestType.Initial);
         }

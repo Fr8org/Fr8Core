@@ -18,9 +18,9 @@ namespace terminalSalesforce
     {
         public void Configuration(IAppBuilder app)
         {            
-            PluginSalesforceStructureMapBootstrapper.ConfigureDependencies(PluginSalesforceStructureMapBootstrapper.DependencyType.LIVE);
+            TerminalSalesforceStructureMapBootstrapper.ConfigureDependencies(TerminalSalesforceStructureMapBootstrapper.DependencyType.LIVE);
 
-            StartHosting("plugin_salesforce");
+            StartHosting("terminal_salesforce");
         }
     }
 }

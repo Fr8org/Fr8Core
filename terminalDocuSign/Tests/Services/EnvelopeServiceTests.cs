@@ -31,11 +31,11 @@ namespace terminalDocuSign.Tests.Services
 		[Category("Envelope")]
 		public void Envelope_Can_Normalize_EnvelopeData()
 		{
-			Account account = docusignApiHelper.LoginDocusign(PluginFixtureData.TestDocuSignAccount1(),
+			Account account = docusignApiHelper.LoginDocusign(TerminalFixtureData.TestDocuSignAccount1(),
 				  FixtureData.TestRestSettings1());
 
 			DocuSignEnvelope envelope = docusignApiHelper.CreateAndFillEnvelope(account,
-				 PluginFixtureData.TestEnvelope2(account),
+				 TerminalFixtureData.TestEnvelope2(account),
 				 FixtureData.TestRealPdfFile1(),
 				 FixtureData.TestTabCollection1());
 

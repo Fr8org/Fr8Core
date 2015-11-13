@@ -241,8 +241,8 @@
     <Compile Include="ExternalServices\SmtpClientWrapper.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Json\JsonContent.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Plugin\IPluginTransmitter.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Plugin\PluginTransmitter.cs" />
+    <Compile Include="Managers\APIManagers\Transmitters\Terminal\ITerminalTransmitter.cs" />
+    <Compile Include="Managers\APIManagers\Transmitters\Terminal\TerminalTransmitter.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\IRestfulServiceClient.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceClient.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceException.cs" />
@@ -300,9 +300,8 @@
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Event.cs" />
-    <Compile Include="Interfaces\IPlugin.cs" />
-    <Compile Include="Services\GoogleSheet.cs" />
-    <Compile Include="Services\Plugin.cs" />
+    <Compile Include="Interfaces\ITerminal.cs" />
+    <Compile Include="Services\Terminal.cs" />
     <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\ProcessNode.cs" />

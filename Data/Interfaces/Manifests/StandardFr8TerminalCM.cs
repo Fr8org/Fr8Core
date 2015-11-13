@@ -9,7 +9,7 @@ namespace Data.Interfaces.Manifests
 {
     public class StandardFr8TerminalCM : Manifest
     {
-        public PluginDO Definition { get; set; }
+        public TerminalDO Definition { get; set; }
 
         public List<ActivityTemplateDO> Actions { get; set; }
 

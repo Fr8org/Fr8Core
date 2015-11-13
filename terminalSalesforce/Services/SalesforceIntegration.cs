@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
 using terminalSalesforce.Infrastructure;
 using Utilities.Logging;
+using Data.Entities;
 
 namespace terminalSalesforce.Services
 {
@@ -17,32 +18,13 @@ namespace terminalSalesforce.Services
            
         }
 
-        public bool CreateLead(ActionDTO currentDTO)
+        public bool CreateLead(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
             bool createFlag = true;
             try
             {
-                var actionDTO = Task.Run(() => _authentication.RefreshAccessToken(currentDTO)).Result;
-                currentDTO = actionDTO;
-                var createtask = _lead.CreateLead(currentDTO);
-            }
-            catch (Exception ex)
-            {
-                createFlag = false;
-                Logger.GetLogger().Error(ex);
-                throw;
-            }
-            return createFlag;
-        } 
-        
-        public bool CreateContact(ActionDTO currentDTO)
-        {
-            bool createFlag = true;
-            try
-            {
-                var actionDTO = Task.Run(() => _authentication.RefreshAccessToken(currentDTO)).Result;
-                currentDTO = actionDTO;
-                var createtask = _contact.CreateContact(currentDTO);
+                var authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
+                var createtask = _lead.CreateLead(actionDO, authTokenResult);
             }
             catch (Exception ex)
             {
@@ -53,14 +35,32 @@ namespace terminalSalesforce.Services
             return createFlag;
         }
 
-        public bool CreateAccount(ActionDTO currentDTO)
+        public bool CreateContact(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
             bool createFlag = true;
             try
             {
-                var actionDTO = Task.Run(() => _authentication.RefreshAccessToken(currentDTO)).Result;
-                currentDTO = actionDTO;
-                var createtask = _account.CreateAccount(currentDTO);
+                var authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
+
+                var createtask = _contact.CreateContact(actionDO, authTokenDO);
+            }
+            catch (Exception ex)
+            {
+                createFlag = false;
+                Logger.GetLogger().Error(ex);
+                throw;
+            }
+            return createFlag;
+        }
+
+        public bool CreateAccount(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        {
+            bool createFlag = true;
+            try
+            {
+                var authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
+
+                var createtask = _account.CreateAccount(actionDO, authTokenResult);
             }
             catch (Exception ex)
             {

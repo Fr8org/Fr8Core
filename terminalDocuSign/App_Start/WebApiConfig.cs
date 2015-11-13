@@ -14,11 +14,11 @@ namespace terminalDocuSign
     {
         public static void Register(HttpConfiguration config)
         {
-            BasePluginWebApiConfig.Register(config);
+            BaseTerminalWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
-                name: "PluginDocuSign",
-                routeTemplate: "plugin_docusign/{controller}/{id}"
+                name: "TerminalDocuSign",
+                routeTemplate: "terminal_docusign/{controller}/{id}"
             );
         }
     }

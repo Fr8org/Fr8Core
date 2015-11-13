@@ -24,7 +24,13 @@ namespace terminalSendGrid.Tests.Fixtures
 
             return actionDO;
         }
-
+        public static ContainerDO TestContainer()
+        {
+            var containerDO = new ContainerDO();
+            containerDO.Id = 1;
+            containerDO.ContainerState = 1;
+            return containerDO;
+        }
         public static ActivityTemplateDO SendEmailViaSendGridActionTemplateDTO()
         {
             return new ActivityTemplateDO

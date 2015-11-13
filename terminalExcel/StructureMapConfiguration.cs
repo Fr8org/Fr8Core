@@ -10,14 +10,14 @@ using Hub.Services;
 
 namespace terminalExcel
 {
-    public class PluginExcelStructureMapRegistries
+    public class TerminalExcelStructureMapRegistries
     {
         public class LiveMode : Registry
         {
             public LiveMode()
             {
                 For<IAction>().Use<Hub.Services.Action>();
-                For<IPlugin>().Use<Plugin>();
+                For<ITerminal>().Use<Terminal>();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IRouteNode>().Use<RouteNode>();
             }

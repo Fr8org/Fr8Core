@@ -48,14 +48,14 @@ namespace HubWeb.ExceptionHandling
             // if debugging enabled send back the details of exception as well
             if (HttpContext.Current.IsDebuggingEnabled)
             {
-                if (ex is PluginCodedException) 
+                if (ex is TerminalCodedException) 
                 {
-                    var pluginEx = (PluginCodedException)ex;
+                    var terminalEx = (TerminalCodedException)ex;
                     
                     errorDto.Details = new
                     {
-                        errorCode = pluginEx.ErrorCode, 
-                        message = pluginEx.ErrorCode.GetEnumDescription()
+                        errorCode = terminalEx.ErrorCode, 
+                        message = terminalEx.ErrorCode.GetEnumDescription()
                     };
                 }
                 else 

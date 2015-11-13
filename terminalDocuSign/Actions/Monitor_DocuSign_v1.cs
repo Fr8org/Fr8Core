@@ -1,3 +1,4 @@
+﻿
 ﻿using AutoMapper;
 using Data.Entities;
 using TerminalBase.Infrastructure;
@@ -20,23 +21,23 @@ using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {
-    public class Monitor_DocuSign_v1 : BasePluginAction
+    public class Monitor_DocuSign_v1 : BaseTerminalAction
     {
         DocuSignManager _docuSignManager = new DocuSignManager();
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(curActionDTO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
         }
 
-        public ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -56,9 +57,10 @@ namespace terminalDocuSign.Actions
             return createDesignTimeFields;
         }
 
-        private void GetTemplateRecipientPickerValue(ActionDTO curActionDTO, out string selectedOption, out string selectedValue)
+        private void GetTemplateRecipientPickerValue(ActionDO curActionDO, out string selectedOption,
+                                                     out string selectedValue)
         {
-            GetTemplateRecipientPickerValue(Crate.GetStorage(curActionDTO), out selectedOption, out selectedValue);
+            GetTemplateRecipientPickerValue(Crate.GetStorage(curActionDO), out selectedOption, out selectedValue);
         }
 
         private void GetTemplateRecipientPickerValue(CrateStorage storage, out string selectedOption, out string selectedValue)
@@ -82,7 +84,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public object Activate(ActionDTO curDataPackage)
+        public object Activate(ActionDO curDataPackage)
         {
             DocuSignAccount docuSignAccount = new DocuSignAccount();
             ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
@@ -96,7 +98,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public object Deactivate(ActionDTO curDataPackage)
+        public object Deactivate(ActionDO curDataPackage)
         {
             DocuSignAccount docuSignAccount = new DocuSignAccount();
             ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
@@ -110,18 +112,18 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(curActionDTO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue;
-            GetTemplateRecipientPickerValue(curActionDTO, out curSelectedOption, out curSelectedValue);
+            GetTemplateRecipientPickerValue(curActionDO, out curSelectedOption, out curSelectedValue);
 
-            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
 
             string envelopeId = string.Empty;
 
@@ -132,7 +134,7 @@ namespace terminalDocuSign.Actions
                 {
                     case "template":
                         //filter the incoming envelope by template value selected by the user
-                        var curAvailableTemplates = Crate.GetStorage(curActionDTO).CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").Single().Content;
+                        var curAvailableTemplates = Crate.GetStorage(curActionDO).CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").Single().Content;
 
                         //if the incoming enveloped is prepared using selected template, get the envelope ID
                         if (curAvailableTemplates.Fields.Single(field => field.Value.Equals(curSelectedValue)).Value.Equals(curSelectedValue))
@@ -158,7 +160,7 @@ namespace terminalDocuSign.Actions
 
             // Make sure that it exists
             if (String.IsNullOrEmpty(envelopeId))
-                throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
 
             //Create a field
             var fields = new List<FieldDTO>()
@@ -203,10 +205,10 @@ namespace terminalDocuSign.Actions
             return envelopeIdField.Value;
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert
-                .DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
+                .DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
          
             var crateControls = PackCrate_ConfigurationControls();
@@ -214,7 +216,7 @@ namespace terminalDocuSign.Actions
             var eventFields = PackCrate_DocuSignEventFields();
 
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Add(crateControls);
                 updater.CrateStorage.Add(crateDesignTimeFields);
@@ -224,20 +226,20 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Remove<EventSubscriptionCM>();
                 updater.CrateStorage.Add(PackCrate_EventSubscriptions(crateControls.Get<StandardConfigurationControlsCM>()));
             }
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
 
-        protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //just update the user selected envelope events in the follow up configuration
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 UpdateSelectedTemplateId(updater.CrateStorage);
                 UpdateSelectedEvents(updater.CrateStorage);
             }
 
-            return Task.FromResult(curActionDTO);
+            return Task.FromResult(curActionDO);
         }
 
         private void UpdateSelectedTemplateId(CrateStorage storage)
