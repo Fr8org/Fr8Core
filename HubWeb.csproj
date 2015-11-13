@@ -451,6 +451,7 @@
     <Content Include="Content\icons\web_services\sendgrid-icon-64x64.png" />
     <Content Include="Content\icons\web_services\slack-icon-64x64.png" />
     <Content Include="Content\icons\web_services\twilio-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\unknown-service.png" />
     <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\backgrounds\about-bg.jpg" />
     <Content Include="Content\img\backgrounds\bg-overlay.png" />
@@ -689,7 +690,6 @@
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
     <Content Include="Scripts\lib\jpattern.js" />
-    <Content Include="Scripts\tests\integration\PluginActionExecuteTest.js" />
     <Content Include="Scripts\tests\integration\ContainerControllerTests.js" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />
@@ -813,7 +813,7 @@
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
     <TypeScriptCompile Include="Scripts\tests\integration\DockyardAccountControllerTests\DockyardAccountControllerTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\integration\PluginDocuSignTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\TerminalDocuSignTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ProcessTemplateControllerTests.ts" />
     <Content Include="Scripts\tests\.gitignore" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
