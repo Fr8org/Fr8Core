@@ -282,6 +282,7 @@
     <Compile Include="Interfaces\DataTransferObjects\RouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\WebServiceActionSetDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\WebServiceDTO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\IMTDataRepository.cs" />
@@ -413,9 +414,13 @@
     <Compile Include="Migrations\201511101607186_Renamed_Plugin_To_Terminal_Final.Designer.cs">
       <DependentUpon>201511101607186_Renamed_Plugin_To_Terminal_Final.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201511130841282_Container_Id_Int32_To_Guid.cs" />
-    <Compile Include="Migrations\201511130841282_Container_Id_Int32_To_Guid.Designer.cs">
-      <DependentUpon>201511130841282_Container_Id_Int32_To_Guid.cs</DependentUpon>
+    <Compile Include="Migrations\201511130248445_MakeWebServicesOptional.cs" />
+    <Compile Include="Migrations\201511130248445_MakeWebServicesOptional.Designer.cs">
+      <DependentUpon>201511130248445_MakeWebServicesOptional.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511131623530_Container_Id_Int32_To_Guid.cs" />
+    <Compile Include="Migrations\201511131623530_Container_Id_Int32_To_Guid.Designer.cs">
+      <DependentUpon>201511131623530_Container_Id_Int32_To_Guid.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -699,8 +704,11 @@
     <EmbeddedResource Include="Migrations\201511101607186_Renamed_Plugin_To_Terminal_Final.resx">
       <DependentUpon>201511101607186_Renamed_Plugin_To_Terminal_Final.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201511130841282_Container_Id_Int32_To_Guid.resx">
-      <DependentUpon>201511130841282_Container_Id_Int32_To_Guid.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201511130248445_MakeWebServicesOptional.resx">
+      <DependentUpon>201511130248445_MakeWebServicesOptional.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511131623530_Container_Id_Int32_To_Guid.resx">
+      <DependentUpon>201511131623530_Container_Id_Int32_To_Guid.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

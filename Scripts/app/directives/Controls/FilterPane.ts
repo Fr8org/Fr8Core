@@ -4,6 +4,7 @@ module dockyard.directives {
     'use strict';
 
     export function FilterPane(): ng.IDirective {
+        var uniqueDirectiveId = 1;
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/FilterPane',
@@ -16,8 +17,8 @@ module dockyard.directives {
                     $scope: IPaneDefineCriteriaScope,
                     $timeout: ng.ITimeoutService,
                     crateHelper: services.CrateHelper
-                    ) {
-
+                ) {
+                    $scope.uniqueDirectiveId = ++uniqueDirectiveId;
                     $scope.operators = [
                         { text: '>', value: 'gt' },
                         { text: '>=', value: 'gte' },
@@ -88,6 +89,7 @@ module dockyard.directives {
         defaultOperator: string;
         conditions: Array<interfaces.ICondition>;
         executionType: number;
+        uniqueDirectiveId: number;
     }
 }
 

@@ -41,7 +41,14 @@ namespace terminalAzure.Controllers
                 Version = "1"
             };
 
+            var webService = new WebServiceDO
+            {
+                Name = "Microsoft Azure"
+            };
+
             template.Terminal = terminal;
+
+	        template.WebService = webService;
 
             result.Add(template);
 

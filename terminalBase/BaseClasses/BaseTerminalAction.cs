@@ -115,7 +115,7 @@ namespace TerminalBase.BaseClasses
             return null;
         }
 
-        protected async Task<ActionDO> ProcessConfigurationRequest(ActionDO curActionDO, ConfigurationEvaluator configurationEvaluationResult, AuthorizationTokenDO	 authToken = null)
+        protected async Task<ActionDO> ProcessConfigurationRequest(ActionDO curActionDO, ConfigurationEvaluator configurationEvaluationResult, AuthorizationTokenDO	 authToken)
         {
             if (configurationEvaluationResult(curActionDO) == ConfigurationRequestType.Initial)
             {
@@ -139,7 +139,7 @@ namespace TerminalBase.BaseClasses
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public virtual async Task<ActionDO> Configure(ActionDO actionDO, AuthorizationTokenDO authTokenDO=null)
+        public virtual async Task<ActionDO> Configure(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
             return await ProcessConfigurationRequest(actionDO, ConfigurationEvaluator, authTokenDO);
         }
@@ -156,14 +156,14 @@ namespace TerminalBase.BaseClasses
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
-        protected virtual async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
+        protected virtual async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //Returns Task<ActivityDTO> using FromResult as the return type is known
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
-        protected virtual async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
+        protected virtual async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //Returns Task<ActivityDTO> using FromResult as the return type is known
             return await Task.FromResult<ActionDO>(curActionDO);

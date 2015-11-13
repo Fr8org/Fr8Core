@@ -112,7 +112,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO = null)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
@@ -205,7 +205,7 @@ namespace terminalDocuSign.Actions
             return envelopeIdField.Value;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert
                 .DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
@@ -229,7 +229,7 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 
-        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
+        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //just update the user selected envelope events in the follow up configuration
 

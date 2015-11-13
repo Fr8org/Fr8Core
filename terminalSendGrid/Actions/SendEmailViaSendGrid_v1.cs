@@ -157,7 +157,7 @@ namespace terminalSendGrid.Actions
             return htmlText;
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO = null)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var fromAddress = _configRepository.Get("OutboundFromAddress");
 

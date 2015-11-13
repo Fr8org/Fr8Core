@@ -29,7 +29,7 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Initial;
         }
 
-        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {

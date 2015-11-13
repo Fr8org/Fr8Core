@@ -120,12 +120,12 @@ namespace terminalDocuSign.Actions
             return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO = null)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return await GetProcessPayload(containerId);
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
@@ -137,7 +137,7 @@ namespace terminalDocuSign.Actions
             return curActionDO;
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var controls = new ActionUi();
             

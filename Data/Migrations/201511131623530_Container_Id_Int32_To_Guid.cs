@@ -7,8 +7,6 @@ namespace Data.Migrations
     {
         public override void Up()
         {
-            System.Diagnostics.Debugger.Launch();
-
             DropForeignKey("dbo.ProcessNodes", "ParentProcessId", "dbo.Processes");
             DropIndex("dbo.ProcessNodes", new[] { "ParentContainerId" });
 
@@ -23,7 +21,7 @@ namespace Data.Migrations
             AddColumn("dbo.ProcessNodes", "ParentContainerId", c => c.Guid(nullable: true));
             Sql("UPDATE [PN] SET [ParentContainerId] = [C].[Id] FROM [dbo].[ProcessNodes] AS [PN] INNER JOIN [dbo].[Containers] [C] ON [C].[OldId] = [PN].[OldParentContainerId]");
             AlterColumn("dbo.ProcessNodes", "ParentContainerId", c => c.Guid(nullable: false));
-            
+
             CreateIndex("dbo.ProcessNodes", "ParentContainerId");
             AddForeignKey("dbo.ProcessNodes", "ParentContainerId", "dbo.Containers", "Id");
 
