@@ -372,5 +372,4 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("value")]
         public string Value { get; set; }
     }
-
 }

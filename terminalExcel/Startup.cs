@@ -15,11 +15,11 @@ using Hub.StructureMap;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 
-[assembly: OwinStartup("PluginExcelConfiguration", typeof(terminalExcel.StartupPluginExcel))]
+[assembly: OwinStartup("TerminalExcelConfiguration", typeof(terminalExcel.StartupTerminalExcel))]
 
 namespace terminalExcel
 {
-    public class StartupPluginExcel : BaseConfiguration
+    public class StartupTerminalExcel : BaseConfiguration
     {
         public void Configuration(IAppBuilder app)
         {
@@ -28,14 +28,14 @@ namespace terminalExcel
 
         public void Configuration(IAppBuilder app, bool selfHost)
         {
-            ConfigureProject(selfHost, PluginExcelStructureMapRegistries.LiveConfiguration);
+            ConfigureProject(selfHost, TerminalExcelStructureMapRegistries.LiveConfiguration);
 
             RoutesConfig.Register(_configuration);
 
             //if (selfHost)
             //{
             // Web API routes
-            _configuration.Services.Replace(typeof(IHttpControllerTypeResolver), new PluginControllerTypeResolver());
+            _configuration.Services.Replace(typeof(IHttpControllerTypeResolver), new TerminalControllerTypeResolver());
             //}
 
             //DataAutoMapperBootStrapper.ConfigureAutoMapper();
@@ -46,7 +46,7 @@ namespace terminalExcel
 
             if (!selfHost)
             {
-                StartHosting("plugin_excel");
+                StartHosting("terminal_excel");
             }
         }
 
@@ -59,14 +59,14 @@ namespace terminalExcel
         //        };
         //}
 
-        public class PluginControllerTypeResolver : IHttpControllerTypeResolver
+        public class TerminalControllerTypeResolver : IHttpControllerTypeResolver
         {
             public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
         {
             return new Type[] {
                     typeof(Controllers.ActionController),
                     typeof(Controllers.EventController),
-                    typeof(Controllers.PluginController)
+                    typeof(Controllers.TerminalController)
                 };
         }
         }

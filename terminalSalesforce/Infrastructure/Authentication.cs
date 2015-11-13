@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Utilities.Configuration.Azure;
+using Data.Entities;
 
 namespace terminalSalesforce.Infrastructure
 {
@@ -69,7 +70,7 @@ namespace terminalSalesforce.Infrastructure
             }
         }
 
-        public AuthTokenDTO Authenticate(
+        public AuthorizationTokenDTO Authenticate(
             ExternalAuthenticationDTO externalAuthDTO)
         {
             string code;
@@ -81,7 +82,7 @@ namespace terminalSalesforce.Infrastructure
 
             AuthenticationClient oauthToken = (AuthenticationClient)Task.Run(() => GetAuthToken(code)).Result;         
           
-            return new AuthTokenDTO()
+            return new AuthorizationTokenDTO()
             {
                 Token = oauthToken.AccessToken,
                 ExternalAccountId = oauthToken.Id.Substring(oauthToken.Id.LastIndexOf("/")+1,oauthToken.Id.Length-(oauthToken.Id.LastIndexOf("/")+1)),
@@ -95,7 +96,7 @@ namespace terminalSalesforce.Infrastructure
         {
             var auth = new AuthenticationClient();
             code = code.Replace("%3D", "=");
-            string redirectUrl = SalesforceAuthCallbackURLDomain + "/AuthenticationCallback/ProcessSuccessfulOAuthResponse?dockyard_plugin=terminalSalesforce&version=1";
+            string redirectUrl = SalesforceAuthCallbackURLDomain + "/AuthenticationCallback/ProcessSuccessfulOAuthResponse?dockyard_terminal=terminalSalesforce&version=1";
             await auth.WebServerAsync(salesforceConsumerKey, salesforceConsumerSecret, redirectUrl, code, tokenRequestEndpointUrl);
             return auth;
         }
@@ -103,7 +104,7 @@ namespace terminalSalesforce.Infrastructure
 
         public string CreateAuthUrl(string exteranalStateValue)
         {
-            string redirectUrl = SalesforceAuthCallbackURLDomain + "/AuthenticationCallback/ProcessSuccessfulOAuthResponse?dockyard_plugin=terminalSalesforce&version=1";
+            string redirectUrl = SalesforceAuthCallbackURLDomain + "/AuthenticationCallback/ProcessSuccessfulOAuthResponse?dockyard_terminal=terminalSalesforce&version=1";
             string url = Common.FormatAuthUrl(
                 salesforceAuthUrl, Salesforce.Common.Models.ResponseTypes.Code,
                 salesforceConsumerKey,
@@ -112,16 +113,16 @@ namespace terminalSalesforce.Infrastructure
             return url;
         }
 
-        public async Task<ActionDTO> RefreshAccessToken(ActionDTO currentActionDTO)
+        public async Task<AuthorizationTokenDO> RefreshAccessToken(AuthorizationTokenDO curAuthTokenDO)
         {
             var auth = new AuthenticationClient();
-            string authAttributes = currentActionDTO.AuthToken.AdditionalAttributes;
+            string authAttributes = curAuthTokenDO.AdditionalAttributes;
             string refreshToken = authAttributes.Substring(authAttributes.IndexOf("refresh_token"), authAttributes.IndexOf("instance_url") - 1);
             refreshToken = refreshToken.Replace("refresh_token=", "");
             await auth.TokenRefreshAsync(salesforceConsumerKey, refreshToken);
-            currentActionDTO.AuthToken.Token = auth.AccessToken;
-            currentActionDTO.AuthToken.AdditionalAttributes = "refresh_token=" + auth.RefreshToken + ";instance_url=" + auth.InstanceUrl + ";api_version=" + auth.ApiVersion;            
-            return currentActionDTO;
+            curAuthTokenDO.Token = auth.AccessToken;
+            curAuthTokenDO.AdditionalAttributes = "refresh_token=" + auth.RefreshToken + ";instance_url=" + auth.InstanceUrl + ";api_version=" + auth.ApiVersion;
+            return curAuthTokenDO;
         }
     }
 }

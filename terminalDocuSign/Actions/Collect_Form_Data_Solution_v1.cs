@@ -18,7 +18,7 @@ using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Collect_Form_Data_Solution_v1 : BasePluginAction
+    public class Collect_Form_Data_Solution_v1 : BaseTerminalAction
     {
         private class ActionUi : StandardConfigurationControlsCM
         {
@@ -95,14 +95,14 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDTO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        public ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -110,42 +110,41 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        public object Activate(ActionDTO curDataPackage)
+        public object Activate(ActionDO curDataPackage)
         {
             return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
         }
 
-        public object Deactivate(ActionDTO curDataPackage)
+        public object Deactivate(ActionDO curDataPackage)
         {
             return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
-            return await GetProcessPayload(actionDto.ProcessId);
+            return await GetProcessPayload(containerId);
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
                 updater.CrateStorage.AddRange(await PackSources());
             }
 
-            return curActionDTO;
+            return curActionDO;
         }
 
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
             var controls = new ActionUi();
             
-            controls.ClonePropertiesFrom(Crate.GetStorage(curActionDTO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
-            
-            var action = Mapper.Map<ActionDO>(curActionDTO);
+            controls.ClonePropertiesFrom(Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
 
-            action.ChildNodes = new List<RouteNodeDO>();
+
+            curActionDO.ChildNodes = new List<RouteNodeDO>();
 
             if (controls.UseTemplate.Selected)
             {
@@ -167,7 +166,7 @@ namespace terminalDocuSign.Actions
                     Name = "First action"
                 };
 
-                action.ChildNodes.Add(firstAction);
+                curActionDO.ChildNodes.Add(firstAction);
             }
 
             int finalActionTemplateId;
@@ -184,10 +183,10 @@ namespace terminalDocuSign.Actions
                     Name = "Final action"
                 };
 
-                action.ChildNodes.Add(finalAction);
+                curActionDO.ChildNodes.Add(finalAction);
             }
             
-            return Mapper.Map<ActionDTO>(action);
+            return curActionDO;
         }
         
         private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(Predicate<ActivityTemplateDO> query)

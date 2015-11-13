@@ -7,7 +7,7 @@ using terminalSendGrid.Services;
 
 namespace terminalSendGrid
 {
-    public static class PluginSendGridStructureMapBootstrapper
+    public static class TerminalSendGridStructureMapBootstrapper
     {
         public static void SendGridConfigureDependencies(this IContainer container, StructureMapBootStrapper.DependencyType type)
         {

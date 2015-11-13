@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting.Fixtures;
 
 namespace HubTests.Managers
 {
@@ -44,6 +45,45 @@ namespace HubTests.Managers
 //
 //
 //        }
+
+
+        [Test]
+        public void CanAddLogMessageToContainerDO()
+        {
+            // Arrange
+            var curContainerDO = FixtureData.TestContainer1();
+            var curLogItemList = FixtureData.LogItemDTOList();
+            var curLabel = "Crate Manager Can Add Log Message To ContainerDO Test";
+            var curCrateDTOContents = "{\"Item\":[{\"Name\":\"LogItemDTO1\",\"PrimaryCategory\":\"Container\",\"SecondaryCategory\":\"LogItemDTO Generator\",\"Activity\":\"Add Log Message\",\"Data\":\"\"}],\"ManifestType\":13,\"ManifestId\":13,\"ManifestName\":\"Standard Logging Crate\"}";
+            
+            //Act
+            _crateManager.AddLogMessage(curLabel, curLogItemList, curContainerDO);
+            var updatedCrate = _crateManager.GetStorage(curContainerDO.CrateStorage).FirstCrateOrDefault<StandardLoggingCM>(x=>x.Label == curLabel);
+            
+            //Assert
+            Assert.IsNotNull(updatedCrate);
+
+            Assert.AreEqual(updatedCrate.Content.Item.Count, curLogItemList.Count);
+            int eq = 0;
+
+            foreach (var item in updatedCrate.Content.Item)
+            {
+                foreach (var refItem in curLogItemList)
+                {
+                    if (item.Activity == refItem.Activity &&
+                        item.Data == refItem.Data &&
+                        item.Name == refItem.Name &&
+                        item.PrimaryCategory == refItem.PrimaryCategory &&
+                        item.SecondaryCategory == refItem.SecondaryCategory)
+                    {
+                        eq ++;
+                        break;
+                    }
+                }    
+            }
+
+            Assert.AreEqual(eq, curLogItemList.Count);
+        }
 
         [Test]
         public void FromNullCrateStorageDTO_ReturnsEmptyStorage()

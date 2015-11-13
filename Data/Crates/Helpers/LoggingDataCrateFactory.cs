@@ -6,7 +6,7 @@ namespace Data.Crates.Helpers
     {
         public Crate Create(LoggingDataCm loggingDataCm)
         {
-            return Crate.FromContent("Dockyard Plugin Event or Incident Report", loggingDataCm);
+            return Crate.FromContent("Dockyard Terminal Event or Incident Report", loggingDataCm);
 
             // var serializer = new JsonSerializer();
             // var contents = serializer.Serialize(loggingData);

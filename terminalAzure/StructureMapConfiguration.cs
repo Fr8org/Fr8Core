@@ -12,14 +12,14 @@ using terminalAzure.Infrastructure;
 
 namespace terminalAzure
 {
-    public class PluginAzureSqlServerStructureMapRegistries
+    public class TerminalAzureSqlServerStructureMapRegistries
     {
         public class LiveMode : Registry
         {
             public LiveMode()
             {
                 For<IAction>().Use<Hub.Services.Action>();
-                For<IPlugin>().Use<Plugin>();
+                For<ITerminal>().Use<Terminal>();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IDbProvider>().Use<SqlClientDbProvider>();
                 For<IRouteNode>().Use<RouteNode>();

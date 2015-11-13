@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 namespace TerminalBase.Infrastructure
 {
     /// <summary>
-    /// JSON utility class, to help parse JSON data in plugins.
+    /// JSON utility class, to help parse JSON data in terminals.
     /// </summary>
     public static class JsonParser
     {
