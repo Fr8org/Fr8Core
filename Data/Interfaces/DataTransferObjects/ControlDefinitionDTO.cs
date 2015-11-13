@@ -239,6 +239,13 @@ namespace Data.Interfaces.DataTransferObjects
             Type = ControlTypes.Duration;
         }
 
+        [JsonProperty("value")]
+        public new TimeSpan Value {
+            get {
+                return new TimeSpan(this.Days, this.Hours, this.Minutes, 0);
+            }
+        }
+
         [JsonProperty("days")]
         public Int32 Days { get; set; }
 
@@ -269,7 +276,7 @@ namespace Data.Interfaces.DataTransferObjects
         public bool Required { get; set; }
 
         [JsonProperty("value")]
-        public string Value { get; set; }
+        public virtual string Value { get; set; }
 
         [JsonProperty("label")]
         public string Label { get; set; }
