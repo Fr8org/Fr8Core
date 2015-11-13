@@ -35,6 +35,9 @@ module dockyard.controllers {
 
         filePicker1: model.FileControlDefinitionDTO;
         filePicker2: model.FileControlDefinitionDTO;
+
+        filterPane1: any;
+        filterPane2: any;
     }
 
     //Setup aliases
@@ -184,6 +187,40 @@ module dockyard.controllers {
                 name: 'fileTest1',
                 events: [],
                 value: ''
+            };
+
+            $scope.filterPane1 = {
+                label: "Execute Actions If:",
+                name: "Selected_Filter",
+                key: 'filterPaneKey1',
+                events: null,
+                fields: null,
+                required: true,
+                selected: false,
+                source: {
+                    label: "Queryable Criteria",
+                    manifestType: "Standard Design-Time Fields"
+                },
+                type: "FilterPane",
+                value: '{"executionType":2,"conditions":[{"field":null,"operator":"","value":null}]}'
+            };
+
+            $scope.filterPane2 = {
+                label: "Execute Actions If:",
+                name: "Selected_Filter",
+                
+                events: null,
+                fields: null,
+                required: true,
+                selected: false,
+                source: {
+                    label: "Queryable Criteria",
+                    manifestType: "Standard Design-Time Fields"
+                },
+                type: "FilterPane",
+                
+                key: 'filterPaneKey2',
+                value: '{"executionType":2,"conditions":[{"field":null,"operator":"","value":null}]}'
             };
         }
 
