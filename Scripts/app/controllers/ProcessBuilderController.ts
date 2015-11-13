@@ -84,6 +84,7 @@ module dockyard.controllers {
                 if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
                     this.selectAction(action);
             }
+
         }
 
         /*

@@ -9,6 +9,7 @@ var dockyard;
             var pca = dockyard.directives.paneConfigureAction;
             //More detail on creating directives in TypeScript: 
             //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
+            //export function FilePicker(): ng.IDirective {
             var FilePicker = (function () {
                 function FilePicker($modal, FileService) {
                     var _this = this;
@@ -93,6 +94,7 @@ var dockyard;
                     if (input) {
                         return 'Selected File : ' + input.substring(input.lastIndexOf('/') + 1, input.length);
                     }
+                    return input;
                 };
             });
             /*
