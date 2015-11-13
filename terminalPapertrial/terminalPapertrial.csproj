@@ -180,6 +180,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\Write_To_Log_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
@@ -205,7 +206,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Actions\" />
     <Folder Include="App_Data\" />
     <Folder Include="DataTransferObjects\" />
     <Folder Include="Infrastructure\" />
