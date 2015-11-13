@@ -38,7 +38,7 @@ namespace terminalSalesforce.Controllers
             var action = new ActivityTemplateDO()
             {
                 Name = "SendEmailViaSendGrid",
-                Label = "Send Email Vie Send Grid",
+                Label = "Send Email Via Send Grid",
                 Version = "1",
                 Tags = "Notifier",
                 Terminal = terminal,
