@@ -9,7 +9,7 @@ using Data.Interfaces.DataTransferObjects;
 using Microsoft.Owin.Hosting;
 using Owin;
 
-namespace pluginIntegrationTests.Fixtures
+namespace terminalIntegrationTests.Fixtures
 {
     partial class FixtureData
     {

@@ -13,11 +13,11 @@ namespace terminalSlack
     {
         public static void Register(HttpConfiguration config)
         {
-            BasePluginWebApiConfig.Register(config);
+            BaseTerminalWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
-                name: "PluginSlack",
-                routeTemplate: "plugin_slack/{controller}/{id}"                
+                name: "TerminalSlack",
+                routeTemplate: "terminal_slack/{controller}/{id}"                
             );
         }
     }

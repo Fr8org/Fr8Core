@@ -17,10 +17,10 @@ namespace terminalDocuSign
 
             GlobalConfiguration.Configure(WebApiConfig.Register);
 			DataAutoMapperBootStrapper.ConfigureAutoMapper();
-			PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
+			TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
             // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE);
-			PluginDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
+			TerminalDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
         }
     }
 }

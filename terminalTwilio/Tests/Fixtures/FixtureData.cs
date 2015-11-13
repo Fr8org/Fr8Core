@@ -44,5 +44,15 @@ namespace terminalTwilio.Tests.Fixtures
 
             return Data.Crates.Crate.FromContent("Configuration_Controls", confControls);
         }
+        public static AuthorizationTokenDO AuthTokenDOTest1()
+        {
+            return new AuthorizationTokenDO()
+            {
+                Token = @"{""Email"":""docusign_developer@dockyard.company"",""ApiPassword"":""VIXdYMrnnyfmtMaktD+qnD4sBdU=""}",
+                ExternalAccountId = "docusign_developer@dockyard.company",
+                UserID = "0addea2e-9f27-4902-a308-b9f57d811c0a",
+
+            };
+        }
     }
 }

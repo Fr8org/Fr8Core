@@ -9,12 +9,12 @@ namespace terminalDocuSign.Controllers
     public class EventController : ApiController
     {
         private IEvent _event;
-        private BasePluginEvent _basePluginEvent;
+        private BaseTerminalEvent _baseTerminalEvent;
 
         public EventController()
         {
             _event = new Event();
-            _basePluginEvent = new BasePluginEvent();
+            _baseTerminalEvent = new BaseTerminalEvent();
         }
 
         [HttpPost]

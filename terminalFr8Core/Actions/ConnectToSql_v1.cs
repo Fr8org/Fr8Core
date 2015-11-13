@@ -17,16 +17,17 @@ using TerminalSqlUtilities;
 
 namespace terminalFr8Core.Actions
 {
-    public class ConnectToSql_v1 : BasePluginAction
+    public class ConnectToSql_v1 : BaseTerminalAction
     {
         #region Configuration.
 
         private const string DefaultDbProvider = "System.Data.SqlClient";
 
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        public override ConfigurationRequestType ConfigurationEvaluator(
+            ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -34,16 +35,16 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
             }
 
-            return Task.FromResult<ActionDTO>(curActionDTO);
+            return Task.FromResult<ActionDO>(curActionDO);
         }
 
         private Crate CreateControlsCrate()
@@ -62,16 +63,16 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(control);
         }
 
-        protected override Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO=null)
         {
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 RemoveControl(updater.CrateStorage, "ErrorLabel");
 
 
                 updater.CrateStorage.RemoveByLabel("Sql Table Definitions");
 
-            var connectionString = ExtractConnectionString(curActionDTO);
+            var connectionString = ExtractConnectionString(curActionDO);
                 
             if (!string.IsNullOrEmpty(connectionString))
             {
@@ -117,12 +118,12 @@ namespace terminalFr8Core.Actions
             }
             }
 
-            return base.FollowupConfigurationResponse(curActionDTO);
+            return base.FollowupConfigurationResponse(curActionDO, authTokenDO);
         }
 
-        private string ExtractConnectionString(ActionDTO curActionDTO)
+        private string ExtractConnectionString(ActionDO curActionDO)
         {
-            var configControls = Crate.GetStorage(curActionDTO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var configControls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
             var connectionStringControl = configControls.FindByName("ConnectionString");
 
             return connectionStringControl.Value;
@@ -215,7 +216,7 @@ namespace terminalFr8Core.Actions
 
         #region Execution.
 
-        public Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
         {
             return Task.FromResult<PayloadDTO>(null);
         }

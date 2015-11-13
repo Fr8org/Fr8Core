@@ -251,7 +251,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<HistoryItemDO>().ToTable("History");
             modelBuilder.Entity<ConceptDO>().ToTable("Concepts");
             modelBuilder.Entity<SubscriptionDO>().ToTable("Subscriptions");
-            modelBuilder.Entity<PluginDO>().ToTable("Plugins");
+            modelBuilder.Entity<TerminalDO>().ToTable("Terminals");
             modelBuilder.Entity<RemoteServiceProviderDO>().ToTable("RemoteCalendarProviders");
             modelBuilder.Entity<RemoteOAuthDataDo>().ToTable("RemoteCalendarAuthData");
             modelBuilder.Entity<AuthorizationTokenDO>().ToTable("AuthorizationTokens");
@@ -332,19 +332,20 @@ namespace Data.Infrastructure
 //               .WillCascadeOnDelete(true);
             
             modelBuilder.Entity<AuthorizationTokenDO>()
-             .HasRequired(x => x.Plugin)
+             .HasRequired(x => x.Terminal)
              .WithMany()
-             .HasForeignKey(x => x.PluginID)
+             .HasForeignKey(x => x.TerminalID)
              .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<ActivityTemplateDO>()
-                .HasRequired(x => x.Plugin)
+                .HasRequired(x => x.Terminal)
                 .WithMany()
-                .HasForeignKey(x => x.PluginID)
+                .HasForeignKey(x => x.TerminalId)
+
                 .WillCascadeOnDelete(false);
 
 			modelBuilder.Entity<ActivityTemplateDO>()
-				.HasRequired(x => x.WebService)
+				.HasOptional(x => x.WebService) // was HasRequired. In reality this relationship looks like to be optional.
 				.WithMany()
 				.HasForeignKey(x => x.WebServiceId)
 				.WillCascadeOnDelete(false);

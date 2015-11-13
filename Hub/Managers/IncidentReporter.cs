@@ -23,10 +23,10 @@ namespace Hub.Managers
         public void SubscribeToAlerts()
         {
             EventManager.AlertEmailProcessingFailure += ProcessAlert_EmailProcessingFailure;
-            EventManager.IncidentPluginConfigureFailed += ProcessIncidentPluginConfigureFailed;
-            EventManager.IncidentPluginRunFailed += ProcessIncidentPluginRunFailed;
+            EventManager.IncidentTerminalConfigureFailed += ProcessIncidentTerminalConfigureFailed;
+            EventManager.IncidentTerminalRunFailed += ProcessIncidentTerminalRunFailed;
             EventManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
-            EventManager.IncidentPluginActionActivationFailed += ProcessIncidentPluginActionActivationFailed;
+            EventManager.IncidentTerminalActionActivationFailed += ProcessIncidentTerminalActionActivationFailed;
             //EventManager.IncidentPluginConfigureFailed += ProcessIncidentPluginConfigureFailed;
             //AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
             EventManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
@@ -34,18 +34,18 @@ namespace Hub.Managers
             //AlertManager.AlertBookingRequestCheckedOut += ProcessBRCheckedOut;
             EventManager.AlertUserRegistrationError += ReportUserRegistrationError;
             //AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
-            EventManager.PluginIncidentReported += LogPluginIncident;
+            EventManager.TerminalIncidentReported += LogTerminalIncident;
             EventManager.UnparseableNotificationReceived += LogUnparseableNotificationIncident;
             EventManager.IncidentDocuSignFieldMissing += IncidentDocuSignFieldMissing;
             EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
         }
 
-        private void ProcessIncidentPluginActionActivationFailed(string pluginUrl, string curActionDTO)
+        private void ProcessIncidentTerminalActionActivationFailed(string terminalUrl, string curActionDTO)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
-                Data = pluginUrl + "      " + curActionDTO,
+                Data = terminalUrl + "      " + curActionDTO,
                 ObjectId = "unknown",
                 PrimaryCategory = "Action",
                 SecondaryCategory = "Activation",
@@ -72,33 +72,33 @@ namespace Hub.Managers
                 uow.SaveChanges();
             }
         }
-        private void ProcessIncidentPluginConfigureFailed(string curPluginUrl, string curAction, string errorMessage)
+        private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string curAction, string errorMessage)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
-                Data = curPluginUrl + "      " + curAction + " " + errorMessage,
+                Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
                 ObjectId = "unknown",
-                PrimaryCategory = "Plugin",
+                PrimaryCategory = "Terminal",
                 SecondaryCategory = "Configure",
                 Activity = "Configuration Failed"
             };
             SaveAndLogIncident(incident);
         }
-        private void ProcessIncidentPluginRunFailed(string curPluginUrl, string curAction, string errorMessage)
+        private void ProcessIncidentTerminalRunFailed(string curTerminalUrl, string curAction, string errorMessage)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
-                Data = curPluginUrl + "      " + curAction + " " + errorMessage,
+                Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
                 ObjectId = "unknown",
-                PrimaryCategory = "Plugin",
+                PrimaryCategory = "Terminal",
                 SecondaryCategory = "Configure",
                 Activity = "Configuration Failed"
             };
             SaveAndLogIncident(incident);
         }
-        private void LogPluginIncident(LoggingDataCm incidentItem)
+        private void LogTerminalIncident(LoggingDataCm incidentItem)
         {
             var currentIncident = new IncidentDO
             {

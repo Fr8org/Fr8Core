@@ -11,7 +11,7 @@ using TerminalBase.BaseClasses;
 namespace terminalGoogle.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BasePluginController
+    public class AuthenticationController : BaseTerminalController
     {
         private const string curPlugin = "terminalGoogle";
 
@@ -41,7 +41,7 @@ namespace terminalGoogle.Controllers
 
         [HttpPost]
         [Route("token")]
-        public AuthTokenDTO GenerateOAuthToken(ExternalAuthenticationDTO externalAuthDTO)
+        public AuthorizationTokenDTO GenerateOAuthToken(ExternalAuthenticationDTO externalAuthDTO)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace terminalGoogle.Controllers
 
                 var oauthToken = _google.GetToken(code);
 
-                return new AuthTokenDTO()
+                return new AuthorizationTokenDTO()
                 {
                     Token = JsonConvert.SerializeObject(oauthToken),
                     ExternalStateToken = state
@@ -64,9 +64,9 @@ namespace terminalGoogle.Controllers
             }
             catch (Exception ex)
             {
-                ReportPluginError(curPlugin, ex);
+                ReportTerminalError(curPlugin, ex);
 
-                return new AuthTokenDTO()
+                return new AuthorizationTokenDTO()
                 {
                     Error = "An error occured while trying to authenticate, please try again later."
                 };

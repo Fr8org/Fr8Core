@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Http;
 using AutoMapper;
@@ -13,6 +14,8 @@ namespace HubWeb.Controllers
 	[RoutePrefix("webservices")]
 	public class WebServicesController : ApiController
 	{
+	    private const string UknownWebServiceName = "UnknownService";
+
 		[HttpGet]
 		[Route("")]
 		public IHttpActionResult GetWebServices()
@@ -49,38 +52,39 @@ namespace HubWeb.Controllers
 		[Route("actions")]
 		public IHttpActionResult GetActions(ActivityCategory[] categories)
 		{
-			var webServiceList = new List<WebServiceActionSetDTO>();
+			List<WebServiceActionSetDTO> webServiceList;
 
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				// Getting web services and their actions as one set, then filtering that set
 				// to get only those actions whose category matches any of categories provided
 				// resulting set is grouped into batches 1 x web service - n x actions
-				webServiceList = uow.WebServiceRepository.GetQuery()
-						.Join(uow.ActivityTemplateRepository.GetQuery(), ws => ws.Id, at => at.WebServiceId, (ws, at) => new { ws, at })
-						.Where(x => categories.Any(p => p == x.at.Category))
-						.GroupBy(x => x.ws, x => x.at, (key, group) => new
-						{
-							WebService = key,
-							Actions = group.ToList()
-						})
-						.Select(x => new WebServiceActionSetDTO
-						{
-							WebServiceIconPath = x.WebService.IconPath,
-							Actions = x.Actions.Select(p => new ActivityTemplateDTO
-							{
-								Id = p.Id,
-								Name = p.Name,
-								Category = p.Category.ToString(),
-								ComponentActivities = p.ComponentActivities,
-								Label = p.Label,
-								MinPaneWidth = p.MinPaneWidth,
-								PluginID = p.PluginID,
-								Version = p.Version
-							})
-							.ToList()
-						})
-						.ToList();
+
+                var templates = uow.ActivityTemplateRepository.GetQuery().Include(x => x.WebService).ToArray();
+                var unknwonService = uow.WebServiceRepository.GetQuery().FirstOrDefault(x => x.Name == UknownWebServiceName);
+
+			    webServiceList = templates.Where(x => categories == null || categories.Contains(x.Category))
+			        .GroupBy(x => x.WebService, x => x, (key, group) => new
+			        {
+			            WebService = key,
+			            SortOrder = key == null ? 1 : 0,
+			            Actions = group
+			        }).OrderBy(x => x.SortOrder)
+			        .Select(x => new WebServiceActionSetDTO
+			        {
+			            WebServiceIconPath = x.WebService != null ? x.WebService.IconPath : (unknwonService != null ? unknwonService.IconPath : null),
+			            Actions = x.Actions.Select(p => new ActivityTemplateDTO
+			            {
+			                Id = p.Id,
+			                Name = p.Name,
+			                Category = p.Category.ToString(),
+			                ComponentActivities = p.ComponentActivities,
+			                Label = p.Label,
+			                MinPaneWidth = p.MinPaneWidth,
+			                TerminalId = p.Terminal.Id,
+			                Version = p.Version
+			            }).ToList()
+			        }).ToList();
 			}
 
 			return Ok(webServiceList);

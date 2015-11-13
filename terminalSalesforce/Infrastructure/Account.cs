@@ -1,4 +1,5 @@
-﻿using Data.Interfaces.DataTransferObjects;
+﻿using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Salesforce.Force;
@@ -15,7 +16,7 @@ namespace terminalSalesforce.Infrastructure
 {
     public class Account
     {
-        ForceClient client;
+        ForceClient client;     
         private ICrateManager _crateManager;
 
         public Account()
@@ -23,14 +24,14 @@ namespace terminalSalesforce.Infrastructure
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        public async Task CreateAccount(ActionDTO currentActionDTO)
+        public async Task CreateAccount(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
             
             string instanceUrl, apiVersion;
-            ParseAuthToken(currentActionDTO.AuthToken.AdditionalAttributes, out instanceUrl, out apiVersion);
-            client = new ForceClient(instanceUrl, currentActionDTO.AuthToken.Token, apiVersion);
+            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
+            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
             AccountDTO account = new AccountDTO();
-            var curFieldList = _crateManager.FromDto(currentActionDTO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var curFieldList = _crateManager.GetStorage(actionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
             account.Name = curFieldList.Controls.First(x => x.Name == "accountName").Value;           
             account.AccountNumber = curFieldList.Controls.First(x => x.Name == "accountNumber").Value;
             account.Phone = curFieldList.Controls.First(x => x.Name == "phone").Value;

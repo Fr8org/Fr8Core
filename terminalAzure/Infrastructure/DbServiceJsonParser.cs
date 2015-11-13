@@ -44,9 +44,9 @@ namespace terminalAzure.Infrastructure
             return ExtractTable(data);
         }
 
-        public string ExtractConnectionString(ActionDTO curActionDTO)
+        public string ExtractConnectionString(ActionDO curActionDO)
         {
-            var controlsMS = _crateManager.GetStorage(curActionDTO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsMS = _crateManager.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {
