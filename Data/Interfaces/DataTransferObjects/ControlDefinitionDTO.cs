@@ -125,7 +125,7 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("isReadOnly")]
         public bool IsReadOnly { get; set; }
 
-        public TextAreaDefinitionDTO () : 
+        public TextAreaDefinitionDTO() :
             base(ControlTypes.TextArea)
         {
         }
@@ -136,7 +136,7 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("class")]
         public string CssClass
         {
-            get; 
+            get;
             set;
         }
 
@@ -240,8 +240,10 @@ namespace Data.Interfaces.DataTransferObjects
         }
 
         [JsonProperty("value")]
-        public new TimeSpan Value {
-            get {
+        public new TimeSpan Value
+        {
+            get
+            {
                 return new TimeSpan(this.Days, this.Hours, this.Minutes, 0);
             }
         }
@@ -303,7 +305,7 @@ namespace Data.Interfaces.DataTransferObjects
             Value = "";
         }
     }
-    
+
     public class FieldSourceDTO
     {
         [JsonProperty("manifestType")]
@@ -319,7 +321,7 @@ namespace Data.Interfaces.DataTransferObjects
         {
             get
             {
-                 return new ControlEvent("onChange", "requestConfig");
+                return new ControlEvent("onChange", "requestConfig");
             }
         }
 
