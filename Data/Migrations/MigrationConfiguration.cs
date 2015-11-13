@@ -502,6 +502,9 @@ namespace Data.Migrations
 
 	        var wsToId = new Dictionary<string, int>();
 
+            AddWebService(uow, "AWS", "/Content/icons/web_services/aws-icon-64x64.png");
+            AddWebService(uow, "Slack", "/Content/icons/web_services/slack-icon-64x64.png");
+            AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
 			AddWebService(uow, "Microsoft Azure", "/Content/icons/web_services/ms-azure-icon-64x64.png");
 			AddWebService(uow, "Excel", "/Content/icons/web_services/ms-excel-icon-64x64.png");
 			AddWebService(uow, "fr8 Core", "/Content/icons/web_services/fr8-core-icon-64x64.png");
