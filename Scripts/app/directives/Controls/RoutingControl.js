@@ -8,27 +8,38 @@ var dockyard;
             'use strict';
             //More detail on creating directives in TypeScript: 
             //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
-            function RoutingControl() {
-                var uniqueDirectiveId = 1;
-                var controller = function ($scope, element, attrs) {
-                    $scope.uniqueDirectiveId = ++uniqueDirectiveId;
-                    //var ChangeSelection = function (route: model.Route) {
-                    //    $scope.route.selection = route.selection;
-                    //    //route.selection
-                    //};
-                };
-                //The factory function returns Directive object as per Angular requirements
-                return {
-                    restrict: 'E',
-                    templateUrl: '/AngularTemplate/RoutingControl',
-                    controller: controller,
-                    scope: {
+            var RoutingControl = (function () {
+                function RoutingControl() {
+                    var _this = this;
+                    this.scope = {
                         route: '='
-                    }
+                    };
+                    this.templateUrl = '/AngularTemplate/RoutingControl';
+                    this.restrict = 'E';
+                    RoutingControl.prototype.link = function ($scope, $element, $attrs) {
+                    };
+                    RoutingControl.prototype.controller = function ($scope, $element, $attrs) {
+                        _this._$element = $element;
+                        _this._$scope = $scope;
+                        //$scope.ChangeSelection = <(scope: IRoutingControlScope) => void> angular.bind(this, this.ChangeSelection);
+                        //$scope.ChangeSelection = <(route: model.Route) => void> angular.bind(this, this.ChangeSelection);
+                    };
+                }
+                //private ChangeSelection(route: model.Route) {
+                //    this._$scope.route.selection = route.selection;
+                //    //route.selection
+                //}
+                //The factory function returns Directive object as per Angular requirements
+                RoutingControl.Factory = function () {
+                    var directive = function () {
+                        return new RoutingControl();
+                    };
+                    directive['$inject'] = [];
+                    return directive;
                 };
-            }
-            paneConfigureAction.RoutingControl = RoutingControl;
-            app.directive('routingControl', RoutingControl);
+                return RoutingControl;
+            })();
+            app.directive('routingControl', RoutingControl.Factory());
         })(paneConfigureAction = directives.paneConfigureAction || (directives.paneConfigureAction = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));

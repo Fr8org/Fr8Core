@@ -87,7 +87,7 @@ namespace DockyardTest.Services
 
                 var container = _container.Create(uow, route.Id, FixtureData.GetEnvelopeIdCrate());
                 Assert.IsNotNull(container);
-                Assert.IsTrue(container.Id != Guid.Empty);
+                Assert.IsTrue(container.Id > 0);
             }
         }
 

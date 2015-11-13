@@ -1,17 +1,16 @@
-﻿using System;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.DataTransferObjects
 {   
     public class PayloadDTO
     {
-        public PayloadDTO(Guid processId)
+        public PayloadDTO(int processId)
         {
             ProcessId = processId;
         }
 
         public CrateStorageDTO CrateStorage{ get; set; }
 
-        public Guid ProcessId { get; set; }
+        public int ProcessId { get; set; }
     }
 }

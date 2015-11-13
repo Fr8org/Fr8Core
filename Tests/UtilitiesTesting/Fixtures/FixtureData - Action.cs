@@ -263,7 +263,7 @@ namespace UtilitiesTesting.Fixtures
 
             var containerDO = new ContainerDO()
             {
-                Id = TestContainer_Id_1(),
+                Id = 1,
                 ContainerState = 1,
                 RouteId = processTemplateDo.Id,
                 Route = processTemplateDo
@@ -344,7 +344,7 @@ namespace UtilitiesTesting.Fixtures
 
             var containerDO = new ContainerDO()
             {
-                Id = TestContainer_Id_1(),
+                Id = 1,
                 ContainerState = 1,
                 RouteId = processTemplateDo.Id,
                 Route = processTemplateDo
@@ -409,7 +409,7 @@ namespace UtilitiesTesting.Fixtures
 
             var curContainerDO = new ContainerDO()
             {
-                Id = TestContainer_Id_1(),
+                Id = 1,
                 RouteId = 1,
                 Route = curRouteDO
             };

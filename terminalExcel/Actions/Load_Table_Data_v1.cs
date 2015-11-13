@@ -70,12 +70,12 @@ namespace terminalExcel.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
             return await CreateStandardPayloadDataFromStandardTableData(curActionDO, containerId);
         }
 
-        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, Guid containerId)
+        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, int containerId)
         {
             var processPayload = await GetProcessPayload(containerId);
 

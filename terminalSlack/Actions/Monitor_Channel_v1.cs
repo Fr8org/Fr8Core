@@ -25,7 +25,7 @@ namespace terminalSlack.Actions
             _slackIntegration = new SlackIntegration();
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {

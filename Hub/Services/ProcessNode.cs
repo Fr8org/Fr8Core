@@ -34,7 +34,7 @@ namespace Hub.Services
         /// Creates ProcessNode Object
         /// </summary>
         /// <returns>New ProcessNodeDO instance</returns>
-        public ProcessNodeDO Create(IUnitOfWork uow, Guid parentContainerId,
+        public ProcessNodeDO Create(IUnitOfWork uow, int parentContainerId,
             int subrouteId, string name = "ProcessNode")
         {
             var processNode = new ProcessNodeDO

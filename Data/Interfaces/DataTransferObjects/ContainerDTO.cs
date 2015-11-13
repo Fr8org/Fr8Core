@@ -12,7 +12,7 @@ namespace Data.Interfaces.DataTransferObjects
         }
 
         [Required]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public int RouteId { get; set; }
         public int ContainerState;

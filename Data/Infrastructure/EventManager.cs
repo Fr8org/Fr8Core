@@ -108,16 +108,16 @@ namespace Data.Infrastructure
         public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
         public static event EventProcessNodeCreatedHandler EventProcessNodeCreated;
 
-        public delegate void EventCriteriaEvaluationStartedHandler(Guid processId);
+        public delegate void EventCriteriaEvaluationStartedHandler(int processId);
         public static event EventCriteriaEvaluationStartedHandler EventCriteriaEvaluationStarted;
 
-        public delegate void EventCriteriaEvaluationFinishedHandler(Guid processId);
+        public delegate void EventCriteriaEvaluationFinishedHandler(int processId);
         public static event EventCriteriaEvaluationFinishedHandler EventCriteriaEvaluationFinished;
 
         public delegate void EventActionStartedHandler(ActionDO action);
         public static event EventActionStartedHandler EventActionStarted;
 
-        public delegate void EventActionDispatchedHandler(ActionDO curAction, Guid processId);
+        public delegate void EventActionDispatchedHandler(ActionDO curAction, int processId);
         public static event EventActionDispatchedHandler EventActionDispatched;
 
         public delegate void TerminalEventHandler(LoggingDataCm eventDataCm);
@@ -377,13 +377,13 @@ namespace Data.Infrastructure
             if (handler != null) handler(processNode);
         }
 
-        public static void CriteriaEvaluationStarted(Guid processId)
+        public static void CriteriaEvaluationStarted(int processId)
         {
             var handler = EventCriteriaEvaluationStarted;
             if (handler != null) handler(processId);
         }
 
-        public static void CriteriaEvaluationFinished(Guid processId)
+        public static void CriteriaEvaluationFinished(int processId)
         {
             var handler = EventCriteriaEvaluationFinished;
             if (handler != null) handler(processId);
@@ -395,7 +395,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(action);
         }
 
-        public static void ActionDispatched(ActionDO curAction, Guid processId)
+        public static void ActionDispatched(ActionDO curAction, int processId)
         {
             var handler = EventActionDispatched;
             if (handler != null) handler(curAction, processId);

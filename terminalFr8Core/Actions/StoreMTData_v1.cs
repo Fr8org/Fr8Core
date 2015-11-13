@@ -35,7 +35,7 @@ namespace terminalFr8Core.Actions
             return null;
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

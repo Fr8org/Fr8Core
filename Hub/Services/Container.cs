@@ -46,39 +46,37 @@ namespace Hub.Services
         /// <returns></returns>
         public ContainerDO Create(IUnitOfWork uow, int processTemplateId, Crate curEvent)
         {
-            var containerDO = new ContainerDO();
-            containerDO.Id = Guid.NewGuid();
+            var containerDO = ObjectFactory.GetInstance<ContainerDO>();
 
-            var curRoute = uow.RouteRepository.GetByKey(processTemplateId);
-            if (curRoute == null)
-                throw new ArgumentNullException("processTemplateId");
-            containerDO.Route = curRoute;
+                var curRoute = uow.RouteRepository.GetByKey(processTemplateId);
+                if (curRoute == null)
+                    throw new ArgumentNullException("processTemplateId");
+                containerDO.Route = curRoute;
 
-            containerDO.Name = curRoute.Name;
-            containerDO.ContainerState = ContainerState.Unstarted;
+                containerDO.Name = curRoute.Name;
+                containerDO.ContainerState = ContainerState.Unstarted;
            
-            if (curEvent != null)
-            {
-                using (var updater = _crate.UpdateStorage(() => containerDO.CrateStorage))
+                if (curEvent != null)
                 {
-                    updater.CrateStorage.Add(curEvent);
+                    using (var updater = _crate.UpdateStorage(() => containerDO.CrateStorage))
+                    {
+                        updater.CrateStorage.Add(curEvent);
+                    }
                 }
-            }
 
-            containerDO.CurrentRouteNode = _route.GetInitialActivity(uow, curRoute);
+                containerDO.CurrentRouteNode = _route.GetInitialActivity(uow, curRoute);
 
-            uow.ContainerRepository.Add(containerDO);
-            uow.SaveChanges();
+                uow.ContainerRepository.Add(containerDO);
+                uow.SaveChanges();
 
-            //then create process node
-            var subrouteId = containerDO.Route.StartingSubroute.Id;
+                //then create process node
+               var subrouteId = containerDO.Route.StartingSubroute.Id;
 
-            var curProcessNode = _processNode.Create(uow, containerDO.Id, subrouteId, "process node");
-            containerDO.ProcessNodes.Add(curProcessNode);
+               var curProcessNode = _processNode.Create(uow, containerDO.Id, subrouteId, "process node");
+               containerDO.ProcessNodes.Add(curProcessNode);
 
-            uow.SaveChanges();
-            EventManager.ContainerCreated(containerDO);
-
+                uow.SaveChanges();
+                EventManager.ContainerCreated(containerDO);
             return containerDO;
         }
 
@@ -161,7 +159,7 @@ namespace Hub.Services
         }
 
         // Return the Containers of current Account
-        public IList<ContainerDO> GetByFr8Account(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, Guid? id = null)
+        public IList<ContainerDO> GetByFr8Account(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, int? id = null)
         {
             if (account.Id == null)
                 throw new ApplicationException("UserId must not be null");
