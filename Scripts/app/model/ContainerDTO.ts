@@ -1,6 +1,6 @@
 ﻿module dockyard.model {
     export class ContainerDTO{
-        id: string;
+        id: number;
         name: string;
         routeId: number;
         containerState: number;

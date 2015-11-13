@@ -17,7 +17,7 @@ namespace terminalFr8Core.Actions
 {
     public class AddPayloadManually_v1 : BaseTerminalAction
     {
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
             var processPayload = await GetProcessPayload(containerId);
 

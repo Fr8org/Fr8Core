@@ -1,5 +1,4 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -24,7 +23,7 @@ namespace Data.Interfaces.DataTransferObjects
 
         public string CurrentView { get; set; }
 
-        public Guid ContainerId { get; set; }
+        public int ContainerId { get; set; }
 
         public AuthorizationTokenDTO AuthToken { get; set; }
 

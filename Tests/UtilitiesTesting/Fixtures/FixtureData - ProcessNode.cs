@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Data.Entities;
 using Data.States;
 
@@ -11,7 +10,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var processNode = new ProcessNodeDO();
             processNode.Id = 50;
-            processNode.ParentContainerId = TestContainer_Id_49();
+            processNode.ParentContainerId = 49;
             processNode.SubrouteId = 50;
             processNode.Subroute = TestSubrouteDO1();
             processNode.ProcessNodeState = ProcessNodeState.Unstarted;
@@ -24,7 +23,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var processNode = new ProcessNodeDO();
             processNode.Id = 50;
-            processNode.ParentContainerId = TestContainer_Id_49();
+            processNode.ParentContainerId = 49;
 
             return processNode;
         }
@@ -34,7 +33,7 @@ namespace UtilitiesTesting.Fixtures
 
             var processNode = new ProcessNodeDO();
             processNode.Id = 51;
-            processNode.ParentContainerId = TestContainer_Id_49();
+            processNode.ParentContainerId = 49;
             processNode.Subroute = TestSubrouteDO1();
             processNode.Subroute.ChildNodes.AddRange(TestActionList5());
 
@@ -45,7 +44,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var processNode = new ProcessNodeDO();
             processNode.Id = 51;
-            processNode.ParentContainerId = TestContainer_Id_49();
+            processNode.ParentContainerId = 49;
             processNode.Subroute = TestSubrouteDO2();
             processNode.Subroute.ChildNodes.AddRange(TestActionList5());
 
@@ -57,7 +56,7 @@ namespace UtilitiesTesting.Fixtures
 
             var processNode = new ProcessNodeDO();
             processNode.Id = 1;
-            processNode.ParentContainerId = TestContainer_Id_49();
+            processNode.ParentContainerId = 49;
             processNode.SubrouteId = 50;
             processNode.Subroute = TestSubrouteDO3();
             processNode.Subroute.ChildNodes.AddRange(TestActionList6());

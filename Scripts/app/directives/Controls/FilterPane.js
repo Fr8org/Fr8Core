@@ -5,7 +5,6 @@ var dockyard;
     (function (directives) {
         'use strict';
         function FilterPane() {
-            var uniqueDirectiveId = 1;
             return {
                 restrict: 'E',
                 templateUrl: '/AngularTemplate/FilterPane',
@@ -15,7 +14,6 @@ var dockyard;
                 },
                 controller: ['$scope', '$timeout', 'CrateHelper',
                     function ($scope, $timeout, crateHelper) {
-                        $scope.uniqueDirectiveId = ++uniqueDirectiveId;
                         $scope.operators = [
                             { text: '>', value: 'gt' },
                             { text: '>=', value: 'gte' },

@@ -418,10 +418,6 @@
     <Compile Include="Migrations\201511130248445_MakeWebServicesOptional.Designer.cs">
       <DependentUpon>201511130248445_MakeWebServicesOptional.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201511131623530_Container_Id_Int32_To_Guid.cs" />
-    <Compile Include="Migrations\201511131623530_Container_Id_Int32_To_Guid.Designer.cs">
-      <DependentUpon>201511131623530_Container_Id_Int32_To_Guid.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -706,9 +702,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511130248445_MakeWebServicesOptional.resx">
       <DependentUpon>201511130248445_MakeWebServicesOptional.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201511131623530_Container_Id_Int32_To_Guid.resx">
-      <DependentUpon>201511131623530_Container_Id_Int32_To_Guid.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

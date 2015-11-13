@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.States.Templates;
 
@@ -13,7 +12,7 @@ namespace Data.Entities
         public string Name { get; set; }
 
         [ForeignKey("ParentContainer")]
-        public Guid ParentContainerId { get; set; }
+        public int ParentContainerId { get; set; }
 
         public virtual ContainerDO ParentContainer { get; set; }
 

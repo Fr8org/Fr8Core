@@ -53,7 +53,7 @@ namespace terminalIntegrationTests.Fixtures
         {
             get
             {
-                PayloadDTO payloadDTO = new PayloadDTO(UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1());
+                PayloadDTO payloadDTO = new PayloadDTO(1);
                 return payloadDTO;
             }
         }
