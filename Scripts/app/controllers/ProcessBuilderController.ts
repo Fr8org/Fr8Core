@@ -38,6 +38,12 @@ module dockyard.controllers {
 
         filterPane1: any;
         filterPane2: any;
+
+        textArea1: model.TextAreaControlDefinitionDTO;
+        textArea2: model.TextAreaControlDefinitionDTO;
+
+        textBlock1: model.TextBlock;
+        textBlock2: model.TextBlock;
     }
 
     //Setup aliases
@@ -221,6 +227,42 @@ module dockyard.controllers {
                 
                 key: 'filterPaneKey2',
                 value: '{"executionType":2,"conditions":[{"field":null,"operator":"","value":null}]}'
+            };
+
+            $scope.textArea1 = {
+                isReadOnly: false,
+                type: 'TextArea',
+                fieldLabel: 'Test Text Area',
+                name: 'TextArea1',
+                events: [],
+                value: 'vuhuuuu'
+            };
+
+            $scope.textArea2 = {
+                isReadOnly: false,
+                type: 'TextArea',
+                fieldLabel: 'Test Text Area 2',
+                name: 'TextArea2',
+                events: [],
+                value: '<p>asdasdasd</p>asdasd<b>bold text</b>'
+            };
+
+            $scope.textBlock1 = {
+                class: 'well well-lg',
+                value: '<p>test</p><hr />asdasd<b>asdlkjasdlkajsd</b>',
+                type: 'TextBlock',
+                fieldLabel: 'TextBlock1',
+                name: 'TextBlock1',
+                events: []
+            };
+
+            $scope.textBlock2 = {
+                class: 'well well-lg',
+                value: 'jksdfkjsdfhkjsdhsdkfjhsdfkj',
+                type: 'TextBlock',
+                fieldLabel: 'TextBlock2',
+                name: 'TextBlock2',
+                events: []
             };
         }
 
