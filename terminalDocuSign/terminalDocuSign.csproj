@@ -193,8 +193,8 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
-    <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
+    <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="DataTransferObjects\DocuSignAuthDTO.cs" />
     <Compile Include="DataTransferObjects\DocuSignEventDTO.cs" />
     <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
@@ -205,7 +205,6 @@
     <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatus.cs" />
     <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatuses.cs" />
     <Compile Include="Infrastructure\IndexManager.cs" />
-    <Compile Include="Infrastructure\TerminalDataAutoMapperBootStrapper.cs" />
     <Compile Include="DataTransferObjects\RecipientDTO.cs" />
     <Compile Include="DataTransferObjects\RecipientsDTO.cs" />
     <Compile Include="DocuSignUtils.cs" />
@@ -219,6 +218,8 @@
     <Compile Include="DataTransferObjects\DocuSignTemplateDTO.cs" />
     <Compile Include="Infrastructure\Signer.cs" />
     <Compile Include="Infrastructure\Tab.cs" />
+    <Compile Include="Infrastructure\TerminalDataAutoMapperBootStrapper.cs" />
+    <Compile Include="Infrastructure\TerminalDocuSignMapBootstrapper.cs" />
     <Compile Include="Interfaces\IDocuSignEnvelope.cs" />
     <Compile Include="Services\DocuSignManager.cs" />
     <Compile Include="Services\DocuSignEnvelope.cs" />
@@ -226,7 +227,6 @@
     <Compile Include="Services\Event.cs" />
     <Compile Include="Interfaces\IDocuSignTemplate.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
-    <Compile Include="Infrastructure\TerminalDocuSignMapBootstrapper.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
