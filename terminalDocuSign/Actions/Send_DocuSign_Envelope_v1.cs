@@ -43,7 +43,7 @@ namespace terminalDocuSign.Actions
             return "Activate Request"; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
             if (authTokenDO == null)
             {

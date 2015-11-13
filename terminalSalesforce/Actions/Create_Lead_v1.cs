@@ -40,7 +40,7 @@ namespace terminalSalesforce.Actions
             return "Deactivated";
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO = null)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
         {
             PayloadDTO processPayload = null;
           
