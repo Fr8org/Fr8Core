@@ -20,13 +20,6 @@ namespace terminalSendGrid.Actions
         // moved the EmailPackager ObjectFactory here since the basepluginAction will be called by others and the dependency is defiend in pluginsendGrid
         private IConfigRepository _configRepository;
         private IEmailPackager _emailPackager;
-        
-
-        // protected override void SetupServices()
-        // {
-        //     base.SetupServices();
-        //     _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
-        // }
 
         public SendEmailViaSendGrid_v1()
         {
