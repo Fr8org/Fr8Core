@@ -57,12 +57,12 @@ namespace TerminalBase.BaseClasses
             return false;
         }
 
-        protected async Task<PayloadDTO> GetProcessPayload(int containerId)
+        protected async Task<PayloadDTO> GetProcessPayload(Guid containerId)
         {
             var httpClient = new HttpClient();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/containers/"
-                + containerId.ToString();
+                + containerId.ToString("D");
 
             using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
             {

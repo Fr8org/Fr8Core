@@ -39,7 +39,10 @@ namespace Data.Migrations
                 
                 if (add)
                 {
-                    container = new ContainerDO();
+                    container = new ContainerDO()
+                    {
+                        Id = Guid.NewGuid()
+                    };
                 }
 
                 ConfigureProcess(container);

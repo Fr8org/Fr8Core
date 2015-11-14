@@ -164,7 +164,7 @@ namespace DockyardTest.Services
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var containerDO = uow.ContainerRepository.GetByKey(49);
+                var containerDO = uow.ContainerRepository.GetByKey(FixtureData.TestContainer_Id_49());
                 await _container.Execute(uow, containerDO);
 
                 Assert.IsNull(containerDO.CurrentRouteNode);
@@ -190,7 +190,7 @@ namespace DockyardTest.Services
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var containerDO = uow.ContainerRepository.GetByKey(49);
+                var containerDO = uow.ContainerRepository.GetByKey(FixtureData.TestContainer_Id_49());
                 await _container.Execute(uow, containerDO);
 
                 Assert.IsNull(containerDO.CurrentRouteNode);

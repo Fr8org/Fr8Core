@@ -31,7 +31,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetProcessPayload(containerId);
 
@@ -59,7 +59,7 @@ namespace terminalFr8Core.Actions
             return curPayloadDTO;
         }
 
-        private bool Evaluate(string criteria, int processId, IEnumerable<FieldDTO> values)
+        private bool Evaluate(string criteria, Guid processId, IEnumerable<FieldDTO> values)
         {
             if (criteria == null)
                 throw new ArgumentNullException("criteria");
@@ -72,7 +72,7 @@ namespace terminalFr8Core.Actions
         }
 
         private IQueryable<FieldDTO> Filter(string criteria,
-            int processId, IQueryable<FieldDTO> values)
+            Guid processId, IQueryable<FieldDTO> values)
         {
             if (criteria == null)
                 throw new ArgumentNullException("criteria");
