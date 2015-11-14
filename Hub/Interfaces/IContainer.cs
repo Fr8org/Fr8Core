@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Crates;
 using Data.Entities;
@@ -14,6 +15,7 @@ namespace Hub.Interfaces
         Task Execute(IUnitOfWork uow, ContainerDO curContainerDO);
         //void SetProcessNextActivity(ProcessDO curProcessDO);
 
-        IList<ContainerDO> GetByFr8Account(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, int? id = null);
+        IList<ContainerDO> GetByFr8Account(IUnitOfWork unitOfWork,
+            Fr8AccountDO account, bool isAdmin = false, Guid? id = null);
     }
 }
