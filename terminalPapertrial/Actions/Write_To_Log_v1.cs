@@ -11,6 +11,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 using System.Collections.Generic;
+using Utilities.Logging;
 
 namespace terminalPapertrial.Actions
 {
@@ -70,13 +71,43 @@ namespace terminalPapertrial.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            //get the paper trial URL value fromt configuration control
+            string curPapertrialUrl;
+            int curPapertrialPort;
+
+            GetPapertrialTargetUrlAndPort(actionDO, out curPapertrialUrl, out curPapertrialPort);
+
+            //get process payload
             var curProcessPayload = await GetProcessPayload(containerId);
 
-            //var curLogMessages = Crate.GetStorage(curProcessPayload).CrateContentsOfType<StandardLoggingCM>().First();
+            //if there are valid URL and Port number
+            if (!string.IsNullOrEmpty(curPapertrialUrl) && curPapertrialPort > 0)
+            {
+                //get log message
+                var curLogMessages = Crate.GetStorage(curProcessPayload).CrateContentsOfType<StandardLoggingCM>().First();
 
-            //check the current log messages and write the log to papertrial
+                curLogMessages.Item.ForEach(logMessage =>
+                {
+                    var papertrialLogger = Logger.GetPapertrialLogger(curPapertrialUrl, curPapertrialPort);
+                    papertrialLogger.Info(logMessage.Data);
+                });
+            }
 
             return curProcessPayload;
+        }
+
+        private void GetPapertrialTargetUrlAndPort(ActionDO curActionDO, out string paperrrialTargetUrl, out int papertrialTargetPort)
+        {
+            //get the configuration control of the given action
+            var curActionConfigControls =
+                Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+
+            //the URL is given in "URL:PortNumber" format. Parse the input value to get the URL and port number
+            var targetUrlValue = curActionConfigControls.FindByName("TargetUrlTextBox").Value.Split(new char[] { ':' });
+
+            //assgign the output value
+            paperrrialTargetUrl = targetUrlValue[0];
+            papertrialTargetPort = Convert.ToInt32(targetUrlValue[1]);
         }
     }
 }

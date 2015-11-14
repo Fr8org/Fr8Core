@@ -25,8 +25,9 @@ namespace Utilities.Logging
                     .GetAppenders()
                     .Single(appender => appender.Name.Equals("PapertrailRemoteSyslogAppender")) as RemoteSyslogAppender;
 
-            curPapertrialAppender.RemoteAddress = IPAddress.Parse(targetPapertrialUrl);
+            curPapertrialAppender.RemoteAddress = Dns.GetHostAddresses(targetPapertrialUrl)[0];
             curPapertrialAppender.RemotePort = papertrialPort;
+            curPapertrialAppender.ActivateOptions();
 
             return LogManager.GetLogger(new StackTrace().GetFrame(depth).GetMethod().DeclaringType);
         }
