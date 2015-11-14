@@ -7,15 +7,62 @@ namespace Data.Migrations
     {
         public override void Up()
         {
+            DropForeignKey("dbo.ProcessNodes", "ParentContainerId", "dbo.Containers");
             DropForeignKey("dbo.ProcessNodes", "ParentProcessId", "dbo.Processes");
             DropIndex("dbo.ProcessNodes", new[] { "ParentContainerId" });
 
-            DropPrimaryKey("dbo.Containers");
-            RenameColumn("dbo.Containers", "Id", "OldId");
-            AddColumn("dbo.Containers", "Id", c => c.Guid(nullable: true));
-            Sql("UPDATE [dbo].[Containers] SET [Id] = newid()");
-            AlterColumn("dbo.Containers", "Id", c => c.Guid(nullable: false));
-            AddPrimaryKey("dbo.Containers", "Id");
+            RenameTable("dbo.Containers", "OldContainers");
+
+            CreateTable(
+                "dbo.Containers",
+                c => new
+                {
+                    Id = c.Guid(nullable: false),
+                    Name = c.String(),
+                    ContainerState = c.Int(nullable: false),
+                    CrateStorage = c.String(),
+                    LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
+                    CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
+                    RouteId = c.Int(nullable: false),
+                    CurrentRouteNodeId = c.Int(),
+                    NextRouteNodeId = c.Int(),
+                    OldId = c.Int(nullable: false)
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Routes", t => t.RouteId)
+                .ForeignKey("dbo.RouteNodes", t => t.CurrentRouteNodeId)
+                .ForeignKey("dbo.RouteNodes", t => t.NextRouteNodeId)
+                .ForeignKey("dbo._ContainerStateTemplate", t => t.ContainerState, cascadeDelete: true)
+                .Index(t => t.RouteId)
+                .Index(t => t.ContainerState)
+                .Index(t => t.CurrentRouteNodeId)
+                .Index(t => t.NextRouteNodeId);
+
+            Sql(
+                @"INSERT INTO [dbo].[Containers] (
+                    [Id],
+                    [Name],
+                    [ContainerState],
+                    [CrateStorage],
+                    [LastUpdated],
+                    [CreateDate],
+                    [RouteId],
+                    [CurrentRouteNodeId],
+                    [NextRouteNodeId],
+                    [OldId])
+                SELECT
+                    newid() as [Id],
+                    [oc].[Name],
+                    [oc].[ContainerState],
+                    [oc].[CrateStorage],
+                    [oc].[LastUpdated],
+                    [oc].[CreateDate],
+                    [oc].[RouteId],
+                    [oc].[CurrentRouteNodeId],
+                    [oc].[NextRouteNodeId],
+                    [oc].[Id] as [OldId]
+                FROM [dbo].[OldContainers] AS [oc]"
+            );
 
             RenameColumn("dbo.ProcessNodes", "ParentContainerId", "OldParentContainerId");
             AddColumn("dbo.ProcessNodes", "ParentContainerId", c => c.Guid(nullable: true));
@@ -27,6 +74,7 @@ namespace Data.Migrations
 
             DropColumn("dbo.ProcessNodes", "OldParentContainerId");
             DropColumn("dbo.Containers", "OldId");
+            DropTable("dbo.OldContainers");
         }
         
         public override void Down()
@@ -34,10 +82,56 @@ namespace Data.Migrations
             DropForeignKey("dbo.ProcessNodes", "ParentContainerId", "dbo.Containers");
             DropIndex("dbo.ProcessNodes", new[] { "ParentContainerId" });
 
-            DropPrimaryKey("dbo.Containers");
-            RenameColumn("dbo.Containers", "Id", "OldId");
-            AddColumn("dbo.Containers", "Id", c => c.Int(nullable: false, identity: true));
-            AddPrimaryKey("dbo.Containers", "Id");
+            RenameTable("dbo.Containers", "OldContainers");
+
+            CreateTable(
+                "dbo.Containers",
+                c => new
+                {
+                    Id = c.Int(nullable: false, identity: true),
+                    Name = c.String(),
+                    ContainerState = c.Int(nullable: false),
+                    CrateStorage = c.String(),
+                    LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
+                    CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
+                    RouteId = c.Int(nullable: false),
+                    CurrentRouteNodeId = c.Int(),
+                    NextRouteNodeId = c.Int(),
+                    OldId = c.Guid(nullable: false)
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Routes", t => t.RouteId)
+                .ForeignKey("dbo.RouteNodes", t => t.CurrentRouteNodeId)
+                .ForeignKey("dbo.RouteNodes", t => t.NextRouteNodeId)
+                .ForeignKey("dbo._ContainerStateTemplate", t => t.ContainerState, cascadeDelete: true)
+                .Index(t => t.RouteId)
+                .Index(t => t.ContainerState)
+                .Index(t => t.CurrentRouteNodeId)
+                .Index(t => t.NextRouteNodeId);
+
+            Sql(
+                @"INSERT INTO [dbo].[Containers] (
+                    [Name],
+                    [ContainerState],
+                    [CrateStorage],
+                    [LastUpdated],
+                    [CreateDate],
+                    [RouteId],
+                    [CurrentRouteNodeId],
+                    [NextRouteNodeId],
+                    [OldId])
+                SELECT
+                    [oc].[Name],
+                    [oc].[ContainerState],
+                    [oc].[CrateStorage],
+                    [oc].[LastUpdated],
+                    [oc].[CreateDate],
+                    [oc].[RouteId],
+                    [oc].[CurrentRouteNodeId],
+                    [oc].[NextRouteNodeId],
+                    [oc].[Id] as [OldId]
+                FROM [dbo].[OldContainers] AS [oc]"
+            );
 
             RenameColumn("dbo.ProcessNodes", "ParentContainerId", "OldParentContainerId");
             AddColumn("dbo.ProcessNodes", "ParentContainerId", c => c.Int(nullable: true));
@@ -49,6 +143,7 @@ namespace Data.Migrations
 
             DropColumn("dbo.ProcessNodes", "OldParentContainerId");
             DropColumn("dbo.Containers", "OldId");
+            DropTable("dbo.OldContainers");
         }
     }
 }
