@@ -472,11 +472,3 @@ input[type=radio]:checked ~ label .control-label-hidden {
 .ui-select-bootstrap[search-enabled=false] .ui-select-match.ng-hide {
     display: block !important;
 }
-
-.ui-select-bootstrap[search-enabled=false] .ui-select-match .text-muted.ng-hide {
-    display: inline !important;
-}
-
-.ui-select-bootstrap[search-enabled=false].ng-dirty .ui-select-match .text-muted.ng-hide {
-    display: none !important;
-}
