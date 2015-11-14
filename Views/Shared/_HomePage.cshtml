@@ -129,7 +129,7 @@
             {
                 <h1 class="site-logo"><a class="navbar-brand" href="http://www.fr8.company" title="fr8"><img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8"></a></h1>
                  <div class="pull-right visible-desktop visible-tablet">
-                     @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "DockyardAccount", routeValues: null, htmlAttributes: new { title = "Manage" })
+                     <a href="/dashboard#/myaccount" title="Manage">Hello @User.Identity.GetUserName()!</a>
                 </div>
             }
             else 
