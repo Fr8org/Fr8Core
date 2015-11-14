@@ -107,17 +107,7 @@ namespace terminalTwilio.Actions
                 Required = true
             };
 
-            DurationControlDefinitionDTO duration = new DurationControlDefinitionDTO()
-            {
-                Label = "Duration control label",
-                Name = "Duraiton_Control",
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                }
-            };
-
-            return PackControlsCrate(radioGroup, smsBody, duration);
+            return PackControlsCrate(radioGroup, smsBody);
         }
 
         private List<FieldDTO> GetRegisteredSenderNumbersData()
