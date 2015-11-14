@@ -1,0 +1,69 @@
+﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using StructureMap;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using Hub.Interfaces;
+
+namespace UtilitiesTesting.Fixtures
+{
+    partial class FixtureData
+    {
+        public static TerminalDO TerminalOne()
+        {
+            return new TerminalDO
+            {
+                Name = "terminalAzureSqlServer",
+                Endpoint = "terminalAzureSqlServer",
+                TerminalStatus = TerminalStatus.Active,
+                Version = "1"
+            };
+        }
+
+        public static TerminalDO TerminalTwo()
+        {
+            return new TerminalDO
+            {
+                Name = "AzureSqlServer",
+                Endpoint = "AzureSqlServer",
+                TerminalStatus = TerminalStatus.Active,
+                Version = "1"
+            };
+        }
+
+        public static TerminalDO TerminalThree()
+        {
+            return new TerminalDO
+            {
+                Name = "http://localhost:46281/",
+                Endpoint = "http://localhost:46281/",
+                TerminalStatus = TerminalStatus.Active,
+                Version = "1"
+            };
+        }
+
+        public static TerminalDO TerminalFour()
+        {
+            return new TerminalDO
+            {
+                Name = "AzureSqlServer",
+                Endpoint = "AzureSqlServer",
+                TerminalStatus = TerminalStatus.Active,
+                Version = "1"
+            };
+        }
+
+        public static TerminalDO TerminalFive()
+        {
+            return new TerminalDO
+            {
+                Name = "DocuSign",
+                Endpoint = "localhost",
+                TerminalStatus = TerminalStatus.Active,
+                Version = "1"
+            };
+        }
+    }
+}

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Linq;
@@ -525,13 +525,14 @@ namespace Data.Infrastructure
         }
 
 
-        private PluginRepository _pluginRepository;
+        private TerminalRepository _terminalRepository;
 
-        public IPluginRepository PluginRepository
+        public ITerminalRepository TerminalRepository
         {
             get
             {
-                return _pluginRepository ?? (_pluginRepository = new PluginRepository(this));
+                return _terminalRepository ?? (_terminalRepository = new TerminalRepository(this));
+
             }
         }
 

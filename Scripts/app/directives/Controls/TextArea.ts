@@ -12,57 +12,32 @@ module dockyard.directives.textBlock {
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
-    class TextArea implements ng.IDirective {
-        public link: (scope: ITextAreaScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public templateUrl = '/AngularTemplate/TextArea';
-        public controller: ($scope: ITextAreaScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public scope = {
-            field: '='
+    //class TextArea implements ng.IDirective {
+    export function TextArea(): ng.IDirective {
+
+        var _availableButtons = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'bold', 'italics', 'underline', 'ul', 'undo', 'redo', 'html', 'insertImage', 'insertLink'];
+        var _disabledButtons = [];
+        var _buttonSet = [_availableButtons, _disabledButtons];
+
+        var controller = ['$scope', ($scope: ITextAreaScope) => {
+            
+            $scope.buttonSet = _buttonSet;
+            $scope.style = $scope.field.isReadOnly ? "readOnlyTextArea" : null;
+            $scope.isDisabled = $scope.field.isReadOnly;
+            $scope.toolbars = $scope.field.isReadOnly ? "[]" : null;
+
+        }];
+
+        return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: '/AngularTemplate/TextArea',
+            controller: controller,
+            scope: {
+                field: '='
+            }
         };
-
-        public restrict = 'E';
-        public replace = true;
-        private _$element: ng.IAugmentedJQuery;
-        private _$scope: ITextAreaScope;
-        private _availableButtons = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'bold', 'italics', 'underline', 'ul', 'undo', 'redo', 'html', 'insertImage', 'insertLink'];
-        private _disabledButtons = [];
-        private _buttonSet = [this._availableButtons, this._disabledButtons];
-
-        constructor() {
-            TextArea.prototype.link = (
-                scope: ITextAreaScope,
-                element: ng.IAugmentedJQuery,
-                attrs: ng.IAttributes) => {
-
-                //Link function goes here
-               
-            };
-
-            TextArea.prototype.controller = (
-                $scope: ITextAreaScope,
-                $element: ng.IAugmentedJQuery,
-                $attrs: ng.IAttributes) => {
-                this._$element = $element;
-                this._$scope = $scope;
-
-                this._$scope.buttonSet = this._buttonSet;
-                this._$scope.style = this._$scope.field.isReadOnly ? "readOnlyTextArea" : null;
-                this._$scope.isDisabled = this._$scope.field.isReadOnly;
-                this._$scope.toolbars = this._$scope.field.isReadOnly ? "[]" : null;
-
-            };
-        }
-
-        //The factory function returns Directive object as per Angular requirements
-        public static Factory() {
-            var directive = () => {
-                return new TextArea();
-            };
-
-            directive['$inject'] = [];
-            return directive;
-        }
     }
 
-    app.directive('textArea', TextArea.Factory());
+    app.directive('textArea', TextArea);
 }

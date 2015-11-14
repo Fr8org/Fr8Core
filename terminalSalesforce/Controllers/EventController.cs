@@ -14,12 +14,12 @@ namespace terminalSalesforce.Controllers
     public class EventController : ApiController
     {
         private IEvent _event;
-        private BasePluginEvent _basePluginEvent;
+        private BaseTerminalEvent _baseTerminalEvent;
 
         public EventController()
         {
             _event = ObjectFactory.GetInstance<IEvent>();
-            _basePluginEvent = new BasePluginEvent();
+            _baseTerminalEvent = new BaseTerminalEvent();
         }
 
         [HttpPost]
@@ -27,9 +27,9 @@ namespace terminalSalesforce.Controllers
         public async Task<string> ProcessIncomingNotification()
         {
             //_event.Process(await Request.Content.ReadAsStringAsync());
-            TerminalBase.Infrastructure.BasePluginEvent.EventParser parser = new BasePluginEvent.EventParser(_event.ProcessEvent);
+            TerminalBase.Infrastructure.BaseTerminalEvent.EventParser parser = new BaseTerminalEvent.EventParser(_event.ProcessEvent);
             string eventPayLoadContent = Request.Content.ReadAsStringAsync().Result;
-            await _basePluginEvent.Process(eventPayLoadContent, parser);
+            await _baseTerminalEvent.Process(eventPayLoadContent, parser);
 
             //We need to acknowledge the request from Salesforce
             //Creating a SOAP XML response to acknowledge

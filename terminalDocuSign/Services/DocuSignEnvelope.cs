@@ -157,6 +157,7 @@ namespace terminalDocuSign.Services
         public IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId)
         {
             var curDocuSignTemplate = new DocuSignTemplate();
+
             if (string.IsNullOrEmpty(_email) || string.IsNullOrEmpty(_apiPassword))
             {
                 curDocuSignTemplate.Login = new DocuSignPackager().Login();
@@ -170,26 +171,36 @@ namespace terminalDocuSign.Services
 
             var envelopeData = new List<EnvelopeDataDTO>();
 
-            foreach (var signer in templateDetails["recipients"]["signers"])
+            var recipients = templateDetails["recipients"];
+
+            if (recipients != null && recipients["signers"] != null)
             {
-                if (signer["tabs"] == null) { continue; }
-
-                if (signer["tabs"]["textTabs"] != null)
+                foreach (var signer in recipients["signers"])
                 {
-                    foreach (var textTab in signer["tabs"]["textTabs"])
+                    var tabs = signer["tabs"];
+
+                    if (tabs == null)
                     {
-                        envelopeData.Add(CreateEnvelopeData(textTab, textTab["value"].ToString()));
+                        continue;
                     }
-                }
 
-                if (signer["tabs"]["checkboxTabs"] == null)
-                {
-                    continue;
-                }
+                    if (tabs["textTabs"] != null)
+                    {
+                        foreach (var textTab in tabs["textTabs"])
+                        {
+                            envelopeData.Add(CreateEnvelopeData(textTab, textTab["value"].ToString()));
+                        }
+                    }
 
-                foreach (var chekBoxTabs in signer["tabs"]["checkboxTabs"])
-                {
-                    envelopeData.Add(CreateEnvelopeData(chekBoxTabs, chekBoxTabs["selected"].ToString()));
+                    if (tabs["checkboxTabs"] == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (var chekBoxTabs in tabs["checkboxTabs"])
+                    {
+                        envelopeData.Add(CreateEnvelopeData(chekBoxTabs, chekBoxTabs["selected"].ToString()));
+                    }
                 }
             }
 

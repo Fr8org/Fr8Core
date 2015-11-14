@@ -7,10 +7,10 @@ namespace terminalTwilio
     {
         public static void Register(HttpConfiguration config)
         {
-            BasePluginWebApiConfig.Register(config);
+            BaseTerminalWebApiConfig.Register(config);
             config.Routes.MapHttpRoute(
-               name: "PluginTwilio",
-               routeTemplate: "plugin_twilio/{controller}/{id}"
+               name: "TerminalTwilio",
+               routeTemplate: "terminal_twilio/{controller}/{id}"
            );
         }
     }

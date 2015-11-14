@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
+using Data.Interfaces.DataTransferObjects;
 using Microsoft.Owin.Hosting;
 using Owin;
 
-namespace pluginIntegrationTests.Fixtures
+namespace terminalIntegrationTests.Fixtures
 {
     partial class FixtureData
     {
@@ -46,6 +47,15 @@ namespace pluginIntegrationTests.Fixtures
         public static IDisposable CreateCoreServer_ActivitiesController()
         {
             return WebApp.Start<ActivitiesController_SelfHostStartup>(url: CoreEndPoint);
+        }
+
+        public static PayloadDTO CratePayloadDTOForSendEmailViaSendGridConfiguration
+        {
+            get
+            {
+                PayloadDTO payloadDTO = new PayloadDTO(1);
+                return payloadDTO;
+            }
         }
     }
 }

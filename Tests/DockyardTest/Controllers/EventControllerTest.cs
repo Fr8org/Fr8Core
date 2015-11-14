@@ -41,11 +41,11 @@ namespace DockyardTest.Controllers
 
         [Test]
         [Category("Controllers.EventController.Event")]
-        public void EventController_Event_WithPluginIncident_ReturnsOK()
+        public void EventController_Event_WithTerminalIncident_ReturnsOK()
         {
-            //Arrange with plugin incident
+            //Arrange with terminal incident
             _incidentReporter.SubscribeToAlerts();
-            var eventDto = FixtureData.TestPluginIncidentDto();
+            var eventDto = FixtureData.TestTerminalIncidentDto();
 
             //Act
 
@@ -62,14 +62,14 @@ namespace DockyardTest.Controllers
 
         [Test]
         [Category("Controllers.EventController.Event")]
-        public void EventController_Post_WithPluginEvent_ReturnsOK()
+        public void EventController_Post_WithTerminalEvent_ReturnsOK()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //Arrange with plugin event
+                //Arrange with terminal event
                 _eventReporter.SubscribeToAlerts();
 
-                var curEventDTO = FixtureData.TestPluginEventDto();
+                var curEventDTO = FixtureData.TestTerminalEventDto();
 
                 //Act
                 var result = _eventController.Post(_crate.ToDto(_eventReportCrateFactoryHelper.Create(curEventDTO)));

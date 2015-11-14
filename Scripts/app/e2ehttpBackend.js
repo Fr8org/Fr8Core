@@ -46,7 +46,6 @@ app.factory('delayHTTP', function ($q, $timeout) {
     };
 })
     .config(['$httpProvider', 'urlPrefix', function ($httpProvider, urlPrefix) {
-        //i don't know why this is here.
-        //$httpProvider.interceptors.push('delayHTTP');
+        $httpProvider.interceptors.push('delayHTTP');
     }]);
 //# sourceMappingURL=e2ehttpBackend.js.map

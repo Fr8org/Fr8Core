@@ -27,13 +27,13 @@ namespace HubWeb.Controllers
 
         [HttpGet]
         public async Task<ActionResult> ProcessSuccessfulOAuthResponse(
-            string pluginName,
-            string pluginVersion)
+            string terminalName,
+            string terminalVersion)
         {
-            
-            if (string.IsNullOrEmpty(pluginName) || string.IsNullOrEmpty(pluginVersion))
+
+            if (string.IsNullOrEmpty(terminalName) || string.IsNullOrEmpty(terminalVersion))
             {
-                throw new ApplicationException("PluginName or PluginVersion is not specified.");
+                throw new ApplicationException("TerminalName or TerminalVersion is not specified.");
             }
 
             var requestQueryString = Request.Url.Query;
@@ -42,15 +42,15 @@ namespace HubWeb.Controllers
                 requestQueryString = requestQueryString.Substring(1);
             }
 
-            PluginDO plugin;
+            TerminalDO terminal;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                plugin = uow.PluginRepository
-                    .FindOne(x => x.Name == pluginName && x.Version == pluginVersion);
-                if (plugin == null)
+                terminal = uow.TerminalRepository
+                    .FindOne(x => x.Name == terminalName && x.Version == terminalVersion);
+                if (terminal == null)
                 {
-                    throw new ApplicationException("Could not find plugin.");
+                    throw new ApplicationException("Could not find terminal.");
                 }
             }
             
@@ -59,7 +59,7 @@ namespace HubWeb.Controllers
                 RequestQueryString = requestQueryString
             };
 
-            var error = await _authorization.GetOAuthToken(plugin, externalAuthenticationDTO);
+            var error = await _authorization.GetOAuthToken(terminal, externalAuthenticationDTO);
 
             if (string.IsNullOrEmpty(error))
             {

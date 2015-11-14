@@ -6,43 +6,50 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using Data.States;
 using TerminalBase.BaseClasses;
+using AutoMapper;
 
 namespace terminalAzure.Controllers
 {    
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private const string curPlugin = "terminalAzure";
-        private BasePluginController _basePluginController = new BasePluginController();
+        private const string curTerminal = "terminalAzure";
+        private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
         [HttpPost]
         [Route("configure")]
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>) _basePluginController
-                .HandleDockyardRequest(curPlugin, "Configure", curActionDTO);           
+
+            return await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, "Configure", curActionDTO);
+
         }
        
         [HttpPost]
         [Route("activate")]
         public ActionDTO Activate(ActionDTO curActionDataPackage)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Activate", curActionDataPackage);
+            return (ActionDTO)_baseTerminalController.HandleFr8Request(curTerminal, "Activate", curActionDataPackage);
+
         }
 
         [HttpPost]
         [Route("deactivate")]
         public ActionDTO Deactivate(ActionDTO curActionDataPackage)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Deactivate", curActionDataPackage);
+
+            return (ActionDTO)_baseTerminalController.HandleFr8Request(curTerminal, "Deactivate", curActionDataPackage);
+
         }
 
         [HttpPost]
         [Route("run")]
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
         {
-            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(
-                curPlugin, "Run", actionDto);
+
+            return await (Task<PayloadDTO>)_baseTerminalController.HandleFr8Request(
+                curTerminal, "Run", curActionDTO);
+
         }
 
         //----------------------------------------------------------
@@ -51,19 +58,19 @@ namespace terminalAzure.Controllers
         [HttpPost]
         [Route("Write_To_Sql_Server")]
         [Obsolete]
-        public IHttpActionResult Process(ActionDTO curActionDTO)
+        public IHttpActionResult Process(ActionDO curActionDO)
         {
             //var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
             return
-                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this plugin. For more" +
+                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this terminal. For more" +
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
 
         }
 
         [HttpPost]
         [Route("Write_To_Sql_Server/{path}")]
-        public IHttpActionResult Process(string path, ActionDTO curActionDTO)
+        public IHttpActionResult Process(string path, ActionDO curActionDO)
 
         {
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
@@ -91,7 +98,7 @@ namespace terminalAzure.Controllers
             //);
 
             return
-                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this plugin. For more" +
+                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this terminal. For more" +
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
 
         }

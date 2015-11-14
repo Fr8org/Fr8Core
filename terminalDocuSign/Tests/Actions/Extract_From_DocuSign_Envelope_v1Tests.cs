@@ -1,3 +1,4 @@
+﻿
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,13 +13,13 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using Hub.Enums;
 using Hub.Interfaces;
-using Hub.Managers;
 using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Tests.Fixtures;
+using Hub.Managers;
 
 namespace terminalDocuSign.Tests.Actions
 {
@@ -27,15 +28,16 @@ namespace terminalDocuSign.Tests.Actions
     public class Receive_DocuSign_Envelope_v1Tests : BaseTest
     {
         Receive_DocuSign_Envelope_v1 _extract_From_DocuSign_Envelope_v1;
-
+        ICrateManager _crate;
         public Receive_DocuSign_Envelope_v1Tests()
         {
             base.SetUp();
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
 
-            PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
+            TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
 
             _extract_From_DocuSign_Envelope_v1 = new Receive_DocuSign_Envelope_v1();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
 //        [Test, Ignore("Vas, Introduced upstream actions logic to get the design time fields as part of DO-1300. This is invalid now")]
@@ -83,8 +85,9 @@ namespace terminalDocuSign.Tests.Actions
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
-            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
-            object[] parameters = new object[] { curActionDTO };
+            curActionDTO.AuthToken = new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            object[] parameters = new object[] { curActionDO };
 
             //Act
             var result = (List<FieldDTO>)ClassMethod.Invoke(typeof(Receive_DocuSign_Envelope_v1), "GetFields", parameters);
@@ -102,10 +105,11 @@ namespace terminalDocuSign.Tests.Actions
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
-            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
-
+            curActionDTO.AuthToken = new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             //Act
-            var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDTO, "6ef29903-e405-4a24-8b92-a3a3ae8d1824");
+            var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDO, curAuthTokenDO, "6ef29903-e405-4a24-8b92-a3a3ae8d1824");
 
             //Assert
             Assert.AreEqual(2, result.AllValues().Count());
@@ -123,7 +127,7 @@ namespace terminalDocuSign.Tests.Actions
             _activity = ObjectFactory.GetInstance<IRouteNode>();
         }
 
-        public async override Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(int activityId, GetCrateDirection direction)
+        public async  Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -134,11 +138,11 @@ namespace terminalDocuSign.Tests.Actions
                     .Select(x => Mapper.Map<ActionDTO>(x))
                     .ToList();
 
-                var curCrates = new List<Crate<TManifest>>();
+                var curCrates = new List<Crate>();
 
                 foreach (var curAction in upstreamActions)
                 {
-                    curCrates.AddRange(Crate.GetStorage(curAction).CratesOfType<TManifest>().ToList());
+                    curCrates.AddRange(Crate.FromDto(curAction.CrateStorage).Where(x=>x.ManifestType.Type == manifestType).ToList());
                 }
 
                 return await Task.FromResult(curCrates);

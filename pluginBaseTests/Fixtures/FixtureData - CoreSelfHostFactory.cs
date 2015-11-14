@@ -8,7 +8,7 @@ using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
 
-namespace pluginBaseTests.Fixtures
+namespace terminalFr8CoreTests.Fixtures
 {
     partial class FixtureData
     {
@@ -19,7 +19,7 @@ namespace pluginBaseTests.Fixtures
             public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
             {
                 return new Type[] {
-                    typeof(HubWeb.Controllers.RouteNodesController)
+                    typeof(HubWeb.Controllers.ManifestController)
                 };
             }
         }
