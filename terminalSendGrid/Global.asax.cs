@@ -18,7 +18,6 @@ namespace terminalSendGrid
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             // StructureMap Dependencies configuration
             Hub.StructureMap.StructureMapBootStrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.LIVE);
-            PluginSendGridStructureMapBootstrapper.ConfigureDependencies(PluginSendGridStructureMapBootstrapper.DependencyType.LIVE);
         }
     }
 }

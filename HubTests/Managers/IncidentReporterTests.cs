@@ -5,7 +5,6 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
 
 namespace HubTests.Managers
 {
