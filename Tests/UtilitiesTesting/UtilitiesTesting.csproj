@@ -184,8 +184,8 @@
     <Compile Include="Fixtures\FixtureData - File.cs" />
     <Compile Include="Fixtures\FixtureData - MultiTenantObjectInstance.cs" />
     <Compile Include="Fixtures\FixtureData - PayloadDTO.cs" />
-    <Compile Include="Fixtures\FixtureData - Plugin.cs" />
-    <Compile Include="Fixtures\FixtureData - PluginIntegration.cs" />
+    <Compile Include="Fixtures\FixtureData - Terminal.cs" />
+    <Compile Include="Fixtures\FixtureData - TerminalIntegration.cs" />
     <Compile Include="Fixtures\FixtureData - Container.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNode.cs" />
     <Compile Include="Fixtures\FixtureData - SQLTable.cs" />

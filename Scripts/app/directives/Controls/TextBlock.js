@@ -8,34 +8,19 @@ var dockyard;
             'use strict';
             //More detail on creating directives in TypeScript: 
             //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
-            var TextBlock = (function () {
-                function TextBlock() {
-                    var _this = this;
-                    this.templateUrl = '/AngularTemplate/TextBlock';
-                    this.scope = {
+            //class TextBlock implements ng.IDirective {
+            function TextArea() {
+                return {
+                    restrict: 'E',
+                    replace: true,
+                    templateUrl: '/AngularTemplate/TextBlock',
+                    scope: {
                         field: '='
-                    };
-                    this.restrict = 'E';
-                    this.replace = true;
-                    TextBlock.prototype.link = function (scope, element, attrs) {
-                        //Link function goes here
-                    };
-                    TextBlock.prototype.controller = function ($scope, $element, $attrs) {
-                        _this._$element = $element;
-                        _this._$scope = $scope;
-                    };
-                }
-                //The factory function returns Directive object as per Angular requirements
-                TextBlock.Factory = function () {
-                    var directive = function () {
-                        return new TextBlock();
-                    };
-                    directive['$inject'] = [];
-                    return directive;
+                    }
                 };
-                return TextBlock;
-            })();
-            app.directive('textBlock', TextBlock.Factory());
+            }
+            button.TextArea = TextArea;
+            app.directive('textBlock', TextArea);
         })(button = directives.button || (directives.button = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));

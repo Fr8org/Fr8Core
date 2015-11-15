@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Data.Crates;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
@@ -9,18 +10,19 @@ using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
-    public class ManageRoute_v1 : BasePluginAction
+
+    public class ManageRoute_v1 : BaseTerminalAction
+
     {
         private readonly FindObjectHelper _findObjectHelper = new FindObjectHelper();
 
 
         #region Configuration.
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (curActionDTO.CrateStorage == null 
-                || curActionDTO.CrateStorage.Crates == null
-                || curActionDTO.CrateStorage.Crates.Length == 0)
+            if (Crate.IsStorageEmpty(curActionDO))
+
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -30,15 +32,17 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        protected override Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
+
             {
                 var crateStorage = updater.CrateStorage;
                 AddRunNowButton(crateStorage);
             }
 
-            return Task.FromResult(curActionDTO);
+            return Task.FromResult(curActionDO);
+
         }
 
         private void AddRunNowButton(CrateStorage crateStorage)
@@ -58,7 +62,8 @@ namespace terminalFr8Core.Actions
 
         #region Execution.
 
-        public Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public Task<PayloadDTO> Run(ActionDO curActionDTO, int containerId, AuthorizationTokenDO authTokenDO)
+
         {
             return Task.FromResult<PayloadDTO>(null);
         }

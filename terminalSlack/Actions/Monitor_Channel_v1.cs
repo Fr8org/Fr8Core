@@ -12,10 +12,11 @@ using TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
+using Data.Entities;
 
 namespace terminalSlack.Actions
 {
-    public class Monitor_Channel_v1 : BasePluginAction
+    public class Monitor_Channel_v1 : BaseTerminalAction
     {
         private readonly ISlackIntegration _slackIntegration;
 
@@ -24,14 +25,14 @@ namespace terminalSlack.Actions
             _slackIntegration = new SlackIntegration();
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(actionDto))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(actionDto.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
             var payloadFields = ExtractPayloadFields(processPayload);
 
             var payloadChannelIdField = payloadFields.FirstOrDefault(x => x.Key == "channel_id");
@@ -41,7 +42,7 @@ namespace terminalSlack.Actions
             }
 
             var payloadChannelId = payloadChannelIdField.Value;
-            var actionChannelId = ExtractControlFieldValue(actionDto, "Selected_Slack_Channel");
+            var actionChannelId = ExtractControlFieldValue(actionDO, "Selected_Slack_Channel");
 
             if (payloadChannelId != actionChannelId)
             {
@@ -73,19 +74,19 @@ namespace terminalSlack.Actions
             return eventReportMS.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(curActionDTO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x),authTokenDO);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -93,48 +94,55 @@ namespace terminalSlack.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var oauthToken = curActionDTO.AuthToken.Token;
+            var oauthToken = authTokenDO.Token;
             var channels = await _slackIntegration.GetChannelList(oauthToken);
 
-            var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = CreateDesignTimeFieldsCrate();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
             var crateEventSubscriptions = CreateEventSubscriptionCrate();
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(crateControls);
+                PackConfigurationControls(updater.CrateStorage);
                 updater.CrateStorage.Add(crateDesignTimeFields);
                 updater.CrateStorage.Add(crateAvailableChannels);
                 updater.CrateStorage.Add(crateEventSubscriptions);
             }
 
-            
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
 
-        private Crate PackCrate_ConfigurationControls()
+        private void PackConfigurationControls(CrateStorage crateStorage)
         {
-            var fieldSelectChannel = new DropDownListControlDefinitionDTO()
-            {
-                Label = "Select Slack Channel",
-                Name = "Selected_Slack_Channel",
-                Required = true,
-                Events = new List<ControlEvent>()
+            AddControl(
+                crateStorage,
+                new DropDownListControlDefinitionDTO()
                 {
-                    new ControlEvent("onChange", "requestConfig")
-                },
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Channels",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                }
-            };
+                    Label = "Select Slack Channel",
+                    Name = "Selected_Slack_Channel",
+                    Required = true,
+                    Events = new List<ControlEvent>()
+                    {
+                        new ControlEvent("onChange", "requestConfig")
+                    },
+                    Source = new FieldSourceDTO
+                    {
+                        Label = "Available Channels",
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                    }
+                });
 
-            return PackControlsCrate(fieldSelectChannel);
+            AddControl(
+                crateStorage,
+                new TextBlockControlDefinitionDTO()
+                {
+                    Name = "Info_Label",
+                    Value = "Slack doesn't currently offer a way for us to automatically request events for this channel. You can do it manually here. use the following values: URL: <strong>http://www.fr8.company/events?dockyard_plugin=terminalSlack&version=1.0</strong>"
+                });
         }
 
         private Crate CreateDesignTimeFieldsCrate()

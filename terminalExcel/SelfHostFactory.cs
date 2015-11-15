@@ -13,7 +13,7 @@ namespace terminalExcel
         {
             public void Configuration(IAppBuilder app)
             {
-                var startup = new StartupPluginExcel();
+                var startup = new StartupTerminalExcel();
                 startup.Configuration(app, selfHost: true);
             }
         }

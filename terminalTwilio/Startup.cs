@@ -12,7 +12,7 @@ namespace terminalTwilio
     {
         public void Configuration(IAppBuilder app)
         {
-            StartHosting("plugin_twilio");
+            StartHosting("terminal_twilio");
         }
     }
 }

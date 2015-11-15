@@ -38,7 +38,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Send an Email",
-                Plugin = new PluginDO { Name = "Send an Email", Version = "1", Endpoint = "", PluginStatus = PluginStatus.Active },
+                Terminal = new TerminalDO { Name = "Send an Email", Version = "1", Endpoint = "", TerminalStatus = TerminalStatus.Active },
 
                 Version = "1"
             };
@@ -50,7 +50,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Send a Text (SMS) Message",
-                Plugin = new PluginDO { Name = "Send a Text (SMS) Message", Version = "1", Endpoint = "", PluginStatus = PluginStatus.Active },
+                Terminal = new TerminalDO { Name = "Send a Text (SMS) Message", Version = "1", Endpoint = "", TerminalStatus = TerminalStatus.Active },
                 Version = "1"
             };
         }
@@ -263,7 +263,7 @@ namespace UtilitiesTesting.Fixtures
 
             var containerDO = new ContainerDO()
             {
-                Id = 1,
+                Id = TestContainer_Id_1(),
                 ContainerState = 1,
                 RouteId = processTemplateDo.Id,
                 Route = processTemplateDo
@@ -344,7 +344,7 @@ namespace UtilitiesTesting.Fixtures
 
             var containerDO = new ContainerDO()
             {
-                Id = 1,
+                Id = TestContainer_Id_1(),
                 ContainerState = 1,
                 RouteId = processTemplateDo.Id,
                 Route = processTemplateDo
@@ -376,11 +376,11 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO TestActionAuthenticate1()
         {
-            PluginDO curPluginDO = new PluginDO()
+            TerminalDO curTerminalDO = new TerminalDO()
             {
                 Id = 1,
                 Name = "AzureSqlServer",
-                PluginStatus = 1,
+                TerminalStatus = 1,
                 Version = "1"
             };
 
@@ -391,8 +391,9 @@ namespace UtilitiesTesting.Fixtures
                 //ParentPluginRegistration = "pluginAzureSqlServer",
                 Version = "v1",
                 AuthenticationType = AuthenticationType.None,
-                Plugin = curPluginDO,
-                PluginID = 1,
+                Terminal = curTerminalDO,
+                TerminalId = 1,
+
             };
 
 
@@ -408,7 +409,7 @@ namespace UtilitiesTesting.Fixtures
 
             var curContainerDO = new ContainerDO()
             {
-                Id = 1,
+                Id = TestContainer_Id_1(),
                 RouteId = 1,
                 Route = curRouteDO
             };

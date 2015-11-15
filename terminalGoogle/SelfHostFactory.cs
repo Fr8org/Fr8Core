@@ -16,7 +16,7 @@ namespace terminalGoogle
             {
                 return new[] {
                     typeof(ActionController),
-                    typeof(PluginController)
+                    typeof(TerminalController)
                 };
             }
         }

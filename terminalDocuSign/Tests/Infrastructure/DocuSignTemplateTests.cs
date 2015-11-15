@@ -40,8 +40,8 @@ namespace terminalDocuSign.Tests.Infrastructure
 		public override void SetUp()
 		{
 			base.SetUp();
-			PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
-			PluginDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
+			TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
+			TerminalDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
 
 			// _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();

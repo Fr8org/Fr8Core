@@ -38,13 +38,13 @@ namespace Hub.Services
             return null;
         }
 
-        public string GetToken(string userId, int pluginId)
+        public string GetToken(string userId, int terminalId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
                     at.UserID == userId
-                    && at.PluginID == pluginId
+                    && at.TerminalID == terminalId
                     && at.AuthorizationTokenState == AuthorizationTokenState.Active);
 
                 if (curAuthToken != null)
@@ -53,12 +53,12 @@ namespace Hub.Services
             return null;
         }
 
-        public string GetPluginToken(int pluginId)
+        public string GetTerminalToken(int terminalId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
-                    at.PluginID == pluginId
+                    at.TerminalID == terminalId
                     && at.AuthorizationTokenState == AuthorizationTokenState.Active);
 
                 if (curAuthToken != null)
@@ -123,7 +123,7 @@ namespace Hub.Services
                     throw new ApplicationException("Could not find Action.");
                 }
 
-                // Try to find AuthToken if plugin requires authentication.
+                // Try to find AuthToken if terminal requires authentication.
                 if (activityTemplate.AuthenticationType != AuthenticationType.None)
                 {
                     // Try to get owner's account for Action -> Route.
@@ -140,15 +140,15 @@ namespace Hub.Services
 
                     var accountId = dockyardAccount.Id;
 
-                    // Try to find AuthToken for specified plugin and account.
+                    // Try to find AuthToken for specified terminal and account.
                     var authToken = uow.AuthorizationTokenRepository
-                        .FindOne(x => x.Plugin.Id == activityTemplate.Plugin.Id
+                        .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id
                             && x.UserDO.Id == accountId);
 
                     // If AuthToken is not empty, fill AuthToken property for ActionDTO.
                     if (authToken != null && !string.IsNullOrEmpty(authToken.Token))
                     {
-                        actionDTO.AuthToken = new AuthTokenDTO()
+                        actionDTO.AuthToken = new AuthorizationTokenDTO()
                         {
                             Token = authToken.Token,
                             AdditionalAttributes = authToken.AdditionalAttributes
@@ -166,10 +166,10 @@ namespace Hub.Services
         {
             if (activityTemplate.AuthenticationType == AuthenticationType.None)
             {
-                throw new ApplicationException("Plugin does not require authentication.");
+                throw new ApplicationException("Terminal does not require authentication.");
             }
 
-            var plugin = activityTemplate.Plugin;
+            var terminal = activityTemplate.Terminal;
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
@@ -180,11 +180,11 @@ namespace Hub.Services
             };
 
             var response = await restClient.PostAsync<CredentialsDTO>(
-                new Uri("http://" + plugin.Endpoint + "/authentication/internal"),
+                new Uri("http://" + terminal.Endpoint + "/authentication/internal"),
                 credentialsDTO
             );
 
-            var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
+            var authTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(response);
             if (!string.IsNullOrEmpty(authTokenDTO.Error))
             {
                 return authTokenDTO.Error;
@@ -193,11 +193,11 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var authToken = uow.AuthorizationTokenRepository
-                    .FindOne(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
+                    .FindOne(x => x.UserDO.Id == account.Id && x.Terminal.Id == terminal.Id);
 
                 if (authTokenDTO != null)
                 {
-                    var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
+                    var curTerminal = uow.TerminalRepository.GetByKey(terminal.Id);
                     var curAccount = uow.UserRepository.GetByKey(account.Id);
 
                     if (authToken == null)
@@ -206,7 +206,7 @@ namespace Hub.Services
                         {
                             Token = authTokenDTO.Token,
                             ExternalAccountId = authTokenDTO.ExternalAccountId,
-                            Plugin = curPlugin,
+                            Terminal = curTerminal,
                             UserDO = curAccount,
                             ExpiresAt = DateTime.Today.AddMonths(1)
                         };
@@ -227,29 +227,29 @@ namespace Hub.Services
         }
 
         public async Task<string> GetOAuthToken(
-            PluginDO plugin,
+            TerminalDO terminal,
             ExternalAuthenticationDTO externalAuthDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var hasAuthentication = uow.ActivityTemplateRepository
                     .GetQuery()
-                    .Any(x => x.Plugin.Id == plugin.Id);
+                    .Any(x => x.Terminal.Id == terminal.Id);
 
                 if (!hasAuthentication)
                 {
-                    throw new ApplicationException("Plugin does not require authentication.");
+                    throw new ApplicationException("Terminal does not require authentication.");
                 }
             }
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             var response = await restClient.PostAsync<ExternalAuthenticationDTO>(
-                new Uri("http://" + plugin.Endpoint + "/authentication/token"),
+                new Uri("http://" + terminal.Endpoint + "/authentication/token"),
                 externalAuthDTO
             );
 
-            var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
+            var authTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(response);
             if (!string.IsNullOrEmpty(authTokenDTO.Error))
             {
                 return authTokenDTO.Error;
@@ -282,15 +282,15 @@ namespace Hub.Services
         {
             if (activityTemplate.AuthenticationType == AuthenticationType.None)
             {
-                throw new ApplicationException("Plugin does not require authentication.");
+                throw new ApplicationException("Terminal does not require authentication.");
             }
 
-            var plugin = activityTemplate.Plugin;
+            var terminal = activityTemplate.Terminal;
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             var response = await restClient.PostAsync(
-                new Uri("http://" + plugin.Endpoint + "/authentication/initial_url")
+                new Uri("http://" + terminal.Endpoint + "/authentication/initial_url")
             );
 
             var externalAuthUrlDTO = JsonConvert.DeserializeObject<ExternalAuthUrlDTO>(response);
@@ -298,18 +298,18 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var authToken = uow.AuthorizationTokenRepository
-                    .FindOne(x => x.Plugin.Id == plugin.Id
+                    .FindOne(x => x.Terminal.Id == terminal.Id
                         && x.UserDO.Id == user.Id);
 
                 if (authToken == null)
                 {
-                    var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
+                    var curTerminal = uow.TerminalRepository.GetByKey(terminal.Id);
                     var curAccount = uow.UserRepository.GetByKey(user.Id);
 
                     authToken = new AuthorizationTokenDO()
                     {
                         UserDO = curAccount,
-                        Plugin = curPlugin,
+                        Terminal = curTerminal,
                         ExpiresAt = DateTime.Today.AddMonths(1),
                         ExternalStateToken = externalAuthUrlDTO.ExternalStateToken
                     };
@@ -369,7 +369,7 @@ namespace Hub.Services
                 if (activityTemplate.AuthenticationType != AuthenticationType.None)
                 {
                     var authToken = uow.AuthorizationTokenRepository
-                        .FindOne(x => x.Plugin.Id == activityTemplate.Plugin.Id
+                        .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id
                             && x.UserDO.Id == account.Id);
 
                     if (authToken == null || string.IsNullOrEmpty(authToken.Token))

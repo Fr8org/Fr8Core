@@ -203,7 +203,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Controllers\EventController.cs" />
-    <Compile Include="Controllers\PluginController.cs" />
+    <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -216,7 +216,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Startup.cs" />
-    <Compile Include="PluginTwilioMapBootstrapper.cs" />
+    <Compile Include="TerminalTwilioMapBootstrapper.cs" />
     <Compile Include="Tests\Actions\Send_Via_Twilio_v1Tests.cs" />
     <Compile Include="Tests\BaseTest.cs" />
     <Compile Include="Tests\Fixtures\FixtureData.cs" />

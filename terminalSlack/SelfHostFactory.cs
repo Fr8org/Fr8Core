@@ -17,8 +17,8 @@ namespace terminalSlack
                 config.MapHttpAttributeRoutes();
 
                 config.Routes.MapHttpRoute(
-                    name: "PluginSlack",
-                    routeTemplate: "plugin_slack/{controller}/{id}",
+                    name: "TerminalSlack",
+                    routeTemplate: "terminal_slack/{controller}/{id}",
                     defaults: new { id = RouteParameter.Optional }
                 );
 

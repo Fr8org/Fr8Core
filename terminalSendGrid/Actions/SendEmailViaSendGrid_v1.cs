@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Crates;
 using StructureMap;
@@ -14,7 +15,7 @@ using terminalSendGrid.Infrastructure;
 
 namespace terminalSendGrid.Actions
 {
-    public class SendEmailViaSendGrid_v1 : BasePluginAction
+    public class SendEmailViaSendGrid_v1 : BaseTerminalAction
     {
         // moved the EmailPackager ObjectFactory here since the basepluginAction will be called by others and the dependency is defiend in pluginsendGrid
         private IConfigRepository _configRepository;
@@ -33,36 +34,36 @@ namespace terminalSendGrid.Actions
             _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
         }
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDTO, EvaluateReceivedRequest);
+            return await ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest, authTokenDO);
         }
 
         /// <summary>
         /// this entire function gets passed as a delegate to the main processing code in the base class
         /// currently many actions have two stages of configuration, and this method determines which stage should be applied
         /// </summary>
-        private ConfigurationRequestType EvaluateReceivedRequest(ActionDTO curActionDTO)
+        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
-            return ConfigurationRequestType.Followup;
-        }
+                return ConfigurationRequestType.Followup;
+            }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
-                updater.CrateStorage.Add(await GetAvailableDataFields(curActionDTO));
+                updater.CrateStorage.Add(await GetAvailableDataFields(curActionDO));
 
             }
 
-            return curActionDTO;
+            return curActionDO;
         }
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace terminalSendGrid.Actions
             var control = CreateSpecificOrUpstreamValueChooser(
                 "For the Email Address, use",
                 "EmailAddress",
-                "Upstream Plugin-Provided Fields"
+                "Upstream Terminal-Provided Fields"
             );
 
             return control;
@@ -89,7 +90,7 @@ namespace terminalSendGrid.Actions
             var control = CreateSpecificOrUpstreamValueChooser(
                 "For the Email Subject, use",
                 "EmailSubject",
-                "Upstream Plugin-Provided Fields"
+                "Upstream Terminal-Provided Fields"
             );
 
             return control;
@@ -104,7 +105,7 @@ namespace terminalSendGrid.Actions
             var control = CreateSpecificOrUpstreamValueChooser(
                 "For the Email Body, use",
                 "EmailBody",
-                "Upstream Plugin-Provided Fields"
+                "Upstream Terminal-Provided Fields"
             );
 
             return control;
@@ -122,15 +123,15 @@ namespace terminalSendGrid.Actions
             return Crate.CreateStandardConfigurationControlsCrate("Send Grid", controls);
         }
 
-        private async Task<Crate> GetAvailableDataFields(ActionDTO curActionDTO)
+        private async Task<Crate> GetAvailableDataFields(ActionDO curActionDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream))
                     .Fields
                     .ToArray();
 
             var crateDTO = Crate.CreateDesignTimeFieldsCrate(
-                "Upstream Plugin-Provided Fields",
+                "Upstream Terminal-Provided Fields",
                 curUpstreamFields
             );
 
@@ -156,29 +157,29 @@ namespace terminalSendGrid.Actions
             return htmlText;
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var fromAddress = _configRepository.Get("OutboundFromAddress");
 
-            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
 
             var emailAddress = ExtractSpecificOrUpstreamValue(
-                Crate.FromDto(curActionDTO.CrateStorage),
+                Crate.GetStorage(curActionDO.CrateStorage),
                 Crate.FromDto(processPayload.CrateStorage),
                 "EmailAddress"
             );
             var emailSubject = ExtractSpecificOrUpstreamValue(
-                Crate.FromDto(curActionDTO.CrateStorage),
+                Crate.GetStorage(curActionDO.CrateStorage),
                 Crate.FromDto(processPayload.CrateStorage),
                 "EmailSubject"
             );
             var emailBody = ExtractSpecificOrUpstreamValue(
-                Crate.FromDto(curActionDTO.CrateStorage),
+                Crate.GetStorage(curActionDO.CrateStorage),
                 Crate.FromDto(processPayload.CrateStorage),
                 "EmailBody"
             );
 
-            var mailerDO = new PluginMailerDO()
+            var mailerDO = new TerminalMailerDO()
             {
                 Email = new EmailDO()
                 {

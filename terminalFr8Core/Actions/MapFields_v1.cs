@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,14 +17,14 @@ using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Actions
 {
-    public class MapFields_v1 : BasePluginAction
+    public class MapFields_v1 : BaseTerminalAction
     {
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curControlsMS = Crate.FromDto(actionDto.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var curControlsMS = Crate.GetStorage(actionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (curControlsMS == null)
             {
@@ -41,7 +41,7 @@ namespace terminalFr8Core.Actions
             var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
 
-            var processPayload = await GetProcessPayload(actionDto.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
             {
@@ -62,9 +62,9 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public async Task<ActionDTO> Configure(ActionDTO actionDTO)
+        public override async Task<ActionDO> Configure(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(actionDO, ConfigurationEvaluator, authTokenDO);
         }
 
 //        private void FillCrateConfigureList(IEnumerable<ActionDO> actions,
@@ -102,17 +102,17 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             Crate getErrorMessageCrate = null;
 
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream))
                 .Fields
                 .ToArray();
 
             var curDownstreamFields =
-                (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Downstream))
+                (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Downstream))
                 .Fields
                 .ToArray();
 
@@ -121,17 +121,17 @@ namespace terminalFr8Core.Actions
                 getErrorMessageCrate = GetTextBoxControlForDisplayingError("MapFieldsErrorMessage",
                          "This action couldn't find either source fields or target fields (or both). " +
                         "Try configuring some Actions first, then try this page again.");
-                curActionDTO.CurrentView = "MapFieldsErrorMessage";
+                curActionDO.currentView = "MapFieldsErrorMessage";
             }
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
-            var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Plugin-Provided Fields", curDownstreamFields);
-            var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+            var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields);
+            var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
 
             var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(downstreamFieldsCrate);
@@ -144,25 +144,25 @@ namespace terminalFr8Core.Actions
                 }
             }
 
-            return curActionDTO;
+            return curActionDO;
         }
 
         /// <summary>
         /// Check if initial configuration was requested.
         /// </summary>
-            private
-            bool CheckIsInitialConfiguration(ActionDTO curAction)
+            private bool CheckIsInitialConfiguration(ActionDO curAction)
+
             {
             CrateStorage storage;
 
             // Check nullability for CrateStorage and Crates array length.
-            if (curAction.CrateStorage == null || (storage = Crate.FromDto(curAction.CrateStorage)).Count == 0)
+            if (curAction.CrateStorage == null || (storage = Crate.GetStorage(curAction.CrateStorage)).Count == 0)
             {
                 return true;
             }
 
-            var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Plugin-Provided Fields").FirstOrDefault();
-            var downStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Plugin-Provided Fields").FirstOrDefault();
+            var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();
+            var downStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").FirstOrDefault();
 
 //            // Check nullability of Upstream and Downstream crates.
 //            var upStreamFieldsCrate = curAction.CrateStorage.CrateDTO.FirstOrDefault(
@@ -203,7 +203,7 @@ namespace terminalFr8Core.Actions
         /// ConfigurationEvaluator always returns Initial,
         /// since Initial and FollowUp phases are the same for current action.
         /// </summary>
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (CheckIsInitialConfiguration(curActionDO))
             {

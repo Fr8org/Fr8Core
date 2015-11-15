@@ -15,8 +15,8 @@ namespace terminalSalesforce
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
-                name: "pluginSalesforce",
-                routeTemplate: "plugin_salesforce/{controller}/{id}"
+                name: "terminalSalesforce",
+                routeTemplate: "terminal_salesforce/{controller}/{id}"
             );         
         }
     }

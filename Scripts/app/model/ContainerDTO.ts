@@ -1,6 +1,6 @@
 ﻿module dockyard.model {
     export class ContainerDTO{
-        id: number;
+        id: string;
         name: string;
         routeId: number;
         containerState: number;
@@ -13,7 +13,7 @@
     export enum ContainerState {
         Unstarted = 1,
         Executing = 2,
-        WaitingForPlugin = 3,
+        WaitingForTerminal = 3,
         Completed = 4,
         Failed = 5
     }

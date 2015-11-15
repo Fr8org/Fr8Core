@@ -17,7 +17,7 @@ namespace terminalDocuSign
     {
         public void Configuration(IAppBuilder app)
         {
-            StartHosting("plugin_docusign");
+            StartHosting("terminal_docusign");
         }
     }
 }

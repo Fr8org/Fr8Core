@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using Data.Entities;
 using Data.Interfaces;
-using Utilities.Configuration.Azure;
-using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Utilities.Configuration.Azure;
+
 
 namespace Data.Repositories
 {
     public class FileRepository : GenericRepository<FileDO>, IFileRepository
     {
-        public FileRepository(IUnitOfWork uow) : base(uow)
+        public FileRepository(IUnitOfWork uow)
+            : base(uow)
         {
 
         }
