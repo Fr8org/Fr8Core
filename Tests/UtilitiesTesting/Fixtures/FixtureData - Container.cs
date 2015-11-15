@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Data.Entities;
 using Data.States;
@@ -12,7 +13,7 @@ namespace UtilitiesTesting.Fixtures
         public static ContainerDO TestContainer1()
 		{
             var containerDO = new ContainerDO();
-            containerDO.Id = 49;
+            containerDO.Id = TestContainer_Id_49();
             containerDO.RouteId = TestRoute2().Id;
             containerDO.ContainerState = 1;
             containerDO.ProcessNodes.Add(TestProcessNode1());
@@ -22,11 +23,47 @@ namespace UtilitiesTesting.Fixtures
         public static ContainerDO TestHealthDemoContainer1()
         {
             var containerDO = new ContainerDO();
-            containerDO.Id = 49;
+            containerDO.Id = TestContainer_Id_49();
             containerDO.RouteId = TestRoute2().Id;
             containerDO.ContainerState = ContainerState.Executing;
             containerDO.ProcessNodes.Add(TestProcessNode1());
             return containerDO;
+        }
+
+        public static Guid TestContainer_Id_1()
+        {
+            // Previous ID value: 1.
+            return new Guid("811D3B85-3A79-446E-8FD0-135A3D45AA94");
+        }
+
+        public static Guid TestContainer_Id_2()
+        {
+            // Previous ID value: 2.
+            return new Guid("BEC8657E-CFB9-437C-A306-DE5FA8FB946F");
+        }
+
+        public static Guid TestContainer_Id_3()
+        {
+            // Previous ID value: 3.
+            return new Guid("3D038766-527F-4DED-934A-5042D2910EE6");
+        }
+
+        public static Guid TestContainer_Id_4()
+        {
+            // Previous ID value: 4.
+            return new Guid("206DAAED-C6CE-40C5-8326-46CFCA1FE873");
+        }
+
+        public static Guid TestContainer_Id_49()
+        {
+            // Previous ID value: 49.
+            return new Guid("221242A7-371F-43B5-9CE1-A2B302CAD428");
+        }
+
+        public static Guid TestContainer_Id_55()
+        {
+            // Previous ID value: 55.
+            return new Guid("4002ADA2-DCA3-424F-885B-3E7658512150");
         }
 
         public static IList<ContainerDO> GetContainers()
@@ -35,7 +72,7 @@ namespace UtilitiesTesting.Fixtures
             var routeId = TestRoute5().Id;
             containeList.Add(new ContainerDO()
 			{
-				Id = 1,
+                Id = TestContainer_Id_1(),
 				Name = "Container 1",
                 RouteId = routeId,
                 // Fr8AccountId = "testuser",
@@ -44,7 +81,7 @@ namespace UtilitiesTesting.Fixtures
 
             containeList.Add(new ContainerDO()
 			{
-				Id = 2,
+                Id = TestContainer_Id_2(),
                 Name = "Container 2",
                 RouteId = routeId,
                 // Fr8AccountId = "testuser",
@@ -53,7 +90,7 @@ namespace UtilitiesTesting.Fixtures
 
             containeList.Add(new ContainerDO()
 			{
-				Id = 3,
+                Id = TestContainer_Id_3(),
                 Name = "Container 3",
                 RouteId = routeId,
                // Fr8AccountId = "testuser",
@@ -62,7 +99,7 @@ namespace UtilitiesTesting.Fixtures
 
             containeList.Add(new ContainerDO()
 			{
-				Id = 4,
+                Id = TestContainer_Id_4(),
                 Name = "Container 4",
                 RouteId = routeId,
                 // Fr8AccountId = "anotheruser",
@@ -78,7 +115,7 @@ namespace UtilitiesTesting.Fixtures
             var routeId = TestRoute4().Id;
             containerList.Add(new ContainerDO()
             {
-                Id = 1,
+                Id = TestContainer_Id_1(),
                 Name = "Container 1",
                 RouteId = routeId,
                 ContainerState = ContainerState.Executing
@@ -86,7 +123,7 @@ namespace UtilitiesTesting.Fixtures
 
             containerList.Add(new ContainerDO()
             {
-                Id = 2,
+                Id = TestContainer_Id_2(),
                 Name = "Container 2",
                 RouteId = routeId,
                 ContainerState = ContainerState.Executing
@@ -94,7 +131,7 @@ namespace UtilitiesTesting.Fixtures
 
             containerList.Add(new ContainerDO()
             {
-                Id = 3,
+                Id = TestContainer_Id_3(),
                 Name = "Container 3",
                 RouteId = routeId,
                 ContainerState = ContainerState.Unstarted
@@ -102,7 +139,7 @@ namespace UtilitiesTesting.Fixtures
 
             containerList.Add(new ContainerDO()
             {
-                Id = 4,
+                Id = TestContainer_Id_4(),
                 Name = "Container 4",
                 RouteId = routeId,
                 ContainerState = ContainerState.Unstarted
@@ -146,7 +183,7 @@ namespace UtilitiesTesting.Fixtures
         public static ContainerDO TestContainerWithCurrentActivityAndNextActivity()
         {
             var container = new ContainerDO();
-            container.Id = 49;
+            container.Id = TestContainer_Id_49();
 				container.Route = TestRoute2();
             container.RouteId = TestRoute2().Id;
             container.ContainerState = 1;
@@ -159,7 +196,7 @@ namespace UtilitiesTesting.Fixtures
         public static ContainerDO TestContainerCurrentActivityNULL()
         {
             var container = new ContainerDO();
-            container.Id = 49;
+            container.Id = TestContainer_Id_49();
             container.RouteId = TestRoute2().Id;
             container.ContainerState = 1;
             container.ProcessNodes.Add(TestProcessNode1());
@@ -170,7 +207,7 @@ namespace UtilitiesTesting.Fixtures
         public static ContainerDO TestContainerWithCurrentActivityAndNextActivityTheSame()
         {
             var container = new ContainerDO();
-            container.Id = 49;
+            container.Id = TestContainer_Id_49();
             container.RouteId = TestRoute2().Id;
             container.ContainerState = 1;
             container.ProcessNodes.Add(TestProcessNode1());
@@ -182,7 +219,7 @@ namespace UtilitiesTesting.Fixtures
         public static ContainerDO TestContainerSetNextActivity()
         {
             var container = new ContainerDO();
-            container.Id = 49;
+            container.Id = TestContainer_Id_49();
             container.RouteId = TestRoute2().Id;
             container.ContainerState = 1;
             container.ProcessNodes.Add(TestProcessNode1());
@@ -194,7 +231,7 @@ namespace UtilitiesTesting.Fixtures
         public static ContainerDO TestContainerUpdateNextActivity()
         {
             var container = new ContainerDO();
-            container.Id = 49;
+            container.Id = TestContainer_Id_49();
             container.RouteId = TestRoute2().Id;
             container.ContainerState = 1;
             container.ProcessNodes.Add(TestProcessNode1());
@@ -206,7 +243,7 @@ namespace UtilitiesTesting.Fixtures
         public static ContainerDO TestContainerExecute()
         {
             var containerDO = new ContainerDO();
-            containerDO.Id = 49;
+            containerDO.Id = TestContainer_Id_49();
             containerDO.Route = FixtureData.TestRoute2();
             containerDO.RouteId = containerDO.Route.Id;
             containerDO.ContainerState = 1;

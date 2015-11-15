@@ -39,7 +39,7 @@ namespace terminalIntegrationTests
 
                 uow.ContainerRepository.Add(new ContainerDO()
                 {
-                    Id = 1,
+                    Id = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
                     Route = route,
                     CrateStorage = _crateManager.EmptyStorageAsStr(),
                     ContainerState = ContainerState.Executing
@@ -61,7 +61,7 @@ namespace terminalIntegrationTests
 
             var curActionDTO = new ActionDTO()
             {
-                ContainerId = 1,
+                ContainerId = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
                 ParentRouteNodeId = 1,
             };
 
