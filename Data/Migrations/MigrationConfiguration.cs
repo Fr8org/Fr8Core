@@ -510,7 +510,6 @@ namespace Data.Migrations
 			AddWebService(uow, "fr8 Core", "/Content/icons/web_services/fr8-core-icon-64x64.png");
 			AddWebService(uow, "Salesforce", "/Content/icons/web_services/salesforce-icon-64x64.png");
 			AddWebService(uow, "SendGrid", "/Content/icons/web_services/sendgrid-icon-64x64.png");
-			AddWebService(uow, "Twilio", "/Content/icons/web_services/twilio-icon-64x64.png");
             AddWebService(uow, "UnknownService", "/Content/icons/web_services/unknown-service.png");
 
 	        foreach (var webServiceDo in uow.WebServiceRepository.GetAll())
