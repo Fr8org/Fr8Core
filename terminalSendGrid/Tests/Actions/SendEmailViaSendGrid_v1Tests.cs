@@ -31,6 +31,7 @@ namespace terminalSendGrid.Tests.Actions
     {
         private SendEmailViaSendGrid_v1 _gridAction;
         private ICrateManager _crate;
+        private ActionDTO actionDto;
 
         public override void SetUp()
         {
@@ -43,11 +44,6 @@ namespace terminalSendGrid.Tests.Actions
             ObjectFactory.Configure(cfg => cfg.For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>())));
             ObjectFactory.Configure(cfg => cfg.For<IEmailPackager>().Use(new SendGridPackager()));
             
-            var restfulServiceClient = new Mock<IRestfulServiceClient>();
-            restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>()))
-                .Returns(Task.FromResult(FixtureData.CratePayloadDTOForSendEmailViaSendGridConfiguration));
-            ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
-
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 
             var routeNode = new Mock<IRouteNode>();
@@ -55,16 +51,23 @@ namespace terminalSendGrid.Tests.Actions
                     .Returns(Task.FromResult(new List<Crate<StandardDesignTimeFieldsCM>>()));
 
             ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(routeNode.Object));
+
+            actionDto = GetActionResult();
+            var payLoadDto = FixtureData.CratePayloadDTOForSendEmailViaSendGridConfiguration;
+            payLoadDto.CrateStorage = actionDto.CrateStorage;
+
+            var restfulServiceClient = new Mock<IRestfulServiceClient>();
+            restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>()))
+                .Returns(Task.FromResult(payLoadDto));
+            ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
+
         }
 
         [Test]
         public void Configure_ReturnsCrateDTO()
         {
-            // Arrange
-            var actionResult = GetActionResult();
-
             // Act
-            var controlsCrates = actionResult.CrateStorage.Crates;
+            var controlsCrates = actionDto.CrateStorage.Crates;
 
             // Assert
             Assert.IsNotNull(controlsCrates);
@@ -74,11 +77,8 @@ namespace terminalSendGrid.Tests.Actions
         [Test]
         public void Configure_ReturnsCrateDTOStandardConfigurationControlsMS()
         {
-            // Arrange
-            var actionResult = GetActionResult();
-
             // Act
-            var controlsCrate = _crate.FromDto(actionResult.CrateStorage).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsCrate = _crate.FromDto(actionDto.CrateStorage).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             // Assert
             Assert.IsNotNull(controlsCrate);
@@ -92,11 +92,8 @@ namespace terminalSendGrid.Tests.Actions
         [TestCase(2)]
         public void Configure_ReturnsEmailControls(int index)
         {
-            // Arrange
-            var actionResult = GetActionResult();
-
             // Act && Assert
-            var standardControls = _crate.FromDto(actionResult.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var standardControls = _crate.FromDto(actionDto.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             Assert.IsNotNull(standardControls);
 
             var specificValueTextField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[index]).Radios.SelectMany(c => c.Controls).Count(s => s.Name == "SpecificValue");
@@ -116,19 +113,20 @@ namespace terminalSendGrid.Tests.Actions
             return Mapper.Map<ActionDTO>(actionResult);
         }
 
-        [Test, Ignore]
+        [Test]
         public void Run_Returns_PayloadDTO()
         {
             // Arrange
-            var actionResult = GetActionResult();
-
             _gridAction = new SendEmailViaSendGrid_v1();
             var curActionDO = FixtureData.ConfigureSendEmailViaSendGridAction();
+
             ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            curActionDTO.CrateStorage = actionResult.CrateStorage;
+            curActionDTO.CrateStorage = actionDto.CrateStorage;
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
+            var actionDO = Mapper.Map<ActionDO>(curActionDTO);
+
             // Act
-            var payloadDTOResult = _gridAction.Run(curActionDO, curActionDTO.ContainerId, curAuthTokenDO).Result;
+            var payloadDTOResult = _gridAction.Run(actionDO, curActionDTO.ContainerId, curAuthTokenDO).Result;
 
             // Assert
             Assert.NotNull(payloadDTOResult);
