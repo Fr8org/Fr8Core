@@ -51,19 +51,23 @@ namespace Hub.Services
                     uow.SaveChanges();
                 }
 
-	            if (activityTemplateDO.WebService != null)
-	            {
-					var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDO.WebService.Name);
+                if (activityTemplateDO.WebService != null)
+                {
+                    var existingWebService = uow.WebServiceRepository.FindOne(x => x.Name == activityTemplateDO.WebService.Name);
 
-		            if (existingWebService != null)
-		            {
-			            activityTemplateDO.WebService = existingWebService;
-		            }
-		            else
-		            {
-						activityTemplateDO.WebService = null;
-		            }
-	            }
+                    if (existingWebService != null)
+                    {
+                        activityTemplateDO.WebService = existingWebService;
+                    }
+                    else
+                    {
+                        //Add a new Web service
+                        if (activityTemplateDO.WebService != null)
+                        {
+                            uow.Db.Entry(activityTemplateDO.WebService).State = System.Data.Entity.EntityState.Added;
+                        }
+                    }
+                }
 
                 var activity = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(t => t.Name == activityTemplateDO.Name);
 

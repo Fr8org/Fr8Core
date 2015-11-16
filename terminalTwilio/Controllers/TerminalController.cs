@@ -26,8 +26,9 @@ namespace terminalTwilio.Controllers
 
 	        var webService = new WebServiceDO
 	        {
-		        Name = "Twilio"
-	        };
+		        Name = "Twilio",
+                IconPath = "/Content/icons/web_services/twilio-icon-64x64.png"
+            };
 
             var sendViaTwilioTemplate = new ActivityTemplateDO
             {
