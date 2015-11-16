@@ -6,22 +6,22 @@ using Data.Interfaces.DataTransferObjects;
 using UtilitiesTesting.Fixtures;
 using System.Threading.Tasks;
 
-namespace pluginBaseTests.BaseClasses
+namespace terminalBaseTests.BaseClasses
 {
     [TestFixture]
     [Category("BaseTerminalController")]
     public class BaseTerminalControllerTests : BaseTest
     {
         IDisposable _coreServer;
-        BaseTerminalController _basePluginController;
+        BaseTerminalController _baseTerminalController;
 
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _basePluginController = new BaseTerminalController();
-            _coreServer = pluginBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
+            _baseTerminalController = new BaseTerminalController();
+            _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
         }
 
         [TearDown]

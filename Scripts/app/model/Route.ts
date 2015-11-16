@@ -3,6 +3,7 @@
         id: number;
         isTempId: boolean;
         name: string;
+        tag: string;
         description: string;
         routeState: RouteState;
         subscribedDocuSignTemplates: Array<string>;

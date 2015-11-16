@@ -1,5 +1,8 @@
 ﻿using System.Diagnostics;
+using System.Linq;
+using System.Net;
 using log4net;
+using log4net.Appender;
 
 namespace Utilities.Logging
 {
@@ -12,6 +15,20 @@ namespace Utilities.Logging
 
         public static ILog GetLogger(int depth = 1)
         {
+            return LogManager.GetLogger(new StackTrace().GetFrame(depth).GetMethod().DeclaringType);
+        }
+
+        public static ILog GetPapertrailLogger(string targetPapertrailUrl, int papertrailPort, int depth = 1)
+        {
+            var curPapertrailAppender =
+                LogManager.GetRepository()
+                    .GetAppenders()
+                    .Single(appender => appender.Name.Equals("PapertrailRemoteSyslogAppender")) as RemoteSyslogAppender;
+
+            curPapertrailAppender.RemoteAddress = Dns.GetHostAddresses(targetPapertrailUrl)[0];
+            curPapertrailAppender.RemotePort = papertrailPort;
+            curPapertrailAppender.ActivateOptions();
+
             return LogManager.GetLogger(new StackTrace().GetFrame(depth).GetMethod().DeclaringType);
         }
     }
