@@ -14,6 +14,7 @@ namespace Data.Interfaces.Manifests
         public StandardLoggingCM()
             : base(Constants.MT.StandardLoggingCrate)
         {
+            Item = new List<LogItemDTO>();
         }
     }
 }
