@@ -43,9 +43,9 @@ namespace terminalSendGrid.Actions
                 return ConfigurationRequestType.Initial;
             }
 
-                return ConfigurationRequestType.Followup;
-            }
-
+            return ConfigurationRequestType.Followup;
+        }
+        
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
@@ -53,7 +53,17 @@ namespace terminalSendGrid.Actions
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
                 updater.CrateStorage.Add(await GetAvailableDataFields(curActionDO));
+            }
 
+            return curActionDO;
+        }
+        
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                updater.CrateStorage.RemoveByLabel("Upstream Terminal-Provided Fields");
+                updater.CrateStorage.Add(await GetAvailableDataFields(curActionDO));
             }
 
             return curActionDO;
