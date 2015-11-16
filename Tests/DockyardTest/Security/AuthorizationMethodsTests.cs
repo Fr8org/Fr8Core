@@ -31,11 +31,11 @@ namespace DockyardTest.Security
             _authorization = new Authorization();
         }   
 
-        private TerminalDO CreateAndAddPluginDO()
+        private TerminalDO CreateAndAddTerminalDO()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var pluginDO = new TerminalDO()
+                var terminalDO = new TerminalDO()
                 {
                     Name = "terminalTest",
                     Version = "1",
@@ -43,10 +43,10 @@ namespace DockyardTest.Security
                     Endpoint = "localhost:39504"
                 };
 
-                uow.TerminalRepository.Add(pluginDO);
+                uow.TerminalRepository.Add(terminalDO);
                 uow.SaveChanges();
 
-                return pluginDO;
+                return terminalDO;
             }
         }
 
@@ -72,13 +72,13 @@ namespace DockyardTest.Security
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var pluginDO = CreateAndAddPluginDO();
+                var terminalDO = CreateAndAddTerminalDO();
                 var userDO = CreateAndAddUserDO();
 
                 var tokenDO = new AuthorizationTokenDO()
                 {
                     UserID = userDO.Id,
-                    TerminalID = pluginDO.Id,
+                    TerminalID = terminalDO.Id,
                     AuthorizationTokenState = AuthorizationTokenState.Active
                 };
                 uow.AuthorizationTokenRepository.Add(tokenDO);
@@ -125,7 +125,7 @@ namespace DockyardTest.Security
         }
 
         [Test]
-        public void CanGetPluginToken()
+        public void CanGetTerminalToken()
         {
             var tokenDO = CreateAndAddTokenDO();
             var testToken = _authorization.GetTerminalToken(tokenDO.TerminalID);
@@ -245,11 +245,11 @@ namespace DockyardTest.Security
         [Test]
         public void CanGetOAuthToken()
         {
-            var pluginDO = CreateAndAddPluginDO();
+            var terminalDO = CreateAndAddTerminalDO();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", pluginDO.Id);
+                var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", terminalDO.Id);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
             }
@@ -259,14 +259,14 @@ namespace DockyardTest.Security
                 RequestQueryString = "?id"
             };
 
-            var result = _authorization.GetOAuthToken(pluginDO, externalAuthenticationDTO);
+            var result = _authorization.GetOAuthToken(terminalDO, externalAuthenticationDTO);
 
             //Assert
             Mock<IRestfulServiceClient> restClientMock = Mock.Get(ObjectFactory.GetInstance<IRestfulServiceClient>());
 
             //verify that the post call is made 
             restClientMock.Verify(
-                client => client.PostAsync<ExternalAuthenticationDTO>(new Uri("http://" + pluginDO.Endpoint + "/authentication/token"),
+                client => client.PostAsync<ExternalAuthenticationDTO>(new Uri("http://" + terminalDO.Endpoint + "/authentication/token"),
                 externalAuthenticationDTO), Times.Exactly(1));
 
             restClientMock.VerifyAll();
@@ -304,12 +304,12 @@ namespace DockyardTest.Security
         public void ValidateAuthenticationNeededIsTrue()
         {
             var userDO = CreateAndAddUserDO();
-            var pluginDO = CreateAndAddPluginDO();
+            var terminalDO = CreateAndAddTerminalDO();
             var actionDTO = new ActionDTO();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", pluginDO.Id);
+                var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", terminalDO.Id);
                 activityTemplateDO.AuthenticationType = AuthenticationType.Internal;
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 actionDTO.ActivityTemplateId = activityTemplateDO.Id;

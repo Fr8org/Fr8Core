@@ -17,7 +17,7 @@ using TerminalBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
-namespace TerminalBaseTests.BaseClasses
+namespace terminalBaseTests.BaseClasses
 {
 
     [TestFixture]
@@ -33,7 +33,7 @@ namespace TerminalBaseTests.BaseClasses
         {
             base.SetUp();
             _baseTerminalAction = new BaseTerminalAction();
-            _coreServer = TerminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
+            _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 

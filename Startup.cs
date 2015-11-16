@@ -156,7 +156,7 @@ namespace HubWeb
                         {
                             alertReporter = ObjectFactory.GetInstance<EventReporter>();
                             alertReporter.ActivityTemplateTerminalRegistrationError(
-                                string.Format("Failed to register {0} plugin. Error Message: {1}", curItem.Terminal.Name, ex.Message),
+                                string.Format("Failed to register {0} terminal. Error Message: {1}", curItem.Terminal.Name, ex.Message),
                                 ex.GetType().Name);
                         }
 
@@ -166,7 +166,7 @@ namespace HubWeb
                 {
                     alertReporter = ObjectFactory.GetInstance<EventReporter>();
                     alertReporter.ActivityTemplateTerminalRegistrationError(
-                        string.Format("Failed plugin service: {0}. Error Message: {1} ", uri, ex.Message),
+                        string.Format("Failed terminal service: {0}. Error Message: {1} ", uri, ex.Message),
                         ex.GetType().Name);
 
                 }

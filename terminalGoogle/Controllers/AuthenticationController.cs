@@ -13,7 +13,7 @@ namespace terminalGoogle.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController : BaseTerminalController
     {
-        private const string curPlugin = "terminalGoogle";
+        private const string curTerinal = "terminalGoogle";
 
         private readonly IGoogleSheet _google;
 
@@ -64,7 +64,7 @@ namespace terminalGoogle.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curPlugin, ex);
+                ReportTerminalError(curTerinal, ex);
 
                 return new AuthorizationTokenDTO()
                 {

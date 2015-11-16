@@ -6,7 +6,7 @@ using Data.Interfaces.DataTransferObjects;
 using UtilitiesTesting.Fixtures;
 using System.Threading.Tasks;
 
-namespace TerminalBaseTests.BaseClasses
+namespace terminalBaseTests.BaseClasses
 {
     [TestFixture]
     [Category("BaseTerminalController")]
@@ -21,7 +21,7 @@ namespace TerminalBaseTests.BaseClasses
         {
             base.SetUp();
             _baseTerminalController = new BaseTerminalController();
-            _coreServer = TerminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
+            _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
         }
 
         [TearDown]

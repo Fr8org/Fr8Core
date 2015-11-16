@@ -1,6 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ServiceDefinition name="terminalCloudService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2015-04.2.6">
   <WebRole name="terminalWebRole" vmsize="Small">
+    <Startup>
+      <Task commandLine="newrelic.cmd" executionContext="elevated" taskType="simple">
+        <Environment>
+          <Variable name="EMULATED">
+            <RoleInstanceValue xpath="/RoleEnvironment/Deployment/@emulated" />
+          </Variable>
+          <Variable name="IsWorkerRole" value="false" />
+          <Variable name="LICENSE_KEY">
+            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/ConfigurationSettings/ConfigurationSetting[@name='NewRelic.LicenseKey']/@value" />
+          </Variable>
+        </Environment>
+      </Task>
+    </Startup>
     <Sites>
       <Site name="terminalAzure" physicalDirectory="..\..\..\terminalAzure\azure.publish">
         <Bindings>
@@ -42,9 +55,15 @@
           <Binding name="Endpoint1" endpointName="terminalExcel" />
         </Bindings>
       </Site>
+      <Site name="terminalGoogle" physicalDirectory="..\..\..\terminalGoogle\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="terminalGoogle" />
+        </Bindings>
+      </Site>
     </Sites>
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
+      <Setting name="NewRelic.LicenseKey" />
     </ConfigurationSettings>
     <Endpoints>
       <InputEndpoint name="terminalAzure" protocol="http" port="46281" />
@@ -55,7 +74,7 @@
       <InputEndpoint name="terminalSendGrid" protocol="http" port="10601" />
       <InputEndpoint name="terminalTwilio" protocol="http" port="30699" />
       <InputEndpoint name="terminalExcel" protocol="http" port="47011" />
-      <InputEndpoint name="terminalGoogle" protocol="http" port="65261" />
+      <InputEndpoint name="terminalGoogle" protocol="http" port="25923" />
     </Endpoints>
     <Imports>
       <Import moduleName="RemoteAccess" />
