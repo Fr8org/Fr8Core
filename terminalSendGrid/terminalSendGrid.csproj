@@ -174,12 +174,12 @@
     <Compile Include="Actions\SendEmailViaSendGrid_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
-    <Compile Include="Controllers\PluginController.cs" />
+    <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\IEmailPackager.cs" />
-    <Compile Include="Infrastructure\PluginMailerDO.cs" />
+    <Compile Include="Infrastructure\TerminalMailerDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\SendGridPackager.cs" />
     <Compile Include="Services\TransportFactory.cs" />
@@ -206,7 +206,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Action\" />
-    <Folder Include="Views\Plugin\" />
+    <Folder Include="Views\Terminal\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

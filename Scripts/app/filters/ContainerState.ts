@@ -14,8 +14,8 @@ module dockyard {
                 case model.ContainerState.Executing:
                     return "Executing";
                     break;
-                case model.ContainerState.WaitingForPlugin:
-                    return "WaitingForPlugin";
+                case model.ContainerState.WaitingForTerminal:
+                    return "WaitingForTerminal";
                     break;
                 case model.ContainerState.Completed:
                     return "Completed";

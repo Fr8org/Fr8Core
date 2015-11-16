@@ -16,7 +16,7 @@ using Data.Crates;
 using Hub.Enums;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Plugin;
+using Hub.Managers.APIManagers.Transmitters.Terminal;
 
 namespace Hub.Services
 {
@@ -305,27 +305,28 @@ namespace Hub.Services
             {
                 curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
 
-                try
-                {
-                    tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
-                }
-                catch (ArgumentException e)
-                {
-                    EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO), e.Message);
-                    throw;
-                }
-                catch (Exception e)
-                {
+            try
+            {
+                tempActionDTO = await CallTerminalActionAsync<ActionDTO>("configure", curActionDO, Guid.Empty);
+            }
+            catch (ArgumentException e)
+            {
+                EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message);
+                throw;
+            }
+            catch (Exception e)
+            {
+
                     JsonSerializerSettings settings = new JsonSerializerSettings
                     {
                         PreserveReferencesHandling = PreserveReferencesHandling.Objects
                     };
 
-                    var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null && curActionDO.ActivityTemplate.Plugin.Endpoint != null) ? curActionDO.ActivityTemplate.Plugin.Endpoint : "<no plugin url>";
-                    EventManager.PluginConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
+                    var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
+                    EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
+                throw;
+            }
 
-                    throw;
-                }
             }
 
             return Mapper.Map<ActionDO>(tempActionDTO);
@@ -461,13 +462,13 @@ namespace Hub.Services
             }
 
             try {
-                var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Run", curActionDO, curContainerDO.Id);
+                var payloadDTO = await CallTerminalActionAsync<PayloadDTO>("Run", curActionDO, curContainerDO.Id);
                 return payloadDTO;
 
             }
             catch (ArgumentException e)
             {
-                EventManager.PluginRunFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO), e.Message);
+                EventManager.TerminalRunFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message);
                 throw;
             }
             catch (Exception e)
@@ -477,8 +478,8 @@ namespace Hub.Services
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects
                 };
 
-                var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Plugin != null && curActionDO.ActivityTemplate.Plugin.Endpoint != null) ? curActionDO.ActivityTemplate.Plugin.Endpoint : "<no plugin url>";
-                EventManager.PluginRunFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
+                var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
+                EventManager.TerminalRunFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
                 throw;
             }
         }
@@ -507,51 +508,51 @@ namespace Hub.Services
         {
             try
             {
-                var result = await CallPluginActionAsync<ActionDTO>("activate", curActionDO);
+                var result = await CallTerminalActionAsync<ActionDTO>("activate", curActionDO, Guid.Empty);
                 EventManager.ActionActivated(curActionDO);
                 return result;
             }
             catch (ArgumentException)
             {
-                EventManager.PluginActionActivationFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO));
+                EventManager.TerminalActionActivationFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO));
                 throw;
             }
             catch
             {
-                EventManager.PluginActionActivationFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO));
+                EventManager.TerminalActionActivationFailed(curActionDO.ActivityTemplate.Terminal.Endpoint, JsonConvert.SerializeObject(curActionDO));
                 throw;
             }
         }
 
         public async Task<ActionDTO> Deactivate(ActionDO curActionDO)
         {
-            return await CallPluginActionAsync<ActionDTO>("deactivate", curActionDO);
+            return await CallTerminalActionAsync<ActionDTO>("deactivate", curActionDO, Guid.Empty);
         }
 
-        private Task<TResult> CallPluginActionAsync<TResult>(string actionName, ActionDO curActionDO, int containerId = 0)
+        private Task<TResult> CallTerminalActionAsync<TResult>(string actionName, ActionDO curActionDO, Guid containerId)
         {
             if (actionName == null) throw new ArgumentNullException("actionName");
             if (curActionDO == null) throw new ArgumentNullException("curActionDO");
 
             var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
-            dto.ProcessId = containerId;
+            dto.ContainerId = containerId;
             _authorizationToken.PrepareAuthToken(dto);
 
             EventManager.ActionDispatched(curActionDO, containerId);
 
-            if (containerId != 0)
+            if (containerId != Guid.Empty)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var containerDO = uow.ContainerRepository.GetByKey(containerId);
                     EventManager.ContainerSent(containerDO, curActionDO);
-                    var reponse = ObjectFactory.GetInstance<IPluginTransmitter>().CallActionAsync<TResult>(actionName, dto);
+                    var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(actionName, dto);
                     EventManager.ContainerReceived(containerDO, curActionDO);
                     return reponse;
                 }
             }
 
-            return ObjectFactory.GetInstance<IPluginTransmitter>().CallActionAsync<TResult>(actionName, dto);
+            return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<TResult>(actionName, dto);
         }
 
 

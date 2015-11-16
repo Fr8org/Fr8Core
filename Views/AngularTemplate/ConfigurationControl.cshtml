@@ -125,7 +125,15 @@
     -->
     <div ng-if='field.type == "ManageRoute"'>
         <manage-route current-action='currentAction'></manage-route>
-    </div> 
+    </div>
+
+    @*
+        Duration template
+    *@
+    <div ng-if='field.type == "Duration"'>
+        <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
+        <duration field="field"></duration>
+    </div>
 
     <!-- Add more configuration field templates below -->
 </div>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -155,14 +155,18 @@
     <Compile Include="Actions\BuildQuery_v1.cs" />
     <Compile Include="Actions\ConnectToSql_v1.cs" />
     <Compile Include="Actions\ExecuteSql_v1.cs" />
+
     <Compile Include="Actions\ManageRoute_v1.cs" />
+
     <Compile Include="Actions\Select_Fr8_Object_v1.cs" />
     <Compile Include="Actions\StoreMTData_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Actions\FilterUsingRunTimeData_v1.cs" />
     <Compile Include="Controllers\EventController.cs" />
-    <Compile Include="Controllers\PluginController.cs" />
+
+    <Compile Include="Controllers\TerminalController.cs" />
+
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -241,12 +245,5 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>if exist $(TargetDir)pluginDockyardCore.dll del /Q $(TargetDir)pluginDockyardCore.dll</PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+    </PropertyGroup>
 </Project>

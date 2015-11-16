@@ -9,7 +9,7 @@ using Data.Interfaces.DataTransferObjects;
 using Microsoft.Owin.Hosting;
 using Owin;
 
-namespace pluginIntegrationTests.Fixtures
+namespace terminalIntegrationTests.Fixtures
 {
     partial class FixtureData
     {
@@ -53,7 +53,7 @@ namespace pluginIntegrationTests.Fixtures
         {
             get
             {
-                PayloadDTO payloadDTO = new PayloadDTO(1);
+                PayloadDTO payloadDTO = new PayloadDTO(UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1());
                 return payloadDTO;
             }
         }

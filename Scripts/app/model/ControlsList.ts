@@ -114,4 +114,10 @@
         Label: string;
         Id: string;
     }
+
+    export class DurationControlDefinitionDTO extends ControlDefinitionDTO {
+        days: number;
+        hours: number;
+        minutes: number;
+    }
 }

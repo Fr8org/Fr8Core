@@ -1,0 +1,678 @@
+﻿2015-10-21 11:04:39,563 [1] WARN - Dockyard  starting...
+2015-10-21 11:05:10,666 [8] ERROR - Critical internal error occured. URL accessed: http://localhost:30643/Dashbord
+System.Web.HttpException (0x80004005): The controller for path '/Dashbord' was not found or does not implement IController.
+   at System.Web.Mvc.DefaultControllerFactory.GetControllerInstance(RequestContext requestContext, Type controllerType)
+   at System.Web.Mvc.DefaultControllerFactory.CreateController(RequestContext requestContext, String controllerName)
+   at System.Web.Mvc.MvcHandler.ProcessRequestInit(HttpContextBase httpContext, IController& controller, IControllerFactory& factory)
+   at System.Web.Mvc.MvcHandler.BeginProcessRequest(HttpContextBase httpContext, AsyncCallback callback, Object state)
+   at System.Web.Mvc.MvcHandler.BeginProcessRequest(HttpContext httpContext, AsyncCallback callback, Object state)
+   at System.Web.Mvc.MvcHandler.System.Web.IHttpAsyncHandler.BeginProcessRequest(HttpContext context, AsyncCallback cb, Object extraData)
+   at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()
+   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)
+2015-10-21 11:05:30,222 [16] ERROR - Error register plugins action template: <!DOCTYPE html>
+<html>
+    <head>
+        <title>The following errors occurred while attempting to load the app.<br> - The OwinStartup attribute discovered in assembly 'pluginSlack' referencing startup type 'pluginSlack.Startup' conflicts with the attribute in assembly 'terminalSlack' referencing startup type 'terminalSlack.Startup' because they have the same FriendlyName ''. Remove or rename one of the attributes, or reference the desired type directly.<br>To disable OWIN startup discovery, add the appSetting owin:AutomaticAppStartup with a value of &quot;false&quot; in your web.config.<br>To specify the OWIN startup Assembly, Class, or Method, add the appSetting owin:AppStartup with the fully qualified startup class or configuration method name in your web.config.</title>
+        <meta name="viewport" content="width=device-width" />
+        <style>
+         body {font-family:"Verdana";font-weight:normal;font-size: .7em;color:black;} 
+         p {font-family:"Verdana";font-weight:normal;color:black;margin-top: -5px}
+         b {font-family:"Verdana";font-weight:bold;color:black;margin-top: -5px}
+         H1 { font-family:"Verdana";font-weight:normal;font-size:18pt;color:red }
+         H2 { font-family:"Verdana";font-weight:normal;font-size:14pt;color:maroon }
+         pre {font-family:"Consolas","Lucida Console",Monospace;font-size:11pt;margin:0;padding:0.5em;line-height:14pt}
+         .marker {font-weight: bold; color: black;text-decoration: none;}
+         .version {color: gray;}
+         .error {margin-bottom: 10px;}
+         .expandable { text-decoration:underline; font-weight:bold; color:navy; cursor:hand; }
+         @media screen and (max-width: 639px) {
+          pre { width: 440px; overflow: auto; white-space: pre-wrap; word-wrap: break-word; }
+         }
+         @media screen and (max-width: 479px) {
+          pre { width: 280px; }
+         }
+        </style>
+    </head>
+
+    <body bgcolor="white">
+
+            <span><H1>Server Error in '/' Application.<hr width=100% size=1 color=silver></H1>
+
+            <h2> <i>The following errors occurred while attempting to load the app.<br> - The OwinStartup attribute discovered in assembly 'pluginSlack' referencing startup type 'pluginSlack.Startup' conflicts with the attribute in assembly 'terminalSlack' referencing startup type 'terminalSlack.Startup' because they have the same FriendlyName ''. Remove or rename one of the attributes, or reference the desired type directly.<br>To disable OWIN startup discovery, add the appSetting owin:AutomaticAppStartup with a value of &quot;false&quot; in your web.config.<br>To specify the OWIN startup Assembly, Class, or Method, add the appSetting owin:AppStartup with the fully qualified startup class or configuration method name in your web.config.</i> </h2></span>
+
+            <font face="Arial, Helvetica, Geneva, SunSans-Regular, sans-serif ">
+
+            <b> Description: </b>An unhandled exception occurred during the execution of the current web request. Please review the stack trace for more information about the error and where it originated in the code.
+
+            <br><br>
+
+            <b> Exception Details: </b>System.EntryPointNotFoundException: The following errors occurred while attempting to load the app.<br> - The OwinStartup attribute discovered in assembly 'pluginSlack' referencing startup type 'pluginSlack.Startup' conflicts with the attribute in assembly 'terminalSlack' referencing startup type 'terminalSlack.Startup' because they have the same FriendlyName ''. Remove or rename one of the attributes, or reference the desired type directly.<br>To disable OWIN startup discovery, add the appSetting owin:AutomaticAppStartup with a value of &quot;false&quot; in your web.config.<br>To specify the OWIN startup Assembly, Class, or Method, add the appSetting owin:AppStartup with the fully qualified startup class or configuration method name in your web.config.<br><br>
+
+            <b>Source Error:</b> <br><br>
+
+            <table width=100% bgcolor="#ffffcc">
+               <tr>
+                  <td>
+                      <code>
+
+An unhandled exception was generated during the execution of the current web request. Information regarding the origin and location of the exception can be identified using the exception stack trace below.</code>
+
+                  </td>
+               </tr>
+            </table>
+
+            <br>
+
+            <b>Stack Trace:</b> <br><br>
+
+            <table width=100% bgcolor="#ffffcc">
+               <tr>
+                  <td>
+                      <code><pre>
+
+[EntryPointNotFoundException: The following errors occurred while attempting to load the app.
+ - The OwinStartup attribute discovered in assembly &#39;pluginSlack&#39; referencing startup type &#39;pluginSlack.Startup&#39; conflicts with the attribute in assembly &#39;terminalSlack&#39; referencing startup type &#39;terminalSlack.Startup&#39; because they have the same FriendlyName &#39;&#39;. Remove or rename one of the attributes, or reference the desired type directly.
+To disable OWIN startup discovery, add the appSetting owin:AutomaticAppStartup with a value of &quot;false&quot; in your web.config.
+To specify the OWIN startup Assembly, Class, or Method, add the appSetting owin:AppStartup with the fully qualified startup class or configuration method name in your web.config.]
+   Microsoft.Owin.Host.SystemWeb.OwinBuilder.GetAppStartup() +764
+   Microsoft.Owin.Host.SystemWeb.OwinHttpModule.InitializeBlueprint() +103
+   System.Threading.LazyInitializer.EnsureInitializedCore(T&amp; target, Boolean&amp; initialized, Object&amp; syncLock, Func`1 valueFactory) +115
+   System.Threading.LazyInitializer.EnsureInitialized(T&amp; target, Boolean&amp; initialized, Object&amp; syncLock, Func`1 valueFactory) +72
+   Microsoft.Owin.Host.SystemWeb.OwinHttpModule.Init(HttpApplication context) +104
+   System.Web.HttpApplication.RegisterEventSubscriptionsWithIIS(IntPtr appContext, HttpContext context, MethodInfo[] handlers) +534
+   System.Web.HttpApplication.InitSpecial(HttpApplicationState state, MethodInfo[] handlers, IntPtr appContext, HttpContext context) +172
+   System.Web.HttpApplicationFactory.GetSpecialApplicationInstance(IntPtr appContext, HttpContext context) +352
+   System.Web.Hosting.PipelineRuntime.InitializeApplication(IntPtr appContext) +296
+
+[HttpException (0x80004005): The following errors occurred while attempting to load the app.
+ - The OwinStartup attribute discovered in assembly &#39;pluginSlack&#39; referencing startup type &#39;pluginSlack.Startup&#39; conflicts with the attribute in assembly &#39;terminalSlack&#39; referencing startup type &#39;terminalSlack.Startup&#39; because they have the same FriendlyName &#39;&#39;. Remove or rename one of the attributes, or reference the desired type directly.
+To disable OWIN startup discovery, add the appSetting owin:AutomaticAppStartup with a value of &quot;false&quot; in your web.config.
+To specify the OWIN startup Assembly, Class, or Method, add the appSetting owin:AppStartup with the fully qualified startup class or configuration method name in your web.config.]
+   System.Web.HttpRuntime.FirstRequestInit(HttpContext context) +9920756
+   System.Web.HttpRuntime.EnsureFirstRequestInit(HttpContext context) +101
+   System.Web.HttpRuntime.ProcessRequestNotificationPrivate(IIS7WorkerRequest wr, HttpContext context) +261
+</pre></code>
+
+                  </td>
+               </tr>
+            </table>
+
+            <br>
+
+            <hr width=100% size=1 color=silver>
+
+            <b>Version Information:</b>&nbsp;Microsoft .NET Framework Version:4.0.30319; ASP.NET Version:4.6.81.0
+
+            </font>
+
+    </body>
+</html>
+<!-- 
+[EntryPointNotFoundException]: The following errors occurred while attempting to load the app.
+ - The OwinStartup attribute discovered in assembly &#39;pluginSlack&#39; referencing startup type &#39;pluginSlack.Startup&#39; conflicts with the attribute in assembly &#39;terminalSlack&#39; referencing startup type &#39;terminalSlack.Startup&#39; because they have the same FriendlyName &#39;&#39;. Remove or rename one of the attributes, or reference the desired type directly.
+To disable OWIN startup discovery, add the appSetting owin:AutomaticAppStartup with a value of &quot;false&quot; in your web.config.
+To specify the OWIN startup Assembly, Class, or Method, add the appSetting owin:AppStartup with the fully qualified startup class or configuration method name in your web.config.
+   at Microsoft.Owin.Host.SystemWeb.OwinBuilder.GetAppStartup()
+   at Microsoft.Owin.Host.SystemWeb.OwinHttpModule.InitializeBlueprint()
+   at System.Threading.LazyInitializer.EnsureInitializedCore[T](T& target, Boolean& initialized, Object& syncLock, Func`1 valueFactory)
+   at System.Threading.LazyInitializer.EnsureInitialized[T](T& target, Boolean& initialized, Object& syncLock, Func`1 valueFactory)
+   at Microsoft.Owin.Host.SystemWeb.OwinHttpModule.Init(HttpApplication context)
+   at System.Web.HttpApplication.RegisterEventSubscriptionsWithIIS(IntPtr appContext, HttpContext context, MethodInfo[] handlers)
+   at System.Web.HttpApplication.InitSpecial(HttpApplicationState state, MethodInfo[] handlers, IntPtr appContext, HttpContext context)
+   at System.Web.HttpApplicationFactory.GetSpecialApplicationInstance(IntPtr appContext, HttpContext context)
+   at System.Web.Hosting.PipelineRuntime.InitializeApplication(IntPtr appContext)
+[HttpException]: The following errors occurred while attempting to load the app.
+ - The OwinStartup attribute discovered in assembly &#39;pluginSlack&#39; referencing startup type &#39;pluginSlack.Startup&#39; conflicts with the attribute in assembly &#39;terminalSlack&#39; referencing startup type &#39;terminalSlack.Startup&#39; because they have the same FriendlyName &#39;&#39;. Remove or rename one of the attributes, or reference the desired type directly.
+To disable OWIN startup discovery, add the appSetting owin:AutomaticAppStartup with a value of &quot;false&quot; in your web.config.
+To specify the OWIN startup Assembly, Class, or Method, add the appSetting owin:AppStartup with the fully qualified startup class or configuration method name in your web.config.
+   at System.Web.HttpRuntime.FirstRequestInit(HttpContext context)
+   at System.Web.HttpRuntime.EnsureFirstRequestInit(HttpContext context)
+   at System.Web.HttpRuntime.ProcessRequestNotificationPrivate(IIS7WorkerRequest wr, HttpContext context)
+--> 
+2015-10-21 11:05:33,166 [15] ERROR - Error register plugins action template: <!DOCTYPE html>
+<html>
+    <head>
+        <title>Could not load file or assembly 'Newtonsoft.Json' or one of its dependencies. The located assembly's manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)</title>
+        <meta name="viewport" content="width=device-width" />
+        <style>
+         body {font-family:"Verdana";font-weight:normal;font-size: .7em;color:black;} 
+         p {font-family:"Verdana";font-weight:normal;color:black;margin-top: -5px}
+         b {font-family:"Verdana";font-weight:bold;color:black;margin-top: -5px}
+         H1 { font-family:"Verdana";font-weight:normal;font-size:18pt;color:red }
+         H2 { font-family:"Verdana";font-weight:normal;font-size:14pt;color:maroon }
+         pre {font-family:"Consolas","Lucida Console",Monospace;font-size:11pt;margin:0;padding:0.5em;line-height:14pt}
+         .marker {font-weight: bold; color: black;text-decoration: none;}
+         .version {color: gray;}
+         .error {margin-bottom: 10px;}
+         .expandable { text-decoration:underline; font-weight:bold; color:navy; cursor:hand; }
+         @media screen and (max-width: 639px) {
+          pre { width: 440px; overflow: auto; white-space: pre-wrap; word-wrap: break-word; }
+         }
+         @media screen and (max-width: 479px) {
+          pre { width: 280px; }
+         }
+        </style>
+    </head>
+
+    <body bgcolor="white">
+
+            <span><H1>Server Error in '/' Application.<hr width=100% size=1 color=silver></H1>
+
+            <h2> <i>Could not load file or assembly 'Newtonsoft.Json' or one of its dependencies. The located assembly's manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)</i> </h2></span>
+
+            <font face="Arial, Helvetica, Geneva, SunSans-Regular, sans-serif ">
+
+            <b> Description: </b>An unhandled exception occurred during the execution of the current web request. Please review the stack trace for more information about the error and where it originated in the code.
+
+            <br><br>
+
+            <b> Exception Details: </b>System.IO.FileLoadException: Could not load file or assembly 'Newtonsoft.Json' or one of its dependencies. The located assembly's manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)<br><br>
+
+            <b>Source Error:</b> <br><br>
+
+            <table width=100% bgcolor="#ffffcc">
+               <tr>
+                  <td>
+                      <code>
+
+An unhandled exception was generated during the execution of the current web request. Information regarding the origin and location of the exception can be identified using the exception stack trace below.</code>
+
+                  </td>
+               </tr>
+            </table>
+
+            <br>
+
+            <b>Assembly Load Trace:</b> The following information can be helpful to determine why the assembly 'Newtonsoft.Json' could not be loaded.<br><br>
+
+            <table width=100% bgcolor="#ffffcc">
+               <tr>
+                  <td>
+                      <code><pre>
+
+WRN: Assembly binding logging is turned OFF.
+To enable assembly bind failure logging, set the registry value [HKLM\Software\Microsoft\Fusion!EnableLog] (DWORD) to 1.
+Note: There is some performance penalty associated with assembly bind failure logging.
+To turn this feature off, remove the registry value [HKLM\Software\Microsoft\Fusion!EnableLog].
+</pre></code>
+
+                  </td>
+               </tr>
+            </table>
+
+            <br>
+
+            <b>Stack Trace:</b> <br><br>
+
+            <table width=100% bgcolor="#ffffcc">
+               <tr>
+                  <td>
+                      <code><pre>
+
+[FileLoadException: Could not load file or assembly &#39;Newtonsoft.Json&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)]
+
+[FileLoadException: Could not load file or assembly &#39;Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)]
+   System.Reflection.RuntimeAssembly._nLoad(AssemblyName fileName, String codeBase, Evidence assemblySecurity, RuntimeAssembly locationHint, StackCrawlMark&amp; stackMark, IntPtr pPrivHostBinder, Boolean throwOnFileNotFound, Boolean forIntrospection, Boolean suppressSecurityChecks) +0
+   System.Reflection.RuntimeAssembly.nLoad(AssemblyName fileName, String codeBase, Evidence assemblySecurity, RuntimeAssembly locationHint, StackCrawlMark&amp; stackMark, IntPtr pPrivHostBinder, Boolean throwOnFileNotFound, Boolean forIntrospection, Boolean suppressSecurityChecks) +36
+   System.Reflection.RuntimeAssembly.InternalLoadAssemblyName(AssemblyName assemblyRef, Evidence assemblySecurity, RuntimeAssembly reqAssembly, StackCrawlMark&amp; stackMark, IntPtr pPrivHostBinder, Boolean throwOnFileNotFound, Boolean forIntrospection, Boolean suppressSecurityChecks) +152
+   System.Reflection.RuntimeAssembly.InternalLoad(String assemblyString, Evidence assemblySecurity, StackCrawlMark&amp; stackMark, IntPtr pPrivHostBinder, Boolean forIntrospection) +77
+   System.Reflection.RuntimeAssembly.InternalLoad(String assemblyString, Evidence assemblySecurity, StackCrawlMark&amp; stackMark, Boolean forIntrospection) +21
+   System.Reflection.Assembly.Load(String assemblyString) +28
+   System.Web.Configuration.CompilationSection.LoadAssemblyHelper(String assemblyName, Boolean starDirective) +38
+
+[ConfigurationErrorsException: Could not load file or assembly &#39;Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)]
+   System.Web.Configuration.CompilationSection.LoadAssemblyHelper(String assemblyName, Boolean starDirective) +738
+   System.Web.Configuration.CompilationSection.LoadAllAssembliesFromAppDomainBinDirectory() +217
+   System.Web.Configuration.CompilationSection.LoadAssembly(AssemblyInfo ai) +130
+   System.Web.Compilation.BuildManager.GetReferencedAssemblies(CompilationSection compConfig) +170
+   System.Web.Compilation.BuildManager.GetPreStartInitMethodsFromReferencedAssemblies() +92
+   System.Web.Compilation.BuildManager.CallPreStartInitMethods(String preStartInitListPath, Boolean&amp; isRefAssemblyLoaded) +290
+   System.Web.Compilation.BuildManager.ExecutePreAppStart() +157
+   System.Web.Hosting.HostingEnvironment.Initialize(ApplicationManager appManager, IApplicationHost appHost, IConfigMapPathFactory configMapPathFactory, HostingEnvironmentParameters hostingParameters, PolicyLevel policyLevel, Exception appDomainCreationException) +531
+
+[HttpException (0x80004005): Could not load file or assembly &#39;Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)]
+   System.Web.HttpRuntime.FirstRequestInit(HttpContext context) +9920756
+   System.Web.HttpRuntime.EnsureFirstRequestInit(HttpContext context) +101
+   System.Web.HttpRuntime.ProcessRequestNotificationPrivate(IIS7WorkerRequest wr, HttpContext context) +261
+</pre></code>
+
+                  </td>
+               </tr>
+            </table>
+
+            <br>
+
+            <hr width=100% size=1 color=silver>
+
+            <b>Version Information:</b>&nbsp;Microsoft .NET Framework Version:4.0.30319; ASP.NET Version:4.6.81.0
+
+            </font>
+
+    </body>
+</html>
+<!-- 
+[FileLoadException]: Could not load file or assembly &#39;Newtonsoft.Json&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)
+[FileLoadException]: Could not load file or assembly &#39;Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)
+   at System.Reflection.RuntimeAssembly._nLoad(AssemblyName fileName, String codeBase, Evidence assemblySecurity, RuntimeAssembly locationHint, StackCrawlMark& stackMark, IntPtr pPrivHostBinder, Boolean throwOnFileNotFound, Boolean forIntrospection, Boolean suppressSecurityChecks)
+   at System.Reflection.RuntimeAssembly.nLoad(AssemblyName fileName, String codeBase, Evidence assemblySecurity, RuntimeAssembly locationHint, StackCrawlMark& stackMark, IntPtr pPrivHostBinder, Boolean throwOnFileNotFound, Boolean forIntrospection, Boolean suppressSecurityChecks)
+   at System.Reflection.RuntimeAssembly.InternalLoadAssemblyName(AssemblyName assemblyRef, Evidence assemblySecurity, RuntimeAssembly reqAssembly, StackCrawlMark& stackMark, IntPtr pPrivHostBinder, Boolean throwOnFileNotFound, Boolean forIntrospection, Boolean suppressSecurityChecks)
+   at System.Reflection.RuntimeAssembly.InternalLoad(String assemblyString, Evidence assemblySecurity, StackCrawlMark& stackMark, IntPtr pPrivHostBinder, Boolean forIntrospection)
+   at System.Reflection.RuntimeAssembly.InternalLoad(String assemblyString, Evidence assemblySecurity, StackCrawlMark& stackMark, Boolean forIntrospection)
+   at System.Reflection.Assembly.Load(String assemblyString)
+   at System.Web.Configuration.CompilationSection.LoadAssemblyHelper(String assemblyName, Boolean starDirective)
+[ConfigurationErrorsException]: Could not load file or assembly &#39;Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)
+   at System.Web.Configuration.CompilationSection.LoadAssemblyHelper(String assemblyName, Boolean starDirective)
+   at System.Web.Configuration.CompilationSection.LoadAllAssembliesFromAppDomainBinDirectory()
+   at System.Web.Configuration.CompilationSection.LoadAssembly(AssemblyInfo ai)
+   at System.Web.Compilation.BuildManager.GetReferencedAssemblies(CompilationSection compConfig)
+   at System.Web.Compilation.BuildManager.GetPreStartInitMethodsFromReferencedAssemblies()
+   at System.Web.Compilation.BuildManager.CallPreStartInitMethods(String preStartInitListPath, Boolean& isRefAssemblyLoaded)
+   at System.Web.Compilation.BuildManager.ExecutePreAppStart()
+   at System.Web.Hosting.HostingEnvironment.Initialize(ApplicationManager appManager, IApplicationHost appHost, IConfigMapPathFactory configMapPathFactory, HostingEnvironmentParameters hostingParameters, PolicyLevel policyLevel, Exception appDomainCreationException)
+[HttpException]: Could not load file or assembly &#39;Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)
+   at System.Web.HttpRuntime.FirstRequestInit(HttpContext context)
+   at System.Web.HttpRuntime.EnsureFirstRequestInit(HttpContext context)
+   at System.Web.HttpRuntime.ProcessRequestNotificationPrivate(IIS7WorkerRequest wr, HttpContext context)
+--> 
+2015-10-21 11:05:39,379 [14] ERROR - Error register plugins action template: <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<title>IIS 10.0 Detailed Error - 404.0 - Not Found</title> 
+<style type="text/css"> 
+<!-- 
+body{margin:0;font-size:.7em;font-family:Verdana,Arial,Helvetica,sans-serif;} 
+code{margin:0;color:#006600;font-size:1.1em;font-weight:bold;} 
+.config_source code{font-size:.8em;color:#000000;} 
+pre{margin:0;font-size:1.4em;word-wrap:break-word;} 
+ul,ol{margin:10px 0 10px 5px;} 
+ul.first,ol.first{margin-top:5px;} 
+fieldset{padding:0 15px 10px 15px;word-break:break-all;} 
+.summary-container fieldset{padding-bottom:5px;margin-top:4px;} 
+legend.no-expand-all{padding:2px 15px 4px 10px;margin:0 0 0 -12px;} 
+legend{color:#333333;;margin:4px 0 8px -12px;_margin-top:0px; 
+font-weight:bold;font-size:1em;} 
+a:link,a:visited{color:#007EFF;font-weight:bold;} 
+a:hover{text-decoration:none;} 
+h1{font-size:2.4em;margin:0;color:#FFF;} 
+h2{font-size:1.7em;margin:0;color:#CC0000;} 
+h3{font-size:1.4em;margin:10px 0 0 0;color:#CC0000;} 
+h4{font-size:1.2em;margin:10px 0 5px 0; 
+}#header{width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:"trebuchet MS",Verdana,sans-serif; 
+ color:#FFF;background-color:#5C87B2; 
+}#content{margin:0 0 0 2%;position:relative;} 
+.summary-container,.content-container{background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;} 
+.content-container p{margin:0 0 10px 0; 
+}#details-left{width:35%;float:left;margin-right:2%; 
+}#details-right{width:63%;float:left;overflow:hidden; 
+}#server_version{width:96%;_height:1px;min-height:1px;margin:0 0 5px 0;padding:11px 2% 8px 2%;color:#FFFFFF; 
+ background-color:#5A7FA5;border-bottom:1px solid #C1CFDD;border-top:1px solid #4A6C8E;font-weight:normal; 
+ font-size:1em;color:#FFF;text-align:right; 
+}#server_version p{margin:5px 0;} 
+table{margin:4px 0 4px 0;width:100%;border:none;} 
+td,th{vertical-align:top;padding:3px 0;text-align:left;font-weight:normal;border:none;} 
+th{width:30%;text-align:right;padding-right:2%;font-weight:bold;} 
+thead th{background-color:#ebebeb;width:25%; 
+}#details-right th{width:20%;} 
+table tr.alt td,table tr.alt th{} 
+.highlight-code{color:#CC0000;font-weight:bold;font-style:italic;} 
+.clear{clear:both;} 
+.preferred{padding:0 5px 2px 5px;font-weight:normal;background:#006633;color:#FFF;font-size:.8em;} 
+--> 
+</style> 
+ 
+</head> 
+<body> 
+<div id="content"> 
+<div class="content-container"> 
+  <h3>HTTP Error 404.0 - Not Found</h3> 
+  <h4>Разыскиваемый вами ресурс был удален, было изменено его имя или он временно недоступен.</h4> 
+</div> 
+<div class="content-container"> 
+ <fieldset><h4>Наиболее вероятные причины:</h4> 
+  <ul> 	<li>Указанный каталог или файл не существует на данном веб-сервере.</li> 	<li>URL-адрес содержит орфографическую ошибку.</li> 	<li>Специальный фильтр или модуль, такой как URLScan, ограничивает доступ к файлу.</li> </ul> 
+ </fieldset> 
+</div> 
+<div class="content-container"> 
+ <fieldset><h4>Что можно предпринять:</h4> 
+  <ul> 	<li>Создайте содержимое на веб-сервере.</li> 	<li>Проверьте URL-адрес веб-браузера.</li> 	<li>Чтобы получить дополнительные сведения об этой ошибке, проверьте журнал трассировки для невыполненных запросов и определите, какой модуль вызывает SetStatus. Чтобы получить дополнительные сведения, щелкните  <a href="http://go.microsoft.com/fwlink/?LinkID=66439">здесь</a>. </li> </ul> 
+ </fieldset> 
+</div> 
+ 
+<div class="content-container"> 
+ <fieldset><h4>Detailed Error Information:</h4> 
+  <div id="details-left"> 
+   <table border="0" cellpadding="0" cellspacing="0"> 
+    <tr class="alt"><th>Module</th><td>&nbsp;&nbsp;&nbsp;IIS Web Core</td></tr> 
+    <tr><th>Notification</th><td>&nbsp;&nbsp;&nbsp;MapRequestHandler</td></tr> 
+    <tr class="alt"><th>Handler</th><td>&nbsp;&nbsp;&nbsp;StaticFile</td></tr> 
+    <tr><th>Error Code</th><td>&nbsp;&nbsp;&nbsp;0x80070002</td></tr> 
+     
+   </table> 
+  </div> 
+  <div id="details-right"> 
+   <table border="0" cellpadding="0" cellspacing="0"> 
+    <tr class="alt"><th>Requested URL</th><td>&nbsp;&nbsp;&nbsp;http://localhost:47011/plugins/discover</td></tr> 
+    <tr><th>Physical Path</th><td>&nbsp;&nbsp;&nbsp;C:\workdir\dockyard\pluginExcel\plugins\discover</td></tr> 
+    <tr class="alt"><th>Logon Method</th><td>&nbsp;&nbsp;&nbsp;Анонимная</td></tr> 
+    <tr><th>Logon User</th><td>&nbsp;&nbsp;&nbsp;Анонимная</td></tr> 
+    <tr class="alt"><th>Каталог трассировки запросов</th><td>&nbsp;&nbsp;&nbsp;C:\Users\ignusin\Documents\IISExpress\TraceLogFiles\PLUGINEXCEL</td></tr> 
+   </table> 
+   <div class="clear"></div> 
+  </div> 
+ </fieldset> 
+</div> 
+ 
+<div class="content-container"> 
+ <fieldset><h4>More Information:</h4> 
+  Эта ошибка означает, что данный файл или каталог не существует на этом сервере. Создайте нужный файл или каталог и вновь направьте запрос. 
+  <p><a href="http://go.microsoft.com/fwlink/?LinkID=62293&amp;IIS70Error=404,0,0x80070002,7601">View more information &raquo;</a></p> 
+   
+ </fieldset> 
+</div> 
+</div> 
+</body> 
+</html> 
+ 
+2015-10-21 11:05:39,943 [15] INFO - 9 activity templates were registrated
+2015-10-21 11:12:23,740 [1] WARN - Dockyard  starting...
+2015-10-21 11:12:52,254 [10] ERROR - Error register plugins action template: <!DOCTYPE html>
+<html>
+    <head>
+        <title>Could not load file or assembly 'Newtonsoft.Json' or one of its dependencies. The located assembly's manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)</title>
+        <meta name="viewport" content="width=device-width" />
+        <style>
+         body {font-family:"Verdana";font-weight:normal;font-size: .7em;color:black;} 
+         p {font-family:"Verdana";font-weight:normal;color:black;margin-top: -5px}
+         b {font-family:"Verdana";font-weight:bold;color:black;margin-top: -5px}
+         H1 { font-family:"Verdana";font-weight:normal;font-size:18pt;color:red }
+         H2 { font-family:"Verdana";font-weight:normal;font-size:14pt;color:maroon }
+         pre {font-family:"Consolas","Lucida Console",Monospace;font-size:11pt;margin:0;padding:0.5em;line-height:14pt}
+         .marker {font-weight: bold; color: black;text-decoration: none;}
+         .version {color: gray;}
+         .error {margin-bottom: 10px;}
+         .expandable { text-decoration:underline; font-weight:bold; color:navy; cursor:hand; }
+         @media screen and (max-width: 639px) {
+          pre { width: 440px; overflow: auto; white-space: pre-wrap; word-wrap: break-word; }
+         }
+         @media screen and (max-width: 479px) {
+          pre { width: 280px; }
+         }
+        </style>
+    </head>
+
+    <body bgcolor="white">
+
+            <span><H1>Server Error in '/' Application.<hr width=100% size=1 color=silver></H1>
+
+            <h2> <i>Could not load file or assembly 'Newtonsoft.Json' or one of its dependencies. The located assembly's manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)</i> </h2></span>
+
+            <font face="Arial, Helvetica, Geneva, SunSans-Regular, sans-serif ">
+
+            <b> Description: </b>An unhandled exception occurred during the execution of the current web request. Please review the stack trace for more information about the error and where it originated in the code.
+
+            <br><br>
+
+            <b> Exception Details: </b>System.IO.FileLoadException: Could not load file or assembly 'Newtonsoft.Json' or one of its dependencies. The located assembly's manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)<br><br>
+
+            <b>Source Error:</b> <br><br>
+
+            <table width=100% bgcolor="#ffffcc">
+               <tr>
+                  <td>
+                      <code>
+
+An unhandled exception was generated during the execution of the current web request. Information regarding the origin and location of the exception can be identified using the exception stack trace below.</code>
+
+                  </td>
+               </tr>
+            </table>
+
+            <br>
+
+            <b>Assembly Load Trace:</b> The following information can be helpful to determine why the assembly 'Newtonsoft.Json' could not be loaded.<br><br>
+
+            <table width=100% bgcolor="#ffffcc">
+               <tr>
+                  <td>
+                      <code><pre>
+
+WRN: Assembly binding logging is turned OFF.
+To enable assembly bind failure logging, set the registry value [HKLM\Software\Microsoft\Fusion!EnableLog] (DWORD) to 1.
+Note: There is some performance penalty associated with assembly bind failure logging.
+To turn this feature off, remove the registry value [HKLM\Software\Microsoft\Fusion!EnableLog].
+</pre></code>
+
+                  </td>
+               </tr>
+            </table>
+
+            <br>
+
+            <b>Stack Trace:</b> <br><br>
+
+            <table width=100% bgcolor="#ffffcc">
+               <tr>
+                  <td>
+                      <code><pre>
+
+[FileLoadException: Could not load file or assembly &#39;Newtonsoft.Json&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)]
+
+[FileLoadException: Could not load file or assembly &#39;Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)]
+   System.Reflection.RuntimeAssembly._nLoad(AssemblyName fileName, String codeBase, Evidence assemblySecurity, RuntimeAssembly locationHint, StackCrawlMark&amp; stackMark, IntPtr pPrivHostBinder, Boolean throwOnFileNotFound, Boolean forIntrospection, Boolean suppressSecurityChecks) +0
+   System.Reflection.RuntimeAssembly.nLoad(AssemblyName fileName, String codeBase, Evidence assemblySecurity, RuntimeAssembly locationHint, StackCrawlMark&amp; stackMark, IntPtr pPrivHostBinder, Boolean throwOnFileNotFound, Boolean forIntrospection, Boolean suppressSecurityChecks) +36
+   System.Reflection.RuntimeAssembly.InternalLoadAssemblyName(AssemblyName assemblyRef, Evidence assemblySecurity, RuntimeAssembly reqAssembly, StackCrawlMark&amp; stackMark, IntPtr pPrivHostBinder, Boolean throwOnFileNotFound, Boolean forIntrospection, Boolean suppressSecurityChecks) +152
+   System.Reflection.RuntimeAssembly.InternalLoad(String assemblyString, Evidence assemblySecurity, StackCrawlMark&amp; stackMark, IntPtr pPrivHostBinder, Boolean forIntrospection) +77
+   System.Reflection.RuntimeAssembly.InternalLoad(String assemblyString, Evidence assemblySecurity, StackCrawlMark&amp; stackMark, Boolean forIntrospection) +21
+   System.Reflection.Assembly.Load(String assemblyString) +28
+   System.Web.Configuration.CompilationSection.LoadAssemblyHelper(String assemblyName, Boolean starDirective) +38
+
+[ConfigurationErrorsException: Could not load file or assembly &#39;Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)]
+   System.Web.Configuration.CompilationSection.LoadAssemblyHelper(String assemblyName, Boolean starDirective) +738
+   System.Web.Configuration.CompilationSection.LoadAllAssembliesFromAppDomainBinDirectory() +217
+   System.Web.Configuration.CompilationSection.LoadAssembly(AssemblyInfo ai) +130
+   System.Web.Compilation.BuildManager.GetReferencedAssemblies(CompilationSection compConfig) +170
+   System.Web.Compilation.BuildManager.GetPreStartInitMethodsFromReferencedAssemblies() +92
+   System.Web.Compilation.BuildManager.CallPreStartInitMethods(String preStartInitListPath, Boolean&amp; isRefAssemblyLoaded) +290
+   System.Web.Compilation.BuildManager.ExecutePreAppStart() +157
+   System.Web.Hosting.HostingEnvironment.Initialize(ApplicationManager appManager, IApplicationHost appHost, IConfigMapPathFactory configMapPathFactory, HostingEnvironmentParameters hostingParameters, PolicyLevel policyLevel, Exception appDomainCreationException) +531
+
+[HttpException (0x80004005): Could not load file or assembly &#39;Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)]
+   System.Web.HttpRuntime.FirstRequestInit(HttpContext context) +9920756
+   System.Web.HttpRuntime.EnsureFirstRequestInit(HttpContext context) +101
+   System.Web.HttpRuntime.ProcessRequestNotificationPrivate(IIS7WorkerRequest wr, HttpContext context) +261
+</pre></code>
+
+                  </td>
+               </tr>
+            </table>
+
+            <br>
+
+            <hr width=100% size=1 color=silver>
+
+            <b>Version Information:</b>&nbsp;Microsoft .NET Framework Version:4.0.30319; ASP.NET Version:4.6.81.0
+
+            </font>
+
+    </body>
+</html>
+<!-- 
+[FileLoadException]: Could not load file or assembly &#39;Newtonsoft.Json&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)
+[FileLoadException]: Could not load file or assembly &#39;Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)
+   at System.Reflection.RuntimeAssembly._nLoad(AssemblyName fileName, String codeBase, Evidence assemblySecurity, RuntimeAssembly locationHint, StackCrawlMark& stackMark, IntPtr pPrivHostBinder, Boolean throwOnFileNotFound, Boolean forIntrospection, Boolean suppressSecurityChecks)
+   at System.Reflection.RuntimeAssembly.nLoad(AssemblyName fileName, String codeBase, Evidence assemblySecurity, RuntimeAssembly locationHint, StackCrawlMark& stackMark, IntPtr pPrivHostBinder, Boolean throwOnFileNotFound, Boolean forIntrospection, Boolean suppressSecurityChecks)
+   at System.Reflection.RuntimeAssembly.InternalLoadAssemblyName(AssemblyName assemblyRef, Evidence assemblySecurity, RuntimeAssembly reqAssembly, StackCrawlMark& stackMark, IntPtr pPrivHostBinder, Boolean throwOnFileNotFound, Boolean forIntrospection, Boolean suppressSecurityChecks)
+   at System.Reflection.RuntimeAssembly.InternalLoad(String assemblyString, Evidence assemblySecurity, StackCrawlMark& stackMark, IntPtr pPrivHostBinder, Boolean forIntrospection)
+   at System.Reflection.RuntimeAssembly.InternalLoad(String assemblyString, Evidence assemblySecurity, StackCrawlMark& stackMark, Boolean forIntrospection)
+   at System.Reflection.Assembly.Load(String assemblyString)
+   at System.Web.Configuration.CompilationSection.LoadAssemblyHelper(String assemblyName, Boolean starDirective)
+[ConfigurationErrorsException]: Could not load file or assembly &#39;Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)
+   at System.Web.Configuration.CompilationSection.LoadAssemblyHelper(String assemblyName, Boolean starDirective)
+   at System.Web.Configuration.CompilationSection.LoadAllAssembliesFromAppDomainBinDirectory()
+   at System.Web.Configuration.CompilationSection.LoadAssembly(AssemblyInfo ai)
+   at System.Web.Compilation.BuildManager.GetReferencedAssemblies(CompilationSection compConfig)
+   at System.Web.Compilation.BuildManager.GetPreStartInitMethodsFromReferencedAssemblies()
+   at System.Web.Compilation.BuildManager.CallPreStartInitMethods(String preStartInitListPath, Boolean& isRefAssemblyLoaded)
+   at System.Web.Compilation.BuildManager.ExecutePreAppStart()
+   at System.Web.Hosting.HostingEnvironment.Initialize(ApplicationManager appManager, IApplicationHost appHost, IConfigMapPathFactory configMapPathFactory, HostingEnvironmentParameters hostingParameters, PolicyLevel policyLevel, Exception appDomainCreationException)
+[HttpException]: Could not load file or assembly &#39;Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed&#39; or one of its dependencies. The located assembly&#39;s manifest definition does not match the assembly reference. (Exception from HRESULT: 0x80131040)
+   at System.Web.HttpRuntime.FirstRequestInit(HttpContext context)
+   at System.Web.HttpRuntime.EnsureFirstRequestInit(HttpContext context)
+   at System.Web.HttpRuntime.ProcessRequestNotificationPrivate(IIS7WorkerRequest wr, HttpContext context)
+--> 
+2015-10-21 11:12:57,838 [10] ERROR - Error register plugins action template: <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<title>IIS 10.0 Detailed Error - 404.0 - Not Found</title> 
+<style type="text/css"> 
+<!-- 
+body{margin:0;font-size:.7em;font-family:Verdana,Arial,Helvetica,sans-serif;} 
+code{margin:0;color:#006600;font-size:1.1em;font-weight:bold;} 
+.config_source code{font-size:.8em;color:#000000;} 
+pre{margin:0;font-size:1.4em;word-wrap:break-word;} 
+ul,ol{margin:10px 0 10px 5px;} 
+ul.first,ol.first{margin-top:5px;} 
+fieldset{padding:0 15px 10px 15px;word-break:break-all;} 
+.summary-container fieldset{padding-bottom:5px;margin-top:4px;} 
+legend.no-expand-all{padding:2px 15px 4px 10px;margin:0 0 0 -12px;} 
+legend{color:#333333;;margin:4px 0 8px -12px;_margin-top:0px; 
+font-weight:bold;font-size:1em;} 
+a:link,a:visited{color:#007EFF;font-weight:bold;} 
+a:hover{text-decoration:none;} 
+h1{font-size:2.4em;margin:0;color:#FFF;} 
+h2{font-size:1.7em;margin:0;color:#CC0000;} 
+h3{font-size:1.4em;margin:10px 0 0 0;color:#CC0000;} 
+h4{font-size:1.2em;margin:10px 0 5px 0; 
+}#header{width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:"trebuchet MS",Verdana,sans-serif; 
+ color:#FFF;background-color:#5C87B2; 
+}#content{margin:0 0 0 2%;position:relative;} 
+.summary-container,.content-container{background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;} 
+.content-container p{margin:0 0 10px 0; 
+}#details-left{width:35%;float:left;margin-right:2%; 
+}#details-right{width:63%;float:left;overflow:hidden; 
+}#server_version{width:96%;_height:1px;min-height:1px;margin:0 0 5px 0;padding:11px 2% 8px 2%;color:#FFFFFF; 
+ background-color:#5A7FA5;border-bottom:1px solid #C1CFDD;border-top:1px solid #4A6C8E;font-weight:normal; 
+ font-size:1em;color:#FFF;text-align:right; 
+}#server_version p{margin:5px 0;} 
+table{margin:4px 0 4px 0;width:100%;border:none;} 
+td,th{vertical-align:top;padding:3px 0;text-align:left;font-weight:normal;border:none;} 
+th{width:30%;text-align:right;padding-right:2%;font-weight:bold;} 
+thead th{background-color:#ebebeb;width:25%; 
+}#details-right th{width:20%;} 
+table tr.alt td,table tr.alt th{} 
+.highlight-code{color:#CC0000;font-weight:bold;font-style:italic;} 
+.clear{clear:both;} 
+.preferred{padding:0 5px 2px 5px;font-weight:normal;background:#006633;color:#FFF;font-size:.8em;} 
+--> 
+</style> 
+ 
+</head> 
+<body> 
+<div id="content"> 
+<div class="content-container"> 
+  <h3>HTTP Error 404.0 - Not Found</h3> 
+  <h4>Разыскиваемый вами ресурс был удален, было изменено его имя или он временно недоступен.</h4> 
+</div> 
+<div class="content-container"> 
+ <fieldset><h4>Наиболее вероятные причины:</h4> 
+  <ul> 	<li>Указанный каталог или файл не существует на данном веб-сервере.</li> 	<li>URL-адрес содержит орфографическую ошибку.</li> 	<li>Специальный фильтр или модуль, такой как URLScan, ограничивает доступ к файлу.</li> </ul> 
+ </fieldset> 
+</div> 
+<div class="content-container"> 
+ <fieldset><h4>Что можно предпринять:</h4> 
+  <ul> 	<li>Создайте содержимое на веб-сервере.</li> 	<li>Проверьте URL-адрес веб-браузера.</li> 	<li>Чтобы получить дополнительные сведения об этой ошибке, проверьте журнал трассировки для невыполненных запросов и определите, какой модуль вызывает SetStatus. Чтобы получить дополнительные сведения, щелкните  <a href="http://go.microsoft.com/fwlink/?LinkID=66439">здесь</a>. </li> </ul> 
+ </fieldset> 
+</div> 
+ 
+<div class="content-container"> 
+ <fieldset><h4>Detailed Error Information:</h4> 
+  <div id="details-left"> 
+   <table border="0" cellpadding="0" cellspacing="0"> 
+    <tr class="alt"><th>Module</th><td>&nbsp;&nbsp;&nbsp;IIS Web Core</td></tr> 
+    <tr><th>Notification</th><td>&nbsp;&nbsp;&nbsp;MapRequestHandler</td></tr> 
+    <tr class="alt"><th>Handler</th><td>&nbsp;&nbsp;&nbsp;StaticFile</td></tr> 
+    <tr><th>Error Code</th><td>&nbsp;&nbsp;&nbsp;0x80070002</td></tr> 
+     
+   </table> 
+  </div> 
+  <div id="details-right"> 
+   <table border="0" cellpadding="0" cellspacing="0"> 
+    <tr class="alt"><th>Requested URL</th><td>&nbsp;&nbsp;&nbsp;http://localhost:47011/plugins/discover</td></tr> 
+    <tr><th>Physical Path</th><td>&nbsp;&nbsp;&nbsp;C:\workdir\dockyard\pluginExcel\plugins\discover</td></tr> 
+    <tr class="alt"><th>Logon Method</th><td>&nbsp;&nbsp;&nbsp;Анонимная</td></tr> 
+    <tr><th>Logon User</th><td>&nbsp;&nbsp;&nbsp;Анонимная</td></tr> 
+    <tr class="alt"><th>Каталог трассировки запросов</th><td>&nbsp;&nbsp;&nbsp;C:\Users\ignusin\Documents\IISExpress\TraceLogFiles\PLUGINEXCEL</td></tr> 
+   </table> 
+   <div class="clear"></div> 
+  </div> 
+ </fieldset> 
+</div> 
+ 
+<div class="content-container"> 
+ <fieldset><h4>More Information:</h4> 
+  Эта ошибка означает, что данный файл или каталог не существует на этом сервере. Создайте нужный файл или каталог и вновь направьте запрос. 
+  <p><a href="http://go.microsoft.com/fwlink/?LinkID=62293&amp;IIS70Error=404,0,0x80070002,7601">View more information &raquo;</a></p> 
+   
+ </fieldset> 
+</div> 
+</div> 
+</body> 
+</html> 
+ 
+2015-10-21 11:13:05,893 [15] INFO - 11 activity templates were registrated
+2015-10-21 11:14:56,343 [22] ERROR - Critical internal error occured. URL accessed: http://localhost:30643/ExternalAuth/AuthSuccess?dockyard_plugin=pluginSlack&version=1&code=7518126694.12908331907.7283c26466&state=6086c0ba-8c11-4ce2-acdb-29538e648aff
+System.ApplicationException: Could not find plugin.
+   at Web.Controllers.ExternalAuthController.<AuthSuccess>d__3.MoveNext() in c:\workdir\dockyard\Controllers\ExternalAuthController.cs:line 47
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.GetResult()
+   at System.Threading.Tasks.TaskHelpersExtensions.ThrowIfFaulted(Task task)
+   at System.Web.Mvc.Async.TaskAsyncActionDescriptor.EndExecute(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass37.<BeginInvokeAsynchronousActionMethod>b__36(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<InvokeActionMethodFilterAsynchronouslyRecursive>b__3f()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.AsyncInvocationWithFilters.<>c__DisplayClass48.<InvokeActionMethodFilterAsynchronouslyRecursive>b__41()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass33.<BeginInvokeActionMethodWithFilters>b__32(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass21.<>c__DisplayClass2b.<BeginInvokeAction>b__1c()
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.<>c__DisplayClass21.<BeginInvokeAction>b__1e(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeAction(IAsyncResult asyncResult)
+   at System.Web.Mvc.Controller.<BeginExecuteCore>b__1d(IAsyncResult asyncResult, ExecuteCoreState innerState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.Async.AsyncResultWrapper.End(IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.Controller.EndExecuteCore(IAsyncResult asyncResult)
+   at System.Web.Mvc.Controller.<BeginExecute>b__15(IAsyncResult asyncResult, Controller controller)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.Async.AsyncResultWrapper.End(IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.Controller.EndExecute(IAsyncResult asyncResult)
+   at System.Web.Mvc.Controller.System.Web.Mvc.Async.IAsyncController.EndExecute(IAsyncResult asyncResult)
+   at System.Web.Mvc.MvcHandler.<BeginProcessRequest>b__5(IAsyncResult asyncResult, ProcessRequestState innerState)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult)
+   at System.Web.Mvc.Async.AsyncResultWrapper.WrappedAsyncResultBase`1.End()
+   at System.Web.Mvc.Async.AsyncResultWrapper.End[TResult](IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.Async.AsyncResultWrapper.End(IAsyncResult asyncResult, Object tag)
+   at System.Web.Mvc.MvcHandler.EndProcessRequest(IAsyncResult asyncResult)
+   at System.Web.Mvc.MvcHandler.System.Web.IHttpAsyncHandler.EndProcessRequest(IAsyncResult result)
+   at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()
+   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean& completedSynchronously)
+2015-10-21 11:15:53,532 [9] INFO - Event Process Node Created generated with CustomerId = a629be58-6b8b-4803-857c-cc07f9c2513c, ObjectId = 0 and Data = Container Execution ID :0, EmailAddress: alex@edelstein.org 3.
+2015-10-21 11:15:53,609 [9] INFO - Event Action Started generated with CustomerId = a629be58-6b8b-4803-857c-cc07f9c2513c, ObjectId = 7 and Data = Process Execution ID :7, EmailAddress: alex@edelstein.org 3.
+2015-10-21 11:15:53,727 [21] INFO - Event Process Requested generated with CustomerId = a629be58-6b8b-4803-857c-cc07f9c2513c, ObjectId = 3 and Data = Process Access ID :3, EmailAddress: alex@edelstein.org 3.
+2015-10-21 11:15:53,898 [8] INFO - Event Action Dispatched generated with CustomerId = a629be58-6b8b-4803-857c-cc07f9c2513c, ObjectId = 7 and Data = Process Execution ID :7, EmailAddress: alex@edelstein.org 3.
+2015-10-21 11:15:53,959 [8] INFO - Event Action Started generated with CustomerId = a629be58-6b8b-4803-857c-cc07f9c2513c, ObjectId = 8 and Data = Process Execution ID :8, EmailAddress: alex@edelstein.org 3.
+2015-10-21 11:15:54,034 [21] INFO - Event Process Requested generated with CustomerId = a629be58-6b8b-4803-857c-cc07f9c2513c, ObjectId = 3 and Data = Process Access ID :3, EmailAddress: alex@edelstein.org 3.
+2015-10-21 11:15:54,953 [21] INFO - Event Action Dispatched generated with CustomerId = a629be58-6b8b-4803-857c-cc07f9c2513c, ObjectId = 8 and Data = Process Execution ID :8, EmailAddress: alex@edelstein.org 3.

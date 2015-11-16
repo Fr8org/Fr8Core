@@ -4,7 +4,7 @@
 ﻿using StructureMap;
 ﻿using Data.Entities;
 ﻿using Data.Interfaces;
-﻿using Hub.Managers.APIManagers.Transmitters.Plugin;
+﻿using Hub.Managers.APIManagers.Transmitters.Terminal;
 ﻿using Hub.Services;
 using UtilitiesTesting;
 ﻿using UtilitiesTesting.Fixtures;
@@ -30,7 +30,7 @@ namespace DockyardTest.Integration
 
                 ObjectFactory.Configure(x =>
                 {
-                    x.For<IPluginTransmitter>().Use<PluginTransmitter>();
+                    x.For<ITerminalTransmitter>().Use<TerminalTransmitter>();
                 });
 
                 //create a registered account

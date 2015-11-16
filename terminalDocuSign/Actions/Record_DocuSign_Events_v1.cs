@@ -15,27 +15,28 @@ using StructureMap;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
 using TerminalBase.BaseClasses;
+using Data.Entities;
 
 namespace terminalDocuSign.Actions
 {
-    public class Record_DocuSign_Events_v1 : BasePluginAction
+    public class Record_DocuSign_Events_v1 : BaseTerminalAction
     {
         /// <summary>
         /// //For this action, both Initial and Followup configuration requests are same. Hence it returns Initial config request type always.
         /// </summary>
-        /// <param name="curActionDTO"></param>
+        /// <param name="curActionDO"></param>
         /// <returns></returns>
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(curActionDTO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDTO, dto => ConfigurationRequestType.Initial);
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationRequestType.Initial,authTokenDO);
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             /*
              * Discussed with Alexei and it is required to have empty Standard Configuration Control in the crate.
@@ -60,21 +61,21 @@ namespace terminalDocuSign.Actions
                     new FieldDTO {Key = "DocuSign Event", Value = string.Empty}
                 });
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage = new CrateStorage(curControlsCrate, curEventSubscriptionsCrate, curAvailableRunTimeObjectsDesignTimeCrate);
             }
-            
+
             /*
              * Note: We should not call Activate at the time of Configuration. For this action, it may be valid use case.
              * Because this particular action will be used internally, it would be easy to execute the Process directly.
              */
-            await Activate(curActionDTO);
+            await Activate(curActionDO);
 
-            return await Task.FromResult(curActionDTO);
+            return await Task.FromResult(curActionDO);
         }
 
-        public Task<object> Activate(ActionDTO curActionDTO)
+        public Task<object> Activate(ActionDO curActionDO)
         {
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
@@ -93,7 +94,7 @@ namespace terminalDocuSign.Actions
                     name = "MonitorAllDocuSignEvents",
                     urlToPublishTo =
                         Regex.Match(ConfigurationManager.AppSettings["EventWebServerUrl"], @"(\w+://\w+:\d+)").Value +
-                        "/events?dockyard_plugin=terminalDocuSign&version=1"
+                        "/events?dockyard_terminal=terminalDocuSign&version=1"
                 };
 
                 curDocuSignAccount.CreateDocuSignConnectProfile(monitorConnectConfiguration);
@@ -102,7 +103,7 @@ namespace terminalDocuSign.Actions
             return Task.FromResult((object)true);
         }
 
-        public object Deactivate(ActionDTO curDataPackage)
+        public object Deactivate(ActionDO curDataPackage)
         {
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
@@ -115,14 +116,14 @@ namespace terminalDocuSign.Actions
             return true;
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(actionDto))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var curProcessPayload = await GetProcessPayload(actionDto.ProcessId);
+            var curProcessPayload = await GetProcessPayload(containerId);
 
             var curEventReport = Crate.GetStorage(curProcessPayload).CrateContentsOfType<EventReportCM>().First();
 

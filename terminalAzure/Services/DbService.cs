@@ -17,7 +17,7 @@ namespace terminalAzure.Services
         {
             // Get corresponding provider.
             var dbProvider = DbProvider.GetDbProvider(args.ProviderName);
-            // Check that plugin knows how to work wih specified provider name.
+            // Check that terminal knows how to work wih specified provider name.
             if (dbProvider == null)
             {
                 var message = string.Format("No DbProvider found for \"{0}\"", args.ProviderName);

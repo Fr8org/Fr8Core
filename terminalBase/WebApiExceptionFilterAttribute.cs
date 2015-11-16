@@ -16,33 +16,33 @@ namespace TerminalBase
     {
         public override void OnException(HttpActionExecutedContext actionExecutedContext)
         {
-            //get the plugin error details
-            var curPluginError = actionExecutedContext.Exception;
-            var pluginName = GetPluginName(actionExecutedContext.ActionContext.ControllerContext.Controller);
+            //get the terminal error details
+            var curTerminalError = actionExecutedContext.Exception;
+            var terminalName = GetTerminalName(actionExecutedContext.ActionContext.ControllerContext.Controller);
 
-            //POST event to fr8 about this plugin error
-            new BasePluginController().ReportPluginError(pluginName, curPluginError);
+            //POST event to fr8 about this terminal error
+            new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError);
 
             //prepare the response JSON based on the exception type
             actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
-            if (curPluginError is PluginCodedException)
+            if (curTerminalError is TerminalCodedException)
             {
-                //if plugin error is Plugin Coded Exception, place the error code description in message
-                var pluginEx = (PluginCodedException) curPluginError;
-                var pluginError =
-                    JsonConvert.SerializeObject(new {status = "plugin_error", message = pluginEx.ErrorCode.GetEnumDescription()});
-                actionExecutedContext.Response.Content = new StringContent(pluginError, Encoding.UTF8, "application/json");
+                //if terminal error is terminal Coded Exception, place the error code description in message
+                var terminalEx = (TerminalCodedException)curTerminalError;
+                var terminalError =
+                    JsonConvert.SerializeObject(new {status = "terminal_error", message = terminalEx.ErrorCode.GetEnumDescription()});
+                actionExecutedContext.Response.Content = new StringContent(terminalError, Encoding.UTF8, "application/json");
             }
             else
             {
-                //if plugin error is general exception, place expcetion message
+                //if terminal error is general exception, place expcetion message
                 var detailedMessage =
-                    JsonConvert.SerializeObject(new { status = "plugin_error", message = curPluginError.Message });
+                    JsonConvert.SerializeObject(new { status = "terminal_error", message = curTerminalError.Message });
                 actionExecutedContext.Response.Content = new StringContent(detailedMessage, Encoding.UTF8, "application/json");
             }
         }
 
-        private string GetPluginName(IHttpController curController)
+        private string GetTerminalName(IHttpController curController)
         {
             string assemblyName = curController.GetType().Assembly.FullName.Split(new char[] {','})[0];
             return assemblyName;

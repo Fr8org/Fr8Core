@@ -25,6 +25,19 @@ namespace terminalSendGrid.Tests.Fixtures
             return actionDO;
         }
 
+        public static Guid TestContainerGuid()
+        {
+            return new Guid("70790811-3394-4B5B-9841-F26A7BE35163");
+        }
+
+        public static ContainerDO TestContainer()
+        {
+            var containerDO = new ContainerDO();
+            containerDO.Id = TestContainerGuid();
+            containerDO.ContainerState = 1;
+            return containerDO;
+        }
+
         public static ActivityTemplateDO SendEmailViaSendGridActionTemplateDTO()
         {
             return new ActivityTemplateDO
@@ -50,11 +63,16 @@ namespace terminalSendGrid.Tests.Fixtures
             };
         }
 
+        public static Guid PayloadDTO_ContainerId()
+        {
+            return new Guid("07EF735F-42F5-435E-8DC2-D039351463FD");
+        }
+
         public static PayloadDTO CratePayloadDTOForSendEmailViaSendGridConfiguration
         {
             get
             {
-                PayloadDTO payloadDTO = new PayloadDTO(1);
+                PayloadDTO payloadDTO = new PayloadDTO(PayloadDTO_ContainerId());
                 return payloadDTO;
             }
         }

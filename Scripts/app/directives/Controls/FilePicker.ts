@@ -14,113 +14,87 @@ module dockyard.directives.filePicker {
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
-    class FilePicker implements ng.IDirective {
-        public link: (scope: IFilePickerScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public templateUrl = '/AngularTemplate/FilePicker';
-        public controller: ($scope: IFilePickerScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public scope = {
-            field: '='
-        };
-        public restrict = 'E';
-        private _$element: ng.IAugmentedJQuery;
-        private _$scope: IFilePickerScope;
+    export function FilePicker(): ng.IDirective {
+    //class FilePicker implements ng.IDirective {
+        
+        
 
-        constructor(private $modal: any, private FileService: IFileService) {
-            FilePicker.prototype.link = (
-                scope: IFilePickerScope,
-                element: ng.IAugmentedJQuery,
-                attrs: ng.IAttributes) => {
-                //Link function goes here
-            };
+        var controller = ['$scope', '$modal', 'FileService', function ($scope: IFilePickerScope, $modal: any, FileService: IFileService) {
 
-            FilePicker.prototype.controller = (
-                $scope: IFilePickerScope,
-                $element: ng.IAugmentedJQuery,
-                $attrs: ng.IAttributes) => {
-                this._$element = $element;
-                this._$scope = $scope;
-                this.FileService = FileService;
-                this._$scope.selectedFile = null;
-                $scope.OnFileSelect = <($file: any) => void> angular.bind(this, this.OnFileSelect);
-                $scope.ListExistingFiles = <() => void> angular.bind(this, this.ListExistingFiles);
-                $scope.Save = <() => void> angular.bind(this, this.Save);
-            };
-        }
+            $scope.selectedFile = null;
 
-        private OnFileUploadSuccess(fileDTO: interfaces.IFileDescriptionDTO) {
-            this._$scope.selectedFile = fileDTO;
-            this._$scope.$root.$broadcast("fp-success", fileDTO );
-            this._$scope.field.value = (<dockyard.model.FileDTO>fileDTO).cloudStorageUrl;
-            this._$scope.$root.$broadcast("onChange", new pca.ChangeEventArgs("select_file"));
-        }
-
-        private OnFileUploadFail(status: any) {
-            alert('sorry file upload failed with status: ' + status);
-       }
-
-        private OnFileSelect($file) {
-            var onFileUploadSuccess = <(fileDTO: interfaces.IFileDTO) => void> angular.bind(this, this.OnFileUploadSuccess);
-            var onFileUploadFail = <(status: any) => void> angular.bind(this, this.OnFileUploadFail);
-            this.FileService.uploadFile($file).then(onFileUploadSuccess, onFileUploadFail);
-        }
-
-        private Save() {
-            if (this._$scope.selectedFile === null) {
-                //raise some kind of error to prevent continuing
-                alert('No file was selected!!!!!!');
-                return;
+            var OnFileUploadSuccess = function(fileDTO: interfaces.IFileDescriptionDTO) {
+                $scope.selectedFile = fileDTO;
+                $scope.$root.$broadcast("fp-success", fileDTO);
+                $scope.field.value = (<dockyard.model.FileDTO>fileDTO).cloudStorageUrl;
+                $scope.$root.$broadcast("onChange", new pca.ChangeEventArgs("select_file"));
             }
-            
-            //we should assign id of selected file to model value
-            //this._$scope.field.value = this._fileDTO.id.toString();
-            alert('Selected FileDO ID -> ' + this._$scope.selectedFile.id.toString());
-            //TODO add this file's id to CrateDO
-        }
 
-        private OnExistingFileSelected(fileDTO: interfaces.IFileDescriptionDTO) {
-            this._$scope.selectedFile = fileDTO;
-        }
+            var OnFileUploadFail = function(status: any) {
+                alert('sorry file upload failed with status: ' + status);
+            }
 
-        private OnFilesLoaded(filesDTO: Array<interfaces.IFileDescriptionDTO>) {
+            $scope.OnFileSelect = function($file) {
+                FileService.uploadFile($file).then(OnFileUploadSuccess, OnFileUploadFail);
+            }
 
-            var modalInstance = this.$modal.open({
-                animation: true,
-                templateUrl: '/AngularTemplate/FileSelectorModal',
-                controller: 'FilePicker__FileSelectorModalController',
-                size: 'm',
-                resolve: {
-                    files: () => filesDTO
+            $scope.Save = function() {
+                if ($scope.selectedFile === null) {
+                    //raise some kind of error to prevent continuing
+                    alert('No file was selected!!!!!!');
+                    return;
                 }
-            });
+            
+                //we should assign id of selected file to model value
+                //this._$scope.field.value = this._fileDTO.id.toString();
+                alert('Selected FileDO ID -> ' + $scope.selectedFile.id.toString());
+                //TODO add this file's id to CrateDO
+            }
 
-            var onExistingFileSelected = <(fileDTO: interfaces.IFileDescriptionDTO) => void> angular.bind(this, this.OnExistingFileSelected);
-            modalInstance.result.then(onExistingFileSelected);
-        }
+            var OnExistingFileSelected = function(fileDTO: interfaces.IFileDescriptionDTO) {
+                $scope.selectedFile = fileDTO;
+            }
 
-        private ListExistingFiles() {
-            var onFilesLoaded = <(filesDTO: Array<interfaces.IFileDescriptionDTO>) => void> angular.bind(this, this.OnFilesLoaded);
-            this.FileService.listFiles().then(onFilesLoaded);
-        }
+            var OnFilesLoaded = function(filesDTO: Array<interfaces.IFileDescriptionDTO>) {
 
-        //The factory function returns Directive object as per Angular requirements
-        public static Factory() {
-            var directive = ($modal: any, FileService: IFileService) => {
-                return new FilePicker($modal, FileService);
-            };
+                var modalInstance = $modal.open({
+                    animation: true,
+                    templateUrl: '/AngularTemplate/FileSelectorModal',
+                    controller: 'FilePicker__FileSelectorModalController',
+                    size: 'm',
+                    resolve: {
+                        files: () => filesDTO
+                    }
+                });
 
-            directive['$inject'] = ['$modal', 'FileService'];
-            return directive;
-        }
+                modalInstance.result.then(OnExistingFileSelected);
+            }
+
+            $scope.ListExistingFiles = function() {
+                FileService.listFiles().then(OnFilesLoaded);
+            }
+
+        }];
+
+        return {
+            restrict: 'E',
+            templateUrl: '/AngularTemplate/FilePicker',
+            controller: controller,
+            scope: {
+                field: '='
+            }
+        };
     }
 
-    app.directive('filePicker', FilePicker.Factory());
+    app.directive('filePicker', FilePicker);
 
     app.filter('formatInput', function () {
-        return function (input) {
+        return input => {
             if (input) {
                 return 'Selected File : ' + input.substring(input.lastIndexOf('/') + 1, input.length)
             }
-        }
+            return input;
+        };
     });
 
     //TODO talk to alex and move this class to services folder? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

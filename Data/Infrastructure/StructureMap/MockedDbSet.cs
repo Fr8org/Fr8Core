@@ -99,6 +99,7 @@ namespace Data.Infrastructure.StructureMap
                 return MergedSets.AsQueryable().Provider;
             }
         }
+
         public TEntityType Find(params object[] keyValues)
         {
             if (keyValues.Length == 0)
@@ -107,13 +108,24 @@ namespace Data.Infrastructure.StructureMap
                 throw new Exception("Multiple keys provided for " + EntityName + ". Only singular keys are supported");
 
             var keyType = keyValues[0].GetType();
-            if (keyType != typeof(int) && keyType != typeof(String))
-                throw new Exception("Only supports int-based or string-based keys.");
+            if (keyType != typeof(int) && keyType != typeof(String) && keyType != typeof(Guid))
+            {
+                throw new Exception("Only supports guid-base, int-based or string-based keys.");
+            }
 
             if (keyType == typeof(String))
             {
                 string entityPrimaryKey = keyValues[0] as string;
                 Func<TEntityType, string> compiledSelector = GetEntityKeySelectorString().Compile();
+                var isSaved = SavedSet.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
+                if (isSaved != null)
+                    return isSaved;
+                return LocalSet.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
+            }
+            else if (keyType == typeof(Guid))
+            {
+                var entityPrimaryKey = (Guid)(keyValues[0]);
+                Func<TEntityType, Guid> compiledSelector = GetEntityKeySelectorGuid().Compile();
                 var isSaved = SavedSet.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
                 if (isSaved != null)
                     return isSaved;
@@ -197,6 +209,22 @@ namespace Data.Infrastructure.StructureMap
             Expression<Func<TEntityType, String>> entityKeySelector = Expression.Lambda(propertyAccessor, new[] { proe }) as Expression<Func<TEntityType, String>>;
             return entityKeySelector;
         }
+
+        protected Expression<Func<TEntityType, Guid>> GetEntityKeySelectorGuid()
+        {
+            Type entityType = typeof(TEntityType);
+            PropertyInfo tableKey = EntityPrimaryKeyPropertyInfo;
+
+            //The following three lines generates the following in LINQ syntax:
+            // (e) => e.[PrimaryKeyProperty]; - where PrimaryKeyProperty is the primary key of the entity
+            // Example of EmailDO:
+            // (e) => e.EmailID;
+            ParameterExpression proe = Expression.Parameter(entityType);
+            MemberExpression propertyAccessor = Expression.Property(proe, tableKey);
+            Expression<Func<TEntityType, Guid>> entityKeySelector = Expression.Lambda(propertyAccessor, new[] { proe }) as Expression<Func<TEntityType, Guid>>;
+            return entityKeySelector;
+        }
+
 
         private String _entityName;
         public String EntityName
