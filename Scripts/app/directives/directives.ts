@@ -189,6 +189,7 @@ app.directive('inputFocus', ['$parse', ($parse: ng.IParseService) => {
                 }
                 prevState = !!value;
             });
+
         }
     };
 }]);
