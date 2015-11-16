@@ -116,6 +116,8 @@
     {
       "Path": "../app/directives/indiClick.js"
     },
+    { "Path": "../app/directives/PaneConfigureAction/configurationControl.js" },
+    { "Path": "../app/directives/PaneConfigureAction/paneConfigureAction.js" },
     {
       "Path": "../app/directives/",
       "Includes": [ "messages.js", "I*.js" ],

@@ -9,6 +9,14 @@ module dockyard.tests.utils.fixtures {
             routeState: 1
         };
 
+        public static filePickerField: model.FileControlDefinitionDTO = {
+            type: 'FilePicker',
+            fieldLabel: 'FilePicker Test',
+            name: 'FilePickerTest',
+            events: [],
+            value: null
+        };
+
         public static textField: model.TextBoxControlDefinitionDTO = {
             required: true,
             type: 'TextBox',

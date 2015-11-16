@@ -12,9 +12,11 @@ module dockyard.tests.unit.directives.controls {
     };
 
     describe('Testing FilePicker control', () => {
-        var $rootScope,
-            $compile,
-            $timeout,
+        var $rootScope: ng.IRootScopeService,
+            $compile: ng.ICompileService,
+            $timeout: ng.ITimeoutService,
+            $q: ng.IQService,
+            fileService,
             element,
             scope,
             directive = '<file-picker field="field" />';
@@ -29,14 +31,15 @@ module dockyard.tests.unit.directives.controls {
 
         beforeEach(() => {
             
-            inject((_$compile_, _$rootScope_, _$timeout_) => {
+            inject((_$compile_, _$rootScope_, _$timeout_, _$q_, _FileService_) => {
                 $rootScope = _$rootScope_;
                 $compile = _$compile_;
                 $timeout = _$timeout_;
+                $q = _$q_;
+                fileService = _FileService_;
 
                 scope = $rootScope.$new();
-                scope.currentAction = fx.ActionDesignDTO.noAuthActionVM;
-                scope.field = fx.ActionDesignDTO.filePickerField;
+                scope.field = angular.copy(fx.ActionDesignDTO.filePickerField);
                 element = compileTemplate(scope, directive, $compile);
                 
             });
@@ -46,58 +49,113 @@ module dockyard.tests.unit.directives.controls {
             expect(element.isolateScope()).not.toBe(null);
         });
 
+        it('Should upload file on selection', () => {
+            var deferred = $q.defer();
+            spyOn(fileService, 'uploadFile').and.returnValue(deferred.promise);
+            element.isolateScope().OnFileSelect({});
+            expect(fileService.uploadFile).toHaveBeenCalled();
+        });
+
+        it('Should broadcast on upload success', () => {
+            var deferred = $q.defer();
+            spyOn(fileService, 'uploadFile').and.returnValue(deferred.promise);
+            spyOn(scope.$root, '$broadcast');
+
+            element.isolateScope().OnFileSelect({});
+            var uploadedFile: interfaces.IFileDescriptionDTO = {
+                id: 123456789,
+                originalFileName: 'testFile.xls'
+            };
+            deferred.resolve(uploadedFile);
+            (<dockyard.model.FileDTO>uploadedFile).cloudStorageUrl = 'testStorageURL';
+            //resolve promise
+            scope.$digest();
+            expect(scope.$root.$broadcast.calls.count()).toBe(2);
+            expect(scope.$root.$broadcast.calls.argsFor(0)).toEqual(['fp-success', uploadedFile]);
+            expect(scope.$root.$broadcast.calls.argsFor(1)).toEqual(['onChange', jasmine.any(Object)]);
+        });
+
+        it('Should set selected file on upload success', () => {
+            expect(element.isolateScope().selectedFile).toEqual(null);
+            var deferred = $q.defer();
+            spyOn(fileService, 'uploadFile').and.returnValue(deferred.promise);
+            spyOn(scope.$root, '$broadcast');
+
+            element.isolateScope().OnFileSelect({});
+            var uploadedFile: interfaces.IFileDescriptionDTO = {
+                id: 123456789,
+                originalFileName: 'testFile.xls'
+            };
+            deferred.resolve(uploadedFile);
+            (<dockyard.model.FileDTO>uploadedFile).cloudStorageUrl = 'testStorageURL';
+            //resolve promise
+            scope.$digest();
+            expect(element.isolateScope().selectedFile).toEqual(uploadedFile);
+            expect(element.isolateScope().field.value).toEqual('testStorageURL');
+        });
     });
 
     ///MULTI-USAGE TESTS
 
-    //describe('Testing TextBox multi usage', () => {
+    describe('Testing FilePicker multi usage', () => {
 
-    //    var $rootScope,
-    //        $compile,
-    //        $timeout,
-    //        element1,
-    //        element2,
-    //        scope,
-    //        directive1 = '<configuration-control current-action="currentAction" field="field1" />',
-    //        directive2 = '<configuration-control current-action="currentAction" field="field2" />';
+        var $rootScope,
+            $compile,
+            $timeout,
+            $q,
+            fileService,
+            element1,
+            element2,
+            scope,
+            directive1 = '<file-picker field="field1" />',
+            directive2 = '<file-picker field="field2" />';
 
-    //    beforeEach(module('app', 'templates'));
+        beforeEach(module('app', 'templates'));
 
-    //    app.run(['$httpBackend', (_$httpBackend_) => {
-    //        //we need this because stateProvider loads on test startup and routes us to default state 
-    //        //which is myaccount and has template URL with /AngularTemplate/MyAccountPage
-    //        _$httpBackend_.expectGET('/AngularTemplate/MyAccountPage').respond(200, '<div></div>');
-    //    }]);
+        app.run(['$httpBackend', (_$httpBackend_) => {
+            //we need this because stateProvider loads on test startup and routes us to default state 
+            //which is myaccount and has template URL with /AngularTemplate/MyAccountPage
+            _$httpBackend_.expectGET('/AngularTemplate/MyAccountPage').respond(200, '<div></div>');
+        }]);
 
-    //    beforeEach(() => {
+        beforeEach(() => {
 
-    //        inject((_$compile_, _$rootScope_, _$timeout_) => {
-    //            $rootScope = _$rootScope_;
-    //            $compile = _$compile_;
-    //            $timeout = _$timeout_;
+            inject((_$compile_, _$rootScope_, _$timeout_, _$q_, _FileService_) => {
+                $rootScope = _$rootScope_;
+                $compile = _$compile_;
+                $timeout = _$timeout_;
+                $q = _$q_;
+                fileService = _FileService_;
 
-    //            scope = $rootScope.$new();
-    //            scope.currentAction = fx.ActionDesignDTO.noAuthActionVM;
-    //            scope.field1 = angular.copy(fx.ActionDesignDTO.textField);
-    //            scope.field2 = angular.copy(fx.ActionDesignDTO.textField);
-    //            element1 = compileTemplate(scope, directive1, $compile);
-    //            element2 = compileTemplate(scope, directive2, $compile);
+                scope = $rootScope.$new();
+                scope.field1 = angular.copy(fx.ActionDesignDTO.filePickerField);
+                scope.field2 = angular.copy(fx.ActionDesignDTO.filePickerField);
+                element1 = compileTemplate(scope, directive1, $compile);
+                element2 = compileTemplate(scope, directive2, $compile);
 
-    //        });
-    //    });
+            });
+        });
 
-    //    it('Should update it\'s value but not any different control', () => {
-    //        changeText(scope, element1, 'super-complex-test-value'); 
-    //        expect(element1.isolateScope().field.value).toBe('super-complex-test-value');
-    //        expect(element2.isolateScope().field.value).toBe(fx.ActionDesignDTO.textField.value);
-    //    });
+        it('Should update it\'s value but not any different control', () => {
+            var deferred = $q.defer();
+            spyOn(fileService, 'uploadFile').and.returnValue(deferred.promise);
+            spyOn(scope.$root, '$broadcast');
 
-    //    it('Should call only own change function', () => {
-    //        element1.isolateScope().onChange = jasmine.createSpy("onChange function");
-    //        element2.isolateScope().onChange = jasmine.createSpy("onChange function");
-    //        changeText(scope, element1, 'super-complex-test-value');
-    //        expect(element1.isolateScope().onChange).toHaveBeenCalled();
-    //        expect(element2.isolateScope().onChange).not.toHaveBeenCalled();
-    //    });
-    //});
+            element1.isolateScope().OnFileSelect({});
+            var uploadedFile: interfaces.IFileDescriptionDTO = {
+                id: 123456789,
+                originalFileName: 'testFile.xls'
+            };
+            deferred.resolve(uploadedFile);
+            (<dockyard.model.FileDTO>uploadedFile).cloudStorageUrl = 'testStorageURL';
+            debugger;
+            //resolve promise
+            scope.$digest();
+            expect(element1.isolateScope().selectedFile).toEqual(uploadedFile);
+            expect(element1.isolateScope().field.value).toEqual('testStorageURL');
+
+            expect(element2.isolateScope().selectedFile).toEqual(null);
+            expect(element2.isolateScope().field.value).toEqual(null);
+        });
+    });
 }
