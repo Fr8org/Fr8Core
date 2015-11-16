@@ -472,3 +472,21 @@ input[type=radio]:checked ~ label .control-label-hidden {
 .ui-select-bootstrap[search-enabled=false] .ui-select-match.ng-hide {
     display: block !important;
 }
+
+.duration-control-label {
+    vertical-align: middle;
+}
+
+.counter-control {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.counter-control > * {
+    display: block;
+    text-align: center;
+}
+
+.counter-input {
+    width: 42px;
+}
