@@ -102,6 +102,7 @@
     <SecondarySite Include="..\terminalTwilio\terminalTwilio.csproj" />
     <SecondarySite Include="..\terminalDocuSign\terminalDocuSign.csproj" />
     <SecondarySite Include="..\terminalGoogle\terminalGoogle.csproj" />
+    <SecondarySite Include="..\terminalDropbox\terminalDropbox.csproj" />
   </ItemGroup>
   <Target Name="CleanSecondarySites">
     <RemoveDir Directories="%(SecondarySite.RootDir)%(Directory)$(SecondarySitePublishDir)" />
