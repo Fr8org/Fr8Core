@@ -309,6 +309,30 @@ namespace Hub.Services
 
             return curActivityTemplates;
         }
+
+        public IEnumerable<ActivityTemplateCategoryDTO> GetSolutions()
+        {
+            List<ActivityTemplateCategoryDTO> curActivityTemplates;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curActivityTemplates = uow.ActivityTemplateRepository
+                        .GetQuery()
+                        .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active && at.Category == Data.States.ActivityCategory.Solution)
+                        .GroupBy(t => t.Category)
+                        .OrderBy(c => c.Key)
+                    //lets load them all before memory processing
+                        .AsEnumerable()
+                        .Select(c => new ActivityTemplateCategoryDTO
+                        {
+                            Activities = c.Select(Mapper.Map<ActivityTemplateDTO>),
+                            Name = c.Key.ToString()
+                        })
+                        .ToList();
+            }
+
+            return curActivityTemplates;
+        }
         
         public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(int activityId, GetCrateDirection direction)
         { 

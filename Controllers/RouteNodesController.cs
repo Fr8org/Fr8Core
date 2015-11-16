@@ -115,6 +115,16 @@ namespace HubWeb.Controllers
             return Ok(categoriesWithActivities);
         }
 
+        [Route("solution")]
+        [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
+        [AllowAnonymous]
+        public IHttpActionResult GetSolutions()
+        {
+            var categoriesWithActivities = _activity.GetSolutions();
+
+            return Ok(categoriesWithActivities);
+        }
+
         [Route("available")]
         [ResponseType(typeof (IEnumerable<ActivityTemplateCategoryDTO>))]
         [AllowAnonymous]

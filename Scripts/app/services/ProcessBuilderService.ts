@@ -57,6 +57,10 @@ module dockyard.services {
         getAvailableActivities: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
     }
 
+    export interface IActivityTemplateService extends ng.resource.IResourceClass<interfaces.IActivityTemplateVM> {
+        getSolutions: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
+    }
+
   
 
     /*
@@ -251,6 +255,11 @@ module dockyard.services {
                 'getAvailableActivities': {
                     method: 'GET',
                     url: '/route_nodes/available/',
+                    isArray: true
+                },
+                'getSolutions': {
+                    method: 'GET',
+                    url: '/route_nodes/solution/',
                     isArray: true
                 }
             })

@@ -24,7 +24,7 @@ module dockyard.controllers {
             $scope.onSolutionSelected = <(solution: interfaces.IActivityCategoryDTO) => void>
                 angular.bind(this, this.onSolutionSelected);
 
-            $scope.activityCategories = ActivityTemplateService.getAvailableActivities();
+            $scope.activityCategories = ActivityTemplateService.getSolutions();
         }
 
         private onSolutionSelected(solution: interfaces.IActivityTemplateVM) {
