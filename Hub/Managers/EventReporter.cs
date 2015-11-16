@@ -680,7 +680,7 @@ namespace Hub.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogEventCriteriaEvaluationStarted(int containerId)
+        private void LogEventCriteriaEvaluationStarted(Guid containerId)
         {
             ContainerDO containerInExecution;
             FactDO fact;
@@ -703,7 +703,7 @@ namespace Hub.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogEventCriteriaEvaluationFinished(int curContainerId)
+        private void LogEventCriteriaEvaluationFinished(Guid curContainerId)
         {
             ContainerDO containerInExecution;
             FactDO fact;
@@ -751,7 +751,7 @@ namespace Hub.Managers
         }
 
         // Commented by Vladimir. DO-1214. If one action can have only one Process?
-        private void LogEventActionDispatched(ActionDO curAction, int processId)
+        private void LogEventActionDispatched(ActionDO curAction, Guid processId)
         {
             ContainerDO containerInExecution;
             FactDO fact;

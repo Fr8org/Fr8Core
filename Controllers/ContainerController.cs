@@ -47,8 +47,8 @@ namespace HubWeb.Controllers
         }
 
         [HttpGet]
-        [Route("{id:int}")]
-        public IHttpActionResult Get(int id)
+        [Route("{id:guid}")]
+        public IHttpActionResult Get(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -109,13 +109,19 @@ namespace HubWeb.Controllers
 
         // Return the Containers accordingly to ID given
         [Fr8ApiAuthorize]
-        [Route("get/{id:int?}")]
+        [Route("get/{id:guid?}")]
         [HttpGet]
-        public IHttpActionResult Get(int? id = null)
+        public IHttpActionResult Get(Guid? id = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IList<ContainerDO> curContainer = _container.GetByFr8Account(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id);
+                IList<ContainerDO> curContainer = _container
+                    .GetByFr8Account(
+                        uow,
+                        _security.GetCurrentAccount(uow),
+                        _security.IsCurrentUserHasRole(Roles.Admin),
+                        id
+                    );
 
                 if (curContainer.Any())
                 {

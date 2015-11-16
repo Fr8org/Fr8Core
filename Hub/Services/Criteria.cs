@@ -18,7 +18,8 @@ namespace Hub.Services
 		public Criteria()
 		{
 		}
-		public bool Evaluate(string criteria, int processId, IEnumerable<EnvelopeDataDTO> envelopeData)
+
+		public bool Evaluate(string criteria, Guid processId, IEnumerable<EnvelopeDataDTO> envelopeData)
 		{
 			if (criteria == null)
 				throw new ArgumentNullException("criteria");
@@ -29,6 +30,7 @@ namespace Hub.Services
 
 			return Filter(criteria, processId, envelopeData.AsQueryable()).Any();
 		}
+
 		public bool Evaluate(List<EnvelopeDataDTO> envelopeData, ProcessNodeDO curProcessNode)
 		{
 			if (envelopeData == null)
@@ -44,10 +46,10 @@ namespace Hub.Services
 				if (curCriteria.CriteriaExecutionType == CriteriaExecutionType.WithoutConditions)
 					return true;
 				else
-					return Evaluate(curCriteria.ConditionsJSON, curProcessNode.Id, envelopeData);
+					return Evaluate(curCriteria.ConditionsJSON, curProcessNode.ParentContainerId, envelopeData);
 			}
 		}
-		public IQueryable<EnvelopeDataDTO> Filter(string criteria, int processId,
+		public IQueryable<EnvelopeDataDTO> Filter(string criteria, Guid processId,
 			 IQueryable<EnvelopeDataDTO> envelopeData)
 		{
 			if (criteria == null)

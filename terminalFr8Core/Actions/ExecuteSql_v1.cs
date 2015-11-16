@@ -155,7 +155,7 @@ namespace terminalFr8Core.Actions
             return connectionStringFields[0].Key;
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var findObjectHelper = new FindObjectHelper();
             var payload = await GetProcessPayload(containerId);

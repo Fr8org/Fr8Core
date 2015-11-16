@@ -16,6 +16,7 @@ using Data.Interfaces.Manifests;
 using Hub.Enums;
 using Hub.Interfaces;
 using Hub.Managers;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
@@ -33,6 +34,7 @@ namespace TerminalBase.BaseClasses
         protected IAction Action;
         protected ICrateManager Crate;
         protected IRouteNode Activity;
+        private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly Authorization _authorizationToken;
         private readonly ITerminal _terminal;
         #endregion
@@ -42,6 +44,7 @@ namespace TerminalBase.BaseClasses
             Crate = ObjectFactory.GetInstance<ICrateManager>();
             Action = ObjectFactory.GetInstance<IAction>();
             Activity = ObjectFactory.GetInstance<IRouteNode>();
+            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             _authorizationToken = new Authorization();
         }
@@ -57,18 +60,14 @@ namespace TerminalBase.BaseClasses
             return false;
         }
 
-        protected async Task<PayloadDTO> GetProcessPayload(int containerId)
+        protected async Task<PayloadDTO> GetProcessPayload(Guid containerId)
         {
-            var httpClient = new HttpClient();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/containers/"
-                + containerId.ToString();
+                + containerId.ToString("D");
 
-            using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<PayloadDTO>(content);
-            }
+            var payloadDTO = await _restfulServiceClient.GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute));
+            return payloadDTO;
         }
 
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)

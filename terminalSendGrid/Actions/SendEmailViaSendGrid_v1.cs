@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Crates;
 using StructureMap;
@@ -19,13 +20,6 @@ namespace terminalSendGrid.Actions
         // moved the EmailPackager ObjectFactory here since the basepluginAction will be called by others and the dependency is defiend in pluginsendGrid
         private IConfigRepository _configRepository;
         private IEmailPackager _emailPackager;
-        
-
-        // protected override void SetupServices()
-        // {
-        //     base.SetupServices();
-        //     _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
-        // }
 
         public SendEmailViaSendGrid_v1()
         {
@@ -49,9 +43,9 @@ namespace terminalSendGrid.Actions
                 return ConfigurationRequestType.Initial;
             }
 
-                return ConfigurationRequestType.Followup;
-            }
-
+            return ConfigurationRequestType.Followup;
+        }
+        
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
@@ -59,7 +53,17 @@ namespace terminalSendGrid.Actions
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
                 updater.CrateStorage.Add(await GetAvailableDataFields(curActionDO));
+            }
 
+            return curActionDO;
+        }
+        
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                updater.CrateStorage.RemoveByLabel("Upstream Terminal-Provided Fields");
+                updater.CrateStorage.Add(await GetAvailableDataFields(curActionDO));
             }
 
             return curActionDO;
@@ -156,7 +160,7 @@ namespace terminalSendGrid.Actions
             return htmlText;
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var fromAddress = _configRepository.Get("OutboundFromAddress");
 
