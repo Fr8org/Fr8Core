@@ -29,7 +29,5 @@ namespace Hub.Interfaces
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(int activityId, GetCrateDirection direction);
 	    
         IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount);
-
-        IEnumerable<ActivityTemplateCategoryDTO> GetSolutions();
     }
 }

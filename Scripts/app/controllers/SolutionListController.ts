@@ -13,6 +13,7 @@ module dockyard.controllers {
         public static $inject = [
             '$scope',
             'ActivityTemplateService',
+            '$modal',
             '$state'
         ];
         constructor(
@@ -24,11 +25,11 @@ module dockyard.controllers {
             $scope.onSolutionSelected = <(solution: interfaces.IActivityCategoryDTO) => void>
                 angular.bind(this, this.onSolutionSelected);
 
-            $scope.activityCategories = ActivityTemplateService.getSolutions();
+            $scope.activityCategories = ActivityTemplateService.getAvailableActivities();
         }
 
         private onSolutionSelected(solution: interfaces.IActivityTemplateVM) {
-            this.$state.go('configureSolution', { id: solution.id });
+            this.$state.go('configureSolution', { name: solution.name });
         }
     }
 
