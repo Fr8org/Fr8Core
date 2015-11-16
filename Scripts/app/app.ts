@@ -186,11 +186,17 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             data: { pageTitle: 'Containers', pageSubTitle: 'This page displays all Containers ' },
         })
 
-		.state('webservices', {
-		    url: "/webservices",
-			templateUrl: "/AngularTemplate/WebServiceList",
+        .state('webservices', {
+            url: "/webservices",
+            templateUrl: "/AngularTemplate/WebServiceList",
             data: { pageTitle: 'Web Services', pageSubTitle: '' }
-	    });
+        })
+
+        .state('findObjects', {
+            url: '/findObjects',
+            templateUrl: '/AngularTemplate/FindObjects',
+            data: { pageTitle: 'Constructing Find Objects route', pageSubTitle: '' }
+        });
 }]);
 
 /* Init global settings and run the app */

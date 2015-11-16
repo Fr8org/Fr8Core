@@ -214,6 +214,12 @@ namespace HubWeb.Controllers
             return Ok(_route.Deactivate(curRoute));
         }
 
-        
+        [HttpPost]
+        [Route("find_objects/create")]
+        public IHttpActionResult CreateFindObjectsRoute()
+        {
+
+            return Ok();
+        }
     }
 }
