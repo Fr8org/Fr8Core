@@ -40,6 +40,7 @@ namespace Data.Interfaces.DataTransferObjects
         public const string TextArea = "TextArea";
         public const string QueryBuilder = "QueryBuilder";
         public const string ManageRoute = "ManageRoute";
+        public const string Duration = "Duration";
     }
 
     public class CheckBoxControlDefinitionDTO : ControlDefinitionDTO
@@ -124,7 +125,7 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("isReadOnly")]
         public bool IsReadOnly { get; set; }
 
-        public TextAreaDefinitionDTO () : 
+        public TextAreaDefinitionDTO() :
             base(ControlTypes.TextArea)
         {
         }
@@ -135,7 +136,7 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("class")]
         public string CssClass
         {
-            get; 
+            get;
             set;
         }
 
@@ -231,6 +232,33 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
+    public class DurationControlDefinitionDTO : ControlDefinitionDTO
+    {
+        public DurationControlDefinitionDTO()
+        {
+            Type = ControlTypes.Duration;
+        }
+
+        [JsonProperty("value")]
+        public new TimeSpan Value
+        {
+            get
+            {
+                return new TimeSpan(this.Days, this.Hours, this.Minutes, 0);
+            }
+        }
+
+        [JsonProperty("days")]
+        public Int32 Days { get; set; }
+
+        [JsonProperty("hours")]
+        public Int32 Hours { get; set; }
+
+        [JsonProperty("minutes")]
+        public Int32 Minutes { get; set; }
+
+    }
+
 
     // TODO It will be good to change setter property 'Type' to protected to disallow change the type. We have all needed classes(RadioButtonGroupFieldDefinitionDTO, DropdownListFieldDefinitionDTO and etc).
     // But Wait_For_DocuSign_Event_v1.FollowupConfigurationResponse() directly write to this property !
@@ -250,7 +278,7 @@ namespace Data.Interfaces.DataTransferObjects
         public bool Required { get; set; }
 
         [JsonProperty("value")]
-        public string Value { get; set; }
+        public virtual string Value { get; set; }
 
         [JsonProperty("label")]
         public string Label { get; set; }
@@ -277,7 +305,7 @@ namespace Data.Interfaces.DataTransferObjects
             Value = "";
         }
     }
-    
+
     public class FieldSourceDTO
     {
         [JsonProperty("manifestType")]
@@ -293,7 +321,7 @@ namespace Data.Interfaces.DataTransferObjects
         {
             get
             {
-                 return new ControlEvent("onChange", "requestConfig");
+                return new ControlEvent("onChange", "requestConfig");
             }
         }
 
