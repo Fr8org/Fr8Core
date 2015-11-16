@@ -8,13 +8,13 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using NUnit.Framework;
-using terminalPapertrial.Actions;
+using terminalPapertrail.Actions;
 using UtilitiesTesting;
 
-namespace terminalPapertrial.Tests.Actions
+namespace terminalPapertrail.Tests.Actions
 {
     [TestFixture]
-    [Category("terminalPapertrialActions")]
+    [Category("terminalPapertrailActions")]
     public class Write_To_LogTests : BaseTest
     {
         private Write_To_Log_v1 _action_under_test;
@@ -34,14 +34,14 @@ namespace terminalPapertrial.Tests.Actions
 
             //Assert
             var crateStorage = new CrateManager().FromDto(resultActionDTO.CrateStorage);
-            Assert.AreEqual(1, crateStorage.Count, "Initial configuration is failed for Write To Log action in Papertrial");
+            Assert.AreEqual(1, crateStorage.Count, "Initial configuration is failed for Write To Log action in Papertrail");
 
             var configControlCrates = crateStorage.CratesOfType<StandardConfigurationControlsCM>().ToList();
             Assert.AreEqual(1, configControlCrates.Count, "More than one configuration controls are avaialbe for Write To Log action");
 
             var targetUrlControl = configControlCrates.First().Content.Controls[0];
-            Assert.IsNotNull(targetUrlControl, "Papertrial target URL control is not configured.");
-            Assert.AreEqual("TargetUrlTextBox", targetUrlControl.Name, "Papertrial target URL control is not configured correctly");
+            Assert.IsNotNull(targetUrlControl, "Papertrail target URL control is not configured.");
+            Assert.AreEqual("TargetUrlTextBox", targetUrlControl.Name, "Papertrail target URL control is not configured correctly");
         }
 
         [Test]
@@ -57,14 +57,14 @@ namespace terminalPapertrial.Tests.Actions
 
             //Assert
             var crateStorage = new CrateManager().FromDto(resultActionDTO.CrateStorage);
-            Assert.AreEqual(1, crateStorage.Count, "Followup configuration is failed for Write To Log action in Papertrial");
+            Assert.AreEqual(1, crateStorage.Count, "Followup configuration is failed for Write To Log action in Papertrail");
 
             var configControlCrates = crateStorage.CratesOfType<StandardConfigurationControlsCM>().ToList();
             Assert.AreEqual(1, configControlCrates.Count, "More than one configuration controls are avaialbe for Write To Log action");
 
             var targetUrlControl = configControlCrates.First().Content.Controls[0];
-            Assert.IsNotNull(targetUrlControl, "Papertrial target URL control is not configured.");
-            Assert.AreEqual("TargetUrlTextBox", targetUrlControl.Name, "Papertrial target URL control is not configured correctly");
+            Assert.IsNotNull(targetUrlControl, "Papertrail target URL control is not configured.");
+            Assert.AreEqual("TargetUrlTextBox", targetUrlControl.Name, "Papertrail target URL control is not configured correctly");
         }
     }
 }

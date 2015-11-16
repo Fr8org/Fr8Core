@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Data.Crates;
 using Data.Entities;
@@ -13,10 +14,10 @@ using Utilities.Configuration.Azure;
 using System.Collections.Generic;
 using Utilities.Logging;
 
-namespace terminalPapertrial.Actions
+namespace terminalPapertrail.Actions
 {
     /// <summary>
-    /// Write To Log action which writes Log Messages to Papertrial at run time
+    /// Write To Log action which writes Log Messages to Papertrail at run time
     /// </summary>
     public class Write_To_Log_v1 : BaseTerminalAction
     {
@@ -40,8 +41,8 @@ namespace terminalPapertrial.Actions
             var targetUrlTextBlock = new TextBoxControlDefinitionDTO
             {
                 Name = "TargetUrlTextBox",
-                Label = "Target Papertrial URL (As URL:PORT format)",
-                Value = CloudConfigurationManager.GetSetting("PapertrialDefaultLogUrl"),
+                Label = "Target Papertrail URL and Port (as URL:Port)",
+                Value = CloudConfigurationManager.GetSetting("PapertrailDefaultLogUrl"),
                 Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
             };
 
@@ -71,32 +72,39 @@ namespace terminalPapertrial.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            //get the paper trial URL value fromt configuration control
-            string curPapertrialUrl;
-            int curPapertrialPort;
+            //get the Papertrail URL value fromt configuration control
+            string curPapertrailUrl;
+            int curPapertrailPort;
 
-            GetPapertrialTargetUrlAndPort(actionDO, out curPapertrialUrl, out curPapertrialPort);
+            GetPapertrailTargetUrlAndPort(actionDO, out curPapertrailUrl, out curPapertrailPort);
 
             //get process payload
             var curProcessPayload = await GetProcessPayload(containerId);
 
             //if there are valid URL and Port number
-            if (!string.IsNullOrEmpty(curPapertrialUrl) && curPapertrialPort > 0)
+            if (!string.IsNullOrEmpty(curPapertrailUrl) && curPapertrailPort > 0)
             {
                 //get log message
-                var curLogMessages = Crate.GetStorage(curProcessPayload).CrateContentsOfType<StandardLoggingCM>().First();
+                var curLogMessages = Crate.GetStorage(curProcessPayload).CrateContentsOfType<StandardLoggingCM>().Single();
 
-                curLogMessages.Item.ForEach(logMessage =>
+                curLogMessages.Item.Where(logMessage => !logMessage.IsLogged).ToList().ForEach(logMessage =>
                 {
-                    var papertrialLogger = Logger.GetPapertrialLogger(curPapertrialUrl, curPapertrialPort);
-                    papertrialLogger.Info(logMessage.Data);
+                    var papertrailLogger = Logger.GetPapertrailLogger(curPapertrailUrl, curPapertrailPort);
+                    papertrailLogger.Info(logMessage.Data);
+                    logMessage.IsLogged = true;
                 });
+
+                using (var updater = Crate.UpdateStorage(curProcessPayload))
+                {
+                    updater.CrateStorage.RemoveByLabel("Log Messages");
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", curLogMessages));
+                }
             }
 
             return curProcessPayload;
         }
 
-        private void GetPapertrialTargetUrlAndPort(ActionDO curActionDO, out string paperrrialTargetUrl, out int papertrialTargetPort)
+        private void GetPapertrailTargetUrlAndPort(ActionDO curActionDO, out string paperrrialTargetUrl, out int papertrailTargetPort)
         {
             //get the configuration control of the given action
             var curActionConfigControls =
@@ -105,9 +113,15 @@ namespace terminalPapertrial.Actions
             //the URL is given in "URL:PortNumber" format. Parse the input value to get the URL and port number
             var targetUrlValue = curActionConfigControls.FindByName("TargetUrlTextBox").Value.Split(new char[] { ':' });
 
+            if (targetUrlValue.Length != 2)
+            {
+                throw new ArgumentException("Papertrail URL and PORT are not in the correct format. The given URL is " +
+                                            curActionConfigControls.FindByName("TargetUrlTextBox").Value);
+            }
+
             //assgign the output value
             paperrrialTargetUrl = targetUrlValue[0];
-            papertrialTargetPort = Convert.ToInt32(targetUrlValue[1]);
+            papertrailTargetPort = Convert.ToInt32(targetUrlValue[1]);
         }
     }
 }

@@ -62,7 +62,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubTests", "HubTests\HubTes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSendGrid", "terminalSendGrid\terminalSendGrid.csproj", "{1E1AB01B-F6AB-4420-BF1D-5E6EF41D76BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalPapertrial", "terminalPapertrial\terminalPapertrial.csproj", "{74D9BDC7-7B46-456F-B3C5-A4CDB5D74D7B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalPapertrail", "terminalPapertrial\terminalPapertrail.csproj", "{74D9BDC7-7B46-456F-B3C5-A4CDB5D74D7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

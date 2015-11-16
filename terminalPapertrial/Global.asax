@@ -1,1 +1,1 @@
-﻿<%@ Application Codebehind="Global.asax.cs" Inherits="terminalPapertrial.WebApiApplication" Language="C#" %>
+﻿<%@ Application Codebehind="Global.asax.cs" Inherits="terminalPapertrail.WebApiApplication" Language="C#" %>

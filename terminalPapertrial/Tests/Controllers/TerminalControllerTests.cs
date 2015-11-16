@@ -3,13 +3,13 @@ using System.Web.Http.Results;
 using Data.Crates;
 using Data.Interfaces.Manifests;
 using NUnit.Framework;
-using terminalPapertrial.Controllers;
+using terminalPapertrail.Controllers;
 using UtilitiesTesting;
 
-namespace terminalPapertrial.Tests.Controllers
+namespace terminalPapertrail.Tests.Controllers
 {
     [TestFixture]
-    [Category("terminalPapertrialControllers")]
+    [Category("terminalPapertrailControllers")]
     public class TerminalControllerTests : BaseTest
     {
         private TerminalController _terminal_controller;
@@ -27,7 +27,7 @@ namespace terminalPapertrial.Tests.Controllers
             var result = _terminal_controller.Get();
 
             //Assert
-            Assert.IsNotNull(result, "The terminal discovery is failed for Terminal Papertrial");
+            Assert.IsNotNull(result, "The terminal discovery is failed for Terminal Papertrail");
             Assert.IsNotNull((result as JsonResult<StandardFr8TerminalCM>).Content);
         }
 
@@ -41,7 +41,7 @@ namespace terminalPapertrial.Tests.Controllers
             var actions = (result as JsonResult<StandardFr8TerminalCM>).Content.Actions;
             Assert.AreEqual(1, actions.Count, "Terminal paper trial has more than one actions.");
             Assert.AreEqual("Write_To_Log", actions[0].Name,
-                "Write to log action for Papertrial terminal is not avaialble.");
+                "Write to log action for Papertrail terminal is not avaialble.");
         }
     }
 }

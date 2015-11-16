@@ -179,7 +179,8 @@ namespace terminalDocuSign.Actions
                 {
                     new LogItemDTO
                     {
-                        Data = "Monitor DocuSign action successfully recieved an envelope ID " + envelopeId
+                        Data = "Monitor DocuSign action successfully recieved an envelope ID " + envelopeId,
+                        IsLogged = false
                     }
                 }
             };

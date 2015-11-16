@@ -3,7 +3,7 @@ using Data.Infrastructure.AutoMapper;
 using Hub.StructureMap;
 using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
 
-namespace terminalPapertrial
+namespace terminalPapertrail
 {
     public class WebApiApplication : System.Web.HttpApplication
     {

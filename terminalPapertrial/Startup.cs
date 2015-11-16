@@ -9,15 +9,15 @@ using Owin;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 
-[assembly: OwinStartup(typeof(terminalPapertrial.Startup))]
+[assembly: OwinStartup(typeof(terminalPapertrail.Startup))]
 
-namespace terminalPapertrial
+namespace terminalPapertrail
 {
     public class Startup : BaseConfiguration
     {
         public void Configuration(IAppBuilder app)
         {
-            StartHosting("terminal_papertrial");
+            StartHosting("terminal_papertrail");
         }
     }
 }

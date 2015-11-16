@@ -18,16 +18,16 @@ namespace Utilities.Logging
             return LogManager.GetLogger(new StackTrace().GetFrame(depth).GetMethod().DeclaringType);
         }
 
-        public static ILog GetPapertrialLogger(string targetPapertrialUrl, int papertrialPort, int depth = 1)
+        public static ILog GetPapertrailLogger(string targetPapertrailUrl, int papertrailPort, int depth = 1)
         {
-            var curPapertrialAppender =
+            var curPapertrailAppender =
                 LogManager.GetRepository()
                     .GetAppenders()
                     .Single(appender => appender.Name.Equals("PapertrailRemoteSyslogAppender")) as RemoteSyslogAppender;
 
-            curPapertrialAppender.RemoteAddress = Dns.GetHostAddresses(targetPapertrialUrl)[0];
-            curPapertrialAppender.RemotePort = papertrialPort;
-            curPapertrialAppender.ActivateOptions();
+            curPapertrailAppender.RemoteAddress = Dns.GetHostAddresses(targetPapertrailUrl)[0];
+            curPapertrailAppender.RemotePort = papertrailPort;
+            curPapertrailAppender.ActivateOptions();
 
             return LogManager.GetLogger(new StackTrace().GetFrame(depth).GetMethod().DeclaringType);
         }

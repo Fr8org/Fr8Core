@@ -6,7 +6,7 @@ using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
 using Data.Interfaces.Manifests;
 
-namespace terminalPapertrial.Controllers
+namespace terminalPapertrail.Controllers
 {
     [RoutePrefix("terminals")]
     public class TerminalController : ApiController
@@ -18,7 +18,7 @@ namespace terminalPapertrial.Controllers
         {
             var terminal = new TerminalDO()
             {
-                Name = "terminalPapertrial",
+                Name = "terminalPapertrail",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 Version = "1"

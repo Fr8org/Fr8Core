@@ -5,11 +5,11 @@ using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
 
-namespace terminalPapertrial
+namespace terminalPapertrail
 {
     public class SelfHostFactory
     {
-        public class PapertrialControllerTypeResolver : IHttpControllerTypeResolver
+        public class PapertrailControllerTypeResolver : IHttpControllerTypeResolver
         {
             public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
             {
@@ -30,14 +30,14 @@ namespace terminalPapertrial
                 config.MapHttpAttributeRoutes();
 
                 config.Routes.MapHttpRoute(
-                    name: "TerminalPapertrial",
-                    routeTemplate: "terminal_papertrial/{controller}/{id}",
+                    name: "TerminalPapertrail",
+                    routeTemplate: "terminal_papertrail/{controller}/{id}",
                     defaults: new { id = RouteParameter.Optional }
                 );
 
                 config.Services.Replace(
                     typeof(IHttpControllerTypeResolver),
-                    new PapertrialControllerTypeResolver()
+                    new PapertrailControllerTypeResolver()
                 );
 
                 app.UseWebApi(config);

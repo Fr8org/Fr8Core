@@ -1,7 +1,7 @@
 ﻿using System.Web.Http;
 using TerminalBase.BaseClasses;
 
-namespace terminalPapertrial
+namespace terminalPapertrail
 {
     public static class WebApiConfig
     {
@@ -10,8 +10,8 @@ namespace terminalPapertrial
             BaseTerminalWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
-                name: "TerminalPapertrial",
-                routeTemplate: "terminal_papertrial/{controller}/{id}"
+                name: "TerminalPapertrail",
+                routeTemplate: "terminal_papertrail/{controller}/{id}"
             );
         }
     }
