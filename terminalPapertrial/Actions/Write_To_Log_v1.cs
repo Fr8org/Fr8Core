@@ -8,8 +8,10 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
+using StructureMap;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalPapertrail.Interfaces;
 using Utilities.Configuration.Azure;
 using System.Collections.Generic;
 using Utilities.Logging;
@@ -21,6 +23,13 @@ namespace terminalPapertrail.Actions
     /// </summary>
     public class Write_To_Log_v1 : BaseTerminalAction
     {
+        private IPapertrailLogger _papertrailLogger;
+
+        public Write_To_Log_v1()
+        {
+            _papertrailLogger = ObjectFactory.GetInstance<IPapertrailLogger>();
+        }
+
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
@@ -89,8 +98,7 @@ namespace terminalPapertrail.Actions
 
                 curLogMessages.Item.Where(logMessage => !logMessage.IsLogged).ToList().ForEach(logMessage =>
                 {
-                    var papertrailLogger = Logger.GetPapertrailLogger(curPapertrailUrl, curPapertrailPort);
-                    papertrailLogger.Info(logMessage.Data);
+                    _papertrailLogger.LogToPapertrail(curPapertrailUrl, curPapertrailPort, logMessage.Data);
                     logMessage.IsLogged = true;
                 });
 

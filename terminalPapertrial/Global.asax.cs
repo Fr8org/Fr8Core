@@ -1,6 +1,7 @@
 ﻿using System.Web.Http;
 using Data.Infrastructure.AutoMapper;
 using Hub.StructureMap;
+using terminalPapertrail.Tests.Infrastructure;
 using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
 
 namespace terminalPapertrail
@@ -17,7 +18,7 @@ namespace terminalPapertrail
             //TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
             // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE);
-            //TerminalDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
+            TerminalPapertrailMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
         }
     }
 }

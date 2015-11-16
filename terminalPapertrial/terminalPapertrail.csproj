@@ -187,11 +187,14 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\IPapertrailLogger.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\PapertrailLogger.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Tests\Actions\Write_To_LogTests.cs" />
     <Compile Include="Tests\Controllers\TerminalControllerTests.cs" />
+    <Compile Include="Tests\Infrastructure\TerminalPapertrailMapBootstrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
@@ -211,10 +214,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="DataTransferObjects\" />
     <Folder Include="Infrastructure\" />
-    <Folder Include="Interfaces\" />
-    <Folder Include="Services\" />
     <Folder Include="Tests\Fixtures\" />
-    <Folder Include="Tests\Infrastructure\" />
     <Folder Include="Tests\Services\" />
   </ItemGroup>
   <ItemGroup>

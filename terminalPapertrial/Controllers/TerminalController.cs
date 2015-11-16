@@ -24,6 +24,12 @@ namespace terminalPapertrail.Controllers
                 Version = "1"
             };
 
+            var webService = new WebServiceDO
+            {
+                Name = "Papertrail",
+                IconPath = "/Content/icons/web_services/papertrail-icon-64x64.png"
+            };
+
             var writeToLogActionTemplate = new ActivityTemplateDO()
             {
                 Version = "1",
@@ -32,7 +38,8 @@ namespace terminalPapertrail.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
-                MinPaneWidth = 330
+                MinPaneWidth = 330,
+                WebService = webService
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
