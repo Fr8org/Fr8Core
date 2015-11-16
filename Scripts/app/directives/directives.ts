@@ -187,7 +187,6 @@ app.directive('inputFocus', ['$parse', ($parse: ng.IParseService) => {
                 if (value && !prevState) {
                     setTimeout(() => { element.focus(); }, 0);
                 }
-
                 prevState = !!value;
             });
         }
