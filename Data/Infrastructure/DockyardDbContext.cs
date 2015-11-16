@@ -272,6 +272,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<MT_Object>().ToTable("MT_Objects");
             modelBuilder.Entity<MT_Data>().ToTable("MT_Data");
 	        modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");
+	        modelBuilder.Entity<TerminalSubscriptionDO>().ToTable("TerminalSubscription");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)

@@ -206,7 +206,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Action\" />
-    <Folder Include="Views\Plugin\" />
+    <Folder Include="Views\Terminal\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
