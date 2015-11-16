@@ -17,6 +17,7 @@ namespace Data.Entities
         }
 
         public virtual Fr8AccountDO UserDO { get; set; }
+        public int Id { get; set; }
 
         [ForeignKey("Terminal")]
         public int TerminalId { get; set; }
