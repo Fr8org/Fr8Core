@@ -40,6 +40,77 @@ module dockyard.tests.utils.fixtures {
             events: [],
             value: 'value3'
         };
+        /*
+        public static radioButtonGroupField: model.RadioButtonGroupControlDefinitionDTO = {
+            groupName: 'testGroup',
+            radios: [],
+            type: 'RadioButtonGroup',
+            fieldLabel: 'RadioButtonGroup Test',
+            name: 'RadioButtonGroupTest',
+            events: [],
+            value: null
+        };*/
+
+        public static radioButtonGroupField: model.RadioButtonGroupControlDefinitionDTO = {
+            groupName: 'SMSNumber_Group',
+            radios: [
+                {
+                    selected: false,
+                    name: 'SMSNumberOption',
+                    value: 'SMS Number',
+                    type: "RadioButtonGroup",
+                    fieldLabel: null,
+                    events: null,
+                    controls: [
+                        {
+                            name: 'SMS_Number',
+                            value: null,
+                            fieldLabel: null,
+                            type: "TextBox",
+                            events: null
+                        }
+                    ]
+                },
+                {
+                    selected: false,
+                    name: 'SMSNumberOption',
+                    value: 'A value from Upstream Crate',
+                    type: "RadioButtonGroup",
+                    fieldLabel: null,
+                    events: null,
+                    controls: [
+                        {
+                            name: 'SMS_Number2',
+                            value: null,
+                            fieldLabel: null,
+                            type: "TextBox",
+                            events: null
+                        }/*
+                        <model.DropDownListControlDefinitionDTO>{
+                            'listItems': [],
+                            'name': 'upstream_crate',
+                            'required': false,
+                            'value': null,
+                            "fieldLabel": null,
+                            "type": "DropDownList",
+                            "selected": false,
+                            "events": [
+                                {
+                                    "name": "onChange",
+                                    "handler": "requestConfig"
+                                }
+                            ],
+                            source: null
+                        }*/
+                    ]
+                }
+            ],
+            name: '',
+            value: null,
+            fieldLabel: "For the SMS Number use:",
+            type: "RadioButtonGroup",
+            events: null
+        };
 
         public static configurationControls = {
             "fields":
