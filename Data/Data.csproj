@@ -423,10 +423,6 @@
     <Compile Include="Migrations\201511131623530_Container_Id_Int32_To_Guid.Designer.cs">
       <DependentUpon>201511131623530_Container_Id_Int32_To_Guid.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201511151639148_Added_SubscriptionState.cs" />
-    <Compile Include="Migrations\201511151639148_Added_SubscriptionState.Designer.cs">
-      <DependentUpon>201511151639148_Added_SubscriptionState.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201511160905225_Added_TerminalSubscription_SubscriptionStatus_Edited_Terminal.cs" />
     <Compile Include="Migrations\201511160905225_Added_TerminalSubscription_SubscriptionStatus_Edited_Terminal.Designer.cs">
       <DependentUpon>201511160905225_Added_TerminalSubscription_SubscriptionStatus_Edited_Terminal.cs</DependentUpon>
@@ -720,9 +716,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511131623530_Container_Id_Int32_To_Guid.resx">
       <DependentUpon>201511131623530_Container_Id_Int32_To_Guid.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201511151639148_Added_SubscriptionState.resx">
-      <DependentUpon>201511151639148_Added_SubscriptionState.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511160905225_Added_TerminalSubscription_SubscriptionStatus_Edited_Terminal.resx">
       <DependentUpon>201511160905225_Added_TerminalSubscription_SubscriptionStatus_Edited_Terminal.cs</DependentUpon>
