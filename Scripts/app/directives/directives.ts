@@ -171,3 +171,25 @@ app.directive('transferClickConfigurePane', () => {
         }
     };
 });
+
+
+interface IInputFocusAttributes extends ng.IAttributes {
+    inputFocus: string;
+}
+
+app.directive('inputFocus', ['$parse', ($parse: ng.IParseService) => {
+    return {
+        restrict: 'A',
+        link: (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: IInputFocusAttributes) => {
+            var prevState = false;
+            var model = $parse(attrs.inputFocus);
+            scope.$watch(model, (value) => {
+                if (value && !prevState) {
+                    setTimeout(() => { element.focus(); }, 0);
+                }
+
+                prevState = !!value;
+            });
+        }
+    };
+}]);
