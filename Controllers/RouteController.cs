@@ -22,6 +22,7 @@ namespace HubWeb.Controllers
     public class RouteController : ApiController
     {
         private readonly IRoute _route;
+        private readonly IFindObjectsRoute _findObjectsRoute;
         private readonly ISecurityServices _security;
         
         public RouteController()
@@ -35,6 +36,7 @@ namespace HubWeb.Controllers
         {
             _route = route;
             _security = ObjectFactory.GetInstance<ISecurityServices>();
+            _findObjectsRoute = ObjectFactory.GetInstance<IFindObjectsRoute>();
         }
 
         [Fr8ApiAuthorize]
@@ -216,10 +218,18 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Route("find_objects/create")]
+        [Fr8ApiAuthorize]
         public IHttpActionResult CreateFindObjectsRoute()
         {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var account = uow.UserRepository.GetByKey(User.Identity.GetUserId());
+                var route = _findObjectsRoute.CreateRoute(uow, account);
 
-            return Ok();
+                uow.SaveChanges();
+
+                return Ok(new { id = route.Id });
+            }
         }
     }
 }

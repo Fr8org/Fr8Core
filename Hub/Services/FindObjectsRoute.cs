@@ -13,7 +13,7 @@ namespace Hub.Services
             ObjectFactory.GetInstance<IActivityTemplate>();
 
 
-        public RouteDO CreateFindObjectsRoute(IUnitOfWork uow, Fr8AccountDO account)
+        public RouteDO CreateRoute(IUnitOfWork uow, Fr8AccountDO account)
         {
             var generatedRouteName = GenerateFindObjectsRouteName(uow, account);
 
@@ -22,7 +22,8 @@ namespace Hub.Services
                 Name = generatedRouteName,
                 Description = "Find Objects ",
                 Fr8Account = account,
-                RouteState = RouteState.Inactive
+                RouteState = RouteState.Inactive,
+                Tag = "Query"
             };
 
             var subroute = new SubrouteDO()
@@ -30,32 +31,44 @@ namespace Hub.Services
                 ParentRouteNode = route
             };
 
+            var connectToSqlActivityTemplate = _activityTemplate.GetByName(uow, "ConnectToSql_v1");
             var connectToSqlAction = new ActionDO()
             {
                 ParentRouteNode = subroute,
                 Ordering = 1,
-                ActivityTemplate = _activityTemplate.GetByName(uow, "ConnectToSql_v1")
+                ActivityTemplate = connectToSqlActivityTemplate,
+                Name = connectToSqlActivityTemplate.Name,
+                Label = connectToSqlActivityTemplate.Name
             };
 
+            var buildQueryActivityTemplate = _activityTemplate.GetByName(uow, "BuildQuery_v1");
             var buildQueryAction = new ActionDO()
             {
                 ParentRouteNode = subroute,
                 Ordering = 2,
-                ActivityTemplate = _activityTemplate.GetByName(uow, "BuildQuery_v1")
+                ActivityTemplate = buildQueryActivityTemplate,
+                Name = buildQueryActivityTemplate.Name,
+                Label = buildQueryActivityTemplate.Name
             };
 
+            var executeSqlActivityTemplate = _activityTemplate.GetByName(uow, "ExecuteSql_v1");
             var executeSqlAction = new ActionDO()
             {
                 ParentRouteNode = subroute,
                 Ordering = 3,
-                ActivityTemplate = _activityTemplate.GetByName(uow, "ExecuteSql_v1")
+                ActivityTemplate = executeSqlActivityTemplate,
+                Name = executeSqlActivityTemplate.Name,
+                Label = executeSqlActivityTemplate.Name
             };
 
+            var manageRouteActivityTemplate = _activityTemplate.GetByName(uow, "ManageRoute_v1");
             var manageRouteAction = new ActionDO()
             {
                 ParentRouteNode = subroute,
                 Ordering = 4,
-                ActivityTemplate = _activityTemplate.GetByName(uow, "ManageRoute_v1")
+                ActivityTemplate = manageRouteActivityTemplate,
+                Name = manageRouteActivityTemplate.Name,
+                Label = manageRouteActivityTemplate.Name
             };
 
             route.ChildNodes.Add(subroute);
@@ -90,7 +103,7 @@ namespace Hub.Services
             {
                 var number = 0;
 
-                for (var i = "FindObjects #".Length + 1; i < findObjectRoute.Name.Length; ++i)
+                for (var i = "FindObjects #".Length; i < findObjectRoute.Name.Length; ++i)
                 {
                     var c = findObjectRoute.Name[i];
                     if (c < '0' && c > '9') { break; }

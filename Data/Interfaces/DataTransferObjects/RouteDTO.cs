@@ -20,6 +20,8 @@ namespace Data.Interfaces.DataTransferObjects
         [Required]
         public string Name { get; set; }
 
+        public string Tag { get; set; }
+
         public string Description { get; set; }
         public int RouteState { get; set; }
 

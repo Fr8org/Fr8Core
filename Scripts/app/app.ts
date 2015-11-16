@@ -193,9 +193,15 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         })
 
         .state('findObjects', {
-            url: '/findObjects',
+            url: '/findObjects/create',
             templateUrl: '/AngularTemplate/FindObjects',
             data: { pageTitle: 'Constructing Find Objects route', pageSubTitle: '' }
+        })
+
+        .state('findObjectsResult', {
+            url: '/findObjects/{id}/results',
+            templateUrl: '/AngularTemplate/FindObjectsResults',
+            data: { pageTitle: 'Find Objects results', pageSubTitle: '' }
         });
 }]);
 
