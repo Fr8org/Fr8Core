@@ -1,142 +1,143 @@
 ﻿{
     "Framework": "jasmine",
-    "References": [
-        {
-            "Path": "../../bower_components/jquery/dist/jquery.min.js",
-            "IsTestFrameworkFile": true
-        },
-        {
-            "Path": "../../bower_components/angular/angular.min.js",
-            "IsTestFrameworkFile": true
-        },
-        {
-            "Path": "../../bower_components/angular-resource/angular-resource.min.js"
-        },
-        {
-            "Path": "../../bower_components/angular-sanitize/angular-sanitize.js"
-        },
-        {
-            "Path": "../../bower_components/angular-touch/angular-touch.js"
-        },
-        {
-            "Path": "../../bower_components/angular-ui-router/release/angular-ui-router.min.js"
-        },
-        {
-            "Path": "../../bower_components/ocLazyLoad/dist/ocLazyLoad.js"
-        },
-        {
-            "Path": "../../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"
-        },
-        {
-            "Path": "../../bower_components/underscore/underscore.js"
-        },
-        {
-            "Path": "../../bower_components/datatables/media/js/jquery.dataTables.min.js"
-        },
-        {
-            "Path": "../../bower_components/angular-datatables/dist/angular-datatables.js"
-        },
-        {
-            "Path": "../../bower_components/ng-file-upload/ng-file-upload-all.min.js"
-        },
-        {
-            "Path": "../../bower_components/textAngular/dist/textAngular-rangy.min.js"
-        },
-        {
-            "Path": "../../bower_components/textAngular/dist/textAngular-sanitize.min.js"
-        },
-        {
-            "Path": "../../bower_components/textAngular/dist/textAngular.min.js"
-        },
-        {
-            "Path": "../../bower_components/angular-ui-select/dist/select.min.js"
-        },
-        {
-            "Path": "../../bower_components/pusher/dist/pusher.js"
-        },
-        {
-            "Path": "../../bower_components/pusher-angular/lib/pusher-angular.js"
-        },
-        {
-            "Path": "../../bower_components/ngToast/dist/ngToast.min.js"
-        },
-        {
-            "Path": "../../bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"
-        },
-        {
-            "Path": "../app/app.js"
-        },
-        {
-            "Path": "../../Scripts/lib/jquery.blockui.min.js"
-        },
-        {
-            "Path": "../../Content/templates/metronic/assets/global/scripts/metronic.js"
-        },
-        {
-            "Path": "../../Content/templates/metronic/assets/admin/layout3/scripts/layout.js"
-        },
-        {
-            "Path": "../../Content/templates/metronic/assets/admin/layout3/scripts/demo.js"
-        },
-        {
-            "Path": "../../bower_components/angular-mocks/angular-mocks.js"
-        },
-        {
-            "Path": "../../bower_components/sinon/lib/sinon.js"
-        },
-        {
-            "Path": "../app/e2ehttpBackend.js"
-        },
-        {
-            "Path": "../app/interfaces/IProcessTemplateVM.js"
-        },
-        {
-            "Path": "../app/model/",
-            "Includes": [ "*.js" ],
-            "Excludes": [ "*.ts" ]
-        },
-        {
-            "Path": "../app/services/",
-            "Includes": [ "*.js" ],
-            "Excludes": [ "*.ts" ]
-        },
-        {
-            "Path": "../app/filters/",
-            "Includes": [ "*.js" ],
-            "Excludes": [ "*.ts" ]
-        },
-        {
-            "Path": "../app/ProcessBuilder/",
-            "Includes": [ "*.js" ],
-            "Excludes": [ "*.ts" ]
-        },
-        {
-            "Path": "../app/directives/EventArgsBase.js"
-        },
-        {
-            "Path": "../app/directives/indiClick.js"
-        },
-        {
-            "Path": "../app/directives/",
-            "Includes": [ "messages.js", "I*.js" ],
-            "Excludes": [ "*.ts" ]
-        },
-        {
-            "Path": "../app/directives/",
-            "Includes": [ "*.js" ],
-            "Excludes": [ "*.ts" ]
-        },
-        {
-            "Path": "../app/controllers/",
-            "Includes": [ "*.js" ],
-            "Excludes": [ "*.ts" ]
-        },
-        {
-            "Path": "../tests/utils/",
-            "Includes": [ "*.js" ],
-            "Excludes": [ "*.ts" ]
-        },
-        { "Path": "../tests/templates/templateCache.js" }
-    ],
+  "References": [
+    {
+      "Path": "../../bower_components/jquery/dist/jquery.min.js",
+      "IsTestFrameworkFile": true
+    },
+    {
+      "Path": "../../bower_components/angular/angular.min.js",
+      "IsTestFrameworkFile": true
+    },
+    {
+      "Path": "../../bower_components/angular-resource/angular-resource.min.js"
+    },
+    {
+      "Path": "../../bower_components/angular-sanitize/angular-sanitize.js"
+    },
+    {
+      "Path": "../../bower_components/angular-touch/angular-touch.js"
+    },
+    {
+      "Path": "../../bower_components/angular-ui-router/release/angular-ui-router.min.js"
+    },
+    {
+      "Path": "../../bower_components/ocLazyLoad/dist/ocLazyLoad.js"
+    },
+    {
+      "Path": "../../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"
+    },
+    {
+      "Path": "../../bower_components/underscore/underscore.js"
+    },
+    {
+      "Path": "../../bower_components/datatables/media/js/jquery.dataTables.min.js"
+    },
+    {
+      "Path": "../../bower_components/angular-datatables/dist/angular-datatables.js"
+    },
+    {
+      "Path": "../../bower_components/ng-file-upload/ng-file-upload-all.min.js"
+    },
+    {
+      "Path": "../../bower_components/textAngular/dist/textAngular-rangy.min.js"
+    },
+    {
+      "Path": "../../bower_components/textAngular/dist/textAngular-sanitize.min.js"
+    },
+    {
+      "Path": "../../bower_components/textAngular/dist/textAngular.min.js"
+    },
+    {
+      "Path": "../../bower_components/angular-ui-select/dist/select.min.js"
+    },
+    {
+      "Path": "../../bower_components/pusher/dist/pusher.js"
+    },
+    {
+      "Path": "../../bower_components/pusher-angular/lib/pusher-angular.js"
+    },
+    {
+      "Path": "../../bower_components/ngToast/dist/ngToast.min.js"
+    },
+    {
+      "Path": "../../bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"
+    },
+    {
+      "Path": "../app/app.js"
+    },
+    {
+      "Path": "../../Scripts/lib/jquery.blockui.min.js"
+    },
+    {
+      "Path": "../../Content/templates/metronic/assets/global/scripts/metronic.js"
+    },
+    {
+      "Path": "../../Content/templates/metronic/assets/admin/layout3/scripts/layout.js"
+    },
+    {
+      "Path": "../../Content/templates/metronic/assets/admin/layout3/scripts/demo.js"
+    },
+    {
+      "Path": "../../bower_components/angular-mocks/angular-mocks.js"
+    },
+    {
+      "Path": "../../bower_components/sinon/lib/sinon.js"
+    },
+    {
+      "Path": "../app/e2ehttpBackend.js"
+    },
+    {
+      "Path": "../app/interfaces/IProcessTemplateVM.js"
+    },
+    {
+      "Path": "../app/model/",
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
+    {
+      "Path": "../app/services/",
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
+    {
+      "Path": "../app/filters/",
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
+    {
+      "Path": "../app/ProcessBuilder/",
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
+    {
+      "Path": "../app/directives/EventArgsBase.js"
+    },
+    {
+      "Path": "../app/directives/indiClick.js"
+    },
+    {
+      "Path": "../app/directives/",
+      "Includes": [ "messages.js", "I*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
+    {
+      "Path": "../app/directives/",
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
+    {
+      "Path": "../app/controllers/",
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
+    {
+      "Path": "../tests/utils/",
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
+    { "Path": "../tests/templates/templateCache.js" }
+  ],
+  "Tests": [{ "Include": "*.js" }],
   "RootReferencePathMode": "SettingsFileDirectory"
 } 
