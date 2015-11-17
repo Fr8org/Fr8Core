@@ -31,7 +31,7 @@ using Hub.Managers;
 namespace terminalIntegrationTests
 {
     [TestFixture]
-    [Category("PluginIntegrationTests")]
+    [Category("TerminalIntegrationTests")]
 	public partial class TerminalIntegrationTests : BaseTest
     {
         private IDisposable _coreServer;
