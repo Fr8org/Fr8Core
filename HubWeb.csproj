@@ -756,7 +756,6 @@
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Counter.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Duration.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\InputFocus.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ManageRoute.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilder.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextSource.ts" />
@@ -825,12 +824,15 @@
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ContainerControllerTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\DropDownListBoxTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBlockTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBoxTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\RadioButtonGroup.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\DropDownListBox.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\FilePicker.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBlock.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBox.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\PaneConfigurationActionTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDesignDTO.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_FieldDTO.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionTemplate.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ContainerDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\mocks.ts" />
