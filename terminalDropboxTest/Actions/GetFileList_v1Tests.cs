@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -8,6 +9,9 @@ using StructureMap;
 using terminalDropbox.Actions;
 using terminalDropboxTests.Fixtures;
 using UtilitiesTesting;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace terminalDropboxTests.Actions
 {
@@ -34,12 +38,15 @@ namespace terminalDropboxTests.Actions
             //Arrange
             var curActionDO = FixtureData.GetFileListTestActionDO1();
             var container = FixtureData.TestContainer();
-            
+
             //Act
-            var payloadDTOResult  =  _getFileList_v1.Run(curActionDO, container.Id, FixtureData.DropboxAuthorizationToken()).Result;
+            var payloadDTOResult = _getFileList_v1.Run(curActionDO, container.Id, FixtureData.DropboxAuthorizationToken()).Result;
+            var jsonData = ((JValue)(payloadDTOResult.CrateStorage.Crates[0].Contents)).Value.ToString();
+            var dropboxFileList = JsonConvert.DeserializeObject<List<string>>(jsonData);
             
             // Assert
             Assert.NotNull(payloadDTOResult);
+            Assert.True(dropboxFileList.Any());
         }
     }
 }
