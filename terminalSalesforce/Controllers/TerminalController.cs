@@ -22,7 +22,7 @@ namespace terminalSalesforce.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult Get()
         {
-            var terminal = new TerminalDO()
+            var terminal = new TerminalDTO()
             {
                 Name = "terminalSalesforce",
                 TerminalStatus = TerminalStatus.Active,
@@ -35,43 +35,43 @@ namespace terminalSalesforce.Controllers
 				Name = "Salesforce"
 	        };
 
-            var createLeadAction = new ActivityTemplateDO()
+            var createLeadAction = new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Create_Lead",
                 Label = "Create Lead",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
-                Category = ActivityCategory.Forwarders,
+                Category = ActivityCategory.Forwarders.ToString(),
                 MinPaneWidth = 330,
-				WebService = webService
+                WebServiceName = webService.Name
             };
 
-            var createContactAction = new ActivityTemplateDO()
+            var createContactAction = new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Create_Contact",
                 Label = "Create Contact",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
-                Category = ActivityCategory.Forwarders,
+                Category = ActivityCategory.Forwarders.ToString(),
                 MinPaneWidth = 330,
-				WebService = webService
+                WebServiceName = webService.Name
             };
 
-            var createAccountAction = new ActivityTemplateDO()
+            var createAccountAction = new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Create_Account",
                 Label = "Create Account",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
-                Category = ActivityCategory.Forwarders,
+                Category = ActivityCategory.Forwarders.ToString(),
                 MinPaneWidth = 330,
-				WebService = webService
+                WebServiceName = webService.Name
             };
 
-            var actionList = new List<ActivityTemplateDO>()
+            var actionList = new List<ActivityTemplateDTO>()
             {
                 createLeadAction,createContactAction,createAccountAction
             };

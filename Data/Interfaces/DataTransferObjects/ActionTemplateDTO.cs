@@ -16,12 +16,20 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("version")]
         public string Version { get; set; }
+        [JsonProperty("authenticationType")]
+        public int AuthenticationType { get; set; }
 
+        [JsonProperty("webServiceName")]
+        public string WebServiceName { get; set; }
+
+        [JsonProperty("terminal")]
+        public TerminalDTO Terminal { get; set; }
         public int TerminalId { get; set; }
 
         [JsonProperty("componentActivities")]
         public string ComponentActivities { get; set; }
-
+        [JsonProperty("tags")]
+        public string Tags { get; set; }
         public string Category { get; set; }
 
         [JsonProperty("minPaneWidth")]

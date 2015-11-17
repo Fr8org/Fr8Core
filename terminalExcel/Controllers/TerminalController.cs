@@ -2,6 +2,7 @@
 using System.Web.Http.Description;
 using System.Web.Http;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Utilities.Configuration.Azure;
 using Utilities.Configuration.Azure;
@@ -21,9 +22,9 @@ namespace terminalExcel.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverTerminals()
         {
-            var result = new List<ActivityTemplateDO>();
+            var result = new List<ActivityTemplateDTO>();
 
-            var terminal = new TerminalDO
+            var terminal = new TerminalDTO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
@@ -36,16 +37,16 @@ namespace terminalExcel.Controllers
 				Name = "Excel"
 	        };
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "Load_Excel_File",
                 Label = "Load Excel File",
                 Version = "1",
-                Category = ActivityCategory.Receivers,
+                Category = ActivityCategory.Receivers.ToString(),
                 Terminal = terminal,
                 Tags = "Table Data Generator",
                 MinPaneWidth = 210,
-				WebService = webService
+				WebServiceName = webService.Name
             });
 
 

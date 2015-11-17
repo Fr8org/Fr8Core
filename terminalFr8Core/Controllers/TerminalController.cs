@@ -2,6 +2,7 @@
 using System.Web.Http.Description;
 using System.Web.Http;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Services;
 using Utilities.Configuration.Azure;
@@ -24,9 +25,9 @@ namespace terminalFr8Core.Controllers
 
         public IHttpActionResult DiscoverTerminals()
         {
-            var result = new List<ActivityTemplateDO>();
+            var result = new List<ActivityTemplateDTO>();
             
-            var terminal = new TerminalDO
+            var terminal = new TerminalDTO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
@@ -39,100 +40,100 @@ namespace terminalFr8Core.Controllers
 		        Name = "fr8 Core"
 	        };
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "FilterUsingRunTimeData",
                 Label = "Filter Using Runtime Data",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
 
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 330,
-				WebService = webService
+				WebServiceName = webService.Name
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "MapFields",
                 Label = "Map Fields",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
 
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 380,
-				WebService = webService
+                WebServiceName = webService.Name
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "AddPayloadManually",
                 Label = "Add Payload Manually",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
 
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 330,
-				WebService = webService
+                WebServiceName = webService.Name
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "StoreMTData",
                 Label = "Store MT Data",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
-                WebService = webService,
+                WebServiceName = webService.Name,
                 Version = "1"
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "Select_Fr8_Object",
                 Label = "Select Fr8 Object",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
-                WebService = webService,
+                WebServiceName = webService.Name,
                 Version = "1",
                 MinPaneWidth = 330
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "ConnectToSql",
                 Label = "Connect To SQL",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
-                WebService = webService,
+                WebServiceName = webService.Name,
                 Version = "1"
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "BuildQuery",
                 Label = "Build Query",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
 
                 Version = "1"
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "ExecuteSql",
                 Label = "Execute Sql Query",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
                 Version = "1"
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "ManageRoute",
                 Label = "Manage Route",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
                 Version = "1"
             });

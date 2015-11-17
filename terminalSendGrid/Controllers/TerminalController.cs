@@ -22,7 +22,7 @@ namespace terminalSalesforce.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult Get()
         {
-            var terminal = new TerminalDO()
+            var terminal = new TerminalDTO()
             {
                 Name = "terminalSendGrid",
                 TerminalStatus = TerminalStatus.Active,
@@ -35,7 +35,7 @@ namespace terminalSalesforce.Controllers
 		        Name = "SendGrid"
 	        };
 
-            var action = new ActivityTemplateDO()
+            var action = new ActivityTemplateDTO()
             {
                 Name = "SendEmailViaSendGrid",
                 Label = "Send Email Via Send Grid",
@@ -43,12 +43,12 @@ namespace terminalSalesforce.Controllers
                 Tags = "Notifier",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
-                Category = ActivityCategory.Forwarders,
+                Category = ActivityCategory.Forwarders.ToString(),
                 MinPaneWidth = 330,
-				WebService = webService
+                WebServiceName = webService.Name
             };
 
-            var actionList = new List<ActivityTemplateDO>()
+            var actionList = new List<ActivityTemplateDTO>()
             {
                 action
             };

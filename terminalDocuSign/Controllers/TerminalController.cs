@@ -23,7 +23,7 @@ namespace terminalDocuSign.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult Get()
         {
-            var terminal = new TerminalDO()
+            var terminal = new TerminalDTO()
             {
                 Name = "terminalDocuSign",
                 TerminalStatus = TerminalStatus.Active,
@@ -31,72 +31,72 @@ namespace terminalDocuSign.Controllers
                 Version = "1"
             };
 
-            var waitForDocusignEventActionTemplate = new ActivityTemplateDO()
+            var waitForDocusignEventActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Monitor_DocuSign",
                 Label = "Monitor DocuSign",
-                Category = ActivityCategory.Monitors,
+                Category = ActivityCategory.Monitors.ToString(),
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,
                 MinPaneWidth = 330
             };
 
-            var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
+            var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
-                Category = ActivityCategory.Forwarders,
+                Category = ActivityCategory.Forwarders.ToString(),
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,
                 MinPaneWidth = 330
             };
 
-            var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
+            var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Receive_DocuSign_Envelope",
                 Label = "Receive DocuSign Envelope",
-                Category = ActivityCategory.Receivers,
+                Category = ActivityCategory.Receivers.ToString(),
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,
                 MinPaneWidth = 330
             };
 
-            var recordDocuSignEvents = new ActivityTemplateDO
+            var recordDocuSignEvents = new ActivityTemplateDTO
             {
                 Name = "Record_DocuSign_Events",
                 Label = "Record DocuSign Events",
                 Version = "1",
-                Category = ActivityCategory.Forwarders,
+                Category = ActivityCategory.Forwarders.ToString(),
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,
                 MinPaneWidth = 330
             };
 
-            var mailMergeActionTemplate = new ActivityTemplateDO
+            var mailMergeActionTemplate = new ActivityTemplateDTO
             {
                 Name = "Mail_Merge_Into_DocuSign",
                 Label = "Mail Merge Into DocuSign",
                 Version = "1",
                 AuthenticationType = AuthenticationType.Internal,
-                Category = ActivityCategory.Solution,
+                Category = ActivityCategory.Solution.ToString(),
                 Terminal = terminal,
                 MinPaneWidth = 500
             };
 
-            var collectFormDataSolution = new ActivityTemplateDO
+            var collectFormDataSolution = new ActivityTemplateDTO
             {
                 Name = "Collect_Form_Data_Solution",
                 Label = "Collect Form Data Solution",
                 Version = "1",
-                Category = ActivityCategory.Solution,
+                Category = ActivityCategory.Solution.ToString(),
                 Terminal = terminal,
                 MinPaneWidth = 380
             };
 
-            var actionList = new List<ActivityTemplateDO>()
+            var actionList = new List<ActivityTemplateDTO>()
             {
                 waitForDocusignEventActionTemplate,
                 extractDataFromEnvelopeActionTemplate,

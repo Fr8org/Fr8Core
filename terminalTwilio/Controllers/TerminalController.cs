@@ -3,6 +3,7 @@ using System.Web.Http;
 using Data.Entities;
 using Data.States;
 using System.Web.Http.Description;
+using Data.Interfaces.DataTransferObjects;
 using Utilities.Configuration.Azure;
 using Data.Interfaces.Manifests;
 
@@ -16,7 +17,7 @@ namespace terminalTwilio.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverTerminals()
         {
-            var terminal = new TerminalDO()
+            var terminal = new TerminalDTO()
             {
                 Name = "terminalTwilio",
                 TerminalStatus = TerminalStatus.Active,
@@ -30,20 +31,20 @@ namespace terminalTwilio.Controllers
                 IconPath = "/Content/icons/web_services/twilio-icon-64x64.png"
             };
 
-            var sendViaTwilioTemplate = new ActivityTemplateDO
+            var sendViaTwilioTemplate = new ActivityTemplateDTO
             {
                 Name = "Send_Via_Twilio",
                 Label = "Send Via Twilio",
                 Tags = "Twillio",
-                Category = ActivityCategory.Forwarders,
+                Category = ActivityCategory.Forwarders.ToString(),
                 Version = "1",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
                 MinPaneWidth = 330,
-				WebService = webService
+                WebServiceName = webService.Name
             };
 
-            var actionList = new List<ActivityTemplateDO>
+            var actionList = new List<ActivityTemplateDTO>
             {
                 sendViaTwilioTemplate
             };

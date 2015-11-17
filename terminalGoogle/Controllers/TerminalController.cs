@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Google.GData.Extensions;
@@ -28,7 +29,7 @@ namespace terminalGoogle.Controllers
                 IconPath= "/Content/icons/web_services/google-icon-64x64.png"
             };
 
-            var terminal = new TerminalDO()
+            var terminal = new TerminalDTO()
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
@@ -36,23 +37,23 @@ namespace terminalGoogle.Controllers
                 Version = "1",
             };
 
-            var extractDataAction = new ActivityTemplateDO
+            var extractDataAction = new ActivityTemplateDTO
             {
                 Name = "Extract_Spreadsheet_Data",
                 Label = "Extract Spreadsheet Data",
                 Version = "1",
-                Category = ActivityCategory.Receivers,
+                Category = ActivityCategory.Receivers.ToString(),
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
                 MinPaneWidth = 300,
-                WebService = webService,
+                WebServiceName = webService.Name,
                 Tags = "Table Data Generator"
             };
 
             return Json(new StandardFr8TerminalCM()
             {
                 Definition = terminal,
-                Actions = new List<ActivityTemplateDO>
+                Actions = new List<ActivityTemplateDTO>
                 {
                     extractDataAction
                 }

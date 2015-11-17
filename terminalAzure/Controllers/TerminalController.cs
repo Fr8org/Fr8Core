@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Web.Http.Description;
 using System.Web.Http;
+using Data.Crates;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Utilities.Configuration.Azure;
 using Data.Interfaces.Manifests;
@@ -21,19 +23,19 @@ namespace terminalAzure.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverTerminals()
         {
-            var result = new List<ActivityTemplateDO>();
+            var result = new List<ActivityTemplateDTO>();
 
-            var template = new ActivityTemplateDO
+            var template = new ActivityTemplateDTO
             {
                 Name = "Write_To_Sql_Server",
                 Label = "Write to Azure Sql Server",
-                Category = ActivityCategory.Forwarders,
+                Category = ActivityCategory.Forwarders.ToString(),
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
                 MinPaneWidth = 330
             };
 
-            var terminal = new TerminalDO
+            var terminal = new TerminalDTO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
@@ -46,9 +48,8 @@ namespace terminalAzure.Controllers
                 Name = "Microsoft Azure"
             };
 
-            template.Terminal = terminal;
 
-	        template.WebService = webService;
+	        template.WebServiceName = webService.Name;
 
             result.Add(template);
 
@@ -57,6 +58,7 @@ namespace terminalAzure.Controllers
                  Definition = terminal,
                  Actions = result
              };
+
             return Json(curStandardFr8TerminalCM);
         }
     }
