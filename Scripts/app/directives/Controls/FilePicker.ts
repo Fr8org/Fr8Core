@@ -15,9 +15,6 @@ module dockyard.directives.filePicker {
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function FilePicker(): ng.IDirective {
-    //class FilePicker implements ng.IDirective {
-        
-        
 
         var controller = ['$scope', '$modal', 'FileService', function ($scope: IFilePickerScope, $modal: any, FileService: IFileService) {
 

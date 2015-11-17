@@ -12,12 +12,14 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using Moq;
+using terminalIntegrationTests.Fixtures;
 using terminalExcel.Actions;
 using terminalExcel.Fixtures;
 using terminalExcel.Infrastructure;
-using AutoMapper;
 
-namespace pluginIntegrationTests
+namespace terminalIntegrationTests
 {
     public partial class TerminalIntegrationTests
     {
@@ -37,7 +39,7 @@ namespace pluginIntegrationTests
 
                 uow.ContainerRepository.Add(new ContainerDO()
                 {
-                    Id = 1,
+                    Id = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
                     Route = route,
                     CrateStorage = _crateManager.EmptyStorageAsStr(),
                     ContainerState = ContainerState.Executing
@@ -59,18 +61,23 @@ namespace pluginIntegrationTests
 
             var curActionDTO = new ActionDTO()
             {
-                ContainerId = 1,
+                ContainerId = UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1(),
                 ParentRouteNodeId = 1,
             };
 
             using (var updater = _crateManager.UpdateStorage(curActionDTO))
-                {
+            {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("", tableDataMS));
             }
-            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
-            var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
 
-            var result = await new Load_Table_Data_v1().Run(curActionDO, curActionDTO.ContainerId, curAuthTokenDO);
+            var restfulServiceClient = new Mock<IRestfulServiceClient>();
+            restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>()))
+                .Returns(Task.FromResult(FixtureData.CratePayloadDTOForSendEmailViaSendGridConfiguration));
+            ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
+
+
+            var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
+            var result = await new Load_Table_Data_v1().Run(curActionDO, curActionDTO.ContainerId, null);
 
             var payloadCrates = _crateManager.GetStorage(result).CratesOfType<StandardPayloadDataCM>();
             var payloadDataMS = payloadCrates.First().Content;
