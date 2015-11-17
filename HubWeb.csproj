@@ -441,6 +441,7 @@
     <Content Include="Content\icons\web_services\fr8-core-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-azure-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-excel-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\papertrail-icon-64x64.png" />
     <Content Include="Content\icons\web_services\salesforce-icon-64x64.png" />
     <Content Include="Content\icons\web_services\sendgrid-icon-64x64.png" />
     <Content Include="Content\icons\web_services\slack-icon-64x64.png" />
@@ -728,6 +729,8 @@
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
     <Content Include="_PowerShellScripts\CheckWebSettings.ps1" />
+    <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsResultsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageFileListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerListController.ts" />
@@ -4058,6 +4061,8 @@
     <Content Include="Views\AngularTemplate\ManageRoute.cshtml" />
     <Content Include="Views\AngularTemplate\Duration.cshtml" />
     <Content Include="Views\AngularTemplate\Counter.cshtml" />
+    <Content Include="Views\AngularTemplate\FindObjects.cshtml" />
+    <Content Include="Views\AngularTemplate\FindObjectsResults.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-router\angular-ui-router.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />
