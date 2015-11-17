@@ -39,7 +39,7 @@ module dockyard.tests.unit.directives.controls {
                 $timeout = _$timeout_;
 
                 scope = $rootScope.$new();
-                scope.field = fx.ActionDesignDTO.textBlock;
+                scope.field = fx.FieldDTO.textBlock;
                 element = compileTemplate(scope, directive, $compile);
                 
             });
@@ -91,8 +91,8 @@ module dockyard.tests.unit.directives.controls {
                 $timeout = _$timeout_;
 
                 scope = $rootScope.$new();
-                scope.field1 = angular.copy(fx.ActionDesignDTO.textBlock);
-                scope.field2 = angular.copy(fx.ActionDesignDTO.textBlock);
+                scope.field1 = angular.copy(fx.FieldDTO.textBlock);
+                scope.field2 = angular.copy(fx.FieldDTO.textBlock);
                 scope.field2.value = 'different value';
                 element1 = compileTemplate(scope, directive1, $compile);
                 element2 = compileTemplate(scope, directive2, $compile);
@@ -100,7 +100,7 @@ module dockyard.tests.unit.directives.controls {
         });
 
         it('Should be able display different values with it\'s sibling', () => {
-            expect(getLabelArea(element1).html().trim()).toBe(fx.ActionDesignDTO.textBlock.value);
+            expect(getLabelArea(element1).html().trim()).toBe(fx.FieldDTO.textBlock.value);
             expect(getLabelArea(element2).html().trim()).toBe('different value');
         });
     });

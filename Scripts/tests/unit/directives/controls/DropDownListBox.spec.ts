@@ -39,7 +39,7 @@ module dockyard.tests.unit.directives.controls {
                 scope = $rootScope.$new();
                 scope.onChange = jasmine.createSpy("onChange function");
                 //we copy data to prevent changes on ongoing tests
-                scope.field = angular.copy(fx.ActionDesignDTO.dropDownListBox);
+                scope.field = angular.copy(fx.FieldDTO.dropDownListBox);
                 element = compileTemplate(scope, directive, $compile);
             });
         });
@@ -100,8 +100,8 @@ module dockyard.tests.unit.directives.controls {
                 scope.onChange1 = jasmine.createSpy("onChange function");
                 scope.onChange2 = jasmine.createSpy("onChange function");
                 //we copy data to prevent changes on ongoing tests
-                scope.field1 = angular.copy(fx.ActionDesignDTO.dropDownListBox);
-                scope.field2 = angular.copy(fx.ActionDesignDTO.dropDownListBox);
+                scope.field1 = angular.copy(fx.FieldDTO.dropDownListBox);
+                scope.field2 = angular.copy(fx.FieldDTO.dropDownListBox);
                 element1 = compileTemplate(scope, directive1, $compile);
                 element2 = compileTemplate(scope, directive2, $compile);
             });

@@ -39,7 +39,7 @@ module dockyard.tests.unit.directives.controls {
                 fileService = _FileService_;
 
                 scope = $rootScope.$new();
-                scope.field = angular.copy(fx.ActionDesignDTO.filePickerField);
+                scope.field = angular.copy(fx.FieldDTO.filePickerField);
                 element = compileTemplate(scope, directive, $compile);
                 
             });
@@ -128,8 +128,8 @@ module dockyard.tests.unit.directives.controls {
                 fileService = _FileService_;
 
                 scope = $rootScope.$new();
-                scope.field1 = angular.copy(fx.ActionDesignDTO.filePickerField);
-                scope.field2 = angular.copy(fx.ActionDesignDTO.filePickerField);
+                scope.field1 = angular.copy(fx.FieldDTO.filePickerField);
+                scope.field2 = angular.copy(fx.FieldDTO.filePickerField);
                 element1 = compileTemplate(scope, directive1, $compile);
                 element2 = compileTemplate(scope, directive2, $compile);
 
@@ -148,7 +148,6 @@ module dockyard.tests.unit.directives.controls {
             };
             deferred.resolve(uploadedFile);
             (<dockyard.model.FileDTO>uploadedFile).cloudStorageUrl = 'testStorageURL';
-            debugger;
             //resolve promise
             scope.$digest();
             expect(element1.isolateScope().selectedFile).toEqual(uploadedFile);

@@ -46,8 +46,8 @@ module dockyard.tests.unit.directives.controls {
                 $timeout = _$timeout_;
 
                 scope = $rootScope.$new();
-                scope.currentAction = fx.ActionDesignDTO.noAuthActionVM;
-                scope.field = fx.ActionDesignDTO.textField;
+                scope.currentAction = fx.ActionDTO.noAuthActionVM;
+                scope.field = fx.FieldDTO.textField;
                 element = compileTemplate(scope, directive, $compile);
                 
             });
@@ -106,9 +106,9 @@ module dockyard.tests.unit.directives.controls {
                 $timeout = _$timeout_;
 
                 scope = $rootScope.$new();
-                scope.currentAction = fx.ActionDesignDTO.noAuthActionVM;
-                scope.field1 = angular.copy(fx.ActionDesignDTO.textField);
-                scope.field2 = angular.copy(fx.ActionDesignDTO.textField);
+                scope.currentAction = fx.ActionDTO.noAuthActionVM;
+                scope.field1 = angular.copy(fx.FieldDTO.textField);
+                scope.field2 = angular.copy(fx.FieldDTO.textField);
                 element1 = compileTemplate(scope, directive1, $compile);
                 element2 = compileTemplate(scope, directive2, $compile);
 
@@ -118,7 +118,7 @@ module dockyard.tests.unit.directives.controls {
         it('Should update it\'s value but not any different control', () => {
             changeText(scope, element1, 'super-complex-test-value'); 
             expect(element1.isolateScope().field.value).toBe('super-complex-test-value');
-            expect(element2.isolateScope().field.value).toBe(fx.ActionDesignDTO.textField.value);
+            expect(element2.isolateScope().field.value).toBe(fx.FieldDTO.textField.value);
         });
 
         it('Should call only own change function', () => {
