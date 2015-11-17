@@ -2,7 +2,7 @@
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using TerminalBase.Infrastructure;
 
-namespace pluginBaseTests.Infrastructure
+namespace terminalBaseTests.Infrastructure
 {
     internal class TestBaseTerminalEvent : BaseTerminalEvent
     {
