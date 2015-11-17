@@ -89,15 +89,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseClasses\BaseConfiguration.cs" />
-    <Compile Include="BaseClasses\BasePluginAction.cs" />
-    <Compile Include="BaseClasses\BasePluginController.cs" />
-    <Compile Include="BaseClasses\BasePluginWebApiConfig.cs" />
-    <Compile Include="Errors\PluginErrorCode.cs" />
-    <Compile Include="Infrastructure\BasePluginEvent.cs" />
+    <Compile Include="BaseClasses\BaseTerminalAction.cs" />
+    <Compile Include="BaseClasses\BaseTerminalController.cs" />
+    <Compile Include="BaseClasses\BaseTerminalWebApiConfig.cs" />
+    <Compile Include="Errors\TerminalErrorCode.cs" />
+    <Compile Include="Infrastructure\BaseTerminalEvent.cs" />
     <Compile Include="Infrastructure\States\ConfigurationRequestType.cs" />
     <Compile Include="Infrastructure\JsonParser.cs" />
     <Compile Include="Infrastructure\Validations.cs" />
-    <Compile Include="Errors\PluginCodedException.cs" />
+    <Compile Include="Errors\TerminalCodedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>

@@ -8,9 +8,9 @@ using terminalSalesforce.Infrastructure;
 namespace terminalSalesforce.Controllers
 {
     [RoutePrefix("authentication")]
-    public class AuthenticationController : BasePluginController
+    public class AuthenticationController : BaseTerminalController
     {
-        private const string curPlugin = "terminalSalesforce";
+        private const string curTerminal = "terminalSalesforce";
         
         private Authentication _authentication = new Authentication();
 
@@ -24,7 +24,7 @@ namespace terminalSalesforce.Controllers
 
         [HttpPost]
         [Route("token")]
-        public Task<AuthTokenDTO> GenerateOAuthToken(
+        public Task<AuthorizationTokenDTO> GenerateOAuthToken(
             ExternalAuthenticationDTO externalAuthDTO)
         {
             try
@@ -33,10 +33,10 @@ namespace terminalSalesforce.Controllers
             }
             catch (Exception ex)
             {
-                ReportPluginError(curPlugin, ex);
+                ReportTerminalError(curTerminal, ex);
 
                 return Task.FromResult(
-                    new AuthTokenDTO()
+                    new AuthorizationTokenDTO()
                     {
                         Error = "An error occured while trying to authenticate, please try again later."
                     }

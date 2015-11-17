@@ -1,18 +1,9 @@
-﻿@*File upload control main container*@
-<div>
-    
-    @*THIS SHOULD GET UNCOMMENTED FOR REAL USAGE*@
-    @*<div class='button' ngf-select" ng-model='file' name='pca__chk__{{field.name}}' id='pca__chk__{{field.name}}'
-     ngf-max-size='20MB' ngf-min-height='100'>Select File</div>*@
-    @* accept='' *@
-    @*THIS IS FOR WORKING DEMO*@
-    @**@<div style="background-color: orange; cursor: pointer; margin-bottom: 15px; margin-top: 15px;" class='btn' ngf-select="OnFileSelect($file)" name='pca__chk__test' id='pca__chk__test'
-     accept='.xls,.xlsx' ngf-max-size='20MB' ngf-min-height='100'>Select File</div>@**@
-    @*
+﻿<div> <!--File upload control main container-->
+    <div style="background-color: orange; cursor: pointer; margin-bottom: 15px; margin-top: 15px;" class='btn' ngf-select="OnFileSelect($file)" name='pca__chk__{{field.name}}' id='pca__chk__{{field.name}}'
+     accept='.xls,.xlsx' ngf-max-size='20MB' ngf-min-height='100'>Select File</div>
+    <!--
     <button ng-click="ListExistingFiles()">List Existing Files</button>
-    <button ng-click="Save()">Save</button>
-
-    *@
+    <button ng-click="Save()">Save</button>    -->
     <br />
     <span>{{field.value == null ? 'No file selected' : field.value|formatInput}}</span>
 </div>

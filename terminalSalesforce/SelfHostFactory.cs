@@ -16,7 +16,7 @@ namespace terminalSalesforce
                 return new Type[] {
                     typeof(Controllers.ActionController),
                     typeof(Controllers.EventController),
-                    typeof(Controllers.PluginController)
+                    typeof(Controllers.TerminalController)
                 };
             }
         }
@@ -31,8 +31,8 @@ namespace terminalSalesforce
                 config.MapHttpAttributeRoutes();
 
                 config.Routes.MapHttpRoute(
-                    name: "pluginSalesforce",
-                    routeTemplate: "plugin_salesforce/{controller}/{id}",
+                    name: "terminalSalesforce",
+                    routeTemplate: "terminal_salesforce/{controller}/{id}",
                     defaults: new { id = RouteParameter.Optional }
                 );
 

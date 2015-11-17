@@ -19,19 +19,19 @@ namespace Data.Entities
         public string DockyardAccountId { get; set; }
         public virtual Fr8AccountDO DockyardAccount { get; set; }
 
-        [ForeignKey("Plugin")]
-        public int PluginId { get; set; }
-        public virtual PluginDO Plugin { get; set; }
+        [ForeignKey("Terminal")]
+        public int TerminalId { get; set; }
+        public virtual TerminalDO Terminal { get; set; }
 
         [ForeignKey("AccessLevelTemplate")]
         public int AccessLevel { get; set; }
         public _AccessLevelTemplate AccessLevelTemplate { get; set; }
 
         [NotMapped]
-        IPluginDO ISubscriptionDO.PluginRegistration
+        ITerminalDO ISubscriptionDO.TerminalRegistration
         {
-            get { return Plugin; }
-            set { Plugin = (PluginDO) value; }
+            get { return Terminal; }
+            set { Terminal = (TerminalDO) value; }
         }
     }
 }

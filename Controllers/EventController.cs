@@ -40,14 +40,14 @@ namespace HubWeb.Controllers
 
         private EventRouter GetEventRouter(EventCM eventCm)
         {
-            if (eventCm.EventName.Equals("Plugin Incident"))
+            if (eventCm.EventName.Equals("Terminal Incident"))
             {
-                return _event.HandlePluginIncident;
+                return _event.HandleTerminalIncident;
             }
 
-            if (eventCm.EventName.Equals("Plugin Event"))
+            if (eventCm.EventName.Equals("Terminal Event"))
             {
-                return _event.HandlePluginEvent;
+                return _event.HandleTerminalEvent;
             }
 
             throw new InvalidOperationException("Unknown EventDTO with name: " + eventCm.EventName);
@@ -96,7 +96,7 @@ namespace HubWeb.Controllers
         /*
          * Commented out as it is not clear in the spec.
          * It is mentioned in the spec that at the time of Activation, 
-         * the action should query for the endpoint and add plugin name and its version with it.
+         * the action should query for the endpoint and add terminal name and its version with it.
          * But in code review got a comment about the purpose of this method. Need to discuss and clarify.
          */
         ///// <summary>
@@ -116,23 +116,23 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Route("events")]
         public async Task<IHttpActionResult> ProcessIncomingEvents(
-            [FromUri(Name = "dockyard_plugin")] string pluginName,
-            [FromUri(Name = "version")] string pluginVersion)
+            [FromUri(Name = "dockyard_terminal")] string terminalName,
+            [FromUri(Name = "version")] string terminalVersion)
         {
-            //if either or both of the plugin name and version are not available, the action in question did not inform the correct URL to the external service
-            if (string.IsNullOrEmpty(pluginName) || string.IsNullOrEmpty(pluginVersion))
+            //if either or both of the terminal name and version are not available, the action in question did not inform the correct URL to the external service
+            if (string.IsNullOrEmpty(terminalName) || string.IsNullOrEmpty(terminalVersion))
             {
                 EventManager.ReportUnparseableNotification(Request.RequestUri.AbsoluteUri, Request.Content.ReadAsStringAsync().Result);
             }
 
-            //create a plugin event for event notification received
+            //create a terminal event for event notification received
             EventManager.ReportExternalEventReceived(Request.Content.ReadAsStringAsync().Result);
             
-             var result =await _event.RequestParsingFromPlugins(Request, pluginName, pluginVersion);
+             var result =await _event.RequestParsingFromTerminals(Request, terminalName, terminalVersion);
 
 
             //Check if responding to Salesforce
-            if (pluginName == "terminalSalesforce")
+             if (terminalName == "terminalSalesforce")
             {
                 var xml = XElement.Parse(result);
                 return Content(HttpStatusCode.OK, xml, GlobalConfiguration.Configuration.Formatters.XmlFormatter);
@@ -147,19 +147,19 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Route("eventsDebug")]
         public async Task<object> ProcessIncomingEventsDebug(
-            [FromUri(Name = "dockyard_plugin")] string pluginName,
-            [FromUri(Name = "version")] string pluginVersion)
+            [FromUri(Name = "dockyard_terminal")] string terminalName,
+            [FromUri(Name = "version")] string terminalVersion)
         {
-            //if either or both of the plugin name and version are not available, the action in question did not inform the correct URL to the external service
-            if (string.IsNullOrEmpty(pluginName) || string.IsNullOrEmpty(pluginVersion))
+            //if either or both of the terminal name and version are not available, the action in question did not inform the correct URL to the external service
+            if (string.IsNullOrEmpty(terminalName) || string.IsNullOrEmpty(terminalVersion))
             {
                 EventManager.ReportUnparseableNotification(Request.RequestUri.AbsoluteUri, Request.Content.ReadAsStringAsync().Result);
             }
 
-            //create a plugin event for event notification received
+            //create a terminal event for event notification received
             EventManager.ReportExternalEventReceived(Request.Content.ReadAsStringAsync().Result);
 
-            var result = await _event.RequestParsingFromPluginsDebug(Request, pluginName, pluginVersion);
+            var result = await _event.RequestParsingFromTerminalsDebug(Request, terminalName, terminalVersion);
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {

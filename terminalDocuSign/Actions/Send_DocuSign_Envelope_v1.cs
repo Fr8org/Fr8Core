@@ -22,43 +22,43 @@ using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {
-    public class Send_DocuSign_Envelope_v1 : BasePluginAction
+    public class Send_DocuSign_Envelope_v1 : BaseTerminalAction
     {
         public Send_DocuSign_Envelope_v1()
         {
         }
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(curActionDTO))
+            if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDTO, x => ConfigurationEvaluator(x));
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
         }
 
-        public object Activate(ActionDTO curActionDTO)
+        public object Activate(ActionDO curActionDO)
         {
             return "Activate Request"; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDTO.AuthToken == null)
+            if (authTokenDO == null)
             {
                 throw new ApplicationException("No auth token provided.");
             }
 
-            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
 
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
             var curEnvelope = new Envelope();
             curEnvelope.Login = new DocuSignPackager()
                 .Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
-            curEnvelope = AddTemplateData(curActionDTO, processPayload, curEnvelope);
+            curEnvelope = AddTemplateData(curActionDO, processPayload, curEnvelope);
             curEnvelope.EmailSubject = "Test Message from Fr8";
             curEnvelope.Status = "sent";
 
@@ -67,9 +67,9 @@ namespace terminalDocuSign.Actions
             return processPayload;
         }
 
-        private string ExtractTemplateId(ActionDTO curActionDTO)
+        private string ExtractTemplateId(ActionDO curActionDO)
         {
-            var controls = Crate.GetStorage(curActionDTO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
+            var controls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
 
             var templateDropDown = controls.SingleOrDefault(x => x.Name == "target_docusign_template");
 
@@ -82,11 +82,11 @@ namespace terminalDocuSign.Actions
             return result;
         }
 
-        private Envelope AddTemplateData(ActionDTO actionDTO, PayloadDTO processPayload, Envelope curEnvelope)
+        private Envelope AddTemplateData(ActionDO actionDO, PayloadDTO processPayload, Envelope curEnvelope)
         {
-            var curTemplateId = ExtractTemplateId(actionDTO);
+            var curTemplateId = ExtractTemplateId(actionDO);
             var curRecipientAddress = ExtractSpecificOrUpstreamValue(
-                Crate.FromDto(actionDTO.CrateStorage),
+                Crate.GetStorage(actionDO.CrateStorage),
                 Crate.FromDto(processPayload.CrateStorage),
                 "Recipient"
             );
@@ -105,16 +105,16 @@ namespace terminalDocuSign.Actions
             return curEnvelope;
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             // Do we have any crate? If no, it means that it's Initial configuration
-            if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
             {
                 return ConfigurationRequestType.Initial;
             }
 
             // Try to find Configuration_Controls
-            var stdCfgControlMS = Crate.GetStorage(curActionDTO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var stdCfgControlMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (stdCfgControlMS == null)
             {
                 return ConfigurationRequestType.Initial;
@@ -136,22 +136,22 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
             var template = new DocuSignTemplate();
             template.Login = new DocuSignPackager().Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
             // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
             // Two crates are created
             // One to hold the ui controls
                 if (updater.CrateStorage.All(c => c.ManifestType.Id != (int) MT.StandardDesignTimeFields))
             {
-                var crateControlsDTO = CreateDocusignTemplateConfigurationControls(curActionDTO);
+                var crateControlsDTO = CreateDocusignTemplateConfigurationControls(curActionDO);
                 // and one to hold the available templates, which need to be requested from docusign
                 var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
                     
@@ -161,49 +161,48 @@ namespace terminalDocuSign.Actions
             // Build a crate with the list of available upstream fields
                 var curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c =>
                                                                                     c.ManifestType.Id == (int) MT.StandardDesignTimeFields
-                && c.Label == "Upstream Plugin-Provided Fields");
+                && c.Label == "Upstream Terminal-Provided Fields");
 
             if (curUpstreamFieldsCrate != null)
             {
                     updater.CrateStorage.Remove(curUpstreamFieldsCrate);
             }
 
-            var curUpstreamFields = (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Upstream))
+            var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream))
                 .Fields
                 .ToArray();
 
-            curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+            curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
                 updater.CrateStorage.Add(curUpstreamFieldsCrate);
             }
 
-            return curActionDTO;
+            return curActionDO;
         }
 
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 if (updater.CrateStorage.Count == 0)
             {
-                return curActionDTO;
+                return curActionDO;
             }
 
-            var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             
             // Try to find Configuration_Controls.
                 var stdCfgControlMS = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (stdCfgControlMS == null)
             {
-                return curActionDTO;
+                return curActionDO;
             }
             
             // Try to find DocuSignTemplate drop-down.
             var dropdownControlDTO = stdCfgControlMS.FindByName("target_docusign_template");
             if (dropdownControlDTO == null)
             {
-                return curActionDTO;
+                return curActionDO;
             }
 
             // Get DocuSign Template Id
@@ -238,10 +237,10 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Add(crateStandardDTO);
             }
 
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            return await Task.FromResult(curActionDO);
         }
 
-        private Crate CreateDocusignTemplateConfigurationControls(ActionDTO curActionDTO)
+        private Crate CreateDocusignTemplateConfigurationControls(ActionDO curActionDO)
         {
             var fieldSelectDocusignTemplateDTO = new DropDownListControlDefinitionDTO()
             {
@@ -262,7 +261,7 @@ namespace terminalDocuSign.Actions
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
-                new TextSourceControlDefinitionDTO("For the Email Address Use", "Upstream Plugin-Provided Fields", "Recipient")
+                new TextSourceControlDefinitionDTO("For the Email Address Use", "Upstream Terminal-Provided Fields", "Recipient")
             };
 
             var controls = new StandardConfigurationControlsCM()

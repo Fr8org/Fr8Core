@@ -40,13 +40,13 @@ namespace Data.Repositories
                 UserID = userID,
 				ExpiresAt = DateTime.UtcNow.AddDays(10),
                 SegmentTrackingEventName = segmentEventName,
-                Plugin = new PluginDO()
+                Terminal = new TerminalDO()
                 {
                     Id = 0,
                     Name = "",
                     Endpoint = "",
                     Version = "1",
-                    PluginStatus = PluginStatus.Active
+                    TerminalStatus = TerminalStatus.Active
                 }
             };
 

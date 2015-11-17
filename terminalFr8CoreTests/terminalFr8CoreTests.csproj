@@ -6,8 +6,8 @@
     <ProjectGuid>{6C3090FC-50D2-4A7E-9B29-EAB9D8802F42}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>pluginTests</RootNamespace>
-    <AssemblyName>pluginTests</AssemblyName>
+    <RootNamespace>terminalTests</RootNamespace>
+    <AssemblyName>terminalTests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>

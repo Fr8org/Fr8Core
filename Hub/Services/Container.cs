@@ -46,7 +46,8 @@ namespace Hub.Services
         /// <returns></returns>
         public ContainerDO Create(IUnitOfWork uow, int processTemplateId, Crate curEvent)
         {
-            var containerDO = ObjectFactory.GetInstance<ContainerDO>();
+            var containerDO = new ContainerDO();
+            containerDO.Id = Guid.NewGuid();
 
                 var curRoute = uow.RouteRepository.GetByKey(processTemplateId);
                 if (curRoute == null)
@@ -77,6 +78,7 @@ namespace Hub.Services
 
                 uow.SaveChanges();
                 EventManager.ContainerCreated(containerDO);
+
             return containerDO;
         }
 
@@ -159,7 +161,7 @@ namespace Hub.Services
         }
 
         // Return the Containers of current Account
-        public IList<ContainerDO> GetByFr8Account(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, int? id = null)
+        public IList<ContainerDO> GetByFr8Account(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, Guid? id = null)
         {
             if (account.Id == null)
                 throw new ApplicationException("UserId must not be null");

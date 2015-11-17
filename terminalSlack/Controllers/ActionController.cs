@@ -18,20 +18,20 @@ namespace terminalSlack.Controllers
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private const string curPlugin = "terminalSlack";
-        private readonly BasePluginController _basePluginController;
+        private const string curTerminal = "terminalSlack";
+        private readonly BaseTerminalController _baseTerminalController;
 
         public ActionController()
         {
-            _basePluginController = new BasePluginController();
+            _baseTerminalController = new BaseTerminalController();
         }
 
         [HttpPost]
         [Route("configure")]
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>) _basePluginController
-                .HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
+            return await (Task<ActionDTO>) _baseTerminalController
+                .HandleFr8Request(curTerminal, "Configure", curActionDTO);
         }
 
         [HttpPost]
@@ -52,8 +52,8 @@ namespace terminalSlack.Controllers
         [Route("run")]
         public async Task<PayloadDTO> Run(ActionDTO actionDto)
         {
-            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(
-                curPlugin, "Run", actionDto);
+            return await (Task<PayloadDTO>)_baseTerminalController.HandleFr8Request(
+                curTerminal, "Run", actionDto);
         }
     }
 }

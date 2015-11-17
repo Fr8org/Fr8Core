@@ -1,22 +1,22 @@
-﻿using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using TerminalBase.Infrastructure;
-using terminalTwilio.Services;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Hub.Managers;
 using System.Threading.Tasks;
 using System.Linq;
+using StructureMap;
 using Data.Crates;
+using Data.Entities;
 using Data.Interfaces;
-using Data.Infrastructure;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.Infrastructure;
+using Hub.Managers;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
+using terminalTwilio.Services;
 
 namespace terminalTwilio.Actions
 {
-    public class Send_Via_Twilio_v1 : BasePluginAction
+    public class Send_Via_Twilio_v1 : BaseTerminalAction
     {
         protected ITwilioService _twilio;
 
@@ -25,77 +25,79 @@ namespace terminalTwilio.Actions
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
 	    }
 
-        public override async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial);
+            return await ProcessConfigurationRequest(curActionDO, actionDO => ConfigurationRequestType.Initial, authTokenDO);
         }
 
         //this entire function gets passed as a delegate to the main processing code in the base class
         //currently many actions have two stages of configuration, and this method determines which stage should be applied
-        private ConfigurationRequestType EvaluateReceivedRequest(ActionDTO curActionDTO)
+        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            if (Crate.IsEmptyStorage(curActionDTO.CrateStorage))
+            if (Crate.IsStorageEmpty(curActionDO))
                 return ConfigurationRequestType.Initial;
             else
                 return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDTO))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackCrate_ConfigurationControls());
-                updater.CrateStorage.Add(GetAvailableDataFields(curActionDTO));
+                updater.CrateStorage.Add(GetAvailableDataFields(curActionDO));
             }
 
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
 
         private Crate PackCrate_ConfigurationControls()
         {
-            TextBoxControlDefinitionDTO smsNumberTextbox = new TextBoxControlDefinitionDTO()
-            {
-                Label = "SMS Number",
-                Name = "SMS_Number",
-                Required = true
-            };
-            RadioButtonOption specificNumberOption = new RadioButtonOption()
-            {
-                Selected = true,
-                Name = "SMSNumberOption",
-                Controls = new List<ControlDefinitionDTO> { smsNumberTextbox }
-            };
-
-
-            //get data for combobox for upstream data
-            var fieldSMSNumberLists = new DropDownListControlDefinitionDTO()
-            {
-                Label = "a value from Upstream Crate:",
-                Name = "upstream_crate",
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Fields",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                }
-            };
-
-            RadioButtonOption upstreamOption = new RadioButtonOption()
-            {
-                Selected = false,
-                Name = "SMSNumberOption",
-                Controls = new List<ControlDefinitionDTO> { fieldSMSNumberLists }
-            };
-
             RadioButtonGroupControlDefinitionDTO radioGroup = new RadioButtonGroupControlDefinitionDTO()
             {
                 GroupName = "SMSNumber_Group",
                 Label = "For the SMS Number use:",
-                Radios = new List<RadioButtonOption>() { specificNumberOption, upstreamOption }
+                Radios = new List<RadioButtonOption>() 
+                {
+                    new RadioButtonOption()
+                    {
+                        Selected = true,
+                        Name = "SMSNumberOption",
+                        Value = "SMS Number",
+                        Controls = new List<ControlDefinitionDTO> 
+                        {
+                            new TextBoxControlDefinitionDTO()
+                            {
+                                Name = "SMS_Number",
+                                Required = true
+                            }
+                        }
+                    },
+                    
+                    new RadioButtonOption()
+                    {
+                        Selected = true,
+                        Name = "SMSNumberOption",
+                        Value = "A value from Upstream Crate",
+                        Controls = new List<ControlDefinitionDTO> 
+                        {
+                            new DropDownListControlDefinitionDTO()
+                            {
+                                Name = "upstream_crate",
+                                Events = new List<ControlEvent>()
+                                {
+                                    new ControlEvent("onChange", "requestConfig")
+                                },
+                                Source = new FieldSourceDTO
+                                {
+                                    Label = "Available Fields",
+                                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                                }
+                            }
+                        }
+                    } 
+                }
             };
 
             TextBoxControlDefinitionDTO smsBody = new TextBoxControlDefinitionDTO()
@@ -117,7 +119,7 @@ namespace terminalTwilio.Actions
             return phoneNumberFields;
         }
 
-        private Crate GetAvailableDataFields(ActionDTO curActionDTO)
+        private Crate GetAvailableDataFields(ActionDO curActionDO)
         {
             Crate crate;
 
@@ -126,7 +128,7 @@ namespace terminalTwilio.Actions
             if (curUpstreamFields.Length == 0)
             {
                 crate = PackCrate_ErrorTextBox("Error_NoUpstreamLists", "No Upstream fr8 Lists Were Found.");
-                curActionDTO.CurrentView = "Error_NoUpstreamLists";
+                curActionDO.currentView = "Error_NoUpstreamLists";
             }
             else
             {
@@ -136,10 +138,10 @@ namespace terminalTwilio.Actions
             return crate;
         }
 
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO,AuthorizationTokenDO authTokenDO)
         {
             //not currently any requirements that need attention at FollowupConfigurationResponse
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            return await Task.FromResult<ActionDO>(curActionDO);
         }
 
         public object Activate(ActionDO curActionDO)
@@ -153,11 +155,12 @@ namespace terminalTwilio.Actions
             return curActionDO;
         }
 
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO,
+            Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+            var processPayload = await GetProcessPayload(containerId);
 
-            var controlsCrate = Crate.GetStorage(curActionDTO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsCrate = Crate.GetStorage(curActionDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (controlsCrate == null)
                 return null;
 

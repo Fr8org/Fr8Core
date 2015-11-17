@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -23,9 +24,9 @@ namespace Data.Interfaces.DataTransferObjects
 
         public string CurrentView { get; set; }
 
-        public int ProcessId { get; set; }
+        public Guid ContainerId { get; set; }
 
-        public AuthTokenDTO AuthToken { get; set; }
+        public AuthorizationTokenDTO AuthToken { get; set; }
 
         public ActionDTO[] ChildrenActions { get; set; }
     }

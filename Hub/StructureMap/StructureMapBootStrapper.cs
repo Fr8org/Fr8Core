@@ -10,7 +10,7 @@ using Hub.Managers.APIManagers.Authorizers.Docusign;
 using Hub.Managers.APIManagers.Authorizers.Google;
 using Hub.Managers.APIManagers.Packagers;
 using Hub.Managers.APIManagers.Packagers.SegmentIO;
-using Hub.Managers.APIManagers.Transmitters.Plugin;
+using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using InternalClass = Hub.Services;
@@ -103,7 +103,7 @@ namespace Hub.StructureMap
                 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
-                For<IPluginTransmitter>().Use<PluginTransmitter>();
+                For<ITerminalTransmitter>().Use<TerminalTransmitter>();
                 For<IRoute>().Use<Route>();
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<ICriteria>().Use<Criteria>();
@@ -117,7 +117,7 @@ namespace Hub.StructureMap
                 For<IEvent>().Use<Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IFile>().Use<File>();
-                For<IPlugin>().Use<Plugin>();
+                For<ITerminal>().Use<Terminal>();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IDockyardEvent>().Use<DockyardEvent>();
                 For<IReport>().Use<Report>();
@@ -170,13 +170,13 @@ namespace Hub.StructureMap
                 //For<IProcessService>().Use(mockProcess.Object);
                 //For<Mock<IProcessService>>().Use(mockProcess);
 
-                var pluginTransmitterMock = new Mock<IPluginTransmitter>();
-                For<IPluginTransmitter>().Use(pluginTransmitterMock.Object).Singleton();
+                var terminalTransmitterMock = new Mock<ITerminalTransmitter>();
+                For<ITerminalTransmitter>().Use(terminalTransmitterMock.Object).Singleton();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IEvent>().Use<Event>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IFile>().Use<File>();
-                For<IPlugin>().Use<Plugin>();
+                For<ITerminal>().Use<Terminal>();
                 For<ICrateManager>().Use<CrateManager>();
                 For<IDockyardEvent>().Use<DockyardEvent>();
                 For<IManifest>().Use<Manifest>();

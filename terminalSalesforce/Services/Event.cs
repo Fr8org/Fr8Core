@@ -13,8 +13,8 @@ namespace terminalSalesforce.Services
     public class Event : IEvent
     {
        
-        private readonly ICrateManager _crate;        
-        private BasePluginController _basePluginController = new BasePluginController();
+        private readonly ICrateManager _crate;
+        private BaseTerminalController _baseTerminalController = new BaseTerminalController();
        
 
         public Event()
@@ -61,7 +61,7 @@ namespace terminalSalesforce.Services
             }
             catch (ArgumentException e)
             {
-                _basePluginController.ReportPluginError("pluginSalesforce", e);               
+                _baseTerminalController.ReportTerminalError("terminalSalesforce", e);               
                 throw new ArgumentException();
             }
         }

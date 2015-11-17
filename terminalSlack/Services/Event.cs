@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Web;
 using Data.Crates;
+using AutoMapper;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
@@ -49,9 +50,10 @@ namespace terminalSlack.Services
             };
 
             var curEventReport = Data.Crates.Crate.FromContent("Standard Event Report", eventReportContent);
-            
+            var curEventReportDTO = _crate.ToDto(curEventReport);
+
             var url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";
-            new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), curEventReport);
+            new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), curEventReportDTO);
         }
 
         private List<FieldDTO> ParseSlackPayloadData(string message)

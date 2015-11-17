@@ -180,6 +180,9 @@
             var crate = this.findByManifestType(
                 crateStorage, 'Standard Configuration Controls'
                 );
+
+            debugger;
+
             var controlsList = new model.ControlsList();
             controlsList.fields = (<any>crate.contents).Controls;
             this.resetClickedFlag(controlsList.fields); // Unset 'clicked' flag on buttons and other coontrols on which it exists

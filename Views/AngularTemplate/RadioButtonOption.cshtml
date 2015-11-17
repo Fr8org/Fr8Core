@@ -1,7 +1,7 @@
 ﻿<input type="radio" ng-click="changeSelection(field)" name="pca__chk__{{groupName}}" id="pca__chk__{{groupName | validId}}__{{field.$$hashKey}}"
        ng-checked="{{field.selected}}" ng-value="true" stop-click-propagation/>
-<label for="pca__chk__{{groupName | validId }}__{{field.$$hashKey}}" stop-click-propagation>
-    {{field.value}}
+<label for="pca__chk__{{groupName | validId }}__{{field.$$hashKey}}" stop-click-propagation class="radio-button-option-label">
+    {{field.value}}<span class="control-label-hidden" ng-if="field.controls && field.controls.length > 0">:</span>
 </label>
 @* Support nested controls *@
 <div class="nested-controls">
