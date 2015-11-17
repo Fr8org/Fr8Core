@@ -73,7 +73,8 @@ module dockyard.directives {
                             .then(function (route) {
                                 runContainer($q, $http, route.id)
                                     .then(function (container) {
-                                        $location.path('/findObjects/' + container.id + '/results');
+                                        var path = '/findObjects/' + container.id + '/results';
+                                        $location.path(path);
                                     })
                                     .catch(function (err) {
                                         $scope.error = err;

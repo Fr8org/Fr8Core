@@ -1,3 +1,47 @@
-﻿<div class="row" ng-controller="FindObjectsController">
-    Find Objects results.
+﻿<!-- BEGIN PAGE BREADCRUMB -->
+<ul class="page-breadcrumb breadcrumb hide">
+    <li>
+        <a href="#">Home</a><i class="fa fa-circle"></i>
+    </li>
+    <li class="active">
+        Find Objects Results
+    </li>
+</ul>
+<!-- END PAGE BREADCRUMB -->
+<!-- BEGIN MAIN CONTENT -->
+<div class="margin-top-10">
+    <div class="row" ng-controller="FindObjectsResultsController">
+        <div class="col-md-12 col-sm-12">
+            <!-- BEGIN PORTLET-->
+            <div class="portlet light ">
+                <div class="portlet-title">
+                    <div class="caption caption-md">
+                        <i class="icon-bar-chart font-green-haze hide"></i>
+                        <span class="caption-subject font-green-haze bold uppercase">Find Objects Results</span>
+                        @*<span class="caption-helper hide">weekly stats...</span>*@
+                    </div>
+                </div>
+
+                <div class="portlet-body">
+                    <div class="table-scrollable table-scrollable-borderless">
+                        @*Note:: reused the class table-process-templates*@
+                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                            <thead>
+                                <tr>
+                                    <th ng-repeat="column in columns">{{column}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="row in data">
+                                    <td ng-repeat="item in row">{{item}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
 </div>
+<!-- END MAIN CONTENT -->
