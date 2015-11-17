@@ -12,12 +12,14 @@ using Data.Entities;
 namespace terminalSalesforce.Infrastructure
 {
     public class Authentication
-    {        
+    {
         string salesforceConsumerKey = string.Empty;
         string salesforceAuthUrl = string.Empty;
         string SalesforceAuthCallbackURLDomain = string.Empty;
         string salesforceConsumerSecret = string.Empty;
         string tokenRequestEndpointUrl = string.Empty;
+        string salesforceTerminalName = string.Empty;
+        string salesforceTerminalVersion = string.Empty;
 
         public Authentication()
         {
@@ -26,6 +28,8 @@ namespace terminalSalesforce.Infrastructure
             SalesforceAuthCallbackURLDomain = CloudConfigurationManager.GetSetting("SalesforceAuthCallbackURLDomain");
             salesforceConsumerSecret = CloudConfigurationManager.GetSetting("SalesforceConsumerSecret");
             tokenRequestEndpointUrl = CloudConfigurationManager.GetSetting("tokenRequestEndpointUrl");
+            salesforceTerminalName = CloudConfigurationManager.GetSetting("salesforceTerminalNameQueryParam");
+            salesforceTerminalVersion = CloudConfigurationManager.GetSetting("salesforceTerminalVersionQueryParam");
         }
 
         public ExternalAuthUrlDTO GetExternalAuthUrl()
@@ -75,19 +79,19 @@ namespace terminalSalesforce.Infrastructure
         {
             string code;
             string state;
-            
+
             //Code will be access code returned by the Salesforce after the user authenticates app
             //State is be value passed by us to salesforce and it's returned by the salesforce after the authentication
-            ParseCodeAndState(externalAuthDTO.RequestQueryString, out code, out state);         
+            ParseCodeAndState(externalAuthDTO.RequestQueryString, out code, out state);
 
-            AuthenticationClient oauthToken = (AuthenticationClient)Task.Run(() => GetAuthToken(code)).Result;         
-          
+            AuthenticationClient oauthToken = (AuthenticationClient)Task.Run(() => GetAuthToken(code)).Result;
+
             return new AuthorizationTokenDTO()
             {
                 Token = oauthToken.AccessToken,
-                ExternalAccountId = oauthToken.Id.Substring(oauthToken.Id.LastIndexOf("/")+1,oauthToken.Id.Length-(oauthToken.Id.LastIndexOf("/")+1)),
-                ExternalStateToken =state,
-                AdditionalAttributes = "refresh_token="+oauthToken.RefreshToken+";instance_url="+oauthToken.InstanceUrl+";api_version="+oauthToken.ApiVersion               
+                ExternalAccountId = oauthToken.Id.Substring(oauthToken.Id.LastIndexOf("/") + 1, oauthToken.Id.Length - (oauthToken.Id.LastIndexOf("/") + 1)),
+                ExternalStateToken = state,
+                AdditionalAttributes = "refresh_token=" + oauthToken.RefreshToken + ";instance_url=" + oauthToken.InstanceUrl + ";api_version=" + oauthToken.ApiVersion
             };
         }
 
@@ -96,7 +100,7 @@ namespace terminalSalesforce.Infrastructure
         {
             var auth = new AuthenticationClient();
             code = code.Replace("%3D", "=");
-            string redirectUrl = SalesforceAuthCallbackURLDomain + "/AuthenticationCallback/ProcessSuccessfulOAuthResponse?dockyard_terminal=terminalSalesforce&version=1";
+            string redirectUrl = SalesforceAuthCallbackURLDomain + salesforceTerminalName + "&" + salesforceTerminalVersion;
             await auth.WebServerAsync(salesforceConsumerKey, salesforceConsumerSecret, redirectUrl, code, tokenRequestEndpointUrl);
             return auth;
         }
@@ -104,7 +108,7 @@ namespace terminalSalesforce.Infrastructure
 
         public string CreateAuthUrl(string exteranalStateValue)
         {
-            string redirectUrl = SalesforceAuthCallbackURLDomain + "/AuthenticationCallback/ProcessSuccessfulOAuthResponse?dockyard_terminal=terminalSalesforce&version=1";
+            string redirectUrl = SalesforceAuthCallbackURLDomain + salesforceTerminalName + "&" + salesforceTerminalVersion;
             string url = Common.FormatAuthUrl(
                 salesforceAuthUrl, Salesforce.Common.Models.ResponseTypes.Code,
                 salesforceConsumerKey,

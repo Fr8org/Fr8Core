@@ -224,6 +224,7 @@
     <Compile Include="Entities\MT_Data.cs" />
     <Compile Include="Entities\MT_Field.cs" />
     <Compile Include="Entities\MT_Object.cs" />
+    <Compile Include="Entities\TerminalSubscriptionDO.cs" />
     <Compile Include="Entities\WebServiceDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
@@ -422,9 +423,13 @@
     <Compile Include="Migrations\201511131623530_Container_Id_Int32_To_Guid.Designer.cs">
       <DependentUpon>201511131623530_Container_Id_Int32_To_Guid.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201511161312430_RouteDO_Tag.cs" />
-    <Compile Include="Migrations\201511161312430_RouteDO_Tag.Designer.cs">
-      <DependentUpon>201511161312430_RouteDO_Tag.cs</DependentUpon>
+    <Compile Include="Migrations\201511160905225_Added_TerminalSubscription_SubscriptionStatus_Edited_Terminal.cs" />
+    <Compile Include="Migrations\201511160905225_Added_TerminalSubscription_SubscriptionStatus_Edited_Terminal.Designer.cs">
+      <DependentUpon>201511160905225_Added_TerminalSubscription_SubscriptionStatus_Edited_Terminal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511170753503_RouteDO_Tag.cs" />
+    <Compile Include="Migrations\201511170753503_RouteDO_Tag.Designer.cs">
+      <DependentUpon>201511170753503_RouteDO_Tag.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -494,6 +499,8 @@
     <Compile Include="Repositories\ProfileNodeRepository.cs" />
     <Compile Include="Repositories\UserStatusRepository.cs" />
     <Compile Include="States\AccessLevel.cs" />
+    <Compile Include="States\SubscriptionState.cs" />
+    <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />
     <Compile Include="States\TerminalStatus.cs" />
     <Compile Include="States\ProcessNodeState.cs" />
     <Compile Include="States\ContainerState.cs" />
@@ -714,8 +721,11 @@
     <EmbeddedResource Include="Migrations\201511131623530_Container_Id_Int32_To_Guid.resx">
       <DependentUpon>201511131623530_Container_Id_Int32_To_Guid.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201511161312430_RouteDO_Tag.resx">
-      <DependentUpon>201511161312430_RouteDO_Tag.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201511160905225_Added_TerminalSubscription_SubscriptionStatus_Edited_Terminal.resx">
+      <DependentUpon>201511160905225_Added_TerminalSubscription_SubscriptionStatus_Edited_Terminal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511170753503_RouteDO_Tag.resx">
+      <DependentUpon>201511170753503_RouteDO_Tag.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

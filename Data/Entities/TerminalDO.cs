@@ -14,7 +14,7 @@ namespace Data.Entities
     {
         public TerminalDO()
         {
-
+            this.SubscriptionRequired = true;
         }
 
         [Key]
@@ -36,5 +36,10 @@ namespace Data.Entities
         //public string BaseEndPoint { get; set; }
 
         public string Endpoint { get; set; }
+
+        public bool SubscriptionRequired { get; set; }
+
+        public virtual Fr8AccountDO UserDO { get; set; }
+        
     }
 }
