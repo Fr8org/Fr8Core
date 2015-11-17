@@ -17,4 +17,5 @@ gulp.task('concattemplates', function () {
       .pipe(gulp.dest('Scripts/tests/templates'));
 });
 
+
 gulp.task('default', ['bower', 'concattemplates']);
