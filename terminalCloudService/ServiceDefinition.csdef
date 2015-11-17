@@ -30,6 +30,11 @@
           <Binding name="Endpoint1" endpointName="terminalDocuSign" />
         </Bindings>
       </Site>
+      <Site name="terminalPapertrail" physicalDirectory="..\..\..\terminalPapertrail\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="terminalPapertrail" />
+        </Bindings>
+      </Site>
       <Site name="terminalSalesforce" physicalDirectory="..\..\..\terminalSalesforce\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalSalesforce" />
@@ -74,6 +79,7 @@
       <InputEndpoint name="terminalAzure" protocol="http" port="46281" />
       <InputEndpoint name="terminalSlack" protocol="http" port="39504" />
       <InputEndpoint name="terminalDocuSign" protocol="http" port="53234" />
+      <InputEndpoint name="terminalPapertrail" protocol="http" port="30701" />
       <InputEndpoint name="terminalSalesforce" protocol="http" port="51234" />
       <InputEndpoint name="terminalFr8Core" protocol="http" port="50705" />
       <InputEndpoint name="terminalSendGrid" protocol="http" port="10601" />
