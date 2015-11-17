@@ -12,7 +12,6 @@ module dockyard.directives.textBlock {
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
-    //class TextArea implements ng.IDirective {
     export function TextArea(): ng.IDirective {
 
         var _availableButtons = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'bold', 'italics', 'underline', 'ul', 'undo', 'redo', 'html', 'insertImage', 'insertLink'];

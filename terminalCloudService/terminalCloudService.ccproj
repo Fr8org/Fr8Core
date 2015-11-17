@@ -101,6 +101,7 @@
     <SecondarySite Include="..\terminalSlack\terminalSlack.csproj" />
     <SecondarySite Include="..\terminalTwilio\terminalTwilio.csproj" />
     <SecondarySite Include="..\terminalDocuSign\terminalDocuSign.csproj" />
+    <SecondarySite Include="..\terminalPapertrail\terminalPapertrail.csproj" />
     <SecondarySite Include="..\terminalGoogle\terminalGoogle.csproj" />
   </ItemGroup>
   <Target Name="CleanSecondarySites">
