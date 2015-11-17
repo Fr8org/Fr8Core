@@ -216,7 +216,7 @@ namespace terminalFr8Core.Actions
 
         #region Execution.
 
-        public Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
+        public Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Task.FromResult<PayloadDTO>(null);
         }
