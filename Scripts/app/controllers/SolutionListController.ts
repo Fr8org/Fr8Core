@@ -29,7 +29,7 @@ module dockyard.controllers {
         }
 
         private onSolutionSelected(solution: interfaces.IActivityTemplateVM) {
-            this.$state.go('configureSolution', { name: solution.name });
+            this.$state.go('configureSolution', { solutionName: solution.name });
         }
     }
 
