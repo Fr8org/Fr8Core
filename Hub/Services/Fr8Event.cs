@@ -18,13 +18,13 @@ using Hub.Managers;
 
 namespace Hub.Services
 {
-    public class DockyardEvent : IDockyardEvent
+    public class Fr8Event : IFr8Event
     {
         private readonly IRoute _route;
         private readonly InternalInterfaces.IContainer _container;
         private readonly ICrateManager _crate;
 
-        public DockyardEvent()
+        public Fr8Event()
         {
             _route = ObjectFactory.GetInstance<IRoute>();
             _container = ObjectFactory.GetInstance<InternalInterfaces.IContainer>();

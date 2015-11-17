@@ -117,7 +117,7 @@ namespace Hub.Services
 
 
         // Manual mapping method to resolve DO-1164.
-        public RouteDTO MapRouteToDto(IUnitOfWork uow, RouteDO curRouteDO)
+        public RouteFullDTO MapRouteToDto(IUnitOfWork uow, RouteDO curRouteDO)
         {
             var subrouteDTOList = uow.SubrouteRepository
                 .GetQuery()
@@ -134,7 +134,7 @@ namespace Hub.Services
                     return pntDTO;
                 }).ToList();
 
-            RouteDTO result = new RouteDTO()
+            RouteFullDTO result = new RouteFullDTO()
             {
                 Description = curRouteDO.Description,
                 Id = curRouteDO.Id,

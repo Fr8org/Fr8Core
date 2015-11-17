@@ -119,7 +119,7 @@ namespace Hub.StructureMap
                 For<IFile>().Use<File>();
                 For<ITerminal>().Use<Terminal>();
                 For<ICrateManager>().Use<CrateManager>();
-                For<IDockyardEvent>().Use<DockyardEvent>();
+                For<IFr8Event>().Use<Fr8Event>();
                 For<IReport>().Use<Report>();
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsRoute>().Use<FindObjectsRoute>();
@@ -179,7 +179,7 @@ namespace Hub.StructureMap
                 For<IFile>().Use<File>();
                 For<ITerminal>().Use<Terminal>();
                 For<ICrateManager>().Use<CrateManager>();
-                For<IDockyardEvent>().Use<DockyardEvent>();
+                For<IFr8Event>().Use<Fr8Event>();
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsRoute>().Use<FindObjectsRoute>();
             }

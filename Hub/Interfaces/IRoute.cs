@@ -21,7 +21,7 @@ namespace Hub.Interfaces
         string Deactivate(RouteDO curRoute);
         IEnumerable<ActionDO> GetActions(int id);
 	    RouteDO GetRoute(ActionDO action);
-	    RouteDTO MapRouteToDto(IUnitOfWork uow, RouteDO curRouteDO);
+	    RouteFullDTO MapRouteToDto(IUnitOfWork uow, RouteDO curRouteDO);
 	  //  ActionListDO GetActionList(IUnitOfWork uow, int id);
         List<RouteDO> MatchEvents(List<RouteDO> curRoutes, EventReportCM curEventReport);
 

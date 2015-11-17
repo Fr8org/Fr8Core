@@ -11,12 +11,12 @@ namespace Data.Infrastructure.AutoMapper
     /// AutoMapper converter to convert RouteDO to FullRouteDTO.
     /// </summary>
     public class RouteDOFullConverter
-        : ITypeConverter<RouteDO, RouteDTO>
+        : ITypeConverter<RouteDO, RouteFullDTO>
     {
         public const string UnitOfWork_OptionsKey = "UnitOfWork";
 
 
-        public RouteDTO Convert(ResolutionContext context)
+        public RouteFullDTO Convert(ResolutionContext context)
         {
             var route = (RouteDO)context.SourceValue;
             var uow = (IUnitOfWork)context.Options.Items[UnitOfWork_OptionsKey];
@@ -39,7 +39,7 @@ namespace Data.Infrastructure.AutoMapper
                     return pntDTO;
                 }).ToList();
 
-            var result = Mapper.Map<RouteDTO>(Mapper.Map<RouteOnlyDTO>(route));
+            var result = Mapper.Map<RouteFullDTO>(Mapper.Map<RouteEmptyDTO>(route));
             result.Subroutes = subrouteDTOList;
 
             return result;

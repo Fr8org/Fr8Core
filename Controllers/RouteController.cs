@@ -41,7 +41,7 @@ namespace HubWeb.Controllers
 
         [Fr8ApiAuthorize]
         [Route("full/{id:int}")]
-        [ResponseType(typeof(RouteDTO))]
+        [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
         public IHttpActionResult GetFullRoute(int id)
         {
@@ -55,7 +55,7 @@ namespace HubWeb.Controllers
         }
 
         [Route("getByAction/{id:int}")]
-        [ResponseType(typeof(RouteDTO))]
+        [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
         
         public IHttpActionResult GetByAction(int id)
@@ -81,7 +81,7 @@ namespace HubWeb.Controllers
 
                 if (curRoutes.Any())
                 {               
-                    return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>).ToArray());
+                    return Ok(curRoutes.Select(Mapper.Map<RouteEmptyDTO>).ToArray());
                 }
             }
 
@@ -122,11 +122,11 @@ namespace HubWeb.Controllers
                 // User intentionally wants to receive a single JSON object in response.
                 if (id.HasValue)
                 {
-                    return Ok(Mapper.Map<RouteOnlyDTO>(curRoutes.First()));
+                    return Ok(Mapper.Map<RouteEmptyDTO>(curRoutes.First()));
                 }
 
                 // Return JSON array of objects, in case no id parameter was provided.
-                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>).ToArray());
+                return Ok(curRoutes.Select(Mapper.Map<RouteEmptyDTO>).ToArray());
             }
             }
 
@@ -136,7 +136,7 @@ namespace HubWeb.Controllers
 
         [Route("~/routes")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Post(RouteOnlyDTO processTemplateDto, bool updateRegistrations = false)
+        public IHttpActionResult Post(RouteEmptyDTO processTemplateDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -150,7 +150,7 @@ namespace HubWeb.Controllers
                     return BadRequest("Some of the request data is invalid");
                 }
 
-                var curRouteDO = Mapper.Map<RouteOnlyDTO, RouteDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
+                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
                 curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
 
                 //this will return 0 on create operation because of not saved changes
