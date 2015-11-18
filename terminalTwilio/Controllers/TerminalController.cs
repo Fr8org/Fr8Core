@@ -25,7 +25,7 @@ namespace terminalTwilio.Controllers
                 Version = "1"
             };
 
-	        var webService = new WebServiceDO
+	        var webService = new WebServiceDTO
 	        {
 		        Name = "Twilio",
                 IconPath = "/Content/icons/web_services/twilio-icon-64x64.png"
@@ -41,7 +41,7 @@ namespace terminalTwilio.Controllers
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
                 MinPaneWidth = 330,
-                WebServiceName = webService.Name
+                WebService = webService
             };
 
             var actionList = new List<ActivityTemplateDTO>

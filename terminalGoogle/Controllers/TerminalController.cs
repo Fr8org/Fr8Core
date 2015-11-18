@@ -23,7 +23,7 @@ namespace terminalGoogle.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverTerminals()
         {
-            var webService = new WebServiceDO
+            var webService = new WebServiceDTO
             {
                 Name = "Google",
                 IconPath= "/Content/icons/web_services/google-icon-64x64.png"
@@ -46,7 +46,7 @@ namespace terminalGoogle.Controllers
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
                 MinPaneWidth = 300,
-                WebServiceName = webService.Name,
+                WebService = webService,
                 Tags = "Table Data Generator"
             };
 

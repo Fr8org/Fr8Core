@@ -30,7 +30,7 @@ namespace terminalSalesforce.Controllers
                 Version = "1"
             };
 
-	        var webService = new WebServiceDO
+	        var webService = new WebServiceDTO
 	        {
 				Name = "Salesforce"
 	        };
@@ -44,7 +44,7 @@ namespace terminalSalesforce.Controllers
                 AuthenticationType = AuthenticationType.External,
                 Category = ActivityCategory.Forwarders.ToString(),
                 MinPaneWidth = 330,
-                WebServiceName = webService.Name
+                WebService = webService
             };
 
             var createContactAction = new ActivityTemplateDTO()
@@ -56,7 +56,7 @@ namespace terminalSalesforce.Controllers
                 AuthenticationType = AuthenticationType.External,
                 Category = ActivityCategory.Forwarders.ToString(),
                 MinPaneWidth = 330,
-                WebServiceName = webService.Name
+                WebService = webService
             };
 
             var createAccountAction = new ActivityTemplateDTO()
@@ -68,7 +68,7 @@ namespace terminalSalesforce.Controllers
                 AuthenticationType = AuthenticationType.External,
                 Category = ActivityCategory.Forwarders.ToString(),
                 MinPaneWidth = 330,
-                WebServiceName = webService.Name
+                WebService = webService
             };
 
             var actionList = new List<ActivityTemplateDTO>()

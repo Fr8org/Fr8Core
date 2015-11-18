@@ -25,7 +25,7 @@ namespace terminalPapertrail.Controllers
                 Version = "1"
             };
 
-            var webService = new WebServiceDO
+            var webService = new WebServiceDTO
             {
                 Name = "Papertrail",
                 IconPath = "/Content/icons/web_services/papertrail-icon-64x64.png"
@@ -40,7 +40,8 @@ namespace terminalPapertrail.Controllers
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
                 MinPaneWidth = 330,
-                WebServiceName = webService.Name
+                WebService = webService
+                
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

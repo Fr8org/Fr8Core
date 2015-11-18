@@ -19,8 +19,8 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("authenticationType")]
         public int AuthenticationType { get; set; }
 
-        [JsonProperty("webServiceName")]
-        public string WebServiceName { get; set; }
+        [JsonProperty("webService")]
+        public WebServiceDTO WebService { get; set; }
 
         [JsonProperty("terminal")]
         public TerminalDTO Terminal { get; set; }

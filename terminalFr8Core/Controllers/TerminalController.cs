@@ -35,7 +35,7 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             };
 
-	        var webService = new WebServiceDO
+	        var webService = new WebServiceDTO
 	        {
 		        Name = "fr8 Core"
 	        };
@@ -50,7 +50,7 @@ namespace terminalFr8Core.Controllers
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 330,
-				WebServiceName = webService.Name
+				WebService = webService
             });
 
             result.Add(new ActivityTemplateDTO
@@ -63,7 +63,7 @@ namespace terminalFr8Core.Controllers
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 380,
-                WebServiceName = webService.Name
+                WebService = webService
             });
 
             result.Add(new ActivityTemplateDTO
@@ -76,7 +76,7 @@ namespace terminalFr8Core.Controllers
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 330,
-                WebServiceName = webService.Name
+                WebService = webService
             });
 
             result.Add(new ActivityTemplateDTO
@@ -85,7 +85,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Store MT Data",
                 Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
-                WebServiceName = webService.Name,
+                WebService = webService,
                 Version = "1"
             });
 
@@ -95,7 +95,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Select Fr8 Object",
                 Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
-                WebServiceName = webService.Name,
+                WebService = webService,
                 Version = "1",
                 MinPaneWidth = 330
             });
@@ -106,7 +106,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Connect To SQL",
                 Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
-                WebServiceName = webService.Name,
+                WebService = webService,
                 Version = "1"
             });
 
@@ -116,7 +116,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Build Query",
                 Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
-
+                WebService = webService,
                 Version = "1"
             });
 
@@ -126,6 +126,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Execute Sql Query",
                 Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
+                WebService = webService,
                 Version = "1"
             });
 
@@ -135,6 +136,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Manage Route",
                 Category = ActivityCategory.Processors.ToString(),
                 Terminal = terminal,
+                WebService = webService,
                 Version = "1"
             });
 

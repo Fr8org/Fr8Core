@@ -26,7 +26,7 @@ namespace terminalDropbox.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 Version = "1"
             };
-            var webService = new WebServiceDO
+            var webService = new WebServiceDTO
             {
                 Name = "Dropbox",
                 IconPath = "/Content/icons/web_services/dropbox-icon-64x64.png"
@@ -43,7 +43,7 @@ namespace terminalDropbox.Controllers
 
                 Category = ActivityCategory.Forwarders.ToString(),
                 MinPaneWidth = 330,
-                WebServiceName = webService.Name
+                WebService = webService
             };
             var actionList = new List<ActivityTemplateDTO>()
 

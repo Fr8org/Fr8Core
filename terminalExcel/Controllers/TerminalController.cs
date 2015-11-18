@@ -32,7 +32,7 @@ namespace terminalExcel.Controllers
                 Version = "1"
             };
 
-	        var webService = new WebServiceDO
+	        var webService = new WebServiceDTO
 	        {
 				Name = "Excel"
 	        };
@@ -46,7 +46,7 @@ namespace terminalExcel.Controllers
                 Terminal = terminal,
                 Tags = "Table Data Generator",
                 MinPaneWidth = 210,
-				WebServiceName = webService.Name
+				WebService = webService
             });
 
 

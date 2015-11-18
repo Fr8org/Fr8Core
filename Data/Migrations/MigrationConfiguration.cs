@@ -498,6 +498,8 @@ namespace Data.Migrations
 	            {"terminalTwilio", "Twilio"},
 	            {"terminalAzure", "Microsoft Azure"},
 	            {"terminalExcel", "Excel"},
+                {"terminalGoogle", "Google"},
+                {"terminalPapertrail", "Papertrail"}
 	        };
 
             var wsToId = new Dictionary<string, int>();
@@ -511,6 +513,8 @@ namespace Data.Migrations
             AddWebService(uow, "Salesforce", "/Content/icons/web_services/salesforce-icon-64x64.png");
             AddWebService(uow, "SendGrid", "/Content/icons/web_services/sendgrid-icon-64x64.png");
             AddWebService(uow, "Dropbox", "/Content/icons/web_services/dropbox-icon-64x64.png");
+            AddWebService(uow, "Google", "/Content/icons/web_services/google-icon-64x64.png");
+            AddWebService(uow, "Papertrail", "/Content/icons/web_services/papertrail-icon-64x64.png");
             AddWebService(uow, "UnknownService", "/Content/icons/web_services/unknown-service.png");
 
             foreach (var webServiceDo in uow.WebServiceRepository.GetAll())
