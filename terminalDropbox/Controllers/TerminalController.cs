@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Data.States;
 using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 
 namespace terminalDropbox.Controllers
@@ -16,7 +17,7 @@ namespace terminalDropbox.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult Get()
         {
-            var terminal = new TerminalDO()
+            var terminal = new TerminalDTO()
             {
                 Name = "terminalDropbox",
                 TerminalStatus = TerminalStatus.Active,
@@ -28,18 +29,18 @@ namespace terminalDropbox.Controllers
                 Name = "Dropbox",
                 IconPath = "/Content/icons/web_services/dropbox-icon-64x64.png"
             };
-            var getFileListAction = new ActivityTemplateDO()
+            var getFileListAction = new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Get_File_List",
                 Label = "Get File List",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
-                Category = ActivityCategory.Forwarders,
+                Category = ActivityCategory.Forwarders.ToString(),
                 MinPaneWidth = 330,
-                WebService = webService
+                WebServiceName = webService.Name
             };
-            var actionList = new List<ActivityTemplateDO>()
+            var actionList = new List<ActivityTemplateDTO>()
             {
                 getFileListAction
             };
