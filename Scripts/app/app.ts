@@ -174,7 +174,13 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             data: { pageTitle: 'Container  Details', pageSubTitle: '' }
         })
 
-        .state('solution', {
+        .state('solutionList', {
+            url: "/solutions",
+            templateUrl: "/AngularTemplate/SolutionList",
+            data: { pageTitle: 'Solutions', pageSubTitle: 'This page displays all Solutions' }
+        })
+
+        .state('configureSolution', {
             url: "/solution/{solutionName}",
             templateUrl: "/AngularTemplate/Solution",
             data: { pageTitle: 'Create a Solution', pageSubTitle: '' }
