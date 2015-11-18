@@ -206,7 +206,7 @@ namespace Hub.Services
 
 
 
-        public async Task Process(int curActivityId, ContainerDO containerDO)
+        public async Task Process(Guid curActivityId, ContainerDO containerDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -310,7 +310,8 @@ namespace Hub.Services
             return curActivityTemplates;
         }
         
-        public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(int activityId, GetCrateDirection direction)
+        public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(
+            Guid activityId, GetCrateDirection direction)
         { 
             var httpClient = new HttpClient();
 

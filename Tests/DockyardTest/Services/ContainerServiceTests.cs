@@ -167,7 +167,7 @@ namespace DockyardTest.Services
                 
                 //Create activity mock to process the actions
                 Mock<IRouteNode> activityMock = new Mock<IRouteNode>(MockBehavior.Default);
-                activityMock.Setup(a => a.Process(1, It.IsAny<ContainerDO>())).Returns(Task.Delay(2));
+                activityMock.Setup(a => a.Process(FixtureData.TestGuid_Id(1), It.IsAny<ContainerDO>())).Returns(Task.Delay(2));
                 ObjectFactory.Container.Inject(typeof(IRouteNode), activityMock.Object);
 
                 //Act
@@ -176,7 +176,7 @@ namespace DockyardTest.Services
 
                 //Assert
                 //since we have only one action in the template, the process should be called exactly once
-                activityMock.Verify(activity => activity.Process(1, It.IsAny<ContainerDO>()), Times.Exactly(1));
+                activityMock.Verify(activity => activity.Process(FixtureData.TestGuid_Id(1), It.IsAny<ContainerDO>()), Times.Exactly(1));
             }
         }
      
@@ -186,7 +186,7 @@ namespace DockyardTest.Services
         {
             var _activity = new Mock<IRouteNode>();
             _activity
-                .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ContainerDO>()))
+                .Setup(c => c.Process(It.IsAny<Guid>(), It.IsAny<ContainerDO>()))
                 .Returns(Task.Delay(100))
                 .Verifiable();
             ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(_activity.Object));
@@ -201,7 +201,7 @@ namespace DockyardTest.Services
 
             Assert.AreNotEqual(originalCurrentActivity, containerDO.CurrentRouteNode);
             Assert.IsNull(containerDO.CurrentRouteNode);
-            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ContainerDO>()));
+            _activity.Verify(p => p.Process(It.IsAny<Guid>(), It.IsAny<ContainerDO>()));
         }
 
 //        [Test]

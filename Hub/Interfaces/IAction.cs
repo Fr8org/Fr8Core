@@ -17,8 +17,8 @@ namespace Hub.Interfaces
         ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO currentActionDo);
         Task<ActionDTO> Configure(string userId, ActionDO curActionDO, bool saveResult = true);
         //Task<ActionDO> SaveUpdateAndConfigure(IUnitOfWork uow, ActionDO submittedActionDo);
-        ActionDO GetById(int id);
-        ActionDO GetById(IUnitOfWork uow, int id);
+        ActionDO GetById(Guid id);
+        ActionDO GetById(IUnitOfWork uow, Guid id);
         //void Delete(int id); -> Delete is moved to ProcessNodeTemplate
         ActionDO MapFromDTO(ActionDTO curActionDTO);
         ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode);

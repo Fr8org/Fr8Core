@@ -221,7 +221,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.Id > 0)
+            if (curActionDO.Id != Guid.Empty)
             {
                 //this conversion from actiondto to Action should be moved back to the controller edge
                 var curUpstreamFields =
@@ -238,7 +238,7 @@ namespace terminalFr8Core.Actions
                 using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
                 {
                     updater.CrateStorage = AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
-            }
+                }
             }
             else
             {

@@ -40,10 +40,10 @@ namespace HubWeb.Controllers
         }
 
         [Fr8ApiAuthorize]
-        [Route("full/{id:int}")]
+        [Route("full/{id:guid}")]
         [ResponseType(typeof(RouteDTO))]
         [HttpGet]
-        public IHttpActionResult GetFullRoute(int id)
+        public IHttpActionResult GetFullRoute(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -54,11 +54,11 @@ namespace HubWeb.Controllers
             };
         }
 
-        [Route("getByAction/{id:int}")]
+        [Route("getByAction/{id:guid}")]
         [ResponseType(typeof(RouteDTO))]
         [HttpGet]
         
-        public IHttpActionResult GetByAction(int id)
+        public IHttpActionResult GetByAction(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -73,11 +73,17 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [Route("status")]
         [HttpGet]
-        public IHttpActionResult GetByStatus(int? id = null, int? status = null)
+        public IHttpActionResult GetByStatus(Guid? id = null, int? status = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id, status);
+                var curRoutes = _route.GetForUser(
+                    uow,
+                    _security.GetCurrentAccount(uow),
+                    _security.IsCurrentUserHasRole(Roles.Admin),
+                    id,
+                    status
+                );
 
                 if (curRoutes.Any())
                 {               
@@ -110,11 +116,16 @@ namespace HubWeb.Controllers
         
         // GET api/<controller>
         [Fr8ApiAuthorize]
-        public IHttpActionResult Get(int? id = null)
+        public IHttpActionResult Get(Guid? id = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id);
+                var curRoutes = _route.GetForUser(
+                    uow,
+                    _security.GetCurrentAccount(uow),
+                    _security.IsCurrentUserHasRole(Roles.Admin),
+                    id
+                );
 
             if (curRoutes.Any())
             {
@@ -179,9 +190,9 @@ namespace HubWeb.Controllers
         
 
         [HttpDelete]
-        [Route("{id:int}")]
+        [Route("{id:guid}")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Delete(int id)
+        public IHttpActionResult Delete(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

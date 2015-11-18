@@ -62,7 +62,7 @@ namespace Hub.Services
             }
         }
 
-        public ActionDO GetById(int id)
+        public ActionDO GetById(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -128,7 +128,7 @@ namespace Hub.Services
 
             if (submittedAction.IsTempId)
             {
-                submittedAction.Id = 0;
+                submittedAction.Id = Guid.NewGuid();
                 existingAction = submittedAction;
                 submittedAction.IsTempId = false;
 
@@ -222,7 +222,7 @@ namespace Hub.Services
             return existingAction;
         }
 
-        public ActionDO GetById(IUnitOfWork uow, int id)
+        public ActionDO GetById(IUnitOfWork uow, Guid id)
         {
             return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).FirstOrDefault(i => i.Id == id);
         }
@@ -362,7 +362,7 @@ namespace Hub.Services
             return SaveOrUpdateAction(submittedAction);
         }
 
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             //we are using Kludge solution for now
             //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering

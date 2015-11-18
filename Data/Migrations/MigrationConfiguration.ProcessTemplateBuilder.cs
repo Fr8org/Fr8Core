@@ -16,7 +16,7 @@ namespace Data.Migrations
         {
             private readonly string _name;
             private readonly List<Crate> _crates = new List<Crate>();
-            private int _ptId;
+            private Guid _ptId;
 
             public RouteBuilder(string name)
             {

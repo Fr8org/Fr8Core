@@ -44,7 +44,7 @@ namespace Hub.Services
         /// <param name="processTemplateId"></param>
         /// <param name="envelopeId"></param>
         /// <returns></returns>
-        public ContainerDO Create(IUnitOfWork uow, int processTemplateId, Crate curEvent)
+        public ContainerDO Create(IUnitOfWork uow, Guid processTemplateId, Crate curEvent)
         {
             var containerDO = new ContainerDO();
             containerDO.Id = Guid.NewGuid();

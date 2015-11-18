@@ -41,7 +41,7 @@ namespace Hub.Services
             _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
-        public IList<RouteDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, int? id = null, int? status = null)
+        public IList<RouteDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, Guid? id = null, int? status = null)
         {
             var queryableRepo = unitOfWork.RouteRepository.GetQuery().Include(pt => pt.ChildContainers); // whe have to include Activities as it is a real navigational property. Not Routes
 
@@ -61,9 +61,10 @@ namespace Hub.Services
 
         public void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool updateChildEntities)
         {
-            var creating = ptdo.Id == 0;
+            var creating = ptdo.Id == Guid.Empty;
             if (creating)
             {
+                ptdo.Id = Guid.NewGuid();
                 ptdo.RouteState = RouteState.Inactive;
                 var subroute = new SubrouteDO(true);
                 subroute.ParentRouteNode = ptdo;
@@ -103,7 +104,7 @@ namespace Hub.Services
             return route;
         }
 
-        public void Delete(IUnitOfWork uow, int id)
+        public void Delete(IUnitOfWork uow, Guid id)
         {
             var curRoute = uow.RouteRepository.GetQuery().SingleOrDefault(pt => pt.Id == id);
 
@@ -353,7 +354,7 @@ namespace Hub.Services
 
 
 
-        public RouteNodeDO GetFirstActivity(int curRouteId)
+        public RouteNodeDO GetFirstActivity(Guid curRouteId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -391,8 +392,8 @@ namespace Hub.Services
             root.Name = name;
             uow.RouteNodeRepository.Add(root);
 
-            var queue = new Queue<Tuple<RouteNodeDO, int>>();
-            queue.Enqueue(new Tuple<RouteNodeDO, int>(root, route.Id));
+            var queue = new Queue<Tuple<RouteNodeDO, Guid>>();
+            queue.Enqueue(new Tuple<RouteNodeDO, Guid>(root, route.Id));
 
             while (queue.Count > 0)
             {
@@ -414,7 +415,7 @@ namespace Hub.Services
 
                     uow.RouteNodeRepository.Add(childCopy);
 
-                    queue.Enqueue(new Tuple<RouteNodeDO, int>(childCopy, sourceChild.Id));
+                    queue.Enqueue(new Tuple<RouteNodeDO, Guid>(childCopy, sourceChild.Id));
                 }
             }
 
