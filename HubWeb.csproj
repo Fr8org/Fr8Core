@@ -822,12 +822,14 @@
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ContainerControllerTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\Counter.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\CounterTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\DropDownListBoxTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\DurationTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBlockTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBoxTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\PaneConfigurationActionTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_Duration.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDesignDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionTemplate.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ContainerDTO.ts" />

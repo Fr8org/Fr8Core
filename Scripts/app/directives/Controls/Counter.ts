@@ -3,7 +3,7 @@ module dockyard.directives.counter {
     'use strict';
 
     export interface ICounterAttributes extends ng.IAttributes {
-        minValue: number;
+        minValue: string;
     }
 
     export interface ICounterScope extends ng.IScope {
@@ -41,7 +41,9 @@ module dockyard.directives.counter {
                 $element: ng.IAugmentedJQuery,
                 $attrs: ICounterAttributes) => {
 
-                var minValue = $attrs.minValue || -Infinity;
+                var minValue = parseInt($attrs.minValue);
+                if (!isFinite(minValue)) minValue = -Infinity;
+
                 var prevValue = $scope.counterValue;
 
                 $scope.increment = () => {
