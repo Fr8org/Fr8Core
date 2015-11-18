@@ -11,6 +11,7 @@ module dockyard.directives.counter {
         counterTooltip: string;
         increment(): void;
         decrement(): void;
+        adjustValue(): void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -27,15 +28,11 @@ module dockyard.directives.counter {
         public templateUrl = '/AngularTemplate/Counter';
         public restrict = 'E';
 
-        private minValue: number;
-
         constructor() {
             Counter.prototype.link = (
                 scope: ICounterScope,
                 element: ng.IAugmentedJQuery,
                 attrs: ICounterAttributes) => {
-
-                this.minValue = attrs.minValue || -Infinity;
 
             }
 
@@ -44,17 +41,23 @@ module dockyard.directives.counter {
                 $element: ng.IAugmentedJQuery,
                 $attrs: ICounterAttributes) => {
 
+                var minValue = $attrs.minValue || -Infinity;
+                var prevValue = $scope.counterValue;
+
                 $scope.increment = () => {
                     $scope.counterValue++;
-                    if (!$scope.counterValue && $scope.counterValue !== 0) $scope.counterValue = 1;
+                    $scope.adjustValue();
                 }
 
                 $scope.decrement = () => {
                     $scope.counterValue--;
-                    if (!$scope.counterValue && $scope.counterValue !== 0) $scope.counterValue = -1;
-                    if ($scope.counterValue < this.minValue) $scope.counterValue = this.minValue;
+                    $scope.adjustValue();
                 }
 
+                $scope.adjustValue = () => {
+                    if (!isFinite($scope.counterValue)) $scope.counterValue = prevValue;
+                    if ($scope.counterValue < minValue) $scope.counterValue = minValue;
+                }
             }
 
         };
