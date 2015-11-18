@@ -203,7 +203,7 @@
       <Project>{cddccfab-28b8-446c-8585-72d2bb78f2dc}</Project>
       <Name>terminalGoogle</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalPapertrial\terminalPapertrail.csproj">
+    <ProjectReference Include="..\terminalPapertrail\terminalPapertrail.csproj">
       <Project>{74d9bdc7-7b46-456f-b3c5-a4cdb5d74d7b}</Project>
       <Name>terminalPapertrail</Name>
     </ProjectReference>
