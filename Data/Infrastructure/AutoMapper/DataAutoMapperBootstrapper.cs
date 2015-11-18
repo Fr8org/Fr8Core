@@ -5,6 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -67,6 +68,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
                 .ForMember(x => x.TerminalId, opts => opts.ResolveUsing(x => x.TerminalId))
                 .ForMember(x => x.Terminal, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null));
+
+
 //
 //            Mapper.CreateMap<ActionListDO, ActionListDTO>()
 //                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
