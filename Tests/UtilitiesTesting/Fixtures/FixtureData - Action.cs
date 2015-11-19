@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using StructureMap;
@@ -450,7 +451,7 @@ namespace UtilitiesTesting.Fixtures
             ICrateManager _crate = ObjectFactory.GetInstance<ICrateManager>();
             IAction _action = ObjectFactory.GetInstance<IAction>();
 
-            var fieldSelectDockusignTemplate = new DropDownListControlDefinitionDTO()
+            var fieldSelectDockusignTemplate = new DropDownList()
             {
                 Label = "Select DocuSign Template",
                 Name = "Selected_DocuSign_Template",

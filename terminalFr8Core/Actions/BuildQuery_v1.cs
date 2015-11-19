@@ -14,6 +14,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalFr8Core.Infrastructure;
 using Data.Entities;
+using Data.Control;
 
 namespace terminalFr8Core.Actions
 {
@@ -181,7 +182,7 @@ namespace terminalFr8Core.Actions
         {
             AddControl(
                 storage,
-                new DropDownListControlDefinitionDTO()
+                new DropDownList()
                 {
                     Label = "Select Object",
                     Name = "SelectObjectDdl",
@@ -294,7 +295,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private void AddQueryBuilder(CrateStorage storage)
         {
-            var queryBuilder = new QueryBuilderControlDefinitionDTO()
+            var queryBuilder = new QueryBuilder()
             {
                 Label = "Please, specify query:",
                 Name = "SelectedQuery",

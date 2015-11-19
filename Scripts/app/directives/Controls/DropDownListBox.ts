@@ -3,7 +3,7 @@ module dockyard.directives.dropDownListBox {
     'use strict';
 
     export interface IDropDownListBoxScope extends ng.IScope {
-        field: model.DropDownListControlDefinitionDTO;
+        field: model.DropDownList;
         change: () => (fieldName: string) => void;
         selectedItem: model.FieldDTO;
         setSelectedItem: (item: model.FieldDTO) => void;

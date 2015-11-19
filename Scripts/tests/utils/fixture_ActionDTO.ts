@@ -81,9 +81,9 @@ module dockyard.tests.utils.fixtures {
                 crates: [{
                     id: "37ea608f-eead-4d0f-b75f-8033474e6030",
                     label: "Configuration_Controls",
-                    contents: angular.fromJson("{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard Configuration Controls\"}"),
+                    contents: angular.fromJson("{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard UI Controls\"}"),
                     parentCrateId: null,
-                    manifestType: "Standard Configuration Controls",                    
+                    manifestType: "Standard UI Controls",                    
                     manufacturer: null
                 }]
             },
@@ -108,9 +108,9 @@ module dockyard.tests.utils.fixtures {
                 crates: [{
                     id: "37ea608f-eead-4d0f-b75f-8033474e6030",
                     label: "Configuration_Controls",
-                    contents: angular.fromJson("{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard Configuration Controls\"}"),
+                    contents: angular.fromJson("{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard UI Controls\"}"),
                     parentCrateId: null,
-                    manifestType: "Standard Configuration Controls",
+                    manifestType: "Standard UI Controls",
                     manufacturer: null
                 }, {
                         id: "37ea608f-eead-4d0f-b75f-8033474e6030",
@@ -142,9 +142,9 @@ module dockyard.tests.utils.fixtures {
                 crates: [{
                     id: "37ea608f-eead-4d0f-b75f-8033474e6030",
                     label: "Configuration_Controls",
-                    contents: angular.fromJson("{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard Configuration Controls\"}"),
+                    contents: angular.fromJson("{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard UI Controls\"}"),
                     parentCrateId: null,
-                    manifestType: "Standard Configuration Controls",
+                    manifestType: "Standard UI Controls",
                     manufacturer: null
                 }, {
                         id: "37ea608f-eead-4d0f-b75f-8033474e6030",
