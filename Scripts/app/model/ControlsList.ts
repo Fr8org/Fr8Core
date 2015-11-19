@@ -74,6 +74,7 @@
     export class DropDownListControlDefinitionDTO extends ControlDefinitionDTO {
         listItems: Array<DropDownListItem>;
         source: FieldSource;
+        selectedKey: string;
     }
 
     export class TextSource extends DropDownListControlDefinitionDTO {

@@ -38,7 +38,8 @@ module dockyard.tests.utils.fixtures {
             fieldLabel: 'DropDownList Test',
             name: 'DropDownList',
             events: [],
-            value: 'value3'
+            value: 'value3',
+            selectedKey: 'test3'
         };
 
         public static radioButtonGroupField: model.RadioButtonGroupControlDefinitionDTO = {
