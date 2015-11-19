@@ -183,7 +183,7 @@ namespace DockyardTest.Services
 
                 ContainerDO containerDO = FixtureData.TestContainer1();
                 _activity = ObjectFactory.GetInstance<IRouteNode>();
-                _activity.Process(FixtureData.TestGuid_Id(1), containerDO);
+                _activity.Process(FixtureData.GetTestGuidById(1), containerDO);
             }
         }
 

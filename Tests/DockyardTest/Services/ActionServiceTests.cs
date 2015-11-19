@@ -243,7 +243,7 @@ namespace DockyardTest.Services
                     {
                         var newAction = new ActionDO
                         {
-                            Id = FixtureData.TestGuid_Id(addCounter + 666),
+                            Id = FixtureData.GetTestGuidById(addCounter + 666),
                             ParentRouteNode = a,
                             Name = "____New " + addCounter
                         };
@@ -260,11 +260,11 @@ namespace DockyardTest.Services
                     Visit(updatedTree, a =>
                     {
                         // if (a.Id > 666)
-                        if (a.Name != "____New 0")
+                        if (FixtureData.GetTestIdByGuid(a.Id) > 666)
                         {
                             var newAction = new ActionDO
                             {
-                                Id = FixtureData.TestGuid_Id(addCounter + 666),
+                                Id = FixtureData.GetTestGuidById(addCounter + 666),
                                 ParentRouteNode = a,
                                 Name = "____New " + addCounter
                             };

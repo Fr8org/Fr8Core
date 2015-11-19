@@ -55,7 +55,7 @@ namespace DockyardTest.Controllers
                 //Arrange is done with empty action list
 
                 //Act
-                var actualAction = CreateActionWithId(FixtureData.TestGuid_Id(1));
+                var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
 
                 actualAction.IsTempId = true;
                 actualAction.ParentRouteNodeId = subroute.Id;
@@ -93,7 +93,7 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();
 
                 //Act
-                var actualAction = CreateActionWithId(FixtureData.TestGuid_Id(2));
+                var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(2));
                 actualAction.IsTempId = true;
                 actualAction.ParentRouteNodeId = subroute.Id;
 
@@ -124,7 +124,7 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();
 
                 //Act
-                var actualAction = CreateActionWithId(FixtureData.TestGuid_Id(1));
+                var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
 
                 var controller = new ActionController();
                 controller.Save(actualAction);
@@ -364,7 +364,7 @@ namespace DockyardTest.Controllers
         public async void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
         {
             var controller = new ActionController();
-            ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.TestGuid_Id(2));
+            ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.ActivityTemplate = FixtureData.TestActionTemplateDTOV2();
             var actionResult = await controller.Configure(actionDesignDTO);
 
@@ -379,7 +379,7 @@ namespace DockyardTest.Controllers
         public async void ActionController_GetConfigurationSettings_IdIsMissing()
         {
             var controller = new ActionController();
-            ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.TestGuid_Id(2));
+            ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.Id = Guid.Empty;
             var actionResult = await controller.Configure(actionDesignDTO);
 
@@ -394,7 +394,7 @@ namespace DockyardTest.Controllers
         public async void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
         {
             var controller = new ActionController();
-            ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.TestGuid_Id(2));
+            ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.ActivityTemplateId = 0;
             var actionResult = await controller.Configure(actionDesignDTO);
 

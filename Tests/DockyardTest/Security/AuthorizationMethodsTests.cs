@@ -172,7 +172,7 @@ namespace DockyardTest.Security
 
                 var processTemplateDO = new RouteDO()
                 {
-                    Id = FixtureData.TestGuid_Id(23),
+                    Id = FixtureData.GetTestGuidById(23),
                     Description = "HealthDemo Integration Test",
                     Name = "StandardEventTesting",
                     RouteState = RouteState.Active,
@@ -187,7 +187,7 @@ namespace DockyardTest.Security
                     ParentRouteNodeId = processTemplateDO.Id,
                     Name = "testaction",
 
-                    Id = FixtureData.TestGuid_Id(1),
+                    Id = FixtureData.GetTestGuidById(1),
                     ActivityTemplateId = activityTemplateDO.Id,
                     ActivityTemplate = activityTemplateDO,
                     Ordering = 1

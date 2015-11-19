@@ -128,7 +128,11 @@ namespace Hub.Services
 
             if (submittedAction.IsTempId)
             {
-                submittedAction.Id = Guid.NewGuid();
+                if (submittedAction.Id == Guid.Empty)
+                {
+                    submittedAction.Id = Guid.NewGuid();
+                }
+
                 existingAction = submittedAction;
                 submittedAction.IsTempId = false;
 
@@ -176,17 +180,17 @@ namespace Hub.Services
             {
                 existingAction = uow.ActionRepository.GetByKey(submittedAction.Id);
 
-            if (existingAction == null)
-            {
-                throw new Exception("Action was not found");
-            }
+                if (existingAction == null)
+                {
+                    throw new Exception("Action was not found");
+                }
 
-            // Update properties
+                // Update properties
                 UpdateActionProperties(existingAction, submittedAction);
 
                 // Sync nested action structure
                 if (submittedAction.ChildNodes != null)
-            {
+                {
                 // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
                 // desired set of children. 
                     var newChildren = submittedAction.ChildNodes.OfType<ActionDO>().Where(x => !x.IsTempId).ToDictionary(x => x.Id, y => y);

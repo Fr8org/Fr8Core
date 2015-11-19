@@ -342,11 +342,11 @@ namespace UtilitiesTesting.Fixtures
             };
             ActionListDO al_1 = new ActionListDO()
             {
-                 ParentActivityId = TestGuid_Id(1)
+                 ParentActivityId = GetTestGuidById(1)
             };
             ActionDO a_23 = new ActionDO()
             {
-                Id = TestGuid_Id(23), 
+                Id = GetTestGuidById(23), 
                 ActivityTemplate = activityTempate, 
                 ActivityTemplateId = activityTempate.Id,
                 Name = "a_23", 
@@ -369,10 +369,10 @@ namespace UtilitiesTesting.Fixtures
                   Terminal = FixtureData.TerminalFive(),
                   Name = "Monitor_DocuSign"
               };
-             ActionListDO al_1 = new ActionListDO() { ParentActivityId = TestGuid_Id(12) };
+             ActionListDO al_1 = new ActionListDO() { ParentActivityId = GetTestGuidById(12) };
              ActionDO a_23 = new ActionDO()
              {
-                 Id = TestGuid_Id(23), 
+                 Id = GetTestGuidById(23), 
                  ActivityTemplate = activityTempate,
                  ActivityTemplateId = activityTempate.Id,
                  Name = "a_23",

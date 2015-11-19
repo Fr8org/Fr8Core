@@ -167,7 +167,7 @@ namespace DockyardTest.Services
                 
                 //Create activity mock to process the actions
                 Mock<IRouteNode> activityMock = new Mock<IRouteNode>(MockBehavior.Default);
-                activityMock.Setup(a => a.Process(FixtureData.TestGuid_Id(1), It.IsAny<ContainerDO>())).Returns(Task.Delay(2));
+                activityMock.Setup(a => a.Process(FixtureData.GetTestGuidById(1), It.IsAny<ContainerDO>())).Returns(Task.Delay(2));
                 ObjectFactory.Container.Inject(typeof(IRouteNode), activityMock.Object);
 
                 //Act
@@ -176,7 +176,7 @@ namespace DockyardTest.Services
 
                 //Assert
                 //since we have only one action in the template, the process should be called exactly once
-                activityMock.Verify(activity => activity.Process(FixtureData.TestGuid_Id(1), It.IsAny<ContainerDO>()), Times.Exactly(1));
+                activityMock.Verify(activity => activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ContainerDO>()), Times.Exactly(1));
             }
         }
      
