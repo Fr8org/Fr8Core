@@ -186,6 +186,41 @@ module dockyard.tests.controller {
 
         });
 
+        describe('.createControlListFromCrateStorage()', () => {
+
+            it('should return control list from the control configuration', () => {
+                var controlList = ch.createControlListFromCrateStorage(crateStorage);
+                var crate = ch.findByManifestType(crateStorage, 'Standard Configuration Controls');
+
+                expect(controlList.fields).toBe(crate.contents.Controls);
+            });
+
+            it('should set the list items', () => {
+                var flatFieldList = [];
+
+                function addToFlatList(items) {
+                    items.forEach((field) => {
+                        flatFieldList.push(field);
+                        if (field.radios || field.controls) {
+                            addToFlatList(field.radios || field.controls);
+                        }
+                    });
+                }
+
+                var controlList = ch.createControlListFromCrateStorage(crateStorage);
+                addToFlatList(controlList.fields);
+
+                for (var field of flatFieldList) {
+                    if (field.type === 'DropDownList') {
+                        var crate = ch.findByManifestTypeAndLabel(crateStorage, field.source.manifestType, field.source.label);
+                        expect(field.listItems.length > 0).toBe(true);
+                        expect(field.listItems).toEqual(crate.contents.Fields);
+                    }
+                }
+            });
+
+        });
+
     });
 
 }
