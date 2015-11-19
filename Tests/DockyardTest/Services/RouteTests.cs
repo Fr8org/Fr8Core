@@ -13,6 +13,9 @@ using Hub.Interfaces;
 using NUnit.Framework;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Hub.Managers;
+using InternalInterface = Hub.Interfaces;
+using InternalClasses = Hub.Services;
 
 namespace DockyardTest.Services
 {
@@ -20,16 +23,17 @@ namespace DockyardTest.Services
     [Category("Route")]
     public class RouteTests : BaseTest
     {
-        private IRoute _processTemplateService;
+        private IRoute _routeService;
+        private InternalInterface.IContainer _container;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _processTemplateService = ObjectFactory.GetInstance<IRoute>();
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
+            _routeService = ObjectFactory.GetInstance<IRoute>();
+           
         }
-
-
 
         [Test]
         public void RouteService_GetSubroutes()
@@ -40,7 +44,7 @@ namespace DockyardTest.Services
                 uow.RouteRepository.Add(curRouteDO);
                 uow.SaveChanges();
 
-                var curSubroutes = _processTemplateService.GetSubroutes(curRouteDO);
+                var curSubroutes = _routeService.GetSubroutes(curRouteDO);
 
                 Assert.IsNotNull(curSubroutes);
                 Assert.AreEqual(curRouteDO.Subroutes.Count(), curSubroutes.Count);
@@ -58,7 +62,7 @@ namespace DockyardTest.Services
                 var curRouteDO = FixtureData.TestRoute_CanCreate();
                 var curUserAccount = FixtureData.TestDockyardAccount1();
                 curRouteDO.Fr8Account = curUserAccount;
-                _processTemplateService.CreateOrUpdate(uow, curRouteDO, false);
+                _routeService.CreateOrUpdate(uow, curRouteDO, false);
                 uow.SaveChanges();
 
                 var result = uow.RouteRepository.GetByKey(curRouteDO.Id);
@@ -82,7 +86,7 @@ namespace DockyardTest.Services
                 Assert.AreNotEqual(curRouteDO.Id, 0);
 
                 var currRouteDOId = curRouteDO.Id;
-                _processTemplateService.Delete(uow, curRouteDO.Id);
+                _routeService.Delete(uow, curRouteDO.Id);
                 var result = uow.RouteRepository.GetByKey(currRouteDOId);
 
                 Assert.NotNull(result);
@@ -129,7 +133,7 @@ namespace DockyardTest.Services
         {
             var curRouteDO = FixtureData.TestRouteNoMatchingParentActivity();
             
-            string result = _processTemplateService.Activate(curRouteDO);
+            string result = _routeService.Activate(curRouteDO);
 
             Assert.AreEqual(result, "no action");
         }
@@ -147,5 +151,46 @@ namespace DockyardTest.Services
         //          }
         //          CollectionAssert.AreEquivalent(newSubscriptions, curSubscriptions);
         //      }
+
+        [Test]
+        public void RouteService_Can_RunWithoutExceptions()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Arrange
+                //Create a Route 
+                var curRoute = FixtureData.TestRouteWithSubscribeEvent();
+
+                //Create activity mock to process the actions
+                Mock<IRouteNode> activityMock = new Mock<IRouteNode>(MockBehavior.Default);
+                activityMock.Setup(a => a.Process(1, It.IsAny<ContainerDO>())).Returns(Task.Delay(1));
+                ObjectFactory.Container.Inject(typeof(IRouteNode), activityMock.Object);
+
+                //Act
+                _routeService = new InternalClasses.Route();
+                _routeService.Run(curRoute, FixtureData.TestDocuSignEventCrate());
+
+                //Assert
+                //since we have only one action in the template, the process should be called exactly once
+                activityMock.Verify(activity => activity.Process(1, It.IsAny<ContainerDO>()), Times.Exactly(1));
+            }
+        }
+
+        //get this working again once 1124 is merged
+        [Test]
+        public void RouteService_Can_CreateContainer()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var route = FixtureData.TestRouteWithStartingSubrouteAndActionList();
+
+                uow.RouteRepository.Add(route);
+                uow.SaveChanges();
+
+                var container = _routeService.Create(uow, route.Id, FixtureData.GetEnvelopeIdCrate());
+                Assert.IsNotNull(container);
+                Assert.IsTrue(container.Id != Guid.Empty);
+            }
+        }
     }
 }

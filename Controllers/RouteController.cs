@@ -14,6 +14,8 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Exceptions;
 using Hub.Interfaces;
+using System.Threading.Tasks;
+using Utilities;
 
 namespace HubWeb.Controllers
 {
@@ -216,19 +218,29 @@ namespace HubWeb.Controllers
             return Ok(_route.Deactivate(curRoute));
         }
 
-        [HttpPost]
-        [Route("find_objects/create")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult CreateFindObjectsRoute()
+        [Route("run")]
+        [HttpPost]
+        public async Task<IHttpActionResult> Run(int routeId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var account = uow.UserRepository.GetByKey(User.Identity.GetUserId());
-                var route = _findObjectsRoute.CreateRoute(uow, account);
+                var processTemplateDO = uow.RouteRepository.GetByKey(routeId);
+                var pusherNotifier = new PusherNotifier();
+                try
+                {
+                    await _route.Run(processTemplateDO, null);
+                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
+                    "fr8pusher_container_executed", String.Format("Route \"{0}\" executed", processTemplateDO.Name));
+                }
+                catch
+                {
+                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
+                    "fr8pusher_container_failed", String.Format("Route \"{0}\" failed", processTemplateDO.Name));
+                }
 
-                uow.SaveChanges();
 
-                return Ok(new { id = route.Id });
+                return Ok();
             }
         }
     }
