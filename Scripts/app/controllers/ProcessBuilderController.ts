@@ -263,7 +263,7 @@ module dockyard.controllers {
                     canBypassActionLoading = idChangedFromTempToPermanent || !actionChanged
                 }
                 
-                if (actionId < 1) {
+                if (actionId == '00000000-0000-0000-0000-000000000000') {
                     throw Error('Action has not been persisted. Process Builder cannot proceed ' +
                         'to action type selection for an unpersisted action.');
                 }
@@ -341,10 +341,10 @@ module dockyard.controllers {
                     name: "test action type",
                     configurationControls: new model.ControlsList(),
                     crateStorage: new model.CrateStorage(),
-                    parentRouteNodeId: 1,
+                    parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                     activityTemplate: null,
                     activityTemplateId: 1,
-                    id: 1,
+                    id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                     isTempId: false,
                     childrenActions: null
                 };
