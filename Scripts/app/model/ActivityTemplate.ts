@@ -4,6 +4,7 @@
         name: string;
         label: string;
         version: string;
+        description: string;
         defaultEndPoint: string;
         componentActivities: string;
         category: string;

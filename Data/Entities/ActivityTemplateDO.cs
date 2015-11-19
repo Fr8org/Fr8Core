@@ -69,6 +69,8 @@ namespace Data.Entities
 
         public string Version { get; set; }
 
+        public string Description { get; set; }
+
         [Required]
         [ForeignKey("AuthenticationTypeTemplate")]
         public int AuthenticationType { get; set; }

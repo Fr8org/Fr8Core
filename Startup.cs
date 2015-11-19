@@ -273,6 +273,12 @@ namespace HubWeb
                             repositaryItem.Tags = registeredItem.Tags;
                             needSave = true;
                         }
+
+                        if (repositaryItem.Description != registeredItem.Description)
+                        {
+                            repositaryItem.Description = registeredItem.Description;
+                            needSave = true;
+                        }
                         
                     }
                 }

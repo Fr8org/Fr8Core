@@ -57,6 +57,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
+                .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description))
                 .ForMember(x => x.TerminalId, opts => opts.ResolveUsing(x => x.TerminalId)); ;
 
 
@@ -66,6 +67,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.ComponentActivities, opts => opts.ResolveUsing(x => x.ComponentActivities))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
                 .ForMember(x => x.TerminalId, opts => opts.ResolveUsing(x => x.TerminalId))
+                .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description))
                 .ForMember(x => x.Terminal, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null));
 //
 //            Mapper.CreateMap<ActionListDO, ActionListDTO>()
