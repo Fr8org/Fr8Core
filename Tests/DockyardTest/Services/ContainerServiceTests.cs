@@ -50,6 +50,7 @@ namespace DockyardTest.Services
                 throw new Exception("XML payload file for testing DocuSign notification is not found.");
 
             processNodeDO = FixtureData.TestProcessNode2();
+
         }
 
         [Test]
@@ -74,23 +75,7 @@ namespace DockyardTest.Services
             Assert.AreEqual(2, containerList.Count());
         }
 
-        //get this working again once 1124 is merged
-        [Test]
-        public void ContainerService_Can_CreateContainer()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var route = FixtureData.TestRouteWithStartingSubrouteAndActionList();
-
-                uow.RouteRepository.Add(route);
-                uow.SaveChanges();
-
-                var container = _container.Create(uow, route.Id, FixtureData.GetEnvelopeIdCrate());
-                Assert.IsNotNull(container);
-                Assert.IsTrue(container.Id != Guid.Empty);
-            }
-        }
-
+       
 /*
         //get this working again once 1124 is merged
         [Test,Ignore]
@@ -155,31 +140,6 @@ namespace DockyardTest.Services
             }
         }
 */
-
-        [Test]
-        public void ContainerService_Can_LaunchWithoutExceptions()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //Arrange
-                //Create a process template
-                var curRoute = FixtureData.TestRouteWithSubscribeEvent();
-                
-                //Create activity mock to process the actions
-                Mock<IRouteNode> activityMock = new Mock<IRouteNode>(MockBehavior.Default);
-                activityMock.Setup(a => a.Process(1, It.IsAny<ContainerDO>())).Returns(Task.Delay(2));
-                ObjectFactory.Container.Inject(typeof(IRouteNode), activityMock.Object);
-
-                //Act
-                _container = new InternalClass.Container();
-                _container.Launch(curRoute, FixtureData.TestDocuSignEventCrate());
-
-                //Assert
-                //since we have only one action in the template, the process should be called exactly once
-                activityMock.Verify(activity => activity.Process(1, It.IsAny<ContainerDO>()), Times.Exactly(1));
-            }
-        }
-     
 
         [Test]
         public async void Execute_MoveToNextActivity_ProcessCurrentAndNextActivity()
@@ -254,12 +214,12 @@ namespace DockyardTest.Services
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        {
+            {
                 await _container.Execute(uow, FixtureData.TestContainerCurrentActivityNULL());
-        }
+            }
         }
 
-        }
+    }
 //
 //        [Test]
 //        [ExpectedException(typeof(ArgumentNullException))]
@@ -391,4 +351,4 @@ namespace DockyardTest.Services
 //            Assert.IsNull(curProcess.CurrentActivity);
 //            Assert.IsNull(curProcess.NextActivity);
 //        }
-    }
+}

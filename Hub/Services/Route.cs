@@ -14,30 +14,36 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
+using InternalInterface = Hub.Interfaces;
 using Hub.Managers;
+using System.Threading.Tasks;
+using Data.Crates;
+using Data.Infrastructure;
 
 namespace Hub.Services
 {
     public class Route : IRoute
     {
-
-
         // private readonly IProcess _process;
+        private readonly InternalInterface.IContainer _container;
         private readonly ISubroute _subroute;
         private readonly Fr8Account _dockyardAccount;
         private readonly IAction _action;
         private readonly IRouteNode _activity;
         private readonly ICrateManager _crate;
         private readonly ISecurityServices _security;
+        private readonly IProcessNode _processNode;
 
         public Route()
         {
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>(); 
             _subroute = ObjectFactory.GetInstance<ISubroute>();
             _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>();
             _action = ObjectFactory.GetInstance<IAction>();
             _activity = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
+            _processNode = ObjectFactory.GetInstance<IProcessNode>();
         }
 
         public IList<RouteDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, int? id = null, int? status = null)
@@ -323,7 +329,7 @@ namespace Hub.Services
         public List<RouteDO> MatchEvents(List<RouteDO> curRoutes, EventReportCM curEventReport)
         {
             List<RouteDO> subscribingRoutes = new List<RouteDO>();
-          
+
             foreach (var curRoute in curRoutes)
             {
                 //get the 1st activity
@@ -418,6 +424,83 @@ namespace Hub.Services
             }
 
             return root;
+        }
+
+        /// <summary>
+        /// New Process object
+        /// </summary>
+        /// <param name="processTemplateId"></param>
+        /// <param name="envelopeId"></param>
+        /// <returns></returns>
+        public ContainerDO Create(IUnitOfWork uow, int processTemplateId, Crate curEvent)
+        {
+            var containerDO = new ContainerDO();
+            containerDO.Id = Guid.NewGuid();
+
+            var curRoute = uow.RouteRepository.GetByKey(processTemplateId);
+            if (curRoute == null)
+                throw new ArgumentNullException("processTemplateId");
+            containerDO.Route = curRoute;
+
+            containerDO.Name = curRoute.Name;
+            containerDO.ContainerState = ContainerState.Unstarted;
+
+            if (curEvent != null)
+            {
+                using (var updater = _crate.UpdateStorage(() => containerDO.CrateStorage))
+                {
+                    updater.CrateStorage.Add(curEvent);
+                }
+            }
+
+            containerDO.CurrentRouteNode = GetInitialActivity(uow, curRoute);
+
+            uow.ContainerRepository.Add(containerDO);
+            uow.SaveChanges();
+
+            //then create process node
+            var subrouteId = containerDO.Route.StartingSubroute.Id;
+
+            var curProcessNode = _processNode.Create(uow, containerDO.Id, subrouteId, "process node");
+            containerDO.ProcessNodes.Add(curProcessNode);
+
+            uow.SaveChanges();
+            EventManager.ContainerCreated(containerDO);
+
+            return containerDO;
+        }
+
+        public async Task Run(RouteDO curRoute, Crate curEvent)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curContainerDO = Create(uow, curRoute.Id, curEvent);
+
+                if (curContainerDO.ContainerState == ContainerState.Failed || curContainerDO.ContainerState == ContainerState.Completed)
+                {
+                    throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
+                }
+
+                curContainerDO.ContainerState = ContainerState  .Executing;
+                uow.SaveChanges();
+
+                try
+                {
+                    await _container.Execute(uow, curContainerDO);
+                    curContainerDO.ContainerState = ContainerState.Completed;
+                }
+                catch
+                {
+                    curContainerDO.ContainerState = ContainerState.Failed;
+                    throw;
+                }
+                finally
+                {
+                    curContainerDO.CurrentRouteNode = null;
+                    curContainerDO.NextRouteNode = null;
+                    uow.SaveChanges();
+                }
+            }
         }
 
         /// <summary>
