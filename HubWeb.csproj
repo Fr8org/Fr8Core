@@ -387,6 +387,7 @@
     <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
+    <Compile Include="ViewModels\PayloadVM.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\ProfileVM.cs" />
@@ -730,6 +731,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\NotifierController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PayloadFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\RouteActionsDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SelectActionController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\RouteDetailsController.ts" />
@@ -4055,6 +4057,7 @@
     <Content Include="Views\AngularTemplate\Counter.cshtml" />
     <Content Include="Views\AngularTemplate\FindObjects.cshtml" />
     <Content Include="Views\AngularTemplate\FindObjectsResults.cshtml" />
+    <Content Include="Views\AngularTemplate\_AddPayloadModal.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-router\angular-ui-router.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />

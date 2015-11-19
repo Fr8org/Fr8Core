@@ -24,6 +24,7 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Services;
+using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -84,8 +85,22 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [Route("launch")]
         [HttpPost]
-        public async Task<IHttpActionResult> Launch(int routeId)
+		public async Task<IHttpActionResult> Launch(int routeId, [FromBody]PayloadVM model)
         {
+	        List<CrateDTO> crates;
+
+			if (model != null)
+			{
+				try
+				{
+					crates = JsonConvert.DeserializeObject<List<CrateDTO>>(model.Payload);
+				}
+				catch (Exception ex)
+				{
+					return BadRequest("You payload is invalid. Make sure that it represents a valid JSON array of crate objects.");
+				}
+	        }
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var processTemplateDO = uow.RouteRepository.GetByKey(routeId);

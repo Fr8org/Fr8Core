@@ -80,7 +80,23 @@ module dockyard.controllers {
             location.reload();
         };
         private executeProcessTemplate(processTemplateId, $event) {
-            this.ProcessTemplateService.execute({ id: processTemplateId });
+			if ($event.ctrlKey) {
+				this.$modal.open({
+					animation: true,
+					templateUrl: '/AngularTemplate/_AddPayloadModal',
+					controller: 'PayloadFormController', resolve: { processTemplateId: processTemplateId  }
+				});
+					/*.result.then((payload: any) => {
+					this.ProcessTemplateService
+						.execute({ id: processTemplateId }, { payload: payload })
+						.$promise.then((data) => {
+							console.log(data);
+						});
+				});*/
+			}
+			else {
+				this.ProcessTemplateService.execute({ id: processTemplateId }, null, null, null);
+			}
         }
 
         private goToProcessTemplatePage(processTemplateId) {
