@@ -82,5 +82,47 @@ namespace Hub.Services
                 uow.SaveChanges();
             }
         }
+
+        /// <summary>
+        /// Returns ActivityTemplate by it's name.
+        /// For example GetByName(uow, "AddPayloadManually_v1").
+        /// </summary>
+        public ActivityTemplateDO GetByName(IUnitOfWork uow, string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ApplicationException("Invalid ActivityTemplate name");
+            }
+
+            var tokens = name.Split('_');
+            if (tokens.Length < 2)
+            {
+                throw new ApplicationException("Invalid ActivityTemplate name");
+            }
+
+            var versionToken = tokens[tokens.Length - 1];
+
+            if (versionToken == null || versionToken.Length < 2)
+            {
+                throw new ApplicationException("Invalid ActivityTemplate name");
+            }
+
+            var namePart = string.Join("_", tokens.Take(tokens.Length - 1).ToArray());
+            var versionPart = versionToken.Substring(1);
+
+            return GetByNameAndVersion(uow, namePart, versionPart);
+        }
+
+        /// <summary>
+        /// Returns ActivityTemplate by it's name and version.
+        /// For example GetByNameAndVersion(uow, "AddPayloadManually", "1").
+        /// </summary>
+        public ActivityTemplateDO GetByNameAndVersion(IUnitOfWork uow, string name, string version)
+        {
+            var activityTemplate = uow.ActivityTemplateRepository
+                .FindOne(x => x.Name == name && x.Version == version);
+
+            return activityTemplate;
+        }
     }
 }

@@ -17,5 +17,7 @@ namespace Data.Interfaces.DataTransferObjects
         public string Activity { get; set; }
 
         public string Data { get; set; }
+
+        public bool IsLogged { get; set; }
     }
 }

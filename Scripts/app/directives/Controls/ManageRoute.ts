@@ -4,13 +4,13 @@ module dockyard.directives {
     'use strict';
 
     export function ManageRoute(): ng.IDirective {
-        var getRouteId = function ($q, $http, actionId): ng.IPromise<any> {
+        var getRoute = function ($q, $http, actionId): ng.IPromise<any> {
             var url = '/routes/getByAction/' + actionId;
 
             return $q(function (resolve, reject) {
                 $http.get(url)
                     .then(function (res) {
-                        resolve(res.data.id);
+                        resolve(res.data);
                     })
                     .catch(function (err) {
                         reject(err);
@@ -23,8 +23,8 @@ module dockyard.directives {
 
             return $q(function (resolve, reject) {
                 $http.post(url)
-                    .then(function () {
-                        resolve();
+                    .then(function (res) {
+                        resolve(res.data);
                     })
                     .catch(function (err) {
                         reject(err);
@@ -52,11 +52,12 @@ module dockyard.directives {
             scope: {
                 currentAction: '='
             },
-            controller: ['$scope', '$http', '$q', 
+            controller: ['$scope', '$http', '$q', '$location', 
                 function (
                     $scope: IManageRouteScope,
                     $http: ng.IHttpService,
-                    $q: ng.IQService
+                    $q: ng.IQService,
+                    $location: ng.ILocationService
                 ) {
                     var _isBusy = false;
 
@@ -68,9 +69,13 @@ module dockyard.directives {
                         $scope.error = null;
                         _isBusy = true;
 
-                        getRouteId($q, $http, $scope.currentAction.id)
-                            .then(function (routeId) {
-                                runContainer($q, $http, routeId)
+                        getRoute($q, $http, $scope.currentAction.id)
+                            .then(function (route) {
+                                runContainer($q, $http, route.id)
+                                    .then(function (container) {
+                                        var path = '/findObjects/' + container.id + '/results';
+                                        $location.path(path);
+                                    })
                                     .catch(function (err) {
                                         $scope.error = err;
                                     })
@@ -93,9 +98,9 @@ module dockyard.directives {
                         $scope.error = null;
                         _isBusy = true;
 
-                        getRouteId($q, $http, $scope.currentAction.id)
-                            .then(function (routeId) {
-                                copyRoute($q, $http, routeId, $scope.saveRouteName)
+                        getRoute($q, $http, $scope.currentAction.id)
+                            .then(function (route) {
+                                copyRoute($q, $http, route.id, $scope.saveRouteName)
                                     .then(function (id) {
                                         $scope.copySuccess = {
                                             id: id,

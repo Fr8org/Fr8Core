@@ -57,8 +57,6 @@ module dockyard.services {
         getAvailableActivities: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
     }
 
-  
-
     /*
         ProcessTemplateDTO CRUD service.
     */

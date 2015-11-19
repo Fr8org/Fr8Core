@@ -24,6 +24,7 @@ namespace HubWeb.Controllers
     public class RouteController : ApiController
     {
         private readonly IRoute _route;
+        private readonly IFindObjectsRoute _findObjectsRoute;
         private readonly ISecurityServices _security;
         
         public RouteController()
@@ -37,6 +38,7 @@ namespace HubWeb.Controllers
         {
             _route = route;
             _security = ObjectFactory.GetInstance<ISecurityServices>();
+            _findObjectsRoute = ObjectFactory.GetInstance<IFindObjectsRoute>();
         }
 
         [Fr8ApiAuthorize]
