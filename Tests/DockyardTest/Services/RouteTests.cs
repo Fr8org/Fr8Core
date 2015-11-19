@@ -129,7 +129,7 @@ namespace DockyardTest.Services
         {
             var curRouteDO = FixtureData.TestRouteNoMatchingParentActivity();
             
-            string result = _processTemplateService.Activate(curRouteDO);
+            string result = _processTemplateService.Activate(curRouteDO).Result;
 
             Assert.AreEqual(result, "no action");
         }

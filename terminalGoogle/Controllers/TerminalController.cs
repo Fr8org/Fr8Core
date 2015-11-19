@@ -41,12 +41,24 @@ namespace terminalGoogle.Controllers
                 MinPaneWidth = 300
             };
 
+            var receiveGoogleForm = new ActivityTemplateDO
+            {
+                Name = "Receive_Google_Form",
+                Label = "Receive Google Form Response",
+                Version = "1",
+                Category = ActivityCategory.Receivers,
+                Terminal = terminal,
+                AuthenticationType = AuthenticationType.External,
+                MinPaneWidth = 300
+            };
+
             return Json(new StandardFr8TerminalCM()
             {
                 Definition = terminal,
                 Actions = new List<ActivityTemplateDO>
                 {
-                    extractDataAction
+                    extractDataAction,
+                    receiveGoogleForm
                 }
             });    
         }

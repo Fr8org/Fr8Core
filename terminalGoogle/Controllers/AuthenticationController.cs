@@ -15,12 +15,12 @@ namespace terminalGoogle.Controllers
     {
         private const string curPlugin = "terminalGoogle";
 
-        private readonly IGoogleSheet _google;
+        private readonly IGoogleIntegration _google;
 
 
         public AuthenticationController()
         {
-            _google = new GoogleSheet();
+            _google = new GoogleIntegration();
         }
 
         [HttpPost]
@@ -41,7 +41,7 @@ namespace terminalGoogle.Controllers
 
         [HttpPost]
         [Route("token")]
-        public AuthorizationTokenDTO GenerateOAuthToken(ExternalAuthenticationDTO externalAuthDTO)
+        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO externalAuthDTO)
         {
             try
             {
@@ -55,11 +55,13 @@ namespace terminalGoogle.Controllers
                 }
 
                 var oauthToken = _google.GetToken(code);
+                var email = await _google.GetExternalUserId(oauthToken);
 
                 return new AuthorizationTokenDTO()
                 {
                     Token = JsonConvert.SerializeObject(oauthToken),
-                    ExternalStateToken = state
+                    ExternalStateToken = state,
+                    ExternalAccountId = email
                 };
             }
             catch (Exception ex)

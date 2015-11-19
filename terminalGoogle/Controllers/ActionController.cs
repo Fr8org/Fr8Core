@@ -21,16 +21,16 @@ namespace terminalGoogle.Controllers
 
         [HttpPost]
         [Route("activate")]
-        public ActionDTO Activate(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Activate(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_baseTerminalController.HandleFr8Request(curTerminal, "Activate", curActionDTO);
+            return await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, "Activate", curActionDTO);
         }
 
         [HttpPost]
         [Route("deactivate")]
-        public ActionDTO Deactivate(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Deactivate(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_baseTerminalController.HandleFr8Request(curTerminal, "Deactivate", curActionDTO);
+            return await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, "Deactivate", curActionDTO);
         }
 
         [HttpPost]

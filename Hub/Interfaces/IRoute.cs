@@ -3,6 +3,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using System.Threading.Tasks;
 
 namespace Hub.Interfaces
 {
@@ -17,8 +18,8 @@ namespace Hub.Interfaces
         IList<SubrouteDO> GetSubroutes(RouteDO curRouteDO);
         IList<RouteDO> GetMatchingRoutes(string userId, EventReportCM curEventReport);
         RouteNodeDO GetFirstActivity(int curRouteId);
-        string Activate(RouteDO curRoute);
-        string Deactivate(RouteDO curRoute);
+        Task<string> Activate(RouteDO curRoute);
+        Task<string> Deactivate(RouteDO curRoute);
         IEnumerable<ActionDO> GetActions(int id);
 	    RouteDO GetRoute(ActionDO action);
 	    RouteDTO MapRouteToDto(IUnitOfWork uow, RouteDO curRouteDO);

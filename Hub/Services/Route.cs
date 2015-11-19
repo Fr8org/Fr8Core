@@ -15,6 +15,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
+using System.Threading.Tasks;
 
 namespace Hub.Services
 {
@@ -151,9 +152,18 @@ namespace Hub.Services
         {
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                //var queryableRepo = unitOfWork.SubrouteRepository
+                //.GetQuery()
+                //.Include(x => x.ChildNodes)
+                //.Where(x => x.ParentRouteNodeId == curRouteDO.Id)
+                //.OrderBy(x => x.Id)
+                //.ToList();
+
+                //return queryableRepo;
+
                 var queryableRepo = unitOfWork.RouteRepository.GetQuery()
-                    .Include("Subroutes")
-                    .Where(x => x.Id == curRouteDO.Id);
+                   .Include("Subroutes")
+                   .Where(x => x.Id == curRouteDO.Id);
 
                 return queryableRepo.SelectMany<RouteDO, SubrouteDO>(x => x.Subroutes)
                     .ToList();
@@ -187,7 +197,7 @@ namespace Hub.Services
 
 
 
-        public string Activate(RouteDO curRoute)
+        public async Task<string> Activate(RouteDO curRoute)
         {
             if (curRoute.Subroutes == null)
             {
@@ -195,23 +205,25 @@ namespace Hub.Services
             }
 
             string result = "no action";
-
-            foreach (var curActionDO in EnumerateActivities<ActionDO>(curRoute))
-            {
-                try
-                {
-                    _action.Activate(curActionDO).Wait();
-
-                    result = "success";
-                }
-                catch (Exception ex)
-                {
-                    throw new ApplicationException("Process template activation failed.", ex);
-                }
-            }
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var route = uow.RouteRepository.GetByKey(curRoute.Id);
+
+                foreach (var curActionDO in EnumerateActivities<ActionDO>(route))
+                {
+                    try
+                    {
+                        var resultActivate = await _action.Activate(curActionDO);
+
+                        result = "success";
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ApplicationException("Process template activation failed.", ex);
+                    }
+                }
+
+            
                 uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Active;
                 uow.SaveChanges();
             }
@@ -221,26 +233,27 @@ namespace Hub.Services
 
 
 
-        public string Deactivate(RouteDO curRoute)
+        public async Task<string> Deactivate(RouteDO curRoute)
         {
             string result = "no action";
 
-            foreach (var curActionDO in EnumerateActivities<ActionDO>(curRoute))
-            {
-                try
-                {
-                    _action.Deactivate(curActionDO).Wait();
-
-                    result = "success";
-                }
-                catch (Exception ex)
-                {
-                    throw new ApplicationException("Process template Deactivation failed.", ex);
-                }
-            }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                foreach (var curActionDO in EnumerateActivities<ActionDO>(curRoute))
+                {
+                    try
+                    {
+                        var resultD = await _action.Deactivate(curActionDO);
+
+                        result = "success";
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ApplicationException("Process template Deactivation failed.", ex);
+                    }
+                }
+
                 uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Inactive;
                 uow.SaveChanges();
             }
@@ -364,7 +377,7 @@ namespace Hub.Services
 
         public RouteNodeDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute)
         {
-            return EnumerateActivities<RouteNodeDO>(curRoute).OrderBy(a => a.Ordering).FirstOrDefault();
+            return EnumerateActivities<RouteNodeDO>(curRoute, false).OrderBy(a => a.Ordering).FirstOrDefault();
         }
 
         public RouteDO GetRoute(ActionDO action)
