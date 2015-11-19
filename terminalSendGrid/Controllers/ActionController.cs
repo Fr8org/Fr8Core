@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using AutoMapper;
@@ -17,17 +18,9 @@ namespace terminalSendGrid.Controllers
         private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
         [HttpPost]
-        [Route("configure")]
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, "Configure", curActionDTO);
-        }
-
-        [HttpPost]
-        [Route("run")]
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
-        {
-            return await (Task<PayloadDTO>)_baseTerminalController.HandleFr8Request(curTerminal, "Run", curActionDTO);
+            return await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, CultureInfo.CurrentCulture.TextInfo.ToTitleCase(actionType), curActionDTO);
         }
     }
 }

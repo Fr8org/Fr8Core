@@ -13,6 +13,10 @@ namespace terminalGoogle
                 name: "TerminalGoogleServer",
                 routeTemplate: "terminalGoogle/{controller}/{id}"
             );
+            config.Routes.MapHttpRoute(
+    name: "TerminalGoogleActionCatchAll",
+    routeTemplate: "actions/{*actionType}",
+    defaults: new { controller = "Action", action = "Execute" });
         }
     }
 }

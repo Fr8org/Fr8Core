@@ -17,7 +17,7 @@ using Hub.Managers.APIManagers.Transmitters.Terminal;
 using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using terminalAzure;
+using terminalFr8Core;
 using terminalDocuSign;
 using terminalDocuSign.Tests.Fixtures;
 

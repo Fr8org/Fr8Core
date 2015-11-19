@@ -5,6 +5,7 @@ using TerminalBase.BaseClasses;
 using System.Collections.Generic;
 using Data.States;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using AutoMapper;
 
@@ -17,31 +18,9 @@ namespace terminalExcel.Controllers
         private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
         [HttpPost]
-        [Route("configure")]
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>) _baseTerminalController.HandleFr8Request(curTerminal, "Configure", curActionDTO);
-        }
-
-        [HttpPost]
-        [Route("activate")]
-        public ActionDTO Activate(ActionDTO curActionDataPackage)
-        {
-            return (ActionDTO)_baseTerminalController.HandleFr8Request(curTerminal, "Activate", curActionDataPackage);
-        }
-
-        [HttpPost]
-        [Route("deactivate")]
-        public ActionDTO Deactivate(ActionDTO curActionDataPackage)
-        {
-            return (ActionDTO)_baseTerminalController.HandleFr8Request(curTerminal, "Deactivate", curActionDataPackage);
-        }
-
-        [HttpPost]
-        [Route("run")]
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
-        {
-            return await (Task<PayloadDTO>)_baseTerminalController.HandleFr8Request(curTerminal, "Run", curActionDTO);
+            return await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, CultureInfo.CurrentCulture.TextInfo.ToTitleCase(actionType), curActionDTO);
         }
     }
 }

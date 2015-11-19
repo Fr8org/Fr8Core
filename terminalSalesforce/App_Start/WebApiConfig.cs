@@ -17,7 +17,11 @@ namespace terminalSalesforce
             config.Routes.MapHttpRoute(
                 name: "terminalSalesforce",
                 routeTemplate: "terminal_salesforce/{controller}/{id}"
-            );         
+            );
+            config.Routes.MapHttpRoute(
+    name: "TerminalSalesforceActionCatchAll",
+    routeTemplate: "actions/{*actionType}",
+    defaults: new { controller = "Action", action = "Execute" });
         }
     }
 }

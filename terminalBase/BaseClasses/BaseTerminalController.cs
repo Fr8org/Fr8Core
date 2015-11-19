@@ -99,12 +99,12 @@ namespace TerminalBase.BaseClasses
                         response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
                         return response;
                     }
-                case "InitialConfigurationResponse":
+                case "Initialconfigurationresponse":
                     {
                         Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
-                case "FollowupConfigurationResponse":
+                case "Followupconfigurationresponse":
                     {
                         Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));

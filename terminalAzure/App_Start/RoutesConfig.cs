@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
-using StructureMap;
-using Hub.StructureMap;
-using TerminalBase;
+﻿using System.Web.Http;
+using Data.States.Templates;
 using TerminalBase.BaseClasses;
-using terminalAzure.Infrastructure;
 
 namespace terminalAzure
 {
@@ -19,8 +13,12 @@ namespace terminalAzure
 
             config.Routes.MapHttpRoute(
                 name: "TerminalAzureSqlServer",
-                routeTemplate: "terminal_azure_sql_server/{controller}/{id}"                
-            );
+                routeTemplate: "terminal_azure_sql_server/{controller}/{id}");
+
+            config.Routes.MapHttpRoute(
+                name: "TerminalAzureActionCatchAll",
+                routeTemplate: "actions/{*actionType}",
+                defaults: new {controller="Action", action="Execute"});
         }
     }
 }

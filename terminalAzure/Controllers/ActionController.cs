@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
-using Data.States;
+using Data.Interfaces.DataTransferObjects;
 using TerminalBase.BaseClasses;
-using AutoMapper;
 
 namespace terminalAzure.Controllers
 {    
@@ -17,40 +15,11 @@ namespace terminalAzure.Controllers
         private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
         [HttpPost]
-        [Route("configure")]
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
-
-            return await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, "Configure", curActionDTO);
-
-        }
-       
-        [HttpPost]
-        [Route("activate")]
-        public ActionDTO Activate(ActionDTO curActionDataPackage)
-        {
-            return (ActionDTO)_baseTerminalController.HandleFr8Request(curTerminal, "Activate", curActionDataPackage);
-
+            return await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, CultureInfo.CurrentCulture.TextInfo.ToTitleCase(actionType.ToLower()), curActionDTO);
         }
 
-        [HttpPost]
-        [Route("deactivate")]
-        public ActionDTO Deactivate(ActionDTO curActionDataPackage)
-        {
-
-            return (ActionDTO)_baseTerminalController.HandleFr8Request(curTerminal, "Deactivate", curActionDataPackage);
-
-        }
-
-        [HttpPost]
-        [Route("run")]
-        public async Task<PayloadDTO> Run(ActionDTO curActionDTO)
-        {
-
-            return await (Task<PayloadDTO>)_baseTerminalController.HandleFr8Request(
-                curTerminal, "Run", curActionDTO);
-
-        }
 
         //----------------------------------------------------------
 

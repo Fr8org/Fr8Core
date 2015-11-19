@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Globalization;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -27,33 +28,9 @@ namespace terminalSlack.Controllers
         }
 
         [HttpPost]
-        [Route("configure")]
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>) _baseTerminalController
-                .HandleFr8Request(curTerminal, "Configure", curActionDTO);
-        }
-
-        [HttpPost]
-        [Route("activate")]
-        public string Activate(ActionDTO curActionDataPackage)
-        {
-            return string.Empty;
-        }
-
-        [HttpPost]
-        [Route("deactivate")]
-        public string Deactivate(ActionDTO curActionDataPackage)
-        {
-            return string.Empty;
-        }
-
-        [HttpPost]
-        [Route("run")]
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
-        {
-            return await (Task<PayloadDTO>)_baseTerminalController.HandleFr8Request(
-                curTerminal, "Run", actionDto);
+            return await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, CultureInfo.CurrentCulture.TextInfo.ToTitleCase(actionType), curActionDTO);
         }
     }
 }
