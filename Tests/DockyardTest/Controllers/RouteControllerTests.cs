@@ -282,6 +282,7 @@ namespace DockyardTest.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                curRouteDO.Fr8Account = FixtureData.TestDeveloperAccount();
                 uow.RouteRepository.Add(curRouteDO);
                 uow.SaveChanges();
             }
