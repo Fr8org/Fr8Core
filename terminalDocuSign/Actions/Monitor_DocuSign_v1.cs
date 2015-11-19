@@ -264,14 +264,14 @@ namespace terminalDocuSign.Actions
 
             if (selectedOption == "template")
             {
-                var envelopeIdField = storage
+                var templateIdField = storage
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>()
                     .SelectMany(x => x.Fields)
-                    .FirstOrDefault(x => x.Key == "EnvelopeId");
+                    .FirstOrDefault(x => x.Key == "TemplateId");
 
-                if (envelopeIdField != null)
+                if (templateIdField != null)
                 {
-                    envelopeIdField.Value = selectedValue;
+                    templateIdField.Value = selectedValue;
                 }
             }
         }
