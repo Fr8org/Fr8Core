@@ -221,6 +221,12 @@ namespace Hub.Services
                     }
 
                     uow.SaveChanges();
+
+                    if (authTokenDTO.RequiresCallback)
+                    {
+                        authTokenDTO.AdditionalAttributes += "fr8_user_id=" + curAccount.Id;
+                        await restClient.PostAsync<AuthorizationTokenDTO>(new Uri("http://" + terminal.Endpoint + "/authentication/completed"), authTokenDTO);
+                    }
                 }
             }
 

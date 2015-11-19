@@ -65,8 +65,12 @@ namespace Hub.Services
             if (creating)
             {
                 ptdo.RouteState = RouteState.Inactive;
-                var subroute = new SubrouteDO(true);
-                subroute.ParentRouteNode = ptdo;
+
+                var subroute = new SubrouteDO(true)
+                {
+                    ParentRouteNode = ptdo
+                };
+
                 ptdo.ChildNodes.Add(subroute);
 
                 uow.RouteRepository.Add(ptdo);
@@ -141,7 +145,8 @@ namespace Hub.Services
                 Name = curRouteDO.Name,
                 RouteState = curRouteDO.RouteState,
                 StartingSubrouteId = curRouteDO.StartingSubrouteId,
-                Subroutes = subrouteDTOList
+                Subroutes = subrouteDTOList,
+                Fr8UserId = curRouteDO.Fr8Account.Id
             };
 
             return result;

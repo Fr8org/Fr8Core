@@ -221,8 +221,10 @@
     <Compile Include="Infrastructure\TerminalDataAutoMapperBootStrapper.cs" />
     <Compile Include="Infrastructure\TerminalDocuSignMapBootstrapper.cs" />
     <Compile Include="Interfaces\IDocuSignEnvelope.cs" />
+    <Compile Include="Interfaces\IDocuSignRoute.cs" />
     <Compile Include="Services\DocuSignManager.cs" />
     <Compile Include="Services\DocuSignEnvelope.cs" />
+    <Compile Include="Services\DocuSignRoute.cs" />
     <Compile Include="Services\DocuSignTemplate.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Interfaces\IDocuSignTemplate.cs" />

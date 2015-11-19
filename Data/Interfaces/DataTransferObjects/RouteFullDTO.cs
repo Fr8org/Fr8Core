@@ -12,6 +12,8 @@ namespace Data.Interfaces.DataTransferObjects
         /// List of Subroute DTOs.
         /// </summary>
         public IEnumerable<FullSubrouteDTO> Subroutes { get; set; }
+
+        public string Fr8UserId { get; set; }
     }
     
     /// <summary>

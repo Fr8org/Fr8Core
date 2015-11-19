@@ -41,6 +41,7 @@ namespace Data.Infrastructure.AutoMapper
 
             var result = Mapper.Map<RouteFullDTO>(Mapper.Map<RouteEmptyDTO>(route));
             result.Subroutes = subrouteDTOList;
+            result.Fr8UserId = route.Fr8Account.Id;
 
             return result;
         }

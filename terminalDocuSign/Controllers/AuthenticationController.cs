@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Data.Interfaces.DataTransferObjects;
+using StructureMap;
 using TerminalBase.BaseClasses;
+using terminalDocuSign.Interfaces;
 using Utilities.Configuration.Azure;
 using terminalDocuSign.DataTransferObjects;
 
@@ -43,7 +46,8 @@ namespace terminalDocuSign.Controllers
                 return new AuthorizationTokenDTO()
                 {
                     Token = JsonConvert.SerializeObject(docuSignAuthDTO),
-                    ExternalAccountId = curCredentials.Username
+                    ExternalAccountId = curCredentials.Username,
+                    RequiresCallback = true
                 };
             }
             catch (Exception ex)
@@ -55,6 +59,28 @@ namespace terminalDocuSign.Controllers
                     Error = "An error occured while trying to authenticate, please try again later."
                 };
             }
+        }
+
+        [HttpPost]
+        [Route("completed")]
+        public async Task OnAuthenticationCompleted(AuthorizationTokenDTO curAuthorizationTokenDTO)
+        {
+            //upon successful DocuSign authentication, we should have fr8_user_id
+            if (string.IsNullOrEmpty(curAuthorizationTokenDTO.AdditionalAttributes) ||
+                !curAuthorizationTokenDTO.AdditionalAttributes.Contains("fr8_user_id"))
+            {
+                throw new ArgumentException(
+                    "fr8_user_id argument is missing on completion of sucessfull DocuSign authentication");
+            }
+
+            string curFr8UserId =
+                curAuthorizationTokenDTO.AdditionalAttributes.Split(new string[] {";"}, StringSplitOptions.None)
+                    .ToList()
+                    .Single(attribute => attribute.StartsWith("fr8_user_id"))
+                    .Split(new string[] {"="}, StringSplitOptions.None)[1];
+
+            //create Monitor All DocuSign Events route
+            await ObjectFactory.GetInstance<IDocuSignRoute>().CreateRoute_MonitorAllDocuSignEvents(curFr8UserId);
         }
 
         private async Task<string> ObtainOAuthToken(CredentialsDTO curCredentials, string baseUrl)
