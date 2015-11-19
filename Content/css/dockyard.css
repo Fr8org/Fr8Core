@@ -60,6 +60,10 @@
     opacity: 0.5;
 }
 
+.route-list-header-button {
+    margin-left: 25px; 
+}
+
 /* Added for Showing Steps in Activity Pane*/
 .processActionStep {
     background-image: URL("/Content/img/ProcessBuilder/circle.png");

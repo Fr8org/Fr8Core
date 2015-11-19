@@ -84,15 +84,15 @@ namespace Hub.Services
 
 
 
-        public async Task Launch(RouteDO curRoute, Crate curEvent)
+        public async Task<ContainerDO> Launch(RouteDO curRoute, Crate curEvent)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curContainerDO = Create(uow, curRoute.Id, curEvent);
 
-            if (curContainerDO.ContainerState == ContainerState.Failed || curContainerDO.ContainerState == ContainerState.Completed)
+                if (curContainerDO.ContainerState == ContainerState.Failed || curContainerDO.ContainerState == ContainerState.Completed)
                 {
-                throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
+                    throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
                 }
 
                 curContainerDO.ContainerState = ContainerState.Executing;
@@ -102,6 +102,8 @@ namespace Hub.Services
                 {
                     await Execute(uow, curContainerDO);
                     curContainerDO.ContainerState = ContainerState.Completed;
+
+                    return curContainerDO;
                 }
                 catch
                 {

@@ -16,7 +16,7 @@ module dockyard.tests.unit.directives.controls {
     };
 
     var changeInputValue = ($element, newValue) => {
-        $element.find('input').val(newValue).blur().triggerHandler('change');
+        $element.find('input').val(newValue).trigger('input').blur();
         $element.isolateScope().adjustValue();
         $element.scope().$apply();
     };
@@ -66,7 +66,7 @@ module dockyard.tests.unit.directives.controls {
         });
 
         it('should change the value in scope when input value is changed', () => {
-            $element.find('input').val(15).change();
+            changeInputValue($element, 15);
             expect(parseInt(scope.value)).toBe(15);
         });
 

@@ -10,7 +10,6 @@ var dockyard;
             //More detail on creating directives in TypeScript: 
             //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
             function FilePicker() {
-                //class FilePicker implements ng.IDirective {
                 var controller = ['$scope', '$modal', 'FileService', function ($scope, $modal, FileService) {
                         $scope.selectedFile = null;
                         var OnFileUploadSuccess = function (fileDTO) {
