@@ -168,6 +168,24 @@ module dockyard.tests.controller {
 
         });
 
+        describe('.hasCrateOfManifestType()', () => {
+
+            it('should return true if there is a create with specified manifest type', () => {
+                expect(ch.hasCrateOfManifestType(crateStorage, 'Standard Configuration Controls')).toBe(true);
+                expect(ch.hasCrateOfManifestType(crateStorage, 'Standard Design-Time Fields2')).toBe(true);
+                expect(ch.hasCrateOfManifestType(duplicateCrateStorage, 'Standard Design-Time Fields')).toBe(true);
+            });
+
+            it('should return false if there is no such crate', () => {
+                expect(ch.hasCrateOfManifestType(crateStorage, 'not existing manifest type')).toBe(false);
+            });
+
+            it('should return false if the storage is empty', () => {
+                expect(ch.hasCrateOfManifestType(emptyStorage, 'Standard Configuration Controls')).toBe(false);
+            });
+
+        });
+
     });
 
 }
