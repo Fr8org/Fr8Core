@@ -77,6 +77,8 @@ namespace Data.Entities
 
         public virtual Fr8AccountDO Fr8Account { get; set; }
 
+        public string Tag { get; set; }
+
         [InverseProperty("Route")]
         public virtual ICollection<ContainerDO> ChildContainers { get; set; }
 

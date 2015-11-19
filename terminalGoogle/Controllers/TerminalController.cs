@@ -22,12 +22,18 @@ namespace terminalGoogle.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverTerminals()
         {
+            var webService = new WebServiceDO
+            {
+                Name = "Google",
+                IconPath= "/Content/icons/web_services/google-icon-64x64.png"
+            };
+
             var terminal = new TerminalDO()
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalGoogle",
-                Version = "1"
+                Version = "1",
             };
 
             var extractDataAction = new ActivityTemplateDO
@@ -38,7 +44,9 @@ namespace terminalGoogle.Controllers
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
-                MinPaneWidth = 300
+                MinPaneWidth = 300,
+                WebService = webService,
+                Tags = "Table Data Generator"
             };
 
             var receiveGoogleForm = new ActivityTemplateDO
@@ -49,6 +57,7 @@ namespace terminalGoogle.Controllers
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
+                WebService = webService,
                 MinPaneWidth = 300
             };
 

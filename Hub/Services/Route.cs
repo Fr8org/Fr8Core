@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using AutoMapper;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;

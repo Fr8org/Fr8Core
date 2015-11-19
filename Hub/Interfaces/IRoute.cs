@@ -28,4 +28,4 @@ namespace Hub.Interfaces
 
         RouteDO Copy(IUnitOfWork uow, RouteDO curRouteDO, string name);
 	}
-    }
+}

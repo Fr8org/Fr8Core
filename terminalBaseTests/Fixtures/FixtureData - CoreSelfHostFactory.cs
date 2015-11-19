@@ -8,7 +8,7 @@ using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
 
-namespace pluginBaseTests.Fixtures
+namespace terminalBaseTests.Fixtures
 {
     partial class FixtureData
     {

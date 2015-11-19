@@ -286,7 +286,7 @@ namespace terminalFr8Core.Actions
         private async Task UpdateQueryableCriteria(CrateStorage storage, ActionDO actionDO, string selectedObject)
         {
             var matchedColumns = await MatchColumnsForSelectedObject(actionDO, selectedObject);
-            UpdateDesignTimeCrateValue(Crate.GetStorage(actionDO), "Queryable Criteria", matchedColumns.ToArray());
+            UpdateDesignTimeCrateValue(storage, "Queryable Criteria", matchedColumns.ToArray());
         }
 
         /// <summary>

@@ -73,7 +73,7 @@ namespace Data.Migrations
             //AddAuthorizationTokens(uow);
             AddContainerDOForTestingApi(uow);
 
-	        AddWebServices(uow);
+            AddWebServices(uow);
 
         }
 
@@ -96,7 +96,7 @@ namespace Data.Migrations
                 ExternalAccountId = "docusign_developer@dockyard.company",
             };
 
-            docusignEventPayload.EventPayload.Add(Crate.FromContent("Payload Data", 
+            docusignEventPayload.EventPayload.Add(Crate.FromContent("Payload Data",
                 new StandardPayloadDataCM(new List<FieldDTO>
             {
                 new FieldDTO
@@ -153,7 +153,7 @@ namespace Data.Migrations
                 token.Terminal = docuSignTerminal;
                 token.TerminalID = docuSignTerminal.Id;
 
-				token.ExpiresAt = DateTime.UtcNow.AddDays(10);
+                token.ExpiresAt = DateTime.UtcNow.AddDays(10);
 
                 uow.AuthorizationTokenRepository.Add(token);
                 uow.SaveChanges();
@@ -487,9 +487,9 @@ namespace Data.Migrations
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
         }
 
-	    private void AddWebServices(IUnitOfWork uow)
-	    {
-	        var terminalToWs = new Dictionary<string, string>
+        private void AddWebServices(IUnitOfWork uow)
+        {
+            var terminalToWs = new Dictionary<string, string>
 	        {
 	            {"terminalSalesforce", "Salesforce"},
 	            {"terminalFr8Core", "fr8 Core"},
@@ -500,65 +500,65 @@ namespace Data.Migrations
 	            {"terminalExcel", "Excel"},
 	        };
 
-	        var wsToId = new Dictionary<string, int>();
+            var wsToId = new Dictionary<string, int>();
 
             AddWebService(uow, "AWS", "/Content/icons/web_services/aws-icon-64x64.png");
             AddWebService(uow, "Slack", "/Content/icons/web_services/slack-icon-64x64.png");
             AddWebService(uow, "DocuSign", "/Content/icons/web_services/docusign-icon-64x64.png");
-			AddWebService(uow, "Microsoft Azure", "/Content/icons/web_services/ms-azure-icon-64x64.png");
-			AddWebService(uow, "Excel", "/Content/icons/web_services/ms-excel-icon-64x64.png");
-			AddWebService(uow, "fr8 Core", "/Content/icons/web_services/fr8-core-icon-64x64.png");
-			AddWebService(uow, "Salesforce", "/Content/icons/web_services/salesforce-icon-64x64.png");
-			AddWebService(uow, "SendGrid", "/Content/icons/web_services/sendgrid-icon-64x64.png");
-			AddWebService(uow, "Twilio", "/Content/icons/web_services/twilio-icon-64x64.png");
+            AddWebService(uow, "Microsoft Azure", "/Content/icons/web_services/ms-azure-icon-64x64.png");
+            AddWebService(uow, "Excel", "/Content/icons/web_services/ms-excel-icon-64x64.png");
+            AddWebService(uow, "fr8 Core", "/Content/icons/web_services/fr8-core-icon-64x64.png");
+            AddWebService(uow, "Salesforce", "/Content/icons/web_services/salesforce-icon-64x64.png");
+            AddWebService(uow, "SendGrid", "/Content/icons/web_services/sendgrid-icon-64x64.png");
+            AddWebService(uow, "Dropbox", "/Content/icons/web_services/dropbox-icon-64x64.png");
             AddWebService(uow, "UnknownService", "/Content/icons/web_services/unknown-service.png");
 
-	        foreach (var webServiceDo in uow.WebServiceRepository.GetAll())
-	        {
-	            if (webServiceDo.Name != null)
-	            {
-	                wsToId[webServiceDo.Name] = webServiceDo.Id;
-	            }
-	        }
+            foreach (var webServiceDo in uow.WebServiceRepository.GetAll())
+            {
+                if (webServiceDo.Name != null)
+                {
+                    wsToId[webServiceDo.Name] = webServiceDo.Id;
+                }
+            }
 
-	        foreach (var activity in uow.ActivityTemplateRepository.GetQuery().Include(x => x.Terminal))
-	        {
-	            string wsName;
-	            int wsId;
+            foreach (var activity in uow.ActivityTemplateRepository.GetQuery().Include(x => x.Terminal))
+            {
+                string wsName;
+                int wsId;
 
                 if (terminalToWs.TryGetValue(activity.Terminal.Name, out wsName) && wsToId.TryGetValue(wsName, out wsId))
                 {
                     activity.WebServiceId = wsId;
                 }
-	        }
-           
-			uow.SaveChanges();
-	    }
+            }
 
-	    private void AddWebService(IUnitOfWork uow, string name, string iconPath)
-	    {
-		    var isWsExists = uow.WebServiceRepository.GetQuery().Any(x => x.Name == name);
+            uow.SaveChanges();
+        }
 
-		    if (!isWsExists)
-		    {
-				var webServiceDO = new WebServiceDO
-				{
-					Name = name,
-					IconPath = iconPath
-				};
+        private void AddWebService(IUnitOfWork uow, string name, string iconPath)
+        {
+            var isWsExists = uow.WebServiceRepository.GetQuery().Any(x => x.Name == name);
 
-				uow.WebServiceRepository.Add(webServiceDO);
-		    }
-	    }
+            if (!isWsExists)
+            {
+                var webServiceDO = new WebServiceDO
+                {
+                    Name = name,
+                    IconPath = iconPath
+                };
+
+                uow.WebServiceRepository.Add(webServiceDO);
+            }
+        }
 
 
         //Getting random working time within next 3 days
         private static DateTimeOffset GetRandomEventStartTime()
         {
-			TimeSpan timeSpan = DateTime.UtcNow.AddDays(3) - DateTime.UtcNow;
+            TimeSpan timeSpan = DateTime.UtcNow.AddDays(3) - DateTime.UtcNow;
             var randomTest = new Random();
             TimeSpan newSpan = new TimeSpan(0, randomTest.Next(0, (int)timeSpan.TotalMinutes), 0);
-			DateTime newDate = DateTime.UtcNow;
+            DateTime newDate = DateTime.UtcNow;
             while (newDate.TimeOfDay.Hours < 9)
             {
                 newDate = newDate.Add(new TimeSpan(1, 0, 0));
