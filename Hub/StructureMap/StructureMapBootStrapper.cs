@@ -122,6 +122,7 @@ namespace Hub.StructureMap
                 For<IDockyardEvent>().Use<DockyardEvent>();
                 For<IReport>().Use<Report>();
                 For<IManifest>().Use<Manifest>();
+                For<IFindObjectsRoute>().Use<FindObjectsRoute>();
             }
         }
 
@@ -180,6 +181,7 @@ namespace Hub.StructureMap
                 For<ICrateManager>().Use<CrateManager>();
                 For<IDockyardEvent>().Use<DockyardEvent>();
                 For<IManifest>().Use<Manifest>();
+                For<IFindObjectsRoute>().Use<FindObjectsRoute>();
             }
         }
 
