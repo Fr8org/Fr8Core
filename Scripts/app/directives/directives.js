@@ -154,4 +154,19 @@ app.directive('transferClickConfigurePane', function () {
         }
     };
 });
+app.directive('inputFocus', ['$parse', function ($parse) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attrs) {
+                var prevState = false;
+                var model = $parse(attrs.inputFocus);
+                scope.$watch(model, function (value) {
+                    if (value && !prevState) {
+                        setTimeout(function () { element.focus(); }, 0);
+                    }
+                    prevState = !!value;
+                });
+            }
+        };
+    }]);
 //# sourceMappingURL=directives.js.map

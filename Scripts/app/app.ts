@@ -174,7 +174,13 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             data: { pageTitle: 'Container  Details', pageSubTitle: '' }
         })
 
-        .state('solution', {
+        .state('solutionList', {
+            url: "/solutions",
+            templateUrl: "/AngularTemplate/SolutionList",
+            data: { pageTitle: 'Solutions', pageSubTitle: 'This page displays all Solutions' }
+        })
+
+        .state('configureSolution', {
             url: "/solution/{solutionName}",
             templateUrl: "/AngularTemplate/Solution",
             data: { pageTitle: 'Create a Solution', pageSubTitle: '' }
@@ -186,11 +192,23 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             data: { pageTitle: 'Containers', pageSubTitle: 'This page displays all Containers ' },
         })
 
-		.state('webservices', {
-		    url: "/webservices",
-			templateUrl: "/AngularTemplate/WebServiceList",
+        .state('webservices', {
+            url: "/webservices",
+            templateUrl: "/AngularTemplate/WebServiceList",
             data: { pageTitle: 'Web Services', pageSubTitle: '' }
-	    });
+        })
+
+        .state('findObjects', {
+            url: '/findObjects/create',
+            templateUrl: '/AngularTemplate/FindObjects',
+            data: { pageTitle: 'Constructing Find Objects route', pageSubTitle: '' }
+        })
+
+        .state('findObjectsResult', {
+            url: '/findObjects/{id}/results',
+            templateUrl: '/AngularTemplate/FindObjectsResults',
+            data: { pageTitle: 'Find Objects results', pageSubTitle: '' }
+        });
 }]);
 
 /* Init global settings and run the app */

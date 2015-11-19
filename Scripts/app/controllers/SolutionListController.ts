@@ -13,6 +13,7 @@ module dockyard.controllers {
         public static $inject = [
             '$scope',
             'ActivityTemplateService',
+            '$modal',
             '$state'
         ];
         constructor(
@@ -28,7 +29,7 @@ module dockyard.controllers {
         }
 
         private onSolutionSelected(solution: interfaces.IActivityTemplateVM) {
-            this.$state.go('configureSolution', { id: solution.id });
+            this.$state.go('configureSolution', { solutionName: solution.name });
         }
     }
 

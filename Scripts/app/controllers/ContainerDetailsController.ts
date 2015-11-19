@@ -28,9 +28,10 @@ module dockyard.controllers {
             // ParseInt use the Radix otherwise Internet explorer gives different result
 
             $scope.id = $stateParams.id;
-            if (/^[0-9]+$/.test($scope.id) && parseInt($scope.id,10) > 0) {
-                $scope.container = ContainerService.getSingle({ id: $stateParams.id });
-            }
+            // if (/^[0-9]+$/.test($scope.id) && parseInt($scope.id,10) > 0) {
+            //     $scope.container = ContainerService.getSingle({ id: $stateParams.id });
+            // }
+            $scope.container = ContainerService.getSingle({ id: $stateParams.id });
         }
     }
 

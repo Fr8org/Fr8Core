@@ -172,9 +172,23 @@ namespace terminalDocuSign.Actions
                 }
             };
 
+            //Create log message
+            var logMessages = new StandardLoggingCM()
+            {
+                Item = new List<LogItemDTO>
+                {
+                    new LogItemDTO
+                    {
+                        Data = "Monitor DocuSign action successfully recieved an envelope ID " + envelopeId,
+                        IsLogged = false
+                    }
+                }
+            };
+
             using (var updater = Crate.UpdateStorage(processPayload))
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
             }
 
             return processPayload;
