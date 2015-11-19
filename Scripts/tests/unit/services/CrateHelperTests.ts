@@ -39,10 +39,6 @@ module dockyard.tests.controller {
                 expect(ch.findByLabel.bind(ch, crateStorage, 'notExistingLabel')).toThrow();
             });
 
-            xit('should throw an exception if more then one crate is found', () => {
-                expect(ch.findByLabel.bind(ch, duplicateCrateStorage, duplicateCrateStorage.crates[0].label)).toThrow(); 
-            });
-
         });
 
         describe('.findByManifestType()', () => {
@@ -64,10 +60,6 @@ module dockyard.tests.controller {
                 expect(ch.findByManifestType.bind(ch, crateStorage, 'notExistingType')).toThrow();
             });
 
-            xit('should throw an exception if more then one crate is found', () => {
-                expect(ch.findByManifestType.bind(ch, duplicateCrateStorage, duplicateCrateStorage.crates[0].manifestType)).toThrow();
-            });
-
         });
 
         describe('.findByManifestTypeAndLabel()', () => {
@@ -81,17 +73,13 @@ module dockyard.tests.controller {
                 });
             });
 
-            xit('should throw an exception if the provided storage is empty', () => {
+            it('should throw an exception if the provided storage is empty', () => {
                 expect(ch.findByManifestTypeAndLabel.bind(ch, emptyStorage, 'type', 'label')).toThrow();
             });
 
             // TODO: This is inconsistent with previous two methods, need to check again
             it('should return null if nothing is found', () => {
                 expect(ch.findByManifestTypeAndLabel(crateStorage, 'notExistingType', 'notExistingLabel')).toBe(null);
-            });
-
-            xit('should throw an exception if more then one crate is found', () => {
-                expect(ch.findByManifestTypeAndLabel.bind(ch, duplicateCrateStorage, duplicateCrateStorage.crates[0].manifestType, duplicateCrateStorage.crates[0].label)).toThrow();
             });
 
         });
