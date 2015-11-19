@@ -819,6 +819,8 @@
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ContainerControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextSource.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\FieldList.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\RadioButtonGroup.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\DropDownListBox.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\FilePicker.spec.ts" />
