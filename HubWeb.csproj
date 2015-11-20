@@ -679,7 +679,8 @@
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
     <Content Include="Scripts\lib\jpattern.js" />
-    <Content Include="Scripts\tests\integration\ContainerControllerTests.js" />
+    <TypeScriptCompile Include="Scripts\lib\jpattern.d.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\ContainerControllerTests.ts" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />
     <Content Include="Views\AngularTemplate\ConfigurationControl.cshtml" />
@@ -811,6 +812,7 @@
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\TestTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ContainerControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextSource.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\FieldList.spec.ts" />
