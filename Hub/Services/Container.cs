@@ -19,11 +19,11 @@ namespace Hub.Services
     {
         
         // Declarations
-
+        
         private readonly IProcessNode _processNode;
         private readonly IRouteNode _activity;
         private readonly ICrateManager _crate;
-
+        
         public Container()
         {
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
@@ -31,7 +31,7 @@ namespace Hub.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-      
+
         public async Task Execute(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             if (curContainerDO == null)
