@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Data.Entities;
 
@@ -6,7 +7,7 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class RouteEmptyDTO
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -17,6 +18,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         public int RouteState { get; set; }
 
-        public int StartingSubrouteId { get; set; }
+        public Guid StartingSubrouteId { get; set; }
     }
 }

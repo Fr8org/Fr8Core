@@ -257,14 +257,14 @@ namespace Hub.Services
             return action;
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, Guid parentNodeId = new Guid(), bool createRoute = false)
         {
-            if (parentNodeId != null && createRoute)
+            if (parentNodeId != Guid.Empty && createRoute)
             {
                 throw new ArgumentException("Parent node id can't be set together with create route flag");
             }
 
-            if (parentNodeId == null && !createRoute)
+            if (parentNodeId == Guid.Empty && !createRoute)
             {
                 throw new ArgumentException("Either Parent node id or create route flag must be set");
             }
@@ -279,7 +279,7 @@ namespace Hub.Services
             }
             else
             {
-                parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId.Value);
+                parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId);
             }
 
             var action = Create(uow, actionTemplateId, name, label, parentNode);

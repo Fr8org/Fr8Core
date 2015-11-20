@@ -105,13 +105,13 @@ namespace terminalDocuSign.Tests.Services
                 _actionMock.Setup(
                     a =>
                         a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                            "Record_DocuSign_Events", It.IsAny<string>(), It.IsAny<int>(), false))
+                            "Record_DocuSign_Events", It.IsAny<string>(), It.IsAny<Guid>(), false))
                     .Returns(Task.FromResult(recordDocuSignAction as RouteNodeDO));
 
                 _actionMock.Setup(
                     a =>
                         a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                            "StoreMTData", It.IsAny<string>(), It.IsAny<int>(), false))
+                            "StoreMTData", It.IsAny<string>(), It.IsAny<Guid>(), false))
                     .Returns(Task.FromResult(storeMtDataAction as RouteNodeDO));
 
                 ObjectFactory.Container.Inject(typeof(IAction), _actionMock.Object);

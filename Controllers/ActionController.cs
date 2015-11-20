@@ -60,7 +60,7 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
+        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid parentNodeId = new Guid(), bool createRoute = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -97,7 +97,7 @@ namespace HubWeb.Controllers
                 }
 
                 var result = await _action.CreateAndConfigure(uow, userId,
-                    activityTemplate.Id, activityTemplate.Name, activityTemplate.Label, null, true);
+                    activityTemplate.Id, activityTemplate.Name, activityTemplate.Label, new Guid(), true);
                 return Ok(_route.MapRouteToDto(uow, (RouteDO)result));
             }
         }
