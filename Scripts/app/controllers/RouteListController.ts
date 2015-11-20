@@ -86,13 +86,6 @@ module dockyard.controllers {
 					templateUrl: '/AngularTemplate/_AddPayloadModal',
 					controller: 'PayloadFormController', resolve: { processTemplateId: processTemplateId  }
 				});
-					/*.result.then((payload: any) => {
-					this.ProcessTemplateService
-						.execute({ id: processTemplateId }, { payload: payload })
-						.$promise.then((data) => {
-							console.log(data);
-						});
-				});*/
 			}
 			else {
 				this.ProcessTemplateService.execute({ id: processTemplateId }, null, null, null);
