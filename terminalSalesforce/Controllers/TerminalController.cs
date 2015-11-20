@@ -42,7 +42,7 @@ namespace terminalSalesforce.Controllers
                 Label = "Create Lead",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
-                Category = ActivityCategory.Forwarders.ToString(),
+                Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
             };
@@ -54,7 +54,7 @@ namespace terminalSalesforce.Controllers
                 Label = "Create Contact",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
-                Category = ActivityCategory.Forwarders.ToString(),
+                Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
             };
@@ -66,7 +66,7 @@ namespace terminalSalesforce.Controllers
                 Label = "Create Account",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
-                Category = ActivityCategory.Forwarders.ToString(),
+                Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
             };

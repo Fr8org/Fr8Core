@@ -30,7 +30,7 @@ namespace Data.Interfaces.DataTransferObjects
         public string ComponentActivities { get; set; }
         [JsonProperty("tags")]
         public string Tags { get; set; }
-        public string Category { get; set; }
+        public ActivityCategory Category { get; set; }
 
         [JsonProperty("minPaneWidth")]
         public int MinPaneWidth { get; set; }

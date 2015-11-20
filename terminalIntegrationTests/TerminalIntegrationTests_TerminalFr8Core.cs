@@ -15,7 +15,7 @@ namespace terminalIntegrationTests
     public partial class TerminalIntegrationTests
     {
         [Test]
-        public void TerminalFr8Core_DisoverTerminals_ShouldReturnDataInCorrectFormat()
+        public void TerminalFr8Core_DiscoverTerminals_ShouldReturnDataInCorrectFormat()
         {
             //Arrange
             TerminalController _terminalController = ObjectFactory.GetInstance<TerminalController>();
@@ -25,6 +25,7 @@ namespace terminalIntegrationTests
             var terminal = (result as JsonResult<StandardFr8TerminalCM>).Content.Definition;
             //Assert
             Assert.IsNotNull(result, "The terminal discovery has failed for Terminal Fr8Core");
+            Assert.IsInstanceOf<WebServiceDTO>(actions.FirstOrDefault().WebService, "The WebService object is not of type WebServiceDTO");
             Assert.IsInstanceOf<TerminalDTO>(terminal, "The terminal object is not of type TerminalDTO");
             Assert.IsInstanceOf<ActivityTemplateDTO>(actions.FirstOrDefault(),
                 "The action template object is not of type ActivityTemplateDTO");

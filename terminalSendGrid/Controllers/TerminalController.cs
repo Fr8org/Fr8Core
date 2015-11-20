@@ -37,7 +37,7 @@ namespace terminalSendGrid.Controllers
                 Tags = "Notifier",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
-                Category = ActivityCategory.Forwarders.ToString(),
+                Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
             };

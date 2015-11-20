@@ -36,7 +36,7 @@ namespace terminalPapertrail.Controllers
                 Version = "1",
                 Name = "Write_To_Log",
                 Label = "Write To Log",
-                Category = ActivityCategory.Processors.ToString(),
+                Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
                 MinPaneWidth = 330,

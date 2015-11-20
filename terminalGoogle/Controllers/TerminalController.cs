@@ -42,7 +42,7 @@ namespace terminalGoogle.Controllers
                 Name = "Extract_Spreadsheet_Data",
                 Label = "Extract Spreadsheet Data",
                 Version = "1",
-                Category = ActivityCategory.Receivers.ToString(),
+                Category = ActivityCategory.Receivers,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
                 MinPaneWidth = 300,

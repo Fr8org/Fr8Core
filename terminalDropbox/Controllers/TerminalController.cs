@@ -41,7 +41,7 @@ namespace terminalDropbox.Controllers
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
 
-                Category = ActivityCategory.Forwarders.ToString(),
+                Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
             };

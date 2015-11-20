@@ -68,13 +68,12 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
                 .ForMember(x => x.TerminalId, opts => opts.ResolveUsing(x => x.TerminalId))
                 .ForMember(x => x.Terminal, opts => opts.ResolveUsing(x => x.Terminal))
-                .ForMember(x=>x.AuthenticationType, opts=>opts.ResolveUsing(x=>x.AuthenticationType))
+                .ForMember(x => x.AuthenticationType, opts => opts.ResolveUsing(x => x.AuthenticationType))
                 .ForMember(x => x.WebService, opts => opts.ResolveUsing(x => Mapper.Map<WebServiceDO>(x.WebService)))
-                .ForMember(x=>x.AuthenticationTypeTemplate, opts =>opts.ResolveUsing((ActivityTemplateDTO x)=>null))
-                .ForMember(x=>x.ActivityTemplateStateTemplate, opts=>opts.ResolveUsing((ActivityTemplateDTO x)=>null))
+                .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
+                .ForMember(x => x.ActivityTemplateStateTemplate,
+                    opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
                 .ForMember(x => x.WebServiceId, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null));
-
-
 
 //
 //            Mapper.CreateMap<ActionListDO, ActionListDTO>()

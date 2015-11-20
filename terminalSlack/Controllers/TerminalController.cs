@@ -34,7 +34,7 @@ namespace terminalSlack.Controllers
             {
                 Name = "Monitor_Channel",
                 Label = "Monitor Channel",
-                Category = ActivityCategory.Monitors.ToString(),
+                Category = ActivityCategory.Monitors,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
                 Version = "1",
@@ -46,7 +46,7 @@ namespace terminalSlack.Controllers
                 Name = "Publish_To_Slack",
                 Label = "Publish To Slack",
                 Tags = "Notifier",
-                Category = ActivityCategory.Forwarders.ToString(),
+                Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
                 Version = "1",

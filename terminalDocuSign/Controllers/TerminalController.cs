@@ -36,7 +36,7 @@ namespace terminalDocuSign.Controllers
                 Version = "1",
                 Name = "Monitor_DocuSign",
                 Label = "Monitor DocuSign",
-                Category = ActivityCategory.Monitors.ToString(),
+                Category = ActivityCategory.Monitors,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,
                 MinPaneWidth = 330
@@ -47,7 +47,7 @@ namespace terminalDocuSign.Controllers
                 Version = "1",
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
-                Category = ActivityCategory.Forwarders.ToString(),
+                Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,
                 MinPaneWidth = 330
@@ -58,7 +58,7 @@ namespace terminalDocuSign.Controllers
                 Version = "1",
                 Name = "Receive_DocuSign_Envelope",
                 Label = "Receive DocuSign Envelope",
-                Category = ActivityCategory.Receivers.ToString(),
+                Category = ActivityCategory.Receivers,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,
                 MinPaneWidth = 330
@@ -69,7 +69,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Record_DocuSign_Events",
                 Label = "Record DocuSign Events",
                 Version = "1",
-                Category = ActivityCategory.Forwarders.ToString(),
+                Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,
                 MinPaneWidth = 330
@@ -81,7 +81,7 @@ namespace terminalDocuSign.Controllers
                 Label = "Mail Merge Into DocuSign",
                 Version = "1",
                 AuthenticationType = AuthenticationType.Internal,
-                Category = ActivityCategory.Solution.ToString(),
+                Category = ActivityCategory.Solution,
                 Terminal = terminal,
                 MinPaneWidth = 500
             };
@@ -91,10 +91,12 @@ namespace terminalDocuSign.Controllers
                 Name = "Collect_Form_Data_Solution",
                 Label = "Collect Form Data Solution",
                 Version = "1",
-                Category = ActivityCategory.Solution.ToString(),
+                Category = ActivityCategory.Solution,
                 Terminal = terminal,
                 MinPaneWidth = 380
             };
+
+
 
             var actionList = new List<ActivityTemplateDTO>()
             {

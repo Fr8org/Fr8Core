@@ -44,7 +44,7 @@ namespace terminalFr8Core.Controllers
             {
                 Name = "FilterUsingRunTimeData",
                 Label = "Filter Using Runtime Data",
-                Category = ActivityCategory.Processors.ToString(),
+                Category = ActivityCategory.Processors,
                 Terminal = terminal,
 
                 AuthenticationType = AuthenticationType.None,
@@ -57,7 +57,7 @@ namespace terminalFr8Core.Controllers
             {
                 Name = "MapFields",
                 Label = "Map Fields",
-                Category = ActivityCategory.Processors.ToString(),
+                Category = ActivityCategory.Processors,
                 Terminal = terminal,
 
                 AuthenticationType = AuthenticationType.None,
@@ -70,7 +70,7 @@ namespace terminalFr8Core.Controllers
             {
                 Name = "AddPayloadManually",
                 Label = "Add Payload Manually",
-                Category = ActivityCategory.Processors.ToString(),
+                Category = ActivityCategory.Processors,
                 Terminal = terminal,
 
                 AuthenticationType = AuthenticationType.None,
@@ -83,7 +83,7 @@ namespace terminalFr8Core.Controllers
             {
                 Name = "StoreMTData",
                 Label = "Store MT Data",
-                Category = ActivityCategory.Processors.ToString(),
+                Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1"
@@ -93,7 +93,7 @@ namespace terminalFr8Core.Controllers
             {
                 Name = "Select_Fr8_Object",
                 Label = "Select Fr8 Object",
-                Category = ActivityCategory.Processors.ToString(),
+                Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
@@ -104,7 +104,7 @@ namespace terminalFr8Core.Controllers
             {
                 Name = "ConnectToSql",
                 Label = "Connect To SQL",
-                Category = ActivityCategory.Processors.ToString(),
+                Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1"
@@ -114,7 +114,7 @@ namespace terminalFr8Core.Controllers
             {
                 Name = "BuildQuery",
                 Label = "Build Query",
-                Category = ActivityCategory.Processors.ToString(),
+                Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1"
@@ -124,7 +124,7 @@ namespace terminalFr8Core.Controllers
             {
                 Name = "ExecuteSql",
                 Label = "Execute Sql Query",
-                Category = ActivityCategory.Processors.ToString(),
+                Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1"
@@ -134,7 +134,7 @@ namespace terminalFr8Core.Controllers
             {
                 Name = "ManageRoute",
                 Label = "Manage Route",
-                Category = ActivityCategory.Processors.ToString(),
+                Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1"
