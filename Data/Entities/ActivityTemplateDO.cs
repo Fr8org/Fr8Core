@@ -20,11 +20,12 @@ namespace Data.Entities
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
         }
 
-        public ActivityTemplateDO(string name, string label, string version, int terminalId) : this()
+        public ActivityTemplateDO(string name, string label, string version, string description, int terminalId) : this()
         {
             this.Name = name;
             this.Label = label;
             this.Version = version;
+            this.Description = description;
             /* We don't need to validate terminalId because of EF chack ForeignKey and if terminalId doesn't exist in table Terminals then 
              * EF will throw 'System.Data.Entity.Infrastructure.DbUpdateException'  */
             this.TerminalId = terminalId;
@@ -42,12 +43,13 @@ namespace Data.Entities
         /*<param name="baseEndPoint">New TerminalDO base end point</param>*/
         /// <param name="Endpoint">New TerminalDO end point</param>
         public ActivityTemplateDO(string name, string version,
-            string terminalName, string endPoint, string label = "") : this()
+            string terminalName, string endPoint, string label = "", string description = "") : this()
         {
 
             this.Name = name;
             this.Label = label;
             this.Version = version;
+            this.Description = description;
 
             this.Terminal = new TerminalDO()
             {
