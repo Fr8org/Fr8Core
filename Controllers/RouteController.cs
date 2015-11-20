@@ -42,7 +42,7 @@ namespace HubWeb.Controllers
         }
 
         [Fr8ApiAuthorize]
-        [Route("full/{id:int}")]
+        [Route("full/{id:guid}")]
         [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
         public IHttpActionResult GetFullRoute(Guid id)
@@ -56,7 +56,7 @@ namespace HubWeb.Controllers
             };
         }
 
-        [Route("getByAction/{id:int}")]
+        [Route("getByAction/{id:guid}")]
         [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
         

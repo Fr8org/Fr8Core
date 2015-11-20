@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -42,9 +43,21 @@ namespace terminalDocuSign.Services
                     Description = "Monitor All DocuSign Events",
                     Fr8Account = curFr8Account,
                     RouteState = RouteState.Active,
-                    Tag = "Monitor"
+                    Tag = "Monitor",
+                    Id = Guid.NewGuid()
                 };
-                uow.RouteRepository.Add(route);
+
+                //create a subroute
+                var subroute = new SubrouteDO(true)
+                {
+                    ParentRouteNode = route,
+                    Id = Guid.NewGuid()
+                };
+
+                //update Route and Subroute into database
+                route.ChildNodes = new List<RouteNodeDO> { subroute };
+                uow.RouteNodeRepository.Add(route);
+                uow.RouteNodeRepository.Add(subroute);
                 uow.SaveChanges();
 
                 //get activity templates of required actions
@@ -54,25 +67,10 @@ namespace terminalDocuSign.Services
 
                 //create and configure required actions
                 var _action = ObjectFactory.GetInstance<IAction>();
-                var action1 = await _action.CreateAndConfigure(uow, curFr8UserId, activity1.Id, activity1.Name, activity1.Label, route.Id);
-                var action2 = await _action.CreateAndConfigure(uow, curFr8UserId, activity2.Id, activity2.Name, activity2.Label, route.Id);
-
-                //add actions into route nodes table
-                uow.RouteNodeRepository.Add(action1);
-                uow.RouteNodeRepository.Add(action2);
-
-                //create sub route with all requried actions
-                var subroute = new SubrouteDO(true)
-                {
-                    ParentRouteNode = route,
-                    ChildNodes = new List<RouteNodeDO> { action1, action2 }
-                };
-
-                //assing the sub route node to route
-                route.ChildNodes = new List<RouteNodeDO> { subroute };
-
-                //update them into the repositories
-                uow.RouteNodeRepository.Add(subroute);
+                await _action.CreateAndConfigure(uow, curFr8UserId, activity1.Id, activity1.Name, activity1.Label, subroute.Id);
+                await _action.CreateAndConfigure(uow, curFr8UserId, activity2.Id, activity2.Name, activity2.Label, subroute.Id);
+                
+                //update database
                 uow.SaveChanges();
             }
         }
