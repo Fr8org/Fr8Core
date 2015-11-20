@@ -59,12 +59,10 @@ module dockyard.tests.unit.directives.controls {
         });
 
         it('Should have an radio button with label a specific value', () => {
-            var curScope = element.isolateScope();
             expect(element.find("[value='specific']").length).toBe(1);
         });
 
         it('Should contain the a radio button for enabling upstream crate dropdown', () => {
-            var curScope = element.isolateScope();
             expect(element.find("[value='upstream']").length).toBe(1);
         });
 

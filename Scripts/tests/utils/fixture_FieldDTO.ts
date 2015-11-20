@@ -86,8 +86,14 @@ module dockyard.tests.utils.fixtures {
             events: null
         };
 
+        public static fieldBlock: model.FieldDTO = {
+            key: 'test1',
+            value: 'value'
+        };
+
         public static fieldList = {
-            value: { key: 'test1', value: 'value1' }
+            value: JSON.stringify(FieldDTO.fieldBlock),
+            field: 'test1'
         };
 
         public static textSource: model.TextSource = {

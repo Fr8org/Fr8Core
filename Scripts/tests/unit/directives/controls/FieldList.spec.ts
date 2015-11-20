@@ -67,6 +67,9 @@ module dockyard.tests.unit.directives.controls {
         it('Should add the new row of fields', () => {
             var currentScope = element.isolateScope();
             triggerHandler(scope, element, '.field-list-add-button');
+            var fieldList = JSON.parse(currentScope.field.value);
+
+            expect(fieldList.length).toBe(3);
             expect(currentScope.field.value).not.toBe(null);
         });
 
@@ -121,21 +124,26 @@ module dockyard.tests.unit.directives.controls {
         });
 
         it('Should create new row of fields in its own scope', () => {
+
             triggerHandler(scope, element1, '.field-list-add-button');
             expect(scope.field1.value).not.toBe(null);
+            var fieldList1 = JSON.parse(scope.field1.value);
+            expect(fieldList1.length).toBe(3);
 
             triggerHandler(scope, element2, '.field-list-add-button');
-            expect(scope.field2.value).not.toBe(null);
-
+            var fieldList2 = JSON.parse(scope.field2.value);
+            expect(fieldList2.length).toBe(3);
         });
 
         it('Should remove row of fields in its own scope.', () => {
+            var curScope1 = element1.isolateScope();
             triggerHandler(scope, element1, '.field-list-remove-button');
-            var fieldList1 = JSON.parse(scope.field1.value);
+            var fieldList1 = JSON.parse(curScope1.field.value);
             expect(fieldList1.length).toBe(1);
 
-            triggerHandler(scope, element2, '.field-list-remove-button');
-            var fieldList2 = JSON.parse(scope.field2.value);
+            var curScope2 = element1.isolateScope();
+            triggerHandler(curScope2, element2, '.field-list-remove-button');
+            var fieldList2 = JSON.parse(curScope2.field.value);
             expect(fieldList2.length).toBe(1);
         });
     });
