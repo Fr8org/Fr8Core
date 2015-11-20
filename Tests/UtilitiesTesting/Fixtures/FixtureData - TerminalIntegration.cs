@@ -114,6 +114,32 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static ActivityTemplateDO TestActivityTemplateDO_RecordDocuSignEvents()
+        {
+            return new ActivityTemplateDO()
+            {
+                Name = "Record_DocuSign_Events",
+                Label = "Record DocuSign Events",
+                Version = "1",
+                Category = ActivityCategory.Forwarders,
+                Terminal = TestTerminal_DocuSign(),
+                AuthenticationType = AuthenticationType.Internal,
+                MinPaneWidth = 330
+            };
+        }
+
+        public static ActivityTemplateDO TestActivityTemplateDO_StoreMTData()
+        {
+            return new ActivityTemplateDO()
+            {
+                Name = "StoreMTData",
+                Label = "Store MT Data",
+                Category = ActivityCategory.Processors,
+                Terminal = TestTerminal_Core(),
+                Version = "1"
+            };
+        }
+
         public static ActivityTemplateDO TestActivityTemplateDO_FilterUsingRunTimeData()
         {
             return new ActivityTemplateDO()
