@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
@@ -14,7 +15,7 @@ namespace Hub.Interfaces
         void Store(IUnitOfWork uow, SubrouteDO subroute);
         SubrouteDO Create(IUnitOfWork uow, RouteDO route, string name);
         void Update(IUnitOfWork uow, SubrouteDO subroute);
-        void Delete(IUnitOfWork uow, int id);
+        void Delete(IUnitOfWork uow, Guid id);
         void AddAction(IUnitOfWork uow, ActionDO resultActionDo);
         /// <summary>
         /// Backups current action and calls configure on downstream actions
@@ -24,6 +25,6 @@ namespace Hub.Interfaces
         /// <param name="actionId">Action to delete</param>
         /// <param name="confirmed">Forces deletion of current action even when there are validation errors</param>
         /// <returns>Deletion status of action</returns>
-        Task<bool> DeleteAction(string userId, int actionId, bool confirmed);
+        Task<bool> DeleteAction(string userId, Guid actionId, bool confirmed);
     }
 }

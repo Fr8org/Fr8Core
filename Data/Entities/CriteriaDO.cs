@@ -1,7 +1,8 @@
-﻿using Data.States.Templates;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -14,7 +15,7 @@ namespace Data.Entities
         public int Id { get; set; }
         
         [ForeignKey("Subroute")]
-        public int? SubrouteId { get; set; }
+        public Guid? SubrouteId { get; set; }
 
         /// <summary>
         /// Reference to parent RouteNode.

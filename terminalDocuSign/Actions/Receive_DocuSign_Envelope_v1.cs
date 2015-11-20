@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+
 using Hub.Interfaces;
 using Hub.Managers;
 using Newtonsoft.Json;
@@ -17,6 +17,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Data.Entities;
 using Data.Crates;
+﻿using Data.States;
 
 namespace terminalDocuSign.Actions
 {
@@ -131,7 +132,7 @@ namespace terminalDocuSign.Actions
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
             //get envelopeIdFromUpstreamActions
-            var upstream = await _routeNode.GetCratesByDirection<StandardDesignTimeFieldsCM>(curActionDO.Id, GetCrateDirection.Upstream);
+            var upstream = await _routeNode.GetCratesByDirection<StandardDesignTimeFieldsCM>(curActionDO.Id, CrateDirection.Upstream);
 
             var envelopeId = upstream.SelectMany(x => x.Content.Fields).FirstOrDefault(x => x.Key == "EnvelopeId");
 

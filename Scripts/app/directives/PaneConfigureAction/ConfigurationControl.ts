@@ -14,11 +14,11 @@ module dockyard.directives.paneConfigureAction {
     }
 
     export class ChangeEventArgs {
-        constructor(fieldName: string) {
-            this.fieldName = fieldName;
+        constructor(field: model.ControlDefinitionDTO) {
+            this.field = field;
         }
 
-        public fieldName: string;
+        public field: model.ControlDefinitionDTO;
     }
 
     export interface IConfigurationControlScope extends ng.IScope {
@@ -52,35 +52,35 @@ module dockyard.directives.paneConfigureAction {
                 $attrs: ng.IAttributes) => {
                 
                 $scope.onChange = (event: any) => {
-                    var fieldName: string;
+
+                    var field: model.ControlDefinitionDTO;
                     if (!!event.target === true) {
-                        // If called by DOM event (for standard fields), get field name
-                        // Get name of field that received the event
-                        fieldName = event.target.attributes.getNamedItem('data-field-name').value;
+                        // If called by DOM event (for standard fields), get field from scope
+                        field = $scope.field;
                     }
                     else {
-                        // If called by custom field, it is assumed that field name is suppied as the argument
-                        fieldName = event;
+                        // If called by custom field, it is assumed that field is supplied as the argument
+                        field = event;
                     }
-
-                    $scope.$emit("onChange", new ChangeEventArgs(fieldName));
+                    
+                    $scope.$emit("onChange", new ChangeEventArgs(field));
                 };
 
 
                 $scope.onClick = (event: any) => {
-                    var fieldName: string;
+                    var field: model.ControlDefinitionDTO;
 
                     if (!!event.target === true) {
-                        // If called by DOM event (for standard fields), get field name
-                        // Get name of field that received the event
-                        fieldName = event.target.attributes.getNamedItem('data-field-name').value;
+                        // If called by DOM event (for standard fields), get field
+                        // Get field that received the event
+                        field = $scope.field;
                     }
                     else {
                         // If called by custom field, it is assumed that field name is suppied as the argument
-                        fieldName = event;
+                        field = event;
                     }
 
-                    $scope.$emit("onClick", new ChangeEventArgs(fieldName));
+                    $scope.$emit("onClick", new ChangeEventArgs(field));
                 };
 
             };

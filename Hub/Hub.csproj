@@ -200,8 +200,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
-    <Compile Include="Enums\SearchDirection.cs" />
-    <Compile Include="Enums\GetCrateDirection.cs" />
     <Compile Include="Exceptions\AmbiguityException.cs" />
     <Compile Include="Exceptions\AuthenticationExeception.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
@@ -339,6 +337,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Diagnostics\" />
+    <Folder Include="Enums\" />
     <Folder Include="Managers\APIManagers\Packagers\Docusign\" />
     <Folder Include="Managers\Crates\" />
     <Folder Include="UserAlerting\" />

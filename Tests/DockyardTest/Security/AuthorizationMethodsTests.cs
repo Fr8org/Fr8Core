@@ -1,12 +1,13 @@
 ﻿using System;
 using Hub.Services;
-using UtilitiesTesting;
 using NUnit.Framework;
 using Data.Entities;
 using StructureMap;
 using Data.Interfaces;
 using Data.States;
 using Data.Interfaces.DataTransferObjects;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 using Owin;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
@@ -171,7 +172,7 @@ namespace DockyardTest.Security
 
                 var processTemplateDO = new RouteDO()
                 {
-                    Id = 23,
+                    Id = FixtureData.GetTestGuidById(23),
                     Description = "HealthDemo Integration Test",
                     Name = "StandardEventTesting",
                     RouteState = RouteState.Active,
@@ -186,7 +187,7 @@ namespace DockyardTest.Security
                     ParentRouteNodeId = processTemplateDO.Id,
                     Name = "testaction",
 
-                    Id = 1,
+                    Id = FixtureData.GetTestGuidById(1),
                     ActivityTemplateId = activityTemplateDO.Id,
                     ActivityTemplate = activityTemplateDO,
                     Ordering = 1

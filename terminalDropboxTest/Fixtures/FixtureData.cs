@@ -9,6 +9,11 @@ namespace terminalDropboxTests.Fixtures
 {
     public class FixtureData
     {
+        public static Guid TestGuid_Id_333()
+        {
+            return new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A");
+        }
+
         public static AuthorizationTokenDO DropboxAuthorizationToken()
         {
             return new AuthorizationTokenDO()
@@ -16,6 +21,7 @@ namespace terminalDropboxTests.Fixtures
                 Token = "bLgeJYcIkHAAAAAAAAAAFf6hjXX_RfwsFNTfu3z00zrH463seBYMNqBaFpbfBmqf"
             };
         }
+
         public static ActionDO GetFileListTestActionDO1()
         {
             var actionTemplate = GetFileListTestActivityTemplateDO();
@@ -23,7 +29,7 @@ namespace terminalDropboxTests.Fixtures
             var actionDO = new ActionDO()
             {
                 Name = "testaction",
-                Id = 333,
+                Id = TestGuid_Id_333(),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
                 CrateStorage = "",

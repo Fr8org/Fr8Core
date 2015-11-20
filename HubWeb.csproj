@@ -194,10 +194,6 @@
       <HintPath>packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NewRelic.Api.Agent, Version=2.25.208.0, Culture=neutral, PublicKeyToken=06552fced0b33d87, processorArchitecture=MSIL">
-      <HintPath>packages\NewRelic.Azure.WebSites.2.25.208.0\lib\NewRelic.Api.Agent.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -682,9 +678,6 @@
     <Content Include="Documentation\UploadBrandProfiles.html" />
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
-    <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
-    <Content Include="newrelic\NewRelic.Agent.Core.dll" />
-    <Content Include="newrelic\NewRelic.Profiler.dll" />
     <Content Include="Scripts\lib\jpattern.js" />
     <Content Include="Scripts\tests\integration\ContainerControllerTests.js" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
@@ -819,6 +812,8 @@
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ContainerControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextSource.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\FieldList.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\RadioButtonGroup.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\DropDownListBox.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\FilePicker.spec.ts" />
@@ -3895,10 +3890,6 @@
     <Content Include="Content\documents\medical_intake_form.pdf" />
     <Content Include="Content\documents\Sample Excel Contact List.xlsx" />
     <Content Include="packages.config">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="newrelic\newrelic.config" />
-    <Content Include="newrelic\extensions\extension.xsd">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Content\img\site\Thumbs.db" />
