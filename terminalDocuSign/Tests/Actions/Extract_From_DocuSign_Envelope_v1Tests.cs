@@ -11,7 +11,8 @@ using StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
-using Hub.Enums;
+﻿using Data.States;
+﻿
 using Hub.Interfaces;
 using Utilities.Configuration.Azure;
 using UtilitiesTesting;
@@ -127,7 +128,7 @@ namespace terminalDocuSign.Tests.Actions
             _activity = ObjectFactory.GetInstance<IRouteNode>();
         }
 
-        public async  Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        public async  Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, CrateDirection direction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
