@@ -45,7 +45,7 @@ namespace HubWeb.Controllers
 
         [Route("upstream")]
         [ResponseType(typeof (List<RouteNodeDO>))]
-        public IHttpActionResult GetUpstreamActivities(int id)
+        public IHttpActionResult GetUpstreamActivities(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -57,7 +57,7 @@ namespace HubWeb.Controllers
 
         [Route("downstream")]
         [ResponseType(typeof (List<RouteNodeDO>))]
-        public IHttpActionResult GetDownstreamActivities(int id)
+        public IHttpActionResult GetDownstreamActivities(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -71,7 +71,7 @@ namespace HubWeb.Controllers
         [Route("upstream_actions")]
         [ResponseType(typeof (List<ActionDTO>))]
         [AllowAnonymous]
-        public IHttpActionResult GetUpstreamActions(int id)
+        public IHttpActionResult GetUpstreamActions(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -90,7 +90,7 @@ namespace HubWeb.Controllers
         [Route("downstream_actions")]
         [ResponseType(typeof (List<ActionDTO>))]
         [AllowAnonymous]
-        public IHttpActionResult GetDownstreamActions(int id)
+        public IHttpActionResult GetDownstreamActions(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

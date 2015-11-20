@@ -435,6 +435,10 @@
     <Compile Include="Migrations\201511192035266_Added_Description_ActivityTemplate.Designer.cs">
       <DependentUpon>201511192035266_Added_Description_ActivityTemplate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.cs" />
+    <Compile Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.Designer.cs">
+      <DependentUpon>201511200612313_RouteNode_Id_Int32_To_Guid.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -451,6 +455,7 @@
     <Compile Include="States\AuthenticationType.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
+    <Compile Include="States\CrateDirection.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
@@ -733,6 +738,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511192035266_Added_Description_ActivityTemplate.resx">
       <DependentUpon>201511192035266_Added_Description_ActivityTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.resx">
+      <DependentUpon>201511200612313_RouteNode_Id_Int32_To_Guid.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

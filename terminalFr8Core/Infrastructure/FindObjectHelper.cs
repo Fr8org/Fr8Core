@@ -9,7 +9,8 @@ using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+using Data.States;
+
 using TerminalBase.BaseClasses;
 using Utilities.Configuration.Azure;
 
@@ -22,7 +23,7 @@ namespace terminalFr8Core.Infrastructure
         {
             var upstreamCrates = await action.GetCratesByDirection<StandardDesignTimeFieldsCM>(
                 actionDO.Id,
-                GetCrateDirection.Upstream
+                CrateDirection.Upstream
             );
 
             if (upstreamCrates == null) { return null; }
@@ -57,7 +58,7 @@ namespace terminalFr8Core.Infrastructure
         {
             var httpClient = new HttpClient();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/containers/launch?routeId=" + routeId.ToString();
+                + "/routes/run?routeId=" + routeId.ToString();
 
             using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
             {

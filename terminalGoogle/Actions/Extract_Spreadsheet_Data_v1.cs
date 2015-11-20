@@ -165,9 +165,9 @@ namespace terminalGoogle.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.Id > 0)
+            if (curActionDO.Id != Guid.Empty)
             {
                 //build a controls crate to render the pane
                 var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
@@ -184,7 +184,8 @@ namespace terminalGoogle.Actions
                 throw new ArgumentException(
                     "Configuration requires the submission of an Action that has a real ActionId");
             }
-            return curActionDO;
+
+            return Task.FromResult(curActionDO);
         }
 
         /// <summary>

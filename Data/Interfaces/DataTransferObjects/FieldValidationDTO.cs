@@ -1,4 +1,5 @@
-﻿using Data.Constants;
+﻿using System;
+using Data.Constants;
 using Data.Entities;
 using Newtonsoft.Json;
 
@@ -19,14 +20,14 @@ namespace Data.Interfaces.DataTransferObjects
         public string ManifestType { get; set; }
 
         [JsonProperty("currentActionId")]
-        public int CurrentActionId { get; set; }
+        public Guid CurrentActionId { get; set; }
 
         public FieldValidationDTO()
         {
 
         }
 
-        public FieldValidationDTO(int currentActionId, string fieldName, ActivityDirection direction, string manifestType, string crateLabel)
+        public FieldValidationDTO(Guid currentActionId, string fieldName, ActivityDirection direction, string manifestType, string crateLabel)
         {
             FieldName = fieldName;
             CrateLabel = crateLabel;
@@ -35,7 +36,7 @@ namespace Data.Interfaces.DataTransferObjects
             CurrentActionId = currentActionId;
         }
 
-        public FieldValidationDTO(int currentActionId, string fieldName)
+        public FieldValidationDTO(Guid currentActionId, string fieldName)
         {
             FieldName = fieldName;
             CurrentActionId = currentActionId;

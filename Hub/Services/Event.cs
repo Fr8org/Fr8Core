@@ -7,6 +7,7 @@ using StructureMap;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
+using System.Configuration;
 
 namespace Hub.Services
 {
@@ -17,6 +18,7 @@ namespace Hub.Services
     {
 
         private readonly ITerminal _terminal;
+
 
         public Event()
         {

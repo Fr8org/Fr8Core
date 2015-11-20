@@ -19,7 +19,7 @@ module dockyard.directives {
         };
 
         var runContainer = function ($q, $http, routeId): ng.IPromise<any> {
-            var url = '/api/containers/launch?routeId=' + routeId;
+            var url = '/routes/run?routeId=' + routeId;
 
             return $q(function (resolve, reject) {
                 $http.post(url)
