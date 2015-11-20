@@ -37,6 +37,7 @@ namespace terminalTwilio.Controllers
                 Tags = "Twillio",
                 Category = ActivityCategory.Forwarders,
                 Version = "1",
+                Description = "Send Via Twilio: Description",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
                 MinPaneWidth = 330,

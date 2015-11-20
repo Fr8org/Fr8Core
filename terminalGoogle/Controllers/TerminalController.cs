@@ -41,6 +41,7 @@ namespace terminalGoogle.Controllers
                 Name = "Extract_Spreadsheet_Data",
                 Label = "Extract Spreadsheet Data",
                 Version = "1",
+                Description = "Extract Spreadsheet Data: Description",
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
