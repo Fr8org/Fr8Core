@@ -11,12 +11,13 @@
         minPaneWidth: number;
 
         constructor(id: number, name: string,
-            version: string, componentActivities: string, category: string, label?:string, minPaneWidth?:number) {
+            version: string, description: string, componentActivities: string, category: string, label?:string, minPaneWidth?:number) {
 
             this.id = id;
             this.name = name;
             this.label = label;
             this.version = version;
+            this.description = description;
             this.componentActivities = componentActivities;
             this.category = category;
             //this.parentPluginRegistration = parentPluginRegistration;  the client shouldn't know anything about plugins
@@ -28,6 +29,7 @@
                 this.name,
                 this.label,
                 this.version,
+                this.description,
                 this.componentActivities,
                 this.category,
                 this.minPaneWidth

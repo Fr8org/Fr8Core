@@ -306,7 +306,7 @@ namespace DockyardTest.Services
                 uow.TerminalRepository.Add(terminal);
                 uow.SaveChanges();
 
-                var template = new ActivityTemplateDO("Template1", "label", "1", terminal.Id);
+                var template = new ActivityTemplateDO("Template1", "label", "1", "description", terminal.Id);
                 uow.ActivityTemplateRepository.Add(template);
                 var parent = new ActionDO();
                 uow.ActionRepository.Add(parent);
