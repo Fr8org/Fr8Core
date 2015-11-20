@@ -10,8 +10,6 @@ namespace Hub.Interfaces
 {
     public interface IContainer
     {
-        ContainerDO Create(IUnitOfWork uow, Guid processTemplateId, Crate curEvent);
-        Task<ContainerDO> Launch(RouteDO curRoute, Crate curEvent);
         Task Execute(IUnitOfWork uow, ContainerDO curContainerDO);
         //void SetProcessNextActivity(ProcessDO curProcessDO);
 

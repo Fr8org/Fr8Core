@@ -14,6 +14,8 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Exceptions;
 using Hub.Interfaces;
+using System.Threading.Tasks;
+using Utilities;
 
 namespace HubWeb.Controllers
 {
@@ -240,6 +242,34 @@ namespace HubWeb.Controllers
                 uow.SaveChanges();
 
                 return Ok(new { id = route.Id });
+            }
+        }
+
+        [Fr8ApiAuthorize]
+        [Route("run")]
+        [HttpPost]
+        public async Task<IHttpActionResult> Run(Guid routeId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var processTemplateDO = uow.RouteRepository.GetByKey(routeId);
+                var pusherNotifier = new PusherNotifier();
+                try
+                {
+                    var containerDO = await _route.Run(processTemplateDO, null);
+                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
+                    "fr8pusher_container_executed", String.Format("Route \"{0}\" executed", processTemplateDO.Name));
+
+                    return Ok(Mapper.Map<ContainerDTO>(containerDO));
+                }
+                catch
+                {
+                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
+                    "fr8pusher_container_failed", String.Format("Route \"{0}\" failed", processTemplateDO.Name));
+                }
+
+
+                return Ok();
             }
         }
     }
