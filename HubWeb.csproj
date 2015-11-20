@@ -812,6 +812,7 @@
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\TestTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ContainerControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextSource.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\FieldList.spec.ts" />
