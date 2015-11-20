@@ -1,15 +1,9 @@
-﻿
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.UI.WebControls.WebParts;
-using AutoMapper;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
-using Hub.Managers.APIManagers.Transmitters.Terminal;
-using Microsoft.Runtime.CompilerServices;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
@@ -85,8 +79,7 @@ namespace terminalDocuSign.Tests.Services
                 var recordDocuSignActivityTemplate = FixtureData.TestActivityTemplateDO_RecordDocuSignEvents();
                 var storeMTDataActivityTemplate = FixtureData.TestActivityTemplateDO_StoreMTData();
 
-                recordDocuSignActivityTemplate.AuthenticationType =
-                    storeMTDataActivityTemplate.AuthenticationType = AuthenticationType.None;
+                recordDocuSignActivityTemplate.AuthenticationType = storeMTDataActivityTemplate.AuthenticationType = AuthenticationType.None;
 
                 uow.TerminalRepository.Add(recordDocuSignActivityTemplate.Terminal);
                 uow.TerminalRepository.Add(storeMTDataActivityTemplate.Terminal);
@@ -102,19 +95,38 @@ namespace terminalDocuSign.Tests.Services
 
                 //setup Action Service
                 Mock<IAction> _actionMock = new Mock<IAction>(MockBehavior.Default);
-                _actionMock.Setup(
-                    a =>
-                        a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                            "Record_DocuSign_Events", It.IsAny<string>(), It.IsAny<Guid>(), false))
-                    .Returns(Task.FromResult(recordDocuSignAction as RouteNodeDO));
 
                 _actionMock.Setup(
-                    a =>
-                        a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
-                            "StoreMTData", It.IsAny<string>(), It.IsAny<Guid>(), false))
-                    .Returns(Task.FromResult(storeMtDataAction as RouteNodeDO));
+                    a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
+                        "Record_DocuSign_Events", It.IsAny<string>(), It.IsAny<Guid>(), false)).Callback(() =>
+                        {
+                            using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
+                            {
+                                uow1.ActionRepository.Add(recordDocuSignAction);
 
-                ObjectFactory.Container.Inject(typeof(IAction), _actionMock.Object);
+                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
+                                subRoute.ChildNodes.Add(recordDocuSignAction);
+
+                                uow1.SaveChanges();
+                            }
+                        }).Returns(Task.FromResult(recordDocuSignAction as RouteNodeDO));
+
+                _actionMock.Setup(
+                    a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
+                        "StoreMTData", It.IsAny<string>(), It.IsAny<Guid>(), false)).Callback(() =>
+                        {
+                            using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
+                            {
+                                uow1.ActionRepository.Add(storeMtDataAction);
+
+                                var subRoute = uow1.SubrouteRepository.GetQuery().Single();
+                                subRoute.ChildNodes.Add(recordDocuSignAction);
+
+                                uow1.SaveChanges();
+                            }
+                        }).Returns(Task.FromResult(storeMtDataAction as RouteNodeDO));
+
+                ObjectFactory.Container.Inject(typeof (IAction), _actionMock.Object);
             }
         }
     }
