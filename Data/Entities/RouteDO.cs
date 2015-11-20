@@ -33,16 +33,19 @@ namespace Data.Entities
         public virtual SubrouteDO StartingSubroute { get; set; }*/
 
         [NotMapped]
-        public int StartingSubrouteId
+        public Guid StartingSubrouteId
         {
             get
             {
-                var startingSubroute = ChildNodes.OfType<SubrouteDO>().SingleOrDefault(pnt => pnt.StartingSubroute == true);
+                var startingSubroute = ChildNodes.OfType<SubrouteDO>()
+                    .SingleOrDefault(pnt => pnt.StartingSubroute == true);
                 if (null != startingSubroute)
+                {
                     return startingSubroute.Id;
+                }
                 else
                 {
-                    return 0;
+                    return Guid.Empty;
                     //throw new ApplicationException("Starting Subroute doesn't exist.");
                 }
             }

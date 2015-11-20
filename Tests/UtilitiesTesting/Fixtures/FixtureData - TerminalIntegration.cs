@@ -25,7 +25,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new RouteDO()
             {
-                Id=1000,
+                Id = GetTestGuidById(1000),
                 Name = "Test Route Name",
                 Description = "Test Route Description",
                 RouteState = RouteState.Active,
@@ -36,7 +36,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new SubrouteDO()
             {
-                Id = 1001,
+                Id = GetTestGuidById(1001),
                 Name = "Test Subroute"
             };
         }

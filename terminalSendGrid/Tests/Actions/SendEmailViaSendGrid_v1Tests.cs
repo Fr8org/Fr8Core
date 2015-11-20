@@ -47,7 +47,7 @@ namespace terminalSendGrid.Tests.Actions
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 
             var routeNode = new Mock<IRouteNode>();
-            routeNode.Setup(c => c.GetCratesByDirection<StandardDesignTimeFieldsCM>(It.IsAny<int>(), It.IsAny<GetCrateDirection>()))
+            routeNode.Setup(c => c.GetCratesByDirection<StandardDesignTimeFieldsCM>(It.IsAny<Guid>(), It.IsAny<GetCrateDirection>()))
                     .Returns(Task.FromResult(new List<Crate<StandardDesignTimeFieldsCM>>()));
 
             ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(routeNode.Object));

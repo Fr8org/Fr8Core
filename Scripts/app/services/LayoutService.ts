@@ -15,7 +15,7 @@ module dockyard.services {
         constructor() {
         }
 
-        placeActions(actions: model.ActionDTO[], startingId: number): model.ActionGroup[] {
+        placeActions(actions: model.ActionDTO[], startingId: string): model.ActionGroup[] {
             var processedGroups: model.ActionGroup[] = [];
 
             var actionGroups = _.toArray<model.ActionDTO[]>(
@@ -94,7 +94,7 @@ module dockyard.services {
             });
         }      
 
-        private findParentGroup(actionGroups: model.ActionGroup[], parentId: number): model.ActionGroup {
+        private findParentGroup(actionGroups: model.ActionGroup[], parentId: string): model.ActionGroup {
             return _.find(actionGroups, (group: model.ActionGroup) => {
                 return group.actions.some((action: model.ActionDTO) => {
                     return action.id === parentId;
@@ -102,7 +102,7 @@ module dockyard.services {
             });
         }        
 
-        private findChildGroup(actionGroups: model.ActionDTO[][], parentId: number): model.ActionDTO[] {
+        private findChildGroup(actionGroups: model.ActionDTO[][], parentId: string): model.ActionDTO[] {
             return _.find(actionGroups, (group: model.ActionDTO[]) => {
                 return group[0].parentRouteNodeId === parentId;
             });
