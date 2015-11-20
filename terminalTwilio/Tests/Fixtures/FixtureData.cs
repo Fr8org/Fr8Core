@@ -12,6 +12,11 @@ namespace terminalTwilio.Tests.Fixtures
 {
     public class FixtureData
     {
+        public static Guid TestGuid_Id_57()
+        {
+            return new Guid("A1C11E86-9B54-42D4-AA91-605BF46E68E9");
+        }
+
         public static ActionDO ConfigureTwilioAction()
         {
             var actionTemplate = FixtureData.TwilioActionTemplateDTO();
@@ -19,7 +24,7 @@ namespace terminalTwilio.Tests.Fixtures
             var actionDO = new ActionDO()
             {
                 Name = "testaction",
-                Id = 57,
+                Id = TestGuid_Id_57(),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
                 CrateStorage = "",

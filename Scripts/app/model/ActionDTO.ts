@@ -1,7 +1,7 @@
 ﻿module dockyard.model {
     export class ActionDTO implements interfaces.IActionDTO {
-        parentRouteNodeId: number;
-        id: number;
+        parentRouteNodeId: string;
+        id: string;
         isTempId: boolean;
         name: string;
         label: string;
@@ -14,8 +14,8 @@
         height: number = 300;
 
         constructor(
-            parentActivityId: number,
-            id: number,
+            parentActivityId: string,
+            id: string,
             isTempId: boolean
         ) {
             this.parentRouteNodeId = parentActivityId;
@@ -49,7 +49,7 @@
         }
 
         static create(dataObject: interfaces.IActionDTO): ActionDTO {
-            var result = new ActionDTO(0, 0, false);
+            var result = new ActionDTO('', '', false);
             result.activityTemplateId = dataObject.activityTemplateId;
             result.activityTemplate = dataObject.activityTemplate;
             result.crateStorage = dataObject.crateStorage;

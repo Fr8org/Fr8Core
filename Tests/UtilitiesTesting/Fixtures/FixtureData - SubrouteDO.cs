@@ -8,7 +8,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var SubrouteDO = new SubrouteDO
             {
-                Id = 50,
+                Id = GetTestGuidById(50),
                 NodeTransitions =
                     "[{'TransitionKey':'true','ProcessNodeId':'1'},{'TransitionKey':'false','ProcessNodeId':'2'}]"
             };
@@ -19,8 +19,8 @@ namespace UtilitiesTesting.Fixtures
         {
             var SubrouteDO = new SubrouteDO
             {
-                Id = 50,
-                ParentRouteNodeId = 23,
+                Id = GetTestGuidById(50),
+                ParentRouteNodeId = GetTestGuidById(23),
                 NodeTransitions = "[{'TransitionKey':'true','ProcessNodeId':'2'}]"
             };
             return SubrouteDO;
@@ -30,11 +30,11 @@ namespace UtilitiesTesting.Fixtures
         {
             SubrouteDO SubrouteDO = new SubrouteDO()
             {
-                Id = 50,
+                Id = GetTestGuidById(50),
                 Name = "TestName",
                 NodeTransitions =
                     "[{'TransitionKey':'true','ProcessNodeId':'1'},{'TransitionKey':'false','ProcessNodeId':'2'}]",
-                ParentRouteNodeId = 50,
+                ParentRouteNodeId = GetTestGuidById(50),
                 StartingSubroute = true
             };
             return SubrouteDO;
@@ -44,7 +44,7 @@ namespace UtilitiesTesting.Fixtures
         {
             SubrouteDO SubrouteDO = new SubrouteDO()
             {
-                Id = 50,
+                Id = GetTestGuidById(50),
                 NodeTransitions =
                     "[{'TransitionKey':'true','ProcessNodeId':'3'},{'TransitionKey':'false','ProcessNodeId':'5'}]"
             };
@@ -55,7 +55,7 @@ namespace UtilitiesTesting.Fixtures
         {
             SubrouteDO SubrouteDO = new SubrouteDO()
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 NodeTransitions =
                     "[{'TransitionKey':'true','ProcessNodeId':'3'},{'TransitionKey':'false','ProcessNodeId':'5'}]"
             };

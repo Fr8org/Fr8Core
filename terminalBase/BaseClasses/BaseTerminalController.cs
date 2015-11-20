@@ -27,7 +27,7 @@ namespace TerminalBase.BaseClasses
         [HttpGet]
         public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError)
         {
-            var exceptionMessage = string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
+            var exceptionMessage = terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
             return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name));
         }
 
