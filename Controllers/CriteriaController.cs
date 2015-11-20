@@ -27,7 +27,7 @@ namespace HubWeb.Controllers
         [ResponseType(typeof(CriteriaDTO))]
         [Route("bySubroute")]
         [HttpGet]
-        public IHttpActionResult GetBySubrouteId(int id)
+        public IHttpActionResult GetBySubrouteId(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

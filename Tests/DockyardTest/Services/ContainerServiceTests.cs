@@ -146,7 +146,7 @@ namespace DockyardTest.Services
         {
             var _activity = new Mock<IRouteNode>();
             _activity
-                .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ContainerDO>()))
+                .Setup(c => c.Process(It.IsAny<Guid>(), It.IsAny<ContainerDO>()))
                 .Returns(Task.Delay(100))
                 .Verifiable();
             ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(_activity.Object));
@@ -161,7 +161,7 @@ namespace DockyardTest.Services
 
             Assert.AreNotEqual(originalCurrentActivity, containerDO.CurrentRouteNode);
             Assert.IsNull(containerDO.CurrentRouteNode);
-            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ContainerDO>()));
+            _activity.Verify(p => p.Process(It.IsAny<Guid>(), It.IsAny<ContainerDO>()));
         }
 
 //        [Test]

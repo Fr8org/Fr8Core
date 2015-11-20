@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.DataTransferObjects
@@ -8,9 +9,9 @@ namespace Data.Interfaces.DataTransferObjects
     /// </summary>
     public class SubrouteDTO
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public int? RouteId { get; set; }
+        public Guid? RouteId { get; set; }
 
         public string Name { get; set; }
 

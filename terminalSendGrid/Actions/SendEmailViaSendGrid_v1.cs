@@ -6,7 +6,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Enums;
+
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
@@ -129,7 +129,7 @@ namespace terminalSendGrid.Actions
         private async Task<Crate> GetAvailableDataFields(ActionDO curActionDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
                     .Fields
                     .ToArray();
 
