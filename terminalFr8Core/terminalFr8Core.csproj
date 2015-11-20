@@ -245,5 +245,5 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>if exist $(TargetDir)pluginDockyardCore.dll del /Q $(TargetDir)pluginDockyardCore.dll</PostBuildEvent>
-    </PropertyGroup>
+  </PropertyGroup>
 </Project>

@@ -20,106 +20,17 @@ namespace Hub.Services
         
         // Declarations
         
-
         private readonly IProcessNode _processNode;
         private readonly IRouteNode _activity;
-        private readonly IRoute _route;
         private readonly ICrateManager _crate;
         
-        
-
         public Container()
         {
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
             _activity = ObjectFactory.GetInstance<IRouteNode>();
-            _route = ObjectFactory.GetInstance<IRoute>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        
-
-        /// <summary>
-        /// New Process object
-        /// </summary>
-        /// <param name="processTemplateId"></param>
-        /// <param name="envelopeId"></param>
-        /// <returns></returns>
-        public ContainerDO Create(IUnitOfWork uow, int processTemplateId, Crate curEvent)
-        {
-            var containerDO = new ContainerDO();
-            containerDO.Id = Guid.NewGuid();
-
-            var curRoute = uow.RouteRepository.GetByKey(processTemplateId);
-            if (curRoute == null)
-                throw new ArgumentNullException("processTemplateId");
-            containerDO.Route = curRoute;
-
-            containerDO.Name = curRoute.Name;
-            containerDO.ContainerState = ContainerState.Unstarted;
-           
-            if (curEvent != null)
-            {
-                using (var updater = _crate.UpdateStorage(() => containerDO.CrateStorage))
-                {
-                    updater.CrateStorage.Add(curEvent);
-                }
-            }
-
-            containerDO.CurrentRouteNode = _route.GetInitialActivity(uow, curRoute);
-
-            uow.ContainerRepository.Add(containerDO);
-            uow.SaveChanges();
-
-            //then create process node
-            var subrouteId = containerDO.Route.StartingSubroute.Id;
-
-            var curProcessNode = _processNode.Create(uow, containerDO.Id, subrouteId, "process node");
-            containerDO.ProcessNodes.Add(curProcessNode);
-
-            uow.SaveChanges();
-            EventManager.ContainerCreated(containerDO);
-
-            return containerDO;
-        }
-
-
-
-        public async Task<ContainerDO> Launch(RouteDO curRoute, Crate curEvent)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curContainerDO = Create(uow, curRoute.Id, curEvent);
-
-                if (curContainerDO.ContainerState == ContainerState.Failed || curContainerDO.ContainerState == ContainerState.Completed)
-                {
-                    throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
-                }
-
-                curContainerDO.ContainerState = ContainerState.Executing;
-                uow.SaveChanges();
-
-                try
-                {
-                    await Execute(uow, curContainerDO);
-                    curContainerDO.ContainerState = ContainerState.Completed;
-
-                    return curContainerDO;
-                }
-                catch
-                {
-                    curContainerDO.ContainerState = ContainerState.Failed;
-                    throw;
-                }
-                finally
-                {
-                    curContainerDO.CurrentRouteNode = null;
-                    curContainerDO.NextRouteNode = null;
-                    uow.SaveChanges();
-                }
-            }
-        }
-
-        
 
         public async Task Execute(IUnitOfWork uow, ContainerDO curContainerDO)
         {
@@ -142,8 +53,6 @@ namespace Hub.Services
                 throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
             }
         }
-
-        
 
         private RouteNodeDO MoveToTheNextActivity(IUnitOfWork uow, ContainerDO curContainerDo)
         {
