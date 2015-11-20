@@ -22,7 +22,7 @@ module dockyard.tests.controller {
 
         describe('.findByLabel()', () => {
 
-            it('should return a create with specified label', () => {
+            it('should return a crate with specified label', () => {
                 crateStorage.crates.forEach((crate) => {
                     if (crate.label) {
                         var found = ch.findByLabel(crateStorage, crate.label);
@@ -43,7 +43,7 @@ module dockyard.tests.controller {
 
         describe('.findByManifestType()', () => {
 
-            it('should return a create with specified manifest type', () => {
+            it('should return a crate with specified manifest type', () => {
                 crateStorage.crates.forEach((crate) => {
                     if (crate.manifestType) {
                         var found = ch.findByManifestType(crateStorage, crate.manifestType);
@@ -64,7 +64,7 @@ module dockyard.tests.controller {
 
         describe('.findByManifestTypeAndLabel()', () => {
 
-            it('should return a create with specified manifest type and label', () => {
+            it('should return a crate with specified manifest type and label', () => {
                 crateStorage.crates.forEach((crate) => {
                     if (crate.manifestType && crate.label) {
                         var found = ch.findByManifestTypeAndLabel(crateStorage, crate.manifestType, crate.label);
@@ -158,7 +158,7 @@ module dockyard.tests.controller {
 
         describe('.hasCrateOfManifestType()', () => {
 
-            it('should return true if there is a create with specified manifest type', () => {
+            it('should return true if there is a crate with specified manifest type', () => {
                 expect(ch.hasCrateOfManifestType(crateStorage, 'Standard Configuration Controls')).toBe(true);
                 expect(ch.hasCrateOfManifestType(crateStorage, 'Standard Design-Time Fields2')).toBe(true);
                 expect(ch.hasCrateOfManifestType(duplicateCrateStorage, 'Standard Design-Time Fields')).toBe(true);
