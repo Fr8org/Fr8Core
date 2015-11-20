@@ -18,6 +18,9 @@ using System.Threading.Tasks;
 using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Utilities;
+using Newtonsoft.Json.Linq;
+using Hub.Managers;
+using Data.Crates;
 
 namespace HubWeb.Controllers
 {
@@ -28,19 +31,19 @@ namespace HubWeb.Controllers
         private readonly IRoute _route;
         private readonly IFindObjectsRoute _findObjectsRoute;
         private readonly ISecurityServices _security;
-        
+        private readonly ICrateManager _crate;
+
         public RouteController()
             : this(ObjectFactory.GetInstance<IRoute>())
         {
         }
-
-        
 
         public RouteController(IRoute route)
         {
             _route = route;
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _findObjectsRoute = ObjectFactory.GetInstance<IFindObjectsRoute>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         [Fr8ApiAuthorize]
@@ -252,15 +255,17 @@ namespace HubWeb.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Run(Guid routeId, [FromBody]PayloadVM model)
         {
-			List<CrateDTO> crates;
+			CrateDTO curCrateDto;
+            Crate curCrate = null;
 
 			if (model != null)
 			{
 				try
 				{
-					crates = JsonConvert.DeserializeObject<List<CrateDTO>>(model.Payload);
-				}
-				catch (Exception ex)
+                    curCrateDto = JsonConvert.DeserializeObject<CrateDTO>(model.Payload);
+                    curCrate = _crate.FromDto(curCrateDto);
+                }
+                catch (Exception ex)
 				{
 					return BadRequest("You payload is invalid. Make sure that it represents a valid JSON array of crate objects.");
 				}
@@ -272,7 +277,7 @@ namespace HubWeb.Controllers
                 var pusherNotifier = new PusherNotifier();
                 try
                 {
-                    var containerDO = await _route.Run(processTemplateDO, null);
+                    var containerDO = await _route.Run(processTemplateDO, curCrate);
                     pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
                     "fr8pusher_container_executed", String.Format("Route \"{0}\" executed", processTemplateDO.Name));
 
@@ -283,7 +288,6 @@ namespace HubWeb.Controllers
                     pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
                     "fr8pusher_container_failed", String.Format("Route \"{0}\" failed", processTemplateDO.Name));
                 }
-
 
                 return Ok();
             }
