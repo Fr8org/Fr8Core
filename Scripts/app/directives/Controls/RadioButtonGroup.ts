@@ -27,7 +27,7 @@ module dockyard.directives.radioButtonGroup {
                 }
                 $scope.field.value = radio.value;
                 // Invoke onChange event handler
-                if ($scope.change != null && angular.isFunction($scope.change)) {
+                if ($scope.change != null && angular.isFunction($scope.change())) {
                     $scope.change()($scope.field);
                 }
             }
