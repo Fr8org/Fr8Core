@@ -16,7 +16,7 @@ var dockyard;
                             $scope.selectedFile = fileDTO;
                             $scope.$root.$broadcast("fp-success", fileDTO);
                             $scope.field.value = fileDTO.cloudStorageUrl;
-                            $scope.$root.$broadcast("onChange", new pca.ChangeEventArgs("select_file"));
+                            $scope.$root.$broadcast("onChange", new pca.ChangeEventArgs($scope.field));
                         };
                         var OnFileUploadFail = function (status) {
                             alert('sorry file upload failed with status: ' + status);
