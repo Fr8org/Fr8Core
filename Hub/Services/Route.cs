@@ -47,7 +47,7 @@ namespace Hub.Services
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
         }
 
-        public IList<RouteDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, int? id = null, int? status = null)
+        public IList<RouteDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false, Guid? id = null, int? status = null)
         {
             var queryableRepo = unitOfWork.RouteRepository.GetQuery().Include(pt => pt.ChildContainers); // whe have to include Activities as it is a real navigational property. Not Routes
 
@@ -67,11 +67,14 @@ namespace Hub.Services
 
         public void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool updateChildEntities)
         {
-            var creating = ptdo.Id == 0;
+            var creating = ptdo.Id == Guid.Empty;
             if (creating)
             {
+                ptdo.Id = Guid.NewGuid();
                 ptdo.RouteState = RouteState.Inactive;
+
                 var subroute = new SubrouteDO(true);
+                subroute.Id = Guid.NewGuid();
                 subroute.ParentRouteNode = ptdo;
                 ptdo.ChildNodes.Add(subroute);
 
@@ -95,6 +98,7 @@ namespace Hub.Services
         {
             var route = new RouteDO()
             {
+                Id = Guid.NewGuid(),
                 Name = name
             };
 
@@ -109,7 +113,7 @@ namespace Hub.Services
             return route;
         }
 
-        public void Delete(IUnitOfWork uow, int id)
+        public void Delete(IUnitOfWork uow, Guid id)
         {
             var curRoute = uow.RouteRepository.GetQuery().SingleOrDefault(pt => pt.Id == id);
 
@@ -129,13 +133,15 @@ namespace Hub.Services
                 .GetQuery()
                 .Include(x => x.ChildNodes)
                 .Where(x => x.ParentRouteNodeId == curRouteDO.Id)
-                .OrderBy(x => x.Id)
+                .OrderBy(x => x.Ordering)
                 .ToList()
                 .Select((SubrouteDO x) =>
                 {
                     var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
 
-                    pntDTO.Actions = Enumerable.ToList(x.ChildNodes.Select(Mapper.Map<ActionDTO>));
+                    pntDTO.Actions = Enumerable.ToList(
+                        x.ChildNodes.OrderBy(y => y.Ordering).Select(Mapper.Map<ActionDTO>)
+                    );
 
                     return pntDTO;
                 }).ToList();
@@ -359,7 +365,7 @@ namespace Hub.Services
 
 
 
-        public RouteNodeDO GetFirstActivity(int curRouteId)
+        public RouteNodeDO GetFirstActivity(Guid curRouteId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -394,11 +400,12 @@ namespace Hub.Services
         public RouteDO Copy(IUnitOfWork uow, RouteDO route, string name)
         {
             var root = (RouteDO) route.Clone();
+            root.Id = Guid.NewGuid();
             root.Name = name;
             uow.RouteNodeRepository.Add(root);
 
-            var queue = new Queue<Tuple<RouteNodeDO, int>>();
-            queue.Enqueue(new Tuple<RouteNodeDO, int>(root, route.Id));
+            var queue = new Queue<Tuple<RouteNodeDO, Guid>>();
+            queue.Enqueue(new Tuple<RouteNodeDO, Guid>(root, route.Id));
 
             while (queue.Count > 0)
             {
@@ -414,13 +421,13 @@ namespace Hub.Services
                 foreach (var sourceChild in sourceChildren)
                 {
                     var childCopy = sourceChild.Clone();
-                    
+                    childCopy.Id = Guid.NewGuid();
                     childCopy.ParentRouteNode = routeNode;
                     routeNode.ChildNodes.Add(childCopy);
 
                     uow.RouteNodeRepository.Add(childCopy);
 
-                    queue.Enqueue(new Tuple<RouteNodeDO, int>(childCopy, sourceChild.Id));
+                    queue.Enqueue(new Tuple<RouteNodeDO, Guid>(childCopy, sourceChild.Id));
                 }
             }
 
@@ -433,7 +440,7 @@ namespace Hub.Services
         /// <param name="processTemplateId"></param>
         /// <param name="envelopeId"></param>
         /// <returns></returns>
-        public ContainerDO Create(IUnitOfWork uow, int processTemplateId, Crate curEvent)
+        public ContainerDO Create(IUnitOfWork uow, Guid processTemplateId, Crate curEvent)
         {
             var containerDO = new ContainerDO();
             containerDO.Id = Guid.NewGuid();
@@ -471,7 +478,7 @@ namespace Hub.Services
             return containerDO;
         }
 
-        public async Task Run(RouteDO curRoute, Crate curEvent)
+        public async Task<ContainerDO> Run(RouteDO curRoute, Crate curEvent)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -489,6 +496,8 @@ namespace Hub.Services
                 {
                     await _container.Execute(uow, curContainerDO);
                     curContainerDO.ContainerState = ContainerState.Completed;
+
+                    return curContainerDO;
                 }
                 catch
                 {

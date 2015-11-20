@@ -1,8 +1,10 @@
-﻿using Data.Entities;
+﻿using System;
+using System.Collections.Generic;
+using Data.Entities;
+using Data.Interfaces;
 using FluentValidation;
 using StructureMap;
-using Data.Interfaces;
-using System.Collections.Generic;
+
 namespace Data.Validations
 {
     public class ContainerValidator : AbstractValidator<ContainerDO>
@@ -13,7 +15,7 @@ namespace Data.Validations
             // RuleFor(containerDO => containerDO.Id).GreaterThan(0).WithMessage("Id must be a positive int");
 
             RuleFor(containerDO => containerDO.RouteId).NotEmpty()
-                .GreaterThan(0)
+                .NotEqual(Guid.Empty)
                 .Must(id => {
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {

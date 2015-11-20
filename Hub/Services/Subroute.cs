@@ -58,6 +58,7 @@ namespace Hub.Services
         public SubrouteDO Create(IUnitOfWork uow, RouteDO route, string name)
         {
             var subroute = new SubrouteDO();
+            subroute.Id = Guid.NewGuid();
 
             uow.SubrouteRepository.Add(subroute);
 
@@ -101,7 +102,7 @@ namespace Hub.Services
         /// <summary>
         /// Remove Subroute and children entities by id.
         /// </summary>
-        public void Delete(IUnitOfWork uow, int id)
+        public void Delete(IUnitOfWork uow, Guid id)
         {
             var subroute = uow.SubrouteRepository.GetByKey(id);
 
@@ -165,7 +166,7 @@ namespace Hub.Services
         /// <param name="userId">current user id</param>
         /// <param name="actionId">action to delete</param>
         /// <returns>isActionDeleted</returns>
-        protected async Task<bool> ValidateDownstreamActionsAndDelete(string userId, int actionId)
+        protected async Task<bool> ValidateDownstreamActionsAndDelete(string userId, Guid actionId)
         {
             var validationErrors = new List<Crate>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -175,10 +176,10 @@ namespace Hub.Services
 
                 //set ActivityTemplate and parentRouteNode of current action to null -> to simulate a delete
                 int? templateIdBackup = curAction.ActivityTemplateId;
-                int? parentRouteNodeIdBackup = curAction.ParentRouteNodeId;
+                Guid? parentRouteNodeIdBackup = curAction.ParentRouteNodeId;
                 curAction.ActivityTemplateId = null;
                 curAction.ParentRouteNodeId = null;
-            uow.SaveChanges();
+                uow.SaveChanges();
 
 
                 //lets start multithreaded calls
@@ -186,7 +187,7 @@ namespace Hub.Services
                 foreach (var downstreamAction in downstreamActions)
                 {
                     configureTaskList.Add(_action.Configure(userId, downstreamAction, false));
-        }
+                }
 
                 await Task.WhenAll(configureTaskList);
 
@@ -223,7 +224,7 @@ namespace Hub.Services
         }
 
         //TODO find a better response type for this function
-        public async Task<bool> DeleteAction(string userId, int actionId, bool confirmed)
+        public async Task<bool> DeleteAction(string userId, Guid actionId, bool confirmed)
         {
             if (confirmed)
             {
@@ -239,7 +240,7 @@ namespace Hub.Services
             return true;
         }
 
-        protected void DeleteActionKludge(int id)
+        protected void DeleteActionKludge(Guid id)
         {
             //Kludge solution
             //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering

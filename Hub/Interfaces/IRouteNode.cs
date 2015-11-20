@@ -16,7 +16,7 @@ namespace Hub.Interfaces
 
         List<RouteNodeDO> GetDownstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO);
 
-        Task Process(int curActivityId, ContainerDO curContainerDO);
+        Task Process(Guid curActivityId, ContainerDO curContainerDO);
 
         IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount);
         IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, Func<ActivityTemplateDO, bool> predicate);
@@ -27,7 +27,7 @@ namespace Hub.Interfaces
 
         IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups();
 
-        Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(int activityId, CrateDirection direction);
+        Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction);
 	    
         IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount);
     }

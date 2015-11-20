@@ -1,16 +1,16 @@
 ﻿module dockyard.model {
     export class SubrouteDTO {
-        public id: number;
+        public id: string;
         public isTempId: boolean;
-        public routeId: number;
+        public routeId: string;
         public name: string;
         public criteria: CriteriaDTO;
         public actions: Array<ActionDTO>;
 
         constructor(
-            id: number,
+            id: string,
             isTempId: boolean,
-            routeId: number,
+            routeId: string,
             name: string
         ) {
             this.id = id;

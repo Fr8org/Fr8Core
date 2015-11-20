@@ -4,7 +4,7 @@ module dockyard.interfaces {
     // TODO: Do we really need all these interfaces, since we have model type safe classes?
 
     export interface ICriteriaDTO {
-        id: number;
+        id: string;
         isTempId: boolean;
         actions: Array<IActionDTO>;
         conditions: Array<ICondition>;
@@ -12,9 +12,9 @@ module dockyard.interfaces {
     }
 
     export interface IActionDTO {
-        id: number;
+        id: string;
         isTempId: boolean;
-        parentRouteNodeId: number;
+        parentRouteNodeId: string;
         name: string;
         label?: string;
         crateStorage: model.CrateStorage;

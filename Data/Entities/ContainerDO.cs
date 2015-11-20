@@ -29,7 +29,7 @@ namespace Data.Entities
 
         [Required]
         [ForeignKey("Route")]
-        public int RouteId { get; set; }
+        public Guid RouteId { get; set; }
         public virtual RouteDO Route { get; set; }
 
         public virtual ICollection<ProcessNodeDO> ProcessNodes { get; set; }
@@ -41,11 +41,11 @@ namespace Data.Entities
         public virtual _ContainerStateTemplate ContainerStateTemplate { get; set; }
 
         [ForeignKey("CurrentRouteNode")]
-        public int? CurrentRouteNodeId { get; set; }
+        public Guid? CurrentRouteNodeId { get; set; }
         public virtual RouteNodeDO CurrentRouteNode { get; set; }
 
         [ForeignKey("NextRouteNode")]
-        public int? NextRouteNodeId { get; set; }
+        public Guid? NextRouteNodeId { get; set; }
         public virtual RouteNodeDO NextRouteNode { get; set; }
 
         public string CrateStorage { get; set; }
