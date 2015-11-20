@@ -87,14 +87,14 @@ module dockyard.tests.utils.fixtures {
         };
 
 
-        public static fieldBlock = {
+        public static designTimeField = {
             Key: 'test2',
             Value: 'value'
         };
         
         public static fieldList = {
-            value: JSON.stringify([FieldDTO.fieldBlock]),
-            field: 'test'
+            value: JSON.stringify([FieldDTO.designTimeField]),
+            field: 'test2'
         };
 
         public static textSource: model.TextSource = {
