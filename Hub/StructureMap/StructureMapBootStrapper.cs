@@ -123,6 +123,7 @@ namespace Hub.StructureMap
                 For<IReport>().Use<Report>();
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsRoute>().Use<FindObjectsRoute>();
+	            For<ITime>().Use<Time>();
             }
         }
 
@@ -182,6 +183,9 @@ namespace Hub.StructureMap
                 For<IDockyardEvent>().Use<DockyardEvent>();
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsRoute>().Use<FindObjectsRoute>();
+
+				var timeMock = new Mock<ITime>();
+	            For<ITime>().Use(timeMock.Object);
             }
         }
 

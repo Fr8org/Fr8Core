@@ -16,14 +16,25 @@ namespace HubWeb.Controllers
 {
     public class TokenAuthController : Controller
     {
+	    private readonly ITime _time;
+
+	    public TokenAuthController()
+	    {
+		    _time = ObjectFactory.GetInstance<ITime>();
+	    }
+
         public ActionResult Index(String token)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var validToken = uow.AuthorizationTokenRepository.GetQuery().FirstOrDefault(t => t.Id.ToString() == token);
-                if (validToken == null)
+                
+				if (validToken == null)
                     throw new HttpException(404, "Authorization token not found.");
-				if (validToken.ExpiresAt < DateTime.UtcNow)
+
+	            DateTime currentTime = _time.CurrentDateTime();
+
+				if (validToken.ExpiresAt < currentTime)
                     throw new HttpException(404, "Authorization token expired.");
 
                 ObjectFactory.GetInstance<ISecurityServices>().Login(uow, validToken.UserDO);
