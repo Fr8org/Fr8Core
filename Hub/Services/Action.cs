@@ -242,12 +242,12 @@ namespace Hub.Services
 
             var action = new ActionDO
             {
+                Id = Guid.NewGuid(),
                 ActivityTemplate = template,
                 Name = name,
                 Label = label,
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1
-
             };
 
             uow.ActionRepository.Add(action);

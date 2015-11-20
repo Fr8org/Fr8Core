@@ -58,6 +58,7 @@ namespace Hub.Services
         public SubrouteDO Create(IUnitOfWork uow, RouteDO route, string name)
         {
             var subroute = new SubrouteDO();
+            subroute.Id = Guid.NewGuid();
 
             uow.SubrouteRepository.Add(subroute);
 

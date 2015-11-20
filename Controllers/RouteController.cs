@@ -97,7 +97,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [Route("copy")]
         [HttpPost]
-        public IHttpActionResult Copy(int id, string name)
+        public IHttpActionResult Copy(Guid id, string name)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

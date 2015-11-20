@@ -66,7 +66,9 @@ namespace Hub.Services
             {
                 ptdo.Id = Guid.NewGuid();
                 ptdo.RouteState = RouteState.Inactive;
+
                 var subroute = new SubrouteDO(true);
+                subroute.Id = Guid.NewGuid();
                 subroute.ParentRouteNode = ptdo;
                 ptdo.ChildNodes.Add(subroute);
 
@@ -90,6 +92,7 @@ namespace Hub.Services
         {
             var route = new RouteDO()
             {
+                Id = Guid.NewGuid(),
                 Name = name
             };
 
@@ -124,13 +127,15 @@ namespace Hub.Services
                 .GetQuery()
                 .Include(x => x.ChildNodes)
                 .Where(x => x.ParentRouteNodeId == curRouteDO.Id)
-                .OrderBy(x => x.Id)
+                .OrderBy(x => x.Ordering)
                 .ToList()
                 .Select((SubrouteDO x) =>
                 {
                     var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
 
-                    pntDTO.Actions = Enumerable.ToList(x.ChildNodes.Select(Mapper.Map<ActionDTO>));
+                    pntDTO.Actions = Enumerable.ToList(
+                        x.ChildNodes.OrderBy(y => y.Ordering).Select(Mapper.Map<ActionDTO>)
+                    );
 
                     return pntDTO;
                 }).ToList();
@@ -389,6 +394,7 @@ namespace Hub.Services
         public RouteDO Copy(IUnitOfWork uow, RouteDO route, string name)
         {
             var root = (RouteDO) route.Clone();
+            root.Id = Guid.NewGuid();
             root.Name = name;
             uow.RouteNodeRepository.Add(root);
 
@@ -409,7 +415,7 @@ namespace Hub.Services
                 foreach (var sourceChild in sourceChildren)
                 {
                     var childCopy = sourceChild.Clone();
-                    
+                    childCopy.Id = Guid.NewGuid();
                     childCopy.ParentRouteNode = routeNode;
                     routeNode.ChildNodes.Add(childCopy);
 

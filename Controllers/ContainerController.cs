@@ -84,7 +84,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [Route("launch")]
         [HttpPost]
-        public async Task<IHttpActionResult> Launch(int routeId)
+        public async Task<IHttpActionResult> Launch(Guid routeId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

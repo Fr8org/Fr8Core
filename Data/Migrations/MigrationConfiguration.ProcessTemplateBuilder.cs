@@ -63,6 +63,7 @@ namespace Data.Migrations
                 if (add)
                 {
                     route = new RouteDO();
+                    route.Id = Guid.NewGuid();
                 }
 
                 route.Name = _name;

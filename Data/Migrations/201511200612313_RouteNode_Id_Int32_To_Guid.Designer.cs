@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201511190552334_RouteNode_Id_Int32_To_Guid"; }
+            get { return "201511200612313_RouteNode_Id_Int32_To_Guid"; }
         }
         
         string IMigrationMetadata.Source

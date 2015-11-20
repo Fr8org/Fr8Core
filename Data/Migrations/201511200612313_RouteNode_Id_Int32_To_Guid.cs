@@ -2,7 +2,7 @@ namespace Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class RouteNode_Id_Int32_To_Guid : DbMigration
     {
         public override void Up()
@@ -18,11 +18,9 @@ namespace Data.Migrations
             AddForeignKeys();
             DropTemporaryTablesAndColumns();
         }
-        
+
         public override void Down()
         {
-            System.Diagnostics.Debugger.Launch();
-
             DropForeignKeys();
             RouteNodeTable_GuidToInt32();
             ContainerForeignKeys_GuidToInt32();
@@ -34,7 +32,7 @@ namespace Data.Migrations
             AddForeignKeys();
             DropTemporaryTablesAndColumns();
         }
-    
+
         private void DropForeignKeys()
         {
             DropForeignKey("dbo.RouteNodes", "ParentRouteNodeId", "dbo.RouteNodes");
