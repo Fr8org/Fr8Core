@@ -10,7 +10,8 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Hub.Enums;
+using Data.States;
+
 using Hub.Interfaces;
 using Hub.Managers;
 using Utilities.Configuration.Azure;
@@ -310,12 +311,12 @@ namespace Hub.Services
             return curActivityTemplates;
         }
         
-        public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(int activityId, GetCrateDirection direction)
+        public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(int activityId, CrateDirection direction)
         { 
             var httpClient = new HttpClient();
 
             // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
-            var directionSuffix = (direction == GetCrateDirection.Upstream)
+            var directionSuffix = (direction == CrateDirection.Upstream)
                 ? "upstream_actions/"
                 : "downstream_actions/";
 

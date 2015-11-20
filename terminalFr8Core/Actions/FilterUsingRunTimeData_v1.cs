@@ -12,7 +12,8 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+using Data.States;
+
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -225,7 +226,7 @@ namespace terminalFr8Core.Actions
             {
                 //this conversion from actiondto to Action should be moved back to the controller edge
                 var curUpstreamFields =
-                    (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream))
+                    (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
                     .Fields
                     .ToArray();
 

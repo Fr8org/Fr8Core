@@ -8,7 +8,8 @@ using Data.Entities;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+using Data.States;
+
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -47,7 +48,7 @@ namespace terminalSendGrid.Tests.Actions
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 
             var routeNode = new Mock<IRouteNode>();
-            routeNode.Setup(c => c.GetCratesByDirection<StandardDesignTimeFieldsCM>(It.IsAny<int>(), It.IsAny<GetCrateDirection>()))
+            routeNode.Setup(c => c.GetCratesByDirection<StandardDesignTimeFieldsCM>(It.IsAny<int>(), It.IsAny<CrateDirection>()))
                     .Returns(Task.FromResult(new List<Crate<StandardDesignTimeFieldsCM>>()));
 
             ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(routeNode.Object));

@@ -5,7 +5,8 @@ using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Hub.Enums;
+using Data.States;
+
 
 namespace Hub.Interfaces
 {
@@ -26,7 +27,7 @@ namespace Hub.Interfaces
 
         IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups();
 
-        Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(int activityId, GetCrateDirection direction);
+        Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(int activityId, CrateDirection direction);
 	    
         IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount);
     }
