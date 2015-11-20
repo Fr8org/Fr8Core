@@ -276,7 +276,7 @@ namespace terminalIntegrationTests
         }
 
         // navigational properties in MockDB are not so navigational... 
-        private void FixActionNavProps(int id)
+        private void FixActionNavProps(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

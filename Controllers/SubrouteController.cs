@@ -93,7 +93,7 @@ namespace HubWeb.Controllers
         /// <param name="id">Subroute id.</param>
         /// <returns>Deleted DTO Subroute.</returns>
         [ResponseType(typeof(SubrouteDTO))]
-        public IHttpActionResult Delete(int id)
+        public IHttpActionResult Delete(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

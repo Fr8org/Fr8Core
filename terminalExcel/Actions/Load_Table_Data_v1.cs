@@ -101,7 +101,7 @@ namespace terminalExcel.Actions
             return processPayload;            
         }
 
-        private async Task<StandardTableDataCM> GetTargetTableData(int actionId, CrateStorage curCrateStorageDTO)
+        private async Task<StandardTableDataCM> GetTargetTableData(Guid actionId, CrateStorage curCrateStorageDTO)
         {
             // Find crates of manifest type Standard Table Data
             var standardTableDataCrates = curCrateStorageDTO.CratesOfType<StandardTableDataCM>();
@@ -115,7 +115,7 @@ namespace terminalExcel.Actions
             return standardTableDataCrates.First().Content;
         }
 
-        private async Task<StandardTableDataCM> GetUpstreamTableData(int actionId, CrateStorage curCrateStorageDTO)
+        private async Task<StandardTableDataCM> GetUpstreamTableData(Guid actionId, CrateStorage curCrateStorageDTO)
         {
             var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(actionId);
 
@@ -163,7 +163,7 @@ namespace terminalExcel.Actions
         /// </summary>
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.Id > 0)
+            if (curActionDO.Id != Guid.Empty)
             {
 
                 //Pack the merged fields into a new crate that can be used to populate the dropdownlistbox

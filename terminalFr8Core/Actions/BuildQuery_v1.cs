@@ -8,12 +8,13 @@ using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalFr8Core.Infrastructure;
 using Data.Entities;
+using Data.States;
 using Data.Control;
 
 namespace terminalFr8Core.Actions
@@ -122,7 +123,7 @@ namespace terminalFr8Core.Actions
         {
             var upstreamCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(
                 actionDO.Id,
-                GetCrateDirection.Upstream
+                CrateDirection.Upstream
             );
 
             if (upstreamCrates == null) { return null; }

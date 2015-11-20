@@ -83,23 +83,24 @@ namespace terminalDocuSign.Actions
         /// </summary>
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.Id > 0)
+            if (curActionDO.Id != Guid.Empty)
             {
                 using (var updater = Crate.UpdateStorage(curActionDO))
-
+                {
                     if (authTokenDO == null || authTokenDO.Token == null)
-                {
-                    updater.CrateStorage = new CrateStorage(await CreateNoAuthCrate());
-                }
-                else
-                {
-                    var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+                    {
+                        updater.CrateStorage = new CrateStorage(await CreateNoAuthCrate());
+                    }
+                    else
+                    {
+                        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
-                    //build a controls crate to render the pane
-                    var configurationControlsCrate = await CreateConfigurationControlsCrate();
-                    var templatesFieldCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
+                        //build a controls crate to render the pane
+                        var configurationControlsCrate = await CreateConfigurationControlsCrate();
+                        var templatesFieldCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
 
-                    updater.CrateStorage = new CrateStorage(templatesFieldCrate, configurationControlsCrate);
+                        updater.CrateStorage = new CrateStorage(templatesFieldCrate, configurationControlsCrate);
+                    }
                 }
             }
             else

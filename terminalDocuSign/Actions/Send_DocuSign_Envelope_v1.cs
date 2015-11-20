@@ -11,7 +11,8 @@ using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+using Data.States;
+
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 using Utilities;
@@ -169,7 +170,7 @@ namespace terminalDocuSign.Actions
                     updater.CrateStorage.Remove(curUpstreamFieldsCrate);
             }
 
-            var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream))
+            var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
                 .Fields
                 .ToArray();
 

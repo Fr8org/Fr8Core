@@ -3,7 +3,7 @@
 module dockyard.services {
 
     export interface ILocalIdentityGenerator {
-        getNextId(): number;
+        getNextId(): string;
     }
 
     export class LocalIdentityGenerator implements ILocalIdentityGenerator {
@@ -14,8 +14,8 @@ module dockyard.services {
         }
 
         // Generating sequential negative numbers, to avoid temporary and global id overlapping.
-        getNextId(): number {
-            return --this._nextId;
+        getNextId(): string {
+            return (--this._nextId).toString();
         }
     } 
 }

@@ -9,6 +9,11 @@ namespace terminalSendGrid.Tests.Fixtures
 {
     public class FixtureData
     {
+        public static Guid TestGuid_Id_333()
+        {
+            return new Guid("A0287C2A-28D3-48C5-8CAC-26FE27E8EA9B");
+        }
+
         public static ActionDO ConfigureSendEmailViaSendGridAction()
         {
             var actionTemplate = SendEmailViaSendGridActionTemplateDTO();
@@ -16,7 +21,7 @@ namespace terminalSendGrid.Tests.Fixtures
             var actionDO = new ActionDO()
             {
                 Name = "testaction",
-                Id = 333,
+                Id = TestGuid_Id_333(),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
                 CrateStorage = ""
