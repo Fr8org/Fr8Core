@@ -185,23 +185,23 @@ namespace terminalDocuSign.Services
                     }
 
                     if (tabs["textTabs"] != null)
-                    {
+                {
                         foreach (var textTab in tabs["textTabs"])
-                        {
-                            envelopeData.Add(CreateEnvelopeData(textTab, textTab["value"].ToString()));
-                        }
-                    }
-
-                    if (tabs["checkboxTabs"] == null)
                     {
-                        continue;
-                    }
-
-                    foreach (var chekBoxTabs in tabs["checkboxTabs"])
-                    {
-                        envelopeData.Add(CreateEnvelopeData(chekBoxTabs, chekBoxTabs["selected"].ToString()));
+                        envelopeData.Add(CreateEnvelopeData(textTab, textTab["value"].ToString()));
                     }
                 }
+
+                    if (tabs["checkboxTabs"] == null)
+                {
+                    continue;
+                }
+
+                    foreach (var chekBoxTabs in tabs["checkboxTabs"])
+                {
+                    envelopeData.Add(CreateEnvelopeData(chekBoxTabs, chekBoxTabs["selected"].ToString()));
+                }
+            }
             }
 
             return envelopeData;

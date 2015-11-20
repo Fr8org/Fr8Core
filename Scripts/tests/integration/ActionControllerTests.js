@@ -70,13 +70,13 @@ var dockyard;
                         // First POST, create a dummy entry
                         var actions = {
                             name: "test action type",
-                            configurationControls: fx.ActionDesignDTO.configurationControls,
+                            configurationControls: fx.ActionDTO.configurationControls,
                             crateStorage: null,
-                            parentRouteNodeId: 1,
+                            parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                             activityTemplate: null,
                             activityTemplateId: 1,
                             isTempId: false,
-                            id: 0,
+                            id: '00000000-0000-0000-0000-000000000000',
                             childrenActions: null
                         };
                         postInvoker(done, actions);
@@ -89,13 +89,13 @@ var dockyard;
                     var endpoint = "/actions";
                     var currentActionDesignDTO = {
                         name: "test action type",
-                        configurationControls: fx.ActionDesignDTO.configurationControls,
+                        configurationControls: fx.ActionDTO.configurationControls,
                         crateStorage: null,
-                        parentRouteNodeId: 1,
+                        parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                         activityTemplate: null,
                         activityTemplateId: 1,
                         isTempId: false,
-                        id: 1,
+                        id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                         childrenActions: null
                     };
                     beforeAll(function () {

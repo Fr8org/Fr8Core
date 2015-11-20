@@ -78,7 +78,7 @@ module dockyard.directives {
                         $scope.field.value = angular.toJson(designTimeFields);
 
                         if ($scope.change && angular.isFunction($scope.change)) {
-                            $scope.change()($scope.field.name);
+                            $scope.change()($scope.field);
                         }
                     };
                 }
@@ -92,7 +92,7 @@ module dockyard.directives {
         update: (event: any) => void;
         addRow: () => void;
         removeRow: (index: number) => void;
-        change: () => (fieldName: string) => void;
+        change: () => (field: model.ControlDefinitionDTO) => void;
     }
 }
 

@@ -14,6 +14,8 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Exceptions;
 using Hub.Interfaces;
+using System.Threading.Tasks;
+using Utilities;
 
 namespace HubWeb.Controllers
 {
@@ -43,7 +45,7 @@ namespace HubWeb.Controllers
         [Route("full/{id:int}")]
         [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
-        public IHttpActionResult GetFullRoute(int id)
+        public IHttpActionResult GetFullRoute(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -58,7 +60,7 @@ namespace HubWeb.Controllers
         [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
         
-        public IHttpActionResult GetByAction(int id)
+        public IHttpActionResult GetByAction(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -73,11 +75,17 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [Route("status")]
         [HttpGet]
-        public IHttpActionResult GetByStatus(int? id = null, int? status = null)
+        public IHttpActionResult GetByStatus(Guid? id = null, int? status = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id, status);
+                var curRoutes = _route.GetForUser(
+                    uow,
+                    _security.GetCurrentAccount(uow),
+                    _security.IsCurrentUserHasRole(Roles.Admin),
+                    id,
+                    status
+                );
 
                 if (curRoutes.Any())
                 {               
@@ -91,7 +99,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [Route("copy")]
         [HttpPost]
-        public IHttpActionResult Copy(int id, string name)
+        public IHttpActionResult Copy(Guid id, string name)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -110,11 +118,16 @@ namespace HubWeb.Controllers
         
         // GET api/<controller>
         [Fr8ApiAuthorize]
-        public IHttpActionResult Get(int? id = null)
+        public IHttpActionResult Get(Guid? id = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id);
+                var curRoutes = _route.GetForUser(
+                    uow,
+                    _security.GetCurrentAccount(uow),
+                    _security.IsCurrentUserHasRole(Roles.Admin),
+                    id
+                );
 
             if (curRoutes.Any())
             {
@@ -179,9 +192,9 @@ namespace HubWeb.Controllers
         
 
         [HttpDelete]
-        [Route("{id:int}")]
+        [Route("{id:guid}")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Delete(int id)
+        public IHttpActionResult Delete(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -229,6 +242,34 @@ namespace HubWeb.Controllers
                 uow.SaveChanges();
 
                 return Ok(new { id = route.Id });
+            }
+        }
+
+        [Fr8ApiAuthorize]
+        [Route("run")]
+        [HttpPost]
+        public async Task<IHttpActionResult> Run(Guid routeId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var processTemplateDO = uow.RouteRepository.GetByKey(routeId);
+                var pusherNotifier = new PusherNotifier();
+                try
+                {
+                    var containerDO = await _route.Run(processTemplateDO, null);
+                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
+                    "fr8pusher_container_executed", String.Format("Route \"{0}\" executed", processTemplateDO.Name));
+
+                    return Ok(Mapper.Map<ContainerDTO>(containerDO));
+                }
+                catch
+                {
+                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
+                    "fr8pusher_container_failed", String.Format("Route \"{0}\" failed", processTemplateDO.Name));
+                }
+
+
+                return Ok();
             }
         }
     }

@@ -78,11 +78,11 @@ module dockyard.directives.paneWorkflowDesigner {
     }
 
     export class AddActionEventArgs {
-        public criteriaId: number;
+        public criteriaId: string;
         public action: model.ActionDTO;
         public doNotRaiseSelectedEvent: boolean;
 
-        constructor(criteriaId: number,
+        constructor(criteriaId: string,
             action: model.ActionDTO,
             doNotRaiseSelectedEvent?: boolean) {
 
@@ -93,13 +93,13 @@ module dockyard.directives.paneWorkflowDesigner {
     }
 
     export class ActionSelectedEventArgs {
-        public processNodeTemplateId: number;
-        public actionId: number;
+        public processNodeTemplateId: string;
+        public actionId: string;
         public activityTemplateId: number;
 
         constructor(
-            processNodeTemplateId: number,
-            actionId: number,
+            processNodeTemplateId: string,
+            actionId: string,
             activityTemplateId: number) {
 
             this.processNodeTemplateId = processNodeTemplateId;
@@ -122,10 +122,10 @@ module dockyard.directives.paneWorkflowDesigner {
     }
 
     export class ActionNameUpdatedEventArgs {
-        public id: number;
+        public id: string;
         public name: string;
 
-        constructor(id: number, name: string) {
+        constructor(id: string, name: string) {
             this.id = id;
             this.name = name;
         }
@@ -142,20 +142,20 @@ module dockyard.directives.paneWorkflowDesigner {
     }
 
     export class ActionTempIdReplacedEventArgs {
-        public tempId: number;
-        public id: number;
+        public tempId: string;
+        public id: string;
 
-        constructor(tempId: number, id: number) {
+        constructor(tempId: string, id: string) {
             this.tempId = tempId;
             this.id = id;
         }
     }
 
     export class UpdateActivityTemplateIdEventArgs {
-        public id: number;
+        public id: string;
         public activityTemplateId: number;
 
-        constructor(id: number, activityTemplateId: number) {
+        constructor(id: string, activityTemplateId: number) {
             this.id = id;
             this.activityTemplateId = activityTemplateId;
         }

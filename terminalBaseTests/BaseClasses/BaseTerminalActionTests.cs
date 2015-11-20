@@ -9,7 +9,8 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+using Data.States;
+
 using Hub.Interfaces;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
@@ -17,23 +18,23 @@ using TerminalBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
-namespace pluginBaseTests.BaseClasses
+namespace terminalBaseTests.BaseClasses
 {
 
     [TestFixture]
-    [Category("BasePluginAction")]
-    public class BasePluginActionTests : BaseTest
+    [Category("BaseTerminalAction")]
+    public class BaseTerminalActionTests : BaseTest
     {
         IDisposable _coreServer;
-        BasePluginAction _basePluginAction;
+        BaseTerminalAction _baseTerminalAction;
         private ICrateManager _crateManager;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _basePluginAction = new BasePluginAction();
-            _coreServer = pluginBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
+            _baseTerminalAction = new BaseTerminalAction();
+            _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
@@ -53,13 +54,14 @@ namespace pluginBaseTests.BaseClasses
             //Arrange
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
             ConfigurationEvaluator curConfigurationEvaluator = EvaluateReceivedRequest;
-            AuthorizationTokenDO authTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
-            object[] parameters = new object[] { curActionDO, curConfigurationEvaluator, authTokenDO };
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var curAuthTokenDO = curActionDTO.AuthToken;
+            object[] parameters = new object[] { curActionDO, curConfigurationEvaluator, curAuthTokenDO };
 
             //Act
-            var result = await (Task<ActionDO>) ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActionDO>) ClassMethod.Invoke(typeof(BaseTerminalAction), "ProcessConfigurationRequest", parameters);
 
+            
             //Assert
             Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage), _crateManager.GetStorage(result));
         }
@@ -69,18 +71,19 @@ namespace pluginBaseTests.BaseClasses
         public async void ProcessConfigurationRequest_ConfigurationRequestTypeIsFollowUp_ReturnsExistingCrateStorage()
         {
             //Arrange
-            ActionDO curActionDO = FixtureData.TestConfigurationSettingsDTO1();
-            ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            ActionDO curAction = FixtureData.TestConfigurationSettingsDTO1();
+            ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
             ConfigurationEvaluator curConfigurationEvaluator = EvaluateReceivedRequest;
-            AuthorizationTokenDO curAuthTokenDO = null;
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var curAuthTokenDO = curActionDTO.AuthToken;
             object[] parameters = new object[] { curActionDO, curConfigurationEvaluator, curAuthTokenDO };
 
             //Act
-            var result = await (Task<ActionDO>)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActionDO>)ClassMethod.Invoke(typeof(BaseTerminalAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
-            Assert.AreEqual(_crateManager.GetStorage(curActionDO.CrateStorage).Count, _crateManager.GetStorage(result.CrateStorage).Count);
-            Assert.AreEqual(_crateManager.GetStorage(curActionDO.CrateStorage).First().ManifestType, _crateManager.GetStorage(result.CrateStorage).First().ManifestType);
+            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).Count, _crateManager.GetStorage(result.CrateStorage).Count);
+            Assert.AreEqual(_crateManager.FromDto(curActionDTO.CrateStorage).First().ManifestType, _crateManager.GetStorage(result.CrateStorage).First().ManifestType);
 
         }
 
@@ -91,7 +94,7 @@ namespace pluginBaseTests.BaseClasses
             object[] parameters = new object[] { FixtureData.FieldDefinitionDTO1() };
 
             //Act
-            var result = (Crate)ClassMethod.Invoke(typeof(BasePluginAction), "PackControlsCrate", parameters);
+            var result = (Crate)ClassMethod.Invoke(typeof(BaseTerminalAction), "PackControlsCrate", parameters);
 
             //Assert
             Assert.IsNotNull(result);
@@ -102,7 +105,7 @@ namespace pluginBaseTests.BaseClasses
         [Test]
         public void MergeContentFields_ReturnsStandardDesignTimeFieldsMS()
         {
-            var result = _basePluginAction.MergeContentFields(FixtureData.TestCrateDTO1());
+            var result = _baseTerminalAction.MergeContentFields(FixtureData.TestCrateDTO1());
             Assert.IsNotNull(result);
             Assert.AreEqual(2, result.Fields.Count);
         }
@@ -120,8 +123,8 @@ namespace pluginBaseTests.BaseClasses
 
                 ActionDO curAction = FixtureData.TestAction57();
 
-                var result = await _basePluginAction.GetDesignTimeFields(
-                    curAction.Id, GetCrateDirection.Upstream);
+                var result = await _baseTerminalAction.GetDesignTimeFields(
+                    curAction.Id, CrateDirection.Upstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(16, result.Fields.Count);
             }
@@ -137,8 +140,8 @@ namespace pluginBaseTests.BaseClasses
 
                 ActionDO curAction = FixtureData.TestAction57();
 
-                var result = await _basePluginAction.GetDesignTimeFields(
-                    curAction.Id, GetCrateDirection.Downstream);
+                var result = await _baseTerminalAction.GetDesignTimeFields(
+                    curAction.Id, CrateDirection.Downstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(18, result.Fields.Count);
             }

@@ -103,7 +103,7 @@ namespace DockyardTest.Controllers
             RouteController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
 
             //Assert
-            var postResult = processTemplateController.Get(55);
+            var postResult = processTemplateController.Get(FixtureData.GetTestGuidById(55));
             Assert.IsNull(postResult as OkNegotiatedContentResult<RouteDO>);
         }
 

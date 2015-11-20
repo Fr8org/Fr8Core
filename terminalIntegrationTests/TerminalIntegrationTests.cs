@@ -13,7 +13,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Plugin;
+using Hub.Managers.APIManagers.Transmitters.Terminal;
 using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
@@ -28,10 +28,10 @@ using System.Security.Principal;
 using Data.Crates;
 using Hub.Managers;
 
-namespace pluginIntegrationTests
+namespace terminalIntegrationTests
 {
     [TestFixture]
-    [Category("PluginIntegrationTests")]
+    [Category("TerminalIntegrationTests")]
 	public partial class TerminalIntegrationTests : BaseTest
     {
         private IDisposable _coreServer;
@@ -112,7 +112,7 @@ namespace pluginIntegrationTests
                 uow.SaveChanges();
             }
 
-            _coreServer = pluginIntegrationTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
+            _coreServer = terminalIntegrationTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
 
             var docuSignServerUrl = "http://" + FixtureData.TestTerminal_DocuSign_EndPoint + "/";
             _docuSignServer = terminalDocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
@@ -275,7 +275,7 @@ namespace pluginIntegrationTests
         }
 
         // navigational properties in MockDB are not so navigational... 
-        private void FixActionNavProps(int id)
+        private void FixActionNavProps(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

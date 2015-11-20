@@ -43,7 +43,7 @@ namespace terminalDocuSign.Infrastructure
                 return curDocuSignAccount;
 
             throw new InvalidOperationException(
-                "Cannot log in to DocuSign. Please check the authentication information on web.config.");
+                "Cannot log in to DocuSign. " + (curDocuSignAccount.RestError != null ? curDocuSignAccount.RestError.Serialize() : ""));
         }
         
         private void ConfigureDocuSignIntegration()

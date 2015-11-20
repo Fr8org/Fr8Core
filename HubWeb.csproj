@@ -119,9 +119,6 @@
       <HintPath>packages\logentries.log4net.2.4.2\lib\net40\LogentriesLog4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.Core">
-      <HintPath>packages\Microsoft.AspNet.Identity.Core.2.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.Identity.Core.2.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
       <Private>True</Private>
@@ -195,10 +192,6 @@
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NewRelic.Api.Agent, Version=2.25.208.0, Culture=neutral, PublicKeyToken=06552fced0b33d87, processorArchitecture=MSIL">
-      <HintPath>packages\NewRelic.Azure.WebSites.2.25.208.0\lib\NewRelic.Api.Agent.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -286,9 +279,6 @@
     <Reference Include="WebActivator, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\WebActivator.1.5.3\lib\net40\WebActivator.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="WebGrease">
-      <HintPath>packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
     </Reference>
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
@@ -444,6 +434,7 @@
     <Content Include="Content\icons\web_services\aws-icon-64x64.png" />
     <Content Include="Content\icons\web_services\docusign-icon-64x64.png" />
     <Content Include="Content\icons\web_services\DocuSign-Logo.png" />
+    <Content Include="Content\icons\web_services\dropbox-icon-64x64.png" />
     <Content Include="Content\icons\web_services\fr8-core-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-azure-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-excel-icon-64x64.png" />
@@ -687,9 +678,6 @@
     <Content Include="Documentation\UploadBrandProfiles.html" />
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
-    <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
-    <Content Include="newrelic\NewRelic.Agent.Core.dll" />
-    <Content Include="newrelic\NewRelic.Profiler.dll" />
     <Content Include="Scripts\lib\jpattern.js" />
     <Content Include="Scripts\tests\integration\ContainerControllerTests.js" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
@@ -756,7 +744,6 @@
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Counter.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Duration.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\InputFocus.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ManageRoute.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilder.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextSource.ts" />
@@ -825,12 +812,17 @@
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ContainerControllerTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\DropDownListBoxTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBlockTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBoxTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextSource.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\FieldList.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\RadioButtonGroup.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\DropDownListBox.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\FilePicker.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBlock.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBox.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\PaneConfigurationActionTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDesignDTO.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_FieldDTO.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionTemplate.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ContainerDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\mocks.ts" />
@@ -3898,10 +3890,6 @@
     <Content Include="Content\documents\medical_intake_form.pdf" />
     <Content Include="Content\documents\Sample Excel Contact List.xlsx" />
     <Content Include="packages.config">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="newrelic\newrelic.config" />
-    <Content Include="newrelic\extensions\extension.xsd">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Content\img\site\Thumbs.db" />

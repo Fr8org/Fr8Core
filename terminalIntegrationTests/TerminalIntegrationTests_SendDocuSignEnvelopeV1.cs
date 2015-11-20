@@ -21,7 +21,7 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using terminalAzure;
 
-namespace pluginIntegrationTests
+namespace terminalIntegrationTests
 {
 	public partial class TerminalIntegrationTests : BaseTest
 	{

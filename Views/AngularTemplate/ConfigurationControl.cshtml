@@ -40,7 +40,7 @@
         -->
     <div ng-if='field.type == "RadioButtonGroup"'>
         <label class='control-label'>{{::field.label}}</label>
-        <radio-button-group field='field' current-action='currentAction'></radio-button-group>
+        <radio-button-group field='field' current-action='currentAction' change='onChange'></radio-button-group>
     </div>  
     
     <!--

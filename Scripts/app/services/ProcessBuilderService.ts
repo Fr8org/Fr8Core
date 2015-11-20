@@ -7,11 +7,11 @@ module dockyard.services {
     export interface IRouteService extends ng.resource.IResourceClass<interfaces.IRouteVM> {
         getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IRouteVM>;
         getFull: (id: Object) => interfaces.IRouteVM;
-        getByAction: (id: { id: number }) => interfaces.IRouteVM;
+        getByAction: (id: { id: string }) => interfaces.IRouteVM;
         execute: (id: { id: number }) => void;
         activate: (processTemplate: model.RouteDTO) => void;
         deactivate: (processTemplate: model.RouteDTO) => void;
-        update: (data: { id: number, name: string}) => interfaces.IRouteVM;
+        update: (data: { id: string, name: string}) => interfaces.IRouteVM;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -20,7 +20,7 @@ module dockyard.services {
         create: (args: { actionTemplateId: number, name: string, label: string, parentNideId: number, createRoute: boolean }) => ng.resource.IResource<model.RouteDTO | model.ActionDTO>;
         createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.RouteDTO>;
         //TODO make resource class do this operation
-        deleteById: (id: { id: number; confirmed: boolean }) => ng.resource.IResource<string>;
+        deleteById: (id: { id: string; confirmed: boolean }) => ng.resource.IResource<string>;
         
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
@@ -36,11 +36,11 @@ module dockyard.services {
 
     interface __ICriteriaService extends ng.resource.IResourceClass<interfaces.ICriteriaVM> {
         update: (curCriteria: model.CriteriaDTO) => interfaces.ICriteriaVM;
-        byProcessNodeTemplate: (id: { id: number }) => interfaces.ICriteriaVM;
+        byProcessNodeTemplate: (id: { id: string }) => interfaces.ICriteriaVM;
     }
 
     export interface ICriteriaServiceWrapper {
-        load: (id: number) => ng.IPromise<model.SubrouteDTO>;
+        load: (id: string) => ng.IPromise<model.SubrouteDTO>;
         add: (curProcessNodeTemplate: model.SubrouteDTO) => ng.IPromise<model.SubrouteDTO>;
         update: (curProcessNodeTemplate: model.SubrouteDTO) => ng.IPromise<model.SubrouteDTO>;
         addOrUpdate(curProcessNodeTemplate: model.SubrouteDTO): {
@@ -56,8 +56,6 @@ module dockyard.services {
     export interface IActivityTemplateService extends ng.resource.IResourceClass<interfaces.IActivityTemplateVM> {
         getAvailableActivities: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
     }
-
-  
 
     /*
         ProcessTemplateDTO CRUD service.
@@ -93,7 +91,7 @@ module dockyard.services {
                 'execute': {
                     method: 'POST',
                     isArray: false,
-                    url: '/api/containers/launch?routeId=:id',
+                    url: '/routes/run?routeId=:id',
                     params: {
                         id: '@id'
                     }
@@ -416,7 +414,7 @@ module dockyard.services {
             return deferred.promise;
         }
 
-        public load(id: number): ng.IPromise<model.SubrouteDTO> {
+        public load(id: string): ng.IPromise<model.SubrouteDTO> {
             var deferred = this.$q.defer<interfaces.ISubrouteVM>();
 
             // Save ProcessNodeTemplate object to server.

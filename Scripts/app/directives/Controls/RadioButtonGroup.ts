@@ -6,6 +6,7 @@ module dockyard.directives.radioButtonGroup {
         field: model.RadioButtonGroupControlDefinitionDTO;
         changeSelection: (radio: model.RadioButtonOption) => void;
         uniqueDirectiveId: number;
+        change: () => (field: model.ControlDefinitionDTO) => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -25,6 +26,10 @@ module dockyard.directives.radioButtonGroup {
                     }
                 }
                 $scope.field.value = radio.value;
+                // Invoke onChange event handler
+                if ($scope.change != null && angular.isFunction($scope.change())) {
+                    $scope.change()($scope.field);
+                }
             }
         };
 
@@ -35,7 +40,8 @@ module dockyard.directives.radioButtonGroup {
             scope: {
                 currentAction: '=',
                 field: '=',
-                changeSelection: '&'
+                changeSelection: '&',
+                change: '&'
             }
         };
         
