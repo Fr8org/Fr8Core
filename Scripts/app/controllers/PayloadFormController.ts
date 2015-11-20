@@ -15,7 +15,7 @@ module dockyard.controllers {
 		constructor(
 			private $scope: any,
 			private ProcessTemplateService: services.IRouteService,
-			private processTemplateId: number,
+			private processTemplateId: any,
 			private $modalInstance: any) {
 
 			$scope.submit = <() => void> angular.bind(this, this.submit);

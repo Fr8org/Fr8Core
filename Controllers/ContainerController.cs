@@ -82,47 +82,6 @@ namespace HubWeb.Controllers
             }
         }
 
-        [Fr8ApiAuthorize]
-        [Route("launch")]
-        [HttpPost]
-		public async Task<IHttpActionResult> Launch(int routeId, [FromBody]PayloadVM model)
-        {
-	        List<CrateDTO> crates;
-
-			if (model != null)
-			{
-				try
-				{
-					crates = JsonConvert.DeserializeObject<List<CrateDTO>>(model.Payload);
-				}
-				catch (Exception ex)
-				{
-					return BadRequest("You payload is invalid. Make sure that it represents a valid JSON array of crate objects.");
-				}
-	        }
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var processTemplateDO = uow.RouteRepository.GetByKey(routeId);
-                var pusherNotifier = new PusherNotifier();
-                try
-                {
-                    var containerDO = await _container.Launch(processTemplateDO, null);
-                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
-                        "fr8pusher_container_executed", String.Format("Route \"{0}\" executed", processTemplateDO.Name));
-
-                    return Ok(Mapper.Map<ContainerDTO>(containerDO));
-                }
-                catch
-                {
-                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
-                        "fr8pusher_container_failed", String.Format("Route \"{0}\" failed", processTemplateDO.Name));
-                }
-
-                return Ok();
-            }
-        }
-
         // Return the Containers accordingly to ID given
         [Fr8ApiAuthorize]
         [Route("get/{id:guid?}")]

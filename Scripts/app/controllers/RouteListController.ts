@@ -84,7 +84,7 @@ module dockyard.controllers {
 				this.$modal.open({
 					animation: true,
 					templateUrl: '/AngularTemplate/_AddPayloadModal',
-					controller: 'PayloadFormController', resolve: { processTemplateId: processTemplateId  }
+					controller: 'PayloadFormController', resolve: { processTemplateId: () => processTemplateId }
 				});
 			}
 			else {
