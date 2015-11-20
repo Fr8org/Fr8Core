@@ -22,8 +22,7 @@ namespace Data.Entities
 
         public virtual _ProcessNodeStatusTemplate ProcessNodeStatusTemplate { get; set; }
 
-        public int SubrouteId { get; set; }
-
+        public Guid SubrouteId { get; set; }
         public virtual SubrouteDO Subroute { get; set; }
     }
 }

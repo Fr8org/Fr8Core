@@ -100,7 +100,7 @@ module dockyard.controllers {
             this.$state.go('routeDetails', { id: processTemplateId });
         }
 
-        private deleteProcessTemplate(processTemplateId: number, isActive: boolean) {
+        private deleteProcessTemplate(processTemplateId: string, isActive: boolean) {
             //to save closure of our controller
             var self = this;
             this.$modal.open({
