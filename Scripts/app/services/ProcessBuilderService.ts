@@ -91,7 +91,7 @@ module dockyard.services {
                 'execute': {
                     method: 'POST',
                     isArray: false,
-                    url: '/api/containers/launch?routeId=:id',
+                    url: '/routes/run?routeId=:id',
                     params: {
                         id: '@id'
                     }
