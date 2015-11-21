@@ -19,7 +19,7 @@ using HubWeb.Controllers;
 using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using terminalAzure;
+using terminalFr8Core;
 
 namespace terminalIntegrationTests
 {

@@ -74,19 +74,6 @@ namespace Data.Entities
             this.DetectStateUpdates(originalValues, currentValues);
         }
 
-        public String DisplayName
-        {
-            get
-            {
-                if (!String.IsNullOrWhiteSpace(FirstName) && !String.IsNullOrWhiteSpace(LastName))
-                    return FirstName + " " + LastName;
-                if (!String.IsNullOrWhiteSpace(FirstName))
-                    return FirstName;
-                if (!String.IsNullOrWhiteSpace(LastName))
-                    return LastName;
-                return UserName;
-            }
-        }
 
         public DateTimeOffset CreateDate { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
@@ -99,20 +86,6 @@ namespace Data.Entities
                 return null;
 
             return TimeZoneInfo.FindSystemTimeZoneById(TimeZoneID);
-        }
-
-		// TODO: The logic in this method should be changed, because we won't store offsets anymore. For more information refer to DO-1355.
-        public TimeZoneInfo GetOrGuessTimeZone()
-        {
-            var explicitTimeZone = GetExplicitTimeZone();
-            if (explicitTimeZone != null)
-                return explicitTimeZone;
-
-            var mostUsedOffset = EmailAddress.SentEmails.GroupBy(b => b.CreateDate.Offset).OrderByDescending(g => g.Count()).Select(k => (TimeSpan?)k.Key).FirstOrDefault();
-            if (mostUsedOffset == null)
-                return null;
-            var potentialTimeZones = TimeZoneInfo.GetSystemTimeZones().Where(tzi => tzi.GetUtcOffset(DateTime.UtcNow) == mostUsedOffset.Value);
-            return potentialTimeZones.FirstOrDefault();
         }
 
         [NotMapped]

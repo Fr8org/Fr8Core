@@ -19,6 +19,10 @@ namespace terminalDropbox
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+            config.Routes.MapHttpRoute(
+name: "TerminalDropboxActionCatchAll",
+routeTemplate: "actions/{*actionType}",
+defaults: new { controller = "Action", action = "Execute" });
         }
     }
 }
