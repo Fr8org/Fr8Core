@@ -9,7 +9,8 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+using Data.States;
+
 using Hub.Interfaces;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
@@ -123,7 +124,7 @@ namespace terminalBaseTests.BaseClasses
                 ActionDO curAction = FixtureData.TestAction57();
 
                 var result = await _baseTerminalAction.GetDesignTimeFields(
-                    curAction.Id, GetCrateDirection.Upstream);
+                    curAction.Id, CrateDirection.Upstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(16, result.Fields.Count);
             }
@@ -140,7 +141,7 @@ namespace terminalBaseTests.BaseClasses
                 ActionDO curAction = FixtureData.TestAction57();
 
                 var result = await _baseTerminalAction.GetDesignTimeFields(
-                    curAction.Id, GetCrateDirection.Downstream);
+                    curAction.Id, CrateDirection.Downstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(18, result.Fields.Count);
             }

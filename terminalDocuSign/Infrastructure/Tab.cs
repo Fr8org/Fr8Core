@@ -20,20 +20,21 @@ namespace terminalDocuSign.Infrastructure
             Tabs curTabsSet = curSigner.tabs;
             if (curTabsSet != null)
             {
-                foreach (TextTab curTextTab in curTabsSet.textTabs)
-                {
-                    EnvelopeDataDTO curEnvelopeData = new EnvelopeDataDTO
-                                                   {
-                                                       RecipientId = curSigner.recipientId,
-                                                       EnvelopeId = envelope.EnvelopeId,
-                                                       DocumentId = curTextTab.documentId,
-                                                       Name = curTextTab.tabLabel,
-                                                       TabId = curTextTab.tabId,
-                                                       Value = curTextTab.value
-                                                   };
+                if (curTabsSet.textTabs != null)
+                    foreach (TextTab curTextTab in curTabsSet.textTabs)
+                    {
+                        EnvelopeDataDTO curEnvelopeData = new EnvelopeDataDTO
+                        {
+                            RecipientId = curSigner.recipientId,
+                            EnvelopeId = envelope.EnvelopeId,
+                            DocumentId = curTextTab.documentId,
+                            Name = curTextTab.tabLabel,
+                            TabId = curTextTab.tabId,
+                            Value = curTextTab.value
+                        };
 
-                    curEnvelopeDataSet.Add(curEnvelopeData);
-                }
+                        curEnvelopeDataSet.Add(curEnvelopeData);
+                    }
 
                 //TODO continue to do, all -> curTabsSet. tabs to envelope data ? Like below;
                 //foreach (Tab curCheckBoxTab in curTabsSet.checkboxTabs)

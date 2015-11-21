@@ -56,7 +56,7 @@ namespace terminalGoogle.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.Id > 0)
+            if (curActionDO.Id != Guid.Empty)
             {
                 var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
                 var configurationControlsCrate = PackCrate_ConfigurationControls();

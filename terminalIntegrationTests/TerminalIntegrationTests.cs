@@ -17,7 +17,7 @@ using Hub.Managers.APIManagers.Transmitters.Terminal;
 using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using terminalAzure;
+using terminalFr8Core;
 using terminalDocuSign;
 using terminalDocuSign.Tests.Fixtures;
 
@@ -275,7 +275,7 @@ namespace terminalIntegrationTests
         }
 
         // navigational properties in MockDB are not so navigational... 
-        private void FixActionNavProps(int id)
+        private void FixActionNavProps(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

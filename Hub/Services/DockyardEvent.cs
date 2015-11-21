@@ -106,7 +106,7 @@ namespace Hub.Services
 
             if (curRoute.RouteState != RouteState.Inactive)
             {
-                await _container.Launch(curRoute, curEventData);
+                await _route.Run(curRoute, curEventData);
             }
         }
     }

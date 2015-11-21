@@ -4,7 +4,7 @@ module dockyard.directives.textSource {
 
     export interface ITextSourceScope extends ng.IScope {
         field: model.TextSource;
-        change: () => (fieldName: string) => void;
+        change: () => (field: model.ControlDefinitionDTO) => void;
         onChange: any;
         uniqueDirectiveId: number;
     }
@@ -17,7 +17,7 @@ module dockyard.directives.textSource {
             $scope.uniqueDirectiveId = ++uniqueDirectiveId;
             $scope.onChange = (fieldName: string) => {
                 if ($scope.change != null && angular.isFunction($scope.change)) {
-                    $scope.change()($scope.field.name);
+                    $scope.change()($scope.field);
                 }
             }
         }];
