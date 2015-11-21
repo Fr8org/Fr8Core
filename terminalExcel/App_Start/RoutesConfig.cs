@@ -18,11 +18,6 @@ namespace terminalExcel
                 name: "TerminalExcel",
                 routeTemplate: "terminal_excel/{controller}/{id}"                
             );
-            config.Routes.MapHttpRoute(
-    name: "TerminalExcelActionCatchAll",
-    routeTemplate: "actions/{*actionType}",
-    defaults: new { controller = "Action", action = "Execute" });
-
         }
     }
 }
