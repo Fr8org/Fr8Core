@@ -270,7 +270,7 @@
     <PostBuildEvent>xcopy  $(SolutionDir)\terminalAzure\bin\terminalAzure.dll.config $(TargetDir) /C /Y
 xcopy  $(SolutionDir)\terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
 xcopy  $(SolutionDir)\terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y
-xcopy  $(SolutionDir)\terminalTwillio\bin\terminalTwillio.dll.config $(TargetDir) /C /Y
+xcopy  $(SolutionDir)\terminalTwilio\bin\terminalTwilio.dll.config $(TargetDir) /C /Y
 xcopy  $(SolutionDir)\terminalPapertrail\bin\terminalPapertrail.dll.config $(TargetDir) /C /Y
 xcopy  $(SolutionDir)\terminalSendGrid\bin\terminalSendGrid.dll.config $(TargetDir) /C /Y
 xcopy  $(SolutionDir)\terminalGoogle\bin\terminalGoogle.dll.config $(TargetDir) /C /Y
