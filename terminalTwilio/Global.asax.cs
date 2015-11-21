@@ -2,6 +2,7 @@
 using System.Web.Http;
 using Data.Infrastructure.AutoMapper;
 using Hub.StructureMap;
+using TerminalBase.Infrastructure;
 
 namespace terminalTwilio
 {
@@ -15,6 +16,7 @@ namespace terminalTwilio
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies(dependencyType).ConfigureTwilioDependencies(dependencyType);
+            TerminalBootstrapper.ConfigureLive();
         }
     }
 }

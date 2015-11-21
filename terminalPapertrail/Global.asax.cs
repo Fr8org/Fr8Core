@@ -3,6 +3,7 @@ using Data.Infrastructure.AutoMapper;
 using Hub.StructureMap;
 using terminalPapertrail.Tests.Infrastructure;
 using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
+using TerminalBase.Infrastructure;
 
 namespace terminalPapertrail
 {
@@ -19,6 +20,7 @@ namespace terminalPapertrail
             // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE);
             TerminalPapertrailMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
+            TerminalBootstrapper.ConfigureLive();
         }
     }
 }

@@ -38,6 +38,8 @@ namespace TerminalBase.BaseClasses
         private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly Authorization _authorizationToken;
         private readonly ITerminal _terminal;
+
+        public IHubCommunicator HubCommunicator { get; set; }
         #endregion
 
         public BaseTerminalAction()
@@ -48,6 +50,8 @@ namespace TerminalBase.BaseClasses
             _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             _authorizationToken = new Authorization();
+
+            HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
@@ -63,12 +67,7 @@ namespace TerminalBase.BaseClasses
 
         protected async Task<PayloadDTO> GetProcessPayload(Guid containerId)
         {
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/containers/"
-                + containerId.ToString("D");
-
-            var payloadDTO = await _restfulServiceClient.GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute));
-            return payloadDTO;
+            return await HubCommunicator.GetProcessPayload(containerId);
         }
 
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
@@ -181,7 +180,7 @@ namespace TerminalBase.BaseClasses
             //1) Build a merged list of the upstream design fields to go into our drop down list boxes
             StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
 
-            var curCrates = await Activity.GetCratesByDirection <StandardDesignTimeFieldsCM>(activityId, direction);
+            var curCrates = await Activity.GetCratesByDirection<StandardDesignTimeFieldsCM>(activityId, direction);
 
             mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);
 

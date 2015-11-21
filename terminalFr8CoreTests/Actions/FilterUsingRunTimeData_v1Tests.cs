@@ -1,23 +1,24 @@
 ﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 using StructureMap;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 //using Data.Interfaces.DataTransferObjects;
 //using Data.Interfaces;
-using System.Linq.Expressions;
 //using Utilities;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using terminalFr8Core.Actions;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces;
 using terminalFr8Core.Interfaces;
+using TerminalBase.Infrastructure;
 
 namespace DockyardTest.Services
 {
@@ -29,6 +30,7 @@ namespace DockyardTest.Services
         public override void SetUp()
         {
             base.SetUp();
+            TerminalBootstrapper.ConfigureTest();
         }
 
         [Test]
