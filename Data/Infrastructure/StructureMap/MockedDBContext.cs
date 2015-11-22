@@ -231,8 +231,11 @@ namespace Data.Infrastructure.StructureMap
                         if (propInfo == null)
                             continue;
 
-                        if ((int)propInfo.GetValue(row) == 0)
+                        if (propInfo.PropertyType == typeof(int)
+                            && (int)propInfo.GetValue(row) == 0)
+                        {
                             propInfo.SetValue(row, ++maxIDAlready);
+                        }
                     }
                 }
             }

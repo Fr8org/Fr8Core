@@ -1,6 +1,6 @@
 ﻿module dockyard.model {
     export class RouteDTO {
-        id: number;
+        id: string;
         isTempId: boolean;
         name: string;
         tag: string;

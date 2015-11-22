@@ -6,18 +6,18 @@
     }
 
     export class CriteriaDTO implements interfaces.ICriteriaDTO {
-        public id: number;
+        public id: string;
         public isTempId: boolean;
-        public processNodeTemplateId: number;
+        public processNodeTemplateId: string;
         public conditions: Array<Condition>;
         public executionType: CriteriaExecutionType;
         public userLabel: string;
         public actions: Array<ActionDTO>;
 
         constructor(
-            id: number,
+            id: string,
             isTempId: boolean,
-            processNodeTemplateId: number,
+            processNodeTemplateId: string,
             executionType: CriteriaExecutionType
         ) {
             this.id = id;

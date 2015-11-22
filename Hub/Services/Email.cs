@@ -240,6 +240,10 @@ namespace Hub.Services
             return curEmail;
         }
 
+
+		/*
+		 * Currently not in use, left for future reference
+		 * 
         internal static void FixInlineImages(EmailDO currEmailDO)
         {
             //Fix the HTML text
@@ -262,7 +266,12 @@ namespace Hub.Services
                 currEmailDO.HTMLText = curBody;
             }
         }
+		*/
 
+
+		/*
+		 * Currently not in use, left for future reference
+		 * 
         public void SendLoginCredentials(IUnitOfWork uow, string toRecipient, string newPassword) 
         {
             string credentials = "<br/> Email : " + toRecipient + "<br/> Password : " + newPassword;
@@ -275,7 +284,12 @@ namespace Hub.Services
 		    	  });
             uow.SaveChanges();
         }
+		*/
 
+
+		/*
+		 * Currently not in use, left for future reference
+		 * 
         public string FindEmailParentage(int emailId) 
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -283,7 +297,12 @@ namespace Hub.Services
                 return Convert.ToString(uow.EmailRepository.GetByKey(emailId).Id);
             }
         }
+		*/
 
+
+		/*
+		 * Currently not in use, left for future reference
+		 * 
         public List<object> GetEmails(IUnitOfWork uow, DateRange dateRange, int start, int length, out int count)
         {
             var emailDO = uow.EmailRepository.GetAll()
@@ -301,9 +320,9 @@ namespace Hub.Services
                     EmailStatus = FilterUtility.GetState(new EmailState().GetType(), (e.EmailStatus.HasValue ? e.EmailStatus.Value : 0)),
                     //EmailStatus = "",
                     ConversationId = e.Id
-                }).ToList();
-
-            
+                })
+				.ToList();
         }
+		*/
     }
 }

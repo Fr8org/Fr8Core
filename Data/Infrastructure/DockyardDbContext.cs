@@ -306,8 +306,8 @@ namespace Data.Infrastructure
                 .WithMany(e => e.Attachments)
                 .HasForeignKey(a => a.EmailID);
 
-            modelBuilder.Entity<ActionDO>()
-                .Property(p => p.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            // modelBuilder.Entity<ActionDO>()
+            //     .Property(p => p.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
             modelBuilder.Entity<RouteNodeDO>().ToTable("RouteNodes");
 

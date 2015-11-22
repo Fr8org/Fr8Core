@@ -16,6 +16,7 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
 using Newtonsoft.Json;
+using System.Xml.Linq;
 
 namespace HubWeb.Controllers
 {
@@ -133,9 +134,9 @@ namespace HubWeb.Controllers
             //Check if responding to Salesforce
              if (terminalName == "terminalSalesforce")
             {
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(result);
-                return Content(HttpStatusCode.OK, doc, Configuration.Formatters.XmlFormatter);
+                var xml = XElement.Parse(result);
+                return Content(HttpStatusCode.OK, xml, GlobalConfiguration.Configuration.Formatters.XmlFormatter);
+              
             }
             
             

@@ -226,12 +226,17 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>
-		xcopy  $(SolutionDir)\terminalDocuSign\bin\terminalDocuSign.dll.config $(TargetDir) /C /Y 
-		xcopy  $(SolutionDir)\terminalAzure\bin\terminalAzure.dll.config $(TargetDir) /C /Y
-		xcopy  $(SolutionDir)\terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
-		xcopy  $(SolutionDir)\terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y 
-	</PostBuildEvent>
+    <PostBuildEvent>xcopy  $(SolutionDir)\terminalAzure\bin\terminalAzure.dll.config $(TargetDir) /C /Y
+xcopy  $(SolutionDir)\terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
+xcopy  $(SolutionDir)\terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y
+xcopy  $(SolutionDir)\terminalTwilio\bin\terminalTwilio.dll.config $(TargetDir) /C /Y
+xcopy  $(SolutionDir)\terminalPapertrail\bin\terminalPapertrail.dll.config $(TargetDir) /C /Y
+xcopy  $(SolutionDir)\terminalSendGrid\bin\terminalSendGrid.dll.config $(TargetDir) /C /Y
+xcopy  $(SolutionDir)\terminalGoogle\bin\terminalGoogle.dll.config $(TargetDir) /C /Y
+xcopy  $(SolutionDir)\terminalSalesforce\bin\terminalSalesforce.dll.config $(TargetDir) /C /Y
+xcopy  $(SolutionDir)\terminalSlack\bin\terminalSlack.dll.config $(TargetDir) /C /Y
+xcopy  $(SolutionDir)\terminalDropbox\bin\terminalDropbox.dll.config $(TargetDir) /C /Y
+xcopy  $(SolutionDir)\terminalDocuSign\bin\terminalDocuSign.dll.config $(TargetDir) /C /Y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,15 +1,16 @@
-﻿using Data.Entities;
-using Data.States;
+﻿using System;
 using System.Collections.Generic;
 using Hub.Managers;
 using StructureMap;
+using Data.Entities;
+using Data.States;
 
 namespace UtilitiesTesting.Fixtures
 {
     public class ActionListDO : List<RouteNodeDO>
     {
         private RouteNodeDO _parentActivity;
-        private int? _parentActivityId;
+        private Guid? _parentActivityId;
 
         internal RouteNodeDO ParentActivity
         {
@@ -28,7 +29,7 @@ namespace UtilitiesTesting.Fixtures
         }
 
 
-        internal int? ParentActivityId
+        internal Guid? ParentActivityId
         {
             get
             {
@@ -45,7 +46,7 @@ namespace UtilitiesTesting.Fixtures
         }
 
 
-        internal int? SubrouteId
+        internal Guid? SubrouteId
         {
             get
             {
@@ -329,33 +330,33 @@ namespace UtilitiesTesting.Fixtures
 //		  }
 //
         public static List<RouteNodeDO> TestActionList1()
-          {
-              List<ActionListDO> actionLists = new List<ActionListDO>();
+        {
+            List<ActionListDO> actionLists = new List<ActionListDO>();
 //
-              var activityTempate = new ActivityTemplateDO()
-              {
-                  Id = 1,
-                  Version = "1",
-                  Terminal = FixtureData.TerminalFive(),
-                  Name = "Monitor_DocuSign"
-              };
-           ActionListDO al_1 = new ActionListDO()
-           {
-                ParentActivityId = 1
-           };
-             ActionDO a_23 = new ActionDO()
-             {
-                 Id = 23, 
-                 ActivityTemplate = activityTempate, 
-                 ActivityTemplateId = activityTempate.Id,
-                 Name = "a_23", 
-                 CrateStorage = ""
-             };
-              al_1.Activities.Add(a_23);
+            var activityTempate = new ActivityTemplateDO()
+            {
+                Id = 1,
+                Version = "1",
+                Terminal = FixtureData.TerminalFive(),
+                Name = "Monitor_DocuSign"
+            };
+            ActionListDO al_1 = new ActionListDO()
+            {
+                 ParentActivityId = GetTestGuidById(1)
+            };
+            ActionDO a_23 = new ActionDO()
+            {
+                Id = GetTestGuidById(23), 
+                ActivityTemplate = activityTempate, 
+                ActivityTemplateId = activityTempate.Id,
+                Name = "a_23", 
+                CrateStorage = ""
+            };
+            al_1.Activities.Add(a_23);
              
-              actionLists.Add(al_1);
-             return new List<RouteNodeDO>() { a_23 };
-          }
+            actionLists.Add(al_1);
+            return new List<RouteNodeDO>() { a_23 };
+        }
 //
          public static List<RouteNodeDO> TestActionListParentActivityID12()
           {
@@ -368,10 +369,10 @@ namespace UtilitiesTesting.Fixtures
                   Terminal = FixtureData.TerminalFive(),
                   Name = "Monitor_DocuSign"
               };
-             ActionListDO al_1 = new ActionListDO() { ParentActivityId = 12 };
+             ActionListDO al_1 = new ActionListDO() { ParentActivityId = GetTestGuidById(12) };
              ActionDO a_23 = new ActionDO()
              {
-                 Id = 23, 
+                 Id = GetTestGuidById(23), 
                  ActivityTemplate = activityTempate,
                  ActivityTemplateId = activityTempate.Id,
                  Name = "a_23",

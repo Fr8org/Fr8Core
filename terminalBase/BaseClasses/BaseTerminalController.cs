@@ -27,7 +27,7 @@ namespace TerminalBase.BaseClasses
         [HttpGet]
         public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError)
         {
-            var exceptionMessage = string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
+            var exceptionMessage = terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
             return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name));
         }
 
@@ -53,7 +53,7 @@ namespace TerminalBase.BaseClasses
             return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Incident");
         }
 
-
+        
         /// <summary>
         /// Reports event when process an action
         /// </summary>
@@ -75,12 +75,11 @@ namespace TerminalBase.BaseClasses
 
             Type calledType = Type.GetType(curAssemblyName + ", " + curTerminal);
             if (calledType == null)
-                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} terminal.",
+                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} terminal.", 
                     curActionDTO.ActivityTemplate.Name,
                     curActionDTO.ActivityTemplate.Version,
                     curTerminal), "curActionDTO");
-            MethodInfo curMethodInfo = calledType.GetMethod(curActionPath,
-    BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
 
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
@@ -88,32 +87,32 @@ namespace TerminalBase.BaseClasses
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             var curContainerId = curActionDTO.ContainerId;
             object response;
-            switch (curActionPath.ToLower())
+            switch (curActionPath)
             {
-                case "configure":
+                case "Configure":
                     {
-                        Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                        Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
-                case "run":
+                case "Run":
                     {
                         response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
                         return response;
                     }
-                case "initialconfigurationresponse":
+                case "InitialConfigurationResponse":
                     {
-                        Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                        Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
-                case "followupconfigurationresponse":
+                case "FollowupConfigurationResponse":
                     {
                         Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
                 default:
                     response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-                    return response;
-            }
+            return response;
+        }
 
 
         }

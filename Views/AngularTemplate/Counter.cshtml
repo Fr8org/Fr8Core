@@ -3,7 +3,7 @@
     <a class="btn btn-link btn-sm" stop-click-propagation ng-click="increment()">
         <span class="glyphicon glyphicon-chevron-up"></span>
     </a>
-    <input type="text" class="form-control text-center counter-input" stop-click-propagation ng-model="counterValue" tooltip="{{counterTooltip}}" tooltip-trigger="mouseenter" />
+    <input type="text" class="form-control text-center counter-input" stop-click-propagation ng-model="counterValue" ng-model-options="{updateOn: 'blur'}" tooltip="{{counterTooltip}}" tooltip-trigger="mouseenter" ng-blur="adjustValue()"/>
     <a class="btn btn-link btn-sm" stop-click-propagation ng-click="decrement()">
         <span class="glyphicon glyphicon-chevron-down"></span>
     </a>

@@ -9,7 +9,8 @@ using Data.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+using Data.States;
+
 using Hub.Managers;
 using StructureMap;
 using TerminalBase.Infrastructure;
@@ -107,12 +108,12 @@ namespace terminalFr8Core.Actions
             Crate getErrorMessageCrate = null;
 
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
                 .Fields
                 .ToArray();
 
             var curDownstreamFields =
-                (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Downstream))
+                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Downstream))
                 .Fields
                 .ToArray();
 
