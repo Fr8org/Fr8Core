@@ -6,7 +6,6 @@
 		<div class="form-group" data-ng-class="{'has-error' : (form.$submitted && form.payload.$error.required) || form.payload.$error.invalid}">
 			<div data-ng-show="form.$submitted">
 				<span class="help-block" data-ng-show="form.payload.$error.required">Payload should not be empty</span>
-				<span class="help-block" data-ng-show="form.payload.$error.invalid">{{ error }}</span>
 			</div>
 			<textarea name="payload" class="form-control" placeholder="Paste your payload here" style="min-height: 650px; max-width: 568px;" required="" data-ng-model="payload"></textarea>
 		</div>

@@ -21,12 +21,12 @@ module dockyard.controllers {
 
             UserService.getCurrentUser().$promise.then(data => {
                 
-                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, 'fr8pusher_container_executed', (data: any) => {
+                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, 'fr8pusher_generic_success', (data: any) => {
                     ngToast.create(data);
                 });
 
-                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, 'fr8pusher_container_failed', (data: any) => {
-                    ngToast.create(data);
+                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, 'fr8pusher_generic_failure', (data: any) => {
+                    ngToast.danger(data);
                 });
             });
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -12,15 +11,14 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Exceptions;
 using Hub.Interfaces;
 using System.Threading.Tasks;
 using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Utilities;
-using Newtonsoft.Json.Linq;
 using Hub.Managers;
 using Data.Crates;
+using Utilities.Interfaces;
 
 namespace HubWeb.Controllers
 {
@@ -28,22 +26,22 @@ namespace HubWeb.Controllers
     [Fr8ApiAuthorize]
     public class RouteController : ApiController
     {
+	    private const string PUSHER_EVENT_GENERIC_SUCCESS = "fr8pusher_generic_success";
+	    private const string PUSHER_EVENT_GENERIC_FAILURE = "fr8pusher_generic_failure";
+
         private readonly IRoute _route;
         private readonly IFindObjectsRoute _findObjectsRoute;
         private readonly ISecurityServices _security;
         private readonly ICrateManager _crate;
+	    private readonly IPusherNotifier _pusherNotifier;
 
         public RouteController()
-            : this(ObjectFactory.GetInstance<IRoute>())
         {
-        }
-
-        public RouteController(IRoute route)
-        {
-            _route = route;
+			_route = ObjectFactory.GetInstance<IRoute>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _findObjectsRoute = ObjectFactory.GetInstance<IFindObjectsRoute>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
+	        _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
         }
 
         [Fr8ApiAuthorize]
@@ -258,6 +256,8 @@ namespace HubWeb.Controllers
 			CrateDTO curCrateDto;
             Crate curCrate = null;
 
+			string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
+
 			if (model != null)
 			{
 				try
@@ -267,26 +267,31 @@ namespace HubWeb.Controllers
                 }
                 catch (Exception ex)
 				{
-					return BadRequest("You payload is invalid. Make sure that it represents a valid JSON array of crate objects.");
+					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "You payload is invalid. Make sure that it represents a valid crate object JSON.");
+
+					return BadRequest();
 				}
 			}
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var processTemplateDO = uow.RouteRepository.GetByKey(routeId);
-                var pusherNotifier = new PusherNotifier();
+
                 try
                 {
                     var containerDO = await _route.Run(processTemplateDO, curCrate);
-                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
-                    "fr8pusher_container_executed", String.Format("Route \"{0}\" executed", processTemplateDO.Name));
+
+	                string message = String.Format("Route \"{0}\" executed", processTemplateDO.Name);
+
+					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
 
                     return Ok(Mapper.Map<ContainerDTO>(containerDO));
                 }
                 catch
                 {
-                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
-                    "fr8pusher_container_failed", String.Format("Route \"{0}\" failed", processTemplateDO.Name));
+	                string message = String.Format("Route \"{0}\" failed", processTemplateDO.Name);
+
+					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
                 }
 
                 return Ok();

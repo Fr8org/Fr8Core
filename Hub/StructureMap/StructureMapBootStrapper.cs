@@ -31,6 +31,7 @@ using StructureMap;
 using StructureMap.Configuration.DSL;
 using System.Threading.Tasks;
 using Utilities;
+using Utilities.Interfaces;
 
 
 namespace Hub.StructureMap
@@ -123,6 +124,7 @@ namespace Hub.StructureMap
                 For<IReport>().Use<Report>();
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsRoute>().Use<FindObjectsRoute>();
+	            For<IPusherNotifier>().Use<PusherNotifier>();
             }
         }
 
@@ -182,6 +184,9 @@ namespace Hub.StructureMap
                 For<IDockyardEvent>().Use<DockyardEvent>();
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsRoute>().Use<FindObjectsRoute>();
+
+				var pusherNotifierMock = new Mock<IPusherNotifier>();
+	            For<IPusherNotifier>().Use(pusherNotifierMock.Object).Singleton();
             }
         }
 

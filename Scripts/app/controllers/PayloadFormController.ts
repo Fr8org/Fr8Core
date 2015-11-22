@@ -22,7 +22,6 @@ module dockyard.controllers {
 			$scope.close = <() => void> angular.bind(this, this.close);
 
 			$scope.payload = "";
-			$scope.error = "";
 		}
 
 		private submit(form) {
@@ -33,7 +32,6 @@ module dockyard.controllers {
 				},
 				(errorResponse) => {
 					form.payload.$error.invalid = true;
-					this.$scope.error = errorResponse.data.message;
 				});
 		}
 
