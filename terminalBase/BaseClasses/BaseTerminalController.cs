@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Reflection;
-using Data.Interfaces.DataTransferObjects;
-using System.Web.Http;
-using TerminalBase.Infrastructure;
 using System.Threading.Tasks;
-using Utilities.Configuration.Azure;
-using Data.Entities;
+using System.Web.Http;
 using AutoMapper;
+using StructureMap;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using TerminalBase.Infrastructure;
+using Utilities.Configuration.Azure;
 
 namespace TerminalBase.BaseClasses
 {
@@ -16,6 +17,7 @@ namespace TerminalBase.BaseClasses
     public class BaseTerminalController : ApiController
     {
         private readonly BaseTerminalEvent _baseTerminalEvent;
+
         public BaseTerminalController()
         {
             _baseTerminalEvent = new BaseTerminalEvent();
@@ -63,6 +65,19 @@ namespace TerminalBase.BaseClasses
             return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Event");
         }
 
+        private void BindTestHubCommunicator(object curObject)
+        {
+            var baseTerminalAction = curObject as BaseTerminalAction;
+
+            if (baseTerminalAction == null)
+            {
+                return;
+            }
+
+            baseTerminalAction.HubCommunicator = ObjectFactory
+                .GetNamedInstance<IHubCommunicator>(TerminalBootstrapper.TestHubCommunicatorKey);
+        }
+
         // For /Configure and /Activate actions that accept ActionDTO
         public object HandleFr8Request(string curTerminal, string curActionPath, ActionDTO curActionDTO)
         {
@@ -70,6 +85,15 @@ namespace TerminalBase.BaseClasses
                 throw new ArgumentNullException("curActionDTO");
             if (curActionDTO.ActivityTemplate == null)
                 throw new ArgumentException("ActivityTemplate is null", "curActionDTO");
+
+            var isTestActivityTemplate = false;
+            var activityTemplateName = curActionDTO.ActivityTemplate.Name;
+            if (activityTemplateName.EndsWith("_TEST"))
+            {
+                isTestActivityTemplate = true;
+                activityTemplateName = activityTemplateName
+                    .Substring(0, activityTemplateName.Length - "_TEST".Length);
+            }
 
             string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curTerminal, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
 
@@ -79,9 +103,15 @@ namespace TerminalBase.BaseClasses
                     curActionDTO.ActivityTemplate.Name,
                     curActionDTO.ActivityTemplate.Version,
                     curTerminal), "curActionDTO");
+
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath,
-    BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
             object curObject = Activator.CreateInstance(calledType);
+
+            if (isTestActivityTemplate)
+            {
+                BindTestHubCommunicator(curObject);
+            }
 
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 

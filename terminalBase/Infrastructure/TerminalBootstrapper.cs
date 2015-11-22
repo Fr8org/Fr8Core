@@ -5,6 +5,9 @@ namespace TerminalBase.Infrastructure
 {
     public class TerminalBootstrapper
     {
+        public const string TestHubCommunicatorKey = "TestHubCommunicator";
+
+
         public static void ConfigureLive()
         {
             ObjectFactory.Configure(x => x.AddRegistry<LiveMode>());
