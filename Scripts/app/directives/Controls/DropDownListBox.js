@@ -13,7 +13,7 @@ var dockyard;
                             $scope.selectedItem = item;
                             // Invoke onChange event handler
                             if ($scope.change != null && angular.isFunction($scope.change)) {
-                                $scope.change()($filter('validId')($scope.field.name));
+                                $scope.change()($scope.field);
                             }
                         };
                         var findAndSetSelectedItem = function () {

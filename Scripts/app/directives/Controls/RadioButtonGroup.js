@@ -24,6 +24,10 @@ var dockyard;
                             }
                         }
                         $scope.field.value = radio.value;
+                        // Invoke onChange event handler
+                        if ($scope.change != null && angular.isFunction($scope.change())) {
+                            $scope.change()($scope.field);
+                        }
                     };
                 };
                 return {
@@ -33,7 +37,8 @@ var dockyard;
                     scope: {
                         currentAction: '=',
                         field: '=',
-                        changeSelection: '&'
+                        changeSelection: '&',
+                        change: '&'
                     }
                 };
             }
