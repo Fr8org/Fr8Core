@@ -12,10 +12,6 @@ namespace terminalTwilio
                name: "TerminalTwilio",
                routeTemplate: "terminal_twilio/{controller}/{id}"
            );
-            config.Routes.MapHttpRoute(
-    name: "TerminalTwillioActionCatchAll",
-    routeTemplate: "actions/{*actionType}",
-    defaults: new { controller = "Action", action = "Execute" });
         }
     }
 }
