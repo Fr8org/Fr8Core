@@ -211,6 +211,7 @@
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
+    <Compile Include="Interfaces\ITime.cs" />
     <Compile Include="Managers\CrateManager.StorageUpdater.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -310,6 +311,7 @@
     <Compile Include="Services\Route.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Subscription.cs" />
+    <Compile Include="Services\Time.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>
   <ItemGroup>
