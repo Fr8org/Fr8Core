@@ -79,7 +79,7 @@ namespace TerminalBase.BaseClasses
                     curActionDTO.ActivityTemplate.Name,
                     curActionDTO.ActivityTemplate.Version,
                     curTerminal), "curActionDTO");
-            MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
+            MethodInfo curMethodInfo = calledType.GetMethod(curActionPath, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
             object curObject = Activator.CreateInstance(calledType);
 
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
@@ -87,24 +87,24 @@ namespace TerminalBase.BaseClasses
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             var curContainerId = curActionDTO.ContainerId;
             object response;
-            switch (curActionPath)
+            switch (curActionPath.ToLower())
             {
-                case "Configure":
+                case "configure":
                     {
                         Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
-                case "Run":
+                case "run":
                     {
                         response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
                         return response;
                     }
-                case "InitialConfigurationResponse":
+                case "initialconfigurationresponse":
                     {
                         Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
-                case "FollowupConfigurationResponse":
+                case "followupconfigurationresponse":
                     {
                         Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));

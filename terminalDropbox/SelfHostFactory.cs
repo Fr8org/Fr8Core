@@ -34,7 +34,10 @@ namespace terminalDropbox
                     routeTemplate: "plugin_dropbox/{controller}/{id}",
                     defaults: new { id = RouteParameter.Optional }
                 );
-
+                config.Routes.MapHttpRoute(
+                name: "TerminalDropboxActionCatchAll",
+                routeTemplate: "actions/{*actionType}",
+                defaults: new { controller = "Action", action = "Execute" });
                 config.Services.Replace(
                     typeof(IHttpControllerTypeResolver),
                     new DropboxControllerTypeResolver()

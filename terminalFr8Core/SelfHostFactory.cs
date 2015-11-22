@@ -37,6 +37,10 @@ namespace terminalFr8Core
                     defaults: new { id = RouteParameter.Optional }
                 );
 
+                config.Routes.MapHttpRoute(
+name: "TerminalFr8CoreActionCatchAll",
+routeTemplate: "actions/{*actionType}",
+defaults: new { controller = "Action", action = "Execute" }); //It calls ActionController#Execute in an MVC style
                 config.Services.Replace(
                     typeof(IHttpControllerTypeResolver),
                     new DocuSignControllerTypeResolver()

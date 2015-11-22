@@ -18,6 +18,10 @@ namespace terminalSendGrid
                 name: "TerminalSendGridServer",
                 routeTemplate: "terminalSendGrid/{controller}/{id}"
             );
+            config.Routes.MapHttpRoute(
+name: "TerminalSendGridActionCatchAll",
+routeTemplate: "actions/{*actionType}",
+defaults: new { controller = "Action", action = "Execute" }); //It calls ActionController#Execute in an MVC style
         }
     }
 }

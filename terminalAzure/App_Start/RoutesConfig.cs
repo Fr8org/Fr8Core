@@ -21,6 +21,10 @@ namespace terminalAzure
                 name: "TerminalAzureSqlServer",
                 routeTemplate: "terminal_azure_sql_server/{controller}/{id}"                
             );
+            config.Routes.MapHttpRoute(
+    name: "TerminalAzureActionCatchAll",
+    routeTemplate: "actions/{*actionType}",
+    defaults: new { controller = "Action", action = "Execute" }); //It calls ActionController#Execute in an MVC style
         }
     }
 }

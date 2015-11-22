@@ -19,6 +19,10 @@ namespace terminalSlack
                 name: "TerminalSlack",
                 routeTemplate: "terminal_slack/{controller}/{id}"                
             );
+            config.Routes.MapHttpRoute(
+name: "TerminalSlackActionCatchAll",
+routeTemplate: "actions/{*actionType}",
+defaults: new { controller = "Action", action = "Execute" }); //It calls ActionController#Execute in an MVC style
         }
     }
 }

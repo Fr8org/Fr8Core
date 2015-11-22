@@ -21,7 +21,10 @@ namespace terminalSlack
                     routeTemplate: "terminal_slack/{controller}/{id}",
                     defaults: new { id = RouteParameter.Optional }
                 );
-
+                config.Routes.MapHttpRoute(
+name: "TerminalSlackActionCatchAll",
+routeTemplate: "actions/{*actionType}",
+defaults: new { controller = "Action", action = "Execute" }); //It calls ActionController#Execute in an MVC style
                 app.UseWebApi(config);
             }
         }

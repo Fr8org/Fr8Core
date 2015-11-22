@@ -35,7 +35,11 @@ namespace terminalSalesforce
                     routeTemplate: "terminal_salesforce/{controller}/{id}",
                     defaults: new { id = RouteParameter.Optional }
                 );
-
+                config.Routes.MapHttpRoute(
+name: "TerminalSalesforceActionCatchAll",
+routeTemplate: "actions/{*actionType}",
+defaults: new { controller = "Action", action = "Execute" }); //It calls ActionController#Execute in an MVC style
+        
                 config.Services.Replace(
                     typeof(IHttpControllerTypeResolver),
                     new SalesForceControllerTypeResolver()

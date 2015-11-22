@@ -20,6 +20,10 @@ namespace terminalDocuSign
                 name: "TerminalDocuSign",
                 routeTemplate: "terminal_docusign/{controller}/{id}"
             );
+            config.Routes.MapHttpRoute(
+    name: "TerminalDocuSignActionCatchAll",
+    routeTemplate: "actions/{*actionType}",
+    defaults: new { controller = "Action", action = "Execute" }); //It calls ActionController#Execute in an MVC style
         }
     }
 }

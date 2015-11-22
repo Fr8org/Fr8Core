@@ -17,6 +17,10 @@ namespace terminalFr8Core
                 name: "TerminalFr8CoreServer",
                 routeTemplate: "terminalFr8Core/{controller}/{id}"
             );
+            config.Routes.MapHttpRoute(
+name: "TerminalFr8CoreActionCatchAll",
+routeTemplate: "actions/{*actionType}",
+defaults: new { controller = "Action", action = "Execute" }); //It calls ActionController#Execute in an MVC style
         }
     }
     }

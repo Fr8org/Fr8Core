@@ -34,7 +34,10 @@ namespace terminalPapertrail
                     routeTemplate: "terminal_papertrail/{controller}/{id}",
                     defaults: new { id = RouteParameter.Optional }
                 );
-
+                config.Routes.MapHttpRoute(
+name: "TerminalPapertrailActionCatchAll",
+routeTemplate: "actions/{*actionType}",
+defaults: new { controller = "Action", action = "Execute" }); //It calls ActionController#Execute in an MVC style
                 config.Services.Replace(
                     typeof(IHttpControllerTypeResolver),
                     new PapertrailControllerTypeResolver()

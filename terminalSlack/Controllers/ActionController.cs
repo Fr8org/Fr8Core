@@ -27,33 +27,11 @@ namespace terminalSlack.Controllers
         }
 
         [HttpPost]
-        [Route("configure")]
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public async Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>) _baseTerminalController
-                .HandleFr8Request(curTerminal, "Configure", curActionDTO);
-        }
-
-        [HttpPost]
-        [Route("activate")]
-        public string Activate(ActionDTO curActionDataPackage)
-        {
-            return string.Empty;
-        }
-
-        [HttpPost]
-        [Route("deactivate")]
-        public string Deactivate(ActionDTO curActionDataPackage)
-        {
-            return string.Empty;
-        }
-
-        [HttpPost]
-        [Route("run")]
-        public async Task<PayloadDTO> Run(ActionDTO actionDto)
-        {
-            return await (Task<PayloadDTO>)_baseTerminalController.HandleFr8Request(
-                curTerminal, "Run", actionDto);
+            if (actionType.Equals("run", StringComparison.InvariantCultureIgnoreCase))
+                return await (Task<PayloadDTO>)_baseTerminalController.HandleFr8Request(curTerminal, actionType, curActionDTO);
+            return await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, actionType, curActionDTO);
         }
     }
 }
