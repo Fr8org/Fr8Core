@@ -1,0 +1,17 @@
+﻿<form role="form" data-ng-submit="form.$valid && submit(form)" name="form" novalidate>
+	<div class="modal-header">
+		<h3 class="modal-title">Add Payload</h3>
+	</div>
+	<div class="modal-body">
+		<div class="form-group" data-ng-class="{'has-error' : (form.$submitted && form.payload.$error.required) || form.payload.$error.invalid}">
+			<div data-ng-show="form.$submitted">
+				<span class="help-block" data-ng-show="form.payload.$error.required">Payload should not be empty</span>
+			</div>
+			<textarea name="payload" class="form-control" placeholder="Paste your payload here" style="min-height: 650px; max-width: 568px;" required="" data-ng-model="payload"></textarea>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" type="submit" data-ng-disabled="form.$submitted && form.payload.$error.required">Run with Payload</button>
+		<button class="btn btn-warning" type="button" data-ng-click="close()">Close</button>
+	</div>
+</form>
