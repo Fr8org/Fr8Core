@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Data.Entities;
@@ -15,11 +16,12 @@ namespace terminalAzure.Controllers
         private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
         [HttpPost]
-        public async Task<ActionDTO> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
+        public async Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, actionType, curActionDTO);
+            if (actionType.Equals("run"))
+                return await (Task<PayloadDTO>)_baseTerminalController.HandleFr8Request(curTerminal, actionType, curActionDTO);                
+            return await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, actionType, curActionDTO);                
         }
-
 
         //----------------------------------------------------------
 
