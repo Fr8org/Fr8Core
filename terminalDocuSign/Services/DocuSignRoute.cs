@@ -18,6 +18,15 @@ namespace terminalDocuSign.Services
     /// </summary>
     public class DocuSignRoute : IDocuSignRoute
     {
+        private readonly IActivityTemplate _activityTemplate;
+        private readonly IAction _action;
+
+        public DocuSignRoute()
+        {
+            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
+            _action = ObjectFactory.GetInstance<IAction>();
+        }
+
         /// <summary>
         /// Creates Monitor All DocuSign Events route with Record DocuSign Events and Store MT Data actions.
         /// </summary>
@@ -30,8 +39,9 @@ namespace terminalDocuSign.Services
 
                 //if route already created
                 if (uow.RouteRepository.GetQuery().Any(existingRoute =>
-                                                            existingRoute.Name.Equals("MonitorAllDocuSignEvents") &&
-                                                            existingRoute.Fr8Account.Email.Equals(curFr8Account.Email)))
+                    existingRoute.Name.Equals("MonitorAllDocuSignEvents") &&
+                    existingRoute.Fr8Account.Email.Equals(curFr8Account.Email) &&
+                    existingRoute.RouteState == RouteState.Active))
                 {
                     return;
                 }
@@ -61,12 +71,10 @@ namespace terminalDocuSign.Services
                 uow.SaveChanges();
 
                 //get activity templates of required actions
-                var _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
                 var activity1 = Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByName(uow, "Record_DocuSign_Events_v1"));
                 var activity2 = Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByName(uow, "StoreMTData_v1"));
 
                 //create and configure required actions
-                var _action = ObjectFactory.GetInstance<IAction>();
                 await _action.CreateAndConfigure(uow, curFr8UserId, activity1.Id, activity1.Name, activity1.Label, subroute.Id);
                 await _action.CreateAndConfigure(uow, curFr8UserId, activity2.Id, activity2.Name, activity2.Label, subroute.Id);
                 

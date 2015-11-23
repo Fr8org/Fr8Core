@@ -22,15 +22,15 @@ namespace terminalDocuSign.Tests.Services
         public override void SetUp()
         {
             base.SetUp();
+
+            SetupForAutomaticRoute();
+
             _curDocuSignRoute = new DocuSignRoute();
         }
 
         [Test, Category("DocuSignRoute_CreteRoute")]
         public async Task CreateRoute_InitialAuthenticationSuccessful_MonitorAllDocuSignEvents_RouteCreatedWithTwoActions()
         {
-            //Arrange
-            SetupForAutomaticRoute();
-
             //Act
             await _curDocuSignRoute.CreateRoute_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id);
 
@@ -50,8 +50,6 @@ namespace terminalDocuSign.Tests.Services
         [Test, Category("DocuSignRoute_CreteRoute")]
         public async Task CreateRoute_SameUserAuthentication_MonitorAllDocuSignEvents_RouteCreatedOnlyOnce()
         {
-            //Arrange
-            SetupForAutomaticRoute();
             //call for first time auth successfull
             await _curDocuSignRoute.CreateRoute_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id);
 

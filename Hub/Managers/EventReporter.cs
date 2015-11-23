@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using StructureMap;
 using Data.Entities;
 using Data.Infrastructure;
@@ -64,8 +66,9 @@ namespace Hub.Managers
             EventManager.EventContainerReceived += LogEventContainerReceived;
             EventManager.EventContainerStateChanged += LogEventContainerStateChanged;
 
-        }
+            EventManager.EventAuthenticationCompleted += PostToTerminalEventsEndPoint;
 
+        }
 
         public void UnsubscribeFromAlerts()
         {
@@ -104,6 +107,8 @@ namespace Hub.Managers
             EventManager.EventContainerSent -= LogEventContainerSent;
             EventManager.EventContainerReceived -= LogEventContainerReceived;
             EventManager.EventContainerStateChanged -= LogEventContainerStateChanged;
+
+            EventManager.EventAuthenticationCompleted -= PostToTerminalEventsEndPoint;
         }
 
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
@@ -864,6 +869,12 @@ namespace Hub.Managers
             uow.FactRepository.Add(curFact);
             uow.SaveChanges();
             }
+        }
+
+        private static async Task PostToTerminalEventsEndPoint(string userId, TerminalDO authenticatedTerminal)
+        {
+            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            await restClient.PostAsync<object>(new Uri("http://" + authenticatedTerminal.Endpoint + "/events"), new {fr8_user_id = userId});
         }
 
     }
