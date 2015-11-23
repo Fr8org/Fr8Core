@@ -37,12 +37,13 @@ namespace terminalDocuSign.Services
 
                 var curFr8Account = uow.UserRepository.GetByKey(curFr8UserId);
 
-                //if route already created
-                if (uow.RouteRepository.GetQuery().Any(existingRoute =>
-                    existingRoute.Name.Equals("MonitorAllDocuSignEvents") &&
-                    existingRoute.Fr8Account.Email.Equals(curFr8Account.Email) &&
-                    existingRoute.RouteState == RouteState.Active))
+                //check if the route already created
+                var existingRoute = GetExistingRoute(uow, "MonitorAllDocuSignEvents", curFr8Account.Email);
+                if (existingRoute != null)
                 {
+                    //if route is already created, just make it active and return
+                    existingRoute.RouteState = RouteState.Active;
+                    uow.SaveChanges();
                     return;
                 }
 
@@ -81,6 +82,20 @@ namespace terminalDocuSign.Services
                 //update database
                 uow.SaveChanges();
             }
+        }
+
+        private RouteDO GetExistingRoute(IUnitOfWork uow, string routeName, string fr8AccountEmail)
+        {
+            if (uow.RouteRepository.GetQuery().Any(existingRoute =>
+                existingRoute.Name.Equals(routeName) &&
+                existingRoute.Fr8Account.Email.Equals(fr8AccountEmail)))
+            {
+                return uow.RouteRepository.GetQuery().First(existingRoute =>
+                    existingRoute.Name.Equals(routeName) &&
+                    existingRoute.Fr8Account.Email.Equals(fr8AccountEmail));
+            }
+
+            return null;
         }
     }
 }
