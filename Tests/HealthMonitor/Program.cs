@@ -20,8 +20,11 @@ namespace HealthMonitor
             var testRunner = new NUnitTestRunner();
             var report = testRunner.Run(package);
 
+            var reportBuilder = new HtmlReportBuilder();
+            var htmlReport = reportBuilder.BuildReport(report);
+
             var reportNotifier = new TestReportNotifier();
-            reportNotifier.Notify(report);
+            reportNotifier.Notify(htmlReport);
         }
     }
 }
