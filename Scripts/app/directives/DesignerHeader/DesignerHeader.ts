@@ -66,8 +66,8 @@ module dockyard.directives.designerHeader {
 
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {
-            var directive = (ProcessTemplateService: services.IRouteService) => {
-                return new DesignerHeader(ProcessTemplateService);
+            var directive = (RouteService: services.IRouteService) => {
+                return new DesignerHeader(RouteService);
             };
 
             directive['$inject'] = ['RouteService'];

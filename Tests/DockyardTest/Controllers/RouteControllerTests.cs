@@ -60,11 +60,11 @@ namespace DockyardTest.Controllers
         public void RouteController_CanAddNewRoute()
         {
             //Arrange 
-            var processTemplateDto = FixtureData.CreateTestRouteDTO();
+            var routeDto = FixtureData.CreateTestRouteDTO();
 
             //Act
             RouteController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            var response = ptc.Post(processTemplateDto);
+            var response = ptc.Post(routeDto);
 
             //Assert
             var okResult = response as OkNegotiatedContentResult<RouteOnlyDTO>;
@@ -73,9 +73,9 @@ namespace DockyardTest.Controllers
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
                 var ptdo = uow.RouteRepository.
-                    GetQuery().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == processTemplateDto.Name);
+                    GetQuery().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == routeDto.Name);
                 Assert.IsNotNull(ptdo);
-                Assert.AreEqual(processTemplateDto.Description, ptdo.Description);
+                Assert.AreEqual(routeDto.Description, ptdo.Description);
             }
         }
 
@@ -83,12 +83,12 @@ namespace DockyardTest.Controllers
         public void RouteController_Will_Return_BadResult_If_Name_Is_Empty()
         {
             //Arrange 
-            var processTemplateDto = FixtureData.CreateTestRouteDTO();
-            processTemplateDto.Name = String.Empty;
+            var routeDto = FixtureData.CreateTestRouteDTO();
+            routeDto.Name = String.Empty;
 
             //Act
             RouteController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address); ;
-            var response = ptc.Post(processTemplateDto);
+            var response = ptc.Post(routeDto);
 
             //Assert
             var badResult = response as BadRequestErrorMessageResult;
@@ -100,10 +100,10 @@ namespace DockyardTest.Controllers
         public void RouteController_Will_ReturnEmptyOkResult_If_No_Route_Found()
         {
             //Act
-            RouteController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            RouteController routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
 
             //Assert
-            var postResult = processTemplateController.Get(FixtureData.GetTestGuidById(55));
+            var postResult = routeController.Get(FixtureData.GetTestGuidById(55));
             Assert.IsNull(postResult as OkNegotiatedContentResult<RouteDO>);
         }
 
@@ -111,10 +111,10 @@ namespace DockyardTest.Controllers
         public void ProcessController_Will_Return_All_When_Get_Invoked_With_Null()
         {
             //Arrange
-            var processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            var routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             for (var i = 0; i < 2; i++)
             {
-                var processTemplateDto = FixtureData.CreateTestRouteDTO();
+                var routeDto = FixtureData.CreateTestRouteDTO();
 
                 // Commented out by yakov.gnusin:
                 // Do we really need to provider DockyardAccountDO inside RouteDTO?
@@ -130,11 +130,11 @@ namespace DockyardTest.Controllers
                 //     default:
                 //         break;
                 // }
-                processTemplateController.Post(processTemplateDto);
+                routeController.Post(routeDto);
             }
 
             //Act
-            var actionResult = processTemplateController.Get() as OkNegotiatedContentResult<RouteOnlyDTO[]>;
+            var actionResult = routeController.Get() as OkNegotiatedContentResult<RouteOnlyDTO[]>;
 
             //Assert
             Assert.NotNull(actionResult);
@@ -145,17 +145,17 @@ namespace DockyardTest.Controllers
         public void ProcessController_Will_Return_One_When_Get_Invoked_With_Id()
         {
             //Arrange
-            var processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            var processTemplateDto = FixtureData.CreateTestRouteDTO();
-            processTemplateController.Post(processTemplateDto);
+            var routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            var routeDto = FixtureData.CreateTestRouteDTO();
+            routeController.Post(routeDto);
 
             //Act
-            var actionResult = processTemplateController.Get(processTemplateDto.Id) as OkNegotiatedContentResult<RouteOnlyDTO>;
+            var actionResult = routeController.Get(routeDto.Id) as OkNegotiatedContentResult<RouteOnlyDTO>;
 
             //Assert
             Assert.NotNull(actionResult);
             Assert.NotNull(actionResult.Content);
-            Assert.AreEqual(processTemplateDto.Id, actionResult.Content.Id);
+            Assert.AreEqual(routeDto.Id, actionResult.Content.Id);
 
         }
 
@@ -166,22 +166,22 @@ namespace DockyardTest.Controllers
         public void RouteController_CanDelete()
         {
             //Arrange 
-            var processTemplateDto = FixtureData.CreateTestRouteDTO();
+            var routeDto = FixtureData.CreateTestRouteDTO();
 
-            RouteController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            var postResult = processTemplateController.Post(processTemplateDto) as OkNegotiatedContentResult<RouteOnlyDTO>;
+            RouteController routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            var postResult = routeController.Post(routeDto) as OkNegotiatedContentResult<RouteOnlyDTO>;
 
             Assert.NotNull(postResult);
 
             //Act
-            var deleteResult = processTemplateController.Delete(postResult.Content.Id) as OkNegotiatedContentResult<int>;
+            var deleteResult = routeController.Delete(postResult.Content.Id) as OkNegotiatedContentResult<int>;
 
             Assert.NotNull(deleteResult);
 
             //Assert
             //After delete, if we get the same process template, it should be null
             var afterDeleteAttemptResult =
-                processTemplateController.Get(postResult.Content.Id) as OkNegotiatedContentResult<RouteOnlyDTO>;
+                routeController.Get(postResult.Content.Id) as OkNegotiatedContentResult<RouteOnlyDTO>;
             Assert.IsNull(afterDeleteAttemptResult);
         }
 
@@ -190,15 +190,15 @@ namespace DockyardTest.Controllers
         public void ProcessController_CannotCreateIfProcessNameIsEmpty()
         {
             //Arrange 
-            var processTemplateDto = FixtureData.CreateTestRouteDTO();
-            processTemplateDto.Name = String.Empty;
+            var routeDto = FixtureData.CreateTestRouteDTO();
+            routeDto.Name = String.Empty;
 
             //Act
-            RouteController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            processTemplateController.Post(processTemplateDto);
+            RouteController routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            routeController.Post(routeDto);
 
             //Assert
-            Assert.AreEqual(1, processTemplateController.ModelState.Count()); //must be one error
+            Assert.AreEqual(1, routeController.ModelState.Count()); //must be one error
         }
 
         [Test]
@@ -206,8 +206,8 @@ namespace DockyardTest.Controllers
         {
             //Arrange 
             //var processTemplateDto = FixtureData.CreateTestRouteDTO();
-            var processTemplateDto = FixtureData.CreateTestRouteDTO();
-            var processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            var routeDto = FixtureData.CreateTestRouteDTO();
+            var routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
 
             var tPT = FixtureData.TestRouteWithStartingSubroutes_ID0();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -217,21 +217,21 @@ namespace DockyardTest.Controllers
             }
 
             //Save First
-            var postResult = processTemplateController.Post(processTemplateDto) as OkNegotiatedContentResult<RouteOnlyDTO>;
+            var postResult = routeController.Post(routeDto) as OkNegotiatedContentResult<RouteOnlyDTO>;
             Assert.NotNull(postResult);
 
             //Then Get
-            var getResult = processTemplateController.Get(postResult.Content.Id) as OkNegotiatedContentResult<RouteOnlyDTO>;
+            var getResult = routeController.Get(postResult.Content.Id) as OkNegotiatedContentResult<RouteOnlyDTO>;
             Assert.NotNull(getResult);
 
             //Then Edit
             var postEditNameValue = "EditedName";
             getResult.Content.Name = postEditNameValue;
-            var editResult = processTemplateController.Post(getResult.Content) as OkNegotiatedContentResult<RouteOnlyDTO>;
+            var editResult = routeController.Post(getResult.Content) as OkNegotiatedContentResult<RouteOnlyDTO>;
             Assert.NotNull(editResult);
 
             //Then Get
-            var postEditGetResult = processTemplateController.Get(editResult.Content.Id) as OkNegotiatedContentResult<RouteOnlyDTO>;
+            var postEditGetResult = routeController.Get(editResult.Content.Id) as OkNegotiatedContentResult<RouteOnlyDTO>;
             Assert.NotNull(postEditGetResult);
 
             //Assert 
@@ -247,7 +247,7 @@ namespace DockyardTest.Controllers
         public void ProcessController_CanUpdateDocuSignTemplate()
         {
             //Arrange
-            var processTemplateDto = FixtureData.CreateTestRouteDTO();
+            var routeDto = FixtureData.CreateTestRouteDTO();
 
             var docuSignTemplateList = new List<string>();
             docuSignTemplateList.Add("58521204-58af-4e65-8a77-4f4b51fef626");
@@ -257,11 +257,11 @@ namespace DockyardTest.Controllers
 
             //Act: first add a process template, then modify it. 
             RouteController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            var response = ptc.Post(processTemplateDto);
-            processTemplateDto.Name = "updated";
-            processTemplateDto.SubscribedDocuSignTemplates = docuSignTemplateList;
-            processTemplateDto.SubscribedExternalEvents = externalEventList;
-            response = ptc.Post(processTemplateDto, true);
+            var response = ptc.Post(routeDto);
+            routeDto.Name = "updated";
+            routeDto.SubscribedDocuSignTemplates = docuSignTemplateList;
+            routeDto.SubscribedExternalEvents = externalEventList;
+            response = ptc.Post(routeDto, true);
 
             //Assert
             var okResult = response as OkNegotiatedContentResult<RouteOnlyDTO>;
@@ -270,12 +270,12 @@ namespace DockyardTest.Controllers
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
                 var ptdo = uow.RouteRepository.
-                    GetQuery().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == processTemplateDto.Name);
+                    GetQuery().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == routeDto.Name);
                 Assert.IsNotNull(ptdo);
-                Assert.AreEqual(processTemplateDto.Name, ptdo.Name);
-                Assert.AreEqual(processTemplateDto.SubscribedDocuSignTemplates.Count(), 1);
-                Assert.AreEqual(processTemplateDto.SubscribedDocuSignTemplates[0], docuSignTemplateList[0]);
-                Assert.AreEqual(processTemplateDto.SubscribedExternalEvents, externalEventList);
+                Assert.AreEqual(routeDto.Name, ptdo.Name);
+                Assert.AreEqual(routeDto.SubscribedDocuSignTemplates.Count(), 1);
+                Assert.AreEqual(routeDto.SubscribedDocuSignTemplates[0], docuSignTemplateList[0]);
+                Assert.AreEqual(routeDto.SubscribedExternalEvents, externalEventList);
             }
         }
      

@@ -31,7 +31,7 @@ namespace Hub.Interfaces
         RouteDO Copy(IUnitOfWork uow, RouteDO curRouteDO, string name);
 
 
-        ContainerDO Create(IUnitOfWork uow, Guid processTemplateId, Crate curEvent);
+        ContainerDO Create(IUnitOfWork uow, Guid routeId, Crate curEvent);
         Task<ContainerDO> Run(RouteDO curRoute, Crate curEvent);
     }
 }    

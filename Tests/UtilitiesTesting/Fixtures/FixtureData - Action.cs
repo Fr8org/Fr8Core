@@ -260,22 +260,22 @@ namespace UtilitiesTesting.Fixtures
             var actionTemplate = ActionTemplate();
 
 
-            var processTemplateDo = TestRoute2();
+            var routeDo = TestRoute2();
 
             var containerDO = new ContainerDO()
             {
                 Id = TestContainer_Id_1(),
                 ContainerState = 1,
-                RouteId = processTemplateDo.Id,
-                Route = processTemplateDo
+                RouteId = routeDo.Id,
+                Route = routeDo
             };
 
             var subrouteDo = new SubrouteDO()
             {
                 Id = GetTestGuidById(1),
                 Name = "C",
-                ParentRouteNodeId = processTemplateDo.Id,
-                ParentRouteNode = processTemplateDo
+                ParentRouteNodeId = routeDo.Id,
+                ParentRouteNode = routeDo
             };
 
 
@@ -335,7 +335,7 @@ namespace UtilitiesTesting.Fixtures
             var actionTemplate = ActionTemplate();
             //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
 
-            var processTemplateDo = new RouteDO()
+            var routeDo = new RouteDO()
             {
                 Id = GetTestGuidById(1),
                 Name = "A",
@@ -347,16 +347,16 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = TestContainer_Id_1(),
                 ContainerState = 1,
-                RouteId = processTemplateDo.Id,
-                Route = processTemplateDo
+                RouteId = routeDo.Id,
+                Route = routeDo
             };
 
             var subrouteDo = new SubrouteDO()
             {
                 Id = GetTestGuidById(1),
                 Name = "C",
-                ParentRouteNodeId = processTemplateDo.Id,
-                ParentRouteNode = processTemplateDo
+                ParentRouteNodeId = routeDo.Id,
+                ParentRouteNode = routeDo
             };
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
@@ -368,7 +368,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = GetTestGuidById(1),
                 Name = "testaction",
-                ParentRouteNode = processTemplateDo,
+                ParentRouteNode = routeDo,
 
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate

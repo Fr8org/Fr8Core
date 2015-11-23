@@ -315,7 +315,7 @@ namespace Hub.Services
 
         public IList<RouteDO> GetMatchingRoutes(string userId, EventReportCM curEventReport)
         {
-            List<RouteDO> processTemplateSubscribers = new List<RouteDO>();
+            List<RouteDO> routeSubscribers = new List<RouteDO>();
             if (String.IsNullOrEmpty(userId))
                 throw new ArgumentNullException("Parameter UserId is null");
             if (curEventReport == null)
@@ -437,17 +437,17 @@ namespace Hub.Services
         /// <summary>
         /// New Process object
         /// </summary>
-        /// <param name="processTemplateId"></param>
+        /// <param name="routeId"></param>
         /// <param name="envelopeId"></param>
         /// <returns></returns>
-        public ContainerDO Create(IUnitOfWork uow, Guid processTemplateId, Crate curEvent)
+        public ContainerDO Create(IUnitOfWork uow, Guid routeId, Crate curEvent)
         {
             var containerDO = new ContainerDO();
             containerDO.Id = Guid.NewGuid();
 
-            var curRoute = uow.RouteRepository.GetByKey(processTemplateId);
+            var curRoute = uow.RouteRepository.GetByKey(routeId);
             if (curRoute == null)
-                throw new ArgumentNullException("processTemplateId");
+                throw new ArgumentNullException("routeId");
             containerDO.Route = curRoute;
 
             containerDO.Name = curRoute.Name;

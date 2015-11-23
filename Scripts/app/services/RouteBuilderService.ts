@@ -9,14 +9,14 @@ module dockyard.services {
         getFull: (id: Object) => interfaces.IRouteVM;
         getByAction: (id: { id: string }) => interfaces.IRouteVM;
         execute: (id: { id: number }) => void;
-        activate: (processTemplate: model.RouteDTO) => void;
-        deactivate: (processTemplate: model.RouteDTO) => void;
+        activate: (route: model.RouteDTO) => void;
+        deactivate: (route: model.RouteDTO) => void;
         update: (data: { id: string, name: string}) => interfaces.IRouteVM;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
         configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IActionVM>;
-        getByProcessTemplate: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
+        getByRoute: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
         create: (args: { actionTemplateId: number, name: string, label: string, parentNideId: number, createRoute: boolean }) => ng.resource.IResource<model.RouteDTO | model.ActionDTO>;
         createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.RouteDTO>;
         //TODO make resource class do this operation
@@ -49,8 +49,8 @@ module dockyard.services {
         }
     }
 
-    export interface IProcessBuilderService {
-        saveCurrent(current: model.ProcessBuilderState): ng.IPromise<model.ProcessBuilderState>
+    export interface IRouteBuilderService {
+        saveCurrent(current: model.RouteBuilderState): ng.IPromise<model.RouteBuilderState>
     }
 
     export interface IActivityTemplateService extends ng.resource.IResourceClass<interfaces.IActivityTemplateVM> {
@@ -58,7 +58,7 @@ module dockyard.services {
     }
 
     /*
-        ProcessTemplateDTO CRUD service.
+        RouteDTO CRUD service.
     */
 
     app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
@@ -179,7 +179,7 @@ module dockyard.services {
                         suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
                     }
                 },
-                'getByProcessTemplate': {
+                'getByRoute': {
                     method: 'GET',
                     url: '/actions/bypt',
                     isArray: true
@@ -255,9 +255,9 @@ module dockyard.services {
     ]);
 
     /*
-        General data persistance methods for ProcessBuilder.
+        General data persistance methods for RouteBuilder.
     */
-    class ProcessBuilderService implements IProcessBuilderService {
+    class RouteBuilderService implements IRouteBuilderService {
         constructor(
             private $q: ng.IQService,
             private CriteriaServiceWrapper: ICriteriaServiceWrapper,
@@ -267,14 +267,14 @@ module dockyard.services {
 
         /* 
             The function saves current entities if they are new or changed (dirty).
-            At this time not all entities whose state we maintain on ProcessBuilder are saved here. 
+            At this time not all entities whose state we maintain on RouteBuilder are saved here. 
             I (@alexavrutin) will add them one-by-one during the course of refactoring. 
             Dirty checking is missing at this moment, too, I will add it later. Now it saves entities no matter 
             if they were or were not changed. 
         */
-        public saveCurrent(currentState: model.ProcessBuilderState): ng.IPromise<model.ProcessBuilderState> {
-            var deferred = this.$q.defer<model.ProcessBuilderState>(),
-                newState = new model.ProcessBuilderState()
+        public saveCurrent(currentState: model.RouteBuilderState): ng.IPromise<model.RouteBuilderState> {
+            var deferred = this.$q.defer<model.RouteBuilderState>(),
+                newState = new model.RouteBuilderState()
 
             // TODO: bypass save for unchanged entities
               
@@ -338,14 +338,14 @@ module dockyard.services {
     }
 
     /*
-        Register ProcessBuilderService with AngularJS
+        Register RouteBuilderService with AngularJS
     */
-    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', 'CrateHelper', 'UIHelperService', (
+    app.factory('RouteBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', 'CrateHelper', 'UIHelperService', (
         $q: ng.IQService,
         CriteriaServiceWrapper: ICriteriaServiceWrapper,
         ActionService: IActionService,
         crateHelper: CrateHelper) => {
-        return new ProcessBuilderService($q, CriteriaServiceWrapper, ActionService, crateHelper);
+        return new RouteBuilderService($q, CriteriaServiceWrapper, ActionService, crateHelper);
     }
     ]);
 

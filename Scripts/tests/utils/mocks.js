@@ -8,8 +8,8 @@ var dockyard;
             var Factory = (function () {
                 function Factory() {
                 }
-                //Creates a mock for ProcessBuilderController $scope
-                Factory.GetProcessBuilderScope = function (rootScope) {
+                //Creates a mock for RouteBuilderController $scope
+                Factory.GetRouteBuilderScope = function (rootScope) {
                     var scope = rootScope.$new();
                     scope.routeId = 0;
                     scope.subroutes = null;
@@ -39,26 +39,26 @@ var dockyard;
                 return ActionServiceMock;
             })();
             utils.ActionServiceMock = ActionServiceMock;
-            var ProcessTemplateServiceMock = (function () {
-                function ProcessTemplateServiceMock($q) {
+            var RouteServiceMock = (function () {
+                function RouteServiceMock($q) {
                     this.get = jasmine.createSpy('get').and.callFake(function () {
                         var def = $q.defer();
-                        def.resolve(utils.fixtures.ProcessBuilder.newProcessTemplate);
+                        def.resolve(utils.fixtures.RouteBuilder.newRoute);
                         def.promise.$promise = def.promise;
                         return def.promise;
                     });
                     this.getFull = jasmine.createSpy('getFull').and.callFake(function () {
                         var def = $q.defer();
-                        def.resolve(utils.fixtures.ProcessBuilder.fullProcessTemplate);
+                        def.resolve(utils.fixtures.RouteBuilder.fullRoute);
                         def.promise.$promise = def.promise;
                         return def.promise;
                     });
                 }
-                return ProcessTemplateServiceMock;
+                return RouteServiceMock;
             })();
-            utils.ProcessTemplateServiceMock = ProcessTemplateServiceMock;
-            var ProcessBuilderServiceMock = (function () {
-                function ProcessBuilderServiceMock($q) {
+            utils.RouteServiceMock = RouteServiceMock;
+            var RouteBuilderServiceMock = (function () {
+                function RouteBuilderServiceMock($q) {
                     this.save = jasmine.createSpy('save').and.callFake(function () {
                         var def = $q.defer();
                         def.resolve();
@@ -67,14 +67,14 @@ var dockyard;
                     });
                     this.saveCurrent = jasmine.createSpy('saveCurrent').and.callFake(function () {
                         var def = $q.defer();
-                        def.resolve(utils.fixtures.ProcessBuilder.processBuilderState);
+                        def.resolve(utils.fixtures.RouteBuilder.routeBuilderState);
                         def.promise.$promise = def.promise;
                         return def.promise;
                     });
                 }
-                return ProcessBuilderServiceMock;
+                return RouteBuilderServiceMock;
             })();
-            utils.ProcessBuilderServiceMock = ProcessBuilderServiceMock;
+            utils.RouteBuilderServiceMock = RouteBuilderServiceMock;
             var $ModalMock = (function () {
                 function $ModalMock($q) {
                     this.open = jasmine.createSpy('open').and.returnValue({

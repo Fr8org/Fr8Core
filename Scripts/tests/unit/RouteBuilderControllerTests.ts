@@ -6,7 +6,7 @@ module dockyard.tests.controller {
     import pwd = dockyard.directives.paneWorkflowDesigner;
     import pca = dockyard.directives.paneConfigureAction;
 
-    describe("ProcessBuilder Framework message processing", () => {
+    describe("RouteBuilder Framework message processing", () => {
         
         // Commented out by yakov.gnusin, to make pass CI build.
         // Some configuration related issue running Chutzpah on AV.

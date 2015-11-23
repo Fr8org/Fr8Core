@@ -12,10 +12,10 @@
 			</div>
 
             <div class="portlet-body">
-                <div ng-if="activeProcessTemplates.length == 0">No active routes found. To make a route active, click on the Activate button after your route is fully configured.</div>
-                <div ng-if="activeProcessTemplates.length > 0">
+                <div ng-if="activeRoutes.length == 0">No active routes found. To make a route active, click on the Activate button after your route is fully configured.</div>
+                <div ng-if="activeRoutes.length > 0">
                     <div class="table-scrollable table-scrollable-borderless">
-                        <table class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                        <table class="row-border hover table table-hover table-light table-linkrows table-routes">
                             <thead>
                                 <tr>
                                     <th>Name</th>
@@ -25,18 +25,18 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="processTemplate in activeProcessTemplates | filter: {routeState:2}">
-                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.name }}</td>
-                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.description }}</td>
-                                    <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">
-                                        <span class="bold font-green-haze">{{processTemplate.routeState == 2 ? 'Active' : 'Inactive' }}</span>
+                                <tr ng-repeat="route in activeRoutes | filter: {routeState:2}">
+                                    <td ng-click="goToRouteDetailsPage(route.id)">{{ route.name }}</td>
+                                    <td ng-click="goToRouteDetailsPage(route.id)">{{ route.description }}</td>
+                                    <td ng-click="goToRouteDetailsPage(route.id)">
+                                        <span class="bold font-green-haze">{{route.routeState == 2 ? 'Active' : 'Inactive' }}</span>
                                     </td>
                                     <td>
                                         <div>
-                                            <button type="button" class="btn btn-sm red" ng-click="deactivateProcessTemplate(processTemplate);">Deactivate</button>
-                                            <button type="button" class="btn btn-sm red" ng-click="deleteProcessTemplate(processTemplate.id);">Delete</button>
-                                            <button type="button" class="btn btn-sm green" ng-click="goToProcessTemplatePage(processTemplate.id);">Edit</button>
-                                            <button type="button" class="btn btn-sm btn-primary" ng-click="executeProcessTemplate(processTemplate.id);">Run Now</button>
+                                            <button type="button" class="btn btn-sm red" ng-click="deactivateRoute(route);">Deactivate</button>
+                                            <button type="button" class="btn btn-sm red" ng-click="deleteRoute(route.id);">Delete</button>
+                                            <button type="button" class="btn btn-sm green" ng-click="goToRoutePage(route.id);">Edit</button>
+                                            <button type="button" class="btn btn-sm btn-primary" ng-click="executeRoute(route.id);">Run Now</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -58,10 +58,10 @@
 			</div>
 
                 <div class="portlet-body">
-                    <div ng-if="inActiveProcessTemplates.length == 0">No inactive routes are found. To make a route inactive, click on the Deactivate button for an Active route you wish to disable.</div>
-                    <div ng-if="inActiveProcessTemplates.length > 0">
+                    <div ng-if="inActiveRoutes.length == 0">No inactive routes are found. To make a route inactive, click on the Deactivate button for an Active route you wish to disable.</div>
+                    <div ng-if="inActiveRoutes.length > 0">
                         <div class="table-scrollable table-scrollable-borderless">
-                            <table class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                            <table class="row-border hover table table-hover table-light table-linkrows table-routes">
                                 <thead>
                                     <tr>
                                         <th>Name</th>
@@ -71,17 +71,17 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="processTemplate in inActiveProcessTemplates | filter: {routeState:1}">
-                                        <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.name }}</td>
-                                        <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">{{ processTemplate.description }}</td>
-                                        <td ng-click="goToProcessTemplateDetailsPage(processTemplate.id)">
-                                            <span class="bold font-green-haze">{{processTemplate.routeState == 2 ? 'Active' : 'Inactive' }}</span>
-                                        <td>
+                                    <tr ng-repeat="route in inActiveRoutes | filter: {routeState:1}">
+                                        <td ng-click="goToRouteDetailsPage(route.id)">{{ route.name }}</td>
+                                        <td ng-click="goToRouteDetailsPage(route.id)">{{ route.description }}</td>
+                                        <td ng-click="goToRouteDetailsPage(route.id)">
+                                            <span class="bold font-green-haze">{{route.routeState == 2 ? 'Active' : 'Inactive' }}</span>
+<td>
                                             <div>
-                                                <button type="button" class="btn btn-sm red" ng-click="deleteProcessTemplate(processTemplate.id);">Delete</button>
-                                                <button type="button" class="btn btn-sm green" ng-click="goToProcessTemplatePage(processTemplate.id);">Edit</button>
-                                                <button type="button" class="btn btn-sm btn-primary" ng-click="executeProcessTemplate(processTemplate.id);">Run Now</button>
-                                                <button type="button" class="btn btn-sm green" ng-click="activateProcessTemplate(processTemplate);">Activate</button>
+                                                <button type="button" class="btn btn-sm red" ng-click="deleteRoute(route.id);">Delete</button>
+                                                <button type="button" class="btn btn-sm green" ng-click="goToRoutePage(route.id);">Edit</button>
+                                                <button type="button" class="btn btn-sm btn-primary" ng-click="executeRoute(route.id);">Run Now</button>
+                                                <button type="button" class="btn btn-sm green" ng-click="activateRoute(route);">Activate</button>
                                             </div>
                                         </td>
                                     </tr>

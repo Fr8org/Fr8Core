@@ -41,7 +41,7 @@ namespace terminalIntegrationTests
         public ICrateManager _crateManager;
 
         private Fr8AccountDO _testUserAccount;
-        private RouteDO _processTemplateDO;
+        private RouteDO _routeDO;
         private SubrouteDO _subrouteDO;
         //private ActionListDO _actionList;
         private AuthorizationTokenDO _authToken;
@@ -66,12 +66,12 @@ namespace terminalIntegrationTests
 
             _testUserAccount = FixtureData.TestUser1();
 
-            _processTemplateDO = FixtureData.Route_TerminalIntegration();
-            _processTemplateDO.Fr8Account = _testUserAccount;
+            _routeDO = FixtureData.Route_TerminalIntegration();
+            _routeDO.Fr8Account = _testUserAccount;
             System.Threading.Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(_testUserAccount.Id), new string[] { "User" });
 
             _subrouteDO = FixtureData.Subroute_TerminalIntegration();
-            _subrouteDO.ParentRouteNode = _processTemplateDO;
+            _subrouteDO.ParentRouteNode = _routeDO;
 
             
             //_actionList = FixtureData.TestActionList_ImmediateActions();
@@ -104,11 +104,11 @@ namespace terminalIntegrationTests
                 uow.UserRepository.Add(_testUserAccount);
                 uow.AuthorizationTokenRepository.Add(_authToken);
 
-                uow.RouteRepository.Add(_processTemplateDO);
+                uow.RouteRepository.Add(_routeDO);
                 uow.SubrouteRepository.Add(_subrouteDO);
                 // This fix inability of MockDB to correctly resolve requests to collections of derived entites
                 uow.RouteNodeRepository.Add(_subrouteDO);
-                uow.RouteNodeRepository.Add(_processTemplateDO);
+                uow.RouteNodeRepository.Add(_routeDO);
                 uow.SaveChanges();
             }
 

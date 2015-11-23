@@ -1,14 +1,14 @@
 /// <reference path="../../app/_all.ts" />
 /// <reference path="../../typings/angularjs/angular-mocks.d.ts" />
 /// <reference path="../../typings/jquery/jquery.d.ts" />
-/// <reference path="../utils/fixture_processbuilder.ts" />
+/// <reference path="../utils/fixture_routebuilder.ts" />
 var dockyard;
 (function (dockyard) {
     var tests;
     (function (tests) {
         var controller;
         (function (controller) {
-            var fx = tests.utils.fixtures.ProcessBuilder; // just an alias
+            var fx = tests.utils.fixtures.RouteBuilder; // just an alias
             var errorHandler = function (response, detail) {
                 if (detail.status === 401) {
                     fail("User is not logged in, to run these tests, please login");
@@ -17,35 +17,35 @@ var dockyard;
                     fail("Something went wrong" + detail.status);
                 }
             };
-            describe("Process Template Controller ", function () {
-                var endpoint = "/api/route", currentProcessTemplate, changeProcessTemplate1 = "";
+            describe("Route Controller ", function () {
+                var endpoint = "/api/route", currentRoute, changeRoute1 = "";
                 beforeAll(function () {
                     $(document).ajaxError(errorHandler);
                     $.ajaxSetup({ async: false, url: endpoint, dataType: "json", contentType: "text/json" });
-                    //Create a ProcessTemplate
-                    $.post(endpoint, JSON.stringify(fx.newProcessTemplate), function (curProcessTemplate, status) { return currentProcessTemplate = curProcessTemplate; });
+                    //Create a Route
+                    $.post(endpoint, JSON.stringify(fx.newRoute), function (curRoute, status) { return currentRoute = curRoute; });
                 });
-                it("should get a Process Template successfully", function () {
-                    $.getJSON(endpoint, { id: currentProcessTemplate.id })
+                it("should get a Route successfully", function () {
+                    $.getJSON(endpoint, { id: currentRoute.id })
                         .done(function (data, status) {
                         expect(data).not.toBe(null);
                         expect(status).toBe("success");
-                        expect(data.name).toBe(fx.newProcessTemplate.name);
-                        expect(data.description).toBe(fx.newProcessTemplate.description);
-                        expect(data.routeState).toBe(fx.newProcessTemplate.routeState);
+                        expect(data.name).toBe(fx.newRoute.name);
+                        expect(data.description).toBe(fx.newRoute.description);
+                        expect(data.routeState).toBe(fx.newRoute.routeState);
                     });
                 });
                 it("should specify DocuSign template successfully", function () {
-                    $.post(endpoint + "?updateRegistrations=true", JSON.stringify(fx.updatedProcessTemplate))
+                    $.post(endpoint + "?updateRegistrations=true", JSON.stringify(fx.updatedRoute))
                         .done(function (data, status) {
                         expect(data).not.toBe(null);
                         expect(status).toBe("success");
-                        expect(data.name).toBe(fx.updatedProcessTemplate.name);
-                        expect(data.description).toBe(fx.updatedProcessTemplate.description);
-                        expect(data.routeState).toBe(fx.updatedProcessTemplate.routeState);
+                        expect(data.name).toBe(fx.updatedRoute.name);
+                        expect(data.description).toBe(fx.updatedRoute.description);
+                        expect(data.routeState).toBe(fx.updatedRoute.routeState);
                         expect($.isArray(data.subscribedDocuSignTemplates)).toBeTruthy();
                         expect(data.subscribedDocuSignTemplates.length).toBe(1);
-                        expect(data.subscribedDocuSignTemplates[0]).toBe(fx.updatedProcessTemplate.subscribedDocuSignTemplates[0]);
+                        expect(data.subscribedDocuSignTemplates[0]).toBe(fx.updatedRoute.subscribedDocuSignTemplates[0]);
                     });
                 });
                 it("should return the list of external events", function () {
@@ -59,4 +59,4 @@ var dockyard;
         })(controller = tests.controller || (tests.controller = {}));
     })(tests = dockyard.tests || (dockyard.tests = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=ProcessTemplateControllerTests.js.map
+//# sourceMappingURL=RouteControllerTests.js.map

@@ -5,7 +5,7 @@
 /// <reference path="interfaces/iapprootscope.ts" />
 /// <reference path="interfaces/icriteria.ts" />
 /// <reference path="interfaces/iquerybuilderwidgetscope.ts" />
-/// <reference path="interfaces/iprocessbuilder.ts" />
+/// <reference path="interfaces/iroutebuilder.ts" />
 /// <reference path="interfaces/iuser.ts" />
 /*
     MODEL
@@ -17,13 +17,13 @@
 /// <reference path="model/route.ts" />
 /// <reference path="model/subroute.ts" />
 /// <reference path="model/controlslist.ts" />
-/// <reference path="model/processbuilderstate.ts" />
+/// <reference path="model/routebuilderstate.ts" />
 /// <reference path="model/user.ts" />
 /*
     SERVICES
 */
 /// <reference path="services/localidentitygenerator.ts" />
-/// <reference path="services/processbuilderservice.ts" />
+/// <reference path="services/routebuilderservice.ts" />
 /// <reference path="services/stringservice.ts" />
 /// <reference path="services/pushernotifierservice.ts" />
 /*
@@ -40,7 +40,7 @@
 /*
     CONTROLLERS
 */
-/// <reference path="controllers/processbuildercontroller.ts" />
+/// <reference path="controllers/routebuildercontroller.ts" />
 /// <reference path="controllers/routeformcontroller.ts" />
 /// <reference path="controllers/routelistcontroller.ts" />
 /// <reference path="controllers/managefilelistcontroller.ts" />

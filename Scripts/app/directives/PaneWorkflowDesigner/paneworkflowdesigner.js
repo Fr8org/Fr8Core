@@ -41,8 +41,8 @@ var dockyard;
                     template: '<div style="overflow: auto;"></div>',
                     scope: {},
                     link: function (scope, element, attrs) {
-                        var factory = new ProcessBuilder.FabricJsFactory();
-                        var widget = Core.create(ProcessBuilder.Widget, element.children()[0], factory, attrs.width, attrs.height);
+                        var factory = new RouteBuilder.FabricJsFactory();
+                        var widget = Core.create(RouteBuilder.Widget, element.children()[0], factory, attrs.width, attrs.height);
                         widget.on('addActionNode:click', function (e, criteriaId, actionType) {
                             scope.$apply(function () {
                                 scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionAdding], new paneWorkflowDesigner.ActionAddingEventArgs(criteriaId));
