@@ -33,14 +33,14 @@ namespace HubWeb.Controllers
         
         public async Task<IHttpActionResult> Notify(DateTimeOffset startTime, Guid containerId, string terminalName, string terminalVersion)
         {
-            Expression<Action> action = () => VerifyContainer(containerId, terminalName, terminalVersion);
+            Expression<Action> action = () => VerifyContainer(startTime, containerId, terminalName, terminalVersion);
             BackgroundJob.Schedule(action, startTime);
 
             var eventController = new EventController();
             return await eventController.ProcessIncomingEvents(terminalName, terminalVersion);
         }
         
-        public async Task<IHttpActionResult> VerifyContainer(Guid containerId, string terminalName, string terminalVersion)
+        public async void VerifyContainer(DateTimeOffset startTime, Guid containerId, string terminalName, string terminalVersion)
         {
             HttpResponseMessage result = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -49,15 +49,17 @@ namespace HubWeb.Controllers
                 if (container != null && container.ContainerState == ContainerState.Pending)
                 {
                     var crateManager = ObjectFactory.GetInstance<ICrateManager>();
-                    // crateManager.AddLogMessage("", , container);
+
+                    var label = String.Format("Alarm Triggered [{0}]", startTime.ToUniversalTime());
+                    var logItemList = new List<LogItemDTO>();
+
+                    crateManager.AddLogMessage(label, logItemList, container);
                     var terminal = ObjectFactory.GetInstance<ITerminal>();
                     var terminalUrl = terminal.ParseTerminalUrlFor(terminalName, terminalVersion, "action/run");
 
                     result = await new HttpClient().PostAsync(new Uri(terminalUrl, UriKind.Absolute), Request.Content);
                 }
             }
-
-            return Ok(result);
         }
     }
 }
