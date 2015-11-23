@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Linq;
 using SendGrid;
+using HealthMonitor.Configuration;
 
 namespace HealthMonitor
 {
@@ -31,10 +32,16 @@ namespace HealthMonitor
 
         public string[] GetToEmails()
         {
-            var toEmailsString = ConfigurationManager.AppSettings["NotificationEmails"];
-            var toEmails = toEmailsString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            var healthMoniorCS = (HealthMonitorConfigurationSection)
+                ConfigurationManager .GetSection("healthMonitor");
 
-            return toEmails;
+            if (healthMoniorCS == null || healthMoniorCS.Notifiers == null)
+            {
+                return null;
+            }
+
+            var notifiers = healthMoniorCS.Notifiers.Select(x => x.Email).ToArray();
+            return notifiers;
         }
 
         public string CreateSubject()
@@ -44,11 +51,17 @@ namespace HealthMonitor
 
         public async void Notify(string htmlReport)
         {
+            var toEmails = GetToEmails();
+            if (toEmails == null)
+            {
+                return;
+            }
+
             var mailMessage = new SendGridMessage
             {
                 From = new MailAddress(GetFromEmailAddress(), GetFromName()),
                 ReplyTo = new[] { new MailAddress(GetFromEmailAddress(), GetFromName()) },
-                To = GetToEmails().Select(x => new MailAddress(x)).ToArray()
+                To = toEmails.Select(x => new MailAddress(x)).ToArray()
             };
 
             mailMessage.Subject = CreateSubject();
@@ -61,7 +74,7 @@ namespace HealthMonitor
             };
 
             var web = new Web(credentials);
-            await web.DeliverAsync(mailMessage);
+            web.Deliver(mailMessage);
         }
     }
 }

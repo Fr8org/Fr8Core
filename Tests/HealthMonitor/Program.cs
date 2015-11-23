@@ -14,11 +14,12 @@ namespace HealthMonitor
         {
             CoreExtensions.Host.InitializeService();
 
-            var testPackageFactory = new NUnitTestPackageFactory();
-            var package = testPackageFactory.CreateTestPackage();
+            // var testPackageFactory = new NUnitTestPackageFactory();
+            // var package = testPackageFactory.CreateTestPackage();
 
             var testRunner = new NUnitTestRunner();
-            var report = testRunner.Run(package);
+            // var report = testRunner.Run(package);
+            var report = testRunner.Run();
 
             var reportBuilder = new HtmlReportBuilder();
             var htmlReport = reportBuilder.BuildReport(report);

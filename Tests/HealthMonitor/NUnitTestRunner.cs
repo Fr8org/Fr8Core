@@ -1,30 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
 using NUnit.Core;
+using HealthMonitor.Configuration;
 
 namespace HealthMonitor
 {
     public class NUnitTestRunner
     {
-        public TestReport Run(TestPackage testPackage)
+        private Type[] GetTestSuiteTypes()
         {
-            var runner = new SimpleTestRunner();
-            if (runner.Load(testPackage))
-            {
-                var testResult = runner.Run(
-                    new NullListener(),
-                    TestFilter.Empty,
-                    false,
-                    LoggingThreshold.Off
-                );
+            var healthMonitorCS = (HealthMonitorConfigurationSection)
+                ConfigurationManager.GetSection("healthMonitor");
 
-                var testReport = GenerateTestReport(testResult);
-                return testReport;
-            }
-            else
+            if (healthMonitorCS == null || healthMonitorCS.TestSuites == null)
             {
-                throw new ApplicationException("Could not initialize NUnit.Core.SimpleTestRunner.");
+                return null;
             }
+
+            var testSuites = healthMonitorCS.TestSuites
+                .Select(x => Type.GetType(x.Type))
+                .Where(x => x != null)
+                .ToArray();
+
+            return testSuites;
+        }
+
+        public TestReport Run()
+        {
+            var testSuiteTypes = GetTestSuiteTypes();
+            if (testSuiteTypes == null || testSuiteTypes.Length == 0)
+            {
+                return new TestReport()
+                {
+                    Tests = new List<TestReportItem>()
+                };
+            }
+
+            var testPackage = new TestPackage("HelthMonitor test package");
+            var testSuite = new TestSuite("HelthMonitor test suite");
+
+            TestExecutionContext.CurrentContext.TestPackage = testPackage;
+
+            foreach (var testSuiteType in testSuiteTypes)
+            {
+                var test = TestFixtureBuilder.BuildFrom(testSuiteType);
+                testSuite.Tests.Add(test);
+            }
+
+            var testResult = testSuite.Run(new NullListener(), TestFilter.Empty);
+            var testReport = GenerateTestReport(testResult);
+
+            return testReport;
         }
 
         private TestReport GenerateTestReport(TestResult testResult)

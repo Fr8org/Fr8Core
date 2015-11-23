@@ -70,6 +70,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalIntegrationTests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthMonitor", "Tests\HealthMonitor\HealthMonitor.csproj", "{83231577-13A5-419F-8269-02AE59D8951A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalDocuSignTests", "Tests\terminalDocuSignTests\terminalDocuSignTests.csproj", "{A6E317FA-2EB0-4447-8ECD-6725F6B78435}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		alexlocal|Any CPU = alexlocal|Any CPU
@@ -460,6 +462,18 @@ Global
 		{83231577-13A5-419F-8269-02AE59D8951A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83231577-13A5-419F-8269-02AE59D8951A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{83231577-13A5-419F-8269-02AE59D8951A}.Release|x86.ActiveCfg = Release|Any CPU
+		{A6E317FA-2EB0-4447-8ECD-6725F6B78435}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
+		{A6E317FA-2EB0-4447-8ECD-6725F6B78435}.alexlocal|Any CPU.Build.0 = Release|Any CPU
+		{A6E317FA-2EB0-4447-8ECD-6725F6B78435}.alexlocal|x86.ActiveCfg = Release|Any CPU
+		{A6E317FA-2EB0-4447-8ECD-6725F6B78435}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6E317FA-2EB0-4447-8ECD-6725F6B78435}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6E317FA-2EB0-4447-8ECD-6725F6B78435}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A6E317FA-2EB0-4447-8ECD-6725F6B78435}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6E317FA-2EB0-4447-8ECD-6725F6B78435}.Dev|Any CPU.Build.0 = Debug|Any CPU
+		{A6E317FA-2EB0-4447-8ECD-6725F6B78435}.Dev|x86.ActiveCfg = Debug|Any CPU
+		{A6E317FA-2EB0-4447-8ECD-6725F6B78435}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6E317FA-2EB0-4447-8ECD-6725F6B78435}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6E317FA-2EB0-4447-8ECD-6725F6B78435}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -486,5 +500,6 @@ Global
 		{74D9BDC7-7B46-456F-B3C5-A4CDB5D74D7B} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 		{579BA25F-1DF5-474A-8A3E-0447FF75711C} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{83231577-13A5-419F-8269-02AE59D8951A} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
+		{A6E317FA-2EB0-4447-8ECD-6725F6B78435} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 	EndGlobalSection
 EndGlobal

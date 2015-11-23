@@ -1,4 +1,5 @@
-﻿using System;
+﻿/*
+using System;
 using NUnit.Core;
 
 namespace HealthMonitor
@@ -7,11 +8,16 @@ namespace HealthMonitor
     {
         public TestPackage CreateTestPackage()
         {
+            // var testSuite = new TestSuite();
+            // testSuite.Run()
+
             var package = new TestPackage("Test");
             package.BasePath = Environment.CurrentDirectory;
             package.Assemblies.Add("Tests.dll");
+            
 
             return package;
         }
     }
 }
+*/
