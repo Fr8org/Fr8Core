@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
-using Data.Crates;
+using AutoMapper;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
+using Data.Crates;
+using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Data.Repositories;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -18,12 +21,10 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Data.Interfaces.Manifests;
 using terminalExcel.Actions;
 using terminalExcel.Infrastructure;
 using terminalExcel.Fixtures;
-using AutoMapper;
-using Data.Entities;
+using TerminalBase.Infrastructure;
 
 namespace terminalExcel.PluginExcelTests
 {
@@ -43,6 +44,7 @@ namespace terminalExcel.PluginExcelTests
         public override void SetUp()
         {
             base.SetUp();
+            TerminalBootstrapper.ConfigureTest();
 
             _fixtureData = new FixtureData(ObjectFactory.GetInstance<IUnitOfWork>());
             _action = ObjectFactory.GetInstance<IAction>();

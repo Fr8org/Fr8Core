@@ -397,7 +397,7 @@ namespace Hub.Managers
         /// The method logs the fact of Process Template creation.      
         /// </summary>
         /// <param name="userId">UserId received from DocuSign.</param>
-        /// <param name="processTemplateId">EnvelopeId received from DocuSign.</param>
+        /// <param name="routeId">EnvelopeId received from DocuSign.</param>
         public void RouteCreated(string userId, string routeName)
         {
             FactDO fact = new FactDO

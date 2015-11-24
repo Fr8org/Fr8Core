@@ -132,12 +132,14 @@ module dockyard.directives.paneConfigureAction {
                 }
 
                 function onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
-                    if (!newValue || !newValue.fields || newValue.fields === oldValue.fields || newValue.fields.length == 0) return;
+                    if (!newValue || !newValue.fields) {
+                         return;
+                    }
                     crateHelper.mergeControlListCrate(
                         $scope.currentAction.configurationControls,
                         $scope.currentAction.crateStorage
                     );
-                    $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                    $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
                     ActionService.save({ id: $scope.currentAction.id },
                         $scope.currentAction, null, null);
                 };
@@ -199,7 +201,7 @@ module dockyard.directives.paneConfigureAction {
                             if (res.childrenActions && res.childrenActions.length > 0) {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
-                                // and redirect user to the ProcessBuilder once if is received.
+                                // and redirect user to the RouteBuilder once if is received.
                                 // It means that solution configuration is complete. 
                                 $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                             }

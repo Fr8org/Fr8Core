@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http.Results;
 using AutoMapper;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using StructureMap;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -19,14 +21,12 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using terminalAzure;
 using terminalDocuSign;
+using terminalDocuSign.Infrastructure.AutoMapper;
+using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Tests.Fixtures;
+using TerminalBase.Infrastructure;
 
 using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
-using terminalDocuSign.Infrastructure.StructureMap;
-using terminalDocuSign.Infrastructure.AutoMapper;
-using System.Security.Principal;
-using Data.Crates;
-using Hub.Managers;
 
 namespace terminalIntegrationTests
 {
@@ -41,7 +41,7 @@ namespace terminalIntegrationTests
         public ICrateManager _crateManager;
 
         private Fr8AccountDO _testUserAccount;
-        private RouteDO _processTemplateDO;
+        private RouteDO _routeDO;
         private SubrouteDO _subrouteDO;
         //private ActionListDO _actionList;
         private AuthorizationTokenDO _authToken;
@@ -60,18 +60,19 @@ namespace terminalIntegrationTests
             base.SetUp();
 			TerminalDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.TEST);
 			TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
+            TerminalBootstrapper.ConfigureTest();
 
             // these are integration tests, we are using a real transmitter
             ObjectFactory.Configure(c => c.For<ITerminalTransmitter>().Use<TerminalTransmitter>());
 
             _testUserAccount = FixtureData.TestUser1();
 
-            _processTemplateDO = FixtureData.Route_TerminalIntegration();
-            _processTemplateDO.Fr8Account = _testUserAccount;
+            _routeDO = FixtureData.Route_TerminalIntegration();
+            _routeDO.Fr8Account = _testUserAccount;
             System.Threading.Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(_testUserAccount.Id), new string[] { "User" });
 
             _subrouteDO = FixtureData.Subroute_TerminalIntegration();
-            _subrouteDO.ParentRouteNode = _processTemplateDO;
+            _subrouteDO.ParentRouteNode = _routeDO;
 
             
             //_actionList = FixtureData.TestActionList_ImmediateActions();
@@ -104,11 +105,11 @@ namespace terminalIntegrationTests
                 uow.UserRepository.Add(_testUserAccount);
                 uow.AuthorizationTokenRepository.Add(_authToken);
 
-                uow.RouteRepository.Add(_processTemplateDO);
+                uow.RouteRepository.Add(_routeDO);
                 uow.SubrouteRepository.Add(_subrouteDO);
                 // This fix inability of MockDB to correctly resolve requests to collections of derived entites
                 uow.RouteNodeRepository.Add(_subrouteDO);
-                uow.RouteNodeRepository.Add(_processTemplateDO);
+                uow.RouteNodeRepository.Add(_routeDO);
                 uow.SaveChanges();
             }
 

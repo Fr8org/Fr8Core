@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -13,10 +12,14 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Exceptions;
 using Hub.Interfaces;
 using System.Threading.Tasks;
+using HubWeb.ViewModels;
+using Newtonsoft.Json;
 using Utilities;
+using Hub.Managers;
+using Data.Crates;
+using Utilities.Interfaces;
 
 namespace HubWeb.Controllers
 {
@@ -24,22 +27,22 @@ namespace HubWeb.Controllers
     [Fr8ApiAuthorize]
     public class RouteController : ApiController
     {
+	    private const string PUSHER_EVENT_GENERIC_SUCCESS = "fr8pusher_generic_success";
+	    private const string PUSHER_EVENT_GENERIC_FAILURE = "fr8pusher_generic_failure";
+
         private readonly IRoute _route;
         private readonly IFindObjectsRoute _findObjectsRoute;
         private readonly ISecurityServices _security;
+        private readonly ICrateManager _crate;
+	    private readonly IPusherNotifier _pusherNotifier;
         
         public RouteController()
-            : this(ObjectFactory.GetInstance<IRoute>())
         {
-        }
-
-        
-
-        public RouteController(IRoute route)
-        {
-            _route = route;
+			_route = ObjectFactory.GetInstance<IRoute>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _findObjectsRoute = ObjectFactory.GetInstance<IFindObjectsRoute>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
+	        _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
         }
 
         [Fr8ApiAuthorize]
@@ -150,11 +153,11 @@ namespace HubWeb.Controllers
 
         [Route("~/routes")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Post(RouteEmptyDTO processTemplateDto, bool updateRegistrations = false)
+        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (string.IsNullOrEmpty(processTemplateDto.Name))
+                if (string.IsNullOrEmpty(routeDto.Name))
                 {
                     ModelState.AddModelError("Name", "Name cannot be null");
                 }
@@ -164,18 +167,18 @@ namespace HubWeb.Controllers
                     return BadRequest("Some of the request data is invalid");
                 }
 
-                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
+                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
                 curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
 
                 //this will return 0 on create operation because of not saved changes
                 _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);
                 uow.SaveChanges();
-                processTemplateDto.Id = curRouteDO.Id;
+                routeDto.Id = curRouteDO.Id;
                 //what a mess lets try this
                 /*curRouteDO.StartingSubroute.Route = curRouteDO;
                 uow.SaveChanges();
                 processTemplateDto.Id = curRouteDO.Id;*/
-                return Ok(processTemplateDto);
+                return Ok(routeDto);
             }
         }
 
@@ -217,17 +220,19 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Route("activate")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Activate(RouteDO curRoute)
+        public async Task<IHttpActionResult> Activate(RouteDO curRoute)
         {
-            return Ok(_route.Activate(curRoute));
+            string actionDTO = await _route.Activate(curRoute);
+            return Ok(actionDTO);
         }
 
         [HttpPost]
         [Route("deactivate")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Deactivate(RouteDO curRoute)
+        public async Task<IHttpActionResult> Deactivate(RouteDO curRoute)
         {
-            return Ok(_route.Deactivate(curRoute));
+            string actionDTO = await _route.Deactivate(curRoute);
+            return Ok(actionDTO);
         }
 
         [HttpPost]
@@ -249,26 +254,48 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [Route("run")]
         [HttpPost]
-        public async Task<IHttpActionResult> Run(Guid routeId)
+        public async Task<IHttpActionResult> Run(Guid routeId, [FromBody]PayloadVM model)
         {
+			CrateDTO curCrateDto;
+            Crate curCrate = null;
+
+			string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
+
+			if (model != null)
+			{
+				try
+				{
+                    curCrateDto = JsonConvert.DeserializeObject<CrateDTO>(model.Payload);
+                    curCrate = _crate.FromDto(curCrateDto);
+                }
+                catch (Exception ex)
+        {
+					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "You payload is invalid. Make sure that it represents a valid crate object JSON.");
+
+					return BadRequest();
+				}
+			}
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplateDO = uow.RouteRepository.GetByKey(routeId);
-                var pusherNotifier = new PusherNotifier();
+                var routeDO = uow.RouteRepository.GetByKey(routeId);
+
                 try
                 {
-                    var containerDO = await _route.Run(processTemplateDO, null);
-                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
-                    "fr8pusher_container_executed", String.Format("Route \"{0}\" executed", processTemplateDO.Name));
+                    var containerDO = await _route.Run(routeDO, curCrate);
+
+	                string message = String.Format("Route \"{0}\" executed", routeDO.Name);
+
+					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
 
                     return Ok(Mapper.Map<ContainerDTO>(containerDO));
                 }
                 catch
                 {
-                    pusherNotifier.Notify(String.Format("fr8pusher_{0}", User.Identity.Name),
-                    "fr8pusher_container_failed", String.Format("Route \"{0}\" failed", processTemplateDO.Name));
-                }
+	                string message = String.Format("Route \"{0}\" failed", routeDO.Name);
 
+					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+                }
 
                 return Ok();
             }

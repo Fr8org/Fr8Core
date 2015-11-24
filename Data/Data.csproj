@@ -228,7 +228,7 @@
     <Compile Include="Entities\WebServiceDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
-    <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
+    <Compile Include="Infrastructure\AutoMapper\RouteDOFullConverter.cs" />
     <Compile Include="Entities\ActivityTemplateDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Infrastructure\CloudFileManager.cs" />
@@ -282,6 +282,7 @@
     <Compile Include="Interfaces\DataTransferObjects\SubrouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\RouteEmptyDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\TerminalDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\WebServiceActionSetDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\WebServiceDTO.cs" />
