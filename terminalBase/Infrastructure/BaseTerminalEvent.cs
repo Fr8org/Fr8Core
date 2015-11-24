@@ -32,7 +32,7 @@ namespace TerminalBase.Infrastructure
             eventWebServerUrl = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            _crateManager = ObjectFactory.GetInstance<CrateManager>();
         }
 
 

@@ -2,6 +2,7 @@
 using System.Web.Http.Description;
 using System.Web.Http;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Services;
 using Utilities.Configuration.Azure;
@@ -24,9 +25,9 @@ namespace terminalFr8Core.Controllers
 
         public IHttpActionResult DiscoverTerminals()
         {
-            var result = new List<ActivityTemplateDO>();
+            var result = new List<ActivityTemplateDTO>();
             
-            var terminal = new TerminalDO
+            var terminal = new TerminalDTO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
@@ -34,12 +35,12 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             };
 
-	        var webService = new WebServiceDO
+	        var webService = new WebServiceDTO
 	        {
 		        Name = "fr8 Core"
 	        };
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "FilterUsingRunTimeData",
                 Label = "Filter Using Runtime Data",
@@ -52,7 +53,7 @@ namespace terminalFr8Core.Controllers
 				WebService = webService
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "MapFields",
                 Label = "Map Fields",
@@ -62,10 +63,10 @@ namespace terminalFr8Core.Controllers
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 380,
-				WebService = webService
+                WebService = webService
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "AddPayloadManually",
                 Label = "Add Payload Manually",
@@ -75,10 +76,10 @@ namespace terminalFr8Core.Controllers
                 AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 330,
-				WebService = webService
+                WebService = webService
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "StoreMTData",
                 Label = "Store MT Data",
@@ -88,7 +89,7 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "Select_Fr8_Object",
                 Label = "Select Fr8 Object",
@@ -99,7 +100,7 @@ namespace terminalFr8Core.Controllers
                 MinPaneWidth = 330
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "ConnectToSql",
                 Label = "Connect To SQL",
@@ -109,31 +110,33 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "BuildQuery",
                 Label = "Build Query",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
+                WebService = webService,
                 Version = "1"
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "ExecuteSql",
                 Label = "Execute Sql Query",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
+                WebService = webService,
                 Version = "1"
             });
 
-            result.Add(new ActivityTemplateDO
+            result.Add(new ActivityTemplateDTO
             {
                 Name = "ManageRoute",
                 Label = "Manage Route",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
+                WebService = webService,
                 Version = "1"
             });
 

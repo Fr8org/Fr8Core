@@ -498,6 +498,8 @@ namespace Data.Migrations
 	            {"terminalTwilio", "Twilio"},
 	            {"terminalAzure", "Microsoft Azure"},
 	            {"terminalExcel", "Excel"},
+                {"terminalGoogle", "Google"},
+                {"terminalPapertrail", "Papertrail"}
 	        };
 
             var wsToId = new Dictionary<string, int>();

@@ -54,17 +54,19 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         {
             HttpResponseMessage response;
             string responseContent = "";
+            int statusCode = -1;
 
             try
             {
                 response = await _innerClient.SendAsync(request);
                 responseContent = await response.Content.ReadAsStringAsync();
+                statusCode = (int)response.StatusCode;
                 response.EnsureSuccessStatusCode();
             }
             catch (HttpRequestException ex)
             {
                 var errorMessage = ExtractErrorMessage(responseContent);
-                throw new RestfulServiceException(errorMessage, ex);
+                throw new RestfulServiceException(statusCode, errorMessage, ex);
             }
             return response;
         }

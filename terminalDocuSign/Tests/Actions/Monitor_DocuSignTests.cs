@@ -1,22 +1,22 @@
 ﻿using System.Linq;
-using UtilitiesTesting;
-using terminalDocuSign.Actions;
-using Data.Interfaces.DataTransferObjects;
-using UtilitiesTesting.Fixtures;
-using Data.Interfaces;
 using System.Threading.Tasks;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
+using AutoMapper;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
+using Hub.Managers;
+using TerminalBase.Infrastructure;
+using terminalDocuSign.Actions;
 using terminalDocuSign.Tests.Fixtures;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using Utilities.Configuration.Azure;
-using AutoMapper;
-using Data.Entities;
-
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace terminalDocuSign.Tests.Actions
 {
@@ -26,9 +26,11 @@ namespace terminalDocuSign.Tests.Actions
     {
         Monitor_DocuSign_v1 _monitor_DocuSign;
 
-        public Monitor_DocuSignTests()
+        public override void SetUp()
         {
             base.SetUp();
+            TerminalBootstrapper.ConfigureTest();
+
             TerminalDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
             TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());

@@ -8,6 +8,7 @@ using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
+using Data.Entities;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -19,7 +20,7 @@ using terminalTwilio.Actions;
 using terminalTwilio.Services;
 using terminalTwilio.Tests.Fixtures;
 using terminalTwilio.Tests;
-using Data.Entities;
+using TerminalBase.Infrastructure;
 
 namespace terminalTwilio.Tests.Actions
 {
@@ -37,6 +38,8 @@ namespace terminalTwilio.Tests.Actions
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             StructureMapBootStrapper.ConfigureDependencies(dependencyType).ConfigureTwilioDependencies(dependencyType);
             ObjectFactory.Configure(cfg => cfg.For<ITwilioService>().Use(new TwilioService()));
+            TerminalBootstrapper.ConfigureTest();
+
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 
             var twilioService = new Mock<ITwilioService>();

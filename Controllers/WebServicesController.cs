@@ -77,7 +77,7 @@ namespace HubWeb.Controllers
 			            {
 			                Id = p.Id,
 			                Name = p.Name,
-			                Category = p.Category.ToString(),
+			                Category = p.Category,
 			                ComponentActivities = p.ComponentActivities,
 			                Label = p.Label,
 			                MinPaneWidth = p.MinPaneWidth,

@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Moq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using terminalDropbox.Actions;
 using terminalDropboxTests.Fixtures;
+using TerminalBase.Infrastructure;
 using UtilitiesTesting;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace terminalDropboxTests.Actions
 {
@@ -24,6 +25,8 @@ namespace terminalDropboxTests.Actions
         public override void SetUp()
         {
             base.SetUp();
+            TerminalBootstrapper.ConfigureTest();
+
             var restfulServiceClient = new Mock<IRestfulServiceClient>();
             restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>()))
                 .Returns(Task.FromResult(FixtureData.FakePayloadDTO));
