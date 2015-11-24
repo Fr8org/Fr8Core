@@ -110,13 +110,9 @@ namespace TerminalBase.BaseClasses
                         return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
                 default:
-<<<<<<< HEAD
                     response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
                     return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
-=======
-                    response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDTO });
-                    return response;
->>>>>>> dev
+
             }
 
 
