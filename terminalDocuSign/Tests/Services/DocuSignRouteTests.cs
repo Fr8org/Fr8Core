@@ -28,7 +28,7 @@ namespace terminalDocuSign.Tests.Services
             _curDocuSignRoute = new DocuSignRoute();
         }
 
-        [Test, Category("DocuSignRoute_CreteRoute")]
+        [Test, Category("DocuSignRoute_CreateRoute")]
         public async Task CreateRoute_InitialAuthenticationSuccessful_MonitorAllDocuSignEvents_RouteCreatedWithTwoActions()
         {
             //Act
@@ -47,7 +47,7 @@ namespace terminalDocuSign.Tests.Services
             }
         }
 
-        [Test, Category("DocuSignRoute_CreteRoute")]
+        [Test, Category("DocuSignRoute_CreateRoute")]
         public async Task CreateRoute_SameUserAuthentication_MonitorAllDocuSignEvents_RouteCreatedOnlyOnce()
         {
             //call for first time auth successfull

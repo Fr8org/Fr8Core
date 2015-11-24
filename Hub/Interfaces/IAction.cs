@@ -24,8 +24,7 @@ namespace Hub.Interfaces
         ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode);
 
         Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name,
-                                             string label = null, Guid parentNodeId = new Guid(),
-                                             bool createRoute = false);
+                                             string label = null, Guid? parentNodeId = null, bool createRoute = false);
         
         Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow);
         Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO);

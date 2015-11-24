@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using HubWeb.Controllers.Helpers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
@@ -50,7 +51,7 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var route = uow.RouteRepository.GetByKey(id);
-                var result = _route.MapRouteToDto(uow, route);
+                var result = RouteMappingHelper.MapRouteToDto(uow, route);
 
                 return Ok(result);
             };
@@ -66,7 +67,7 @@ namespace HubWeb.Controllers
             {
                 var action = uow.ActionRepository.GetByKey(id);
                 var route = _route.GetRoute(action);
-                var result = _route.MapRouteToDto(uow, route);
+                var result = RouteMappingHelper.MapRouteToDto(uow, route);
 
                 return Ok(result);
             };

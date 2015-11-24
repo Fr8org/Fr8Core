@@ -125,42 +125,6 @@ namespace Hub.Services
             _activity.Delete(uow, curRoute);
         }
 
-
-        // Manual mapping method to resolve DO-1164.
-        public RouteFullDTO MapRouteToDto(IUnitOfWork uow, RouteDO curRouteDO)
-        {
-            var subrouteDTOList = uow.SubrouteRepository
-                .GetQuery()
-                .Include(x => x.ChildNodes)
-                .Where(x => x.ParentRouteNodeId == curRouteDO.Id)
-                .OrderBy(x => x.Ordering)
-                .ToList()
-                .Select((SubrouteDO x) =>
-                {
-                    var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
-
-                    pntDTO.Actions = Enumerable.ToList(
-                        x.ChildNodes.OrderBy(y => y.Ordering).Select(Mapper.Map<ActionDTO>)
-                    );
-
-                    return pntDTO;
-                }).ToList();
-
-            RouteFullDTO result = new RouteFullDTO()
-            {
-                Description = curRouteDO.Description,
-                Id = curRouteDO.Id,
-                Name = curRouteDO.Name,
-                RouteState = curRouteDO.RouteState,
-                StartingSubrouteId = curRouteDO.StartingSubrouteId,
-                Subroutes = subrouteDTOList,
-                Fr8UserId = curRouteDO.Fr8Account.Id
-            };
-
-            return result;
-        }
-
-
         public IList<SubrouteDO> GetSubroutes(RouteDO curRouteDO)
         {
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
