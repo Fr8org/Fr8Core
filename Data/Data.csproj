@@ -437,6 +437,10 @@
     <Compile Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.Designer.cs">
       <DependentUpon>201511200612313_RouteNode_Id_Int32_To_Guid.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs" />
+    <Compile Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.Designer.cs">
+      <DependentUpon>201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
