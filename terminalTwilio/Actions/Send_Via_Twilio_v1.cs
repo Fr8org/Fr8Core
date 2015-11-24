@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using Data.Control;
 using StructureMap;
 using Data.Crates;
 using Data.Entities;
@@ -55,7 +54,7 @@ namespace terminalTwilio.Actions
 
         private Crate PackCrate_ConfigurationControls()
         {
-            RadioButtonGroup radioGroup = new RadioButtonGroup()
+            RadioButtonGroupControlDefinitionDTO radioGroup = new RadioButtonGroupControlDefinitionDTO()
             {
                 GroupName = "SMSNumber_Group",
                 Label = "For the SMS Number use:",
@@ -68,7 +67,7 @@ namespace terminalTwilio.Actions
                         Value = "SMS Number",
                         Controls = new List<ControlDefinitionDTO> 
                         {
-                            new TextBox()
+                            new TextBoxControlDefinitionDTO()
                             {
                                 Name = "SMS_Number",
                                 Required = true
@@ -83,7 +82,7 @@ namespace terminalTwilio.Actions
                         Value = "A value from Upstream Crate",
                         Controls = new List<ControlDefinitionDTO> 
                         {
-                            new DropDownList()
+                            new DropDownListControlDefinitionDTO()
                             {
                                 Name = "upstream_crate",
                                 Events = new List<ControlEvent>()
@@ -101,7 +100,7 @@ namespace terminalTwilio.Actions
                 }
             };
 
-            TextBox smsBody = new TextBox()
+            TextBoxControlDefinitionDTO smsBody = new TextBoxControlDefinitionDTO()
             {
                 Label = "SMS Body",
                 Name = "SMS_Body",
@@ -203,19 +202,19 @@ namespace terminalTwilio.Actions
             
             if (standardControls == null)
             {
-                throw new ArgumentException("CrateDTO is not a standard UI controls");
+                throw new ArgumentException("CrateDTO is not a standard configuration controls");
             }
 
             var smsBodyFields = standardControls.FindByName("SMS_Body");
 
-            var smsNumber = GetSMSNumber((RadioButtonGroup)standardControls.Controls[0]);
+            var smsNumber = GetSMSNumber((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[0]);
 
             smsInfo = new KeyValuePair<string, string>(smsNumber, smsBodyFields.Value);
 
             return smsInfo;
         }
 
-        private string GetSMSNumber(RadioButtonGroup radioButtonGroupControl)
+        private string GetSMSNumber(RadioButtonGroupControlDefinitionDTO radioButtonGroupControl)
         {
             string smsNumber = "";
 

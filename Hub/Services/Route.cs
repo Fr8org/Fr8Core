@@ -327,7 +327,7 @@ namespace Hub.Services
 
         public IList<RouteDO> GetMatchingRoutes(string userId, EventReportCM curEventReport)
         {
-            List<RouteDO> processTemplateSubscribers = new List<RouteDO>();
+            List<RouteDO> routeSubscribers = new List<RouteDO>();
             if (String.IsNullOrEmpty(userId))
                 throw new ArgumentNullException("Parameter UserId is null");
             if (curEventReport == null)

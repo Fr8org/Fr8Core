@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using Data.Control;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -72,14 +71,14 @@ namespace terminalSalesforce.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var accountName = new TextBox()
+            var accountName = new TextBoxControlDefinitionDTO()
             {
                 Label = "Account Name",
                 Name = "accountName",
                 Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
 
             };
-            var accountNumber = new TextBox()
+            var accountNumber = new TextBoxControlDefinitionDTO()
             {
                 Label = "Account Number",
                 Name = "accountNumber",
@@ -87,7 +86,7 @@ namespace terminalSalesforce.Actions
                 Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
             };
 
-            var phone = new TextBox()
+            var phone = new TextBoxControlDefinitionDTO()
             {
                 Label = "Phone",
                 Name = "phone",

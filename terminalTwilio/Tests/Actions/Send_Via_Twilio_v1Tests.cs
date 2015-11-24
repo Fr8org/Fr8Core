@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Control;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -96,8 +95,8 @@ namespace terminalTwilio.Tests.Actions
             var actionResult = _twilioAction.Configure(curActionDO, null).Result;
 
             var standardControls = _crate.GetStorage(actionResult.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            var smsNumberTextField = ((RadioButtonGroup)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "SMS_Number").Count();
-            var smsNumberUpstreamField = ((RadioButtonGroup)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "upstream_crate").Count();
+            var smsNumberTextField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "SMS_Number").Count();
+            var smsNumberUpstreamField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "upstream_crate").Count();
             var smsBodyFields = standardControls.FindByName("SMS_Body");
 
 

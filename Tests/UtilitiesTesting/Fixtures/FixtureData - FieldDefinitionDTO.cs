@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-﻿using Data.Control;
 ﻿using Data.Crates;
 ﻿using Data.Interfaces.Manifests;
 
@@ -15,7 +14,7 @@ namespace UtilitiesTesting.Fixtures
     {
         public static ControlDefinitionDTO[] FieldDefinitionDTO1()
         {
-            var fieldSelectDocusignTemplate = new DropDownList()
+            var fieldSelectDocusignTemplate = new DropDownListControlDefinitionDTO()
             {
                 Label = "Select DocuSign Template",
                 Name = "Selected_DocuSign_Template",
@@ -31,25 +30,25 @@ namespace UtilitiesTesting.Fixtures
                 }
             };
 
-            var fieldEnvelopeSent = new CheckBox()
+            var fieldEnvelopeSent = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Envelope Sent",
                 Name = "Event_Envelope_Sent"
             };
 
-            var fieldEnvelopeReceived = new CheckBox()
+            var fieldEnvelopeReceived = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Envelope Received",
                 Name = "Event_Envelope_Received"
             };
 
-            var fieldRecipientSigned = new CheckBox()
+            var fieldRecipientSigned = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Recipient Signed",
                 Name = "Event_Recipient_Signed"
             };
 
-            var fieldEventRecipientSent = new CheckBox()
+            var fieldEventRecipientSent = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Recipient Sent",
                 Name = "Event_Recipient_Sent"

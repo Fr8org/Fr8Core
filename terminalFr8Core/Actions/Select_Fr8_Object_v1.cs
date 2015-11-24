@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Data.Control;
 using Data.Crates;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -23,13 +22,13 @@ namespace terminalFr8Core.Actions
         public class ActionUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
-            public readonly DropDownList Selected_Fr8_Object;
+            public readonly DropDownListControlDefinitionDTO Selected_Fr8_Object;
 
             public ActionUi()
             {
                 Controls = new List<ControlDefinitionDTO>();
 
-                Selected_Fr8_Object = new DropDownList()
+                Selected_Fr8_Object = new DropDownListControlDefinitionDTO()
                 {
                     Label = "Select Fr8 Object",
                     Name = "Selected_Fr8_Object",

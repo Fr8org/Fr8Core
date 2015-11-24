@@ -39,8 +39,8 @@ module dockyard.tests.unit.directives.controls {
                 $compile = _$compile_;
 
                 scope = $rootScope.$new();
-                scope.field = $.extend(true, {}, fx.Duration.sampleField);
-                scope.field1 = $.extend(true, {}, fx.Duration.sampleField);
+                scope.field = $.extend(true, {}, fx.DurationControlDefinitionDTO.sampleField);
+                scope.field1 = $.extend(true, {}, fx.DurationControlDefinitionDTO.sampleField);
                 $element = compileTemplate(scope, directive, $compile);
                 $element1 = compileTemplate(scope, direcitve1, $compile);
             });

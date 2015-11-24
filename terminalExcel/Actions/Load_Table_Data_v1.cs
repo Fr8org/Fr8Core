@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using StructureMap;
@@ -48,7 +47,7 @@ namespace terminalExcel.Actions
                     },
                 }));
 
-                Controls.Add(new TextBlock
+                Controls.Add(new TextBlockControlDefinitionDTO
                 {
                     Label = "",
                     Value = "This Action will try to extract a table of rows from the first spreadsheet in the file. The rows should have a header row.",
@@ -57,7 +56,7 @@ namespace terminalExcel.Actions
                 
                 if (includeTextBlockControl)
                 {
-                    Controls.Add(new TextBlock
+                    Controls.Add(new TextBlockControlDefinitionDTO
                     {
                         Label = "",
                         Value = "File successfully uploaded.",

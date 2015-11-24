@@ -15,7 +15,6 @@ using TerminalBase.Infrastructure;
 using terminalFr8Core.Infrastructure;
 using Data.Entities;
 using Data.States;
-using Data.Control;
 
 namespace terminalFr8Core.Actions
 {
@@ -56,23 +55,23 @@ namespace terminalFr8Core.Actions
                 RemoveControl(updater.CrateStorage, "UpstreamError");
 
             var columnDefinitions = await ExtractColumnDefinitions(curActionDO);
-            List<FieldDTO> tablesList = null;
+                List<FieldDTO> tablesList = null;
 
-            if (columnDefinitions != null)
-            {
-                tablesList = ExtractTableNames(columnDefinitions);
-            }
+                if (columnDefinitions != null)
+                {
+                    tablesList = ExtractTableNames(columnDefinitions);
+                }
 
-            if (tablesList == null || tablesList.Count == 0)
-            {
-                AddLabelControl(
-                        updater.CrateStorage,
-                    "UpstreamError",
-                    "Unexpected error",
-                    "No upstream crates found to extract table definitions."
-                );
+                if (tablesList == null || tablesList.Count == 0)
+                {
+                    AddLabelControl(
+                            updater.CrateStorage,
+                        "UpstreamError",
+                        "Unexpected error",
+                        "No upstream crates found to extract table definitions."
+                    );
                 return curActionDO;
-            }
+                }
 
                 var controlsCrate = EnsureControlsCrate(updater.CrateStorage);
 
@@ -92,25 +91,25 @@ namespace terminalFr8Core.Actions
                 RemoveControl(updater.CrateStorage, "SelectObjectError");
 
                 var selectedObject = ExtractSelectedObject(updater.CrateStorage);
-            if (string.IsNullOrEmpty(selectedObject))
-            {
+                if (string.IsNullOrEmpty(selectedObject))
+                {
                     AddLabelControl(updater.CrateStorage, "SelectObjectError",
-                    "No object selected", "Please select object from the list above.");
+                        "No object selected", "Please select object from the list above.");
 
                 return curActionDO;
-            }
-            else
-            {
-                    var prevSelectedObject = ExtractPreviousSelectedObject(updater.CrateStorage);
-                if (prevSelectedObject != selectedObject)
+                }
+                else
                 {
+                    var prevSelectedObject = ExtractPreviousSelectedObject(updater.CrateStorage);
+                    if (prevSelectedObject != selectedObject)
+                    {
                         RemoveControl(updater.CrateStorage, "SelectedQuery");
                         AddQueryBuilder(updater.CrateStorage);
 
                         UpdatePreviousSelectedObject(updater.CrateStorage, selectedObject);
                         await UpdateQueryableCriteria(updater.CrateStorage,  curActionDO, selectedObject);
+                    }
                 }
-            }
             }
 
             return curActionDO;
@@ -138,7 +137,7 @@ namespace terminalFr8Core.Actions
 
             return tablesDefinition.Fields;
         }
-
+        
         /// <summary>
         /// Returns distinct list of table names from Table Definitions list.
         /// </summary>
@@ -183,7 +182,7 @@ namespace terminalFr8Core.Actions
         {
             AddControl(
                 storage,
-                new DropDownList()
+                new DropDownListControlDefinitionDTO()
                 {
                     Label = "Select Object",
                     Name = "SelectObjectDdl",
@@ -220,7 +219,7 @@ namespace terminalFr8Core.Actions
         /// Exract previously stored valued of selected object type.
         /// </summary>
         private string ExtractPreviousSelectedObject(CrateStorage storage)
-            {
+        {
             var fields = storage.CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == "Selected Object");
 
             if (fields == null || fields.Content.Fields.Count == 0)
@@ -296,7 +295,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private void AddQueryBuilder(CrateStorage storage)
         {
-            var queryBuilder = new QueryBuilder()
+            var queryBuilder = new QueryBuilderControlDefinitionDTO()
             {
                 Label = "Please, specify query:",
                 Name = "SelectedQuery",

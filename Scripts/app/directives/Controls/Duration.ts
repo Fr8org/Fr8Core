@@ -3,7 +3,7 @@ module dockyard.directives.duration {
     'use strict';
 
     export interface IDurationScope extends ng.IScope {
-        field: model.Duration;
+        field: model.DurationControlDefinitionDTO;
     }
 
     //More detail on creating directives in TypeScript: 

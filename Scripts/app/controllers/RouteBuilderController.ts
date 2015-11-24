@@ -7,7 +7,7 @@
 module dockyard.controllers {
     'use strict';
 
-    export interface IProcessBuilderScope extends ng.IScope {
+    export interface IRouteBuilderScope extends ng.IScope {
         routeId: number;
         subroutes: Array<model.SubrouteDTO>;
         fields: Array<model.Field>;
@@ -17,7 +17,7 @@ module dockyard.controllers {
         //curNodeId: number;
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
-        current: model.ProcessBuilderState;
+        current: model.RouteBuilderState;
         actionGroups: model.ActionGroup[]
 
         addAction(): void;
@@ -30,7 +30,7 @@ module dockyard.controllers {
     import pca = dockyard.directives.paneConfigureAction;
     import psa = dockyard.directives.paneSelectAction;
 
-    class ProcessBuilderController {
+    class RouteBuilderController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
@@ -45,7 +45,7 @@ module dockyard.controllers {
             '$http',
             'RouteService',
             '$timeout',
-            'ProcessBuilderService',
+            'RouteBuilderService',
             'CrateHelper',
             '$filter',
             'UIHelperService',
@@ -53,14 +53,14 @@ module dockyard.controllers {
         ];
 
         constructor(
-            private $scope: IProcessBuilderScope,
+            private $scope: IRouteBuilderScope,
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
             private $state: ng.ui.IState,
             private ActionService: services.IActionService,
             private $http: ng.IHttpService,
             private RouteService: services.IRouteService,
             private $timeout: ng.ITimeoutService,
-            private ProcessBuilderService: services.IProcessBuilderService,
+            private RouteBuilderService: services.IRouteBuilderService,
             private CrateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
             private uiHelperService: services.IUIHelperService,
@@ -68,11 +68,11 @@ module dockyard.controllers {
             ) {
 
             this.$scope.routeId = $state.params.id;
-            this.$scope.current = new model.ProcessBuilderState();
+            this.$scope.current = new model.RouteBuilderState();
             this.$scope.actionGroups = [];
 
             this.setupMessageProcessing();
-            $timeout(() => this.loadProcessTemplate(), 500, true);
+            $timeout(() => this.loadRoute(), 500, true);
 
             this.$scope.addAction = () => {
                 this.addAction();
@@ -112,27 +112,27 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_InitiateSaveAction(eventArgs));
         }
 
-        private loadProcessTemplate() {
-            var processTemplatePromise = this.RouteService.getFull({ id: this.$scope.routeId });
+        private loadRoute() {
+            var routePromise = this.RouteService.getFull({ id: this.$scope.routeId });
             var self = this;
-            processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IRouteVM) => {
-                this.$scope.current.route = curProcessTemplate;
-                this.$scope.currentSubroute = curProcessTemplate.subroutes[0];
-                this.renderProcessTemplate(curProcessTemplate);
+            routePromise.$promise.then((curRoute: interfaces.IRouteVM) => {
+                this.$scope.current.route = curRoute;
+                this.$scope.currentSubroute = curRoute.subroutes[0];
+                this.renderRoute(curRoute);
             });
         }
 
-        private renderProcessTemplate(curProcessTemplate: interfaces.IRouteVM) {
-            if (curProcessTemplate.subroutes.length == 0) return;
+        private renderRoute(curRoute: interfaces.IRouteVM) {
+            if (curRoute.subroutes.length == 0) return;
 
             var actions = [];
-            for (var subroute of curProcessTemplate.subroutes) {
+            for (var subroute of curRoute.subroutes) {
                 for (var action of subroute.actions) {
                     actions.push(action);
                 }
             }
 
-            this.$scope.actionGroups = this.LayoutService.placeActions(actions, curProcessTemplate.startingSubrouteId);  
+            this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);  
         }
 
         // If action updated, notify interested parties and update $scope.current.action
@@ -165,17 +165,17 @@ module dockyard.controllers {
         private addAction() {
             console.log('Add action');
             var self = this;
-            var promise = this.ProcessBuilderService.saveCurrent(this.$scope.current);
-            promise.then((result: model.ProcessBuilderState) => {
+            var promise = this.RouteBuilderService.saveCurrent(this.$scope.current);
+            promise.then((result: model.RouteBuilderState) => {
                 //we should just raise an event for this
                 self.$scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_ActionAdd],new psa.ActionAddEventArgs());
             });
         }
 
-        private reloadProcessTemplate() {
+        private reloadRoute() {
             this.$scope.actionGroups = [];
-            this.$scope.current = new model.ProcessBuilderState();
-            this.loadProcessTemplate();
+            this.$scope.current = new model.RouteBuilderState();
+            this.loadRoute();
         }
 
         private deleteAction(action: model.ActionDTO) {
@@ -183,14 +183,14 @@ module dockyard.controllers {
 
             var self = this;
             self.ActionService.deleteById({ id: action.id, confirmed: false }).$promise.then((response) => {
-                self.reloadProcessTemplate();
+                self.reloadRoute();
             }, (error) => {
                 //TODO check error status while completing DO-1335
                 this.uiHelperService
                     .openConfirmationModal('Are you sure you want to delete this Action? You will have to reconfigure all downstream Actions.')
                     .then(() => {
                     self.ActionService.deleteById({ id: action.id, confirmed: true }).$promise.then(() => {
-                        self.reloadProcessTemplate();
+                        self.reloadRoute();
                     });
                 });
             });
@@ -233,9 +233,9 @@ module dockyard.controllers {
 
             // Save previously selected action (and associated entities)
             // If a new action has just been added, it will be saved. 
-            var promise = this.ProcessBuilderService.saveCurrent(this.$scope.current);
+            var promise = this.RouteBuilderService.saveCurrent(this.$scope.current);
 
-            promise.then((result: model.ProcessBuilderState) => {
+            promise.then((result: model.RouteBuilderState) => {
 
                 if (result.action != null) {
                     // Notity interested parties of action update and update $scope
@@ -287,13 +287,13 @@ module dockyard.controllers {
             Handles message 'WorkflowDesignerPane_TemplateSelected'
         */
         private PaneWorkflowDesigner_TemplateSelected(eventArgs: pwd.TemplateSelectedEventArgs) {
-            console.log("ProcessBuilderController: template selected");
+            console.log("RouteBuilderController: template selected");
 
             var scope = this.$scope,
                 that = this;
 
-            this.ProcessBuilderService.saveCurrent(this.$scope.current)
-                .then((result: model.ProcessBuilderState) => {
+            this.RouteBuilderService.saveCurrent(this.$scope.current)
+                .then((result: model.RouteBuilderState) => {
                 // Notity interested parties of action update and update $scope
                 this.handleActionUpdate(result.action);
 
@@ -319,7 +319,7 @@ module dockyard.controllers {
            Handles message 'SelectActionPane_InitiateSaveAction'
        */
         private PaneSelectAction_InitiateSaveAction(eventArgs: psa.ActionTypeSelectedEventArgs) {
-            var promise = this.ProcessBuilderService.saveCurrent(this.$scope.current);
+            var promise = this.RouteBuilderService.saveCurrent(this.$scope.current);
         }
 
         /*
@@ -361,5 +361,5 @@ module dockyard.controllers {
         }
     ]);
 
-    app.controller('ProcessBuilderController', ProcessBuilderController);
+    app.controller('RouteBuilderController', RouteBuilderController);
 } 

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
@@ -24,7 +23,7 @@ namespace terminalDocuSign.Actions
         private class ActionUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
-            public DropDownList FinalActionsList { get; set; }
+            public DropDownListControlDefinitionDTO FinalActionsList { get; set; }
             [JsonIgnore]
             public RadioButtonOption UseTemplate { get; set; }
             [JsonIgnore]
@@ -32,19 +31,19 @@ namespace terminalDocuSign.Actions
             [JsonIgnore]
             public RadioButtonOption UseUploadedForm { get; set; }
             [JsonIgnore]
-            public DropDownList StandardFormsList { get; set; }
+            public DropDownListControlDefinitionDTO StandardFormsList { get; set; }
 
             public ActionUi()
             {
                 Controls = new List<ControlDefinitionDTO>();
-                Controls.Add(new TextArea
+                Controls.Add(new TextAreaDefinitionDTO
                 {
                     IsReadOnly = true,
                     Label = "",
                     Value = "<h4><b>Fr8 Solutions for DocuSign</b><img height=\"30px\" src=\"/Content/icons/web_services/DocuSign-Logo.png\" align=\"right\"></h4><p>Use DocuSign to collect information</p>"
                 });
 
-                Controls.Add(new RadioButtonGroup
+                Controls.Add(new RadioButtonGroupControlDefinitionDTO
                 {
                     Label = "1. Collect What Kind of Form Data?",
                     Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")},
@@ -56,7 +55,7 @@ namespace terminalDocuSign.Actions
                             Value = "Use standard form",
                             Controls = new List<ControlDefinitionDTO>
                             {
-                                (StandardFormsList = new DropDownList
+                                (StandardFormsList = new DropDownListControlDefinitionDTO
                                 {
                                     Name = "StandardFormsList",
                                     Source = new FieldSourceDTO
@@ -81,7 +80,7 @@ namespace terminalDocuSign.Actions
                     }
                 });
 
-                Controls.Add((FinalActionsList = new DropDownList
+                Controls.Add((FinalActionsList = new DropDownListControlDefinitionDTO
                 {
                     Name = "FinalActionsList",
                     Required = true,

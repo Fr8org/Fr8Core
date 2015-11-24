@@ -6,7 +6,6 @@ using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Constants;
-using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -244,7 +243,7 @@ namespace terminalDocuSign.Actions
 
         private Crate CreateDocusignTemplateConfigurationControls(ActionDO curActionDO)
         {
-            var fieldSelectDocusignTemplateDTO = new DropDownList()
+            var fieldSelectDocusignTemplateDTO = new DropDownListControlDefinitionDTO()
             {
                 Label = "Use DocuSign Template",
                 Name = "target_docusign_template",
@@ -263,7 +262,7 @@ namespace terminalDocuSign.Actions
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
-                new TextSource("For the Email Address Use", "Upstream Terminal-Provided Fields", "Recipient")
+                new TextSourceControlDefinitionDTO("For the Email Address Use", "Upstream Terminal-Provided Fields", "Recipient")
             };
 
             var controls = new StandardConfigurationControlsCM()
