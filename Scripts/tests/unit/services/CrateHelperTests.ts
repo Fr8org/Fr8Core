@@ -86,9 +86,9 @@ module dockyard.tests.controller {
 
         describe('.mergeControlListCrate()', () => {
 
-            it('should replace the Controls of "Standard Configuration Controls" type crate in storage by the given control list', () => {
+            it('should replace the Controls of "Standard UI Controls" type crate in storage by the given control list', () => {
                 ch.mergeControlListCrate(controlList, crateStorage);
-                var targetCrate = ch.findByManifestType(crateStorage, 'Standard Configuration Controls');
+                var targetCrate = ch.findByManifestType(crateStorage, 'Standard UI Controls');
                 expect(targetCrate.contents.Controls).toBe(controlList.fields);
             });
 
@@ -96,7 +96,7 @@ module dockyard.tests.controller {
                 var copy = $.extend(true, {}, crateStorage);
                 ch.mergeControlListCrate(controlList, crateStorage);
                 copy.crates.forEach((crate, index) => {
-                    if (crate.manifestType !== 'Standard Configuration Controls') {
+                    if (crate.manifestType !== 'Standard UI Controls') {
                         expect(crate).toEqual(crateStorage.crates[index]);
                     }
                 });
@@ -159,7 +159,7 @@ module dockyard.tests.controller {
         describe('.hasCrateOfManifestType()', () => {
 
             it('should return true if there is a crate with specified manifest type', () => {
-                expect(ch.hasCrateOfManifestType(crateStorage, 'Standard Configuration Controls')).toBe(true);
+                expect(ch.hasCrateOfManifestType(crateStorage, 'Standard UI Controls')).toBe(true);
                 expect(ch.hasCrateOfManifestType(crateStorage, 'Standard Design-Time Fields2')).toBe(true);
                 expect(ch.hasCrateOfManifestType(duplicateCrateStorage, 'Standard Design-Time Fields')).toBe(true);
             });
@@ -169,7 +169,7 @@ module dockyard.tests.controller {
             });
 
             it('should return false if the storage is empty', () => {
-                expect(ch.hasCrateOfManifestType(emptyStorage, 'Standard Configuration Controls')).toBe(false);
+                expect(ch.hasCrateOfManifestType(emptyStorage, 'Standard UI Controls')).toBe(false);
             });
 
         });
@@ -178,7 +178,7 @@ module dockyard.tests.controller {
 
             it('should return control list from the control configuration', () => {
                 var controlList = ch.createControlListFromCrateStorage(crateStorage);
-                var crate = ch.findByManifestType(crateStorage, 'Standard Configuration Controls');
+                var crate = ch.findByManifestType(crateStorage, 'Standard UI Controls');
 
                 expect(controlList.fields).toBe(crate.contents.Controls);
             });
