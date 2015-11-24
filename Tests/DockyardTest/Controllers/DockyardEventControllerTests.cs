@@ -30,18 +30,18 @@ namespace DockyardTest.Controllers
     {
         [Test]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public async Task dockyard_events_NullCrateDTO_ThrowsException()
+        public async Task fr8_events_NullCrateDTO_ThrowsException()
         {
-            var dockyardEventController = new DockyardEventController();
+            var dockyardEventController = new Fr8EventController();
 
              await dockyardEventController.ProcessDockyardEvents(null);
         }
 
         [Test]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public async Task dockyard_events_NotStandardEventReport_ThrowsException()
+        public async Task fr8_events_NotStandardEventReport_ThrowsException()
         {
-            var dockyardEventController = new DockyardEventController();
+            var dockyardEventController = new Fr8EventController();
             var crateDTO = new CrateDTO();
 
 
@@ -49,7 +49,7 @@ namespace DockyardTest.Controllers
         }
 
         //[Test]
-        //public void dockyard_events_CorrectStandardEventReport_ReturnsOK()
+        //public void fr8_events_CorrectStandardEventReport_ReturnsOK()
         //{
         //    Mock<IDockyardEvent> dockyardEventMock = new Mock<IDockyardEvent>();
         //    dockyardEventMock.Setup(a => a.ProcessInbound("1", It.IsAny<EventReportMS>()));
