@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Constants;
+using Data.Control;
 using StructureMap;
 using Newtonsoft.Json;
 using Data.Crates;
@@ -370,7 +371,7 @@ namespace Hub.Services
                 }
 
                 controlsCrate.Content.Controls.Add(
-                    new TextBlockControlDefinitionDTO()
+                    new TextBlock()
                     {
                         Name = "AuthAwaitLabel",
                         Value = "Waiting for authentication window..."

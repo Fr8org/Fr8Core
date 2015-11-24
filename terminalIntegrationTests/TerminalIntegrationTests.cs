@@ -27,6 +27,12 @@ using terminalDocuSign.Tests.Fixtures;
 using TerminalBase.Infrastructure;
 
 using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
+using terminalDocuSign.Infrastructure.StructureMap;
+using terminalDocuSign.Infrastructure.AutoMapper;
+using System.Security.Principal;
+using Data.Control;
+using Data.Crates;
+using Hub.Managers;
 
 namespace terminalIntegrationTests
 {
@@ -298,12 +304,12 @@ namespace terminalIntegrationTests
             var configurationControlsCrate = curCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single(x => x.Label == "Configuration_Controls");
             var controlsMS = configurationControlsCrate.Content;
             
-            controlsMS.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.ForEach(r => r.Selected = false);
+            controlsMS.Controls.OfType<RadioButtonGroup>().First().Radios.ForEach(r => r.Selected = false);
 
             // Modify value of Selected_DocuSign_Template field and push it back to crate,
             // exact same way we do on front-end.
             var docuSignTemplateControl =
-                controlsMS.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().First().Radios.Single(r => r.Name.Equals("template"));
+                controlsMS.Controls.OfType<RadioButtonGroup>().First().Radios.Single(r => r.Name.Equals("template"));
 
             docuSignTemplateControl.Selected = true;
             docuSignTemplateControl.Controls[0].Value = fieldsMS.Fields.First().Value;

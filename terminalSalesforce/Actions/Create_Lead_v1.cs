@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Data.Entities;
 using TerminalBase.BaseClasses;
 using System;
+using Data.Control;
 
 namespace terminalSalesforce.Actions
 {
@@ -77,21 +78,21 @@ namespace terminalSalesforce.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var firstNameCrate = new TextBoxControlDefinitionDTO()
+            var firstNameCrate = new TextBox()
             {
                 Label = "First Name",
                 Name = "firstName",
                 Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
 
             };
-            var lastNAme = new TextBoxControlDefinitionDTO()
+            var lastNAme = new TextBox()
             {
                 Label = "Last Name",
                 Name = "lastName",
                 Required = true,
                 Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
             };
-            var company = new TextBoxControlDefinitionDTO()
+            var company = new TextBox()
             {
                 Label = "Company ",
                 Name = "companyName",
