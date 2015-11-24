@@ -1,18 +1,12 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Web.Http;
+using System.Web.Http.Description;
 using Data.Interfaces.DataTransferObjects;
-using AutoMapper;
-using Data.Entities;
-using Newtonsoft.Json;
-using System.Reflection;
-using TerminalBase.BaseClasses;
-using System.Collections.Generic;
+using Data.Interfaces.Manifests;
 using Data.States;
 using Utilities.Configuration.Azure;
-using System.Web.Http.Description;
-using Data.Interfaces.Manifests;
 
-namespace terminalSalesforce.Controllers
+namespace terminalSendGrid.Controllers
 {
     [RoutePrefix("terminals")]
     public class TerminalController : ApiController
@@ -20,9 +14,9 @@ namespace terminalSalesforce.Controllers
         [HttpGet]
         [Route("discover")]
         [ResponseType(typeof(StandardFr8TerminalCM))]
-        public IHttpActionResult Get()
+        public IHttpActionResult DiscoverTerminals()
         {
-            var terminal = new TerminalDO()
+            var terminal = new TerminalDTO()
             {
                 Name = "terminalSendGrid",
                 TerminalStatus = TerminalStatus.Active,
@@ -30,12 +24,12 @@ namespace terminalSalesforce.Controllers
                 Version = "1"
             };
 
-	        var webService = new WebServiceDO
+	        var webService = new WebServiceDTO
 	        {
 		        Name = "SendGrid"
 	        };
 
-            var action = new ActivityTemplateDO()
+            var action = new ActivityTemplateDTO()
             {
                 Name = "SendEmailViaSendGrid",
                 Label = "Send Email Via Send Grid",
@@ -45,10 +39,10 @@ namespace terminalSalesforce.Controllers
                 AuthenticationType = AuthenticationType.None,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
-				WebService = webService
+                WebService = webService
             };
 
-            var actionList = new List<ActivityTemplateDO>()
+            var actionList = new List<ActivityTemplateDTO>()
             {
                 action
             };

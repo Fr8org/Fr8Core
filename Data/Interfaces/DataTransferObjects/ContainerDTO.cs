@@ -14,11 +14,11 @@ namespace Data.Interfaces.DataTransferObjects
         [Required]
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public int RouteId { get; set; }
+        public Guid RouteId { get; set; }
         public int ContainerState;
 
-        public int? CurrentRouteNodeId { get; set; }
-        public int? NextRouteNodeId { get; set; }
+        public Guid? CurrentRouteNodeId { get; set; }
+        public Guid? NextRouteNodeId { get; set; }
 
         public string LastUpdated { get; set; }
 

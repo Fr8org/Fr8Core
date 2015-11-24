@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -12,8 +11,14 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Exceptions;
 using Hub.Interfaces;
+using System.Threading.Tasks;
+using HubWeb.ViewModels;
+using Newtonsoft.Json;
+using Utilities;
+using Hub.Managers;
+using Data.Crates;
+using Utilities.Interfaces;
 
 namespace HubWeb.Controllers
 {
@@ -21,29 +26,29 @@ namespace HubWeb.Controllers
     [Fr8ApiAuthorize]
     public class RouteController : ApiController
     {
+	    private const string PUSHER_EVENT_GENERIC_SUCCESS = "fr8pusher_generic_success";
+	    private const string PUSHER_EVENT_GENERIC_FAILURE = "fr8pusher_generic_failure";
+
         private readonly IRoute _route;
         private readonly IFindObjectsRoute _findObjectsRoute;
         private readonly ISecurityServices _security;
-        
+        private readonly ICrateManager _crate;
+	    private readonly IPusherNotifier _pusherNotifier;
+
         public RouteController()
-            : this(ObjectFactory.GetInstance<IRoute>())
         {
-        }
-
-        
-
-        public RouteController(IRoute route)
-        {
-            _route = route;
+			_route = ObjectFactory.GetInstance<IRoute>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _findObjectsRoute = ObjectFactory.GetInstance<IFindObjectsRoute>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
+	        _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
         }
 
         [Fr8ApiAuthorize]
-        [Route("full/{id:int}")]
+        [Route("full/{id:guid}")]
         [ResponseType(typeof(RouteDTO))]
         [HttpGet]
-        public IHttpActionResult GetFullRoute(int id)
+        public IHttpActionResult GetFullRoute(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -54,11 +59,11 @@ namespace HubWeb.Controllers
             };
         }
 
-        [Route("getByAction/{id:int}")]
+        [Route("getByAction/{id:guid}")]
         [ResponseType(typeof(RouteDTO))]
         [HttpGet]
         
-        public IHttpActionResult GetByAction(int id)
+        public IHttpActionResult GetByAction(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -73,11 +78,17 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [Route("status")]
         [HttpGet]
-        public IHttpActionResult GetByStatus(int? id = null, int? status = null)
+        public IHttpActionResult GetByStatus(Guid? id = null, int? status = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id, status);
+                var curRoutes = _route.GetForUser(
+                    uow,
+                    _security.GetCurrentAccount(uow),
+                    _security.IsCurrentUserHasRole(Roles.Admin),
+                    id,
+                    status
+                );
 
                 if (curRoutes.Any())
                 {               
@@ -91,7 +102,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [Route("copy")]
         [HttpPost]
-        public IHttpActionResult Copy(int id, string name)
+        public IHttpActionResult Copy(Guid id, string name)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -110,11 +121,16 @@ namespace HubWeb.Controllers
         
         // GET api/<controller>
         [Fr8ApiAuthorize]
-        public IHttpActionResult Get(int? id = null)
+        public IHttpActionResult Get(Guid? id = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id);
+                var curRoutes = _route.GetForUser(
+                    uow,
+                    _security.GetCurrentAccount(uow),
+                    _security.IsCurrentUserHasRole(Roles.Admin),
+                    id
+                );
 
             if (curRoutes.Any())
             {
@@ -179,9 +195,9 @@ namespace HubWeb.Controllers
         
 
         [HttpDelete]
-        [Route("{id:int}")]
+        [Route("{id:guid}")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Delete(int id)
+        public IHttpActionResult Delete(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -229,6 +245,56 @@ namespace HubWeb.Controllers
                 uow.SaveChanges();
 
                 return Ok(new { id = route.Id });
+            }
+        }
+
+        [Fr8ApiAuthorize]
+        [Route("run")]
+        [HttpPost]
+        public async Task<IHttpActionResult> Run(Guid routeId, [FromBody]PayloadVM model)
+        {
+			CrateDTO curCrateDto;
+            Crate curCrate = null;
+
+			string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
+
+			if (model != null)
+			{
+				try
+				{
+                    curCrateDto = JsonConvert.DeserializeObject<CrateDTO>(model.Payload);
+                    curCrate = _crate.FromDto(curCrateDto);
+                }
+                catch (Exception ex)
+				{
+					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "You payload is invalid. Make sure that it represents a valid crate object JSON.");
+
+					return BadRequest();
+				}
+			}
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var processTemplateDO = uow.RouteRepository.GetByKey(routeId);
+
+                try
+                {
+                    var containerDO = await _route.Run(processTemplateDO, curCrate);
+
+	                string message = String.Format("Route \"{0}\" executed", processTemplateDO.Name);
+
+					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
+
+                    return Ok(Mapper.Map<ContainerDTO>(containerDO));
+                }
+                catch
+                {
+	                string message = String.Format("Route \"{0}\" failed", processTemplateDO.Name);
+
+					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+                }
+
+                return Ok();
             }
         }
     }

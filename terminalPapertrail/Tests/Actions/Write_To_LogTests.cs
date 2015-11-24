@@ -17,6 +17,7 @@ using StructureMap;
 using terminalPapertrail.Actions;
 using terminalPapertrail.Interfaces;
 using terminalPapertrail.Tests.Infrastructure;
+using TerminalBase.Infrastructure;
 using Utilities.Logging;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
@@ -32,7 +33,7 @@ namespace terminalPapertrail.Tests.Actions
         public override void SetUp()
         {
             base.SetUp();
-
+            TerminalBootstrapper.ConfigureTest();
             TerminalPapertrailMapBootstrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
 
             //setup the rest client

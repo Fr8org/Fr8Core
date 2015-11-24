@@ -11,11 +11,13 @@ using StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
-using Hub.Enums;
+﻿using Data.States;
+﻿
 using Hub.Interfaces;
 using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using TerminalBase.Infrastructure;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Tests.Fixtures;
@@ -29,9 +31,12 @@ namespace terminalDocuSign.Tests.Actions
     {
         Receive_DocuSign_Envelope_v1 _extract_From_DocuSign_Envelope_v1;
         ICrateManager _crate;
-        public Receive_DocuSign_Envelope_v1Tests()
+
+        public override void SetUp()
         {
             base.SetUp();
+            TerminalBootstrapper.ConfigureTest();
+
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
 
             TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
@@ -127,7 +132,7 @@ namespace terminalDocuSign.Tests.Actions
             _activity = ObjectFactory.GetInstance<IRouteNode>();
         }
 
-        public async  Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        public async  Task<List<Crate>> GetCratesByDirection(int activityId, string manifestType, CrateDirection direction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

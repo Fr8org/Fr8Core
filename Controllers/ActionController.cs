@@ -121,8 +121,8 @@ namespace HubWeb.Controllers
         /// GET : Returns an action with the specified id
         /// </summary>
         [HttpGet]
-        [Route("{id:int}")]
-        public ActionDTO Get(int id)
+        [Route("{id:guid}")]
+        public ActionDTO Get(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -134,8 +134,8 @@ namespace HubWeb.Controllers
         /// GET : Returns an action with the specified id
         /// </summary>
         [HttpDelete]
-        [Route("{id:int}")]
-        public async Task<IHttpActionResult> Delete(int id, bool confirmed = false)
+        [Route("{id:guid}")]
+        public async Task<IHttpActionResult> Delete(Guid id, bool confirmed = false)
         {
             var isDeleted = await _subRoute.DeleteAction(User.Identity.GetUserId(), id, confirmed);
             if (!isDeleted)

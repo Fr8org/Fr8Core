@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Http.Description;
 using System.Web.Http;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Utilities.Configuration.Azure;
 using Data.Interfaces.Manifests;
@@ -21,7 +22,7 @@ namespace terminalSlack.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverTerminals()
         {
-            var terminal = new TerminalDO
+            var terminal = new TerminalDTO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
@@ -29,7 +30,7 @@ namespace terminalSlack.Controllers
                 Version = "1"
             };
 
-            var monitorChannelAction = new ActivityTemplateDO
+            var monitorChannelAction = new ActivityTemplateDTO
             {
                 Name = "Monitor_Channel",
                 Label = "Monitor Channel",
@@ -40,7 +41,7 @@ namespace terminalSlack.Controllers
                 MinPaneWidth = 330
             };
 
-            var publishToSlackAction = new ActivityTemplateDO
+            var publishToSlackAction = new ActivityTemplateDTO
             {
                 Name = "Publish_To_Slack",
                 Label = "Publish To Slack",
@@ -52,7 +53,7 @@ namespace terminalSlack.Controllers
                 MinPaneWidth = 330
             };
 
-            var result = new List<ActivityTemplateDO>()
+            var result = new List<ActivityTemplateDTO>()
             {
                 monitorChannelAction,
                 publishToSlackAction

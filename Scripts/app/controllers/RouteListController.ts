@@ -80,7 +80,16 @@ module dockyard.controllers {
             location.reload();
         };
         private executeProcessTemplate(processTemplateId, $event) {
-            this.ProcessTemplateService.execute({ id: processTemplateId });
+			if ($event.ctrlKey) {
+				this.$modal.open({
+					animation: true,
+					templateUrl: '/AngularTemplate/_AddPayloadModal',
+					controller: 'PayloadFormController', resolve: { processTemplateId: () => processTemplateId }
+				});
+			}
+			else {
+				this.ProcessTemplateService.execute({ id: processTemplateId }, null, null, null);
+			}
         }
 
         private goToProcessTemplatePage(processTemplateId) {
@@ -91,7 +100,7 @@ module dockyard.controllers {
             this.$state.go('routeDetails', { id: processTemplateId });
         }
 
-        private deleteProcessTemplate(processTemplateId: number, isActive: boolean) {
+        private deleteProcessTemplate(processTemplateId: string, isActive: boolean) {
             //to save closure of our controller
             var self = this;
             this.$modal.open({

@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Newtonsoft.Json;
-using NUnit.Framework;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using terminalFr8Core.Actions;
+using NUnit.Framework;
+using StructureMap;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces;
 using Hub.Managers;
-using StructureMap;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
+using TerminalBase.Infrastructure;
+using terminalFr8Core.Actions;
 using terminalFr8Core.Interfaces;
-using AutoMapper;
-using Data.Entities;
 
 namespace terminalFr8CoreTests.Actions
 {
@@ -31,6 +32,8 @@ namespace terminalFr8CoreTests.Actions
         public override void SetUp()
         {
             base.SetUp();
+            TerminalBootstrapper.ConfigureTest();
+
             _coreServer = Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             select_Fr8_Object_v1 = new Select_Fr8_Object_v1();
         }

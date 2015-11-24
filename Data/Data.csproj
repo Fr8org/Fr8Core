@@ -282,6 +282,7 @@
     <Compile Include="Interfaces\DataTransferObjects\SubrouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\RouteDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\TerminalDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\WebServiceActionSetDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\WebServiceDTO.cs" />
@@ -431,6 +432,10 @@
     <Compile Include="Migrations\201511170753503_RouteDO_Tag.Designer.cs">
       <DependentUpon>201511170753503_RouteDO_Tag.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.cs" />
+    <Compile Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.Designer.cs">
+      <DependentUpon>201511200612313_RouteNode_Id_Int32_To_Guid.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -447,6 +452,7 @@
     <Compile Include="States\AuthenticationType.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
+    <Compile Include="States\CrateDirection.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
@@ -726,6 +732,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511170753503_RouteDO_Tag.resx">
       <DependentUpon>201511170753503_RouteDO_Tag.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.resx">
+      <DependentUpon>201511200612313_RouteNode_Id_Int32_To_Guid.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

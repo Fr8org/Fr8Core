@@ -13,7 +13,8 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+using Data.States;
+
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -33,20 +34,18 @@ namespace TerminalBase.BaseClasses
 
         protected IAction Action;
         protected ICrateManager Crate;
-        protected IRouteNode Activity;
-        private readonly IRestfulServiceClient _restfulServiceClient;
-        private readonly Authorization _authorizationToken;
         private readonly ITerminal _terminal;
+
+        public IHubCommunicator HubCommunicator { get; set; }
         #endregion
 
         public BaseTerminalAction()
         {
             Crate = ObjectFactory.GetInstance<ICrateManager>();
             Action = ObjectFactory.GetInstance<IAction>();
-            Activity = ObjectFactory.GetInstance<IRouteNode>();
-            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
-            _authorizationToken = new Authorization();
+
+            HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
@@ -62,12 +61,7 @@ namespace TerminalBase.BaseClasses
 
         protected async Task<PayloadDTO> GetProcessPayload(Guid containerId)
         {
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/containers/"
-                + containerId.ToString("D");
-
-            var payloadDTO = await _restfulServiceClient.GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute));
-            return payloadDTO;
+            return await HubCommunicator.GetProcessPayload(containerId);
         }
 
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
@@ -109,7 +103,6 @@ namespace TerminalBase.BaseClasses
 
         //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
         protected virtual async Task<CrateStorage> ValidateAction(ActionDO curActionDO)
-
         {
             return null;
         }
@@ -169,17 +162,20 @@ namespace TerminalBase.BaseClasses
         }
 
         //wrapper for support test method
-        public async virtual Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(int activityId, GetCrateDirection direction)
+        public async virtual Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(
+            Guid activityId, CrateDirection direction)
         {
-            return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
+            return await HubCommunicator.GetCratesByDirection<TManifest>(activityId, direction);
+            // return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
         }
 
-        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(int activityId, GetCrateDirection direction)
+        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(Guid activityId, CrateDirection direction)
         {
             //1) Build a merged list of the upstream design fields to go into our drop down list boxes
             StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
 
-            var curCrates = await Activity.GetCratesByDirection <StandardDesignTimeFieldsCM>(activityId,direction);
+            var curCrates = await HubCommunicator
+                .GetCratesByDirection<StandardDesignTimeFieldsCM>(activityId, direction);
 
             mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);
 
@@ -248,14 +244,19 @@ namespace TerminalBase.BaseClasses
             return field.Value;
         }
 
-        protected async virtual Task<List<Crate<StandardFileHandleMS>>> GetUpstreamFileHandleCrates(int curActionId)
+        protected async virtual Task<List<Crate<StandardFileHandleMS>>>
+            GetUpstreamFileHandleCrates(Guid curActionId)
         {
-            return await Activity.GetCratesByDirection<StandardFileHandleMS>(curActionId, GetCrateDirection.Upstream);
+            return await HubCommunicator
+                .GetCratesByDirection<StandardFileHandleMS>(
+                    curActionId, CrateDirection.Upstream
+                );
         }
 
-        protected async Task<Crate<StandardDesignTimeFieldsCM>> MergeUpstreamFields(int curActionDOId, string label)
+        protected async Task<Crate<StandardDesignTimeFieldsCM>>
+            MergeUpstreamFields(Guid curActionDOId, string label)
         {
-            var curUpstreamFields = (await GetDesignTimeFields(curActionDOId, GetCrateDirection.Upstream)).Fields.ToArray();
+            var curUpstreamFields = (await GetDesignTimeFields(curActionDOId, CrateDirection.Upstream)).Fields.ToArray();
             var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
 
             return upstreamFieldsCrate;

@@ -25,6 +25,7 @@
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
     <RestorePackages>true</RestorePackages>
+    <ApplicationInsightsResourceId />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -387,6 +388,7 @@
     <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
+    <Compile Include="ViewModels\PayloadVM.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\ProfileVM.cs" />
@@ -723,6 +725,10 @@
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
     <Content Include="_PowerShellScripts\CheckWebSettings.ps1" />
+    <Content Include="Service References\Application Insights\ConnectedService.json" />
+    <None Include="Web.Dev.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsResultsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
@@ -730,6 +736,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\NotifierController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PayloadFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\RouteActionsDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SelectActionController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\RouteDetailsController.ts" />
@@ -812,15 +819,23 @@
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ContainerControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextSource.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\FieldList.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\RadioButtonGroup.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\DropDownListBox.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\FilePicker.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBlock.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBox.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\CounterTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\DurationTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextAreaTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\PaneConfigurationActionTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\services\CrateHelperTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_FieldDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDTO.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_Duration.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_TextArea.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionTemplate.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ContainerDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\mocks.ts" />
@@ -4055,7 +4070,9 @@
     <Content Include="Views\AngularTemplate\Counter.cshtml" />
     <Content Include="Views\AngularTemplate\FindObjects.cshtml" />
     <Content Include="Views\AngularTemplate\FindObjectsResults.cshtml" />
+    <Content Include="Views\AngularTemplate\_AddPayloadModal.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
+    <TypeScriptCompile Include="Scripts\tests\utils\services\fixture_CrateHelper.ts" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-router\angular-ui-router.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-resource.d.ts" />
@@ -4122,6 +4139,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'alexlocal|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>

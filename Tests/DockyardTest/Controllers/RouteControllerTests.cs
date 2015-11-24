@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Web.Http.Results;
 using NUnit.Framework;
 using StructureMap;
-using StructureMap.AutoMocking;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Hub.Interfaces;
 using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
@@ -103,7 +98,7 @@ namespace DockyardTest.Controllers
             RouteController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
 
             //Assert
-            var postResult = processTemplateController.Get(55);
+            var postResult = processTemplateController.Get(FixtureData.GetTestGuidById(55));
             Assert.IsNull(postResult as OkNegotiatedContentResult<RouteDO>);
         }
 

@@ -9,6 +9,7 @@ using Daemons;
 using Data.Entities;
 using Data.Interfaces;
 using Hub.ExternalServices;
+using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Services;
 using HubWeb.ViewModels;
@@ -20,6 +21,13 @@ namespace HubWeb.Controllers
 	[ DockyardAuthorize( Roles = "Booker" ) ]
     public class DiagnosticsController : Controller
     {
+		private readonly ITime _time;
+
+		public DiagnosticsController()
+		{
+			_time = ObjectFactory.GetInstance<ITime>();
+		}
+
         public ActionResult Index(int? pageAmount)
         {
             if (!pageAmount.HasValue)
@@ -154,7 +162,7 @@ namespace HubWeb.Controllers
             ServiceManager.LogSuccess<T>();
         }
 
-        private static void MarkTestFail<T>(String testName, string results)
+        private static void MarkTestFail<T>(String testName, string results, DateTime currentTime)
         {
             ServiceManager.FinishedTest<T>();
             ServiceManager.LogEvent<T>("Test '" + testName + "' failed.");
@@ -170,11 +178,12 @@ namespace HubWeb.Controllers
                     string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
 
                     Email email = ObjectFactory.GetInstance<Email>();
+					
                     string message = String.Format(@"
 Test failed at {0}. Results:
 {1}.
 See more: {2}
-", DateTime.UtcNow, results, Utilities.Server.ServerUrl);
+", currentTime, results, Utilities.Server.ServerUrl);
                     string subject = String.Format("Alert! Service test failed. Service: {0} Test: {1}", typeof (T).Name,
                         testName);
                     var curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, "ops@kwasant.com");
@@ -192,8 +201,8 @@ See more: {2}
             var inboundEmailDaemon = ServiceManager.GetInformationForService<InboundEmail>().Instance as InboundEmail;
             if (inboundEmailDaemon == null)
             {
-                MarkTestFail<OutboundEmail>(testName, "No InboundEmail daemon found.");
-                MarkTestFail<InboundEmail>(testName, "No InboundEmail daemon found.");
+				MarkTestFail<OutboundEmail>(testName, "No InboundEmail daemon found.", _time.CurrentDateTime());
+				MarkTestFail<InboundEmail>(testName, "No InboundEmail daemon found.", _time.CurrentDateTime());
                 return;
             }
 
@@ -230,9 +239,10 @@ See more: {2}
             }
 
             bool success = false;
-			var startTime = DateTime.UtcNow;
+	        DateTime currentTime = _time.CurrentDateTime();
+			var startTime = currentTime;
             var endTime = startTime.Add(TimeSpan.FromMinutes(10));
-			while (!success && DateTime.UtcNow < endTime)
+			while (!success && _time.CurrentDateTime() < endTime)
             {
                 if (messageReceived)
                 {
@@ -247,8 +257,8 @@ See more: {2}
             if (!success)
             {
                 const string errorMessage = "No email was reported with the correct subject within the given timeframe.";
-                MarkTestFail<OutboundEmail>(testName, errorMessage);
-                MarkTestFail<InboundEmail>(testName, errorMessage);
+				MarkTestFail<OutboundEmail>(testName, errorMessage, _time.CurrentDateTime());
+				MarkTestFail<InboundEmail>(testName, errorMessage, _time.CurrentDateTime());
             }
 
             //Now, delete that email

@@ -1,8 +1,10 @@
-﻿using Data.Entities;
+﻿using System;
+using System.Collections.Generic;
 using FluentValidation;
 using StructureMap;
+using Data.Entities;
 using Data.Interfaces;
-using System.Collections.Generic;
+
 namespace Data.Validations
 {
     public class SubroutetValidator : AbstractValidator<SubrouteDO>
@@ -17,7 +19,8 @@ namespace Data.Validations
             // Commented out, since NodeTransitions is not used in other parts of code.
             // RuleFor(pntDO => pntDO.NodeTransitions).NotEmpty().WithMessage("NodeTransitions is Required");
 
-            RuleFor(pntDO => pntDO.ParentRouteNodeId).GreaterThan(0)
+            RuleFor(pntDO => pntDO.ParentRouteNodeId)
+                .NotEqual(Guid.Empty)
                 .Must(id =>
                 {
                     // We should create internal UnitOfWork.

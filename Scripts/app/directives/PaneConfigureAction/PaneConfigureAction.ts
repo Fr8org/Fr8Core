@@ -132,25 +132,21 @@ module dockyard.directives.paneConfigureAction {
                 }
 
                 function onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
-                    if (!newValue || !newValue.fields || newValue.fields === oldValue.fields || newValue.fields.length == 0) return;
+                    if (!newValue || !newValue.fields) {
+                         return;
+                    }
                     crateHelper.mergeControlListCrate(
                         $scope.currentAction.configurationControls,
                         $scope.currentAction.crateStorage
                     );
-                    $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                    $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
                     ActionService.save({ id: $scope.currentAction.id },
                         $scope.currentAction, null, null);
                 };
 
                 function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
-                    // Check if this event is defined for the current field
-                    var fieldName = eventArgs.fieldName;
-                    var fieldList = $scope.currentAction.configurationControls.fields;
 
-                    // Find the configuration field object for which the event has fired
-                    fieldList = <Array<model.ControlDefinitionDTO>>$filter('filter')(fieldList, { name: fieldName }, true);
-                    if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0) return;
-                    var field = fieldList[0];
+                    var field = eventArgs.field;
 
                     // Find the onChange event object
                     var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onChange' }, true);
@@ -170,14 +166,7 @@ module dockyard.directives.paneConfigureAction {
 
                 function onClickEvent(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
                     var scope = <IPaneConfigureActionScope>event.currentScope;
-                    // Check if this event is defined for the current field
-                    var fieldName = eventArgs.fieldName;
-                    var fieldList = scope.currentAction.configurationControls.fields;
-
-                    // Find the configuration field object for which the event has fired
-                    fieldList = <Array<model.ControlDefinitionDTO>>$filter('filter')(fieldList, { name: fieldName }, true);
-                    if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0) return;
-                    var field = fieldList[0];
+                    var field = eventArgs.field;
 
                     // Find the onChange event object
                     var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onClick' }, true);

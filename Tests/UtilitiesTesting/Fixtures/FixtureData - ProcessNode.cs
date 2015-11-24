@@ -12,7 +12,7 @@ namespace UtilitiesTesting.Fixtures
             var processNode = new ProcessNodeDO();
             processNode.Id = 50;
             processNode.ParentContainerId = TestContainer_Id_49();
-            processNode.SubrouteId = 50;
+            processNode.SubrouteId = GetTestGuidById(50);
             processNode.Subroute = TestSubrouteDO1();
             processNode.ProcessNodeState = ProcessNodeState.Unstarted;
             processNode.ParentContainer = TestContainer1();
@@ -58,7 +58,7 @@ namespace UtilitiesTesting.Fixtures
             var processNode = new ProcessNodeDO();
             processNode.Id = 1;
             processNode.ParentContainerId = TestContainer_Id_49();
-            processNode.SubrouteId = 50;
+            processNode.SubrouteId = GetTestGuidById(50);
             processNode.Subroute = TestSubrouteDO3();
             processNode.Subroute.ChildNodes.AddRange(TestActionList6());
 
