@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Infrastructure.AutoMapper;
@@ -98,10 +99,10 @@ namespace terminalSendGrid.Tests.Actions
             var standardControls = _crate.FromDto(actionDto.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             Assert.IsNotNull(standardControls);
 
-            var specificValueTextField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[index]).Radios.SelectMany(c => c.Controls).Count(s => s.Name == "SpecificValue");
+            var specificValueTextField = ((RadioButtonGroup)standardControls.Controls[index]).Radios.SelectMany(c => c.Controls).Count(s => s.Name == "SpecificValue");
             Assert.AreEqual(specificValueTextField, 1);
 
-            var upstreamCrateField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[index]).Radios.SelectMany(c => c.Controls).Count(s => s.Name == "UpstreamCrate");
+            var upstreamCrateField = ((RadioButtonGroup)standardControls.Controls[index]).Radios.SelectMany(c => c.Controls).Count(s => s.Name == "UpstreamCrate");
             Assert.AreEqual(upstreamCrateField, 1);
         }
 

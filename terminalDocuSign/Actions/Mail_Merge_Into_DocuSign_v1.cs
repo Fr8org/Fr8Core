@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Data.Control;
 using Data.Crates;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
@@ -46,7 +47,7 @@ namespace terminalDocuSign.Actions
         {
             var controlList = new List<ControlDefinitionDTO>();
 
-            controlList.Add(new DropDownListControlDefinitionDTO()
+            controlList.Add(new DropDownList()
             {
                 Label = "1. Where is your Source Data?",
                 Name = "DataSource",
@@ -54,7 +55,7 @@ namespace terminalDocuSign.Actions
             });
 
             controlList.Add(DocuSignManager.CreateDocuSignTemplatePicker(false, "DocuSignTemplate", "2. Use which DocuSign Template?"));
-            controlList.Add(new ButtonControlDefinitionDTO()
+            controlList.Add(new Button()
             {
                 Label = "Continue",
                 Name = "Continue"
@@ -113,7 +114,7 @@ namespace terminalDocuSign.Actions
         {
             var controlList = new List<ControlDefinitionDTO>();
 
-            controlList.Add(new TextBlockControlDefinitionDTO()
+            controlList.Add(new TextBlock()
             {
                 Value = "This action requires authentication. Please authenticate."
             });
@@ -140,16 +141,16 @@ namespace terminalDocuSign.Actions
 
 
             // "Follow up" phase is when Continue button is clicked 
-            ButtonControlDefinitionDTO button = GetStdConfigurationControl<ButtonControlDefinitionDTO>(storage, "Continue");
+            Button button = GetStdConfigurationControl<Button>(storage, "Continue");
             if (button == null) return ConfigurationRequestType.Initial;
             if (button.Clicked == false) return ConfigurationRequestType.Initial;
 
             // If no values selected in textboxes, remain on initial phase
-            DropDownListControlDefinitionDTO dataSource = GetStdConfigurationControl<DropDownListControlDefinitionDTO>(storage, "DataSource");
+            DropDownList dataSource = GetStdConfigurationControl<DropDownList>(storage, "DataSource");
             if (dataSource.Value == null) return ConfigurationRequestType.Initial;
             _dataSourceValue = dataSource.Value;
 
-            DropDownListControlDefinitionDTO docuSignTemplate = GetStdConfigurationControl<DropDownListControlDefinitionDTO>(storage, "DocuSignTemplate");
+            DropDownList docuSignTemplate = GetStdConfigurationControl<DropDownList>(storage, "DocuSignTemplate");
             if (docuSignTemplate.Value == null) return ConfigurationRequestType.Initial;
             _docuSignTemplateValue = docuSignTemplate.Value;
 

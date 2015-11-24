@@ -21,8 +21,8 @@ module dockyard.controllers {
         cancel: Function;
 
         //this is for demo only, should be deleted on production
-        radioDemoField: model.RadioButtonGroupControlDefinitionDTO;
-        dropdownDemoField: model.DropDownListControlDefinitionDTO;
+        radioDemoField: model.RadioButtonGroup;
+        dropdownDemoField: model.DropDownList;
         textBlockDemoField: model.TextBlockField;
         routingControlGroup: model.RoutingControlGroup;
     }
@@ -86,7 +86,7 @@ module dockyard.controllers {
             this._scope.current = new model.RouteBuilderState();
 
             //THIS IS FOR DEMO ONLY
-            var radioDemoField = new model.RadioButtonGroupControlDefinitionDTO();
+            var radioDemoField = new model.RadioButtonGroup();
             radioDemoField.fieldLabel = 'Demo Label';
             radioDemoField.groupName = 'Demo Group Name';
             radioDemoField.type = 'radioButtonGroup';
@@ -106,7 +106,7 @@ module dockyard.controllers {
             radioDemoField.radios = radios;
             this._scope.radioDemoField = radioDemoField;
 
-            var dropdownDemoField = new model.DropDownListControlDefinitionDTO();
+            var dropdownDemoField = new model.DropDownList();
             var demoSelectItem1 = new model.DropDownListItem();
 
             demoSelectItem1.key = "Operation 1";
