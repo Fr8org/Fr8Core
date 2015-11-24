@@ -1,10 +1,9 @@
 ﻿/// <reference path="../../_all.ts" />
-
 module dockyard.directives.dropDownListBox {
     'use strict';
 
     export interface IDropDownListBoxScope extends ng.IScope {
-        field: model.DropDownList;
+        field: model.DropDownListControlDefinitionDTO;
         change: () => (field: model.ControlDefinitionDTO) => void;
         selectedItem: model.FieldDTO;
         setSelectedItem: (item: model.FieldDTO) => void;

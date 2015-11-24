@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Razor.Generator;
-using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
@@ -91,7 +90,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private Crate CreateStandardConfigurationControls()
         {
-            var fieldFilterPane = new MappingPane()
+            var fieldFilterPane = new MappingPaneControlDefinitionDTO()
             {
                 Label = "Configure Mapping",
                 Name = "Selected_Mapping",

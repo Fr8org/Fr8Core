@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
@@ -128,7 +127,7 @@ namespace terminalGoogle.Actions
         {
             var controlList = new List<ControlDefinitionDTO>();
 
-            var spreadsheetControl = new DropDownList()
+            var spreadsheetControl = new DropDownListControlDefinitionDTO()
             {
                 Label = "Select a Google Spreadsheet",
                 Name = "select_spreadsheet",
@@ -153,7 +152,7 @@ namespace terminalGoogle.Actions
             };
             controlList.Add(spreadsheetControl);
 
-            var textBlockControlField = new TextBlock()
+            var textBlockControlField = new TextBlockControlDefinitionDTO()
             {
                 Label = "",
                 Value = "This Action will try to extract a table of rows from the first worksheet in the selected spreadsheet. The rows should have a header row.",

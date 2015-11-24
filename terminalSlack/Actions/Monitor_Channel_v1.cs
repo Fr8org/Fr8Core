@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
 using Data.Crates;
 using Hub.Managers;
 using Newtonsoft.Json;
@@ -121,7 +120,7 @@ namespace terminalSlack.Actions
         {
             AddControl(
                 crateStorage,
-                new DropDownList()
+                new DropDownListControlDefinitionDTO()
                 {
                     Label = "Select Slack Channel",
                     Name = "Selected_Slack_Channel",
@@ -139,7 +138,7 @@ namespace terminalSlack.Actions
 
             AddControl(
                 crateStorage,
-                new TextBlock()
+                new TextBlockControlDefinitionDTO()
                 {
                     Name = "Info_Label",
                     Value = "Slack doesn't currently offer a way for us to automatically request events for this channel. You can do it manually here. use the following values: URL: <strong>http://www.fr8.company/events?dockyard_plugin=terminalSlack&version=1.0</strong>"

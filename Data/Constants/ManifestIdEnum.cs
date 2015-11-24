@@ -22,7 +22,7 @@ namespace Data.Constants
         [Display(Name = "Standard Payload Data")]
         StandardPayloadData = 5,
 
-        [Display(Name = "Standard UI Controls")]
+        [Display(Name = "Standard Configuration Controls")]
         StandardConfigurationControls = 6,
 
         [Display(Name = "Standard Event Report")]

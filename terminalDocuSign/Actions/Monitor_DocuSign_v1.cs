@@ -6,8 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-﻿using Data.Control;
-﻿using Data.Crates;
+using Data.Crates;
 using Hub.Managers;
 using Newtonsoft.Json;
 using Data.Interfaces;
@@ -68,11 +67,11 @@ namespace terminalDocuSign.Actions
         {
             var controls = storage.FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls");
 
-            var group = controls.Content.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
+            var group = controls.Content.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().FirstOrDefault();
             if (group == null)
             {
                 selectedOption = "template";
-                selectedValue = controls.Content.Controls.OfType<DropDownList>().First().Value;
+                selectedValue = controls.Content.Controls.OfType<DropDownListControlDefinitionDTO>().First().Value;
             }
             else
             {
@@ -325,7 +324,7 @@ namespace terminalDocuSign.Actions
 
         private Crate PackCrate_ConfigurationControls()
         {
-            var fieldEnvelopeSent = new CheckBox()
+            var fieldEnvelopeSent = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Envelope Sent",
                 Name = "Event_Envelope_Sent",
@@ -335,7 +334,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            var fieldEnvelopeReceived = new CheckBox()
+            var fieldEnvelopeReceived = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Envelope Received",
                 Name = "Event_Envelope_Received",
@@ -345,7 +344,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            var fieldRecipientSigned = new CheckBox()
+            var fieldRecipientSigned = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Recipient Signed",
                 Name = "Event_Recipient_Signed",
@@ -355,7 +354,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            var fieldEventRecipientSent = new CheckBox()
+            var fieldEventRecipientSent = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Recipient Sent",
                 Name = "Event_Recipient_Sent",
@@ -375,7 +374,7 @@ namespace terminalDocuSign.Actions
 
         private ControlDefinitionDTO PackCrate_TemplateRecipientPicker()
         {
-            var templateRecipientPicker = new RadioButtonGroup()
+            var templateRecipientPicker = new RadioButtonGroupControlDefinitionDTO()
             {
                 Label = "Monitor for Envelopes that:",
                 GroupName = "TemplateRecipientPicker",
@@ -390,7 +389,7 @@ namespace terminalDocuSign.Actions
                         Value = "Are sent to the recipient",
                         Controls = new List<ControlDefinitionDTO>
                         {
-                            new TextBox()
+                            new TextBoxControlDefinitionDTO()
                             {
                                 Label = "",
                                 Name = "RecipientValue",
@@ -406,7 +405,7 @@ namespace terminalDocuSign.Actions
                         Value = "Use the template",
                         Controls = new List<ControlDefinitionDTO>
                         {
-                            new DropDownList()
+                            new DropDownListControlDefinitionDTO()
                             {
                                 Label = "",
                                 Name = "UpstreamCrate",

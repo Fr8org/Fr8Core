@@ -1,8 +1,8 @@
 ﻿module dockyard.tests.utils.fixtures {
 
-    export class TextArea {
+    export class TextAreaDefinitionDTO {
 
-        public static sampleField = <model.TextArea> {
+        public static sampleField = <model.TextAreaControlDefinitionDTO> {
             type: 'textArea',
             fieldLabel: 'Label',
             name: 'duration1',
@@ -11,7 +11,7 @@
             value: 'Text value'
         }
 
-        public static readOnlyField = <model.TextArea> {
+        public static readOnlyField = <model.TextAreaControlDefinitionDTO> {
             type: 'textArea',
             fieldLabel: 'Label1',
             name: 'duration2',
