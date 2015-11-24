@@ -34,5 +34,10 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("minPaneWidth")]
         public int MinPaneWidth { get; set; }
+
+        public ActivityTemplateDTO()
+        {
+            AuthenticationType = States.AuthenticationType.None;
+        }
     }
 }
