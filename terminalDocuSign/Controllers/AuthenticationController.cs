@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Data.Interfaces.DataTransferObjects;
+using StructureMap;
 using TerminalBase.BaseClasses;
+using terminalDocuSign.Interfaces;
 using Utilities.Configuration.Azure;
 using terminalDocuSign.DataTransferObjects;
 
@@ -43,7 +46,8 @@ namespace terminalDocuSign.Controllers
                 return new AuthorizationTokenDTO()
                 {
                     Token = JsonConvert.SerializeObject(docuSignAuthDTO),
-                    ExternalAccountId = curCredentials.Username
+                    ExternalAccountId = curCredentials.Username,
+                    AuthCompletedNotificationRequired = true
                 };
             }
             catch (Exception ex)

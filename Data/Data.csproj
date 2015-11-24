@@ -274,13 +274,13 @@
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDescriptionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FullRouteDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\RouteFullDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ContainerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\QueryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SubrouteDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\RouteDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\RouteEmptyDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
