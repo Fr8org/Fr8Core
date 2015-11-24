@@ -18,7 +18,7 @@ namespace terminalDocuSignTests
             return new ActivityTemplateDTO()
             {
                 Id = 1,
-                Name = "Monitor_DocuSign",
+                Name = "Monitor_DocuSign_TEST",
                 Version = "1"
             };
         }

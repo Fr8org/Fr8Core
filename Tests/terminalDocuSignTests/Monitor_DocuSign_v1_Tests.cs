@@ -11,23 +11,11 @@ namespace terminalDocuSignTests
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Monitor_DocuSign_v1_Tests
+    public class Monitor_DocuSign_v1_Tests : BaseHealthMonitorTest
     {
-        public JsonRestClient JsonRestClient { get; set; }
-
-        public Monitor_DocuSign_v1_Tests()
+        public override string TerminalName
         {
-            JsonRestClient = new JsonRestClient();
-        }
-
-        public string GetTerminalUrl()
-        {
-            return ConfigurationManager.AppSettings["terminalDocuSignUrl"];
-        }
-
-        public string GetTerminalConfigureUrl()
-        {
-            return GetTerminalUrl() + "/actions/configure";
+            get { return "terminalDocuSign"; }
         }
 
         [Test]
