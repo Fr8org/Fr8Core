@@ -4238,7 +4238,6 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>if exist $(TargetDir)Web.dll del /Q $(TargetDir)Web.dll
-gulp compile_js
-powershell start-process gulp watch_js</PostBuildEvent>
+gulp compile_js</PostBuildEvent>
   </PropertyGroup>
 </Project>
