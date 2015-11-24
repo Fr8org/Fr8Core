@@ -38,7 +38,8 @@ module dockyard.tests.utils.fixtures {
             fieldLabel: 'DropDownList Test',
             name: 'DropDownList',
             events: [],
-            value: 'value3'
+            value: 'value3',
+            selectedKey: 'test3'
         };
 
         public static radioButtonGroupField: model.RadioButtonGroupControlDefinitionDTO = {
@@ -84,6 +85,34 @@ module dockyard.tests.utils.fixtures {
             fieldLabel: "For the SMS Number use:",
             type: "RadioButtonGroup",
             events: null
+        };
+
+
+        public static designTimeField = {
+            Key: 'test2',
+            Value: 'value'
+        };
+        
+        public static fieldList = {
+            value: JSON.stringify([FieldDTO.designTimeField]),
+            field: 'test2'
+        };
+
+
+        public static textSource: model.TextSource = {
+            type: "TextSource",
+            events: [],
+            initialLabel: 'test label',
+            value: null,
+            source: {
+                manifestType: 'testManifest',
+                label: 'testLabel'
+            },
+            valueSource: 'test',
+            listItems: [{ key: 'test1', value: 'value1' }, { key: 'test2', value: 'value2' }, { key: 'test3', value: 'value3' }],
+            name: 'test name',
+            fieldLabel: 'test label',
+            selectedKey: null
         };
     }
 } 

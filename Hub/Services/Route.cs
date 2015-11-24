@@ -489,7 +489,7 @@ namespace Hub.Services
                     throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
                 }
 
-                curContainerDO.ContainerState = ContainerState  .Executing;
+                curContainerDO.ContainerState = ContainerState.Executing;
                 uow.SaveChanges();
 
                 try
@@ -511,6 +511,7 @@ namespace Hub.Services
                     uow.SaveChanges();
                 }
             }
+
         }
 
         /// <summary>

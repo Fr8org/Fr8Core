@@ -200,8 +200,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
-    <Compile Include="Enums\SearchDirection.cs" />
-    <Compile Include="Enums\GetCrateDirection.cs" />
     <Compile Include="Exceptions\AmbiguityException.cs" />
     <Compile Include="Exceptions\AuthenticationExeception.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
@@ -213,6 +211,7 @@
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
+    <Compile Include="Interfaces\ITime.cs" />
     <Compile Include="Managers\CrateManager.StorageUpdater.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -312,6 +311,7 @@
     <Compile Include="Services\Route.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Subscription.cs" />
+    <Compile Include="Services\Time.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -339,6 +339,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Diagnostics\" />
+    <Folder Include="Enums\" />
     <Folder Include="Managers\APIManagers\Packagers\Docusign\" />
     <Folder Include="Managers\Crates\" />
     <Folder Include="UserAlerting\" />

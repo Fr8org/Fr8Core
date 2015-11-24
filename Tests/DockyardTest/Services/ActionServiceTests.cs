@@ -20,6 +20,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
 using Newtonsoft.Json.Linq;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Action = Hub.Services.Action;
@@ -49,6 +50,8 @@ namespace DockyardTest.Services
         public override void SetUp()
         {
             base.SetUp();
+            TerminalBootstrapper.ConfigureTest();
+
             _action = ObjectFactory.GetInstance<IAction>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();

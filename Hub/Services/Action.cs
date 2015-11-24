@@ -13,7 +13,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Crates;
-using Hub.Enums;
+
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Terminal;

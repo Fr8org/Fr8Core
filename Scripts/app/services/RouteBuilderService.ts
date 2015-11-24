@@ -8,7 +8,7 @@ module dockyard.services {
         getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IRouteVM>;
         getFull: (id: Object) => interfaces.IRouteVM;
         getByAction: (id: { id: string }) => interfaces.IRouteVM;
-        execute: (id: { id: number }) => void;
+        execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
         activate: (route: model.RouteDTO) => void;
         deactivate: (route: model.RouteDTO) => void;
         update: (data: { id: string, name: string}) => interfaces.IRouteVM;

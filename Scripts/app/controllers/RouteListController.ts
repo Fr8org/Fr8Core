@@ -80,7 +80,16 @@ module dockyard.controllers {
             location.reload();
         };
         private executeRoute(routeId, $event) {
-            this.RouteService.execute({ id: routeId });
+			if ($event.ctrlKey) {
+				this.$modal.open({
+					animation: true,
+					templateUrl: '/AngularTemplate/_AddPayloadModal',
+					controller: 'PayloadFormController', resolve: { routeId: () => routeId }
+				});
+        }
+			else {
+				this.RouteService.execute({ id: routeId }, null, null, null);
+			}
         }
 
         private goToRoutePage(routeId) {
