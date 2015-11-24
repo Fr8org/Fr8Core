@@ -1,8 +1,8 @@
 ﻿module dockyard.tests.utils.fixtures {
 
-    export class Duration {
+    export class DurationControlDefinitionDTO {
         
-        public static sampleField = <model.Duration> {
+        public static sampleField = <model.DurationControlDefinitionDTO> {
             type: 'duration',
             fieldLabel: 'Label',
             name: 'duration1',

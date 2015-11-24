@@ -4,7 +4,6 @@ using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Data.Control;
 using Data.Crates;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -43,7 +42,7 @@ namespace terminalDocuSign.Actions
              * Discussed with Alexei and it is required to have empty Standard Configuration Control in the crate.
              * So we create a text block which informs the user that this particular aciton does not require any configuration.
              */
-            var textBlock = new TextBlock()
+            var textBlock = new TextBlockControlDefinitionDTO()
             {
                 Label = "Monitor All DocuSign events",
                 Value = "This Action doesn't require any configuration.",

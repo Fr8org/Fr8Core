@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using Data.Control;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -72,14 +71,14 @@ namespace terminalSalesforce.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO= null)
         {
-            var firstNameCrate = new TextBox()
+            var firstNameCrate = new TextBoxControlDefinitionDTO()
             {
                 Label = "First Name",
                 Name = "firstName",
                 Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
 
             };
-            var lastName = new TextBox()
+            var lastName = new TextBoxControlDefinitionDTO()
             {
                 Label = "Last Name",
                 Name = "lastName",
@@ -87,7 +86,7 @@ namespace terminalSalesforce.Actions
                 Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
             };
 
-            var mobileNumber = new TextBox()
+            var mobileNumber = new TextBoxControlDefinitionDTO()
             {
                 Label = "Mobile Phone",
                 Name = "mobilePhone",
@@ -95,7 +94,7 @@ namespace terminalSalesforce.Actions
                 Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
             };
 
-            var email = new TextBox()
+            var email = new TextBoxControlDefinitionDTO()
             {
                 Label = "Email",
                 Name = "email",

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Control;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
@@ -86,7 +85,7 @@ namespace terminalFr8Core.Actions
 
             var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO.Id, "Available Run-Time Objects");
 
-            var fieldSelectObjectTypes = new DropDownList()
+            var fieldSelectObjectTypes = new DropDownListControlDefinitionDTO()
             {
                 Label = "Save Which Data Types?",
                 Name = "Save Object Name",

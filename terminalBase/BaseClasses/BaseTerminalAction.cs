@@ -8,7 +8,6 @@ using AutoMapper;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Constants;
-using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
@@ -299,7 +298,7 @@ namespace TerminalBase.BaseClasses
         {
             ControlDefinitionDTO[] controls =
             {
-                new TextBlock()
+                new TextBlockControlDefinitionDTO()
                 {
                     Label = fieldLabel,
                     Value = errorMessage,
@@ -323,7 +322,7 @@ namespace TerminalBase.BaseClasses
         {
             var fields = new List<ControlDefinitionDTO>()
             {
-                new TextBlock()
+                new TextBlockControlDefinitionDTO()
                 {
                     Label = fieldLabel,
                     Value = errorMessage,
@@ -351,7 +350,7 @@ namespace TerminalBase.BaseClasses
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
             string label, string controlName, string upstreamSourceLabel)
         {
-            var control = new RadioButtonGroup()
+            var control = new RadioButtonGroupControlDefinitionDTO()
             {
                 Label = label,
                 GroupName = controlName,
@@ -365,7 +364,7 @@ namespace TerminalBase.BaseClasses
                         Value = "this specific value",
                         Controls = new List<ControlDefinitionDTO>
                         {
-                            new TextBox()
+                            new TextBoxControlDefinitionDTO()
                             {
                                 Label = "",
                                 Name = "SpecificValue"
@@ -380,7 +379,7 @@ namespace TerminalBase.BaseClasses
                         Value = "a value from an Upstream Crate",
                         Controls = new List<ControlDefinitionDTO>
                         {
-                            new DropDownList()
+                            new DropDownListControlDefinitionDTO()
                             {
                                 Label = "",
                                 Name = "UpstreamCrate",
@@ -410,19 +409,19 @@ namespace TerminalBase.BaseClasses
             var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var control = controls.Controls.SingleOrDefault(c => c.Name == controlName);
 
-            if (control as RadioButtonGroup != null)
+            if (control as RadioButtonGroupControlDefinitionDTO != null)
             {
                 // Get value from a combination of RadioButtonGroup, TextField and DDLB controls
                 // (old approach prior to TextSource) 
-                return ExtractSpecificOrUpstreamValueLegacy((RadioButtonGroup)control, runTimeCrateStorage);
+                return ExtractSpecificOrUpstreamValueLegacy((RadioButtonGroupControlDefinitionDTO)control, runTimeCrateStorage);
             }
 
-            if (control as TextSource == null)
+            if (control as TextSourceControlDefinitionDTO == null)
             {
                 throw new ApplicationException("TextSource control was expected but not found.");
             }
 
-            TextSource textSourceControl = (TextSource)control;
+            TextSourceControlDefinitionDTO textSourceControl = (TextSourceControlDefinitionDTO)control;
 
             switch (textSourceControl.ValueSource)
             {
@@ -437,7 +436,7 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroup radioButtonGroupControl, CrateStorage runTimeCrateStorage)
+        private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroupControlDefinitionDTO radioButtonGroupControl, CrateStorage runTimeCrateStorage)
         {
             var radioButton = radioButtonGroupControl
                 .Radios
@@ -498,7 +497,7 @@ namespace TerminalBase.BaseClasses
         {
             AddControl(
                 storage,
-                new TextBlock()
+                new TextBlockControlDefinitionDTO()
                 {
                     Name = name,
                     Label = label,

@@ -14,7 +14,6 @@ using TerminalBase.Infrastructure;
 using terminalPapertrail.Interfaces;
 using Utilities.Configuration.Azure;
 using System.Collections.Generic;
-using Data.Control;
 using Utilities.Logging;
 
 namespace terminalPapertrail.Actions
@@ -48,7 +47,7 @@ namespace terminalPapertrail.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
-            var targetUrlTextBlock = new TextBox
+            var targetUrlTextBlock = new TextBoxControlDefinitionDTO
             {
                 Name = "TargetUrlTextBox",
                 Label = "Target Papertrail URL and Port (as URL:Port)",

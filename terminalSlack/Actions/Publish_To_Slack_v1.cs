@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
@@ -125,7 +124,7 @@ namespace terminalSlack.Actions
 
         private Crate PackCrate_ConfigurationControls()
         {
-            var fieldSelectChannel = new DropDownList()
+            var fieldSelectChannel = new DropDownListControlDefinitionDTO()
             {
                 Label = "Select Slack Channel",
                 Name = "Selected_Slack_Channel",
@@ -141,7 +140,7 @@ namespace terminalSlack.Actions
                 }
             };
 
-            var fieldSelectMessageField = new DropDownList()
+            var fieldSelectMessageField = new DropDownListControlDefinitionDTO()
             {
                 Label = "Select Message Field",
                 Name = "Select_Message_Field",
