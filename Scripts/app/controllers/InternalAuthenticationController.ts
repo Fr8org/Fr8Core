@@ -14,6 +14,9 @@
 
             $scope.authError = false;
             $scope.authErrorText = null;
+            $scope.mode = $scope.mode;
+
+            // 3 - AuthenticationMode.InternalModeWithDomain
             $scope.showDomain = $scope.mode == 3 ? 1 : 0;
 
             $scope.formData = {
