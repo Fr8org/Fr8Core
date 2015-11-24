@@ -138,7 +138,8 @@ namespace Data.Infrastructure
         public delegate void IncidentTwilioSMSSendFailureHandler(string number, string message, string errorMsg);
         public static event IncidentTwilioSMSSendFailureHandler IncidentTwilioSMSSendFailure;
 
-
+        public delegate object AuthenticationCompletedEventHandler(string userId, TerminalDO authenticatedTerminal);
+        public static event AuthenticationCompletedEventHandler EventAuthenticationCompleted;
 
 
         #region Method
@@ -469,6 +470,12 @@ namespace Data.Infrastructure
         {
             var handler = EventContainerStateChanged;
             if (handler != null) handler(currentValues);
+        }
+
+        public static void TerminalAuthenticationCompleted(string userId, TerminalDO authenticatedTerminal)
+        {
+            var handler = EventAuthenticationCompleted;
+            if (handler != null) handler(userId, authenticatedTerminal);
         }
 
         #endregion

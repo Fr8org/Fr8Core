@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Data.Crates;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -15,6 +16,7 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Interfaces;
 using Utilities.Configuration.Azure;
 using terminalDocuSign.Infrastructure;
 
@@ -24,15 +26,35 @@ namespace terminalDocuSign.Services
     {
         private readonly EventReporter _alertReporter;
         private readonly ICrateManager _crate;
+        private readonly IDocuSignRoute _docuSignRoute;
 
         public Event()
         {
             _alertReporter = ObjectFactory.GetInstance<EventReporter>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
+            _docuSignRoute = ObjectFactory.GetInstance<IDocuSignRoute>();
         }
 
         public async Task<object> Process(string curExternalEventPayload)
         {
+            //DO - 1449
+            //if the event payload is Fr8 User ID, it is DocuSign Authentication Completed event
+            //The Monitor All DocuSign Events route should be creaed in this case.
+            if (curExternalEventPayload.Contains("fr8_user_id"))
+            {
+                var curFr8UserId = JObject.Parse(curExternalEventPayload)["fr8_user_id"].Value<string>();
+
+                if (string.IsNullOrEmpty(curFr8UserId))
+                {
+                    throw new ArgumentException("Fr8 User ID is not in the correct format.");
+                }
+
+                //create MonitorAllDocuSignEvents route
+                await _docuSignRoute.CreateRoute_MonitorAllDocuSignEvents(curFr8UserId);
+
+                return null;
+            } 
+
             //parse the external event xml payload
             List<DocuSignEventDTO> curExternalEvents;
             string curEnvelopeId;
@@ -51,7 +73,7 @@ namespace terminalDocuSign.Services
             //prepare the event report
             var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
 
-            string url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";
+            string url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/fr8_events";
             var response = await new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), _crate.ToDto(curEventReport));
 
             var content = await response.Content.ReadAsStringAsync();
@@ -147,7 +169,5 @@ namespace terminalDocuSign.Services
 
             return returnList;
             }
-
-
     }
 }

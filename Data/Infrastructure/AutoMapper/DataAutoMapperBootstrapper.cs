@@ -81,9 +81,9 @@ namespace Data.Infrastructure.AutoMapper
 //                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
 //                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
-            Mapper.CreateMap<RouteDO, RouteOnlyDTO>();
-            Mapper.CreateMap<RouteOnlyDTO, RouteDO>();
-            Mapper.CreateMap<RouteDO, RouteOnlyDTO>();
+            Mapper.CreateMap<RouteDO, RouteEmptyDTO>();
+            Mapper.CreateMap<RouteEmptyDTO, RouteDO>();
+            Mapper.CreateMap<RouteDO, RouteEmptyDTO>();
             Mapper.CreateMap<SubrouteDTO, SubrouteDO>()
                 .ForMember(x => x.ParentRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId));
             Mapper.CreateMap<SubrouteDO, SubrouteDTO>()
@@ -94,10 +94,10 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
                 .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
 
-            Mapper.CreateMap<RouteDO, RouteDTO>()
+            Mapper.CreateMap<RouteDO, RouteFullDTO>()
                 .ConvertUsing<RouteDOFullConverter>();
 
-            Mapper.CreateMap<RouteOnlyDTO, RouteDTO>();
+            Mapper.CreateMap<RouteEmptyDTO, RouteFullDTO>();
           //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();
             Mapper.CreateMap<SubrouteDO, FullSubrouteDTO>();
 

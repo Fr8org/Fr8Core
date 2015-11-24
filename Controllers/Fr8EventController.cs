@@ -11,23 +11,23 @@ using Newtonsoft.Json.Linq;
 
 namespace HubWeb.Controllers
 {
-    public class DockyardEventController : ApiController
+    public class Fr8EventController : ApiController
     {
-        private readonly IDockyardEvent _dockyardEvent;
+        private readonly IFr8Event _fr8Event;
         private readonly ICrateManager _crate;
         private IRoute _route;
 
 
-        public DockyardEventController()
+        public Fr8EventController()
         {
-            _dockyardEvent = ObjectFactory.GetInstance<IDockyardEvent>();
+            _fr8Event = ObjectFactory.GetInstance<IFr8Event>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _route = ObjectFactory.GetInstance<IRoute>();
 
         }
 
         [HttpPost]
-        [Route("dockyard_events")]
+        [Route("fr8_events")]
         public async Task<IHttpActionResult> ProcessDockyardEvents(CrateDTO raw)
         {
             //check if its not null
@@ -43,7 +43,7 @@ namespace HubWeb.Controllers
             if (curCrateStandardEventReport.Get() == null)
                 throw new ArgumentNullException("CrateDTO Content is empty.");
              
-            await _dockyardEvent.ProcessInboundEvents(curCrateStandardEventReport);
+            await _fr8Event.ProcessInboundEvents(curCrateStandardEventReport);
 
             return Ok();
         }

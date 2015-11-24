@@ -4,12 +4,12 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public static RouteOnlyDTO CreateTestRouteDTO()
+        public static RouteEmptyDTO CreateTestRouteDTO()
         {
-            return new RouteOnlyDTO()
+            return new RouteEmptyDTO()
             {
-                Name = "processtemplate1",
-                Description = "Description for test process template",
+                Name = "route1",
+                Description = "Description for test route",
                 RouteState = 1
                 //DockyardAccount = FixtureData.TestDockyardAccount1()
             };

@@ -16,8 +16,5 @@ namespace terminalGoogle.Interfaces
         /// <param name="spreadsheetUri">Spreadsheet URI</param>
         /// <returns>Returns a link to CSV file on storage</returns>
         string ExtractData(string spreadsheetUri, GoogleAuthDTO authDTO);
-
-        string CreateOAuth2AuthorizationUrl(string state = null);
-        GoogleAuthDTO GetToken(string code);
     }
 }
