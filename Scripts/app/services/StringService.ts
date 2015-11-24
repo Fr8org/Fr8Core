@@ -6,7 +6,7 @@
 
 module dockyard.services {
     export interface IStringService {
-        processTemplate: dictionary;
+        route: dictionary;
     }
 
     export interface dictionary {
@@ -14,7 +14,7 @@ module dockyard.services {
     }
 
     var strings: IStringService = {
-        processTemplate: {
+        route: {
             error404: "Sorry, the Route was not found. Perhaps it has been deleted.",
             error400: "Some of the specified data were invalid. Please verify your entry and try again.",
             error: "Route cannot be saved. Please try again in a few minutes."

@@ -2,7 +2,7 @@
     /*
         Current state is moved to this class
     */
-    export class ProcessBuilderState {
+    export class RouteBuilderState {
         route: model.RouteDTO;
 
         // ProcessNodeTemplate for currently edited Crteria. Unlike criteria property, 
