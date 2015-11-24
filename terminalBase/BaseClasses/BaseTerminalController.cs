@@ -64,8 +64,7 @@ namespace TerminalBase.BaseClasses
                 return;
             }
 
-            baseTerminalAction.HubCommunicator = ObjectFactory
-                .GetNamedInstance<IHubCommunicator>(TerminalBootstrapper.TestHubCommunicatorKey);
+            baseTerminalAction.HubCommunicator = new TestMonitoringHubCommunicator();
         }
         
         /// <summary>
@@ -94,7 +93,7 @@ namespace TerminalBase.BaseClasses
                     .Substring(0, activityTemplateName.Length - "_TEST".Length);
             }
 
-            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curTerminal, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
+            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curTerminal, activityTemplateName, curActionDTO.ActivityTemplate.Version);
 
             Type calledType = Type.GetType(curAssemblyName + ", " + curTerminal);
             if (calledType == null)

@@ -51,7 +51,7 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No auth token provided.");
             }
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
@@ -169,7 +169,7 @@ namespace terminalDocuSign.Actions
                     updater.CrateStorage.Remove(curUpstreamFieldsCrate);
             }
 
-            var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
+            var curUpstreamFields = (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
                 .Fields
                 .ToArray();
 

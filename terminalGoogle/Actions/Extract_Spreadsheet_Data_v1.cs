@@ -63,7 +63,7 @@ namespace terminalGoogle.Actions
         private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(
             ActionDO curActionDO, Guid containerId)
         {
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var tableDataMS = await GetTargetTableData(curActionDO);
 
@@ -100,7 +100,7 @@ namespace terminalGoogle.Actions
 
         private async Task<StandardTableDataCM> GetUpstreamTableData(ActionDO curActionDO)
         {
-            var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(curActionDO.Id);
+            var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(curActionDO);
 
             //if no "Standard File Handle" crate found then return
             if (!upstreamFileHandleCrates.Any())

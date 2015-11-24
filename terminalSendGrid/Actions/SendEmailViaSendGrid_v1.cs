@@ -129,7 +129,7 @@ namespace terminalSendGrid.Actions
         private async Task<Crate> GetAvailableDataFields(ActionDO curActionDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
                     .Fields
                     .ToArray();
 
@@ -164,7 +164,7 @@ namespace terminalSendGrid.Actions
         {
             var fromAddress = _configRepository.Get("OutboundFromAddress");
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var emailAddress = ExtractSpecificOrUpstreamValue(
                 Crate.GetStorage(curActionDO.CrateStorage),

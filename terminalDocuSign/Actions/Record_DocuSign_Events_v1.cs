@@ -123,7 +123,7 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var curProcessPayload = await GetProcessPayload(containerId);
+            var curProcessPayload = await GetProcessPayload(actionDO, containerId);
 
             var curEventReport = Crate.GetStorage(curProcessPayload).CrateContentsOfType<EventReportCM>().First();
 

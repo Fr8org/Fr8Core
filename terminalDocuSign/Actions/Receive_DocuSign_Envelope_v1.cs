@@ -59,7 +59,7 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(actionDO, containerId);
 
             //Get envlopeId
             string envelopeId = GetEnvelopeId(processPayload);

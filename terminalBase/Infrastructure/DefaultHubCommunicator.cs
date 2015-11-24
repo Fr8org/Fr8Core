@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using StructureMap;
 using Data.Crates;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
@@ -22,7 +23,7 @@ namespace TerminalBase.Infrastructure
             _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
 
-        public Task<PayloadDTO> GetProcessPayload(Guid containerId)
+        public Task<PayloadDTO> GetProcessPayload(ActionDO actionDO, Guid containerId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/containers/"
@@ -35,9 +36,9 @@ namespace TerminalBase.Infrastructure
         }
 
         public Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(
-            Guid routeNodeId, CrateDirection direction)
+            ActionDO actionDO, CrateDirection direction)
         {
-            return _routeNode.GetCratesByDirection<TManifest>(routeNodeId, direction);
+            return _routeNode.GetCratesByDirection<TManifest>(actionDO.Id, direction);
         }
     }
 }

@@ -40,7 +40,7 @@ namespace terminalFr8Core.Actions
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //get the process payload
-                var curProcessPayload = await GetProcessPayload(containerId);
+                var curProcessPayload = await GetProcessPayload(actionDO, containerId);
 
                 //get docu sign envelope crate from payload
                 var curDocuSignEnvelopeCrate = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<DocuSignEnvelopeCM>().Single(x => x.Label == "DocuSign Envelope Manifest");
@@ -83,7 +83,7 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
 
-            var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO.Id, "Available Run-Time Objects");
+            var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO, "Available Run-Time Objects");
 
             var fieldSelectObjectTypes = new DropDownListControlDefinitionDTO()
             {

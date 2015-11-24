@@ -88,7 +88,7 @@ namespace terminalPapertrail.Actions
             GetPapertrailTargetUrlAndPort(actionDO, out curPapertrailUrl, out curPapertrailPort);
 
             //get process payload
-            var curProcessPayload = await GetProcessPayload(containerId);
+            var curProcessPayload = await GetProcessPayload(actionDO, containerId);
 
             //if there are valid URL and Port number
             if (!string.IsNullOrEmpty(curPapertrailUrl) && curPapertrailPort > 0)

@@ -43,7 +43,7 @@ namespace terminalSalesforce.Actions
         {
             PayloadDTO processPayload = null;
 
-            processPayload = await GetProcessPayload(containerId);
+            processPayload = await GetProcessPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {

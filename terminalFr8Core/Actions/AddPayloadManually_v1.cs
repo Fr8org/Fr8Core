@@ -19,7 +19,7 @@ namespace terminalFr8Core.Actions
     {
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var controlsMS = Crate.GetStorage(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 

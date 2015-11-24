@@ -121,7 +121,7 @@ namespace terminalFr8Core.Actions
         private async Task<List<FieldDTO>> ExtractColumnDefinitions(ActionDO actionDO)
         {
             var upstreamCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(
-                actionDO.Id,
+                actionDO,
                 CrateDirection.Upstream
             );
 
@@ -316,7 +316,7 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
             var stroage = Crate.GetStorage(curActionDO);
             var selectedObject = ExtractSelectedObject(stroage);
             if (string.IsNullOrEmpty(selectedObject))
