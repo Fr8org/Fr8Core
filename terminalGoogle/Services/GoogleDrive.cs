@@ -83,7 +83,7 @@ namespace terminalGoogle.Services
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
                     //load template file and replace specific formID
-                    string filename = System.Web.Hosting.HostingEnvironment.MapPath("~\\App_Data\\googleAppScriptFormResponse.json");
+                    string filename = System.Web.Hosting.HostingEnvironment.MapPath("~\\Template\\googleAppScriptFormResponse.json");
                     string content = System.IO.File.ReadAllText(filename);
                     content = content.Replace("@ID", formId);
                     byte[] contentAsBytes = Encoding.UTF8.GetBytes(content);
