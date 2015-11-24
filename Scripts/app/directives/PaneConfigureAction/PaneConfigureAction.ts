@@ -201,7 +201,7 @@ module dockyard.directives.paneConfigureAction {
                             if (res.childrenActions && res.childrenActions.length > 0) {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
-                                // and redirect user to the ProcessBuilder once if is received.
+                                // and redirect user to the RouteBuilder once if is received.
                                 // It means that solution configuration is complete. 
                                 $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                             }

@@ -50,12 +50,25 @@ namespace terminalGoogle.Controllers
                 Tags = "Table Data Generator"
             };
 
+            var receiveGoogleForm = new ActivityTemplateDTO
+            {
+                Name = "Receive_Google_Form",
+                Label = "Receive Google Form Response",
+                Version = "1",
+                Category = ActivityCategory.Receivers,
+                Terminal = terminal,
+                AuthenticationType = AuthenticationType.External,
+                WebService = webService,
+                MinPaneWidth = 300
+            };
+
             return Json(new StandardFr8TerminalCM()
             {
                 Definition = terminal,
                 Actions = new List<ActivityTemplateDTO>
                 {
-                    extractDataAction
+                    extractDataAction,
+                    receiveGoogleForm
                 }
             });    
         }
