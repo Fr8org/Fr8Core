@@ -47,7 +47,7 @@
             }
 
             // Validate foundCrates.length that only single Crate was found.
-            if (foundCrates.length == 0 || foundCrates.length > 1) {
+            if (foundCrates.length == 0) {
                 this.throwError('Invalid foundCrates.length = ' + foundCrates.length.toString());
                 return;
             }
@@ -77,7 +77,7 @@
             }
 
             // Validate foundCrates.length that only single Crate was found.
-            if (foundCrates.length == 0 || foundCrates.length > 1) {
+            if (foundCrates.length == 0 ) {
                 this.throwError('Invalid foundCrates.length = ' + foundCrates.length.toString());
                 return;
             }
@@ -89,7 +89,7 @@
         // Find single Crate by ManifestType and Label in CrateStorage.
         public findByManifestTypeAndLabel(crateStorage: model.CrateStorage, manifestType: string, label: string): model.Crate {
             // Check that CrateStorage is not empty.
-            if (!crateStorage || !crateStorage.crates) {
+            if (!crateStorage || !crateStorage.crates || crateStorage.crates.length === 0) {
                 this.throwError('CrateStorage is empty.');
                 return;
             }
@@ -108,10 +108,6 @@
             // Validate foundCrates.length that only single Crate was found.
             if (foundCrates.length == 0) {
                 return null;
-            }
-            if (foundCrates.length > 1) {
-                this.throwError('Invalid foundCrates.length = ' + foundCrates.length.toString() +' in function findByManifestTypeAndLabel');
-                return;
             }
 
             // Return single Crate.

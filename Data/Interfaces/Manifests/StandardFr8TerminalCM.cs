@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Interfaces.Manifests
 {
     public class StandardFr8TerminalCM : Manifest
     {
-        public TerminalDO Definition { get; set; }
+        public TerminalDTO Definition { get; set; }
 
-        public List<ActivityTemplateDO> Actions { get; set; }
+        public List<ActivityTemplateDTO> Actions { get; set; }
 
         public StandardFr8TerminalCM():base(Constants.MT.StandardFr8Terminal){
         }

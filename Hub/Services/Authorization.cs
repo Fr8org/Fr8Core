@@ -21,11 +21,13 @@ namespace Hub.Services
     public class Authorization
     {
         private readonly ICrateManager _crate;
+	    private readonly ITime _time;
 
 
         public Authorization()
         {
-           _crate = ObjectFactory.GetInstance<ICrateManager>();
+			_crate = ObjectFactory.GetInstance<ICrateManager>();
+	        _time = ObjectFactory.GetInstance<ITime>();
         }
 
         public string GetToken(string userId)
@@ -82,7 +84,10 @@ namespace Hub.Services
                     };
                     uow.AuthorizationTokenRepository.Add(tokenDO);
                 }
-				tokenDO.ExpiresAt = DateTime.UtcNow.AddYears(100);
+
+	            DateTime currentTime = _time.CurrentDateTime();
+
+				tokenDO.ExpiresAt = currentTime.AddYears(100);
                 tokenDO.Token = token;
                 uow.SaveChanges();
             }
@@ -433,6 +438,42 @@ namespace Hub.Services
             }
 
             return false;
+        }
+
+        public void InvalidateToken(string userId, ActionDTO curActionDto)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDto.ActivityTemplateId);
+
+                if (activityTemplate == null)
+                {
+                    throw new NullReferenceException("ActivityTemplate was not found.");
+                }
+
+                var account = uow.UserRepository.GetByKey(userId);
+
+                if (account == null)
+                {
+                    throw new NullReferenceException("Current account was not found.");
+                }
+
+                if (activityTemplate.AuthenticationType != AuthenticationType.None)
+                {
+                    var token = uow.AuthorizationTokenRepository.FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id && x.UserDO.Id == account.Id);
+                    
+                    if (token != null)
+                    {
+                        uow.AuthorizationTokenRepository.Remove(token);
+                    }
+
+                    RemoveAuthenticationCrate(curActionDto);
+                    RemoveAuthenticationLabel(curActionDto);
+
+                    AddAuthenticationCrate(curActionDto, activityTemplate.AuthenticationType);
+                    AddAuthenticationLabel(curActionDto);
+                }
+            }
         }
     }
 }

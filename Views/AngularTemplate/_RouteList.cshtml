@@ -36,7 +36,7 @@
                                             <button type="button" class="btn btn-sm red" ng-click="deactivateProcessTemplate(processTemplate);">Deactivate</button>
                                             <button type="button" class="btn btn-sm red" ng-click="deleteProcessTemplate(processTemplate.id);">Delete</button>
                                             <button type="button" class="btn btn-sm green" ng-click="goToProcessTemplatePage(processTemplate.id);">Edit</button>
-                                            <button type="button" class="btn btn-sm btn-primary" ng-click="executeProcessTemplate(processTemplate.id);">Run Now</button>
+                                            <button type="button" class="btn btn-sm btn-primary" ng-click="executeProcessTemplate(processTemplate.id, $event);">Run Now</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -80,7 +80,7 @@
                                             <div>
                                                 <button type="button" class="btn btn-sm red" ng-click="deleteProcessTemplate(processTemplate.id);">Delete</button>
                                                 <button type="button" class="btn btn-sm green" ng-click="goToProcessTemplatePage(processTemplate.id);">Edit</button>
-                                                <button type="button" class="btn btn-sm btn-primary" ng-click="executeProcessTemplate(processTemplate.id);">Run Now</button>
+                                                <button type="button" class="btn btn-sm btn-primary" ng-click="executeProcessTemplate(processTemplate.id, $event);">Run Now</button>
                                                 <button type="button" class="btn btn-sm green" ng-click="activateProcessTemplate(processTemplate);">Activate</button>
                                             </div>
                                         </td>

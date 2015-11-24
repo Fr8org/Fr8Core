@@ -24,7 +24,7 @@ namespace terminalPapertrail.Tests.Controllers
         public async Task Get_ShouldReturn_NonEmptyJsonResult()
         {
             //Act
-            var result = _terminal_controller.Get();
+            var result = _terminal_controller.DiscoverTerminals();
 
             //Assert
             Assert.IsNotNull(result, "The terminal discovery is failed for Terminal Papertrail");
@@ -35,7 +35,7 @@ namespace terminalPapertrail.Tests.Controllers
         public async Task Get_ShouldReturn_WriteToLogActivityTemplate()
         {
             //Act
-            var result = _terminal_controller.Get();
+            var result = _terminal_controller.DiscoverTerminals();
 
             //Assert
             var actions = (result as JsonResult<StandardFr8TerminalCM>).Content.Actions;

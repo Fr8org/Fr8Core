@@ -4,6 +4,7 @@ using Data.Entities;
 using Data.States;
 using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 
 namespace terminalPapertrail.Controllers
@@ -14,9 +15,9 @@ namespace terminalPapertrail.Controllers
         [HttpGet]
         [Route("discover")]
         [ResponseType(typeof (StandardFr8TerminalCM))]
-        public IHttpActionResult Get()
+        public IHttpActionResult DiscoverTerminals()
         {
-            var terminal = new TerminalDO()
+            var terminal = new TerminalDTO()
             {
                 Name = "terminalPapertrail",
                 TerminalStatus = TerminalStatus.Active,
@@ -24,13 +25,13 @@ namespace terminalPapertrail.Controllers
                 Version = "1"
             };
 
-            var webService = new WebServiceDO
+            var webService = new WebServiceDTO
             {
                 Name = "Papertrail",
                 IconPath = "/Content/icons/web_services/papertrail-icon-64x64.png"
             };
 
-            var writeToLogActionTemplate = new ActivityTemplateDO()
+            var writeToLogActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Write_To_Log",
@@ -40,12 +41,13 @@ namespace terminalPapertrail.Controllers
                 AuthenticationType = AuthenticationType.None,
                 MinPaneWidth = 330,
                 WebService = webService
+                
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
-                Actions = new List<ActivityTemplateDO> {writeToLogActionTemplate}
+                Actions = new List<ActivityTemplateDTO> {writeToLogActionTemplate}
             };
 
             return Json(curStandardFr8TerminalCM);
