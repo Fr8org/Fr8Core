@@ -741,6 +741,9 @@
     <EmbeddedResource Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.resx">
       <DependentUpon>201511200612313_RouteNode_Id_Int32_To_Guid.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.resx">
+      <DependentUpon>201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
