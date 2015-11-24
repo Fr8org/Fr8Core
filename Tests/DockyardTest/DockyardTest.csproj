@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -245,6 +245,7 @@
     <Compile Include="Controllers\EventControllerTest.cs" />
     <Compile Include="Controllers\NotificationControllerTests.cs" />
     <Compile Include="Controllers\RouteControllerTests.cs" />
+    <Compile Include="Controllers\RouteControllerTests_2.cs" />
     <Compile Include="Controllers\UserApiControlle.cs" />
     <Compile Include="Controllers\UserControllerTests.cs" />
     <Compile Include="CsvReaderTests.cs" />

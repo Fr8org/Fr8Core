@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Reflection;
-using System.Threading.Tasks;
-using System.Web.Http;
-using AutoMapper;
-using StructureMap;
-using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using System.Web.Http;
 using TerminalBase.Infrastructure;
+using System.Threading.Tasks;
 using Utilities.Configuration.Azure;
+using Data.Entities;
+using AutoMapper;
 
 namespace TerminalBase.BaseClasses
 {
@@ -17,7 +16,6 @@ namespace TerminalBase.BaseClasses
     public class BaseTerminalController : ApiController
     {
         private readonly BaseTerminalEvent _baseTerminalEvent;
-
         public BaseTerminalController()
         {
             _baseTerminalEvent = new BaseTerminalEvent();
@@ -55,7 +53,7 @@ namespace TerminalBase.BaseClasses
             return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Incident");
         }
 
-
+        
         /// <summary>
         /// Reports event when process an action
         /// </summary>
@@ -63,19 +61,6 @@ namespace TerminalBase.BaseClasses
         private Task<string> ReportEvent(string terminalName)
         {
             return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Event");
-        }
-
-        private void BindTestHubCommunicator(object curObject)
-        {
-            var baseTerminalAction = curObject as BaseTerminalAction;
-
-            if (baseTerminalAction == null)
-            {
-                return;
-            }
-
-            baseTerminalAction.HubCommunicator = ObjectFactory
-                .GetNamedInstance<IHubCommunicator>(TerminalBootstrapper.TestHubCommunicatorKey);
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
@@ -86,64 +71,48 @@ namespace TerminalBase.BaseClasses
             if (curActionDTO.ActivityTemplate == null)
                 throw new ArgumentException("ActivityTemplate is null", "curActionDTO");
 
-            var isTestActivityTemplate = false;
-            var activityTemplateName = curActionDTO.ActivityTemplate.Name;
-            if (activityTemplateName.EndsWith("_TEST"))
-            {
-                isTestActivityTemplate = true;
-                activityTemplateName = activityTemplateName
-                    .Substring(0, activityTemplateName.Length - "_TEST".Length);
-            }
-
             string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curTerminal, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
 
             Type calledType = Type.GetType(curAssemblyName + ", " + curTerminal);
             if (calledType == null)
-                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} terminal.",
+                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} terminal.", 
                     curActionDTO.ActivityTemplate.Name,
                     curActionDTO.ActivityTemplate.Version,
                     curTerminal), "curActionDTO");
-
-            MethodInfo curMethodInfo = calledType.GetMethod(curActionPath,
-                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
-
-            if (isTestActivityTemplate)
-            {
-                BindTestHubCommunicator(curObject);
-            }
 
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             var curContainerId = curActionDTO.ContainerId;
             object response;
-            switch (curActionPath.ToLower())
+            switch (curActionPath)
             {
-                case "configure":
+                case "Configure":
                     {
-                        Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                        Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
-                case "run":
+                case "Run":
                     {
                         response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
                         return response;
                     }
-                case "initialconfigurationresponse":
+                case "InitialConfigurationResponse":
                     {
-                        Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                        Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
-                case "followupconfigurationresponse":
+                case "FollowupConfigurationResponse":
                     {
                         Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
                 default:
                     response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-                    return response;
-            }
+            return response;
+        }
 
 
         }

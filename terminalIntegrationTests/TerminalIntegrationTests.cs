@@ -19,7 +19,7 @@ using Hub.Managers.APIManagers.Transmitters.Terminal;
 using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using terminalFr8Core;
+using terminalAzure;
 using terminalDocuSign;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Infrastructure.StructureMap;
