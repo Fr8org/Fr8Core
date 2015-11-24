@@ -12,11 +12,14 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Http;
 using Data.Control;
 using Data.Crates;
 
 using Hub.Interfaces;
 using Hub.Managers;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 
 namespace Hub.Services
@@ -319,6 +322,18 @@ namespace Hub.Services
                 EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message);
                 throw;
             }
+                catch (RestfulServiceException e)
+                {
+                    // terminal requested token invalidation
+                    if (e.StatusCode == 419)
+                    {
+                        _authorizationToken.InvalidateToken(userId, tempActionDTO);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             catch (Exception e)
             {
 

@@ -38,7 +38,8 @@ module dockyard.tests.utils.fixtures {
             fieldLabel: 'DropDownList Test',
             name: 'DropDownList',
             events: [],
-            value: 'value3'
+            value: 'value3',
+            selectedKey: 'test3'
         };
 
         public static radioButtonGroupField: model.RadioButtonGroup = {
@@ -97,6 +98,7 @@ module dockyard.tests.utils.fixtures {
             field: 'test2'
         };
 
+
         public static textSource: model.TextSource = {
             type: "TextSource",
             events: [],
@@ -109,7 +111,8 @@ module dockyard.tests.utils.fixtures {
             valueSource: 'test',
             listItems: [{ key: 'test1', value: 'value1' }, { key: 'test2', value: 'value2' }, { key: 'test3', value: 'value3' }],
             name: 'test name',
-            fieldLabel: 'test label'
+            fieldLabel: 'test label',
+            selectedKey: null
         };
     }
 } 

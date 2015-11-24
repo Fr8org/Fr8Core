@@ -440,5 +440,41 @@ namespace Hub.Services
 
             return false;
         }
+
+        public void InvalidateToken(string userId, ActionDTO curActionDto)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDto.ActivityTemplateId);
+
+                if (activityTemplate == null)
+                {
+                    throw new NullReferenceException("ActivityTemplate was not found.");
+                }
+
+                var account = uow.UserRepository.GetByKey(userId);
+
+                if (account == null)
+                {
+                    throw new NullReferenceException("Current account was not found.");
+                }
+
+                if (activityTemplate.AuthenticationType != AuthenticationType.None)
+                {
+                    var token = uow.AuthorizationTokenRepository.FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id && x.UserDO.Id == account.Id);
+                    
+                    if (token != null)
+                    {
+                        uow.AuthorizationTokenRepository.Remove(token);
+                    }
+
+                    RemoveAuthenticationCrate(curActionDto);
+                    RemoveAuthenticationLabel(curActionDto);
+
+                    AddAuthenticationCrate(curActionDto, activityTemplate.AuthenticationType);
+                    AddAuthenticationLabel(curActionDto);
+                }
+            }
+        }
     }
 }
