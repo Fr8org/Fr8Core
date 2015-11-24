@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using HubWeb.Controllers.Helpers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
@@ -46,21 +47,21 @@ namespace HubWeb.Controllers
 
         [Fr8ApiAuthorize]
         [Route("full/{id:guid}")]
-        [ResponseType(typeof(RouteDTO))]
+        [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
         public IHttpActionResult GetFullRoute(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var route = uow.RouteRepository.GetByKey(id);
-                var result = _route.MapRouteToDto(uow, route);
+                var result = RouteMappingHelper.MapRouteToDto(uow, route);
 
                 return Ok(result);
             };
         }
 
         [Route("getByAction/{id:guid}")]
-        [ResponseType(typeof(RouteDTO))]
+        [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
         
         public IHttpActionResult GetByAction(Guid id)
@@ -69,7 +70,7 @@ namespace HubWeb.Controllers
             {
                 var action = uow.ActionRepository.GetByKey(id);
                 var route = _route.GetRoute(action);
-                var result = _route.MapRouteToDto(uow, route);
+                var result = RouteMappingHelper.MapRouteToDto(uow, route);
 
                 return Ok(result);
             };
@@ -92,7 +93,7 @@ namespace HubWeb.Controllers
 
                 if (curRoutes.Any())
                 {               
-                    return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>).ToArray());
+                    return Ok(curRoutes.Select(Mapper.Map<RouteEmptyDTO>).ToArray());
                 }
             }
 
@@ -138,11 +139,11 @@ namespace HubWeb.Controllers
                 // User intentionally wants to receive a single JSON object in response.
                 if (id.HasValue)
                 {
-                    return Ok(Mapper.Map<RouteOnlyDTO>(curRoutes.First()));
+                    return Ok(Mapper.Map<RouteEmptyDTO>(curRoutes.First()));
                 }
 
                 // Return JSON array of objects, in case no id parameter was provided.
-                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>).ToArray());
+                return Ok(curRoutes.Select(Mapper.Map<RouteEmptyDTO>).ToArray());
             }
             }
 
@@ -152,7 +153,7 @@ namespace HubWeb.Controllers
 
         [Route("~/routes")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Post(RouteOnlyDTO routeDto, bool updateRegistrations = false)
+        public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -166,7 +167,7 @@ namespace HubWeb.Controllers
                     return BadRequest("Some of the request data is invalid");
                 }
 
-                var curRouteDO = Mapper.Map<RouteOnlyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
+                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
                 curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
 
                 //this will return 0 on create operation because of not saved changes
@@ -268,7 +269,7 @@ namespace HubWeb.Controllers
                     curCrate = _crate.FromDto(curCrateDto);
                 }
                 catch (Exception ex)
-				{
+        {
 					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "You payload is invalid. Make sure that it represents a valid crate object JSON.");
 
 					return BadRequest();

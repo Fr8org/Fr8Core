@@ -10,7 +10,7 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Hub.Interfaces
 {
-    public interface IDockyardEvent
+    public interface IFr8Event
     {
         Task ProcessInboundEvents(Crate curCrateStandardEventReport);
         Task LaunchProcess(RouteDO curRoute, Crate curEventData = null);

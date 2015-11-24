@@ -7,6 +7,7 @@ using Data.States;
 using StructureMap;
 using System;
 using System.Collections.Generic;
+using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using Utilities;
@@ -50,7 +51,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static List<ControlDefinitionDTO> SampleConfigurationControls()
         {
-            var fieldSelectDocusignTemplateDTO = new DropDownListControlDefinitionDTO()
+            var fieldSelectDocusignTemplateDTO = new DropDownList()
             {
                 Label = "Use DocuSign Template",
                 Name = "target_docusign_template",
@@ -65,7 +66,7 @@ namespace UtilitiesTesting.Fixtures
                 }
             };
 
-            var recipientSource = new RadioButtonGroupControlDefinitionDTO()
+            var recipientSource = new RadioButtonGroup()
             {
                 Label = "Recipient",
                 GroupName = "Recipient",
@@ -87,13 +88,13 @@ namespace UtilitiesTesting.Fixtures
                 }
             };
 
-            recipientSource.Radios[0].Controls.Add(new TextBoxControlDefinitionDTO()
+            recipientSource.Radios[0].Controls.Add(new TextBox()
             {
                 Label = "",
                 Name = "Address"
             });
 
-            recipientSource.Radios[1].Controls.Add(new DropDownListControlDefinitionDTO()
+            recipientSource.Radios[1].Controls.Add(new DropDownList()
             {
                 Label = "",
                 Name = "Select Upstream Crate",
@@ -115,7 +116,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static List<ControlDefinitionDTO> AllConfigurationControls()
         {
-            var fieldSelectDocusignTemplateDTO = new DropDownListControlDefinitionDTO()
+            var fieldSelectDocusignTemplateDTO = new DropDownList()
             {
                 Label = "Use DocuSign Template",
                 Name = "target_docusign_template",
@@ -149,7 +150,7 @@ namespace UtilitiesTesting.Fixtures
                 }
             };
 
-            var recipientSource = new RadioButtonGroupControlDefinitionDTO()
+            var recipientSource = new RadioButtonGroup()
             {
                 Label = "Recipient",
                 GroupName = "Recipient",
@@ -171,7 +172,7 @@ namespace UtilitiesTesting.Fixtures
                 }
             };
 
-            recipientSource.Radios[0].Controls.Add(new DropDownListControlDefinitionDTO()
+            recipientSource.Radios[0].Controls.Add(new DropDownList()
             {
                 Label = "",
                 Name = "Select Upstream Crate",
@@ -185,7 +186,7 @@ namespace UtilitiesTesting.Fixtures
                 }
             });
 
-            var textboxControl = new TextBoxControlDefinitionDTO()
+            var textboxControl = new TextBox()
             {
                 Label = "Address",
                 Name = "Address",
@@ -194,24 +195,24 @@ namespace UtilitiesTesting.Fixtures
                 }
             };
 
-            var textblockControl = new TextBlockControlDefinitionDTO()
+            var textblockControl = new TextBlock()
             {
                 Label = "Docu Sign Envelope",
                 Value = "This Action doesn't require any configuration.",
                 CssClass = "well well-lg"
             };
 
-            var filepickerControl = new FilePickerControlDefinitionDTO()
+            var filepickerControl = new FilePicker()
             {
                 Label = "Select a File"
             };
 
-            var mapingPaneControl = new MappingPaneControlDefinitionDTO()
+            var mapingPaneControl = new MappingPane()
             {
                 Label = "Mapping Pane"
             };
 
-            var fieldFilterPane = new FilterPaneControlDefinitionDTO()
+            var fieldFilterPane = new FilterPane()
             {
                 Label = "Execute Actions If:",
                 Name = "Selected_Filter",
@@ -223,14 +224,14 @@ namespace UtilitiesTesting.Fixtures
                 }
             };
 
-            var mappingPane = new MappingPaneControlDefinitionDTO()
+            var mappingPane = new MappingPane()
             {
                 Label = "Configure Mapping",
                 Name = "Selected_Mapping",
                 Required = true
             };
 
-            var checkboxControl = new CheckBoxControlDefinitionDTO()
+            var checkboxControl = new CheckBox()
             {
                 Label = "Envelope Sent",
                 Name = "Event_Envelope_Sent"

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Data.Constants;
+using Data.Control;
 using Data.Crates;
 using StructureMap;
 using Data.Interfaces;
@@ -23,12 +24,12 @@ namespace terminalDocuSign.Services
             Crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        public static DropDownListControlDefinitionDTO CreateDocuSignTemplatePicker(
+        public static DropDownList CreateDocuSignTemplatePicker(
             bool addOnChangeEvent, 
             string name = "Selected_DocuSign_Template", 
             string label = "Select DocuSign Template")
         {
-            var control = new DropDownListControlDefinitionDTO()
+            var control = new DropDownList()
             {
                 Label = label,
                 Name = name,

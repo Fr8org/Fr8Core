@@ -47,7 +47,7 @@ namespace terminalAzure.Tests.Controllers
 
             ActionDTO actionDTO = await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, curActionPath, curActionDTO);
 
-            Assert.AreEqual("Standard Configuration Controls", _crateManager.FromDto(actionDTO.CrateStorage).First().ManifestType.Type);
+            Assert.AreEqual("Standard UI Controls", _crateManager.FromDto(actionDTO.CrateStorage).First().ManifestType.Type);
         }
     }
 }

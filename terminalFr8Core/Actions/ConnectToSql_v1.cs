@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Razor.Generator;
 using AutoMapper;
+using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using Data.Entities;
@@ -49,7 +50,7 @@ namespace terminalFr8Core.Actions
 
         private Crate CreateControlsCrate()
         {
-            var control = new TextBoxControlDefinitionDTO()
+            var control = new TextBox()
             {
                 Label = "SQL Connection String",
                 Name = "ConnectionString",
