@@ -1,5 +1,4 @@
-﻿using slnStartupProjectLibrary;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,25 +13,18 @@ namespace PortSetter
     {
         static string solutionFolderName = "fr8company";
         static string solutionPath = "";
-        static string solutionFileName = "Dockyard.sln";
+        static string hubWebPort = "30643";
         static string configFilePath = @"\config\applicationhost.config";
         static bool isVS2015 = false;
-        static bool configureMultiStartUp = false;
         static XDocument configIIS = null;
         static void Main(string[] args)
         {
-            Console.WriteLine("Would you like to configure multiple startup? y/n");
-            configureMultiStartUp = Console.ReadKey(true).Key == ConsoleKey.Y;
+
             ConfigurePorts();
-            ConfigureStartup();
             Console.ReadKey();
             return;
         }
 
-        private static void ConfigureStartup()
-        {
-            throw new NotImplementedException();
-        }
 
         static void ConfigurePorts()
         {
@@ -76,6 +68,12 @@ namespace PortSetter
                 else Console.WriteLine("skipped " + term.Name);
             }
 
+            //HubWeb
+            string hubWebuserFile = folderPath.FullName + @"\HubWeb.csproj.user";
+            string hubWebConfig = folderPath.FullName + @"\Web.config";
+            string hubresult = ChangePort("HubWeb", hubWebuserFile, hubWebConfig);
+            Console.WriteLine("HubWeb".PadRight(40) + hubresult);
+
             configIIS.Save(configFilePath);
         }
 
@@ -85,9 +83,16 @@ namespace PortSetter
             XDocument xWeb = XDocument.Load(webConfig);
 
             //get correct port from Web.config / appSettings / TerminalEndpoint
-            var terminalEndpoint = xWeb.Descendants("appSettings").FirstOrDefault().Descendants().Where(a => a.Attribute("key").Value == "TerminalEndpoint");
-            var port_value = terminalEndpoint.Attributes("value").FirstOrDefault().Value;
-            string port = port_value.Substring(port_value.IndexOf(":") + 1);
+            string port = "";
+            if (terminalname != "HubWeb")
+            {
+                var terminalEndpoint = xWeb.Descendants("appSettings").FirstOrDefault().Descendants().Where(a => a.Attribute("key").Value == "TerminalEndpoint");
+                var port_value = terminalEndpoint.Attributes("value").FirstOrDefault().Value;
+                port = port_value.Substring(port_value.IndexOf(":") + 1);
+            }
+            else
+                port = hubWebPort;
+
 
 
             //set port in IIS virtual directory
