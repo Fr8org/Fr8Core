@@ -45,9 +45,6 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup>
-    <RunPostBuildEvent>Always</RunPostBuildEvent>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -152,18 +149,8 @@
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="TerminalIntegrationTests_SendDocuSignEnvelopeV1.cs" />
     <Compile Include="TerminalIntegrationTests.cs" />
-    <Compile Include="TerminalIntegrationTests_TerminalDocuSign.cs" />
-    <Compile Include="TerminalIntegrationTests_TerminalDropbox.cs" />
     <Compile Include="TerminalIntegrationTests_TerminalExcel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TerminalIntegrationTests_TerminalFr8Core.cs" />
-    <Compile Include="TerminalIntegrationTests_TerminalGoogle.cs" />
-    <Compile Include="TerminalIntegrationTests_TerminalPapertrail.cs" />
-    <Compile Include="TerminalIntegrationTests_TerminalSalesForce.cs" />
-    <Compile Include="TerminalIntegrationTests_TerminalSendGrid.cs" />
-    <Compile Include="TerminalIntegrationTests_TerminalSlack.cs" />
-    <Compile Include="TerminalIntegrationTests_TerminalTwillio.cs" />
-    <Compile Include="TerminalIntergrationTests_TerminalAzure.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -186,10 +173,6 @@
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalDropbox\terminalDropbox.csproj">
-      <Project>{cfba4468-222f-4255-8d94-809acbf7ac47}</Project>
-      <Name>terminalDropbox</Name>
-    </ProjectReference>
     <ProjectReference Include="..\terminalFr8Core\terminalFr8Core.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
       <Name>terminalFr8Core</Name>
@@ -201,30 +184,6 @@
     <ProjectReference Include="..\terminalExcel\terminalExcel.csproj">
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
       <Name>terminalExcel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\terminalGoogle\terminalGoogle.csproj">
-      <Project>{cddccfab-28b8-446c-8585-72d2bb78f2dc}</Project>
-      <Name>terminalGoogle</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\terminalPapertrail\terminalPapertrail.csproj">
-      <Project>{74d9bdc7-7b46-456f-b3c5-a4cdb5d74d7b}</Project>
-      <Name>terminalPapertrail</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\terminalSalesforce\terminalSalesforce.csproj">
-      <Project>{85cb0215-96df-4c38-a022-1be6c952813b}</Project>
-      <Name>terminalSalesforce</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\terminalSendGrid\terminalSendGrid.csproj">
-      <Project>{1e1ab01b-f6ab-4420-bf1d-5e6ef41d76bf}</Project>
-      <Name>terminalSendGrid</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\terminalSlack\terminalSlack.csproj">
-      <Project>{990db8cb-aad6-42fe-940d-3a731df56abe}</Project>
-      <Name>terminalSlack</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\terminalTwilio\terminalTwilio.csproj">
-      <Project>{14404298-4182-4d43-8098-5a199ed2fcaa}</Project>
-      <Name>terminalTwilio</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
@@ -267,17 +226,11 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy  $(SolutionDir)\terminalAzure\bin\terminalAzure.dll.config $(TargetDir) /C /Y
-xcopy  $(SolutionDir)\terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
-xcopy  $(SolutionDir)\terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y
-xcopy  $(SolutionDir)\terminalTwilio\bin\terminalTwilio.dll.config $(TargetDir) /C /Y
-xcopy  $(SolutionDir)\terminalPapertrail\bin\terminalPapertrail.dll.config $(TargetDir) /C /Y
-xcopy  $(SolutionDir)\terminalSendGrid\bin\terminalSendGrid.dll.config $(TargetDir) /C /Y
-xcopy  $(SolutionDir)\terminalGoogle\bin\terminalGoogle.dll.config $(TargetDir) /C /Y
-xcopy  $(SolutionDir)\terminalSalesforce\bin\terminalSalesforce.dll.config $(TargetDir) /C /Y
-xcopy  $(SolutionDir)\terminalSlack\bin\terminalSlack.dll.config $(TargetDir) /C /Y
-xcopy  $(SolutionDir)\terminalDropbox\bin\terminalDropbox.dll.config $(TargetDir) /C /Y
-xcopy  $(SolutionDir)\terminalDocuSign\bin\terminalDocuSign.dll.config $(TargetDir) /C /Y</PostBuildEvent>
+    <PostBuildEvent>$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalDocuSign\bin\terminalDocuSign.dll.config $(TargetDir) /C /Y 
+$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalAzure\bin\terminalAzure.dll.config $(TargetDir) /C /Y
+$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
+$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y 
+	</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

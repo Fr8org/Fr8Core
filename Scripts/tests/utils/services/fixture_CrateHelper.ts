@@ -185,7 +185,7 @@
             crateDTO: null
         }
 
-        public static controlsList: model.ControlsList = {
+        public static controlsList: model.ControlsList = <any>{
             fields: [
                 {
                     "name": "SMS_Number",
