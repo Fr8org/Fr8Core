@@ -14,6 +14,7 @@ using Hub.Managers;
 using terminalGoogle.Services;
 using TerminalBase.Infrastructure;
 using AutoMapper;
+using Data.Control;
 
 namespace terminalGoogle.Actions
 {
@@ -80,7 +81,7 @@ namespace terminalGoogle.Actions
 
         private Crate PackCrate_ConfigurationControls()
         {
-            var fieldSelectTemplate = new DropDownListControlDefinitionDTO()
+            var fieldSelectTemplate = new DropDownList()
             {
                 Label = "Select Google Form",
                 Name = "Selected_Google_Form",

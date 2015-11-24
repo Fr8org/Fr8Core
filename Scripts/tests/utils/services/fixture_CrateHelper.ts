@@ -85,7 +85,7 @@
                         ]
                     },
                     "parentCrateId": null,
-                    "manifestType": "Standard Configuration Controls",
+                    "manifestType": "Standard UI Controls",
                     "manifestId": "6",
                     "manufacturer": null,
                     "createTime": "0001-01-01T00:00:00"

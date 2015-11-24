@@ -204,6 +204,7 @@
     <Compile Include="Constants\FieldValidationResult.cs" />
     <Compile Include="Constants\ActivityDirection.cs" />
     <Compile Include="Constants\ManifestIdEnum.cs" />
+    <Compile Include="Control\Control.cs" />
     <Compile Include="Crates\Crate.cs" />
     <Compile Include="Crates\CrateManifestAttribute.cs" />
     <Compile Include="Crates\CrateManifestType.cs" />
@@ -435,6 +436,10 @@
     <Compile Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.cs" />
     <Compile Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.Designer.cs">
       <DependentUpon>201511200612313_RouteNode_Id_Int32_To_Guid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs" />
+    <Compile Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.Designer.cs">
+      <DependentUpon>201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
