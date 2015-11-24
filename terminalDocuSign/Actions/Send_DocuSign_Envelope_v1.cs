@@ -164,7 +164,7 @@ namespace terminalDocuSign.Actions
             return curActionDO;
         }
 
-        private async Task UpdateUpstreamCrate(ActionDO curActionDO)
+        public async Task UpdateUpstreamCrate(ActionDO curActionDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
