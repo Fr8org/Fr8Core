@@ -167,7 +167,7 @@ namespace HubWeb.Controllers
                     return BadRequest("Some of the request data is invalid");
                 }
 
-                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
+                var curRouteDO = Mapper.Map<RouteEmptyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
                 curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
 
                 //this will return 0 on create operation because of not saved changes

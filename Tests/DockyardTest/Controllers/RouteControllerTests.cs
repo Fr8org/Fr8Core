@@ -252,9 +252,9 @@ namespace DockyardTest.Controllers
 
             //Act: first add a process template, then modify it. 
             RouteController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            var response = ptc.Post(processTemplateDto);
-            processTemplateDto.Name = "updated";
-            response = ptc.Post(processTemplateDto, true);
+            var response = ptc.Post(routeDto);
+            routeDto.Name = "updated";
+            response = ptc.Post(routeDto, true);
 
             //Assert
             var okResult = response as OkNegotiatedContentResult<RouteEmptyDTO>;
@@ -265,7 +265,7 @@ namespace DockyardTest.Controllers
                 var ptdo = uow.RouteRepository.
                     GetQuery().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == routeDto.Name);
                 Assert.IsNotNull(ptdo);
-                Assert.AreEqual(processTemplateDto.Name, ptdo.Name);
+                Assert.AreEqual(routeDto.Name, ptdo.Name);
             }
         }
      
