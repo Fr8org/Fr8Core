@@ -41,7 +41,7 @@ namespace terminalTwilio.Services
             //CrateDTO curEventReport = ObjectFactory.GetInstance<ICrate>()
             //    .Create("Standard Event Report", JsonConvert.SerializeObject(eventReportContent), "Standard Event Report", 7);
 
-            //string url = Regex.Match(ConfigurationManager.AppSettings["EventWebServerUrl"], @"(\w+://\w+:\d+)").Value + "/dockyard_events";
+            //string url = Regex.Match(ConfigurationManager.AppSettings["EventWebServerUrl"], @"(\w+://\w+:\d+)").Value + "/fr8_events";
             //new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), curEventReport);
         }
     }

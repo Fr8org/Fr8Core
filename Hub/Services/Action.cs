@@ -261,7 +261,7 @@ namespace Hub.Services
             return action;
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false)
         {
             if (parentNodeId != null && createRoute)
             {
@@ -283,7 +283,7 @@ namespace Hub.Services
             }
             else
             {
-                parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId.Value);
+                parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId);
             }
 
             var action = Create(uow, actionTemplateId, name, label, parentNode);
