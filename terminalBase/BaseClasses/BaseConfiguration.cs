@@ -10,6 +10,7 @@ using Newtonsoft.Json.Serialization;
 using StructureMap;
 using Data.Infrastructure.AutoMapper;
 using Hub.StructureMap;
+using TerminalBase.Infrastructure;
 
 namespace TerminalBase.BaseClasses
 {
@@ -24,6 +25,7 @@ namespace TerminalBase.BaseClasses
                 ObjectFactory.Initialize();
                 ObjectFactory.Configure(StructureMapBootStrapper.LiveConfiguration);
             }
+            TerminalBootstrapper.ConfigureLive();
             ObjectFactory.Configure(terminalStructureMapRegistryConfigExpression);
 
             if (selfHost)

@@ -17,6 +17,7 @@ using Hub.Interfaces;
 using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using TerminalBase.Infrastructure;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Tests.Fixtures;
@@ -30,9 +31,12 @@ namespace terminalDocuSign.Tests.Actions
     {
         Receive_DocuSign_Envelope_v1 _extract_From_DocuSign_Envelope_v1;
         ICrateManager _crate;
-        public Receive_DocuSign_Envelope_v1Tests()
+
+        public override void SetUp()
         {
             base.SetUp();
+            TerminalBootstrapper.ConfigureTest();
+
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
 
             TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
