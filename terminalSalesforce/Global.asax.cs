@@ -1,5 +1,6 @@
 ﻿using System.Web.Http;
 using Data.Infrastructure.AutoMapper;
+using TerminalBase.Infrastructure;
 
 namespace terminalSalesforce
 {
@@ -11,6 +12,7 @@ namespace terminalSalesforce
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             // StructureMap Dependencies configuration
             Hub.StructureMap.StructureMapBootStrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.LIVE);
+            TerminalBootstrapper.ConfigureLive();
         }
     }
 }

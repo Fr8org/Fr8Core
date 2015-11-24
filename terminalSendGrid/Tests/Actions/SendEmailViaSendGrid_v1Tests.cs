@@ -22,6 +22,7 @@ using terminalSendGrid.Actions;
 using terminalSendGrid.Infrastructure;
 using terminalSendGrid.Services;
 using terminalSendGrid.Tests.Fixtures;
+using TerminalBase.Infrastructure;
 using Utilities;
 
 namespace terminalSendGrid.Tests.Actions
@@ -44,7 +45,8 @@ namespace terminalSendGrid.Tests.Actions
             StructureMapBootStrapper.ConfigureDependencies(dependencyType).SendGridConfigureDependencies(dependencyType);
             ObjectFactory.Configure(cfg => cfg.For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>())));
             ObjectFactory.Configure(cfg => cfg.For<IEmailPackager>().Use(new SendGridPackager()));
-            
+            TerminalBootstrapper.ConfigureTest();
+
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 
             var routeNode = new Mock<IRouteNode>();
@@ -61,7 +63,6 @@ namespace terminalSendGrid.Tests.Actions
             restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>()))
                 .Returns(Task.FromResult(payLoadDto));
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
-
         }
 
         [Test]
