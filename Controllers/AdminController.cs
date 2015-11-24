@@ -20,7 +20,7 @@ namespace HubWeb.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult ProcessBuilderExample()
+        public ActionResult RouteBuilderExample()
         {
             return View();
         }

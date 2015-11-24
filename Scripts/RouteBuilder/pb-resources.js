@@ -53,4 +53,4 @@
     // Singleton ImageLoader instance.
     ns.ImageLoader.instance = new ns.ImageLoader();
 
-}) (Core.ns('ProcessBuilder'));
+})(Core.ns('RouteBuilder'));

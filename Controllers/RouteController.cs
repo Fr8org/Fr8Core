@@ -34,7 +34,7 @@ namespace HubWeb.Controllers
         private readonly ISecurityServices _security;
         private readonly ICrateManager _crate;
 	    private readonly IPusherNotifier _pusherNotifier;
-
+        
         public RouteController()
         {
 			_route = ObjectFactory.GetInstance<IRoute>();
@@ -152,11 +152,11 @@ namespace HubWeb.Controllers
 
         [Route("~/routes")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Post(RouteOnlyDTO processTemplateDto, bool updateRegistrations = false)
+        public IHttpActionResult Post(RouteOnlyDTO routeDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (string.IsNullOrEmpty(processTemplateDto.Name))
+                if (string.IsNullOrEmpty(routeDto.Name))
                 {
                     ModelState.AddModelError("Name", "Name cannot be null");
                 }
@@ -166,18 +166,18 @@ namespace HubWeb.Controllers
                     return BadRequest("Some of the request data is invalid");
                 }
 
-                var curRouteDO = Mapper.Map<RouteOnlyDTO, RouteDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
+                var curRouteDO = Mapper.Map<RouteOnlyDTO, RouteDO>(routeDto, opts => opts.Items.Add("ptid", routeDto.Id));
                 curRouteDO.Fr8Account = _security.GetCurrentAccount(uow);
 
                 //this will return 0 on create operation because of not saved changes
                 _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);
                 uow.SaveChanges();
-                processTemplateDto.Id = curRouteDO.Id;
+                routeDto.Id = curRouteDO.Id;
                 //what a mess lets try this
                 /*curRouteDO.StartingSubroute.Route = curRouteDO;
                 uow.SaveChanges();
                 processTemplateDto.Id = curRouteDO.Id;*/
-                return Ok(processTemplateDto);
+                return Ok(routeDto);
             }
         }
 
@@ -277,13 +277,13 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplateDO = uow.RouteRepository.GetByKey(routeId);
+                var routeDO = uow.RouteRepository.GetByKey(routeId);
 
                 try
                 {
-                    var containerDO = await _route.Run(processTemplateDO, curCrate);
+                    var containerDO = await _route.Run(routeDO, curCrate);
 
-	                string message = String.Format("Route \"{0}\" executed", processTemplateDO.Name);
+	                string message = String.Format("Route \"{0}\" executed", routeDO.Name);
 
 					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
 
@@ -291,7 +291,7 @@ namespace HubWeb.Controllers
                 }
                 catch
                 {
-	                string message = String.Format("Route \"{0}\" failed", processTemplateDO.Name);
+	                string message = String.Format("Route \"{0}\" failed", routeDO.Name);
 
 					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
                 }
