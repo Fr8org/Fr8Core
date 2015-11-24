@@ -40,7 +40,7 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             /*
-             * Discussed with Alexei and it is required to have empty Standard Configuration Control in the crate.
+             * Discussed with Alexei and it is required to have empty Standard UI Control in the crate.
              * So we create a text block which informs the user that this particular aciton does not require any configuration.
              */
             var textBlock = new TextBlock()
