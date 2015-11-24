@@ -9,7 +9,7 @@ module dockyard.interfaces {
     export interface IReportIncidentVM extends ng.resource.IResource<model.IncidentDTO>, model.IncidentDTO { }
 
     export interface ISubscribedDocuSignTemplates {
-        processTemplateId?: number;
+        routeId?: number;
         id: number;
         docuSignTemplateId: string;
     }
@@ -17,7 +17,7 @@ module dockyard.interfaces {
     export interface IExternalEventSubscription {
         id: number;
         externalEvent: number;
-        processTemplateId: number;
+        routeId: number;
     }
 
     export interface IExternalEvent {
@@ -33,7 +33,7 @@ module dockyard.interfaces {
     export interface IExternalEventVM extends ng.resource.IResource<IExternalEvent> { }
     export interface IDataSourceListVM extends ng.resource.IResource<Array<string>> { }
 
-    export interface IProcessBuilderController extends ng.IControllerService {
+    export interface IRouteBuilderController extends ng.IControllerService {
         ptvm: interfaces.IRouteVM;
         submit: (isValid: boolean) => void;
         errorMessage: string;
@@ -42,7 +42,7 @@ module dockyard.interfaces {
         pbAddActionClick: (criteriaId: number) => void;
         pbActionClick: (criteriaId: number, actionId: number) => void;
 
-        processBuilder: any;
+        routeBuilder: any;
     }
 
     export interface IControlsListVM extends ng.resource.IResource<model.ControlsList>, model.ControlsList {

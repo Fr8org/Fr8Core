@@ -229,7 +229,7 @@
     <Compile Include="Entities\WebServiceDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
-    <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
+    <Compile Include="Infrastructure\AutoMapper\RouteDOFullConverter.cs" />
     <Compile Include="Entities\ActivityTemplateDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Infrastructure\CloudFileManager.cs" />

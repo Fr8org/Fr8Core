@@ -8,8 +8,8 @@ namespace UtilitiesTesting.Fixtures
         {
             return new RouteOnlyDTO()
             {
-                Name = "processtemplate1",
-                Description = "Description for test process template",
+                Name = "route1",
+                Description = "Description for test route",
                 RouteState = 1
                 //DockyardAccount = FixtureData.TestDockyardAccount1()
             };

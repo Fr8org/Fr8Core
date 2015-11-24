@@ -3,9 +3,9 @@
 
     //The class contains methods to create mocks for complex objects
     export class Factory {
-        //Creates a mock for ProcessBuilderController $scope
-        public static GetProcessBuilderScope(rootScope: interfaces.IAppRootScope): dockyard.controllers.IProcessBuilderScope {
-            var scope = <dockyard.controllers.IProcessBuilderScope>rootScope.$new();
+        //Creates a mock for RouteBuilderController $scope
+        public static GetRouteBuilderScope(rootScope: interfaces.IAppRootScope): dockyard.controllers.IRouteBuilderScope {
+            var scope = <dockyard.controllers.IRouteBuilderScope>rootScope.$new();
             scope.routeId = 0;
             scope.subroutes = null;
             scope.fields = null;
@@ -41,18 +41,18 @@
     }
 
 
-    export class ProcessTemplateServiceMock {
+    export class RouteServiceMock {
         constructor($q: ng.IQService) {
 
             this.get = jasmine.createSpy('get').and.callFake(() => {
                 var def: any = $q.defer();
-                def.resolve(fixtures.ProcessBuilder.newProcessTemplate);
+                def.resolve(fixtures.RouteBuilder.newRoute);
                 def.promise.$promise = def.promise;
                 return def.promise;
             });
             this.getFull = jasmine.createSpy('getFull').and.callFake(() => {
                 var def: any = $q.defer();
-                def.resolve(fixtures.ProcessBuilder.fullProcessTemplate);
+                def.resolve(fixtures.RouteBuilder.fullRoute);
                 def.promise.$promise = def.promise;
                 return def.promise;
             });
@@ -63,7 +63,7 @@
         public saveCurrent: any;
     }
 
-    export class ProcessBuilderServiceMock {
+    export class RouteBuilderServiceMock {
         constructor($q: ng.IQService) {
             this.save = jasmine.createSpy('save').and.callFake(() => {
                 var def: any = $q.defer();
@@ -75,7 +75,7 @@
             });
             this.saveCurrent = jasmine.createSpy('saveCurrent').and.callFake(() => {
                 var def: any = $q.defer();
-                def.resolve(fixtures.ProcessBuilder.processBuilderState);
+                def.resolve(fixtures.RouteBuilder.routeBuilderState);
                 def.promise.$promise = def.promise;
                 return def.promise;
             });
