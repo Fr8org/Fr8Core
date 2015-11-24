@@ -55,10 +55,19 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("listItems")]
         public List<ListItem> ListItems { get; set; }
 
+        [JsonProperty("selectedKey")]
+        public string SelectedKey { get; set; }
+
         public DropDownListControlDefinitionDTO()
         {
             ListItems = new List<ListItem>();
             Type = "DropDownList";
+        }
+
+        public override void Reset(List<string> fieldNames)
+        {
+            base.Reset(fieldNames);
+            SelectedKey = "";
         }
     }
 

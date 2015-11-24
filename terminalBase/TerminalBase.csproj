@@ -94,8 +94,12 @@
     <Compile Include="BaseClasses\BaseTerminalWebApiConfig.cs" />
     <Compile Include="Errors\TerminalErrorCode.cs" />
     <Compile Include="Infrastructure\BaseTerminalEvent.cs" />
+    <Compile Include="Infrastructure\DefaultHubCommunicator.cs" />
+    <Compile Include="Infrastructure\IHubCommunicator.cs" />
     <Compile Include="Infrastructure\States\ConfigurationRequestType.cs" />
     <Compile Include="Infrastructure\JsonParser.cs" />
+    <Compile Include="Infrastructure\TerminalBootstrapper.cs" />
+    <Compile Include="Infrastructure\TestMonitoringHubCommunicator.cs" />
     <Compile Include="Infrastructure\Validations.cs" />
     <Compile Include="Errors\TerminalCodedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

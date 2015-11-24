@@ -22,7 +22,7 @@ namespace terminalSalesforce.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult Get()
         {
-            var terminal = new TerminalDO()
+            var terminal = new TerminalDTO()
             {
                 Name = "terminalSalesforce",
                 TerminalStatus = TerminalStatus.Active,
@@ -30,12 +30,12 @@ namespace terminalSalesforce.Controllers
                 Version = "1"
             };
 
-	        var webService = new WebServiceDO
+	        var webService = new WebServiceDTO
 	        {
 				Name = "Salesforce"
 	        };
 
-            var createLeadAction = new ActivityTemplateDO()
+            var createLeadAction = new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Create_Lead",
@@ -44,10 +44,10 @@ namespace terminalSalesforce.Controllers
                 AuthenticationType = AuthenticationType.External,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
-				WebService = webService
+                WebService = webService
             };
 
-            var createContactAction = new ActivityTemplateDO()
+            var createContactAction = new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Create_Contact",
@@ -56,10 +56,10 @@ namespace terminalSalesforce.Controllers
                 AuthenticationType = AuthenticationType.External,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
-				WebService = webService
+                WebService = webService
             };
 
-            var createAccountAction = new ActivityTemplateDO()
+            var createAccountAction = new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Create_Account",
@@ -68,10 +68,10 @@ namespace terminalSalesforce.Controllers
                 AuthenticationType = AuthenticationType.External,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
-				WebService = webService
+                WebService = webService
             };
 
-            var actionList = new List<ActivityTemplateDO>()
+            var actionList = new List<ActivityTemplateDTO>()
             {
                 createLeadAction,createContactAction,createAccountAction
             };

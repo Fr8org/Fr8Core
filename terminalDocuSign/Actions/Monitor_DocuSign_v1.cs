@@ -249,6 +249,7 @@ namespace terminalDocuSign.Actions
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
+                UpgrateDocusignEventFields(updater.CrateStorage);
                 UpdateSelectedTemplateId(updater.CrateStorage);
                 UpdateSelectedEvents(updater.CrateStorage);
             }
@@ -434,11 +435,25 @@ namespace terminalDocuSign.Actions
                 fields);
             return createDesignTimeFields;
         }
+        // If we have "old" version of this action - rename EnvelopeId to TemplateId
+        private void UpgrateDocusignEventFields(CrateStorage storage)
+        {
+            foreach (var crate in storage.CratesOfType<StandardDesignTimeFieldsCM>().Where(x => x.Label == "DocuSign Event Fields"))
+            {
+                foreach (var field in crate.Content.Fields)
+                {
+                    if (field.Key == "EnvelopeId")
+                    {
+                        field.Key = "TemplateId";
+                    }
+                }
+            }
+        }
 
         private Crate PackCrate_DocuSignEventFields()
         {
             return Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields",
-                new FieldDTO {Key = "EnvelopeId", Value = string.Empty});
+                new FieldDTO {Key = "TemplateId", Value = string.Empty});
         }
     }
 }

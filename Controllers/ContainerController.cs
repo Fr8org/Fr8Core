@@ -24,6 +24,7 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Services;
+using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -81,7 +82,6 @@ namespace HubWeb.Controllers
             }
         }
 
-    
         // Return the Containers accordingly to ID given
         [Fr8ApiAuthorize]
         [Route("get/{id:guid?}")]

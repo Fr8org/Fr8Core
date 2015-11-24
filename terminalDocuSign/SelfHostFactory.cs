@@ -35,10 +35,7 @@ namespace terminalDocuSign
                     routeTemplate: "terminal_docusign/{controller}/{id}",
                     defaults: new { id = RouteParameter.Optional }
                 );
-                config.Routes.MapHttpRoute(
-    name: "TerminalDocuSignActionCatchAll",
-    routeTemplate: "actions/{*actionType}",
-    defaults: new { controller = "Action", action = "Execute" });
+
                 config.Services.Replace(
                     typeof(IHttpControllerTypeResolver),
                     new DocuSignControllerTypeResolver()

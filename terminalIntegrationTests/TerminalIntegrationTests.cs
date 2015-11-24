@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Http.Results;
 using AutoMapper;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using StructureMap;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -17,16 +19,14 @@ using Hub.Managers.APIManagers.Transmitters.Terminal;
 using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using terminalFr8Core;
+using terminalAzure;
 using terminalDocuSign;
+using terminalDocuSign.Infrastructure.AutoMapper;
+using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Tests.Fixtures;
+using TerminalBase.Infrastructure;
 
 using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
-using terminalDocuSign.Infrastructure.StructureMap;
-using terminalDocuSign.Infrastructure.AutoMapper;
-using System.Security.Principal;
-using Data.Crates;
-using Hub.Managers;
 
 namespace terminalIntegrationTests
 {
@@ -60,6 +60,7 @@ namespace terminalIntegrationTests
             base.SetUp();
 			TerminalDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.TEST);
 			TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
+            TerminalBootstrapper.ConfigureTest();
 
             // these are integration tests, we are using a real transmitter
             ObjectFactory.Configure(c => c.For<ITerminalTransmitter>().Use<TerminalTransmitter>());
