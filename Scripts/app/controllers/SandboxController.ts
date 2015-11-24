@@ -8,7 +8,7 @@ module dockyard.controllers {
     'use strict';
 
     export interface ISandboxScope extends ng.IScope {
-        processTemplateId: number;
+        routeId: number;
         processNodeTemplates: Array<model.SubrouteDTO>,
         fields: Array<model.Field>;
 
@@ -16,7 +16,7 @@ module dockyard.controllers {
         //curNodeId: number;
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
-        current: model.ProcessBuilderState,
+        current: model.RouteBuilderState,
         save: Function;
         cancel: Function;
 
@@ -51,7 +51,7 @@ module dockyard.controllers {
             'RouteService',
             '$timeout',
             'CriteriaServiceWrapper',
-            'ProcessBuilderService',
+            'RouteBuilderService',
             'ActionListService',
             'CrateHelper',
             'ActivityTemplateService'
@@ -72,18 +72,18 @@ module dockyard.controllers {
             private RouteService: services.IRouteService,
             private $timeout: ng.ITimeoutService,
             private CriteriaServiceWrapper: services.ICriteriaServiceWrapper,
-            private ProcessBuilderService: services.IProcessBuilderService,
+            private RouteBuilderService: services.IRouteBuilderService,
             
             private CrateHelper: services.CrateHelper,
             private ActivityTemplateService: services.IActivityTemplateService
             ) {
             this._scope = $scope;
-            this._scope.processTemplateId = $state.params.id;
+            this._scope.routeId = $state.params.id;
 
 
             this._scope.processNodeTemplates = [];
             this._scope.fields = [];
-            this._scope.current = new model.ProcessBuilderState();
+            this._scope.current = new model.RouteBuilderState();
 
             //THIS IS FOR DEMO ONLY
             var radioDemoField = new model.RadioButtonGroupControlDefinitionDTO();

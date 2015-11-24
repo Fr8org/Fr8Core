@@ -1,26 +1,26 @@
 ﻿module dockyard.tests.utils.fixtures {
 
-    export class ProcessBuilder {
-        public static newProcessTemplate = <interfaces.IRouteVM> {
+    export class RouteBuilder {
+        public static newRoute = <interfaces.IRouteVM> {
             id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
-            name: "MockProcessTemplate",
-            description: "MockProcessTemplate",
+            name: "MockRoute",
+            description: "MockRoute",
             routeState: 1,
             subscribedDocuSignTemplates: [],
             externalEventSubscription: [],
             startingSubrouteId: 1
         };
 
-        public static processBuilderState = new model.ProcessBuilderState();
+        public static routeBuilderState = new model.RouteBuilderState();
 
-        public static updatedProcessTemplate = <interfaces.IRouteVM> {
+        public static updatedRoute = <interfaces.IRouteVM> {
             'name': 'Updated',
             'description': 'Description',
             'routeState': 1,
             'subscribedDocuSignTemplates': ['58521204-58af-4e65-8a77-4f4b51fef626']
         }
 
-        public static fullProcessTemplate = <interfaces.IRouteVM> {
+        public static fullRoute = <interfaces.IRouteVM> {
             'name': 'Updated',
             'description': 'Description',
             'routeState': 1,
