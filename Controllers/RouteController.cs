@@ -219,17 +219,19 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Route("activate")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Activate(RouteDO curRoute)
+        public async Task<IHttpActionResult> Activate(RouteDO curRoute)
         {
-            return Ok(_route.Activate(curRoute));
+            string actionDTO = await _route.Activate(curRoute);
+            return Ok(actionDTO);
         }
 
         [HttpPost]
         [Route("deactivate")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Deactivate(RouteDO curRoute)
+        public async Task<IHttpActionResult> Deactivate(RouteDO curRoute)
         {
-            return Ok(_route.Deactivate(curRoute));
+            string actionDTO = await _route.Deactivate(curRoute);
+            return Ok(actionDTO);
         }
 
         [HttpPost]
