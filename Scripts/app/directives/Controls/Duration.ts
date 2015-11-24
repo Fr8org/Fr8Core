@@ -39,6 +39,9 @@ module dockyard.directives.duration {
                         } else {
                             $scope.field.minutes = 0;
                         }
+                    } else if ($scope.field.minutes >= 60) {
+                        $scope.field.hours += Math.floor($scope.field.minutes / 60);
+                        $scope.field.minutes %= 60;
                     }
 
                     if ($scope.field.hours < 0) {
@@ -48,6 +51,9 @@ module dockyard.directives.duration {
                         } else {
                             $scope.field.hours = 0;
                         }
+                    } else if ($scope.field.hours >= 24) {
+                        $scope.field.days += Math.floor($scope.field.hours / 24);
+                        $scope.field.hours %= 24;
                     }
                 });
 

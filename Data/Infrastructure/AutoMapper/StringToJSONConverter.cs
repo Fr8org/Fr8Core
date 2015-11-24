@@ -42,7 +42,7 @@ namespace Data.Infrastructure.AutoMapper
 
             var storageDto = JsonConvert.DeserializeObject<CrateStorageDTO>(jsonString);
 
-            if (storageDto.Crates != null)
+            if (storageDto != null && storageDto.Crates != null)
             {
                 foreach (var crateDto in storageDto.Crates)
                 {

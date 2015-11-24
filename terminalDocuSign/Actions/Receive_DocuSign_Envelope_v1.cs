@@ -135,11 +135,11 @@ namespace terminalDocuSign.Actions
             //get envelopeIdFromUpstreamActions
             var upstream = await _routeNode.GetCratesByDirection<StandardDesignTimeFieldsCM>(curActionDO.Id, CrateDirection.Upstream);
 
-            var envelopeId = upstream.SelectMany(x => x.Content.Fields).FirstOrDefault(x => x.Key == "EnvelopeId");
+            var templateId = upstream.SelectMany(x => x.Content.Fields).FirstOrDefault(x => x.Key == "TemplateId");
 
             //In order to Receive a DocuSign Envelope as fr8, an upstream action needs to provide a DocuSign EnvelopeID.
             TextBlock textBlock;
-            if (envelopeId != null)
+            if (templateId != null)
             {
                 textBlock = new TextBlock
                 {
@@ -153,7 +153,7 @@ namespace terminalDocuSign.Actions
                 textBlock = new TextBlock
                 {
                     Label = "Docu Sign Envelope",
-                    Value = "In order to Receive a DocuSign Envelope as fr8, an upstream action needs to provide a DocuSign EnvelopeID.",
+                    Value = "In order to Receive a DocuSign Envelope as fr8, an upstream action needs to provide a DocuSign TemplateId.",
                     CssClass = "alert alert-warning"
                 };
             }
@@ -165,12 +165,12 @@ namespace terminalDocuSign.Actions
             }
 
             // var templateId = upstream.SelectMany(x => x.Content.Fields).FirstOrDefault(x => x.Key == "TemplateId");
-            var templateId = envelopeId.Value;
+            //var templateId = templateId.Value;
 
             // If DocuSignTemplate Id was found, then add design-time fields.
-            if (!string.IsNullOrEmpty(templateId))
+            if (templateId != null && !string.IsNullOrEmpty(templateId.Value))
             {
-                _docuSignManager.ExtractFieldsAndAddToCrate(templateId, docuSignAuthDTO, curActionDO);
+                _docuSignManager.ExtractFieldsAndAddToCrate(templateId.Value, docuSignAuthDTO, curActionDO);
             }
             return curActionDO;
         }

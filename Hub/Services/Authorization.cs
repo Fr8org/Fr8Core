@@ -22,11 +22,13 @@ namespace Hub.Services
     public class Authorization
     {
         private readonly ICrateManager _crate;
+	    private readonly ITime _time;
 
 
         public Authorization()
         {
-           _crate = ObjectFactory.GetInstance<ICrateManager>();
+			_crate = ObjectFactory.GetInstance<ICrateManager>();
+	        _time = ObjectFactory.GetInstance<ITime>();
         }
 
         public string GetToken(string userId)
@@ -83,7 +85,10 @@ namespace Hub.Services
                     };
                     uow.AuthorizationTokenRepository.Add(tokenDO);
                 }
-				tokenDO.ExpiresAt = DateTime.UtcNow.AddYears(100);
+
+	            DateTime currentTime = _time.CurrentDateTime();
+
+				tokenDO.ExpiresAt = currentTime.AddYears(100);
                 tokenDO.Token = token;
                 uow.SaveChanges();
             }
