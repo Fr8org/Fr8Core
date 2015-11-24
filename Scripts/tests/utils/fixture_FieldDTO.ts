@@ -98,6 +98,7 @@ module dockyard.tests.utils.fixtures {
             field: 'test2'
         };
 
+
         public static textSource: model.TextSource = {
             type: "TextSource",
             events: [],
