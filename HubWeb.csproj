@@ -4238,6 +4238,6 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>if exist $(TargetDir)Web.dll del /Q $(TargetDir)Web.dll
-gulp compile_js</PostBuildEvent>
+$(ProjectDir)/node_modules/.bin/gulp compile_js</PostBuildEvent>
   </PropertyGroup>
 </Project>
