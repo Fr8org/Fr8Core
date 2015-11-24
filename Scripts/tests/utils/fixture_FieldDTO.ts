@@ -110,7 +110,8 @@ module dockyard.tests.utils.fixtures {
             valueSource: 'test',
             listItems: [{ key: 'test1', value: 'value1' }, { key: 'test2', value: 'value2' }, { key: 'test3', value: 'value3' }],
             name: 'test name',
-            fieldLabel: 'test label'
+            fieldLabel: 'test label',
+            selectedKey: null
         };
     }
 } 

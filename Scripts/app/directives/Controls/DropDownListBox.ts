@@ -10,8 +10,8 @@ module dockyard.directives.dropDownListBox {
     }
 
     export function DropDownListBox(): ng.IDirective {
-        var controller = ['$scope', '$filter', function ($scope: IDropDownListBoxScope, $filter: any) {
-            $scope.setSelectedItem = function (item: model.FieldDTO) {
+        var controller = ['$scope', function ($scope: IDropDownListBoxScope) {
+            $scope.setSelectedItem = (item: model.FieldDTO) => {
                 $scope.field.value = item.value || (<any>item).Value;
                 $scope.field.selectedKey = item.key;
                 $scope.selectedItem = item;
