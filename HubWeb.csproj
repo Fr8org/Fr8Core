@@ -767,6 +767,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\DesignerHeader\DesignerHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\layout.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\LongAjaxCursor.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ActionNameFormatter.ts" />

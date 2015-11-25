@@ -494,3 +494,9 @@ input[type=radio]:checked ~ label .control-label-hidden {
 .counter-input {
     width: 42px;
 }
+
+
+/* Long ajax cursor */
+.long-ajax-cursor {
+    cursor: progress;
+}
