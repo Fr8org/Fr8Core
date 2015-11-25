@@ -26,6 +26,11 @@ namespace HealthMonitor.Utility
             return ConfigurationManager.AppSettings[TerminalName + "Url"];
         }
 
+        public string GetTerminalDiscoverUrl()
+        {
+            return GetTerminalUrl() + "/terminals/discover";
+        }
+
         public string GetTerminalConfigureUrl()
         {
             return GetTerminalUrl() + "/actions/configure";
@@ -78,6 +83,11 @@ namespace HealthMonitor.Utility
         public async Task<TResponse> HttpPostAsync<TRequest, TResponse>(string url, TRequest request)
         {
             return await RestfulServiceClient.PostAsync<TRequest, TResponse>(new Uri(url), request);
+        }
+
+        public async Task<TResponse> HttpGetAsync<TResponse>(string url)
+        {
+            return await RestfulServiceClient.GetAsync<TResponse>(new Uri(url));
         }
     }
 }
