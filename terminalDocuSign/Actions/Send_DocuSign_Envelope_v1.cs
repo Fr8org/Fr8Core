@@ -144,6 +144,21 @@ namespace terminalDocuSign.Actions
 
             var template = new DocuSignTemplate();
             template.Login = new DocuSignPackager().Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
+            
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
+                // Two crates are created
+                // One to hold the ui controls
+                if (updater.CrateStorage.All(c => c.ManifestType.Id != (int)MT.StandardDesignTimeFields))
+                {
+                    var crateControlsDTO = CreateDocusignTemplateConfigurationControls(curActionDO);
+                    // and one to hold the available templates, which need to be requested from docusign
+                    var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
+
+                    updater.CrateStorage = new CrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
+                }
+            }
 
             await UpdateUpstreamCrate(curActionDO);
 
@@ -255,22 +270,10 @@ namespace terminalDocuSign.Actions
             return Crate.CreateDesignTimeFieldsCrate("Available Templates", fieldsDTO.ToArray());
         }
 
-        private async Task UpdateUpstreamCrate(ActionDO curActionDO)
+        public async Task UpdateUpstreamCrate(ActionDO curActionDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
-                // Two crates are created
-                // One to hold the ui controls
-                if (updater.CrateStorage.All(c => c.ManifestType.Id != (int)MT.StandardDesignTimeFields))
-                {
-                    var crateControlsDTO = CreateDocusignTemplateConfigurationControls(curActionDO);
-                    // and one to hold the available templates, which need to be requested from docusign
-                    var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
-
-                    updater.CrateStorage = new CrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
-                }
-
                 // Build a crate with the list of available upstream fields
                 var curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c =>
                                                                                     c.ManifestType.Id == (int)MT.StandardDesignTimeFields
