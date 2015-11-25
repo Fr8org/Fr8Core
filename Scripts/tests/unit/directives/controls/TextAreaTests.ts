@@ -34,8 +34,8 @@ module dockyard.tests.unit.directives.controls {
                 $compile = _$compile_;
 
                 scope = $rootScope.$new();
-                scope.field = $.extend(true, {}, fx.TextAreaDefinitionDTO.sampleField);
-                scope.field1 = $.extend(true, {}, fx.TextAreaDefinitionDTO.readOnlyField);
+                scope.field = $.extend(true, {}, fx.TextArea.sampleField);
+                scope.field1 = $.extend(true, {}, fx.TextArea.readOnlyField);
                 $element = compileTemplate(scope, directive, $compile);
                 $element1 = compileTemplate(scope, direcitve1, $compile);
             });

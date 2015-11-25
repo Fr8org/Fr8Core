@@ -24,7 +24,7 @@
         }
 
         public hasControlListCrate(crateStorage: model.CrateStorage): boolean {
-            return this.hasCrateOfManifestType(crateStorage, 'Standard Configuration Controls');
+            return this.hasCrateOfManifestType(crateStorage, 'Standard UI Controls');
         }
 
 
@@ -124,9 +124,9 @@
                 return;
             }
 
-            // Find single crate with manifestType == 'Standard Configuration Controls'.
+            // Find single crate with manifestType == 'Standard UI Controls'.
             var controlListCrate = this.findByManifestType(
-                crateStorage, 'Standard Configuration Controls');
+                crateStorage, 'Standard UI Controls');
 
             // Overwrite contents of that crate with actual data in controlList.fields.
             controlListCrate.contents = { Controls: controlList.fields };
@@ -137,7 +137,7 @@
             //to set or override our DropdownListBox items
             for (var i = 0; i < fields.length; i++) {
                 if (fields[i].type == 'DropDownList' || fields[i].type == 'TextSource') {
-                    var dropdownListField = <model.DropDownListControlDefinitionDTO> fields[i];
+                    var dropdownListField = <model.DropDownList> fields[i];
                     if (!dropdownListField.source) {
                         continue;
                     }
@@ -160,7 +160,7 @@
                 }
                 // If we encountered radiobuttonGroup, we need to check every individual option if it has any nested fields
                 if (field.radios) {
-                    this.populateListItemsFromDataSource((<model.RadioButtonGroupControlDefinitionDTO>field).radios, crateStorage);
+                    this.populateListItemsFromDataSource((<model.RadioButtonGroup>field).radios, crateStorage);
                 }
             }
         }
@@ -174,7 +174,7 @@
 
         public createControlListFromCrateStorage(crateStorage: model.CrateStorage): model.ControlsList {
             var crate = this.findByManifestType(
-                crateStorage, 'Standard Configuration Controls'
+                crateStorage, 'Standard UI Controls'
                 );
 
             var controlsList = new model.ControlsList();
