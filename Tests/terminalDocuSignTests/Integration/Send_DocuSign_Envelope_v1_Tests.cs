@@ -34,29 +34,17 @@ namespace terminalDocuSignTests
             get { return "terminalDocuSign"; }
         }
 
-        [Test]
-        public async Task Configure_Initial_Test()
+        private async Task<ActionDTO> ConfigureInitial()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
             var requestActionDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_ActionDTO();
-            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl,requestActionDTO);
+            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
 
-            int a = 12;
-
-            Assert.NotNull(responseActionDTO);
-            Assert.NotNull(responseActionDTO.CrateStorage);
-
-            var storage = _crateManager.GetStorage(responseActionDTO);
-
-            Assert.AreEqual(3, storage.Count);
-            Assert.True((storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls")));
-            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates")));
-            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Upstream Terminal-Provided Fields")));
+            return responseActionDTO;
         }
 
-        [Test]
-        public async Task Configure_FollowUp_Test()
+        private async Task<ActionDTO> ConfigureFollowUp()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -73,8 +61,29 @@ namespace terminalDocuSignTests
                 updater.CrateStorage = storage;
             }
 
+            return await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+        }
 
-            var responseFollowUpActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+        [Test]
+        public async Task Configure_Initial_Test()
+        {
+            var responseActionDTO = await ConfigureInitial();
+
+            Assert.NotNull(responseActionDTO);
+            Assert.NotNull(responseActionDTO.CrateStorage);
+
+            var storage = _crateManager.GetStorage(responseActionDTO);
+
+            Assert.AreEqual(3, storage.Count);
+            Assert.True((storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls")));
+            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates")));
+            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Upstream Terminal-Provided Fields")));
+        }
+
+        [Test]
+        public async Task Configure_FollowUp_Test()
+        {
+            var responseFollowUpActionDTO = await ConfigureFollowUp();
 
             // Assert FollowUp Configure result.
             Assert.NotNull(responseFollowUpActionDTO);
@@ -85,11 +94,24 @@ namespace terminalDocuSignTests
             Assert.AreEqual(5, followUpStorage.Count);
             Assert.True((followUpStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSignTemplateUserDefinedFields")));
             Assert.True((followUpStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSignTemplateStandardFields")));
-            Assert.True((storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls")));
-            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates")));
-            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Upstream Terminal-Provided Fields")));
+            Assert.True((followUpStorage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls")));
+            Assert.True((followUpStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates")));
+            Assert.True((followUpStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Upstream Terminal-Provided Fields")));
         }
 
+/*
+        [Test]
+        public async Task Run_Correct_Test()
+        {
+            var responseFollowUpActionDTO = await ConfigureFollowUp();
+            var terminalRunUrl = GetTerminalRunUrl();
+            var requestActionDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_ActionDTO();
+            responseFollowUpActionDTO.AuthToken = requestActionDTO.AuthToken;
+            var responsePayloadDTO = await HttpPostAsync<ActionDTO, ActionDTO>(terminalRunUrl, responseFollowUpActionDTO);
+            int a = 12;
+
+        }
+        */
         private void SendDocuSignEnvelope_SelectFirstTemplate(CrateStorage curCrateStorage)
         {
             // Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
@@ -108,43 +130,5 @@ namespace terminalDocuSignTests
             var docuSignTemplateControlDTO = controlsMS.Controls.Single(x => x.Name == "target_docusign_template");
             docuSignTemplateControlDTO.Value = fieldsMS.Fields.First().Value;
         }
-
-        /*
-        private ActionDTO CreateEmptyAction(ActivityTemplateDO activityTemplate)
-        {
-            var curActionController = CreateActionController();
-            var curActionDO = FixtureData.TestAction_Blank();
-
-            if (_subrouteDO.ChildNodes == null)
-            {
-                _subrouteDO.ChildNodes = new List<RouteNodeDO>();
-                _subrouteDO.ChildNodes.Add(curActionDO);
-            }
-
-            if (activityTemplate != null)
-            {
-                curActionDO.ActivityTemplate = activityTemplate;
-                curActionDO.ActivityTemplateId = activityTemplate.Id;
-            }
-
-            curActionDO.ParentRouteNode = _subrouteDO;
-            curActionDO.ParentRouteNodeId = _subrouteDO.Id;
-
-            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-
-            curActionDTO.IsTempId = true;
-
-            var result = curActionController.Save(curActionDTO)
-                as OkNegotiatedContentResult<ActionDTO>;
-
-            // Assert action was property saved.
-            Assert.NotNull(result);
-            Assert.NotNull(result.Content);
-            Assert.AreEqual(result.Content.ActivityTemplateId, curActionDTO.ActivityTemplateId);
-            Assert.AreEqual(result.Content.CrateStorage, curActionDTO.CrateStorage);
-
-
-            return result.Content;
-        }*/
     }
 }
