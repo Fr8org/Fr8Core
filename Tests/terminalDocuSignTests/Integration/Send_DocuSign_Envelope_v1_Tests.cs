@@ -1,0 +1,150 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Data.Crates;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
+using HealthMonitor.Utility;
+using Hub.Managers;
+using Hub.StructureMap;
+using NUnit.Framework;
+using StructureMap;
+using UtilitiesTesting.Fixtures;
+
+namespace terminalDocuSignTests
+{
+    [Explicit]
+    public class Send_DocuSign_Envelope_v1_Tests : BaseHealthMonitorTest
+    {
+
+        public ICrateManager _crateManager;
+
+        [SetUp]
+        public void SetUp()
+        {
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);        
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+        }
+
+        public override string TerminalName
+        {
+            get { return "terminalDocuSign"; }
+        }
+
+        [Test]
+        public async Task Configure_Initial_Test()
+        {
+            var configureUrl = GetTerminalConfigureUrl();
+
+            var requestActionDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_ActionDTO();
+            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl,requestActionDTO);
+
+            int a = 12;
+
+            Assert.NotNull(responseActionDTO);
+            Assert.NotNull(responseActionDTO.CrateStorage);
+
+            var storage = _crateManager.GetStorage(responseActionDTO);
+
+            Assert.AreEqual(3, storage.Count);
+            Assert.True((storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls")));
+            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates")));
+            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Upstream Terminal-Provided Fields")));
+        }
+
+        [Test]
+        public async Task Configure_FollowUp_Test()
+        {
+            var configureUrl = GetTerminalConfigureUrl();
+
+            var requestActionDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_ActionDTO();
+
+            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+
+            var storage = _crateManager.GetStorage(responseActionDTO);
+
+            SendDocuSignEnvelope_SelectFirstTemplate(storage);
+
+            using (var updater = _crateManager.UpdateStorage(requestActionDTO))
+            {
+                updater.CrateStorage = storage;
+            }
+
+
+            var responseFollowUpActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+
+            // Assert FollowUp Configure result.
+            Assert.NotNull(responseFollowUpActionDTO);
+            Assert.NotNull(responseFollowUpActionDTO.CrateStorage);
+
+            var followUpStorage = _crateManager.GetStorage(responseFollowUpActionDTO);
+
+            Assert.AreEqual(5, followUpStorage.Count);
+            Assert.True((followUpStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSignTemplateUserDefinedFields")));
+            Assert.True((followUpStorage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "DocuSignTemplateStandardFields")));
+            Assert.True((storage.CratesOfType<StandardConfigurationControlsCM>().Any(x => x.Label == "Configuration_Controls")));
+            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates")));
+            Assert.True((storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Upstream Terminal-Provided Fields")));
+        }
+
+        private void SendDocuSignEnvelope_SelectFirstTemplate(CrateStorage curCrateStorage)
+        {
+            // Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
+            var availableTemplatesCrateDTO = curCrateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Single(x => x.Label == "Available Templates");
+
+            var fieldsMS = availableTemplatesCrateDTO.Content;
+
+            // Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
+
+            var configurationControlsCrateDTO = curCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single(x => x.Label == "Configuration_Controls");
+
+            var controlsMS = configurationControlsCrateDTO.Content;
+
+            // Modify value of Selected_DocuSign_Template field and push it back to crate,
+            // exact same way we do on front-end.
+            var docuSignTemplateControlDTO = controlsMS.Controls.Single(x => x.Name == "target_docusign_template");
+            docuSignTemplateControlDTO.Value = fieldsMS.Fields.First().Value;
+        }
+
+        /*
+        private ActionDTO CreateEmptyAction(ActivityTemplateDO activityTemplate)
+        {
+            var curActionController = CreateActionController();
+            var curActionDO = FixtureData.TestAction_Blank();
+
+            if (_subrouteDO.ChildNodes == null)
+            {
+                _subrouteDO.ChildNodes = new List<RouteNodeDO>();
+                _subrouteDO.ChildNodes.Add(curActionDO);
+            }
+
+            if (activityTemplate != null)
+            {
+                curActionDO.ActivityTemplate = activityTemplate;
+                curActionDO.ActivityTemplateId = activityTemplate.Id;
+            }
+
+            curActionDO.ParentRouteNode = _subrouteDO;
+            curActionDO.ParentRouteNodeId = _subrouteDO.Id;
+
+            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+
+            curActionDTO.IsTempId = true;
+
+            var result = curActionController.Save(curActionDTO)
+                as OkNegotiatedContentResult<ActionDTO>;
+
+            // Assert action was property saved.
+            Assert.NotNull(result);
+            Assert.NotNull(result.Content);
+            Assert.AreEqual(result.Content.ActivityTemplateId, curActionDTO.ActivityTemplateId);
+            Assert.AreEqual(result.Content.CrateStorage, curActionDTO.CrateStorage);
+
+
+            return result.Content;
+        }*/
+    }
+}
