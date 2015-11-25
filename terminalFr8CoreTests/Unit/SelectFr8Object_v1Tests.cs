@@ -19,7 +19,7 @@ using TerminalBase.Infrastructure;
 using terminalFr8Core.Actions;
 using terminalFr8Core.Interfaces;
 
-namespace terminalFr8CoreTests.Actions
+namespace terminalFr8CoreTests.Unit
 {
     [TestFixture]
     [Category("Select_Fr8_Object_v1")]
