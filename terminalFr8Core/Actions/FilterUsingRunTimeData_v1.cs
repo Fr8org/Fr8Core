@@ -35,7 +35,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetProcessPayload(containerId);
+            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
 
             var controlsMS = Action.GetControlsManifest(curActionDO);
 
@@ -227,7 +227,7 @@ namespace terminalFr8Core.Actions
             {
                 //this conversion from actiondto to Action should be moved back to the controller edge
                 var curUpstreamFields =
-                    (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
+                    (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
                     .Fields
                     .ToArray();
 

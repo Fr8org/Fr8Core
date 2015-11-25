@@ -10,7 +10,7 @@ namespace Data.Interfaces.DataTransferObjects
             ProcessId = processId;
         }
 
-        public CrateStorageDTO CrateStorage{ get; set; }
+        public CrateStorageDTO CrateStorage { get; set; }
 
         public Guid ProcessId { get; set; }
     }
