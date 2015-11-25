@@ -441,10 +441,6 @@
     <Compile Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.Designer.cs">
       <DependentUpon>201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201511250912363_Add_Description_To_Terminal.cs" />
-    <Compile Include="Migrations\201511250912363_Add_Description_To_Terminal.Designer.cs">
-      <DependentUpon>201511250912363_Add_Description_To_Terminal.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -456,7 +452,6 @@
     <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
-    <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
     <Compile Include="Repositories\WebServiceRepository.cs" />
     <Compile Include="States\ActivityCategory.cs" />
     <Compile Include="States\AuthenticationType.cs" />
@@ -634,7 +629,6 @@
     <Compile Include="Validations\OutboundEmailValidatorBase.cs" />
     <Compile Include="Validations\OutboundHtmlEmailValidator.cs" />
     <Compile Include="Validations\OutboundTemplatedEmailValidator.cs" />
-    <Compile Include="Validations\TerminalValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\Validators.cs" />
   </ItemGroup>
@@ -749,9 +743,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.resx">
       <DependentUpon>201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201511250912363_Add_Description_To_Terminal.resx">
-      <DependentUpon>201511250912363_Add_Description_To_Terminal.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

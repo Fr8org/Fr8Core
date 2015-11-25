@@ -9,7 +9,5 @@
 
         // TODO: remove this, DO-1397
         // bool RequiresAuthentication { get; set; }
-
-        string Description { get; set; }
     }
 }

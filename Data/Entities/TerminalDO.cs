@@ -40,7 +40,6 @@ namespace Data.Entities
         public bool SubscriptionRequired { get; set; }
 
         public virtual Fr8AccountDO UserDO { get; set; }
-
-        public string Description { get; set; }
+        
     }
 }
