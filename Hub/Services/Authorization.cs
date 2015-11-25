@@ -346,7 +346,7 @@ namespace Hub.Services
             return externalAuthUrlDTO;
         }
 
-        private void AddAuthenticationCrate(ActionDTO actionDTO, int authType)
+        public void AddAuthenticationCrate(ActionDTO actionDTO, int authType)
         {
             using (var updater = _crate.UpdateStorage(() => actionDTO.CrateStorage))
             {
