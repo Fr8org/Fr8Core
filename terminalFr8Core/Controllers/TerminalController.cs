@@ -42,6 +42,17 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
+                Name = "Build_Message",
+                Label = "Build a Message",
+                Category = ActivityCategory.Processors,
+                AuthenticationType = AuthenticationType.None,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1"
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
                 Name = "FilterUsingRunTimeData",
                 Label = "Filter Using Runtime Data",
                 Category = ActivityCategory.Processors,
@@ -139,6 +150,8 @@ namespace terminalFr8Core.Controllers
                 WebService = webService,
                 Version = "1"
             });
+
+            
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
