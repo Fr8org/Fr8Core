@@ -9,6 +9,22 @@ namespace HealthMonitor
 {
     public class NUnitTestRunner
     {
+        public class NUnitTestRunnerFilter : ITestFilter
+        {
+            public bool IsEmpty { get { return false; } }
+
+            public bool Match(ITest test)
+            {
+                return test.RunState != RunState.NotRunnable;
+            }
+
+            public bool Pass(ITest test)
+            {
+                return test.RunState != RunState.NotRunnable;
+            }
+        }
+
+
         private Type[] GetTestSuiteTypes()
         {
             var healthMonitorCS = (HealthMonitorConfigurationSection)
@@ -49,7 +65,7 @@ namespace HealthMonitor
                 testSuite.Tests.Add(test);
             }
 
-            var testResult = testSuite.Run(new NullListener(), TestFilter.Empty);
+            var testResult = testSuite.Run(new NullListener(), new NUnitTestRunnerFilter());
             var testReport = GenerateTestReport(testResult);
 
             return testReport;
@@ -89,9 +105,12 @@ namespace HealthMonitor
             }
             else
             {
-                foreach (TestResult childTestResult in testResult.Results)
+                if (testResult.Results != null)
                 {
-                    result.AddRange(VisitTestResult(childTestResult));
+                    foreach (TestResult childTestResult in testResult.Results)
+                    {
+                        result.AddRange(VisitTestResult(childTestResult));
+                    }
                 }
             }
 
