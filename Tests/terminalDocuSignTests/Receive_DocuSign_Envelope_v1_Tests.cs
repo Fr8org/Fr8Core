@@ -38,8 +38,8 @@ namespace terminalDocuSignTests
                 }
             );
 
-            var responseActionDTO = await JsonRestClient
-                .PostAsync<ActionDTO, ActionDTO>(
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );
@@ -49,7 +49,47 @@ namespace terminalDocuSignTests
                 .CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "DocuSignTemplateUserDefinedFields");
 
             Assert.AreEqual(docuSignTemplateUserDefinedFieldsCrates.Count(), 1);
-            // DocuSignTemplateUserDefinedFields
+        }
+
+        [Test]
+        public async void Example_PayloadData()
+        {
+            var runUrl = GetTerminalRunUrl();
+
+            var requestActionDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_ActionDTO();
+
+            AddPayloadCrate(
+                requestActionDTO,
+                new StandardPayloadDataCM(
+                    new FieldDTO()
+                    {
+                        Key = "EnvelopeId",
+                        Value = "ea2258b2-2d80-4eca-9f40-6c5b5d5c5dda"
+                    }
+                )
+            );
+
+            AddCrate(
+                requestActionDTO,
+                new StandardDesignTimeFieldsCM()
+                {
+                    Fields = new List<FieldDTO>()
+                    {
+                        new FieldDTO()
+                        {
+                            Key = "TestField",
+                            Value = "TestValue"
+                        }
+                    }
+                },
+                "DocuSignTemplateUserDefinedFields"
+            );
+
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    runUrl,
+                    requestActionDTO
+                );
         }
     }
 }

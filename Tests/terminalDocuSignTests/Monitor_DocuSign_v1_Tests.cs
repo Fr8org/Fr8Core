@@ -25,8 +25,8 @@ namespace terminalDocuSignTests
 
             var requestActionDTO = HealthMonitor_FixtureData.Monitor_DocuSign_v1_InitialConfiguration_ActionDTO();
 
-            var responseActionDTO = await JsonRestClient
-                .PostAsync<ActionDTO, ActionDTO>(
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );

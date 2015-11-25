@@ -44,6 +44,7 @@ namespace TerminalBase.Infrastructure
                 var crates = crateStorage
                     .Where(x => x.Label.StartsWith("HealthMonitor_PayloadCrate"))
                     .ToList();
+
                 StripLabelPrefix(crates, "HealthMonitor_PayloadCrate");
 
                 updater.CrateStorage.AddRange(crates);

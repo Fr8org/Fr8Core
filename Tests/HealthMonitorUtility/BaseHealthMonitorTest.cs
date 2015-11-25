@@ -1,18 +1,21 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
+using System.Threading.Tasks;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Managers;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace HealthMonitor.Utility
 {
     public abstract class BaseHealthMonitorTest
     {
-        public JsonRestClient JsonRestClient { get; set; }
         public ICrateManager Crate { get; set; }
+        public IRestfulServiceClient RestfulServiceClient { get; set; }
 
         public BaseHealthMonitorTest()
         {
-            JsonRestClient = new JsonRestClient();
+            RestfulServiceClient = new RestfulServiceClient();
             Crate = new CrateManager();
         }
 
@@ -28,7 +31,12 @@ namespace HealthMonitor.Utility
             return GetTerminalUrl() + "/actions/configure";
         }
 
-        private void AddCrate<T>(ActionDTO actionDTO, T crateManifest, string label, string innerLabel)
+        public string GetTerminalRunUrl()
+        {
+            return GetTerminalUrl() + "/actions/run";
+        }
+
+        private void AddHubCrate<T>(ActionDTO actionDTO, T crateManifest, string label, string innerLabel)
         {
             using (var updater = Crate.UpdateStorage(actionDTO))
             {
@@ -43,19 +51,33 @@ namespace HealthMonitor.Utility
             }
         }
 
+        public void AddCrate<T>(ActionDTO actionDTO, T crateManifest, string label)
+        {
+            using (var updater = Crate.UpdateStorage(actionDTO))
+            {
+                var crate = Crate<T>.FromContent(label, crateManifest);
+                updater.CrateStorage.Add(crate);
+            }
+        }
+
         public void AddUpstreamCrate<T>(ActionDTO actionDTO, T crateManifest, string crateLabel = "")
         {
-            AddCrate(actionDTO, crateManifest, "HealthMonitor_UpstreamCrate", crateLabel);
+            AddHubCrate(actionDTO, crateManifest, "HealthMonitor_UpstreamCrate", crateLabel);
         }
 
         public void AddDownstreamCrate<T>(ActionDTO actionDTO, T crateManifest, string crateLabel = "")
         {
-            AddCrate(actionDTO, crateManifest, "HealthMonitor_DownstreamCrate", crateLabel);
+            AddHubCrate(actionDTO, crateManifest, "HealthMonitor_DownstreamCrate", crateLabel);
         }
 
         public void AddPayloadCrate<T>(ActionDTO actionDTO, T crateManifest, string crateLabel = "")
         {
-            AddCrate(actionDTO, crateManifest, "HealthMonitor_PayloadCrate", crateLabel);
+            AddHubCrate(actionDTO, crateManifest, "HealthMonitor_PayloadCrate", crateLabel);
+        }
+
+        public async Task<TResponse> HttpPostAsync<TRequest, TResponse>(string url, TRequest request)
+        {
+            return await RestfulServiceClient.PostAsync<TRequest, TResponse>(new Uri(url), request);
         }
     }
 }
