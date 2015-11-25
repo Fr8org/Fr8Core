@@ -234,8 +234,8 @@ namespace Hub.Services
             curActivityTemplates = uow.ActivityTemplateRepository
                 .GetAll()
                 .OrderBy(t => t.Category)
-                .ToList()
-                .Select(Mapper.Map<ActivityTemplateDTO>);
+                .Select(Mapper.Map<ActivityTemplateDTO>)
+                .ToList();
 
 
             //we're currently bypassing the subscription logic until we need it
@@ -260,8 +260,8 @@ namespace Hub.Services
                 .Where(predicate)
                 .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                 .OrderBy(t => t.Category)
-                .ToList()
-                .Select(Mapper.Map<ActivityTemplateDTO>);
+                .Select(Mapper.Map<ActivityTemplateDTO>)
+                .ToList();
         }
 
         public IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount)
@@ -272,8 +272,8 @@ namespace Hub.Services
                 .Where(at => at.Category == Data.States.ActivityCategory.Solution 
                     && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                 .OrderBy(t => t.Category)
-                .ToList()
-                .Select(Mapper.Map<ActivityTemplateDTO>);
+                .Select(Mapper.Map<ActivityTemplateDTO>)
+                .ToList();
 
             //we're currently bypassing the subscription logic until we need it
             //we're bypassing the pluginregistration logic here because it's going away in V2
@@ -295,14 +295,12 @@ namespace Hub.Services
             {
                 curActivityTemplates = uow.ActivityTemplateRepository
                     .GetQuery()
-                    .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
+                    .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active).AsEnumerable().ToArray()
                     .GroupBy(t => t.Category)
                     .OrderBy(c => c.Key)
-                    //lets load them all before memory processing
-                    .AsEnumerable()
                     .Select(c => new ActivityTemplateCategoryDTO
                     {
-                        Activities = c.Select(Mapper.Map<ActivityTemplateDTO>),
+                        Activities = c.Select(Mapper.Map<ActivityTemplateDTO>).ToList(),
                         Name = c.Key.ToString()
                     })
                     .ToList();
