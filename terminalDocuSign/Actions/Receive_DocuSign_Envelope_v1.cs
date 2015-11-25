@@ -25,11 +25,9 @@ namespace terminalDocuSign.Actions
     public class Receive_DocuSign_Envelope_v1 : BaseTerminalAction
     {
         private readonly DocuSignManager _docuSignManager;
-        private readonly IRouteNode _routeNode;
 
         public Receive_DocuSign_Envelope_v1()
         {
-            _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _docuSignManager = new DocuSignManager();
         }
 
@@ -53,14 +51,15 @@ namespace terminalDocuSign.Actions
             return; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO,
+            Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(actionDO, containerId);
 
             //Get envlopeId
             string envelopeId = GetEnvelopeId(processPayload);
@@ -133,7 +132,7 @@ namespace terminalDocuSign.Actions
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
             //get envelopeIdFromUpstreamActions
-            var upstream = await _routeNode.GetCratesByDirection<StandardDesignTimeFieldsCM>(curActionDO.Id, CrateDirection.Upstream);
+            var upstream = await GetCratesByDirection<StandardDesignTimeFieldsCM>(curActionDO, CrateDirection.Upstream);
 
             var templateId = upstream.SelectMany(x => x.Content.Fields).FirstOrDefault(x => x.Key == "TemplateId");
 

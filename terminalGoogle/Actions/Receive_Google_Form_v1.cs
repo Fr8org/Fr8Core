@@ -158,7 +158,7 @@ namespace terminalGoogle.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
             var payloadFields = ExtractPayloadFields(processPayload);
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
             

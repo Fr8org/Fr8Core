@@ -43,7 +43,7 @@ namespace terminalFr8Core.Actions
             var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(actionDO, containerId);
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
             {
@@ -109,12 +109,12 @@ namespace terminalFr8Core.Actions
             Crate getErrorMessageCrate = null;
 
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
                 .Fields
                 .ToArray();
 
             var curDownstreamFields =
-                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Downstream))
+                (await GetDesignTimeFields(curActionDO, CrateDirection.Downstream))
                 .Fields
                 .ToArray();
 

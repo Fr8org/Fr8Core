@@ -44,8 +44,8 @@ namespace terminalSalesforce.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             PayloadDTO processPayload = null;
-          
-            processPayload = await GetProcessPayload(containerId);
+
+            processPayload = await GetProcessPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
                 {
