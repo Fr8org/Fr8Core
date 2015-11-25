@@ -13,7 +13,7 @@ namespace terminalDocuSignTests
             };
         }
 
-        public static ActivityTemplateDTO Monitor_DocuSign_ActivityTemplate_v1()
+        public static ActivityTemplateDTO Monitor_DocuSign_v1_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
             {
@@ -23,15 +23,40 @@ namespace terminalDocuSignTests
             };
         }
 
+        public static ActivityTemplateDTO Receive_DocuSign_Envelope_v1_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 2,
+                Name = "Receive_DocuSign_Envelope_TEST",
+                Version = "1"
+            };
+        }
+
         public static ActionDTO Monitor_DocuSign_v1_InitialConfiguration_ActionDTO()
         {
-            var activityTemplate = Monitor_DocuSign_ActivityTemplate_v1();
+            var activityTemplate = Monitor_DocuSign_v1_ActivityTemplate();
 
             return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Monitor_DocuSign",
                 Label = "Monitor DocuSign",
+                AuthToken = DocuSign_AuthToken(),
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
+        public static ActionDTO Receive_DocuSign_Envelope_v1_Example_ActionDTO()
+        {
+            var activityTemplate = Receive_DocuSign_Envelope_v1_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Receive_DocuSign",
+                Label = "Receive DocuSign",
                 AuthToken = DocuSign_AuthToken(),
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id

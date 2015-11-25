@@ -20,6 +20,17 @@ namespace TerminalBase.Infrastructure
             Crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
+        private void StripLabelPrefix(IEnumerable<Crate> crates, string prefix)
+        {
+            foreach (var crate in crates)
+            {
+                if (crate.Label != prefix && crate.Label.StartsWith(prefix + "_"))
+                {
+                    crate.Label = crate.Label.Substring((prefix + "_").Length);
+                }
+            }
+        }
+
         public Task<PayloadDTO> GetProcessPayload(ActionDO actionDO, Guid containerId)
         {
             var payload = new PayloadDTO(containerId)
@@ -30,7 +41,12 @@ namespace TerminalBase.Infrastructure
             var crateStorage = Crate.GetStorage(actionDO);
             using (var updater = Crate.UpdateStorage(payload))
             {
-                updater.CrateStorage.AddRange(crateStorage.Where(x => x.Label == "HealthMonitor_PayloadCrate"));
+                var crates = crateStorage
+                    .Where(x => x.Label.StartsWith("HealthMonitor_PayloadCrate"))
+                    .ToList();
+                StripLabelPrefix(crates, "HealthMonitor_PayloadCrate");
+
+                updater.CrateStorage.AddRange(crates);
             }
 
             return Task.FromResult(payload);
@@ -44,7 +60,11 @@ namespace TerminalBase.Infrastructure
                 : "HealthMonitor_DownstreamCrate";
 
             var crateStorage = Crate.GetStorage(actionDO);
-            var crates = crateStorage.CratesOfType<TManifest>(x => x.Label == searchLabel).ToList();
+            var crates = crateStorage
+                .CratesOfType<TManifest>(x => x.Label.StartsWith(searchLabel))
+                .ToList();
+
+            StripLabelPrefix(crates, searchLabel);
 
             return Task.FromResult(crates);
         }

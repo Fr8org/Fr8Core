@@ -19,7 +19,7 @@ namespace terminalDocuSignTests
         }
 
         [Test]
-        public async void Initial_Configuration_Check_Crate_Types()
+        public async void Example_Initial_Configuration_Check_Crate_Types()
         {
             var configureUrl = GetTerminalConfigureUrl();
 

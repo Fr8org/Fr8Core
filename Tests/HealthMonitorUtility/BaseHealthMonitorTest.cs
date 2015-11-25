@@ -28,28 +28,34 @@ namespace HealthMonitor.Utility
             return GetTerminalUrl() + "/actions/configure";
         }
 
-        private void AddCrate<T>(ActionDTO actionDTO, T crateManifest, string label)
+        private void AddCrate<T>(ActionDTO actionDTO, T crateManifest, string label, string innerLabel)
         {
             using (var updater = Crate.UpdateStorage(actionDTO))
             {
-                var crate = Crate<T>.FromContent("HealthMonitor_UpstreamCrate", crateManifest);
+                var fullLabel = label;
+                if (!string.IsNullOrEmpty(innerLabel))
+                {
+                    fullLabel += "_" + innerLabel;
+                }
+
+                var crate = Crate<T>.FromContent(fullLabel, crateManifest);
                 updater.CrateStorage.Add(crate);
             }
         }
 
-        public void AddUpstreamCrate<T>(ActionDTO actionDTO, T crateManifest)
+        public void AddUpstreamCrate<T>(ActionDTO actionDTO, T crateManifest, string crateLabel = "")
         {
-            AddCrate(actionDTO, crateManifest, "HealthMonitor_UpstreamCrate");
+            AddCrate(actionDTO, crateManifest, "HealthMonitor_UpstreamCrate", crateLabel);
         }
 
-        public void AddDownstreamCrate<T>(ActionDTO actionDTO, T crateManifest)
+        public void AddDownstreamCrate<T>(ActionDTO actionDTO, T crateManifest, string crateLabel = "")
         {
-            AddCrate(actionDTO, crateManifest, "HealthMonitor_DownstreamCrate");
+            AddCrate(actionDTO, crateManifest, "HealthMonitor_DownstreamCrate", crateLabel);
         }
 
-        public void AddPayloadCrate<T>(ActionDTO actionDTO, T crateManifest)
+        public void AddPayloadCrate<T>(ActionDTO actionDTO, T crateManifest, string crateLabel = "")
         {
-            AddCrate(actionDTO, crateManifest, "HealthMonitor_PayloadCrate");
+            AddCrate(actionDTO, crateManifest, "HealthMonitor_PayloadCrate", crateLabel);
         }
     }
 }
