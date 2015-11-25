@@ -3,8 +3,8 @@ module dockyard.directives.longAjaxCursor {
     'use strict';
 
     const LOADING_CSS = 'long-ajax-cursor';
-    const LOADING_TIMEOUT = 800;
-    const WAIT_TIMEOUT = 300;
+    const LOADING_TIMEOUT = 800; // Max time between first request and last response
+    const WAIT_TIMEOUT = 300; // Max time between consiquent requests to consider them a set
 
     var instances = [];
     
