@@ -186,7 +186,7 @@ module dockyard.directives.paneConfigureAction {
                     }
                 } 
 
-                // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
+                // Here we look for Crate with ManifestType == 'Standard UI Controls'.
                 // We parse its contents and put it into currentAction.configurationControls structure.
                 function loadConfiguration() {
                     // Block pane and show pane-level 'loading' spinner
@@ -201,7 +201,7 @@ module dockyard.directives.paneConfigureAction {
                             if (res.childrenActions && res.childrenActions.length > 0) {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
-                                // and redirect user to the ProcessBuilder once if is received.
+                                // and redirect user to the RouteBuilder once if is received.
                                 // It means that solution configuration is complete. 
                                 $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                             }
@@ -236,8 +236,8 @@ module dockyard.directives.paneConfigureAction {
                         var authMS = <any>authCrate.contents;
 
                         // Dockyard auth mode.
-                        if (authMS.Mode == 1) {
-                            startInternalAuthentication($scope.currentAction.activityTemplate.id);
+                        if (authMS.Mode == 1 || authMS.Mode == 3) {
+                            startInternalAuthentication($scope.currentAction.activityTemplate.id, authMS.Mode);
                         }
 
                         // External auth mode.                           
@@ -258,11 +258,12 @@ module dockyard.directives.paneConfigureAction {
                     }, 1000);
                 }
 
-                function startInternalAuthentication(activityTemplateId: number) {
+                function startInternalAuthentication(activityTemplateId: number, mode: number) {
                     var self = this;
 
                     var modalScope = <any>$scope.$new(true);
                     modalScope.activityTemplateId = activityTemplateId;
+                    modalScope.mode = mode;
 
                     $modal.open({
                         animation: true,

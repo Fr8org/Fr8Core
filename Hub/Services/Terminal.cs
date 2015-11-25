@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using AutoMapper;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces.Manifests;
@@ -87,7 +89,7 @@ namespace Hub.Services
         {
             var restClient = new RestfulServiceClient();
             var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
-            return standardFr8TerminalCM.Actions;
+            return Mapper.Map<IList<ActivityTemplateDO>>(standardFr8TerminalCM.Actions);
         }
     }
 }

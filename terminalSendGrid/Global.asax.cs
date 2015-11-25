@@ -1,7 +1,8 @@
-﻿using Data.Infrastructure.AutoMapper;
-using System.Web;
+﻿using System.Web;
 using System.Web.Http;
+using Data.Infrastructure.AutoMapper;
 using Hub.StructureMap;
+using TerminalBase.Infrastructure;
 
 namespace terminalSendGrid
 {
@@ -16,6 +17,7 @@ namespace terminalSendGrid
 
             // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies(dependencyType).SendGridConfigureDependencies(dependencyType);
+            TerminalBootstrapper.ConfigureLive();
         }
     }
 }

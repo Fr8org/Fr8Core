@@ -12,6 +12,7 @@ using TerminalBase.BaseClasses;
 using Data.Entities;
 using StructureMap;
 using Hub.Managers;
+using Data.Control;
 
 namespace terminalFr8Core.Actions
 {
@@ -19,7 +20,7 @@ namespace terminalFr8Core.Actions
     {
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var controlsMS = Crate.GetStorage(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -103,7 +104,7 @@ namespace terminalFr8Core.Actions
 
         private Crate CreateControlsCrate()
         {
-            var fieldFilterPane = new FieldListControlDefinitionDTO
+            var fieldFilterPane = new FieldList
             {
                 Label = "Fill the values for other actions",
                 Name = "Selected_Fields",

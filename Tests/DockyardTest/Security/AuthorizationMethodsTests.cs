@@ -170,7 +170,7 @@ namespace DockyardTest.Security
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
 
-                var processTemplateDO = new RouteDO()
+                var routeDO = new RouteDO()
                 {
                     Id = FixtureData.GetTestGuidById(23),
                     Description = "HealthDemo Integration Test",
@@ -178,13 +178,13 @@ namespace DockyardTest.Security
                     RouteState = RouteState.Active,
                     Fr8Account = tokenDO.UserDO
                 };
-                uow.RouteRepository.Add(processTemplateDO);
+                uow.RouteRepository.Add(routeDO);
                 uow.SaveChanges();
 
                 var actionDO = new ActionDO()
                 {
-                    ParentRouteNode = processTemplateDO,
-                    ParentRouteNodeId = processTemplateDO.Id,
+                    ParentRouteNode = routeDO,
+                    ParentRouteNodeId = routeDO.Id,
                     Name = "testaction",
 
                     Id = FixtureData.GetTestGuidById(1),
@@ -223,11 +223,12 @@ namespace DockyardTest.Security
             var credentialsDTO = new CredentialsDTO()
             {
                 Username = "Username",
-                Password = "Password"
+                Password = "Password",
+                Domain = "Domain"
             };
 
             var result = _authorization.AuthenticateInternal(
-               tokenDO.UserDO, activityTemplateDO, credentialsDTO.Username, credentialsDTO.Password);
+               tokenDO.UserDO, activityTemplateDO, credentialsDTO.Domain, credentialsDTO.Username, credentialsDTO.Password);
 
             //Assert
             Mock<IRestfulServiceClient> restClientMock = Mock.Get(ObjectFactory.GetInstance<IRestfulServiceClient>());

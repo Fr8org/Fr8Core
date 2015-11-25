@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -57,8 +59,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
-                .ForMember(x => x.TerminalId, opts => opts.ResolveUsing(x => x.TerminalId)); ;
-
+                .ForMember(x => x.TerminalId, opts => opts.ResolveUsing(x => x.TerminalId));
 
             Mapper.CreateMap<ActivityTemplateDTO, ActivityTemplateDO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
@@ -66,16 +67,23 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.ComponentActivities, opts => opts.ResolveUsing(x => x.ComponentActivities))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
                 .ForMember(x => x.TerminalId, opts => opts.ResolveUsing(x => x.TerminalId))
-                .ForMember(x => x.Terminal, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null));
+                .ForMember(x => x.Terminal, opts => opts.ResolveUsing(x => x.Terminal))
+                .ForMember(x => x.AuthenticationType, opts => opts.ResolveUsing(x => x.AuthenticationType))
+                .ForMember(x => x.WebService, opts => opts.ResolveUsing(x => Mapper.Map<WebServiceDO>(x.WebService)))
+                .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
+                .ForMember(x => x.ActivityTemplateStateTemplate,
+                    opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
+                .ForMember(x => x.WebServiceId, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null));
+
 //
 //            Mapper.CreateMap<ActionListDO, ActionListDTO>()
 //                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
 //                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
 //                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
-            Mapper.CreateMap<RouteDO, RouteOnlyDTO>();
-            Mapper.CreateMap<RouteOnlyDTO, RouteDO>();
-            Mapper.CreateMap<RouteDO, RouteOnlyDTO>();
+            Mapper.CreateMap<RouteDO, RouteEmptyDTO>();
+            Mapper.CreateMap<RouteEmptyDTO, RouteDO>();
+            Mapper.CreateMap<RouteDO, RouteEmptyDTO>();
             Mapper.CreateMap<SubrouteDTO, SubrouteDO>()
                 .ForMember(x => x.ParentRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId));
             Mapper.CreateMap<SubrouteDO, SubrouteDTO>()
@@ -86,10 +94,10 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
                 .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
 
-            Mapper.CreateMap<RouteDO, RouteDTO>()
+            Mapper.CreateMap<RouteDO, RouteFullDTO>()
                 .ConvertUsing<RouteDOFullConverter>();
 
-            Mapper.CreateMap<RouteOnlyDTO, RouteDTO>();
+            Mapper.CreateMap<RouteEmptyDTO, RouteFullDTO>();
           //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();
             Mapper.CreateMap<SubrouteDO, FullSubrouteDTO>();
 
@@ -104,6 +112,9 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ContainerDO, ContainerDTO>();
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>();
+            Mapper.CreateMap<TerminalDO, TerminalDTO>();
+            Mapper.CreateMap<TerminalDTO, TerminalDO>();
+
         }
 
         private static List<RouteNodeDO> MapActions(IEnumerable<ActionDTO> actions)

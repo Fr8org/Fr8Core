@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Google.GData.Extensions;
@@ -22,13 +23,13 @@ namespace terminalGoogle.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverTerminals()
         {
-            var webService = new WebServiceDO
+            var webService = new WebServiceDTO
             {
                 Name = "Google",
                 IconPath= "/Content/icons/web_services/google-icon-64x64.png"
             };
 
-            var terminal = new TerminalDO()
+            var terminal = new TerminalDTO()
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
@@ -36,7 +37,7 @@ namespace terminalGoogle.Controllers
                 Version = "1",
             };
 
-            var extractDataAction = new ActivityTemplateDO
+            var extractDataAction = new ActivityTemplateDTO
             {
                 Name = "Extract_Spreadsheet_Data",
                 Label = "Extract Spreadsheet Data",
@@ -49,12 +50,25 @@ namespace terminalGoogle.Controllers
                 Tags = "Table Data Generator"
             };
 
+            var receiveGoogleForm = new ActivityTemplateDTO
+            {
+                Name = "Receive_Google_Form",
+                Label = "Receive Google Form Response",
+                Version = "1",
+                Category = ActivityCategory.Receivers,
+                Terminal = terminal,
+                AuthenticationType = AuthenticationType.External,
+                WebService = webService,
+                MinPaneWidth = 300
+            };
+
             return Json(new StandardFr8TerminalCM()
             {
                 Definition = terminal,
-                Actions = new List<ActivityTemplateDO>
+                Actions = new List<ActivityTemplateDTO>
                 {
-                    extractDataAction
+                    extractDataAction,
+                    receiveGoogleForm
                 }
             });    
         }

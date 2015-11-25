@@ -110,24 +110,24 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             templateUrl: "/AngularTemplate/MyAccountPage",
             data: { pageTitle: 'My Account', pageSubTitle: '' }
         })
-    // Process Template list
+    // Route list
         .state('routeList', {
-            url: "/processes",
+            url: "/routes",
             templateUrl: "/AngularTemplate/RouteList",
             data: { pageTitle: 'Routes', pageSubTitle: 'This page displays all Routes' }
         })
 
-    // Process Template form
+    // Route form
         .state('routeForm', {
-            url: "/processes/{id}",
+            url: "/routes/{id}",
             templateUrl: "/AngularTemplate/RouteForm",
             data: { pageTitle: 'Route', pageSubTitle: 'Add a new Route' },
         })
 
     // Process Builder framework
-        .state('processBuilder', {
-            url: "/processes/{id}/builder",
-            templateUrl: "/AngularTemplate/ProcessBuilder",
+        .state('routeBuilder', {
+            url: "/routes/{id}/builder",
+            templateUrl: "/AngularTemplate/RouteBuilder",
             data: { pageTitle: '' },
         })
 
@@ -144,7 +144,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         })
 
         .state('routeDetails', {
-            url: "/processes/{id}/details",
+            url: "/routes/{id}/details",
             templateUrl: "/AngularTemplate/RouteDetails",
             data: { pageTitle: 'Route Details', pageSubTitle: '' }
         })

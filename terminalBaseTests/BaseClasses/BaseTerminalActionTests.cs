@@ -33,6 +33,8 @@ namespace terminalBaseTests.BaseClasses
         public override void SetUp()
         {
             base.SetUp();
+            TerminalBootstrapper.ConfigureTest();
+
             _baseTerminalAction = new BaseTerminalAction();
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
@@ -124,7 +126,7 @@ namespace terminalBaseTests.BaseClasses
                 ActionDO curAction = FixtureData.TestAction57();
 
                 var result = await _baseTerminalAction.GetDesignTimeFields(
-                    curAction.Id, CrateDirection.Upstream);
+                    curAction, CrateDirection.Upstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(16, result.Fields.Count);
             }
@@ -141,7 +143,7 @@ namespace terminalBaseTests.BaseClasses
                 ActionDO curAction = FixtureData.TestAction57();
 
                 var result = await _baseTerminalAction.GetDesignTimeFields(
-                    curAction.Id, CrateDirection.Downstream);
+                    curAction, CrateDirection.Downstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(18, result.Fields.Count);
             }

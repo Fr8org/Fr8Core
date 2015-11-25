@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Constants;
+using Data.Control;
+using Data.Infrastructure;
 using StructureMap;
 using Newtonsoft.Json;
 using Data.Crates;
@@ -167,6 +169,7 @@ namespace Hub.Services
         public async Task<string> AuthenticateInternal(
             Fr8AccountDO account,
             ActivityTemplateDO activityTemplate,
+            string domain,
             string username,
             string password)
         {
@@ -181,19 +184,20 @@ namespace Hub.Services
 
             var credentialsDTO = new CredentialsDTO()
             {
+                Domain = domain,
                 Username = username,
                 Password = password
             };
 
-            var response = await restClient.PostAsync<CredentialsDTO>(
+            var terminalResponse = await restClient.PostAsync<CredentialsDTO>(
                 new Uri("http://" + terminal.Endpoint + "/authentication/internal"),
                 credentialsDTO
             );
 
-            var authTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(response);
-            if (!string.IsNullOrEmpty(authTokenDTO.Error))
+            var terminalResponseAuthTokenDTO = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(terminalResponse);
+            if (!string.IsNullOrEmpty(terminalResponseAuthTokenDTO.Error))
             {
-                return authTokenDTO.Error;
+                return terminalResponseAuthTokenDTO.Error;
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -201,7 +205,7 @@ namespace Hub.Services
                 var authToken = uow.AuthorizationTokenRepository
                     .FindOne(x => x.UserDO.Id == account.Id && x.Terminal.Id == terminal.Id);
 
-                if (authTokenDTO != null)
+                if (terminalResponseAuthTokenDTO != null)
                 {
                     var curTerminal = uow.TerminalRepository.GetByKey(terminal.Id);
                     var curAccount = uow.UserRepository.GetByKey(account.Id);
@@ -210,8 +214,8 @@ namespace Hub.Services
                     {
                         authToken = new AuthorizationTokenDO()
                         {
-                            Token = authTokenDTO.Token,
-                            ExternalAccountId = authTokenDTO.ExternalAccountId,
+                            Token = terminalResponseAuthTokenDTO.Token,
+                            ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId,
                             Terminal = curTerminal,
                             UserDO = curAccount,
                             ExpiresAt = DateTime.Today.AddMonths(1)
@@ -221,11 +225,18 @@ namespace Hub.Services
                     }
                     else
                     {
-                        authToken.Token = authTokenDTO.Token;
-                        authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                        authToken.Token = terminalResponseAuthTokenDTO.Token;
+                        authToken.ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId;
                     }
 
                     uow.SaveChanges();
+
+                    //if terminal requires Authentication Completed Notification, follow the existing terminal event notification protocol 
+                    //to notify the terminal about authentication completed event
+                    if (terminalResponseAuthTokenDTO.AuthCompletedNotificationRequired)
+                    {
+                        EventManager.TerminalAuthenticationCompleted(curAccount.Id, curTerminal);
+                    }
                 }
             }
 
@@ -339,7 +350,24 @@ namespace Hub.Services
         {
             using (var updater = _crate.UpdateStorage(() => actionDTO.CrateStorage))
             {
-                var mode = authType == AuthenticationType.Internal ? AuthenticationMode.InternalMode : AuthenticationMode.ExternalMode;
+                AuthenticationMode mode = authType == AuthenticationType.Internal ? AuthenticationMode.InternalMode : AuthenticationMode.ExternalMode;
+
+                switch (authType)
+                {
+                    case AuthenticationType.Internal:
+                        mode = AuthenticationMode.InternalMode;
+                        break;
+                    case AuthenticationType.External:
+                        mode = AuthenticationMode.ExternalMode;
+                        break;
+                    case AuthenticationType.InternalWithDomain:
+                        mode = AuthenticationMode.InternalModeWithDomain;
+                        break;
+                    case AuthenticationType.None:
+                    default:
+                        mode = AuthenticationMode.ExternalMode;
+                        break;
+                }
 
                 updater.CrateStorage.Add(_crate.CreateAuthenticationCrate("RequiresAuthentication", mode));
             }
@@ -370,7 +398,7 @@ namespace Hub.Services
                 }
 
                 controlsCrate.Content.Controls.Add(
-                    new TextBlockControlDefinitionDTO()
+                    new TextBlock()
                     {
                         Name = "AuthAwaitLabel",
                         Value = "Waiting for authentication window..."
@@ -438,6 +466,42 @@ namespace Hub.Services
             }
 
             return false;
+        }
+
+        public void InvalidateToken(string userId, ActionDTO curActionDto)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDto.ActivityTemplateId);
+
+                if (activityTemplate == null)
+                {
+                    throw new NullReferenceException("ActivityTemplate was not found.");
+                }
+
+                var account = uow.UserRepository.GetByKey(userId);
+
+                if (account == null)
+                {
+                    throw new NullReferenceException("Current account was not found.");
+                }
+
+                if (activityTemplate.AuthenticationType != AuthenticationType.None)
+                {
+                    var token = uow.AuthorizationTokenRepository.FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id && x.UserDO.Id == account.Id);
+                    
+                    if (token != null)
+                    {
+                        uow.AuthorizationTokenRepository.Remove(token);
+                    }
+
+                    RemoveAuthenticationCrate(curActionDto);
+                    RemoveAuthenticationLabel(curActionDto);
+
+                    AddAuthenticationCrate(curActionDto, activityTemplate.AuthenticationType);
+                    AddAuthenticationLabel(curActionDto);
+                }
+            }
         }
     }
 }

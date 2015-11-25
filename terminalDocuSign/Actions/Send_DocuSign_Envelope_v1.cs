@@ -6,6 +6,7 @@ using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Constants;
+using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -51,7 +52,7 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No auth token provided.");
             }
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
@@ -144,46 +145,9 @@ namespace terminalDocuSign.Actions
             var template = new DocuSignTemplate();
             template.Login = new DocuSignPackager().Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
-
-            using (var updater = Crate.UpdateStorage(curActionDO))
-            {
-                // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
-                // Two crates are created
-                // One to hold the ui controls
-                if (updater.CrateStorage.All(c => c.ManifestType.Id != (int) MT.StandardDesignTimeFields))
-                {
-                    var crateControlsDTO = CreateDocusignTemplateConfigurationControls(curActionDO);
-                    var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
-                    
-                    updater.CrateStorage = new CrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
-                }  // and one to hold the available templates, which need to be requested from docusign
-
-                await UpdateUpstreamCrate(curActionDO);
-            }
+            await UpdateUpstreamCrate(curActionDO);
 
             return curActionDO;
-        }
-
-        public async Task UpdateUpstreamCrate(ActionDO curActionDO)
-        {
-            using (var updater = Crate.UpdateStorage(curActionDO))
-            {
-                // Build a crate with the list of available upstream fields
-                var curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.StandardDesignTimeFields
-                                                                                    && c.Label == "Upstream Terminal-Provided Fields");
-
-                if (curUpstreamFieldsCrate != null)
-                {
-                    updater.CrateStorage.Remove(curUpstreamFieldsCrate);
-                }
-
-                var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
-                    .Fields
-                    .ToArray();
-
-                curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
-                updater.CrateStorage.Add(curUpstreamFieldsCrate);
-            }
         }
 
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -250,7 +214,7 @@ namespace terminalDocuSign.Actions
 
         private Crate CreateDocusignTemplateConfigurationControls(ActionDO curActionDO)
         {
-            var fieldSelectDocusignTemplateDTO = new DropDownListControlDefinitionDTO()
+            var fieldSelectDocusignTemplateDTO = new DropDownList()
             {
                 Label = "Use DocuSign Template",
                 Name = "target_docusign_template",
@@ -269,7 +233,7 @@ namespace terminalDocuSign.Actions
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
-                new TextSourceControlDefinitionDTO("For the Email Address Use", "Upstream Terminal-Provided Fields", "Recipient")
+                new TextSource("For the Email Address Use", "Upstream Terminal-Provided Fields", "Recipient")
             };
 
             var controls = new StandardConfigurationControlsCM()
@@ -289,6 +253,41 @@ namespace terminalDocuSign.Actions
                 Fields = fieldsDTO,
             };
             return Crate.CreateDesignTimeFieldsCrate("Available Templates", fieldsDTO.ToArray());
+        }
+
+        private async Task UpdateUpstreamCrate(ActionDO curActionDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
+                // Two crates are created
+                // One to hold the ui controls
+                if (updater.CrateStorage.All(c => c.ManifestType.Id != (int)MT.StandardDesignTimeFields))
+                {
+                    var crateControlsDTO = CreateDocusignTemplateConfigurationControls(curActionDO);
+                    // and one to hold the available templates, which need to be requested from docusign
+                    var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
+
+                    updater.CrateStorage = new CrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
+                }
+
+                // Build a crate with the list of available upstream fields
+                var curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c =>
+                                                                                    c.ManifestType.Id == (int)MT.StandardDesignTimeFields
+                && c.Label == "Upstream Terminal-Provided Fields");
+
+                if (curUpstreamFieldsCrate != null)
+                {
+                    updater.CrateStorage.Remove(curUpstreamFieldsCrate);
+                }
+
+                var curUpstreamFields = (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
+                    .Fields
+                    .ToArray();
+
+                curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
+                updater.CrateStorage.Add(curUpstreamFieldsCrate);
+            }
         }
     }
 }

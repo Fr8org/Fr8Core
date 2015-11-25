@@ -1,0 +1,15 @@
+﻿using System.Threading.Tasks;
+
+namespace terminalDocuSign.Interfaces
+{
+    /// <summary>
+    /// Service to create DocuSign related routes in Hub
+    /// </summary>
+    public interface IDocuSignRoute
+    {
+        /// <summary>
+        /// Creates Monitor All DocuSign Events route with Record DocuSign Events and Store MT Data actions.
+        /// </summary>
+        Task CreateRoute_MonitorAllDocuSignEvents(string curFr8UserId);
+    }
+}
