@@ -383,13 +383,13 @@ namespace Hub.Services
             IEnumerable<RouteDO> activeRoutes;
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplateQuery = unitOfWork.RouteRepository.GetQuery().Include(i => i.Fr8Account);
+                var routeQuery = unitOfWork.RouteRepository.GetQuery().Include(i => i.Fr8Account);
 
-                processTemplateQuery
+                routeQuery
                     .Where(pt => pt.RouteState == RouteState.Active)//1.
                     .Where(id => id.Fr8Account.Id == userId);//2
 
-                activeRoutes = processTemplateQuery.ToList();
+                activeRoutes = routeQuery.ToList();
             }
             return activeRoutes;
         }

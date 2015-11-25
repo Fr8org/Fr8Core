@@ -97,7 +97,7 @@ namespace TerminalBase.BaseClasses
 
             Type calledType = Type.GetType(curAssemblyName + ", " + curTerminal);
             if (calledType == null)
-                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} terminal.", 
+                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} terminal.",
                     curActionDTO.ActivityTemplate.Name,
                     curActionDTO.ActivityTemplate.Version,
                     curTerminal), "curActionDTO");
@@ -137,9 +137,9 @@ namespace TerminalBase.BaseClasses
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
                 default:
-                    response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-            return response;
-        }
+                    response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDTO });
+                    return response;
+            }
 
 
         }

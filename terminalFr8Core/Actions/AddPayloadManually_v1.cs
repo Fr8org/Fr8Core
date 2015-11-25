@@ -12,6 +12,7 @@ using TerminalBase.BaseClasses;
 using Data.Entities;
 using StructureMap;
 using Hub.Managers;
+using Data.Control;
 
 namespace terminalFr8Core.Actions
 {
@@ -103,7 +104,7 @@ namespace terminalFr8Core.Actions
 
         private Crate CreateControlsCrate()
         {
-            var fieldFilterPane = new FieldListControlDefinitionDTO
+            var fieldFilterPane = new FieldList
             {
                 Label = "Fill the values for other actions",
                 Name = "Selected_Fields",

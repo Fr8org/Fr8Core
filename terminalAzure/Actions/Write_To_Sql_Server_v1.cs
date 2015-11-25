@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using StructureMap;
@@ -77,7 +78,7 @@ namespace terminalAzure.Actions
         private Crate CreateControlsCrate()
         { 
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var control = new TextBoxControlDefinitionDTO()
+            var control = new TextBox()
             {
                 Label = "SQL Connection String",
                 Name = "connection_string",

@@ -1,18 +1,20 @@
 ﻿/// <reference path="../../_all.ts" />
+
 module dockyard.directives.dropDownListBox {
     'use strict';
 
     export interface IDropDownListBoxScope extends ng.IScope {
-        field: model.DropDownListControlDefinitionDTO;
+        field: model.DropDownList;
         change: () => (field: model.ControlDefinitionDTO) => void;
         selectedItem: model.FieldDTO;
         setSelectedItem: (item: model.FieldDTO) => void;
     }
 
     export function DropDownListBox(): ng.IDirective {
-        var controller = ['$scope', '$filter', function ($scope: IDropDownListBoxScope, $filter: any) {
-            $scope.setSelectedItem = function (item: model.FieldDTO) {
+        var controller = ['$scope', function ($scope: IDropDownListBoxScope) {
+            $scope.setSelectedItem = (item: model.FieldDTO) => {
                 $scope.field.value = item.value || (<any>item).Value;
+                $scope.field.selectedKey = item.key;
                 $scope.selectedItem = item;
 
                 // Invoke onChange event handler
@@ -23,7 +25,7 @@ module dockyard.directives.dropDownListBox {
 
             var findAndSetSelectedItem = function () {
                 for (var i = 0; i < $scope.field.listItems.length; i++) {
-                    if ($scope.field.value == $scope.field.listItems[i].value || (<any>$scope.field.listItems[i]).Value) {
+                    if ($scope.field.value == $scope.field.listItems[i].value && $scope.field.selectedKey == $scope.field.listItems[i].key) {
                         $scope.selectedItem = $scope.field.listItems[i];
                         break;
                     }

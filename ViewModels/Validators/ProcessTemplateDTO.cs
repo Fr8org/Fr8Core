@@ -4,7 +4,7 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace HubWeb.ViewModels.Validators
 {
-    public class RouteDTOValidator : AbstractValidator<RouteOnlyDTO>
+    public class RouteDTOValidator : AbstractValidator<RouteEmptyDTO>
     {
         public RouteDTOValidator()
         {

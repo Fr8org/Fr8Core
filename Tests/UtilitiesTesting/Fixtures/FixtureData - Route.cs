@@ -82,13 +82,13 @@ namespace UtilitiesTesting.Fixtures
 
         public static RouteDO TestRouteWithSubscribeEvent()
         {
-            RouteDO processTemplateDO;
+            RouteDO routeDO;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Fr8AccountDO testUser = TestDockyardAccount1();
                 uow.UserRepository.Add(testUser);
 
-                processTemplateDO = new RouteDO()
+                routeDO = new RouteDO()
                 {
                     Id = GetTestGuidById(23),
                     Description = "HealthDemo Integration Test",
@@ -96,14 +96,14 @@ namespace UtilitiesTesting.Fixtures
                     RouteState = RouteState.Active,
                     Fr8Account = testUser
                 };
-                uow.RouteRepository.Add(processTemplateDO);
+                uow.RouteRepository.Add(routeDO);
 
                 var actionTemplate = ActionTemplate();
 
                 var containerDO = new ContainerDO()
                 {
                     Id = TestContainer_Id_1(),
-                    RouteId = processTemplateDO.Id,
+                    RouteId = routeDO.Id,
                     ContainerState = 1
                 };
 
@@ -118,18 +118,18 @@ namespace UtilitiesTesting.Fixtures
 
                 SubrouteDO subrouteDO = new SubrouteDO()
                 {
-                    ParentRouteNode = processTemplateDO,
+                    ParentRouteNode = routeDO,
                     StartingSubroute = true
                 };
                 uow.SubrouteRepository.Add(subrouteDO);
-                processTemplateDO.ChildNodes = new List<RouteNodeDO> {subrouteDO};
-                processTemplateDO.StartingSubroute = subrouteDO;
+                routeDO.ChildNodes = new List<RouteNodeDO> {subrouteDO};
+                routeDO.StartingSubroute = subrouteDO;
 
 
                 var actionDo = new ActionDO()
                 {
-                    ParentRouteNode = processTemplateDO,
-                    ParentRouteNodeId = processTemplateDO.Id,
+                    ParentRouteNode = routeDO,
+                    ParentRouteNodeId = routeDO.Id,
                     Name = "testaction",
 
                     Id = GetTestGuidById(1),
@@ -157,7 +157,7 @@ namespace UtilitiesTesting.Fixtures
                 uow.SaveChanges();
             }
 
-            return processTemplateDO;
+            return routeDO;
         }
 
         public static RouteDO TestRoute3()

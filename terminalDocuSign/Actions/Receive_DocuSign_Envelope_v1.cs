@@ -3,7 +3,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
+﻿using Data.Control;
+﻿using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 
 using Hub.Interfaces;
@@ -136,10 +137,10 @@ namespace terminalDocuSign.Actions
             var templateId = upstream.SelectMany(x => x.Content.Fields).FirstOrDefault(x => x.Key == "TemplateId");
 
             //In order to Receive a DocuSign Envelope as fr8, an upstream action needs to provide a DocuSign EnvelopeID.
-            TextBlockControlDefinitionDTO textBlock;
+            TextBlock textBlock;
             if (templateId != null)
             {
-                textBlock = new TextBlockControlDefinitionDTO
+                textBlock = new TextBlock
                 {
                     Label = "Docu Sign Envelope",
                     Value = "This Action doesn't require any configuration.",
@@ -148,7 +149,7 @@ namespace terminalDocuSign.Actions
             }
             else
             {
-                textBlock = new TextBlockControlDefinitionDTO
+                textBlock = new TextBlock
                 {
                     Label = "Docu Sign Envelope",
                     Value = "In order to Receive a DocuSign Envelope as fr8, an upstream action needs to provide a DocuSign TemplateId.",

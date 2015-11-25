@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Web.Razor.Generator;
 using AutoMapper;
+using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
@@ -202,7 +203,7 @@ namespace terminalFr8Core.Actions
 
         private Crate CreateControlsCrate()
         {
-            var fieldFilterPane = new FilterPaneControlDefinitionDTO()
+            var fieldFilterPane = new FilterPane()
             {
                 Label = "Execute Actions If:",
                 Name = "Selected_Filter",

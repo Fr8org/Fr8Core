@@ -6,12 +6,14 @@ namespace Data.Interfaces.DataTransferObjects
     /// Route DTO that contains full graph of other DTO objects
     /// Specifically used in Workflow Designer to draw entire process.
     /// </summary>
-    public class RouteDTO : RouteOnlyDTO
+    public class RouteFullDTO : RouteEmptyDTO
     {
         /// <summary>
         /// List of Subroute DTOs.
         /// </summary>
         public IEnumerable<FullSubrouteDTO> Subroutes { get; set; }
+
+        public string Fr8UserId { get; set; }
     }
     
     /// <summary>
