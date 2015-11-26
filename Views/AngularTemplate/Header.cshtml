@@ -79,6 +79,52 @@
                     </ul>
                 </li>
 
+                <li class="menu-dropdown mega-menu-dropdown ">
+                    <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#" class="dropdown-toggle">
+                        Routes <i class="fa fa-angle-down"></i>
+                    </a>
+                    <ul class="dropdown-menu" style="min-width: 410px">
+                        <li>
+                            <div class="mega-menu-content">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="mega-menu-submenu">
+                                            <!--<li>
+                                    <h3>Processes</h3>
+                                </li>-->
+                                            <li>
+                                                <a href="#/routes" class="iconify">
+                                                    <i class="icon-puzzle"></i>
+                                                    Show All
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#/routes/add" class="iconify">
+                                                    <i class="icon-paper-clip"></i>
+                                                    Add
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#/solutions" class="iconify">
+                                                    <i class="icon-paper-clip"></i>
+                                                    Create Solution
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#/findObjects/create" class="iconify">
+                                                    <i class="icon-paper-clip"></i>
+                                                    Find Objects
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+
 				<li class="menu-dropdown mega-menu-dropdown ">
 					<a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#" class="dropdown-toggle">
                         Containers <i class="fa fa-angle-down"></i>
@@ -104,48 +150,6 @@
                     </ul>
                 </li>
 
-				<li class="menu-dropdown mega-menu-dropdown ">
-					<a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#" class="dropdown-toggle">
-					Routes <i class="fa fa-angle-down"></i>
-					</a>
-					<ul class="dropdown-menu" style="min-width: 410px">
-						<li>
-							<div class="mega-menu-content">
-								<div class="row">
-									<div class="col-md-6">
-										<ul class="mega-menu-submenu">
-											<!--<li>
-												<h3>Processes</h3>
-											</li>-->
-											<li>
-												<a href="#/routes" class="iconify">
-												<i class="icon-puzzle"></i>
-												Show All </a>
-											</li>
-											<li>
-												<a href="#/routes/add" class="iconify">
-												<i class="icon-paper-clip"></i>
-												Add </a>
-											</li>
-                                            <li>
-                                                <a href="#/solutions" class="iconify">
-                                                    <i class="icon-paper-clip"></i>
-                                                    Create Solution</a>
-                                            </li>
-                                            <li>
-                                                <a href="#/findObjects/create" class="iconify">
-                                                    <i class="icon-paper-clip"></i>
-                                                    Find Objects
-                                                </a>
-                                            </li>
-										</ul>
-									</div>
-								
-								</div>
-							</div>
-						</li>
-					</ul>
-				</li>
                 
                 @if (User.IsInRole("Admin")) {
 				<li class="menu-dropdown mega-menu-dropdown mega-menu-full ">
