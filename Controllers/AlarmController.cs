@@ -19,7 +19,7 @@ namespace HubWeb.Controllers
     public class AlarmController : ApiController
     {
         [HttpPost]
-        [Route("")]
+        [Route("SetAlarm")]
         public async Task<IHttpActionResult> SetAlarm(AlarmDTO alarmDTO)
         {
             Expression<Action> action = () => ExecuteTerminalWithLogging(alarmDTO);
