@@ -40,5 +40,9 @@ namespace TerminalBase.Infrastructure
         {
             return _routeNode.GetCratesByDirection<TManifest>(actionDO.Id, direction);
         }
+
+        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category)
+        {
+        }
     }
 }

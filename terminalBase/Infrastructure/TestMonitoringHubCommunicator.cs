@@ -69,5 +69,9 @@ namespace TerminalBase.Infrastructure
 
             return Task.FromResult(crates);
         }
+
+        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category)
+        {
+        }
     }
 }
