@@ -7,10 +7,9 @@ using Hub.Managers;
 using StructureMap;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -23,47 +22,32 @@ namespace HubWeb.Controllers
         [Route("")]
         public async Task<IHttpActionResult> SetAlarm(AlarmDTO alarmDTO)
         {
-            DateTimeOffset startTime;
-            if (!DateTimeOffset.TryParse(alarmDTO.StartTime, out startTime))
-            {
-                return ResponseMessage(
-                    Request.CreateErrorResponse(HttpStatusCode.BadRequest, new ArgumentException("\'StartTime\' has invalid format", "startTime")));
-            }
-
-            Guid containerId = alarmDTO.ContainerId;
-            string terminalName = alarmDTO.TerminalName;
-            string terminalVersion = alarmDTO.TerminalVersion;
-            
-            return await SetAlarm(startTime, containerId, terminalName, terminalVersion);
-        }
-        
-        public async Task<IHttpActionResult> SetAlarm(DateTimeOffset startTime, Guid containerId, string terminalName, string terminalVersion)
-        {
-            Expression<Action> action = () => ExecuteTerminalWithLogging(startTime, containerId, terminalName, terminalVersion);
-            BackgroundJob.Schedule(action, startTime);
+            Expression<Action> action = () => ExecuteTerminalWithLogging(alarmDTO);
+            BackgroundJob.Schedule(action, alarmDTO.StartTime);
 
             var eventController = new EventController();
-            return await eventController.ProcessIncomingEvents(terminalName, terminalVersion);
+            return await eventController.ProcessIncomingEvents(alarmDTO.TerminalName, alarmDTO.TerminalVersion);
         }
-        
-        public async void ExecuteTerminalWithLogging(DateTimeOffset startTime, Guid containerId, string terminalName, string terminalVersion)
+
+        public async void ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
         {
             HttpResponseMessage result = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var container = uow.ContainerRepository.GetByKey(containerId);
+                var container = uow.ContainerRepository.GetByKey(alarmDTO.ContainerId);
                 if (container != null && container.ContainerState == ContainerState.Pending)
                 {
                     var crateManager = ObjectFactory.GetInstance<ICrateManager>();
 
-                    var label = String.Format("Alarm Triggered [{0}]", startTime.ToUniversalTime());
+                    var label = String.Format("Alarm Triggered [{0}]", alarmDTO.StartTime.ToUniversalTime());
                     var logItemList = new List<LogItemDTO>();
 
                     crateManager.AddLogMessage(label, logItemList, container);
                     var terminal = ObjectFactory.GetInstance<ITerminal>();
-                    var terminalUrl = terminal.ParseTerminalUrlFor(terminalName, terminalVersion, "action/run");
+                    var terminalUrl = terminal.ParseTerminalUrlFor(alarmDTO.TerminalName, alarmDTO.TerminalVersion, "action/run");
+                    var content = new ObjectContent<ActionDTO>(alarmDTO.ActionDTO, new JsonMediaTypeFormatter());
 
-                    result = await new HttpClient().PostAsync(new Uri(terminalUrl, UriKind.Absolute), Request.Content);
+                    result = await new HttpClient().PostAsync(new Uri(terminalUrl, UriKind.Absolute), content);
                 }
             }
         }
