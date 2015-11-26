@@ -19,7 +19,7 @@ namespace terminalGoogle
 
             StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE).ConfigureGoogleDependencies(DependencyType.LIVE);
 
-            StartHosting("terminal_google");
+            StartHosting("terminal_Google");
         }
     }
 }

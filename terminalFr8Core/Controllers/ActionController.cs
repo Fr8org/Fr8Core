@@ -17,7 +17,7 @@ using TerminalBase.BaseClasses;
 
 namespace terminalFr8Core.Controllers
 {
-    [RoutePrefix("actions")]
+    [RoutePrefix("actions/terminal_Fr8Core")]
     public class ActionController : ApiController
     {
         private const string curTerminal = "terminalFr8Core";

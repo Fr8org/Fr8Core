@@ -20,7 +20,7 @@ namespace terminalSalesforce
         {            
             TerminalSalesforceStructureMapBootstrapper.ConfigureDependencies(TerminalSalesforceStructureMapBootstrapper.DependencyType.LIVE);
 
-            StartHosting("terminal_salesforce");
+            StartHosting("terminal_Salesforce");
         }
     }
 }

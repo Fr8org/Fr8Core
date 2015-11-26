@@ -4,6 +4,7 @@ using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
+using TerminalBase.BaseClasses;
 
 namespace terminalSalesforce
 {
@@ -27,19 +28,7 @@ namespace terminalSalesforce
             {
                 var config = new HttpConfiguration();
 
-                // Web API routes
-                config.MapHttpAttributeRoutes();
-
-                config.Routes.MapHttpRoute(
-                    name: "terminalSalesforce",
-                    routeTemplate: "terminal_salesforce/{controller}/{id}",
-                    defaults: new { id = RouteParameter.Optional }
-                );
-                config.Routes.MapHttpRoute(
-name: "TerminalSalesforceActionCatchAll",
-routeTemplate: "actions/{*actionType}",
-defaults: new { controller = "Action", action = "Execute" }); //It calls ActionController#Execute in an MVC style
-        
+                BaseTerminalWebApiConfig.Register("Salesforce", config);
                 config.Services.Replace(
                     typeof(IHttpControllerTypeResolver),
                     new SalesForceControllerTypeResolver()

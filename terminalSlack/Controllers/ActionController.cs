@@ -15,7 +15,7 @@ using terminalSlack.Services;
 
 namespace terminalSlack.Controllers
 {
-    [RoutePrefix("actions")]
+    [RoutePrefix("actions/terminal_Slack")]
     public class ActionController : ApiController
     {
         private const string curTerminal = "terminalSlack";

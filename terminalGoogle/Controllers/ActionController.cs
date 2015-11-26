@@ -6,7 +6,7 @@ using TerminalBase.BaseClasses;
 
 namespace terminalGoogle.Controllers
 {
-    [RoutePrefix("actions")]
+    [RoutePrefix("actions/terminal_Google")]
     public class ActionController : ApiController
     {
         private const string curTerminal = "terminalGoogle";

@@ -4,6 +4,7 @@ using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
+using TerminalBase.BaseClasses;
 
 namespace terminalExcel
 {
@@ -14,17 +15,8 @@ namespace terminalExcel
             public void Configuration(IAppBuilder app)
             {
                 var config = new HttpConfiguration();
-                // Web API routes
-                config.MapHttpAttributeRoutes();
-
                 var startup = new StartupTerminalExcel();
-
-                config.Routes.MapHttpRoute(
-           name: "TerminalDropboxActionCatchAll",
-           routeTemplate: "actions/{*actionType}",
-           defaults: new { controller = "Action", action = "Execute" }); //It calls ActionController#Execute in an MVC style
-                startup.Configuration(app, selfHost: true);
-
+                BaseTerminalWebApiConfig.Register("Excel", config);
             }
         }
 

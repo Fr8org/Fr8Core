@@ -12,16 +12,7 @@ namespace terminalExcel
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register(config);            
-
-            config.Routes.MapHttpRoute(
-                name: "TerminalExcel",
-                routeTemplate: "terminal_excel/{controller}/{id}"                
-            );
-            config.Routes.MapHttpRoute(
-           name: "TerminalExcelActionCatchAll",
-           routeTemplate: "actions/{*actionType}",
-           defaults: new { controller = "Action", action = "Execute" }); 
+            BaseTerminalWebApiConfig.Register("Excel", config);            
         }
     }
 }

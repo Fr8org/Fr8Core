@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace terminalSendGrid.Controllers
 {
-    [RoutePrefix("actions")]
+    [RoutePrefix("actions/terminal_SendGrid")]
     public class ActionController : ApiController
     {
         private const string curTerminal = "terminalSendGrid";

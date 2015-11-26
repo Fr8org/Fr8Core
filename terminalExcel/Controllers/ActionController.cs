@@ -10,7 +10,7 @@ using AutoMapper;
 
 namespace terminalExcel.Controllers
 {
-    [RoutePrefix("actions")]
+    [RoutePrefix("actions/terminal_Excel")]
     public class ActionController : ApiController
     {
         private const string curTerminal = "terminalExcel";

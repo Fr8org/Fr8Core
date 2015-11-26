@@ -5,6 +5,7 @@ using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
 using terminalGoogle.Controllers;
+using TerminalBase.BaseClasses;
 
 namespace terminalGoogle
 {
@@ -27,24 +28,7 @@ namespace terminalGoogle
             public void Configuration(IAppBuilder app)
             {
                 var config = new HttpConfiguration();
-
-                // Web API routes
-                config.MapHttpAttributeRoutes();
-
-                config.Routes.MapHttpRoute(
-                    name: "TerminalGoogle",
-                    routeTemplate: "terminal_google/{controller}/{id}",
-                    defaults: new { id = RouteParameter.Optional }
-                );
-                config.Routes.MapHttpRoute(
-name: "TerminalGoogleActionCatchAll",
-routeTemplate: "actions/{*actionType}",
-defaults: new { controller = "Action", action = "Execute" }); //It calls ActionController#Execute in an MVC style
-                config.Services.Replace(
-                    typeof(IHttpControllerTypeResolver),
-                    new DocuSignControllerTypeResolver()
-                );
-
+                BaseTerminalWebApiConfig.Register("Google", config);
                 app.UseWebApi(config);
             }
         }

@@ -12,16 +12,7 @@ namespace terminalSendGrid
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register(config);
-
-            config.Routes.MapHttpRoute(
-                name: "TerminalSendGridServer",
-                routeTemplate: "terminalSendGrid/{controller}/{id}"
-            );
-            config.Routes.MapHttpRoute(
-name: "TerminalSendGridActionCatchAll",
-routeTemplate: "actions/{*actionType}",
-defaults: new { controller = "Action", action = "Execute" }); //It calls ActionController#Execute in an MVC style
+            BaseTerminalWebApiConfig.Register("SendGrid", config);
         }
     }
 }
