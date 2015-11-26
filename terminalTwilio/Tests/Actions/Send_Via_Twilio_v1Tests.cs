@@ -105,13 +105,12 @@ namespace terminalTwilio.Tests.Actions
             var actionResult = _twilioAction.Configure(curActionDO, null).Result;
 
             var standardControls = _crate.GetStorage(actionResult.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            var smsNumberTextField = ((RadioButtonGroup)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "SMS_Number").Count();
-            var smsNumberUpstreamField = ((RadioButtonGroup)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "upstream_crate").Count();
+            var smsNumberTextField = standardControls.Controls[0].Name;
+            var smsNumberUpstreamField = standardControls.Controls[1].Name;
             var smsBodyFields = standardControls.FindByName("SMS_Body");
 
-
-            Assert.Greater(smsNumberTextField, 0);
-            Assert.Greater(smsNumberUpstreamField, 0);
+            Assert.AreEqual(smsNumberTextField, "SMS_Number");
+            Assert.AreEqual(smsNumberUpstreamField, "SMS_Body");
             Assert.IsNotNull(smsBodyFields);
         }
 
