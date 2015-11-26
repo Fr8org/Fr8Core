@@ -49,39 +49,53 @@ namespace terminalDocuSign.Tests.Actions
             curActionDTO.AuthToken = new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
+            var listTestCrates = FixtureData.TestCrateDTO1();
+            Crate<StandardDesignTimeFieldsCM> crate = new Crate<StandardDesignTimeFieldsCM>(listTestCrates[0]);
+            Crate<StandardDesignTimeFieldsCM>[] curCrates = new Crate<StandardDesignTimeFieldsCM>[1];
+            curCrates.SetValue(crate, 0);
+
             using (var updater = _crate.UpdateStorage(curActionDO))
-            {
-                var cnt = updater.CrateStorage.Count;
-                var str = String.Format("{0}", cnt);
-
-                var list = new List<Crate<StandardDesignTimeFieldsCM>>();
-                var crate = new Crate<StandardDesignTimeFieldsCM>(new Crate(CrateManifestType.Unknown, "testlabel"));
-                list.Add(crate);
-                
-                Crate<StandardDesignTimeFieldsCM>[] curCrates = new Crate<StandardDesignTimeFieldsCM>[1];
-                curCrates.SetValue(crate, 0);//.AddRange<StandardDesignTimeFieldsCM>(list);
-
-                //var routeNode = MockGetCrates<StandardDesignTimeFieldsCM>(curCrates);
-                var mock = MockGetCrates<StandardDesignTimeFieldsCM>(curCrates);
-
-                IRouteNode routeNode = mock.Object;
-
-                var result = routeNode.GetCratesByDirection<StandardDesignTimeFieldsCM>(curActionDO.Id, CrateDirection.Upstream);
-
-                str = String.Format(result.ToString());
-                _send_DocuSign_Envelope_v1.UpdateUpstreamCrate(curActionDO);
-
-            
+            {  
                 // Build a crate with the list of available upstream fields
-                cnt = updater.CrateStorage.Count;
-                str = String.Format("{0}", cnt);
-                var item = updater.CrateStorage.FirstOrDefault<Crate>();
-                str = String.Format("{0}", item.ToString());
+                var curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c =>
+                                                                                    c.ManifestType.Id == (int)MT.StandardDesignTimeFields
+                && c.Label == "Upstream Terminal-Provided Fields");
+
+                if (curUpstreamFieldsCrate != null)
+                {
+                    updater.CrateStorage.Remove(curUpstreamFieldsCrate);
+                }
+
+                var curUpstreamFields = GetDesignTimeFields(curActionDO, curCrates, CrateDirection.Upstream)
+                    .Fields
+                    .ToArray();
+
+                curUpstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
+                updater.CrateStorage.Add(curUpstreamFieldsCrate);
+                
+               
                 var has = updater.CrateStorage.Any(c => c.ManifestType.Id == (int)MT.StandardDesignTimeFields
                                                                                     && c.Label == "Upstream Terminal-Provided Fields");
                 Assert.IsTrue(has);
             }
 
+        }
+
+        private StandardDesignTimeFieldsCM GetDesignTimeFields(ActionDO actionDO, Crate<StandardDesignTimeFieldsCM>[] curCrates, CrateDirection direction)
+        {
+            
+
+            var mock = MockGetCrates<StandardDesignTimeFieldsCM>(curCrates);
+            IRouteNode routeNode = mock.Object;
+
+            Task<List <Crate<StandardDesignTimeFieldsCM>>> lisrCrates =  (routeNode.GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO.Id, CrateDirection.Upstream));
+
+            //1) Build a merged list of the upstream design fields to go into our drop down list boxes
+            StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
+
+            mergedFields.Fields.AddRange(_send_DocuSign_Envelope_v1.MergeContentFields(lisrCrates.Result).Fields);
+
+            return mergedFields;
         }
 
         private Mock<IRouteNode> MockGetCrates<TManifest>(params Crate<TManifest>[] cratesToReturn)
