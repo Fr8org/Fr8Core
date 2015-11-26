@@ -59,11 +59,11 @@ namespace terminalTwilio.Actions
                 {
                     updater.CrateStorage.Remove(curUpstreamFieldsCrate);
                 }
-                //var curUpstreamFields = (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
-                //    .Fields
-                //    .ToArray();
-                //curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
-//                updater.CrateStorage.Add(curUpstreamFieldsCrate);
+                var curUpstreamFields = (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
+                    .Fields
+                    .ToArray();
+                curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
+                updater.CrateStorage.Add(curUpstreamFieldsCrate);
             }
             return await Task.FromResult<ActionDO>(curActionDO);
         }

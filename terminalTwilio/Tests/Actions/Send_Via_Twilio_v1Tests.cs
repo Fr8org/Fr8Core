@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Services.Protocols;
 using AutoMapper;
 using Data.Control;
 using Moq;
@@ -13,14 +15,17 @@ using Data.Entities;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.StructureMap;
+using ServiceStack.Text;
 using terminalTwilio;
 using terminalTwilio.Actions;
 using terminalTwilio.Services;
 using terminalTwilio.Tests.Fixtures;
 using terminalTwilio.Tests;
+using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
 namespace terminalTwilio.Tests.Actions
@@ -55,21 +60,25 @@ namespace terminalTwilio.Tests.Actions
                 .Setup(c => c.MapFromDTO(It.IsAny<ActionDTO>()))
                 .Returns(actionDO);
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(actionService.Object));
-
             var action = FixtureData.ConfigureTwilioAction();
+            var baseTerminalAction = new Mock<BaseTerminalAction>();
+            baseTerminalAction
+                .Setup(c => c.GetDesignTimeFields(It.IsAny<ActionDO>(), CrateDirection.Upstream))
+                .Returns(Task.FromResult(FixtureData.TestFields()));
+            ObjectFactory.Configure(cfg => cfg.For<BaseTerminalAction>().Use(baseTerminalAction.Object));
+
         }
 
         [Test]
         public void Configure_ReturnsCrateDTO()
         {
             _twilioAction = new Send_Via_Twilio_v1();
-            var curActionDO = FixtureData.ConfigureTwilioAction();;
+            var curActionDO = FixtureData.ConfigureTwilioAction(); ;
             AuthorizationTokenDO curAuthTokenDO = FixtureData.AuthTokenDOTest1();
             var actionResult = _twilioAction.Configure(curActionDO, curAuthTokenDO).Result;
-
             var controlsCrate = _crate.GetStorage(actionResult.CrateStorage).FirstOrDefault();
-
             Assert.IsNotNull(controlsCrate);
+
         }
 
         [Test]
@@ -77,7 +86,7 @@ namespace terminalTwilio.Tests.Actions
         {
             _twilioAction = new Send_Via_Twilio_v1();
             var curActionDO = FixtureData.ConfigureTwilioAction();
-           // ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
+            // ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
             var curAuthTokenD0 = FixtureData.AuthTokenDOTest1();
             var actionResult = _twilioAction.Configure(curActionDO, curAuthTokenD0).Result;
 
@@ -115,7 +124,7 @@ namespace terminalTwilio.Tests.Actions
             var smsINfo = _twilioAction.ParseSMSNumberAndMsg(crateDTO);
 
             Assert.AreEqual(smsINfo.Key, "+15005550006");
-            Assert.AreEqual(smsINfo.Value, "DocuSign Sent");
+            Assert.AreEqual(smsINfo.Value, "DO-1437 test");
         }
     }
 }
