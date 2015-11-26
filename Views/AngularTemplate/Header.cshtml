@@ -57,9 +57,28 @@
 		<!-- DOC: Remove dropdown-menu-hover and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
 		<div class="hor-menu">
 			<ul class="nav navbar-nav">
+
 				<li class="active">
 					<a href="#/myaccount">Home</a>
 				</li>
+
+                <li class="menu-dropdown classic-menu-dropdown">
+                    <a href="javascript:;" data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" class="dropdown-toggle">Solutions <i class="fa fa-angle-down"></i></a>
+                    <ul class="dropdown-menu pull-left">
+                        <li class="dropdown-submenu">
+                            <a href="javascript:;" data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" class="dropdown-toggle">DocuSign</a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="#/solution/Collect_Form_Data_Solution">Collect Form Data Solution</a>
+                                </li>
+                                <li>
+                                    <a href="#/solution/Mail_Merge_Into_DocuSign">Mail Merge into DocuSign</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
 				<li class="menu-dropdown mega-menu-dropdown ">
 					<a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#" class="dropdown-toggle">
                         Containers <i class="fa fa-angle-down"></i>
@@ -84,6 +103,7 @@
                         </li>
                     </ul>
                 </li>
+
 				<li class="menu-dropdown mega-menu-dropdown ">
 					<a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#" class="dropdown-toggle">
 					Routes <i class="fa fa-angle-down"></i>
