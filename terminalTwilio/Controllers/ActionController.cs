@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace terminalTwilio.Controllers
 {    
-    [RoutePrefix("actions/terminal_Twilio")]
+    [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
         private const string curTerminal = "terminalTwilio";
