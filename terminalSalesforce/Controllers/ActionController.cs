@@ -13,7 +13,7 @@ using Salesforce.Common;
 
 namespace terminalSalesforce.Controllers
 {
-    [RoutePrefix("actions/terminal_Salesforce")]
+    [RoutePrefix("actions")]
     public class ActionController:ApiController
     {
         private const string curTerminal = "terminalSalesforce";

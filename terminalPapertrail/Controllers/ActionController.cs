@@ -6,7 +6,7 @@ using TerminalBase.BaseClasses;
 
 namespace terminalPapertrail.Controllers
 {    
-    [RoutePrefix("actions/terminal_Papertrail")]
+    [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
         private const string curTerminal = "terminalPapertrail";
