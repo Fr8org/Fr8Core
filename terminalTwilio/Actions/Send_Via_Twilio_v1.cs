@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using Data.Constants;
 using Data.Control;
 using StructureMap;
 using Data.Crates;
@@ -10,10 +11,12 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.Infrastructure;
+using Data.States;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalTwilio.Services;
+using Utilities;
 
 namespace terminalTwilio.Actions
 {
@@ -40,75 +43,47 @@ namespace terminalTwilio.Actions
             else
                 return ConfigurationRequestType.Followup;
         }
-
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackCrate_ConfigurationControls());
-                updater.CrateStorage.Add(GetAvailableDataFields(curActionDO));
+                if (updater.CrateStorage.All(c => c.ManifestType.Id != (int)MT.StandardDesignTimeFields))
+                {
+                    var crateControlsDTO = PackCrate_ConfigurationControls();
+                    updater.CrateStorage = new CrateStorage(crateControlsDTO);
+                }
+                var curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c =>
+                                                                                    c.ManifestType.Id == (int)MT.StandardDesignTimeFields
+                && c.Label == "Upstream Terminal-Provided Fields");
+                if (curUpstreamFieldsCrate != null)
+                {
+                    updater.CrateStorage.Remove(curUpstreamFieldsCrate);
+                }
+                //var curUpstreamFields = (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
+                //    .Fields
+                //    .ToArray();
+                //curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
+//                updater.CrateStorage.Add(curUpstreamFieldsCrate);
             }
-
             return await Task.FromResult<ActionDO>(curActionDO);
         }
-
         private Crate PackCrate_ConfigurationControls()
         {
-            RadioButtonGroup radioGroup = new RadioButtonGroup()
+            var fieldsDTO = new List<ControlDefinitionDTO>()
             {
-                GroupName = "SMSNumber_Group",
-                Label = "For the SMS Number use:",
-                Radios = new List<RadioButtonOption>() 
-                {
-                    new RadioButtonOption()
-                    {
-                        Selected = true,
-                        Name = "SMSNumberOption",
-                        Value = "SMS Number",
-                        Controls = new List<ControlDefinitionDTO> 
-                        {
-                            new TextBox()
-                            {
-                                Name = "SMS_Number",
-                                Required = true
-                            }
-                        }
-                    },
-                    
-                    new RadioButtonOption()
-                    {
-                        Selected = true,
-                        Name = "SMSNumberOption",
-                        Value = "A value from Upstream Crate",
-                        Controls = new List<ControlDefinitionDTO> 
-                        {
-                            new DropDownList()
-                            {
-                                Name = "upstream_crate",
-                                Events = new List<ControlEvent>()
-                                {
-                                    new ControlEvent("onChange", "requestConfig")
-                                },
-                                Source = new FieldSourceDTO
-                                {
-                                    Label = "Available Fields",
-                                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                }
-                            }
-                        }
-                    } 
-                }
-            };
-
-            TextBox smsBody = new TextBox()
+                new TextSource("For the SMS Number Use:", "Upstream Terminal-Provided Fields", "Recipient"),
+                new TextBox()
             {
                 Label = "SMS Body",
                 Name = "SMS_Body",
                 Required = true
+            }
             };
-
-            return PackControlsCrate(radioGroup, smsBody);
+            var controls = new StandardConfigurationControlsCM()
+            {
+                Controls = fieldsDTO
+            };
+            return Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
 
         private List<FieldDTO> GetRegisteredSenderNumbersData()
@@ -144,13 +119,11 @@ namespace terminalTwilio.Actions
             //not currently any requirements that need attention at FollowupConfigurationResponse
             return await Task.FromResult<ActionDO>(curActionDO);
         }
-
         public object Activate(ActionDO curActionDO)
         {
             //not currently any requirements that need attention at Activation Time
             return curActionDO;
         }
-
         public object Deactivate(ActionDO curActionDO)
         {
             return curActionDO;
@@ -200,37 +173,52 @@ namespace terminalTwilio.Actions
             KeyValuePair<string, string> smsInfo;
 
             var standardControls = crateDTO.Get<StandardConfigurationControlsCM>();
-            
             if (standardControls == null)
             {
                 throw new ArgumentException("CrateDTO is not a standard UI controls");
             }
-
             var smsBodyFields = standardControls.FindByName("SMS_Body");
-
-            var smsNumber = GetSMSNumber((RadioButtonGroup)standardControls.Controls[0]);
-
+            var smsNumber = GetSMSNumber((TextSource)standardControls.Controls[0]);
             smsInfo = new KeyValuePair<string, string>(smsNumber, smsBodyFields.Value);
-
             return smsInfo;
         }
 
-        private string GetSMSNumber(RadioButtonGroup radioButtonGroupControl)
+        //private string GetSMSNumber(RadioButtonGroup radioButtonGroupControl)
+        //{
+        //    string smsNumber = "";
+
+        //    var radioOptionSpecific = radioButtonGroupControl.Radios.Where(r => r.Controls.Where(c => c.Name == "SMS_Number").Count() > 0).FirstOrDefault();
+
+        //    if (radioOptionSpecific.Selected) 
+        //    {
+        //        smsNumber = radioButtonGroupControl.Radios.SelectMany(s => s.Controls).Where(c => c.Name == "SMS_Number").Select(v => v.Value).FirstOrDefault();
+        //    }
+        //    else
+        //    {
+        //        smsNumber = radioButtonGroupControl.Radios.SelectMany(s => s.Controls).Where(c => c.Name == "upstream_crate").Select(v => v.Value).FirstOrDefault();
+        //    }
+
+        //    return smsNumber;
+        //}
+
+        private string GetSMSNumber(TextSource control)
         {
             string smsNumber = "";
-
-            var radioOptionSpecific = radioButtonGroupControl.Radios.Where(r => r.Controls.Where(c => c.Name == "SMS_Number").Count() > 0).FirstOrDefault();
-
-            if (radioOptionSpecific.Selected) 
+            if (control == null)
             {
-                smsNumber = radioButtonGroupControl.Radios.SelectMany(s => s.Controls).Where(c => c.Name == "SMS_Number").Select(v => v.Value).FirstOrDefault();
+                throw new ApplicationException("TextSource control was expected but not found.");
             }
-            else
+            switch (control.ValueSource)
             {
-                smsNumber = radioButtonGroupControl.Radios.SelectMany(s => s.Controls).Where(c => c.Name == "upstream_crate").Select(v => v.Value).FirstOrDefault();
-            }
+                case "specific":
+                    return control.Value;
 
-            return smsNumber;
+                case "upstream":
+                    return control.Value;
+
+                default:
+                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+            }
         }
     }
 }
