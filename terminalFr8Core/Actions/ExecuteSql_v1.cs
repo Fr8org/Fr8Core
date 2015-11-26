@@ -135,7 +135,7 @@ namespace terminalFr8Core.Actions
         private async Task<string> ExtractConnectionString(ActionDO actionDO)
         {
             var upstreamCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(
-                actionDO.Id,
+                actionDO,
                 CrateDirection.Upstream
             );
 
@@ -159,7 +159,7 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var findObjectHelper = new FindObjectHelper();
-            var payload = await GetProcessPayload(containerId);
+            var payload = await GetProcessPayload(curActionDO, containerId);
 
             var columnTypes = await findObjectHelper.ExtractColumnTypes(this, curActionDO);
             if (columnTypes == null)
