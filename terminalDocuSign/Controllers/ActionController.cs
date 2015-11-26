@@ -17,7 +17,7 @@ using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Controllers
 {
-    [RoutePrefix("actions/terminal_DocuSign")]
+    [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
         private const string curTerminal = "terminalDocuSign";

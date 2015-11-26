@@ -10,7 +10,7 @@ using AutoMapper;
 
 namespace terminalAzure.Controllers
 {    
-    [RoutePrefix("actions/terminal_Azure")]
+    [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
         private const string curTerminal = "terminalAzure";
