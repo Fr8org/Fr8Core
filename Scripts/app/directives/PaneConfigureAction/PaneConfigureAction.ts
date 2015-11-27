@@ -7,7 +7,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ActionRemoved,
         PaneConfigureAction_Reconfigure,
         PaneConfigureAction_RenderConfiguration,
-        PaneConfigureAction_ChildActionsDetected
+        PaneConfigureAction_ChildActionsDetected,
+        PaneConfigureAction_ChildActionsReconfiguration
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
@@ -66,6 +67,7 @@ module dockyard.directives.paneConfigureAction {
         processing: boolean;
         configurationWatchUnregisterer: Function;
         mode: string;
+        reconfigureChildrenActions: boolean;
     }
 
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -132,6 +134,8 @@ module dockyard.directives.paneConfigureAction {
                 }
 
                 function onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
+                    debugger;
+
                     if (!newValue || !newValue.fields) {
                          return;
                     }
@@ -140,8 +144,19 @@ module dockyard.directives.paneConfigureAction {
                         $scope.currentAction.crateStorage
                     );
                     $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
-                    ActionService.save({ id: $scope.currentAction.id },
-                        $scope.currentAction, null, null);
+                    ActionService.save({ id: $scope.currentAction.id }, $scope.currentAction, null, null)
+                        .$promise
+                        .then(function () {
+                            debugger;
+
+                            if ($scope.currentAction.childrenActions
+                                && $scope.currentAction.childrenActions.length > 0) {
+
+                                if ($scope.reconfigureChildrenActions) {
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration]);
+                                }
+                            }
+                        });
                 };
 
                 function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
@@ -198,6 +213,8 @@ module dockyard.directives.paneConfigureAction {
 
                     ActionService.configure($scope.currentAction).$promise
                         .then((res: interfaces.IActionVM) => {
+                            debugger;
+
                             if (res.childrenActions && res.childrenActions.length > 0) {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
@@ -205,7 +222,18 @@ module dockyard.directives.paneConfigureAction {
                                 // It means that solution configuration is complete. 
                                 $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                             }
+
+                            $scope.reconfigureChildrenActions = false;
+
+                            if ($scope.currentAction.childrenActions) {
+                                if (angular.toJson($scope.currentAction.childrenActions) != angular.toJson(res.childrenActions)) {
+                                    $scope.reconfigureChildrenActions = true;
+                                }
+                            }
+
                             $scope.currentAction.crateStorage = res.crateStorage;
+                            $scope.currentAction.childrenActions = res.childrenActions;
+
                             $scope.processConfiguration();
                         })
                         .catch((result) => {

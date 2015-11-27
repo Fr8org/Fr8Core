@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Fr8</title>
+    @Styles.Render("~/bundles/css/bootstrap30")
+    <link href="~/Content/css/welcome.css" rel="stylesheet">
+</head>
+
+<body>
+    <!--site content start-->
+    <section class="MainContent">
+        <div class="MainMenuDropdown">
+            <span class="dropdown-toggle">
+                Welcome to Fr8
+            </span>
+            
+        </div>
+        <div id="HomePage" class="HomePage">
+            <div class="HomeLeftSide">
+                <a href="~/Home/DocuSign">
+                    <span class="docusign-header">Try our Docusign Solutions</span>
+                    <img src="/Content/img/welcome/docusign.png">
+                    <span class="docusign-info">Some more information about docusign, some nice images maybe</span>
+                </a>
+            </div>
+            <div class="HomeRightSide">
+                <a href="~/dashboard#/myaccount">
+                    <div class="HomeRightSideWrapper">
+                        <div class="Logo">
+                            <img src="/Content/img/welcome/logo.png">
+                        </div>
+                        <p>
+                            <b>Go to Route Builder</b><span>With route builder you can create complex routes without any knowledge of programming.</span>
+                        </p><img src="/Content/img/welcome/routeBuilder.png" class="hidden-sm hidden-xs">
+                    </div>
+                </a>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </section>
+    <!--site content end-->
+    <!--site scripts start-->
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/bootstrap31")
+    <script>
+        $(function () {
+            var resizePanes = function () {
+                var rightSideMinHeight = $(window).height() - 64;
+                var currentRightSideHeight = $('.HomeRightSide').height();
+                if (currentRightSideHeight < rightSideMinHeight){
+                    $('.HomeRightSide').css({ 'min-height': ($(window).height() - 64) + 'px' });
+                }
+            };
+            
+            $(window).resize(function() {
+                resizePanes();
+            });
+            resizePanes();
+        });
+    </script>
+
+</body>
+
+</html>

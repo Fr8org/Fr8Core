@@ -1,0 +1,73 @@
+﻿html, body {
+    height:100%;
+}
+.MainContent {
+    min-height: 100%;
+}
+.btn{box-shadow:none!important}
+body{font-family:"Open Sans";background:#f5f5f5}
+
+a:hover{cursor:pointer;text-decoration: none;}
+.MainMenuDropdown .dropdown-toggle {
+    
+    height:64px;
+    line-height:64px;
+    font-size:36px;
+    display:block;
+    text-align: center;
+    font-family: monospace;
+}
+.MainMenuDropdown li a{text-align:left}@media (max-width:991px){.MainMenu{display:block}.MainMenu .ResponsiveMainMenu .dropdown-toggle{display:block;color:#ef6a20;width:36px;height:36px;line-height:36px;font-size:18px;text-align:center;padding:0;box-shadow:none}.MainMenu .ResponsiveMainMenu li a{text-align:left}.MainMenu .ResponsiveMainMenu.open .dropdown-toggle{background:#ef6a20;color:#fff}}
+.HomePage{position:relative}
+.HomePage .HomeLeftSide {
+    background:url(../img/welcome/left-side-bg.jpg)right top no-repeat #252830;
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width:50%;
+    padding: 40px 0;
+    text-align: center;
+}
+.HomePage .HomeLeftSide:hover {
+    background:#252830;
+    cursor: pointer;
+}
+.HomePage .HomeLeftSide img{margin:45px auto 0;max-width:100%;display:block}
+.HomePage .HomeLeftSide .Login{background:#ef6a20;color:#fff;border-color:#b5490d;text-shadow:0 1px 1px rgba(0,0,0,.4);border-radius:0;position:absolute;bottom:160px;left:50%;margin-left:-70px}
+.HomePage .HomeLeftSide .Login:hover{color:#fff;background:#f18041}
+.docusign-header {
+    display:block;font-size:24px;line-height:36px;margin-bottom:20px;font-weight: 600;
+    font-family: monospace;
+    color: white;
+    margin-top: 40px;
+}
+.docusign-info {
+    display:block;font-size:24px;line-height:36px;margin-bottom:20px;
+    font-family: monospace;
+    color: white;
+    margin-top: 40px;
+}
+.HomePage .HomeRightSide {
+    background:url(../img/welcome/right-side-bg.jpg)left top no-repeat #347ab6;
+    float:right;
+    width:50%;
+    padding:40px 0
+}
+.HomePage .HomeRightSide:hover {
+    background:#347ab6;
+    cursor: pointer;
+}
+.HomePage .HomeRightSide .HomeRightSideWrapper {
+    max-width:550px;
+    margin: auto;
+    text-align: center;
+}
+.HomePage .HomeRightSide .HomeRightSideWrapper .Logo{background:rgba(255,255,255,.4);padding:20px;display:inline-block;box-shadow:0 1px 4px rgba(0,0,0,.4);margin:0 0 45px}
+.HomePage .HomeRightSide .HomeRightSideWrapper p{color:#fff;font-size:16px;margin:0 0 40px;line-height: 28px;
+                                                     font-family: monospace;
+}
+.HomePage .HomeRightSide .HomeRightSideWrapper p b {
+    display:block;font-size:24px;line-height:36px;margin-bottom:20px;font-weight: 600;
+    font-family: monospace;
+}

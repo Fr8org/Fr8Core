@@ -17,6 +17,7 @@ using Utilities;
 using Utilities.Configuration.Azure;
 using Utilities.Logging;
 using Hub.Interfaces;
+using Hangfire;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -28,6 +29,7 @@ namespace HubWeb
         {
             //ConfigureDaemons();
             ConfigureAuth(app);
+            ConfigureHangfire(app, "DockyardDB");
 
             await RegisterTerminalActions();
 
@@ -62,6 +64,13 @@ namespace HubWeb
             });
         }
 
+        public void ConfigureHangfire(IAppBuilder app, string connectionString)
+        {
+            GlobalConfiguration.Configuration.UseSqlServerStorage(connectionString);
+            app.UseHangfireDashboard();
+            app.UseHangfireServer();
+        }
+
         //SeedDatabases
         //Ensure that critical configuration information is present in the database
         //Twilio SMS messages are based on CommunicationConfigurations
@@ -87,7 +96,7 @@ namespace HubWeb
             }
 
         }
-
+        
         public void AddMainSMSAlertToDb(CommunicationConfigurationRepository communicationConfigurationRepo)
         {
 
