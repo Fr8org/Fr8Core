@@ -26,7 +26,7 @@ namespace TerminalBase.Infrastructure
         public Task<PayloadDTO> GetProcessPayload(ActionDO actionDO, Guid containerId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/"+ CloudConfigurationManager.GetSetting("HubVersion") + "/containers/"
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/containers?id="
                 + containerId.ToString("D");
 
             var payloadDTOTask = _restfulServiceClient

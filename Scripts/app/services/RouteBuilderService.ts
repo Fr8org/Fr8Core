@@ -154,7 +154,7 @@ module dockyard.services {
         ActionDTO CRUD service.
     */
     app.factory('ActionService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
-        <IActionService>$resource('/api/actions/:id',
+        <IActionService>$resource('/api/actions?id=:id',
             {
                 id: '@id'
             },
@@ -190,7 +190,7 @@ module dockyard.services {
                 },
                 'deleteById': {
                     method: 'DELETE',
-                    url: '/api/actions/:id?confirmed=:confirmed'
+                    url: '/api/actions?id=:id&confirmed=:confirmed'
                 },
                 'create': {
                     method: 'POST',

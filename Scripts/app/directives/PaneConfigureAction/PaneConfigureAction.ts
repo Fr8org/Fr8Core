@@ -147,7 +147,7 @@ module dockyard.directives.paneConfigureAction {
                 function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
 
                     var field = eventArgs.field;
-
+                    if (field.events === null) return;
                     // Find the onChange event object
                     var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onChange' }, true);
                     if (eventHandlerList.length == 0) return;
