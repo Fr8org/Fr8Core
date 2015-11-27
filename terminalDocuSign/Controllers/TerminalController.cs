@@ -88,8 +88,8 @@ namespace terminalDocuSign.Controllers
 
             var collectFormDataSolution = new ActivityTemplateDTO
             {
-                Name = "Collect_Form_Data_Solution",
-                Label = "Collect Form Data Solution",
+				Name = "Extract_Data_From_Envelopes",
+				Label = "Extract Data From Envelopes",
                 Version = "1",
                 Category = ActivityCategory.Solution,
                 Terminal = terminal,
