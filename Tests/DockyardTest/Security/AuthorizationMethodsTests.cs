@@ -223,12 +223,11 @@ namespace DockyardTest.Security
             var credentialsDTO = new CredentialsDTO()
             {
                 Username = "Username",
-                Password = "Password",
-                Domain = "Domain"
+                Password = "Password"
             };
 
             var result = _authorization.AuthenticateInternal(
-               tokenDO.UserDO, activityTemplateDO, credentialsDTO.Domain, credentialsDTO.Username, credentialsDTO.Password);
+               tokenDO.UserDO, activityTemplateDO, credentialsDTO.Username, credentialsDTO.Password);
 
             //Assert
             Mock<IRestfulServiceClient> restClientMock = Mock.Get(ObjectFactory.GetInstance<IRestfulServiceClient>());

@@ -169,7 +169,6 @@ namespace Hub.Services
         public async Task<string> AuthenticateInternal(
             Fr8AccountDO account,
             ActivityTemplateDO activityTemplate,
-            string domain,
             string username,
             string password)
         {
@@ -184,7 +183,6 @@ namespace Hub.Services
 
             var credentialsDTO = new CredentialsDTO()
             {
-                Domain = domain,
                 Username = username,
                 Password = password
             };
@@ -350,24 +348,7 @@ namespace Hub.Services
         {
             using (var updater = _crate.UpdateStorage(() => actionDTO.CrateStorage))
             {
-                AuthenticationMode mode = authType == AuthenticationType.Internal ? AuthenticationMode.InternalMode : AuthenticationMode.ExternalMode;
-
-                switch (authType)
-                {
-                    case AuthenticationType.Internal:
-                        mode = AuthenticationMode.InternalMode;
-                        break;
-                    case AuthenticationType.External:
-                        mode = AuthenticationMode.ExternalMode;
-                        break;
-                    case AuthenticationType.InternalWithDomain:
-                        mode = AuthenticationMode.InternalModeWithDomain;
-                        break;
-                    case AuthenticationType.None:
-                    default:
-                        mode = AuthenticationMode.ExternalMode;
-                        break;
-                }
+                var mode = authType == AuthenticationType.Internal ? AuthenticationMode.InternalMode : AuthenticationMode.ExternalMode;
 
                 updater.CrateStorage.Add(_crate.CreateAuthenticationCrate("RequiresAuthentication", mode));
             }

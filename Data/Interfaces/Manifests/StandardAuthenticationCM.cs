@@ -22,11 +22,6 @@ namespace Data.Interfaces.Manifests
         /// <summary>
         /// When external auth form URL is triggered.
         /// </summary>
-        ExternalMode = 2,
-
-        // <summary>
-        /// When application shows default credentials window and displays Domain textbox
-        /// </summary>
-        InternalModeWithDomain = 3
+        ExternalMode = 2
     }
 }
