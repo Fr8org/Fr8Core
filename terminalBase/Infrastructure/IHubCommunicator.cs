@@ -15,6 +15,9 @@ namespace TerminalBase.Infrastructure
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(
             ActionDO actionDO, CrateDirection direction);
 
-        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category);
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO);
+
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(
+            ActionDO actionDO, ActivityCategory category);
     }
 }

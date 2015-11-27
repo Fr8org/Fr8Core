@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using StructureMap;
 using Data.Crates;
@@ -41,8 +42,24 @@ namespace TerminalBase.Infrastructure
             return _routeNode.GetCratesByDirection<TManifest>(actionDO.Id, direction);
         }
 
-        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO)
         {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "route_nodes/available";
+
+            var allCategories = await _restfulServiceClient
+                .GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(new Uri(hubUrl));
+
+            var templates = allCategories.SelectMany(x => x.Activities);
+            return templates.ToList();
+        }
+
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(
+            ActionDO actionDO, ActivityCategory category)
+        {
+            var allTemplates = await GetActivityTemplates(actionDO);
+            var templates = allTemplates.Where(x => x.Category == category);
+
+            return templates.ToList();
         }
     }
 }

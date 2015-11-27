@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using StructureMap;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Managers;
-using StructureMap;
 
 namespace TerminalBase.Infrastructure
 {
@@ -70,8 +71,28 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(crates);
         }
 
-        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category)
+        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO)
         {
+            var searchLabel = "HealthMonitor_ActivityTemplate";
+
+            var crateStorage = Crate.GetStorage(actionDO);
+            var activityTemplates = crateStorage
+                .Where(x => x.Label == searchLabel)
+                .Select(x => x.Get<ActivityTemplateDTO>())
+                .ToList();
+
+            return Task.FromResult(activityTemplates);
+        }
+
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(
+            ActionDO actionDO, ActivityCategory category)
+        {
+            var allTemplates = await GetActivityTemplates(actionDO);
+            var activityTemplates = allTemplates
+                .Where(x => x.Category == category)
+                .ToList();
+
+            return activityTemplates;
         }
     }
 }
