@@ -67,7 +67,7 @@ namespace terminalDocuSign.Actions
 
                 Controls.Add(new DropDownList()
                 {
-                    Name = "SpecificTemplate",
+                    Name = "SpecificEvent",
                     Label = "What event do you want to be notified about?",
                     Source = new FieldSourceDTO
                     {
@@ -147,6 +147,8 @@ namespace terminalDocuSign.Actions
 
             var specificRecipientOption = ((RadioButtonGroup)controls.Controls[0]).Radios[0];
             var specificTemplateOption = ((RadioButtonGroup)controls.Controls[0]).Radios[1];
+            var specificEventDdl = (DropDownList)controls.Controls[1];
+            var specificHandlerDdl = (DropDownList)controls.Controls[3];
 
             if (actionDO.ChildNodes == null || actionDO.ChildNodes.Count == 0)
             {
@@ -161,6 +163,10 @@ namespace terminalDocuSign.Actions
             {
                 ApplyMonitorDocuSignSpecificTemplate((ActionDO)actionDO.ChildNodes[0], specificTemplateOption);
             }
+
+            ApplyMonitorDocuSignSpecificEvent((ActionDO)actionDO.ChildNodes[0], specificEventDdl);
+
+            await ApplyHandlerAction(actionDO, specificHandlerDdl);
 
             return actionDO;
         }
@@ -231,6 +237,77 @@ namespace terminalDocuSign.Actions
                 var templateOption = ((RadioButtonGroup)controls.Controls[0]).Radios[1];
                 templateOption.Selected = true;
                 ((DropDownList)templateOption.Controls[0]).Value = ((DropDownList)option.Controls[0]).Value;
+            }
+        }
+
+        private void ApplyMonitorDocuSignSpecificEvent(
+            ActionDO monitorAction, DropDownList ddl)
+        {
+            using (var updater = Crate.UpdateStorage(monitorAction))
+            {
+                var controls = updater.CrateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
+                    .First();
+
+                if (ddl.ListItems != null)
+                {
+                    var checkBoxes = controls.Controls
+                        .Where(x => x.Type == ControlTypes.CheckBox
+                            && ddl.ListItems.Any(y => y.Value == x.Name)
+                        )
+                        .ToList();
+
+                    checkBoxes.ForEach(x => { x.Selected = false; });
+
+                    var selectedCheckBox = checkBoxes.FirstOrDefault(x => x.Name == ddl.Value);
+                    if (selectedCheckBox != null)
+                    {
+                        selectedCheckBox.Selected = true;
+                    }
+                }
+            }
+        }
+
+        private async Task ApplyHandlerAction(
+            ActionDO solutionAction, DropDownList ddl)
+        {
+            // Remove action if action types do not match.
+            if (solutionAction.ChildNodes != null && solutionAction.ChildNodes.Count == 2)
+            {
+                var handlerAction = (ActionDO)solutionAction.ChildNodes[1];
+                var handlerActivityTemplateIdStr = handlerAction.ActivityTemplateId.HasValue
+                    ? handlerAction.ActivityTemplateId.Value.ToString()
+                    : string.Empty;
+
+                if (handlerActivityTemplateIdStr != ddl.Value)
+                {
+                    solutionAction.ChildNodes.RemoveAt(1);
+                }
+            }
+
+            // Add action if no notifier action exist.
+            if (solutionAction.ChildNodes != null
+                && solutionAction.ChildNodes.Count == 1
+                && !string.IsNullOrEmpty(ddl.Value))
+            {
+                var templates = await HubCommunicator.GetActivityTemplates(solutionAction);
+                var selectedTemplate = templates.FirstOrDefault(x => x.Id.ToString() == ddl.Value);
+
+                if (selectedTemplate != null)
+                {
+                    var handlerAction = new ActionDO
+                    {
+                        IsTempId = true,
+                        ActivityTemplateId = selectedTemplate.Id,
+                        CrateStorage = Crate.EmptyStorageAsStr(),
+                        CreateDate = DateTime.Now,
+                        Ordering = 1,
+                        Name = selectedTemplate.Label,
+                        Label = selectedTemplate.Label
+                    };
+
+                    solutionAction.ChildNodes.Add(handlerAction);
+                }
             }
         }
 
