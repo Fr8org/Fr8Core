@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
@@ -100,7 +101,7 @@ namespace terminalDocuSign.Actions
             }
         }
     
-        public virtual ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (Crate.IsStorageEmpty(curActionDO))
             {
@@ -111,18 +112,18 @@ namespace terminalDocuSign.Actions
         }
 
         protected override async Task<ActionDO> InitialConfigurationResponse(
-            ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+            ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            using (var updater = Crate.UpdateStorage(actionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
                 updater.CrateStorage.Add(await PackAvailableTemplates());
                 updater.CrateStorage.Add(await PackAvailableEvents());
-                updater.CrateStorage.Add(await PackAvailableHandlers());
+                updater.CrateStorage.Add(await PackAvailableHandlers(actionDO));
             }
 
-            return curActionDO;
+            return actionDO;
         }
 
         protected override Task<ActionDO> FollowupConfigurationResponse(
@@ -141,9 +142,18 @@ namespace terminalDocuSign.Actions
             throw new NotImplementedException();
         }
 
-        private Task<Crate> PackAvailableHandlers()
+        private async Task<Crate> PackAvailableHandlers(ActionDO actionDO)
         {
-            throw new NotImplementedException();
+            var templates = await HubCommunicator.GetActivityTemplates(actionDO);
+            var taggedTemplates = templates.Where(x => x.Tags.Contains("Notifier"));
+
+            var availableHandlersCrate =
+                Crate.CreateDesignTimeFieldsCrate(
+                    "AvailableActions",
+                    templates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()
+                );
+
+            return availableHandlersCrate;
         }
     }
 }
