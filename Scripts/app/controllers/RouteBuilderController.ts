@@ -49,7 +49,8 @@ module dockyard.controllers {
             'CrateHelper',
             '$filter',
             'UIHelperService',
-            'LayoutService'
+            'LayoutService',
+            '$state'
         ];
 
         constructor(
@@ -96,6 +97,8 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionRemoved],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsReconfiguration],
+                (event: ng.IAngularEvent) => this.PaneConfigureAction_ChildActionsReconfiguration());
 
             //Process Select Action Pane events
             this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActivityTypeSelected],
@@ -222,6 +225,8 @@ module dockyard.controllers {
             This message is sent when user is selecting an existing action or after addng a new action. 
         */
         private selectAction(action: model.ActionDTO) {
+            debugger;
+
             console.log("Action selected: " + action.id);
             var originalId,
                 actionId = action.id,
@@ -332,6 +337,10 @@ module dockyard.controllers {
                 );
         }
 
+        private PaneConfigureAction_ChildActionsReconfiguration() {
+            debugger;
+            this.reloadRoute();
+        }
     }
 
     app.run([
