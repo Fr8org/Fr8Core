@@ -44,7 +44,8 @@ namespace TerminalBase.Infrastructure
 
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO)
         {
-            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "route_nodes/available";
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") 
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/available";
 
             var allCategories = await _restfulServiceClient
                 .GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(new Uri(hubUrl));
