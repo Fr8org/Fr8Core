@@ -34,6 +34,7 @@ namespace terminalDocuSign.Actions
                         {
                             Name = "SpecificRecipient",
                             Value = "A specific Recipient",
+                            Selected = true,
                             Controls = new List<ControlDefinitionDTO>
                             {
                                 new TextBox()
@@ -85,7 +86,8 @@ namespace terminalDocuSign.Actions
                         new RadioButtonOption
                         {
                             Name = "NotificationMode",
-                            Value = "When the event happens"
+                            Value = "When the event happens",
+                            Selected = true
                         }
                     }
                 });
@@ -136,11 +138,103 @@ namespace terminalDocuSign.Actions
             return actionDO;
         }
 
-        protected override Task<ActionDO> FollowupConfigurationResponse(
-            ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(
+            ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
-            throw new NotImplementedException();
+            var controls = Crate.GetStorage(actionDO)
+                .CrateContentsOfType<StandardConfigurationControlsCM>()
+                .First();
+
+            var specificRecipientOption = ((RadioButtonGroup)controls.Controls[0]).Radios[0];
+            var specificTemplateOption = ((RadioButtonGroup)controls.Controls[0]).Radios[1];
+
+            if (actionDO.ChildNodes == null || actionDO.ChildNodes.Count == 0)
+            {
+                await CreateEmptyMonitorDocuSignAction(actionDO, authTokenDO);
+            }
+
+            if (specificRecipientOption.Selected)
+            {
+                ApplyMonitorDocuSignSpecificRecipient((ActionDO)actionDO.ChildNodes[0], specificRecipientOption);
+            }
+            else if (specificTemplateOption.Selected)
+            {
+                ApplyMonitorDocuSignSpecificTemplate((ActionDO)actionDO.ChildNodes[0], specificTemplateOption);
+            }
+
+            return actionDO;
         }
+
+        #region Monitor_DocuSign routines.
+
+        private async Task CreateEmptyMonitorDocuSignAction(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        {
+            actionDO.ChildNodes = new List<RouteNodeDO>();
+
+            const string monitorDocuSignTemplateName = "Monitor_DocuSign";
+            var monitorDocuSignTemplate = (await HubCommunicator.GetActivityTemplates(actionDO))
+                .FirstOrDefault(x => x.Name == "Monitor_DocuSign");
+
+            if (monitorDocuSignTemplate == null)
+            {
+                throw new Exception(string.Format("ActivityTemplate {0} was not found", monitorDocuSignTemplateName));
+            }
+
+            var monitorDocuSignAction = new ActionDO
+            {
+                IsTempId = true,
+                ActivityTemplateId = monitorDocuSignTemplate.Id,
+                CrateStorage = Crate.EmptyStorageAsStr(),
+                CreateDate = DateTime.Now,
+                Ordering = 1,
+                Name = "Monitor DocuSign",
+                Label = "Monitor DocuSign"
+            };
+
+            var monitorDocuSignTerminalAction = new Monitor_DocuSign_v1();
+            monitorDocuSignAction = await monitorDocuSignTerminalAction
+                .Configure(monitorDocuSignAction, authTokenDO);
+
+            actionDO.ChildNodes.Add(monitorDocuSignAction);
+        }
+
+        private void ApplyMonitorDocuSignSpecificRecipient(
+            ActionDO monitorAction, RadioButtonOption source)
+        {
+            using (var updater = Crate.UpdateStorage(monitorAction))
+            {
+                var controls = updater.CrateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
+                    .First();
+
+                var recipientOption = ((RadioButtonGroup)controls.Controls[0]).Radios[0];
+                recipientOption.Selected = true;
+                ((TextBox)recipientOption.Controls[0]).Value = ((TextBox)source.Controls[0]).Value;
+
+                var templateOption = ((RadioButtonGroup)controls.Controls[0]).Radios[1];
+                templateOption.Selected = false;
+            }
+        }
+
+        private void ApplyMonitorDocuSignSpecificTemplate(
+            ActionDO monitorAction, RadioButtonOption option)
+        {
+            using (var updater = Crate.UpdateStorage(monitorAction))
+            {
+                var controls = updater.CrateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
+                    .First();
+
+                var recipientOption = ((RadioButtonGroup)controls.Controls[0]).Radios[0];
+                recipientOption.Selected = false;
+
+                var templateOption = ((RadioButtonGroup)controls.Controls[0]).Radios[1];
+                templateOption.Selected = true;
+                ((DropDownList)templateOption.Controls[0]).Value = ((DropDownList)option.Controls[0]).Value;
+            }
+        }
+
+        #endregion Monitor_DocuSign routines.
 
         private Crate PackAvailableTemplates(AuthorizationTokenDO authTokenDO)
         {
@@ -169,12 +263,12 @@ namespace terminalDocuSign.Actions
         private async Task<Crate> PackAvailableHandlers(ActionDO actionDO)
         {
             var templates = await HubCommunicator.GetActivityTemplates(actionDO);
-            var taggedTemplates = templates.Where(x => x.Tags.Contains("Notifier"));
+            var taggedTemplates = templates.Where(x => x.Tags != null && x.Tags.Contains("Notifier"));
 
             var availableHandlersCrate =
                 Crate.CreateDesignTimeFieldsCrate(
-                    "AvailableActions",
-                    templates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()
+                    "AvailableHandlers",
+                    taggedTemplates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()
                 );
 
             return availableHandlersCrate;
