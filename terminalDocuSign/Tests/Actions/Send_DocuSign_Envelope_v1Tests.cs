@@ -18,6 +18,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
+using TerminalBase.Infrastructure;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Tests.Fixtures;
 using Utilities.Configuration.Azure;
@@ -38,6 +39,8 @@ namespace terminalDocuSign.Tests.Actions
         {
             base.SetUp();
 
+            TerminalBootstrapper.ConfigureTest();            
+
             _send_DocuSign_Envelope_v1 = new Send_DocuSign_Envelope_v1();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
@@ -47,50 +50,33 @@ namespace terminalDocuSign.Tests.Actions
         {
             ActionDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
             curActionDTO.AuthToken = new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
-            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);            
+
+            var crate = FixtureData.TestCrateDTO1();
+            Crate<StandardDesignTimeFieldsCM>[] curCrates = new Crate<StandardDesignTimeFieldsCM>[1];
+            curCrates.SetValue(crate[0], 0);
+     
+            MockGetCrates<StandardDesignTimeFieldsCM>(curCrates);
+
+            _send_DocuSign_Envelope_v1.UpdateUpstreamCrate(curActionDO);
 
             using (var updater = _crate.UpdateStorage(curActionDO))
-            {
-                var cnt = updater.CrateStorage.Count;
-                var str = String.Format("{0}", cnt);
-
-                var list = new List<Crate<StandardDesignTimeFieldsCM>>();
-                var crate = new Crate<StandardDesignTimeFieldsCM>(new Crate(CrateManifestType.Unknown, "testlabel"));
-                list.Add(crate);
-                
-                Crate<StandardDesignTimeFieldsCM>[] curCrates = new Crate<StandardDesignTimeFieldsCM>[1];
-                curCrates.SetValue(crate, 0);//.AddRange<StandardDesignTimeFieldsCM>(list);
-
-                //var routeNode = MockGetCrates<StandardDesignTimeFieldsCM>(curCrates);
-                var mock = MockGetCrates<StandardDesignTimeFieldsCM>(curCrates);
-
-                IRouteNode routeNode = mock.Object;
-
-                var result = routeNode.GetCratesByDirection<StandardDesignTimeFieldsCM>(curActionDO.Id, CrateDirection.Upstream);
-
-                str = String.Format(result.ToString());
-                _send_DocuSign_Envelope_v1.UpdateUpstreamCrate(curActionDO);
-
-            
-                // Build a crate with the list of available upstream fields
-                cnt = updater.CrateStorage.Count;
-                str = String.Format("{0}", cnt);
-                var item = updater.CrateStorage.FirstOrDefault<Crate>();
-                str = String.Format("{0}", item.ToString());
+            { 
                 var has = updater.CrateStorage.Any(c => c.ManifestType.Id == (int)MT.StandardDesignTimeFields
                                                                                     && c.Label == "Upstream Terminal-Provided Fields");
+
                 Assert.IsTrue(has);
             }
 
         }
-
-        private Mock<IRouteNode> MockGetCrates<TManifest>(params Crate<TManifest>[] cratesToReturn)
+        
+        private void MockGetCrates<TManifest>(params Crate<TManifest>[] cratesToReturn)
         {
-            var mok = new Mock<IRouteNode>();
+            var communicator = _send_DocuSign_Envelope_v1.HubCommunicator;
+            var mok = Mock.Get(communicator);
 
-            mok.Setup(x => x.GetCratesByDirection<TManifest>(It.IsAny<Guid>(), It.IsAny<CrateDirection>())).Returns(Task.FromResult(new List<Crate<TManifest>>(cratesToReturn)));
-
-            return mok;
+            mok.Setup(x => x.GetCratesByDirection<TManifest>(It.IsAny<ActionDO>(), It.IsAny<CrateDirection>())).Returns(Task.FromResult(new List<Crate<TManifest>>(cratesToReturn)));
+            
         }
     }
 
