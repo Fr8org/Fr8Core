@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
+using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
@@ -100,7 +103,14 @@ namespace terminalDocuSign.Actions
                 });
             }
         }
-    
+
+        public DocuSignManager DocuSignManager { get; set; }
+
+        public Rich_Document_Notifications_v1()
+        {
+            DocuSignManager = new DocuSignManager();
+        }
+
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (Crate.IsStorageEmpty(curActionDO))
@@ -118,8 +128,8 @@ namespace terminalDocuSign.Actions
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.Add(await PackAvailableTemplates());
-                updater.CrateStorage.Add(await PackAvailableEvents());
+                updater.CrateStorage.Add(PackAvailableTemplates(authTokenDO));
+                updater.CrateStorage.Add(PackAvailableEvents());
                 updater.CrateStorage.Add(await PackAvailableHandlers(actionDO));
             }
 
@@ -132,14 +142,28 @@ namespace terminalDocuSign.Actions
             throw new NotImplementedException();
         }
 
-        private Task<Crate> PackAvailableTemplates()
+        private Crate PackAvailableTemplates(AuthorizationTokenDO authTokenDO)
         {
-            throw new NotImplementedException();
+            var docuSignAuthDTO = JsonConvert
+                .DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+
+            var crate = DocuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
+            crate.Label = "AvailableTemplates";
+
+            return crate;
         }
 
-        private Task<Crate> PackAvailableEvents()
+        private Crate PackAvailableEvents()
         {
-            throw new NotImplementedException();
+            var crate = Crate.CreateDesignTimeFieldsCrate(
+                "AvailableEvents",
+                new FieldDTO { Key = "Envelope Sent", Value = "Event_Envelope_Sent" },
+                new FieldDTO { Key = "Envelope Received", Value = "Event_Envelope_Received" },
+                new FieldDTO { Key = "Recipient Signed", Value = "Event_Recipient_Signed" },
+                new FieldDTO { Key = "Recipient Sent", Value = "Event_Recipient_Sent" }
+            );
+
+            return crate;
         }
 
         private async Task<Crate> PackAvailableHandlers(ActionDO actionDO)
