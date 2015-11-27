@@ -53,6 +53,9 @@ namespace Data.Control
         [JsonProperty("listItems")]
         public List<ListItem> ListItems { get; set; }
 
+        [JsonProperty("selectedKey")]
+        public string selectedKey { get; set; }
+
         public DropDownList()
         {
             ListItems = new List<ListItem>();

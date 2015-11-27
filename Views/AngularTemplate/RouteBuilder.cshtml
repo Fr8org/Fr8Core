@@ -11,7 +11,7 @@
 <!-- BEGIN MAIN CONTENT -->
 <div ng-controller="RouteBuilderController" class="margin-top-10">
     <designer-header route="current.route"></designer-header>
-    <div class="process-builder-container" layout-container>
+    <div class="route-builder-container" layout-container>
         <div ng-repeat="group in actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
             <div class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
             <div>
