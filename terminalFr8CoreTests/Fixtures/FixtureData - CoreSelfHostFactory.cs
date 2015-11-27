@@ -19,7 +19,7 @@ namespace terminalFr8CoreTests.Fixtures
             public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
             {
                 return new Type[] {
-                    typeof(HubWeb.Controllers.ManifestController)
+                    typeof(HubWeb.Controllers.ManifestsController)
                 };
             }
         }
