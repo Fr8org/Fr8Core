@@ -11,13 +11,18 @@ namespace HubWeb
 			// Web API configuration and services
 
 			// Web API routes
-			config.MapHttpAttributeRoutes();
 
 			config.Routes.MapHttpRoute(
-				name : "DefaultApi",
-				routeTemplate : "api/{controller}/{id}",
+				name : "DefaultWithActionApi",
+				routeTemplate : "api/v1/{controller}/{action}/{id}",
 				defaults : new { id = RouteParameter.Optional }
 				);
+
+            //config.Routes.MapHttpRoute(
+            //    name: "DefaultApi",
+            //    routeTemplate: "api/v1/{controller}/{id}",
+            //    defaults: new { id = RouteParameter.Optional }
+            //    );
             HttpConfiguration config1 = GlobalConfiguration.Configuration;
             config.Formatters.JsonFormatter.SerializerSettings.Formatting =
                 Newtonsoft.Json.Formatting.Indented;

@@ -16,7 +16,7 @@ namespace HubWeb.Controllers
     /// <summary>
     /// Critera web api controller to handle operations from frontend.
     /// </summary>
-    [RoutePrefix("api/criteria")]
+    //[RoutePrefix("api/criteria")]
     [Fr8ApiAuthorize]
     public class CriteriaController : ApiController
     {
@@ -25,9 +25,9 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <param name="id">Subroute.id.</param>
         [ResponseType(typeof(CriteriaDTO))]
-        [Route("bySubroute")]
+        //[Route("bySubroute")]
         [HttpGet]
-        public IHttpActionResult GetBySubrouteId(Guid id)
+        public IHttpActionResult BySubrouteId(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
