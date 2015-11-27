@@ -1,5 +1,4 @@
-﻿using Moq;
-using StructureMap;
+﻿using StructureMap;
 using StructureMap.Configuration.DSL;
 
 namespace TerminalBase.Infrastructure
@@ -16,7 +15,7 @@ namespace TerminalBase.Infrastructure
 
         public static void ConfigureTest()
         {
-            ObjectFactory.Configure(x => x.AddRegistry<TestMode>());
+            ObjectFactory.Configure(x => x.AddRegistry<LiveMode>());
         }
 
         public class LiveMode : Registry
@@ -25,15 +24,6 @@ namespace TerminalBase.Infrastructure
             {                
                 For<IHubCommunicator>().Use<DefaultHubCommunicator>();
             }            
-        }
-
-        public class TestMode : Registry
-        {
-            public TestMode()
-            {
-                var hubCommunicator = new Mock<IHubCommunicator>();
-                For<IHubCommunicator>().Use(hubCommunicator.Object);
-            }
         }
     }
 }

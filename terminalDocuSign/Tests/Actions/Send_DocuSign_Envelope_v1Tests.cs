@@ -41,8 +41,18 @@ namespace terminalDocuSign.Tests.Actions
 
             TerminalBootstrapper.ConfigureTest();            
 
-            _send_DocuSign_Envelope_v1 = new Send_DocuSign_Envelope_v1();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
+
+            var crate = FixtureData.TestCrateDTO1();
+            Crate<StandardDesignTimeFieldsCM>[] cratesToReturn = new Crate<StandardDesignTimeFieldsCM>[1];
+            cratesToReturn.SetValue(crate[0], 0);
+
+            var routeNode = new Mock<IRouteNode>();
+            routeNode.Setup(x => x.GetCratesByDirection<StandardDesignTimeFieldsCM>(It.IsAny<Guid>(), It.IsAny<CrateDirection>())).Returns(Task.FromResult(new List<Crate<StandardDesignTimeFieldsCM>>(cratesToReturn)));
+
+            ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(routeNode.Object));
+
+            _send_DocuSign_Envelope_v1 = new Send_DocuSign_Envelope_v1();
         }
 
         [Test]
@@ -51,12 +61,6 @@ namespace terminalDocuSign.Tests.Actions
             ActionDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
             curActionDTO.AuthToken = new AuthorizationTokenDTO() { Token = JsonConvert.SerializeObject(TerminalFixtureData.TestDocuSignAuthDTO1()) };
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);            
-
-            var crate = FixtureData.TestCrateDTO1();
-            Crate<StandardDesignTimeFieldsCM>[] curCrates = new Crate<StandardDesignTimeFieldsCM>[1];
-            curCrates.SetValue(crate[0], 0);
-     
-            MockGetCrates<StandardDesignTimeFieldsCM>(curCrates);
 
             _send_DocuSign_Envelope_v1.UpdateUpstreamCrate(curActionDO);
 
@@ -68,16 +72,7 @@ namespace terminalDocuSign.Tests.Actions
                 Assert.IsTrue(has);
             }
 
-        }
-        
-        private void MockGetCrates<TManifest>(params Crate<TManifest>[] cratesToReturn)
-        {
-            var communicator = _send_DocuSign_Envelope_v1.HubCommunicator;
-            var mok = Mock.Get(communicator);
-
-            mok.Setup(x => x.GetCratesByDirection<TManifest>(It.IsAny<ActionDO>(), It.IsAny<CrateDirection>())).Returns(Task.FromResult(new List<Crate<TManifest>>(cratesToReturn)));
-            
-        }
+        }        
     }
 
 }
