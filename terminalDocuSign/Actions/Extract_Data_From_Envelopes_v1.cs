@@ -106,7 +106,7 @@ namespace terminalDocuSign.Actions
 
 			// Always use default template for solution
 			const string firstTemplateName = "Monitor_DocuSign";
-			var firstActionTemplate = (await FindTemplates(x => x.Name == "Monitor_DocuSign")).FirstOrDefault();
+			var firstActionTemplate = (await FindTemplates(curActionDO, x => x.Name == "Monitor_DocuSign")).FirstOrDefault();
 
 			if (firstActionTemplate == null)
 			{
@@ -154,7 +154,6 @@ namespace terminalDocuSign.Actions
         private async Task<IEnumerable<Crate>> PackSources(ActionDO actionDO)
         {
             var sources = new List<Crate>();
-            sources.Add(Crate.CreateDesignTimeFieldsCrate("AvailableForms", new FieldDTO("key", "value")));
 
             var templates = await HubCommunicator.GetActivityTemplates(actionDO, ActivityCategory.Forwarders);
             sources.Add(
