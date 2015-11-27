@@ -62,7 +62,7 @@ namespace terminalFr8Core.Actions
 
             };
 
-            var messageBody = new TextAreaDefinitionDTO
+            var messageBody = new TextAreaDefinitionDTO()
             {
                 Label = "Body:",
                 Name = "Body",
@@ -73,10 +73,10 @@ namespace terminalFr8Core.Actions
 
             var fieldSelectObjectTypes = new DropDownListControlDefinitionDTO()
             {
-                Label = "Save Which Data Types?",
-                Name = "Save Object Name",
+                Label = "Available Fields",
+                Name = "Available Fields",
                 Required = true,
-                Events = new List<ControlEvent>(),
+                Events = new List<ControlEvent>() { new ControlEvent("onChange", "focusConfig") },
                 Source = new FieldSourceDTO
                 {
                     Label = curMergedUpstreamRunTimeObjects.Label,
