@@ -64,13 +64,14 @@
 
                 <li class="menu-dropdown classic-menu-dropdown">
                     <a href="#" data-toggle="dropdown" class="dropdown-toggle">Solutions <i class="fa fa-angle-down"></i></a>
-                    <ul class="dropdown-menu pull-left">
+                    <ul class="dropdown-menu pull-left" ng-controller="SolutionListController">
                         <li class="dropdown-submenu">
                             <a href="javascript:;" class="dropdown-toggle">DocuSign</a>
                             <ul class="dropdown-menu">
 
-                                <li><a href="#/solution/Collect_Form_Data_Solution">Collect Form Data Solution</a></li>
-                                <li><a href="#/solution/Mail_Merge_Into_DocuSign">Mail Merge into DocuSign</a></li>
+                                <li ng-repeat="activity in (activityCategories | filter: {name: 'Solution', $: 'DocuSign'})[0].activities">
+                                    <a ng-href="#/solution/{{activity.name}}">{{activity.label}}</a>
+                                </li>
 
                             </ul>
                         </li>
