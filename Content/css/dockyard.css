@@ -242,10 +242,18 @@
     }
 
 .action-to-add {
+	display: inline-block;
+	background-color: white;
+	box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px 0px, rgba(0, 0, 0, 0.137255) 0px 1px 1px 0px, rgba(0, 0, 0, 0.117647) 0px 2px 1px -1px;
     cursor: pointer;
     opacity: 0.5;
-    margin-left: -3px;
-    height: 300px;
+    margin-bottom: 48px;
+    height: 150px;
+	width: 150px;
+	vertical-align: middle;
+	border-radius: 50% !important;
+	text-align: center;
+	line-height: 150px; 
 }
 
     .action-to-add:hover {
