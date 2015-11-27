@@ -19,8 +19,8 @@ namespace HubWeb.Controllers
     public class AlarmController : ApiController
     {
         [HttpPost]
-        [Route("SetAlarm")]
-        public async Task<IHttpActionResult> SetAlarm(AlarmDTO alarmDTO)
+        [Route("")]
+        public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {
             Expression<Action> action = () => ExecuteTerminalWithLogging(alarmDTO);
             BackgroundJob.Schedule(action, alarmDTO.StartTime);
@@ -29,6 +29,8 @@ namespace HubWeb.Controllers
             return await eventController.ProcessIncomingEvents(alarmDTO.TerminalName, alarmDTO.TerminalVersion);
         }
 
+        [HttpPost]
+        [Route("executeTerminalWithLogging")]
         public async void ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
         {
             HttpResponseMessage result = null;
