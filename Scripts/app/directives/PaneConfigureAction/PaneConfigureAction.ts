@@ -289,7 +289,7 @@ module dockyard.directives.paneConfigureAction {
                     };
 
                     $http
-                        .get('/authentication/initial_url?id=' + activityTemplateId)
+                        .get('/api/authentication/initial_url?id=' + activityTemplateId)
                         .then(res => {
                             var url = (<any>res.data).url;
                             childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');

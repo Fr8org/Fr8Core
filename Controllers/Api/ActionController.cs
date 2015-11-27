@@ -59,7 +59,6 @@ namespace HubWeb.Controllers
 
 
         [HttpPost]
-        //[ActionName("create")]
         public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -83,7 +82,6 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        //[ActionName("create")]
         public async Task<IHttpActionResult> Create(string solutionName)
         {
             var userId = User.Identity.GetUserId();
@@ -106,9 +104,6 @@ namespace HubWeb.Controllers
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
 
         [HttpPost]
-//        [ActionName("configuration")]
-        //[ActionName("configure")]
-        //[ResponseType(typeof(CrateStorageDTO))]
         public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
         {
             curActionDesignDTO.CurrentView = null;
@@ -121,7 +116,6 @@ namespace HubWeb.Controllers
         /// GET : Returns an action with the specified id
         /// </summary>
         [HttpGet]
-        //[ActionName("{id:guid}")]
         public ActionDTO Get(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -149,7 +143,6 @@ namespace HubWeb.Controllers
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
-        //[Route("save")]
         public IHttpActionResult Save(ActionDTO curActionDTO)
         {
             ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);

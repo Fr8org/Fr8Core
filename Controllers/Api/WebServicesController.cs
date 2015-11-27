@@ -11,14 +11,12 @@ using StructureMap;
 
 namespace HubWeb.Controllers
 {
-	//[RoutePrefix("webservices")]
 	public class WebServicesController : ApiController
 	{
 	    private const string UknownWebServiceName = "UnknownService";
 
 		[HttpGet]
-		//[Route("")]
-		public IHttpActionResult GetWebServices()
+		public IHttpActionResult Get()
 		{
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
@@ -31,8 +29,7 @@ namespace HubWeb.Controllers
 		}
 
 		[HttpPost]
-		//[Route("")]
-		public IHttpActionResult CreateWebService(WebServiceDTO webService)
+		public IHttpActionResult Post(WebServiceDTO webService)
 		{
 			WebServiceDO entity = Mapper.Map<WebServiceDO>(webService);
 
