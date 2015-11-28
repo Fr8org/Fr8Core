@@ -74,9 +74,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
                 .ForMember(x => x.ActivityTemplateStateTemplate,
                     opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
-                .ForMember(x => x.WebServiceId, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null));
-
-                .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description))
+                .ForMember(x => x.WebServiceId, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null)) 
+                .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description));
 
 //
 //            Mapper.CreateMap<ActionListDO, ActionListDTO>()

@@ -454,6 +454,10 @@
     <Compile Include="Migrations\201511281709584_Merge2_Migration.Designer.cs">
       <DependentUpon>201511281709584_Merge2_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511281946401_Empty.cs" />
+    <Compile Include="Migrations\201511281946401_Empty.Designer.cs">
+      <DependentUpon>201511281946401_Empty.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -767,6 +771,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511281709584_Merge2_Migration.resx">
       <DependentUpon>201511281709584_Merge2_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511281946401_Empty.resx">
+      <DependentUpon>201511281946401_Empty.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
