@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Services.Protocols;
-using AutoMapper;
-using Data.Control;
-using Moq;
-using Newtonsoft.Json;
-using NUnit.Framework;
-using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
@@ -19,12 +9,12 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.StructureMap;
-using ServiceStack.Text;
-using terminalTwilio;
+using Moq;
+using NUnit.Framework;
+using StructureMap;
 using terminalTwilio.Actions;
 using terminalTwilio.Services;
 using terminalTwilio.Tests.Fixtures;
-using terminalTwilio.Tests;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
@@ -51,7 +41,7 @@ namespace terminalTwilio.Tests.Actions
             var twilioService = new Mock<ITwilioService>();
             twilioService
                 .Setup(c => c.GetRegisteredSenderNumbers())
-                .Returns(new List<string>() { "+15005550006" });
+                .Returns(new List<string> { "+15005550006" });
             ObjectFactory.Configure(cfg => cfg.For<ITwilioService>().Use(twilioService.Object));
 
             var actionDO = FixtureData.ConfigureTwilioAction();
