@@ -442,6 +442,10 @@
     <Compile Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.Designer.cs">
       <DependentUpon>201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511271920340_RenameMonitorDocuSignAction.cs" />
+    <Compile Include="Migrations\201511271920340_RenameMonitorDocuSignAction.Designer.cs">
+      <DependentUpon>201511271920340_RenameMonitorDocuSignAction.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -744,6 +748,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.resx">
       <DependentUpon>201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511271920340_RenameMonitorDocuSignAction.resx">
+      <DependentUpon>201511271920340_RenameMonitorDocuSignAction.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

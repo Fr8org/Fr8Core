@@ -218,7 +218,7 @@
     <Compile Include="Actions\Collect_Form_Data_Solution_v1.cs" />
     <Compile Include="Actions\Mail_Merge_Into_DocuSign_v1.cs" />
     <Compile Include="Actions\Receive_DocuSign_Envelope_v1.cs" />
-    <Compile Include="Actions\Monitor_DocuSign_v1.cs" />
+    <Compile Include="Actions\Monitor_DocuSign_Envelope_Activity_v1.cs" />
     <Compile Include="Actions\Record_DocuSign_Events_v1.cs" />
     <Compile Include="Actions\Rich_Document_Notifications_v1.cs" />
     <Compile Include="Actions\Send_DocuSign_Envelope_v1.cs" />
