@@ -458,6 +458,10 @@
     <Compile Include="Migrations\201511281946401_Empty.Designer.cs">
       <DependentUpon>201511281946401_Empty.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511261934585_RenameCollectFormDataSolution.cs" />
+    <Compile Include="Migrations\201511261934585_RenameCollectFormDataSolution.Designer.cs">
+      <DependentUpon>201511261934585_RenameCollectFormDataSolution.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -774,6 +778,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511281946401_Empty.resx">
       <DependentUpon>201511281946401_Empty.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511261934585_RenameCollectFormDataSolution.resx">
+      <DependentUpon>201511261934585_RenameCollectFormDataSolution.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

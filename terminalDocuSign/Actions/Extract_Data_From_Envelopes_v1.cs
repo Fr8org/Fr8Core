@@ -8,7 +8,6 @@ using AutoMapper;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
@@ -19,73 +18,32 @@ using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Collect_Form_Data_Solution_v1 : BaseTerminalAction
+    public class Extract_Data_From_Envelopes_v1 : BaseTerminalAction
     {
         private class ActionUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
             public DropDownList FinalActionsList { get; set; }
-            [JsonIgnore]
-            public RadioButtonOption UseTemplate { get; set; }
-            [JsonIgnore]
-            public RadioButtonOption UseStandardForm { get; set; }
-            [JsonIgnore]
-            public RadioButtonOption UseUploadedForm { get; set; }
-            [JsonIgnore]
-            public DropDownList StandardFormsList { get; set; }
 
             public ActionUi()
             {
                 Controls = new List<ControlDefinitionDTO>();
+
                 Controls.Add(new TextArea
                 {
                     IsReadOnly = true,
                     Label = "",
-                    Value = "<h4><b>Fr8 Solutions for DocuSign</b><img height=\"30px\" src=\"/Content/icons/web_services/DocuSign-Logo.png\" align=\"right\"></h4><p>Use DocuSign to collect information</p>"
-                });
-
-                Controls.Add(new RadioButtonGroup
-                {
-                    Label = "1. Collect What Kind of Form Data?",
-                    Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")},
-                    Radios = new List<RadioButtonOption>
-                    {
-                        (UseStandardForm = new RadioButtonOption
-                        {
-                            Name = "UseStandardForm",
-                            Value = "Use standard form",
-                            Controls = new List<ControlDefinitionDTO>
-                            {
-                                (StandardFormsList = new DropDownList
-                                {
-                                    Name = "StandardFormsList",
-                                    Source = new FieldSourceDTO
-                                    {
-                                        Label = "AvailableForms",
-                                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                    },
-                                    Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
-                                })
-                            }
-                        }),
-                        (UseTemplate = new RadioButtonOption
-                        {
-                            Name = "UseTemplate",
-                            Value = "I want to use a template on my DocuSign account"
-                        }),
-                        (UseUploadedForm = new RadioButtonOption
-                        {
-                            Name = "UseUploadedForm",
-                            Value = "I want to upload my own form"
-                        })
-                    }
+                    Value = "<img height=\"30px\" src=\"/Content/icons/web_services/DocuSign-Logo.png\">" +
+							"<p>You will be asked to select a DocuSign Template.</p>" +
+							"<p>Each time a related DocuSign Envelope is completed, we'll extract the data for you.</p>"
+                           
                 });
 
                 Controls.Add((FinalActionsList = new DropDownList
                 {
                     Name = "FinalActionsList",
                     Required = true,
-                    Label = "2.  After the forms are completed, where do you want to collect the data?",
+					Label = "What would you like us to do with the data?",
                     Source = new FieldSourceDTO
                     {
                         Label = "AvailableActions",
@@ -144,31 +102,28 @@ namespace terminalDocuSign.Actions
             
             controls.ClonePropertiesFrom(Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
 
-
             curActionDO.ChildNodes = new List<RouteNodeDO>();
 
-            if (controls.UseTemplate.Selected)
-            {
-                const string firstTemplateName = "Monitor_DocuSign";
-                var firstActionTemplate = (await FindTemplates(curActionDO, x => x.Name == "Monitor_DocuSign")).FirstOrDefault();
+			// Always use default template for solution
+			const string firstTemplateName = "Monitor_DocuSign";
+			var firstActionTemplate = (await FindTemplates(curActionDO, x => x.Name == "Monitor_DocuSign")).FirstOrDefault();
 
-                if (firstActionTemplate == null)
-                {
-                    throw new Exception(string.Format("ActivityTemplate {0} was not found", firstTemplateName));
-                }
+			if (firstActionTemplate == null)
+			{
+				throw new Exception(string.Format("ActivityTemplate {0} was not found", firstTemplateName));
+			}
 
-                var firstAction = new ActionDO
-                {
-                    IsTempId = true,
-                    ActivityTemplateId = firstActionTemplate.Id,
-                    CrateStorage = Crate.EmptyStorageAsStr(),
-                    CreateDate = DateTime.Now,
-                    Ordering = 1,
-                    Name = "First action"
-                };
+			var firstAction = new ActionDO
+			{
+				IsTempId = true,
+				ActivityTemplateId = firstActionTemplate.Id,
+				CrateStorage = Crate.EmptyStorageAsStr(),
+				CreateDate = DateTime.UtcNow,
+				Ordering = 1,
+				Name = "First action"
+			};
 
-                curActionDO.ChildNodes.Add(firstAction);
-            }
+			curActionDO.ChildNodes.Add(firstAction);
 
             int finalActionTemplateId;
 
@@ -179,7 +134,7 @@ namespace terminalDocuSign.Actions
                     ActivityTemplateId = finalActionTemplateId,
                     IsTempId = true,
                     CrateStorage = Crate.EmptyStorageAsStr(),
-                    CreateDate = DateTime.Now,
+                    CreateDate = DateTime.UtcNow,
                     Ordering = 2,
                     Name = "Final action"
                 };
@@ -199,7 +154,6 @@ namespace terminalDocuSign.Actions
         private async Task<IEnumerable<Crate>> PackSources(ActionDO actionDO)
         {
             var sources = new List<Crate>();
-            sources.Add(Crate.CreateDesignTimeFieldsCrate("AvailableForms", new FieldDTO("key", "value")));
 
             var templates = await HubCommunicator.GetActivityTemplates(actionDO, ActivityCategory.Forwarders);
             sources.Add(
