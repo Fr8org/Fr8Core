@@ -73,7 +73,7 @@ namespace terminalTwilio.Actions
         {
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
-                new TextSource("For the SMS Number Use", "Upstream Terminal-Provided Fields", "SMS_Number"),
+                new TextSource("SMS Number", "Upstream Terminal-Provided Fields", "SMS_Number"),
                 new TextBox()
                 {
                     Label = "SMS Body",

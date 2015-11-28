@@ -263,7 +263,7 @@ namespace terminalDocuSign.Actions
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
-                new TextSource("For the Email Address Use", "Upstream Terminal-Provided Fields", "Recipient")
+                new TextSource("Email Address", "Upstream Terminal-Provided Fields", "Recipient")
             };
 
             var controls = new StandardConfigurationControlsCM()
