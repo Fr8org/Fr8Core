@@ -23,7 +23,7 @@ namespace HubWeb.Controllers
             
         }
 
-        [Route("api/report/getallfacts")]
+        //[Route("api/report/getallfacts")]
         public IHttpActionResult GetAllFacts()
         {
             List<FactDO> factDOList = null;
@@ -41,7 +41,7 @@ namespace HubWeb.Controllers
             return Ok(factDOList);
         }
 
-         [Route("api/report/getallincidents")]
+        //[Route("api/report/getallincidents")]
         public IHttpActionResult GetALLIncidents()
         {
             List<IncidentDO> incidentList = null;

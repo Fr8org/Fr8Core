@@ -17,7 +17,7 @@ using Hub.Services;
 namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
-    [RoutePrefix("api/manageFile")]
+    //[RoutePrefix("api/manageFile")]
     public class ManageFileController : ApiController
     {
         private readonly IFile _fileService;

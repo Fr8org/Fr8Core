@@ -72,6 +72,8 @@ app.controller('FooterController', ['$scope', function ($scope) {
 /* Setup Rounting For All Pages */
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
 
+    $httpProvider.interceptors.push('fr8VersionInterceptor');
+
     // Install a HTTP request interceptor that causes 'Processing...' message to display
     $httpProvider.interceptors.push(($q: ng.IQService, $window: ng.IWindowService) => {
         return {
@@ -208,10 +210,31 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: '/findObjects/{id}/results',
             templateUrl: '/AngularTemplate/FindObjectsResults',
             data: { pageTitle: 'Find Objects results', pageSubTitle: '' }
+        })
+
+        .state('terminals', {
+            url: "/terminals",
+            templateUrl: "/AngularTemplate/TerminalList",
+            data: { pageTitle: 'Terminals', pageSubTitle: '' }
         });
 }]);
 
 /* Init global settings and run the app */
 app.run(["$rootScope", "settings", "$state", function ($rootScope, settings, $state) {
     $rootScope.$state = $state; // state to be accessed from view
+}]);
+
+app.constant('fr8ApiVersion', 'v1');
+
+app.factory('fr8VersionInterceptor', ['fr8ApiVersion', (fr8ApiVersion: string) => {
+    var apiPrefix: string = '/api/';
+    return {
+        'request': (config: ng.IRequestConfig) => {
+            //this is an api call, we should append a version to this
+            if (config.url.indexOf(apiPrefix) > -1) {
+                config.url = config.url.slice(0, 5) + fr8ApiVersion + "/" + config.url.slice(5);
+            }
+            return config;
+        }
+    };
 }]);

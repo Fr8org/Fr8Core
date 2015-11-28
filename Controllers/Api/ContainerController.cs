@@ -33,14 +33,13 @@ namespace HubWeb.Controllers
     // commented out by yakov.gnusin.
     // Please DO NOT put [Fr8ApiAuthorize] on class, this breaks process execution!
     // [Fr8ApiAuthorize]
-    [RoutePrefix("api/containers")]
-    public class ContainerController : ApiController
+    public class ContainersController : ApiController
     {
         private readonly InternalInterface.IContainer _container;
         private readonly ISecurityServices _security;
        // private readonly ICrateManager _crateManager;
 
-        public ContainerController()
+        public ContainersController()
         {
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
@@ -48,7 +47,6 @@ namespace HubWeb.Controllers
         }
 
         [HttpGet]
-        [Route("{id:guid}")]
         public IHttpActionResult Get(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -70,7 +68,6 @@ namespace HubWeb.Controllers
         }
 
         [Fr8ApiAuthorize]
-        [Route("getIdsByName")]
         [HttpGet]
         public IHttpActionResult GetIdsByName(string name)
         {
@@ -84,7 +81,7 @@ namespace HubWeb.Controllers
 
         // Return the Containers accordingly to ID given
         [Fr8ApiAuthorize]
-        [Route("get/{id:guid?}")]
+        //[Route("get/{id:guid?}")]
         [HttpGet]
         public IHttpActionResult Get(Guid? id = null)
         {
