@@ -386,9 +386,9 @@ namespace DockyardTest.Controllers
             return crate.Get<StandardDesignTimeFieldsCM>();
         }
 
-        private static ManifestController CreateManifestController()
+        private static ManifestsController CreateManifestController()
         {
-            return new ManifestController();
+            return new ManifestsController();
         }
     }
 }

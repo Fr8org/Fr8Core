@@ -21,9 +21,9 @@ namespace TerminalBase.Infrastructure
         public class LiveMode : Registry
         {
             public LiveMode()
-            {
+            {                
                 For<IHubCommunicator>().Use<DefaultHubCommunicator>();
-            }
+            }            
         }
     }
 }

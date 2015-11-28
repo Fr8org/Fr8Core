@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
+using System.Web.Http.Routing;
 using Microsoft.Owin.Hosting;
 using Owin;
 
@@ -31,7 +33,35 @@ namespace terminalBaseTests.Fixtures
                 var config = new HttpConfiguration();
 
                 // Web API routes
-                config.MapHttpAttributeRoutes();
+                config.Routes.MapHttpRoute(
+                    name: "DefaultApiWithAction",
+                    routeTemplate: "api/v1/{controller}/{action}/{id}",
+                    defaults: new { id = RouteParameter.Optional }
+                );
+                config.Routes.MapHttpRoute(
+                    name: "DefaultApiGet",
+                    routeTemplate: "api/v1/{controller}/{id}",
+                    defaults: new { id = RouteParameter.Optional, action = "Get" },
+                    constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Get) }
+                    );
+                config.Routes.MapHttpRoute(
+                    name: "DefaultApiPost",
+                    routeTemplate: "api/v1/{controller}",
+                    defaults: new { action = "Post" },
+                    constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Post) }
+                    );
+                config.Routes.MapHttpRoute(
+                    name: "DefaultApiPut",
+                    routeTemplate: "api/v1/{controller}",
+                    defaults: new { action = "Put" },
+                    constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Put) }
+                    );
+                config.Routes.MapHttpRoute(
+                    name: "DefaultApiDelete",
+                    routeTemplate: "api/v1/{controller}/{id}",
+                    defaults: new { id = RouteParameter.Optional, action = "Delete" },
+                    constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Delete) }
+                    );
 
                 config.Services.Replace(
                     typeof(IHttpControllerTypeResolver),

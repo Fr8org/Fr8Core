@@ -12,7 +12,6 @@ using Hub.Services;
 
 namespace HubWeb.Controllers
 {
-    [RoutePrefix("authentication")]
     public class AuthenticationController : ApiController
     {
         private readonly ISecurityServices _security;
@@ -27,7 +26,7 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8ApiAuthorize]
-        [Route("token")]
+        [ActionName("token")]
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
         {
             Fr8AccountDO account;
@@ -59,7 +58,7 @@ namespace HubWeb.Controllers
 
         [HttpGet]
         [Fr8ApiAuthorize]
-        [Route("initial_url")]
+        [ActionName("initial_url")]
         public async Task<IHttpActionResult> GetOAuthInitiationURL(
             [FromUri(Name = "id")] int activityTemplateId)
         {
