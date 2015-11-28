@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Linq;
 using Data.Constants;
 using Data.Control;
+using StructureMap;
 using Data.Crates;
 using Data.Entities;
-using Data.Infrastructure;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.Infrastructure;
+using Data.States;
 using Hub.Managers;
-using StructureMap;
-using terminalTwilio.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalTwilio.Services;
+using Utilities;
 
 namespace terminalTwilio.Actions
 {
@@ -68,10 +71,10 @@ namespace terminalTwilio.Actions
         }
         private Crate PackCrate_ConfigurationControls()
         {
-            var fieldsDTO = new List<ControlDefinitionDTO>
+            var fieldsDTO = new List<ControlDefinitionDTO>()
             {
-                new TextSource("For the SMS Number Use", "Upstream Terminal-Provided Fields", "SMS_Number"),
-                new TextBox
+                new TextSource("SMS Number", "Upstream Terminal-Provided Fields", "SMS_Number"),
+                new TextBox()
                 {
                     Label = "SMS Body",
                     Name = "SMS_Body",
@@ -89,7 +92,7 @@ namespace terminalTwilio.Actions
 
         private List<FieldDTO> GetRegisteredSenderNumbersData()
         {
-            return _twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO { Key = number, Value = number }).ToList();
+            return _twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO() { Key = number, Value = number }).ToList();
         }
 
         /*
