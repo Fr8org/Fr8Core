@@ -210,6 +210,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: '/findObjects/{id}/results',
             templateUrl: '/AngularTemplate/FindObjectsResults',
             data: { pageTitle: 'Find Objects results', pageSubTitle: '' }
+        })
+
+        .state('terminals', {
+            url: "/terminals",
+            templateUrl: "/AngularTemplate/TerminalList",
+            data: { pageTitle: 'Terminals', pageSubTitle: '' }
         });
 }]);
 
