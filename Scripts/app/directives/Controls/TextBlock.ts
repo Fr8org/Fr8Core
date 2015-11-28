@@ -9,7 +9,7 @@ module dockyard.directives.button {
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     //class TextBlock implements ng.IDirective {
-    export function TextArea(): ng.IDirective {
+    export function TextBlock(): ng.IDirective {
         return {
             restrict: 'E',
             replace: true,
@@ -20,5 +20,5 @@ module dockyard.directives.button {
         };
     }
 
-    app.directive('textBlock', TextArea);
+    app.directive('textBlock', TextBlock);
 }

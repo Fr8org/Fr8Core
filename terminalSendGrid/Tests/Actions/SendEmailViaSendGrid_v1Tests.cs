@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Infrastructure.AutoMapper;
@@ -22,6 +23,7 @@ using terminalSendGrid.Actions;
 using terminalSendGrid.Infrastructure;
 using terminalSendGrid.Services;
 using terminalSendGrid.Tests.Fixtures;
+using TerminalBase.Infrastructure;
 using Utilities;
 
 namespace terminalSendGrid.Tests.Actions
@@ -44,7 +46,8 @@ namespace terminalSendGrid.Tests.Actions
             StructureMapBootStrapper.ConfigureDependencies(dependencyType).SendGridConfigureDependencies(dependencyType);
             ObjectFactory.Configure(cfg => cfg.For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>())));
             ObjectFactory.Configure(cfg => cfg.For<IEmailPackager>().Use(new SendGridPackager()));
-            
+            TerminalBootstrapper.ConfigureTest();
+
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 
             var routeNode = new Mock<IRouteNode>();
@@ -61,7 +64,6 @@ namespace terminalSendGrid.Tests.Actions
             restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>()))
                 .Returns(Task.FromResult(payLoadDto));
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
-
         }
 
         [Test]
@@ -97,10 +99,10 @@ namespace terminalSendGrid.Tests.Actions
             var standardControls = _crate.FromDto(actionDto.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             Assert.IsNotNull(standardControls);
 
-            var specificValueTextField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[index]).Radios.SelectMany(c => c.Controls).Count(s => s.Name == "SpecificValue");
+            var specificValueTextField = ((RadioButtonGroup)standardControls.Controls[index]).Radios.SelectMany(c => c.Controls).Count(s => s.Name == "SpecificValue");
             Assert.AreEqual(specificValueTextField, 1);
 
-            var upstreamCrateField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[index]).Radios.SelectMany(c => c.Controls).Count(s => s.Name == "UpstreamCrate");
+            var upstreamCrateField = ((RadioButtonGroup)standardControls.Controls[index]).Radios.SelectMany(c => c.Controls).Count(s => s.Name == "UpstreamCrate");
             Assert.AreEqual(upstreamCrateField, 1);
         }
 

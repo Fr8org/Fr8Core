@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Data.States;
 using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 
 namespace terminalDropbox.Controllers
@@ -14,32 +15,38 @@ namespace terminalDropbox.Controllers
         [HttpGet]
         [Route("discover")]
         [ResponseType(typeof(StandardFr8TerminalCM))]
-        public IHttpActionResult Get()
+        public IHttpActionResult DiscoverTerminals()
         {
-            var terminal = new TerminalDO()
+
+            var terminal = new TerminalDTO()
+
             {
                 Name = "terminalDropbox",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 Version = "1"
             };
-            var webService = new WebServiceDO
+            var webService = new WebServiceDTO
             {
                 Name = "Dropbox",
                 IconPath = "/Content/icons/web_services/dropbox-icon-64x64.png"
             };
-            var getFileListAction = new ActivityTemplateDO()
+
+            var getFileListAction = new ActivityTemplateDTO()
+
             {
                 Version = "1",
                 Name = "Get_File_List",
                 Label = "Get File List",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
+
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
             };
-            var actionList = new List<ActivityTemplateDO>()
+            var actionList = new List<ActivityTemplateDTO>()
+
             {
                 getFileListAction
             };

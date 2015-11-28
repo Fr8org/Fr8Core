@@ -25,7 +25,7 @@
                 <div class="portlet-body">
                     <div class="table-scrollable table-scrollable-borderless">
                         @*Note:: reused the class table-process-templates*@
-                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-routes">
                             <thead>
                                 <tr>
                                     <th ng-repeat="column in columns">{{column}}</th>
@@ -33,7 +33,7 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="row in data">
-                                    <td ng-repeat="item in row">{{item}}</td>
+                                    <td ng-repeat="item in row track by $index">{{item}}</td>
                                 </tr>
                             </tbody>
                         </table>

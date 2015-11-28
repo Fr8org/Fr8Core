@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Control;
 using Data.Crates;
 using Hub.Managers;
 using Newtonsoft.Json;
@@ -32,7 +33,7 @@ namespace terminalSlack.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(actionDO, containerId);
             var payloadFields = ExtractPayloadFields(processPayload);
 
             var payloadChannelIdField = payloadFields.FirstOrDefault(x => x.Key == "channel_id");
@@ -120,7 +121,7 @@ namespace terminalSlack.Actions
         {
             AddControl(
                 crateStorage,
-                new DropDownListControlDefinitionDTO()
+                new DropDownList()
                 {
                     Label = "Select Slack Channel",
                     Name = "Selected_Slack_Channel",
@@ -138,7 +139,7 @@ namespace terminalSlack.Actions
 
             AddControl(
                 crateStorage,
-                new TextBlockControlDefinitionDTO()
+                new TextBlock()
                 {
                     Name = "Info_Label",
                     Value = "Slack doesn't currently offer a way for us to automatically request events for this channel. You can do it manually here. use the following values: URL: <strong>http://www.fr8.company/events?dockyard_plugin=terminalSlack&version=1.0</strong>"

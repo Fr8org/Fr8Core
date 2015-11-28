@@ -7,7 +7,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ActionRemoved,
         PaneConfigureAction_Reconfigure,
         PaneConfigureAction_RenderConfiguration,
-        PaneConfigureAction_ChildActionsDetected
+        PaneConfigureAction_ChildActionsDetected,
+        PaneConfigureAction_ChildActionsReconfiguration
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
@@ -66,6 +67,7 @@ module dockyard.directives.paneConfigureAction {
         processing: boolean;
         configurationWatchUnregisterer: Function;
         mode: string;
+        reconfigureChildrenActions: boolean;
     }
 
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -132,20 +134,31 @@ module dockyard.directives.paneConfigureAction {
                 }
 
                 function onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
-                    if (!newValue || !newValue.fields || newValue.fields === oldValue.fields || newValue.fields.length == 0) return;
+                    if (!newValue || !newValue.fields) {
+                         return;
+                    }
                     crateHelper.mergeControlListCrate(
                         $scope.currentAction.configurationControls,
                         $scope.currentAction.crateStorage
                     );
-                    $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
-                    ActionService.save({ id: $scope.currentAction.id },
-                        $scope.currentAction, null, null);
+                    $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
+                    ActionService.save({ id: $scope.currentAction.id }, $scope.currentAction, null, null)
+                        .$promise
+                        .then(function () {
+                            if ($scope.currentAction.childrenActions
+                                && $scope.currentAction.childrenActions.length > 0) {
+
+                                if ($scope.reconfigureChildrenActions) {
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration]);
+                                }
+                            }
+                        });
                 };
 
                 function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
 
                     var field = eventArgs.field;
-
+                    if (field.events === null) return;
                     // Find the onChange event object
                     var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onChange' }, true);
                     if (eventHandlerList.length == 0) return;
@@ -184,7 +197,7 @@ module dockyard.directives.paneConfigureAction {
                     }
                 } 
 
-                // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
+                // Here we look for Crate with ManifestType == 'Standard UI Controls'.
                 // We parse its contents and put it into currentAction.configurationControls structure.
                 function loadConfiguration() {
                     // Block pane and show pane-level 'loading' spinner
@@ -199,11 +212,22 @@ module dockyard.directives.paneConfigureAction {
                             if (res.childrenActions && res.childrenActions.length > 0) {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
-                                // and redirect user to the ProcessBuilder once if is received.
+                                // and redirect user to the RouteBuilder once if is received.
                                 // It means that solution configuration is complete. 
                                 $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                             }
+
+                            $scope.reconfigureChildrenActions = false;
+
+                            if ($scope.currentAction.childrenActions) {
+                                if (angular.toJson($scope.currentAction.childrenActions) != angular.toJson(res.childrenActions)) {
+                                    $scope.reconfigureChildrenActions = true;
+                                }
+                            }
+
                             $scope.currentAction.crateStorage = res.crateStorage;
+                            $scope.currentAction.childrenActions = res.childrenActions;
+
                             $scope.processConfiguration();
                         })
                         .catch((result) => {
@@ -276,8 +300,6 @@ module dockyard.directives.paneConfigureAction {
                     var childWindow;
 
                     var messageListener = function (event) {
-                        debugger;
-
                         if (!event.data || event.data != 'external-auth-success') {
                             return;
                         }
@@ -287,7 +309,7 @@ module dockyard.directives.paneConfigureAction {
                     };
 
                     $http
-                        .get('/authentication/initial_url?id=' + activityTemplateId)
+                        .get('/api/authentication/initial_url?id=' + activityTemplateId)
                         .then(res => {
                             var url = (<any>res.data).url;
                             childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');

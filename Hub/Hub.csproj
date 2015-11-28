@@ -211,13 +211,14 @@
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
+    <Compile Include="Interfaces\ITime.cs" />
     <Compile Include="Managers\CrateManager.StorageUpdater.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Managers\CrateMangerExtensions.cs" />
     <Compile Include="Managers\ICrateManager.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
-    <Compile Include="Interfaces\IDockyardEvent.cs" />
+    <Compile Include="Interfaces\IFr8Event.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
     <Compile Include="Interfaces\IFile.cs" />
@@ -296,7 +297,7 @@
     <Compile Include="Managers\CrateManager.cs" />
     <Compile Include="Services\Criteria.cs" />
     <Compile Include="Services\Fr8Account.cs" />
-    <Compile Include="Services\DockyardEvent.cs" />
+    <Compile Include="Services\Fr8Event.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Event.cs" />
@@ -310,6 +311,7 @@
     <Compile Include="Services\Route.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Subscription.cs" />
+    <Compile Include="Services\Time.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>
   <ItemGroup>

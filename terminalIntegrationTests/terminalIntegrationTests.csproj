@@ -45,6 +45,9 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -226,11 +229,10 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>
-		xcopy  $(SolutionDir)\terminalDocuSign\bin\terminalDocuSign.dll.config $(TargetDir) /C /Y 
-		xcopy  $(SolutionDir)\terminalAzure\bin\terminalAzure.dll.config $(TargetDir) /C /Y
-		xcopy  $(SolutionDir)\terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
-		xcopy  $(SolutionDir)\terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y 
+    <PostBuildEvent>$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalDocuSign\bin\terminalDocuSign.dll.config $(TargetDir) /C /Y 
+$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalAzure\bin\terminalAzure.dll.config $(TargetDir) /C /Y
+$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
+$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y 
 	</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

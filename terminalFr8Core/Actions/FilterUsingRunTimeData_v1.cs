@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Web.Razor.Generator;
 using AutoMapper;
+using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
@@ -34,7 +35,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetProcessPayload(containerId);
+            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
 
             var controlsMS = Action.GetControlsManifest(curActionDO);
 
@@ -202,7 +203,7 @@ namespace terminalFr8Core.Actions
 
         private Crate CreateControlsCrate()
         {
-            var fieldFilterPane = new FilterPaneControlDefinitionDTO()
+            var fieldFilterPane = new FilterPane()
             {
                 Label = "Execute Actions If:",
                 Name = "Selected_Filter",
@@ -226,7 +227,7 @@ namespace terminalFr8Core.Actions
             {
                 //this conversion from actiondto to Action should be moved back to the controller edge
                 var curUpstreamFields =
-                    (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
+                    (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
                     .Fields
                     .ToArray();
 

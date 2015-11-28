@@ -2,6 +2,7 @@
 using System.Web.Http;
 using DocuSign.Integrations.Client;
 using Microsoft.Owin.Hosting;
+using Moq;
 using Owin;
 using StructureMap;
 using StructureMap.Configuration.DSL;
@@ -38,6 +39,7 @@ namespace terminalDocuSign.Infrastructure.StructureMap
 			{
 				For<IDocuSignEnvelope>().Use<DocuSignEnvelope>();
 				For<IDocuSignTemplate>().Use<DocuSignTemplate>();
+			    For<IDocuSignRoute>().Use<DocuSignRoute>();
 			}
 		}
 
@@ -47,6 +49,7 @@ namespace terminalDocuSign.Infrastructure.StructureMap
 			{
 				For<IDocuSignEnvelope>().Use<DocuSignEnvelope>();
 				For<IDocuSignTemplate>().Use<DocuSignTemplate>();
+                For<IDocuSignRoute>().Use(new Mock<DocuSignRoute>(MockBehavior.Default).Object);
 			}
 		}
 

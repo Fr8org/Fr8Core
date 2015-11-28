@@ -25,6 +25,7 @@
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
     <RestorePackages>true</RestorePackages>
+    <ApplicationInsightsResourceId />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -105,6 +106,14 @@
     </Reference>
     <Reference Include="Google.Apis.PlatformServices, Version=1.8.2.23765, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Google.Apis.1.8.2\lib\net40\Google.Apis.PlatformServices.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Hangfire.Core, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Hangfire.Core.1.5.3\lib\net45\Hangfire.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Hangfire.SqlServer, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Hangfire.SqlServer.1.5.3\lib\net45\Hangfire.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -192,6 +201,10 @@
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.1.0\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -291,43 +304,48 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Owin">
-      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <HintPath>packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin">
-      <HintPath>..\packages\Microsoft.Owin.2.0.0\lib\net45\Microsoft.Owin.dll</HintPath>
+      <HintPath>packages\Microsoft.Owin.2.0.0\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Owin.Security">
-      <HintPath>..\packages\Microsoft.Owin.Security.2.0.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <HintPath>packages\Microsoft.Owin.Security.2.0.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin.Security.Cookies">
-      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.2.0.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+      <HintPath>packages\Microsoft.Owin.Security.Cookies.2.0.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\AuthenticationController.cs" />
-    <Compile Include="Controllers\FieldController.cs" />
-    <Compile Include="Controllers\ActionListController.cs" />
-    <Compile Include="Controllers\ActionController.cs" />
-    <Compile Include="Controllers\CriteriaController.cs" />
-    <Compile Include="Controllers\DockyardEventController.cs" />
+    <Compile Include="Controllers\Api\AuthenticationController.cs" />
+    <Compile Include="Controllers\Api\FieldController.cs" />
+    <Compile Include="Controllers\Api\ActionListController.cs" />
+    <Compile Include="Controllers\Api\ActionsController.cs" />
+    <Compile Include="Controllers\Api\CriteriaController.cs" />
+    <Compile Include="Controllers\Api\Fr8EventController.cs" />
+    <Compile Include="Controllers\Api\AlarmsController.cs" />
+    <Compile Include="Controllers\WelcomeController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
-    <Compile Include="Controllers\ManifestController.cs" />
-    <Compile Include="Controllers\RouteNodesController.cs" />
+    <Compile Include="Controllers\Helpers\RouteMappingHelper.cs" />
+    <Compile Include="Controllers\Api\ManifestsController.cs" />
+    <Compile Include="Controllers\Api\RouteNodesController.cs" />
     <Compile Include="Controllers\AuthenticationCallbackController.cs" />
-    <Compile Include="Controllers\FilesController.cs" />
+    <Compile Include="Controllers\Api\FilesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
-    <Compile Include="Controllers\SubrouteController.cs" />
-    <Compile Include="Controllers\RouteController.cs" />
-    <Compile Include="Controllers\EventController.cs" />
+    <Compile Include="Controllers\Api\SubrouteController.cs" />
+    <Compile Include="Controllers\Api\RoutesController.cs" />
+    <Compile Include="Controllers\Api\EventController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
-    <Compile Include="Controllers\ContainerController.cs" />
+    <Compile Include="Controllers\Api\ContainerController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
-    <Compile Include="Controllers\ManageFileController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="Controllers\WebServicesController.cs" />
+    <Compile Include="Controllers\Api\TerminalsController.cs" />
+    <Compile Include="Controllers\Api\ManageFileController.cs" />
+    <Compile Include="Controllers\Api\UserController.cs" />
+    <Compile Include="Controllers\Api\WebServicesController.cs" />
     <Compile Include="DependencyResolution\IoC.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
@@ -367,7 +385,7 @@
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
-    <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
@@ -387,6 +405,7 @@
     <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
+    <Compile Include="ViewModels\PayloadVM.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\ProfileVM.cs" />
@@ -428,6 +447,7 @@
     <Content Include="Content\css\jquery-ui.theme.css" />
     <Content Include="Content\css\NegotiationWidgets.css" />
     <Content Include="Content\css\toolbar.min.css" />
+    <Content Include="Content\css\welcome.css" />
     <Content Include="Content\Databases\DO-823.sql" />
     <Content Include="Content\DO-823.sql" />
     <Content Include="Content\documents\Medical_Form_v2.xml" />
@@ -478,17 +498,17 @@
     <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
-    <Content Include="Content\img\ProcessBuilder\action-add-small.png" />
-    <Content Include="Content\img\ProcessBuilder\actions-node-bg.png" />
-    <Content Include="Content\img\ProcessBuilder\actions-node-bottom.png" />
-    <Content Include="Content\img\ProcessBuilder\actions-node-top.png" />
-    <Content Include="Content\img\ProcessBuilder\add-criteria-node-bg.png" />
-    <Content Include="Content\img\ProcessBuilder\circle-selected.png" />
-    <Content Include="Content\img\ProcessBuilder\circle.png" />
-    <Content Include="Content\img\ProcessBuilder\criteria-node-bg.png" />
-    <Content Include="Content\img\ProcessBuilder\delete-icon.png" />
-    <Content Include="Content\img\ProcessBuilder\right-arrow.png" />
-    <Content Include="Content\img\ProcessBuilder\start-node-bg.png" />
+    <Content Include="Content\img\RouteBuilder\action-add-small.png" />
+    <Content Include="Content\img\RouteBuilder\actions-node-bg.png" />
+    <Content Include="Content\img\RouteBuilder\actions-node-bottom.png" />
+    <Content Include="Content\img\RouteBuilder\actions-node-top.png" />
+    <Content Include="Content\img\RouteBuilder\add-criteria-node-bg.png" />
+    <Content Include="Content\img\RouteBuilder\circle-selected.png" />
+    <Content Include="Content\img\RouteBuilder\circle.png" />
+    <Content Include="Content\img\RouteBuilder\criteria-node-bg.png" />
+    <Content Include="Content\img\RouteBuilder\delete-icon.png" />
+    <Content Include="Content\img\RouteBuilder\right-arrow.png" />
+    <Content Include="Content\img\RouteBuilder\start-node-bg.png" />
     <Content Include="Content\img\select-info.png" />
     <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\arrow_blue_ic_arrow_forward_48px-512.png" />
@@ -502,6 +522,12 @@
     <Content Include="Content\img\site\kwasant-video-screen-logo.png" />
     <Content Include="Content\img\site\kwasant-video-screen.png" />
     <Content Include="Content\img\site\site-logo.png" />
+    <Content Include="Content\img\welcome\docusign.png" />
+    <Content Include="Content\img\welcome\left-side-bg.jpg" />
+    <Content Include="Content\img\welcome\logo.png" />
+    <Content Include="Content\img\welcome\right-side-bg.jpg" />
+    <Content Include="Content\img\welcome\routeBuilder.png" />
+    <Content Include="Documentation\UpstreamCrates.html" />
     <Content Include="fr8terminals.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />
@@ -701,7 +727,7 @@
     <Content Include="Views\AngularTemplate\PageHead.cshtml" />
     <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
     <Content Include="Views\AngularTemplate\PaneSelectActionModal.cshtml" />
-    <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
+    <Content Include="Views\AngularTemplate\RouteBuilder.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilderWidget.cshtml" />
     <Content Include="Views\AngularTemplate\RadioButtonOption.cshtml" />
     <Content Include="Views\AngularTemplate\RouteDetails.cshtml" />
@@ -723,6 +749,13 @@
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
     <Content Include="_PowerShellScripts\CheckWebSettings.ps1" />
+    <Content Include="Service References\Application Insights\ConnectedService.json" />
+    <Content Include="Views\AngularTemplate\TerminalForm.cshtml" />
+    <Content Include="Views\AngularTemplate\TerminalList.cshtml" />
+    <Content Include="Views\Welcome\Index.cshtml" />
+    <None Include="Web.Dev.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsResultsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
@@ -730,6 +763,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\NotifierController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PayloadFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\RouteActionsDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SelectActionController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\RouteDetailsController.ts" />
@@ -738,6 +772,8 @@
     <Content Include="Scripts\lib\jquery.blockui.min.js" />
     <Content Include="Views\Sandbox\Index.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\TerminalListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\WebServiceListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\WebServiceFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionController.ts" />
@@ -766,6 +802,7 @@
     <TypeScriptCompile Include="Scripts\app\filters\RouteState.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\ITerminal.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IUser.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IWebService.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActionGroup.ts" />
@@ -776,17 +813,19 @@
     <TypeScriptCompile Include="Scripts\app\model\FileDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ControlsList.ts" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
-    <Content Include="Scripts\ProcessBuilder\core.js" />
-    <Content Include="Scripts\ProcessBuilder\pb-fabricjs-img.js" />
-    <Content Include="Scripts\ProcessBuilder\pb-resources.js" />
-    <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
+    <Content Include="Scripts\RouteBuilder\core.js" />
+    <Content Include="Scripts\RouteBuilder\pb-fabricjs-img.js" />
+    <Content Include="Scripts\RouteBuilder\pb-resources.js" />
+    <Content Include="Scripts\RouteBuilder\pb-widget.js" />
     <TypeScriptCompile Include="Scripts\app\model\ActivityTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FieldMappingSettings.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncidentDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Subroute.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ContainerDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Route.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\ProcessBuilderState.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\RouteBuilderState.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\TerminalActionSetDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\TerminalDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\User.ts" />
     <TypeScriptCompile Include="Scripts\app\model\WebServiceActionSetDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\WebServiceDTO.ts" />
@@ -796,6 +835,7 @@
     <TypeScriptCompile Include="Scripts\app\services\ManageFileService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\PusherNotifierService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ReportService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\TerminalService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UIHelperService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UserService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\WebServiceService.ts" />
@@ -806,7 +846,7 @@
     <Content Include="Scripts\respond.min.js" />
     <TypeScriptCompile Include="Scripts\tests\integration\DockyardAccountControllerTests\DockyardAccountControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\TerminalDocuSignTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\integration\ProcessTemplateControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\RouteControllerTests.ts" />
     <Content Include="Scripts\tests\.gitignore" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
@@ -819,17 +859,23 @@
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\FilePicker.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBlock.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextBox.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\CounterTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\DurationTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextAreaTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\PaneConfigurationActionTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\RouteBuilderControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\services\CrateHelperTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_FieldDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDTO.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_Duration.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_TextArea.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionTemplate.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ContainerDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\mocks.ts" />
-    <TypeScriptCompile Include="Scripts\tests\utils\fixture_ProcessBuilder.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_RouteBuilder.ts" />
     <Content Include="Scripts\_legacy\about-page.js" />
     <TypeScriptCompile Include="Scripts\app\app.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\ProcessBuilderController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\RouteBuilderController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\RouteListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilterPane.ts" />
@@ -849,8 +895,8 @@
     <TypeScriptCompile Include="Scripts\app\model\Field.ts" />
     <TypeScriptCompile Include="Scripts\app\services\LocalIdentityGenerator.ts" />
     <TypeScriptCompile Include="Scripts\app\services\StringService.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessBuilder.ts" />
-    <TypeScriptCompile Include="Scripts\app\services\ProcessBuilderService.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IRouteBuilder.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\RouteBuilderService.ts" />
     <Content Include="Scripts\lib\jquery-ui.js" />
     <Content Include="Scripts\_legacy\custom.js" />
     <Content Include="Scripts\_legacy\main.js" />
@@ -2821,9 +2867,9 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\skins\square\grey.css" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\skins\square\grey.png" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\skins\square\orange%402x.png" />
-    <Content Include="Scripts\ProcessBuilder\pb-consts.js" />
-    <Content Include="Scripts\ProcessBuilder\pb-fabricjs.js" />
-    <Content Include="Scripts\ProcessBuilder\pb-interfaces.js" />
+    <Content Include="Scripts\RouteBuilder\pb-consts.js" />
+    <Content Include="Scripts\RouteBuilder\pb-fabricjs.js" />
+    <Content Include="Scripts\RouteBuilder\pb-interfaces.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Views\Action\ShowAllActionLists.html" />
     <Content Include="Views\Action\ShowAllActions.html" />
@@ -4046,7 +4092,6 @@
     <Content Include="Views\Shared\403.cshtml" />
     <Content Include="Views\AngularTemplate\TextSource.cshtml" />
     <Content Include="Views\AngularTemplate\_RouteList.cshtml" />
-    <Content Include="Views\AngularTemplate\SolutionList.cshtml" />
     <Content Include="Views\AngularTemplate\_DeleteRouteModal.cshtml" />
     <Content Include="Views\AngularTemplate\Solution.cshtml" />
     <Content Include="Views\AuthenticationCallback\Error.cshtml" />
@@ -4057,7 +4102,9 @@
     <Content Include="Views\AngularTemplate\Counter.cshtml" />
     <Content Include="Views\AngularTemplate\FindObjects.cshtml" />
     <Content Include="Views\AngularTemplate\FindObjectsResults.cshtml" />
+    <Content Include="Views\AngularTemplate\_AddPayloadModal.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
+    <TypeScriptCompile Include="Scripts\tests\utils\services\fixture_CrateHelper.ts" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-router\angular-ui-router.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-resource.d.ts" />
@@ -4124,6 +4171,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'alexlocal|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>

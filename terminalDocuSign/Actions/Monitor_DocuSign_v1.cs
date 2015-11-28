@@ -6,7 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Crates;
+﻿using Data.Control;
+﻿using Data.Crates;
 using Hub.Managers;
 using Newtonsoft.Json;
 using Data.Interfaces;
@@ -67,11 +68,11 @@ namespace terminalDocuSign.Actions
         {
             var controls = storage.FirstCrate<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls");
 
-            var group = controls.Content.Controls.OfType<RadioButtonGroupControlDefinitionDTO>().FirstOrDefault();
+            var group = controls.Content.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
             if (group == null)
             {
                 selectedOption = "template";
-                selectedValue = controls.Content.Controls.OfType<DropDownListControlDefinitionDTO>().First().Value;
+                selectedValue = controls.Content.Controls.OfType<DropDownList>().First().Value;
             }
             else
             {
@@ -123,7 +124,7 @@ namespace terminalDocuSign.Actions
             string curSelectedOption, curSelectedValue;
             GetTemplateRecipientPickerValue(curActionDO, out curSelectedOption, out curSelectedValue);
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             string envelopeId = string.Empty;
 
@@ -249,6 +250,7 @@ namespace terminalDocuSign.Actions
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
+                UpgrateDocusignEventFields(updater.CrateStorage);
                 UpdateSelectedTemplateId(updater.CrateStorage);
                 UpdateSelectedEvents(updater.CrateStorage);
             }
@@ -323,7 +325,7 @@ namespace terminalDocuSign.Actions
 
         private Crate PackCrate_ConfigurationControls()
         {
-            var fieldEnvelopeSent = new CheckBoxControlDefinitionDTO()
+            var fieldEnvelopeSent = new CheckBox()
             {
                 Label = "Envelope Sent",
                 Name = "Event_Envelope_Sent",
@@ -333,7 +335,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            var fieldEnvelopeReceived = new CheckBoxControlDefinitionDTO()
+            var fieldEnvelopeReceived = new CheckBox()
             {
                 Label = "Envelope Received",
                 Name = "Event_Envelope_Received",
@@ -343,7 +345,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            var fieldRecipientSigned = new CheckBoxControlDefinitionDTO()
+            var fieldRecipientSigned = new CheckBox()
             {
                 Label = "Recipient Signed",
                 Name = "Event_Recipient_Signed",
@@ -353,7 +355,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            var fieldEventRecipientSent = new CheckBoxControlDefinitionDTO()
+            var fieldEventRecipientSent = new CheckBox()
             {
                 Label = "Recipient Sent",
                 Name = "Event_Recipient_Sent",
@@ -373,7 +375,7 @@ namespace terminalDocuSign.Actions
 
         private ControlDefinitionDTO PackCrate_TemplateRecipientPicker()
         {
-            var templateRecipientPicker = new RadioButtonGroupControlDefinitionDTO()
+            var templateRecipientPicker = new RadioButtonGroup()
             {
                 Label = "Monitor for Envelopes that:",
                 GroupName = "TemplateRecipientPicker",
@@ -388,7 +390,7 @@ namespace terminalDocuSign.Actions
                         Value = "Are sent to the recipient",
                         Controls = new List<ControlDefinitionDTO>
                         {
-                            new TextBoxControlDefinitionDTO()
+                            new TextBox()
                             {
                                 Label = "",
                                 Name = "RecipientValue",
@@ -404,7 +406,7 @@ namespace terminalDocuSign.Actions
                         Value = "Use the template",
                         Controls = new List<ControlDefinitionDTO>
                         {
-                            new DropDownListControlDefinitionDTO()
+                            new DropDownList()
                             {
                                 Label = "",
                                 Name = "UpstreamCrate",
@@ -434,11 +436,25 @@ namespace terminalDocuSign.Actions
                 fields);
             return createDesignTimeFields;
         }
+        // If we have "old" version of this action - rename EnvelopeId to TemplateId
+        private void UpgrateDocusignEventFields(CrateStorage storage)
+        {
+            foreach (var crate in storage.CratesOfType<StandardDesignTimeFieldsCM>().Where(x => x.Label == "DocuSign Event Fields"))
+            {
+                foreach (var field in crate.Content.Fields)
+                {
+                    if (field.Key == "EnvelopeId")
+                    {
+                        field.Key = "TemplateId";
+                    }
+                }
+            }
+        }
 
         private Crate PackCrate_DocuSignEventFields()
         {
             return Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields",
-                new FieldDTO {Key = "EnvelopeId", Value = string.Empty});
+                new FieldDTO {Key = "TemplateId", Value = string.Empty});
         }
     }
 }
