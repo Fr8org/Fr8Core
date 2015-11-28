@@ -5,11 +5,11 @@ module dockyard.services {
     }
 
     app.factory("TerminalService", ["$resource", ($resource: ng.resource.IResourceService): ITerminalService =>
-        <ITerminalService>$resource("terminals/:id", { id: "@id" }, {
+        <ITerminalService>$resource("/api/terminals?id=:id", { id: "@id" }, {
             getActions: {
                 method: "POST",
                 isArray: true,
-                url: "terminals/actions"
+                url: "/api/terminals/actions"
             }
         })
     ]);

@@ -162,7 +162,7 @@ module dockyard.directives.paneConfigureAction {
                 function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
 
                     var field = eventArgs.field;
-
+                    if (field.events === null) return;
                     // Find the onChange event object
                     var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onChange' }, true);
                     if (eventHandlerList.length == 0) return;
@@ -317,7 +317,7 @@ module dockyard.directives.paneConfigureAction {
                     };
 
                     $http
-                        .get('/authentication/initial_url?id=' + activityTemplateId)
+                        .get('/api/authentication/initial_url?id=' + activityTemplateId)
                         .then(res => {
                             var url = (<any>res.data).url;
                             childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');

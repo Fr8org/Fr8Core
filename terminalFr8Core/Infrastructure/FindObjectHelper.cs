@@ -58,7 +58,7 @@ namespace terminalFr8Core.Infrastructure
         {
             var httpClient = new HttpClient();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "/routes/run?routeId=" + routeId.ToString();
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/run?routeId=" + routeId.ToString();
 
             using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
             {

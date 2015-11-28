@@ -114,7 +114,7 @@ namespace HubWeb.Controllers
         //}
 
         [HttpPost]
-        [Route("events")]
+        [ActionName("events")]
         public async Task<IHttpActionResult> ProcessIncomingEvents(
             [FromUri(Name = "dockyard_terminal")] string terminalName,
             [FromUri(Name = "version")] string terminalVersion)
@@ -145,7 +145,7 @@ namespace HubWeb.Controllers
 
         // for tesing. This method will return result
         [HttpPost]
-        [Route("eventsDebug")]
+        [ActionName("eventsDebug")]
         public async Task<object> ProcessIncomingEventsDebug(
             [FromUri(Name = "dockyard_terminal")] string terminalName,
             [FromUri(Name = "version")] string terminalVersion)

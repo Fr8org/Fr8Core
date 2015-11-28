@@ -320,7 +320,7 @@ namespace Hub.Services
                 : "downstream_actions/";
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "route_nodes/"
+                +"api/"+ CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
                 + directionSuffix
                 + "?id=" + activityId;
 

@@ -20,7 +20,7 @@ using Hub.Services;
 
 namespace HubWeb.Controllers
 {
-    [RoutePrefix("field")]
+    //[RoutePrefix("field")]
     public class FieldController : ApiController
     {
         private readonly IField _field;
@@ -38,7 +38,6 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         //[Fr8ApiAuthorize]
-        [Route("exists")]
         [ResponseType(typeof(List<FieldValidationResult>))]
         public async Task<IHttpActionResult> Exists(List<FieldValidationDTO> fieldCheckList)
         {

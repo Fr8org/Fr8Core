@@ -60,7 +60,7 @@ namespace DockyardTest.Controllers
                 actualAction.IsTempId = true;
                 actualAction.ParentRouteNodeId = subroute.Id;
                 
-                var controller = new ActionController();
+                var controller = new ActionsController();
                 controller.Save(actualAction);
 
                 //Assert
@@ -97,7 +97,7 @@ namespace DockyardTest.Controllers
                 actualAction.IsTempId = true;
                 actualAction.ParentRouteNodeId = subroute.Id;
 
-                var controller = new ActionController();
+                var controller = new ActionsController();
                 controller.Save(actualAction);
 
                 //Assert
@@ -126,7 +126,7 @@ namespace DockyardTest.Controllers
                 //Act
                 var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
 
-                var controller = new ActionController();
+                var controller = new ActionsController();
                 controller.Save(actualAction);
 
                 //Assert
@@ -266,7 +266,7 @@ namespace DockyardTest.Controllers
                 subRouteMock.Setup(a => a.DeleteAction(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(true);
 
                 ActionDO actionDO = new FixtureData(uow).TestAction3();
-                var controller = new ActionController(subRouteMock.Object);
+                var controller = new ActionsController(subRouteMock.Object);
                 await controller.Delete(actionDO.Id);
                 subRouteMock.Verify(a => a.DeleteAction(null, actionDO.Id, false));
             }
@@ -282,7 +282,7 @@ namespace DockyardTest.Controllers
                 actionMock.Setup(a => a.GetById(It.IsAny<IUnitOfWork>(), It.IsAny<Guid>()));
 
                 ActionDO actionDO = new FixtureData(uow).TestAction3();
-                var controller = new ActionController(actionMock.Object);
+                var controller = new ActionsController(actionMock.Object);
                 controller.Get(actionDO.Id);
                 actionMock.Verify(a => a.GetById(It.IsAny<IUnitOfWork>(), actionDO.Id));
             }
@@ -363,7 +363,7 @@ namespace DockyardTest.Controllers
 
         public async void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
         {
-            var controller = new ActionController();
+            var controller = new ActionsController();
             ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.ActivityTemplate = FixtureData.TestActionTemplateDTOV2();
             var actionResult = await controller.Configure(actionDesignDTO);
@@ -378,7 +378,7 @@ namespace DockyardTest.Controllers
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public async void ActionController_GetConfigurationSettings_IdIsMissing()
         {
-            var controller = new ActionController();
+            var controller = new ActionsController();
             ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.Id = Guid.Empty;
             var actionResult = await controller.Configure(actionDesignDTO);
@@ -393,7 +393,7 @@ namespace DockyardTest.Controllers
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public async void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
         {
-            var controller = new ActionController();
+            var controller = new ActionsController();
             ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.ActivityTemplateId = 0;
             var actionResult = await controller.Configure(actionDesignDTO);

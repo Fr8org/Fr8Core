@@ -21,7 +21,7 @@ namespace terminalIntegrationTests.Fixtures
             {
                 return new Type[] {
                     typeof(HubWeb.Controllers.RouteNodesController),
-                    typeof(HubWeb.Controllers.ContainerController)
+                    typeof(HubWeb.Controllers.ContainersController)
                 };
             }
         }

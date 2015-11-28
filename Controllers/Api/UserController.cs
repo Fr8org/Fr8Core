@@ -400,7 +400,7 @@ namespace HubWeb.Controllers
             }
         }
 
-        [Route("api/user/getCurrent")]
+        //[Route("api/user/getCurrent")]
         [HttpGet]
         public IHttpActionResult GetCurrent()
         {

@@ -12,13 +12,11 @@ using StructureMap;
 namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
-    [RoutePrefix("terminals")]
 	public class TerminalsController : ApiController
 	{
         private readonly ISecurityServices _security = ObjectFactory.GetInstance<ISecurityServices>();
 
         [HttpGet]
-		[Route("")]
 		public IHttpActionResult Get()
 		{
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -34,7 +32,6 @@ namespace HubWeb.Controllers
 		}
 
 		[HttpPost]
-		[Route("")]
 		public IHttpActionResult Post(TerminalDTO terminal)
 		{
             TerminalDO entity = Mapper.Map<TerminalDO>(terminal);

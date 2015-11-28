@@ -68,7 +68,7 @@ namespace terminalDocuSign.Actions
         {
             var httpClient = new HttpClient();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-            + "route_nodes/available/?tag=" + tag;
+            + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/available?tag=" + tag;
 
             using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
             {
