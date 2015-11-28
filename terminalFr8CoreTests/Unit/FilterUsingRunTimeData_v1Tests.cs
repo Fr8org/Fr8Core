@@ -20,7 +20,7 @@ using terminalFr8Core.Actions;
 using terminalFr8Core.Interfaces;
 using TerminalBase.Infrastructure;
 
-namespace DockyardTest.Services
+namespace DockyardTest.Unit
 {
     [TestFixture]
     [Category("FilterUsingRunTimeData_v1")]
