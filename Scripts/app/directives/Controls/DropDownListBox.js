@@ -7,9 +7,10 @@ var dockyard;
         (function (dropDownListBox) {
             'use strict';
             function DropDownListBox() {
-                var controller = ['$scope', '$filter', function ($scope, $filter) {
+                var controller = ['$scope', function ($scope) {
                         $scope.setSelectedItem = function (item) {
                             $scope.field.value = item.value || item.Value;
+                            $scope.field.selectedKey = item.key;
                             $scope.selectedItem = item;
                             // Invoke onChange event handler
                             if ($scope.change != null && angular.isFunction($scope.change)) {
@@ -18,7 +19,10 @@ var dockyard;
                         };
                         var findAndSetSelectedItem = function () {
                             for (var i = 0; i < $scope.field.listItems.length; i++) {
-                                if ($scope.field.value == $scope.field.listItems[i].value || $scope.field.listItems[i].Value) {
+                                if ($scope.field.value == $scope.field.listItems[i].value
+                                    && (!$scope.field.hasOwnProperty('selectedKey')
+                                        || $scope.field.hasOwnProperty('selectedKey')
+                                            && $scope.field.selectedKey == $scope.field.listItems[i].key)) {
                                     $scope.selectedItem = $scope.field.listItems[i];
                                     break;
                                 }

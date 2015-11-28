@@ -10,6 +10,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
 using Hub.Services;
+using HubWeb.Controllers.Helpers;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using StructureMap;
@@ -60,7 +61,7 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
+        public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -75,7 +76,7 @@ namespace HubWeb.Controllers
 
                 if (result is RouteDO)
                 {
-                    return Ok(_route.MapRouteToDto(uow, (RouteDO)result));
+                    return Ok(RouteMappingHelper.MapRouteToDto(uow, (RouteDO)result));
                 }
 
                 throw new Exception("Unsupported type " + result.GetType());
@@ -90,7 +91,9 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplate = uow.ActivityTemplateRepository.GetAll().FirstOrDefault(at => at.Name == solutionName);
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetAll()
+                    .FirstOrDefault(at => at.Name == solutionName);
                 if (activityTemplate == null)
                 {
                     throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
@@ -98,7 +101,7 @@ namespace HubWeb.Controllers
 
                 var result = await _action.CreateAndConfigure(uow, userId,
                     activityTemplate.Id, activityTemplate.Name, activityTemplate.Label, null, true);
-                return Ok(_route.MapRouteToDto(uow, (RouteDO)result));
+                return Ok(RouteMappingHelper.MapRouteToDto(uow, (RouteDO)result));
             }
         }
 

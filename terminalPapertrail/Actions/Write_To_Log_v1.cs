@@ -14,6 +14,7 @@ using TerminalBase.Infrastructure;
 using terminalPapertrail.Interfaces;
 using Utilities.Configuration.Azure;
 using System.Collections.Generic;
+using Data.Control;
 using Utilities.Logging;
 
 namespace terminalPapertrail.Actions
@@ -47,7 +48,7 @@ namespace terminalPapertrail.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO = null)
         {
-            var targetUrlTextBlock = new TextBoxControlDefinitionDTO
+            var targetUrlTextBlock = new TextBox
             {
                 Name = "TargetUrlTextBox",
                 Label = "Target Papertrail URL and Port (as URL:Port)",
@@ -88,7 +89,7 @@ namespace terminalPapertrail.Actions
             GetPapertrailTargetUrlAndPort(actionDO, out curPapertrailUrl, out curPapertrailPort);
 
             //get process payload
-            var curProcessPayload = await GetProcessPayload(containerId);
+            var curProcessPayload = await GetProcessPayload(actionDO, containerId);
 
             //if there are valid URL and Port number
             if (!string.IsNullOrEmpty(curPapertrailUrl) && curPapertrailPort > 0)

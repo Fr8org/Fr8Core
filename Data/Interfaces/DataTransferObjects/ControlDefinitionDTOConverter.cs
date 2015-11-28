@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Control;
 using Data.Crates;
 using Data.Interfaces.Manifests;
 
@@ -14,7 +15,7 @@ namespace Data.Interfaces.DataTransferObjects
     {
         public override ControlDefinitionDTO Create(Type objectType)
         {
-            return new GenericControlDefinitionDTO();
+            return new Generic();
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -31,11 +32,11 @@ namespace Data.Interfaces.DataTransferObjects
             // Create type
             if (controlType == null)
             {
-                controlType = typeof(GenericControlDefinitionDTO);
+                controlType = typeof(Generic);
             }
 
             var control = Activator.CreateInstance(controlType);
-            if (control == null) control = new GenericControlDefinitionDTO();
+            if (control == null) control = new Generic();
             serializer.Populate(curjObject.CreateReader(), control);
 
             return control;
@@ -57,7 +58,7 @@ namespace Data.Interfaces.DataTransferObjects
         {
             try
             {
-                return Type.GetType(string.Format("Data.Interfaces.DataTransferObjects.{0}ControlDefinitionDTO, Data", fieldTypeName));
+                return Type.GetType(string.Format("Data.Control.{0}, Data", fieldTypeName));
             }
             catch
             {

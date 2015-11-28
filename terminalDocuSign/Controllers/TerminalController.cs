@@ -23,7 +23,7 @@ namespace terminalDocuSign.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult Get()
         {
-            var terminal = new TerminalDO()
+            var terminal = new TerminalDTO()
             {
                 Name = "terminalDocuSign",
                 TerminalStatus = TerminalStatus.Active,
@@ -31,7 +31,7 @@ namespace terminalDocuSign.Controllers
                 Version = "1"
             };
 
-            var waitForDocusignEventActionTemplate = new ActivityTemplateDO()
+            var waitForDocusignEventActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Monitor_DocuSign",
@@ -42,7 +42,7 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 330
             };
 
-            var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
+            var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Send_DocuSign_Envelope",
@@ -53,7 +53,7 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 330
             };
 
-            var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
+            var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Receive_DocuSign_Envelope",
@@ -64,7 +64,7 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 330
             };
 
-            var recordDocuSignEvents = new ActivityTemplateDO
+            var recordDocuSignEvents = new ActivityTemplateDTO
             {
                 Name = "Record_DocuSign_Events",
                 Label = "Record DocuSign Events",
@@ -75,7 +75,7 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 330
             };
 
-            var mailMergeActionTemplate = new ActivityTemplateDO
+            var mailMergeActionTemplate = new ActivityTemplateDTO
             {
                 Name = "Mail_Merge_Into_DocuSign",
                 Label = "Mail Merge Into DocuSign",
@@ -86,7 +86,7 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 500
             };
 
-            var collectFormDataSolution = new ActivityTemplateDO
+            var collectFormDataSolution = new ActivityTemplateDTO
             {
                 Name = "Collect_Form_Data_Solution",
                 Label = "Collect Form Data Solution",
@@ -96,21 +96,35 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 380
             };
 
-            var actionList = new List<ActivityTemplateDO>()
+            var richDocumentNotificationsSolution = new ActivityTemplateDTO
+            {
+                Name = "Rich_Document_Notifications",
+                Label = "Rich Document Notifications",
+                Version = "1",
+                Category = ActivityCategory.Solution,
+                AuthenticationType = AuthenticationType.Internal,
+                Terminal = terminal,
+                MinPaneWidth = 380
+            };
+
+
+            var actionList = new List<ActivityTemplateDTO>()
             {
                 waitForDocusignEventActionTemplate,
                 extractDataFromEnvelopeActionTemplate,
                 sendDocuSignEnvelopeActionTemplate,
                 recordDocuSignEvents,
                 mailMergeActionTemplate,
-                collectFormDataSolution
+                collectFormDataSolution,
+                richDocumentNotificationsSolution
             };
 
-            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
                 Actions = actionList
             };
+
             return Json(curStandardFr8TerminalCM);
         }
     }

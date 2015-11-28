@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using Data.Control;
 using StructureMap;
 using Data.Crates;
 using Data.Entities;
@@ -54,7 +55,7 @@ namespace terminalTwilio.Actions
 
         private Crate PackCrate_ConfigurationControls()
         {
-            RadioButtonGroupControlDefinitionDTO radioGroup = new RadioButtonGroupControlDefinitionDTO()
+            RadioButtonGroup radioGroup = new RadioButtonGroup()
             {
                 GroupName = "SMSNumber_Group",
                 Label = "For the SMS Number use:",
@@ -67,7 +68,7 @@ namespace terminalTwilio.Actions
                         Value = "SMS Number",
                         Controls = new List<ControlDefinitionDTO> 
                         {
-                            new TextBoxControlDefinitionDTO()
+                            new TextBox()
                             {
                                 Name = "SMS_Number",
                                 Required = true
@@ -82,7 +83,7 @@ namespace terminalTwilio.Actions
                         Value = "A value from Upstream Crate",
                         Controls = new List<ControlDefinitionDTO> 
                         {
-                            new DropDownListControlDefinitionDTO()
+                            new DropDownList()
                             {
                                 Name = "upstream_crate",
                                 Events = new List<ControlEvent>()
@@ -100,7 +101,7 @@ namespace terminalTwilio.Actions
                 }
             };
 
-            TextBoxControlDefinitionDTO smsBody = new TextBoxControlDefinitionDTO()
+            TextBox smsBody = new TextBox()
             {
                 Label = "SMS Body",
                 Name = "SMS_Body",
@@ -158,7 +159,7 @@ namespace terminalTwilio.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO,
             Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var controlsCrate = Crate.GetStorage(curActionDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (controlsCrate == null)
@@ -202,19 +203,19 @@ namespace terminalTwilio.Actions
             
             if (standardControls == null)
             {
-                throw new ArgumentException("CrateDTO is not a standard configuration controls");
+                throw new ArgumentException("CrateDTO is not a standard UI controls");
             }
 
             var smsBodyFields = standardControls.FindByName("SMS_Body");
 
-            var smsNumber = GetSMSNumber((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[0]);
+            var smsNumber = GetSMSNumber((RadioButtonGroup)standardControls.Controls[0]);
 
             smsInfo = new KeyValuePair<string, string>(smsNumber, smsBodyFields.Value);
 
             return smsInfo;
         }
 
-        private string GetSMSNumber(RadioButtonGroupControlDefinitionDTO radioButtonGroupControl)
+        private string GetSMSNumber(RadioButtonGroup radioButtonGroupControl)
         {
             string smsNumber = "";
 

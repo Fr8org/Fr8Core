@@ -20,19 +20,19 @@
         handler: string;
     }
 
-    export class CheckBoxControlDefinitionDTO extends ControlDefinitionDTO {
+    export class CheckBox extends ControlDefinitionDTO {
         checked: boolean;
     }
 
-    export class ButtonControlDefinitionDTO extends ControlDefinitionDTO {
+    export class Button extends ControlDefinitionDTO {
         checked: boolean;
     }
 
-    export class TextBoxControlDefinitionDTO extends ControlDefinitionDTO {
+    export class TextBox extends ControlDefinitionDTO {
         required: boolean;        
     }
 
-    export class FileControlDefinitionDTO extends ControlDefinitionDTO {
+    export class File extends ControlDefinitionDTO {
 
     }
 
@@ -41,7 +41,7 @@
         controls: Array<ControlDefinitionDTO>;
     }
 
-    export class RadioButtonGroupControlDefinitionDTO extends ControlDefinitionDTO {
+    export class RadioButtonGroup extends ControlDefinitionDTO {
         groupName: string;
         radios: Array<RadioButtonOption>;
     }
@@ -71,12 +71,13 @@
         public label: string;
     }
 
-    export class DropDownListControlDefinitionDTO extends ControlDefinitionDTO {
+    export class DropDownList extends ControlDefinitionDTO {
         listItems: Array<DropDownListItem>;
         source: FieldSource;
+        selectedKey: string;
     }
 
-    export class TextSource extends DropDownListControlDefinitionDTO {
+    export class TextSource extends DropDownList {
         initialLabel: string;
         valueSource: string;
     }
@@ -85,11 +86,11 @@
         public class: string;
     }
 
-    export class TextAreaControlDefinitionDTO extends ControlDefinitionDTO {
+    export class TextArea extends ControlDefinitionDTO {
         isReadOnly:boolean;
     }
 
-    export class MappingPaneControlDefinitionDTO extends ControlDefinitionDTO {
+    export class MappingPane extends ControlDefinitionDTO {
     }
 
     export class RoutingControlGroup extends ControlDefinitionDTO {
@@ -115,7 +116,7 @@
         Id: string;
     }
 
-    export class DurationControlDefinitionDTO extends ControlDefinitionDTO {
+    export class Duration extends ControlDefinitionDTO {
         days: number;
         hours: number;
         minutes: number;

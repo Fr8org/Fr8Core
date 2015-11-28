@@ -50,9 +50,21 @@ namespace Data.Infrastructure
                                                      .GetGenericArguments()[0];
                                              var stateName = stateType.Name;
                                              var stateKey = currentValues[stateProperty.Name];
-                                             var stateValue = stateKey != null
-                                                                  ? stateType.GetFields().Single(f => Equals(f.GetValue(entity), stateKey)).Name
-                                                                  : null;
+                                             string stateValue = null;
+
+                                             if (stateKey != null)
+                                             {
+                                                 var value = stateType.GetFields().FirstOrDefault(f => Equals(f.GetValue(entity), stateKey));
+                                                 if (value != null)
+                                                 {
+                                                     stateValue = value.Name;
+                                                 }
+                                             }
+
+//                                             stateValue = stateKey != null
+//                                                                  ? stateType.GetFields().Single(f => Equals(f.GetValue(entity), stateKey)).Name
+//                                                                  : null;
+
                                              EventManager.EntityStateChanged(entityName, idValue, stateName, stateValue);
                                          });
             }

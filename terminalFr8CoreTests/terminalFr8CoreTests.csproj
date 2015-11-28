@@ -139,8 +139,9 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\FilterUsingRunTimeData_v1Tests.cs" />
-    <Compile Include="Actions\SelectFr8Object_v1Tests.cs" />
+    <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
+    <Compile Include="Unit\FilterUsingRunTimeData_v1Tests.cs" />
+    <Compile Include="Unit\SelectFr8Object_v1Tests.cs" />
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -160,6 +161,10 @@
     <ProjectReference Include="..\terminalFr8Core\terminalFr8Core.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
       <Name>terminalFr8Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tests\HealthMonitorUtility\HealthMonitorUtility.csproj">
+      <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
+      <Name>HealthMonitorUtility</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>

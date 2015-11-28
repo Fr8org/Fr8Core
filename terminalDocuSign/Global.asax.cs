@@ -1,6 +1,7 @@
 ﻿using System.Web.Http;
 using Data.Infrastructure.AutoMapper;
 using Hub.StructureMap;
+using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Infrastructure.StructureMap;
 
@@ -21,6 +22,7 @@ namespace terminalDocuSign
             // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE);
 			TerminalDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
+            TerminalBootstrapper.ConfigureLive();
         }
     }
 }

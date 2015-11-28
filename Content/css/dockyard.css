@@ -2,7 +2,7 @@
     cursor: pointer;
 }
 
-.table-process-templates td button {
+.table-routes td button {
     float: right;
 }
 
@@ -66,7 +66,7 @@
 
 /* Added for Showing Steps in Activity Pane*/
 .processActionStep {
-    background-image: URL("/Content/img/ProcessBuilder/circle.png");
+    background-image: URL("/Content/img/RouteBuilder/circle.png");
     display: inline-flex;
     width: 80px;
     height: 50px;
@@ -79,7 +79,7 @@
 }
 
 .processActionStepSelected {
-    background-image: URL("/Content/img/ProcessBuilder/circle-selected.png");
+    background-image: URL("/Content/img/RouteBuilder/circle-selected.png");
     display: inline-flex;
     width: 75px;
     height: 50px;
@@ -96,7 +96,7 @@
     margin-top: -15px;
 }
 
-/* Process Builder */
+/* Route Builder */
 
 .designer-header {
     background: transparent;
@@ -121,7 +121,7 @@
     display: inline-block;
 }
 
-.designer-header-title.design-header-title-editing .process-template-name, .designer-header-title.design-header-title-editing .designer-header-glyphicon {
+.designer-header-title.design-header-title-editing .route-name, .designer-header-title.design-header-title-editing .designer-header-glyphicon {
     display: none;
 }
 
@@ -132,7 +132,7 @@
     cursor: pointer;
 }
 
-.process-template-name {
+.route-name {
     display: inline-block;
     vertical-align: top;
 }
@@ -161,7 +161,7 @@
         background-color: #428bca;
     }
 
-.process-builder-container {
+.route-builder-container {
     height: 800px;
     overflow-y: auto;
     position: relative;

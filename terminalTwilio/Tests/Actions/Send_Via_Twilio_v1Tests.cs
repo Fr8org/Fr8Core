@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Control;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
+using Data.Entities;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -19,7 +21,7 @@ using terminalTwilio.Actions;
 using terminalTwilio.Services;
 using terminalTwilio.Tests.Fixtures;
 using terminalTwilio.Tests;
-using Data.Entities;
+using TerminalBase.Infrastructure;
 
 namespace terminalTwilio.Tests.Actions
 {
@@ -37,6 +39,8 @@ namespace terminalTwilio.Tests.Actions
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             StructureMapBootStrapper.ConfigureDependencies(dependencyType).ConfigureTwilioDependencies(dependencyType);
             ObjectFactory.Configure(cfg => cfg.For<ITwilioService>().Use(new TwilioService()));
+            TerminalBootstrapper.ConfigureTest();
+
             _crate = ObjectFactory.GetInstance<ICrateManager>();
 
             var twilioService = new Mock<ITwilioService>();
@@ -92,8 +96,8 @@ namespace terminalTwilio.Tests.Actions
             var actionResult = _twilioAction.Configure(curActionDO, null).Result;
 
             var standardControls = _crate.GetStorage(actionResult.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            var smsNumberTextField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "SMS_Number").Count();
-            var smsNumberUpstreamField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "upstream_crate").Count();
+            var smsNumberTextField = ((RadioButtonGroup)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "SMS_Number").Count();
+            var smsNumberUpstreamField = ((RadioButtonGroup)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "upstream_crate").Count();
             var smsBodyFields = standardControls.FindByName("SMS_Body");
 
 
