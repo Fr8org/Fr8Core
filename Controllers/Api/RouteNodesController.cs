@@ -15,7 +15,7 @@ using Hub.Managers;
 
 namespace HubWeb.Controllers
 {
-    [RoutePrefix("route_nodes")]
+    //[RoutePrefix("route_nodes")]
     [Fr8ApiAuthorize]
     public class RouteNodesController : ApiController
     {
@@ -43,7 +43,7 @@ namespace HubWeb.Controllers
             }
         }
 
-        [Route("upstream")]
+        [ActionName("upstream")]
         [ResponseType(typeof (List<RouteNodeDO>))]
         public IHttpActionResult GetUpstreamActivities(Guid id)
         {
@@ -55,7 +55,7 @@ namespace HubWeb.Controllers
             }
         }
 
-        [Route("downstream")]
+        [ActionName("downstream")]
         [ResponseType(typeof (List<RouteNodeDO>))]
         public IHttpActionResult GetDownstreamActivities(Guid id)
         {
@@ -68,7 +68,7 @@ namespace HubWeb.Controllers
         }
 
         // TODO: after DO-1214 is completed, this method must be removed.
-        [Route("upstream_actions")]
+        [ActionName("upstream_actions")]
         [ResponseType(typeof (List<ActionDTO>))]
         [AllowAnonymous]
         public IHttpActionResult GetUpstreamActions(Guid id)
@@ -87,7 +87,7 @@ namespace HubWeb.Controllers
         }
 
         // TODO: after DO-1214 is completed, this method must be removed.
-        [Route("downstream_actions")]
+        [ActionName("downstream_actions")]
         [ResponseType(typeof (List<ActionDTO>))]
         [AllowAnonymous]
         public IHttpActionResult GetDownstreamActions(Guid id)
@@ -105,9 +105,10 @@ namespace HubWeb.Controllers
             }
         }
 
-        [Route("available")]
+        [ActionName("available")]
         [ResponseType(typeof (IEnumerable<ActivityTemplateCategoryDTO>))]
         [AllowAnonymous]
+        [HttpGet]
         public IHttpActionResult GetAvailableActivities()
         {
             var categoriesWithActivities = _activity.GetAvailableActivitiyGroups();
@@ -115,9 +116,10 @@ namespace HubWeb.Controllers
             return Ok(categoriesWithActivities);
         }
 
-        [Route("available")]
+        [ActionName("available")]
         [ResponseType(typeof (IEnumerable<ActivityTemplateCategoryDTO>))]
         [AllowAnonymous]
+        [HttpGet]
         public IHttpActionResult GetAvailableActivities(string tag)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

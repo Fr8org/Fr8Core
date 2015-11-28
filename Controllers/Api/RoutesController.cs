@@ -23,9 +23,9 @@ using Utilities.Interfaces;
 
 namespace HubWeb.Controllers
 {
-    [RoutePrefix("routes")]
+    //[RoutePrefix("routes")]
     [Fr8ApiAuthorize]
-    public class RouteController : ApiController
+    public class RoutesController : ApiController
     {
 	    private const string PUSHER_EVENT_GENERIC_SUCCESS = "fr8pusher_generic_success";
 	    private const string PUSHER_EVENT_GENERIC_FAILURE = "fr8pusher_generic_failure";
@@ -36,7 +36,7 @@ namespace HubWeb.Controllers
         private readonly ICrateManager _crate;
 	    private readonly IPusherNotifier _pusherNotifier;
         
-        public RouteController()
+        public RoutesController()
         {
 			_route = ObjectFactory.GetInstance<IRoute>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
@@ -46,7 +46,8 @@ namespace HubWeb.Controllers
         }
 
         [Fr8ApiAuthorize]
-        [Route("full/{id:guid}")]
+        //[Route("full/{id:guid}")]
+        [ActionName("full")]
         [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
         public IHttpActionResult GetFullRoute(Guid id)
@@ -60,7 +61,7 @@ namespace HubWeb.Controllers
             };
         }
 
-        [Route("getByAction/{id:guid}")]
+        //[Route("getByAction/{id:guid}")]
         [ResponseType(typeof(RouteFullDTO))]
         [HttpGet]
         
@@ -77,7 +78,7 @@ namespace HubWeb.Controllers
         }
 
         [Fr8ApiAuthorize]
-        [Route("status")]
+        [ActionName("status")]
         [HttpGet]
         public IHttpActionResult GetByStatus(Guid? id = null, int? status = null)
         {
@@ -101,7 +102,7 @@ namespace HubWeb.Controllers
        }
 
         [Fr8ApiAuthorize]
-        [Route("copy")]
+        //[Route("copy")]
         [HttpPost]
         public IHttpActionResult Copy(Guid id, string name)
         {
@@ -151,7 +152,7 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
-        [Route("~/routes")]
+        //[Route("~/routes")]
         [Fr8ApiAuthorize]
         public IHttpActionResult Post(RouteEmptyDTO routeDto, bool updateRegistrations = false)
         {
@@ -184,7 +185,6 @@ namespace HubWeb.Controllers
 
         
         [HttpPost]
-        [Route("action")]
         [ActionName("action")]
         [Fr8ApiAuthorize]
         public IHttpActionResult PutAction(ActionDTO actionDto)
@@ -196,7 +196,7 @@ namespace HubWeb.Controllers
         
 
         [HttpDelete]
-        [Route("{id:guid}")]
+        //[Route("{id:guid}")]
         [Fr8ApiAuthorize]
         public IHttpActionResult Delete(Guid id)
         {
@@ -210,7 +210,7 @@ namespace HubWeb.Controllers
         }
 
         
-        [Route("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
+        [ActionName("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
         [Fr8ApiAuthorize]
         public IHttpActionResult GetTriggerSettings()
         {
@@ -218,7 +218,7 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [Route("activate")]
+        //[Route("activate")]
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Activate(RouteDO curRoute)
         {
@@ -227,7 +227,7 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [Route("deactivate")]
+        //[Route("deactivate")]
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Deactivate(RouteDO curRoute)
         {
@@ -236,7 +236,7 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [Route("find_objects/create")]
+        //[Route("find_objects/create")]
         [Fr8ApiAuthorize]
         public IHttpActionResult CreateFindObjectsRoute()
         {
@@ -252,7 +252,7 @@ namespace HubWeb.Controllers
         }
 
         [Fr8ApiAuthorize]
-        [Route("run")]
+        //[Route("run")]
         [HttpPost]
         public async Task<IHttpActionResult> Run(Guid routeId, [FromBody]PayloadVM model)
         {
