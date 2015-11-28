@@ -434,6 +434,10 @@
     <Compile Include="Migrations\201511170753503_RouteDO_Tag.Designer.cs">
       <DependentUpon>201511170753503_RouteDO_Tag.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511192035266_Added_Description_ActivityTemplate.cs" />
+    <Compile Include="Migrations\201511192035266_Added_Description_ActivityTemplate.Designer.cs">
+      <DependentUpon>201511192035266_Added_Description_ActivityTemplate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.cs" />
     <Compile Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.Designer.cs">
       <DependentUpon>201511200612313_RouteNode_Id_Int32_To_Guid.cs</DependentUpon>
@@ -449,6 +453,10 @@
     <Compile Include="Migrations\201511281709584_Merge2_Migration.cs" />
     <Compile Include="Migrations\201511281709584_Merge2_Migration.Designer.cs">
       <DependentUpon>201511281709584_Merge2_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511281946401_Empty.cs" />
+    <Compile Include="Migrations\201511281946401_Empty.Designer.cs">
+      <DependentUpon>201511281946401_Empty.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -749,6 +757,9 @@
     <EmbeddedResource Include="Migrations\201511170753503_RouteDO_Tag.resx">
       <DependentUpon>201511170753503_RouteDO_Tag.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511192035266_Added_Description_ActivityTemplate.resx">
+      <DependentUpon>201511192035266_Added_Description_ActivityTemplate.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.resx">
       <DependentUpon>201511200612313_RouteNode_Id_Int32_To_Guid.cs</DependentUpon>
     </EmbeddedResource>
@@ -760,6 +771,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511281709584_Merge2_Migration.resx">
       <DependentUpon>201511281709584_Merge2_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511281946401_Empty.resx">
+      <DependentUpon>201511281946401_Empty.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
