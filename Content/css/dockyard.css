@@ -508,3 +508,9 @@ a.documentation-link {
     color: #aaa;
     margin-left: 5px;
 }
+
+
+/* Long ajax cursor */
+.long-ajax-cursor {
+    cursor: progress;
+}
