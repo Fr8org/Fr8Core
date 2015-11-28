@@ -33,16 +33,20 @@ namespace terminalTwilio.Actions
         {
             return await ProcessConfigurationRequest(curActionDO, actionDO => ConfigurationRequestType.Initial, authTokenDO);
         }
-
+        /*
         //this entire function gets passed as a delegate to the main processing code in the base class
         //currently many actions have two stages of configuration, and this method determines which stage should be applied
         private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
+            if (Crate.IsStorageEmpty(curActionDO)) 
+            { 
                 return ConfigurationRequestType.Initial;
-            else
-                return ConfigurationRequestType.Followup;
+            }
+
+
+            return ConfigurationRequestType.Followup;
         }
+        */
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
@@ -63,7 +67,7 @@ namespace terminalTwilio.Actions
                 curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
                 updater.CrateStorage.Add(curUpstreamFieldsCrate);
             }
-            return await Task.FromResult<ActionDO>(curActionDO);
+            return await Task.FromResult(curActionDO);
         }
         private Crate PackCrate_ConfigurationControls()
         {
@@ -71,28 +75,27 @@ namespace terminalTwilio.Actions
             {
                 new TextSource("For the SMS Number Use", "Upstream Terminal-Provided Fields", "SMS_Number"),
                 new TextBox()
-            {
-                Label = "SMS Body",
-                Name = "SMS_Body",
-                Required = true
-            }
+                {
+                    Label = "SMS Body",
+                    Name = "SMS_Body",
+                    Required = true
+                }
             };
+            /*
             var controls = new StandardConfigurationControlsCM()
             {
                 Controls = fieldsDTO
             };
+             * */
             return Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
 
         private List<FieldDTO> GetRegisteredSenderNumbersData()
         {
-            List<FieldDTO> phoneNumberFields = new List<FieldDTO>();
-
-            phoneNumberFields = _twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO() { Key = number, Value = number }).ToList();
-
-            return phoneNumberFields;
+            return _twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO() { Key = number, Value = number }).ToList();
         }
 
+        /*
         private Crate GetAvailableDataFields(ActionDO curActionDO)
         {
             Crate crate;
@@ -110,12 +113,12 @@ namespace terminalTwilio.Actions
             }
 
             return crate;
-        }
+        }*/
 
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO,AuthorizationTokenDO authTokenDO)
         {
             //not currently any requirements that need attention at FollowupConfigurationResponse
-            return await Task.FromResult<ActionDO>(curActionDO);
+            return await Task.FromResult(curActionDO);
         }
         public object Activate(ActionDO curActionDO)
         {
@@ -135,10 +138,9 @@ namespace terminalTwilio.Actions
             if (controlsCrate == null)
                 return null;
 
-            KeyValuePair<string, string> smsInfo;
             try
             {
-                smsInfo= ParseSMSNumberAndMsg(controlsCrate);
+                KeyValuePair<string, string> smsInfo = ParseSMSNumberAndMsg(controlsCrate);
                 string smsNumber = smsInfo.Key;
                 string smsBody = smsInfo.Value;
 
@@ -146,20 +148,18 @@ namespace terminalTwilio.Actions
                 {
                     return null;
                 }
-                else
+
+                try
                 {
-                    try
-                    {
-                        _twilio.SendSms(smsNumber, smsBody);
-                        EventManager.TwilioSMSSent(smsNumber, smsBody);
-                    }
-                    catch (Exception ex)
-                    {
-                        EventManager.TwilioSMSSendFailure(smsNumber, smsBody, ex.Message);
-                    }
+                    _twilio.SendSms(smsNumber, smsBody);
+                    EventManager.TwilioSMSSent(smsNumber, smsBody);
+                }
+                catch (Exception ex)
+                {
+                    EventManager.TwilioSMSSendFailure(smsNumber, smsBody, ex.Message);
                 }
             }
-            catch (ApplicationException appEx)
+            catch (ArgumentException appEx)
             {
                 var textBlock = new TextBlock
                 {
@@ -167,11 +167,12 @@ namespace terminalTwilio.Actions
                     Value = appEx.Message,
                     CssClass = "alert alert-warning"
                 };
-                            using (var updater = Crate.UpdateStorage(curActionDO))
-            {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackControlsCrate(textBlock));
-            }
+
+                using (var updater = Crate.UpdateStorage(curActionDO))
+                {
+                    updater.CrateStorage.Clear();
+                    updater.CrateStorage.Add(PackControlsCrate(textBlock));
+                }
             }
             return processPayload;
         }
@@ -183,17 +184,14 @@ namespace terminalTwilio.Actions
         /// <returns>Key = SMS Number; Value = SMS Body</returns>
         public KeyValuePair<string, string> ParseSMSNumberAndMsg(Crate crateDTO)
         {
-            KeyValuePair<string, string> smsInfo;
-
             var standardControls = crateDTO.Get<StandardConfigurationControlsCM>();
             if (standardControls == null)
             {
-                throw new ArgumentException("CrateDTO is not a standard UI controls");
+                throw new ArgumentException("CrateDTO is not a standard UI control");
             }
             var smsBodyFields = standardControls.FindByName("SMS_Body");
             var smsNumber = GetSMSNumber((TextSource)standardControls.Controls[0]);
-            smsInfo = new KeyValuePair<string, string>(smsNumber, smsBodyFields.Value);
-            return smsInfo;
+            return new KeyValuePair<string, string>(smsNumber, smsBodyFields.Value);
         }
 
         //private string GetSMSNumber(RadioButtonGroup radioButtonGroupControl)
@@ -216,7 +214,6 @@ namespace terminalTwilio.Actions
 
         private string GetSMSNumber(TextSource control)
         {
-            string smsNumber = "";
             if (control == null)
             {
                 throw new ApplicationException("TextSource control was expected but not found.");
