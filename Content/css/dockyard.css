@@ -96,7 +96,7 @@
     margin-top: -15px;
 }
 
-/* Process Builder */
+/* Route Builder */
 
 .designer-header {
     background: transparent;
@@ -161,7 +161,7 @@
         background-color: #428bca;
     }
 
-.process-builder-container {
+.route-builder-container {
     height: 800px;
     overflow-y: auto;
     position: relative;

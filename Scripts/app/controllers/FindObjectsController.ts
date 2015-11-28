@@ -14,7 +14,7 @@
 
             $http.post('/routes/find_objects/create', {})
                 .then(function (res: any) {
-                    $location.path('/processes/' + res.data.id + '/builder');
+                    $location.path('/routes/' + res.data.id + '/builder');
                 });
         }
     }
