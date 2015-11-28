@@ -15,11 +15,9 @@ using System.Web.Http;
 
 namespace HubWeb.Controllers
 {
-    [RoutePrefix("api/alarms")]
-    public class AlarmController : ApiController
+    public class AlarmsController : ApiController
     {
         [HttpPost]
-        [Route("")]
         public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {
             Expression<Action> action = () => ExecuteTerminalWithLogging(alarmDTO);
@@ -30,7 +28,6 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [Route("executeTerminalWithLogging")]
         public async void ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
         {
             HttpResponseMessage result = null;

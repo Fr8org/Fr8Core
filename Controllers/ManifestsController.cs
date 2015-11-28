@@ -12,20 +12,20 @@ using Hub.Managers;
 
 namespace HubWeb.Controllers
 {
-    [RoutePrefix("manifests")]
-    public class ManifestController : ApiController
+    //[RoutePrefix("manifests")]
+    public class ManifestsController : ApiController
     {
         private IManifest _manifest;
         private ICrateManager _crateManager;
 
-        public ManifestController()
+        public ManifestsController()
         {
             _manifest = ObjectFactory.GetInstance<IManifest>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         [HttpGet]
-        [Route("{id:int}")]
+        //[Route("{id:int}")]
         public IHttpActionResult Get(int id)
         {
             var crate = _manifest.GetById(id);

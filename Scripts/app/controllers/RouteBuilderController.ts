@@ -225,8 +225,7 @@ module dockyard.controllers {
             This message is sent when user is selecting an existing action or after addng a new action. 
         */
         private selectAction(action: model.ActionDTO) {
-            debugger;
-
+            
             console.log("Action selected: " + action.id);
             var originalId,
                 actionId = action.id,
@@ -338,7 +337,6 @@ module dockyard.controllers {
         }
 
         private PaneConfigureAction_ChildActionsReconfiguration() {
-            debugger;
             this.reloadRoute();
         }
     }
