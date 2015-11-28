@@ -62,12 +62,16 @@ module dockyard.services {
     */
 
     app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
-        <IRouteService>$resource('/routes/:id', { id: '@id' },
+        <IRouteService>$resource('/api/routes/:id', { id: '@id' },
             {
+                'save': {
+                    method: 'POST',
+                    url: '/api/routes/post'
+                },
                 'getFull': {
                     method: 'GET',
                     isArray: false,
-                    url: '/routes/full/:id',
+                    url: '/api/routes/full/:id',
                     params: {
                         id: '@id'
                     }
@@ -75,7 +79,7 @@ module dockyard.services {
                 'getbystatus': {
                     method: 'GET',
                     isArray: true,
-                    url: '/routes/status?status=:status',
+                    url: '/api/routes/status?status=:status',
                     params: {
                         status: '@status'
                     }
@@ -83,7 +87,7 @@ module dockyard.services {
                 'getByAction': {
                     method: 'GET',
                     isArray: false,
-                    url: '/routes/getByAction/:id',
+                    url: '/api/routes/getByAction/:id',
                     params: {
                         id: '@id'
                     }
@@ -91,26 +95,26 @@ module dockyard.services {
                 'execute': {
                     method: 'POST',
                     isArray: false,
-                    url: '/routes/run?routeId=:id',
+                    url: '/api/routes/run?routeId=:id',
                     params: {
                         id: '@id'
                     }
                 },
                 'activate': {
                     method: 'POST',
-                    url: '/routes/activate/',
+                    url: '/api/routes/activate/',
                     params: {
                     }
                 },
                 'deactivate': {
                     method: 'POST',
-                    url: '/routes/deactivate/',
+                    url: '/api/routes/deactivate/',
                     params: {
                     }
                 },
                 'update': {
                     method: 'POST',
-                    url: '/routes/',
+                    url: '/api/routes/',
                     params: {
 
                     }
@@ -129,16 +133,16 @@ module dockyard.services {
         DocuSignExternalEventDTO CRUD service.
     */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
-        <IDocuSignTriggerService>$resource('/route/triggersettings')
+        <IDocuSignTriggerService>$resource('/api/route/triggersettings')
     ]);
 
     app.factory('ActionTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
-        <IActionService>$resource('/actiontemplates/', null,
+        <IActionService>$resource('/api/actiontemplates/', null,
             {
                 'available': {
                     method: 'GET',
                     isArray: true,
-                    url: '/route_nodes/available',
+                    url: '/api/routenodes/available',
                     params: {
                         tag: '@tag'
                     }
@@ -150,7 +154,7 @@ module dockyard.services {
         ActionDTO CRUD service.
     */
     app.factory('ActionService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
-        <IActionService>$resource('/actions/:id',
+        <IActionService>$resource('/api/actions?id=:id',
             {
                 id: '@id'
             },
@@ -158,7 +162,7 @@ module dockyard.services {
                 'save': {
                     method: 'POST',
                     isArray: false,
-                    url: '/actions/save',
+                    url: '/api/actions/save',
                     params: {
                         suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
                     }
@@ -174,27 +178,27 @@ module dockyard.services {
                 'delete': { method: 'DELETE' },
                 'configure': {
                     method: 'POST',
-                    url: '/actions/configure',
+                    url: '/api/actions/configure',
                     params: {
                         suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
                     }
                 },
                 'getByRoute': {
                     method: 'GET',
-                    url: '/actions/bypt',
+                    url: '/api/actions/bypt',
                     isArray: true
                 },
                 'deleteById': {
                     method: 'DELETE',
-                    url: '/actions/:id?confirmed=:confirmed'
+                    url: '/api/actions?id=:id&confirmed=:confirmed'
                 },
                 'create': {
                     method: 'POST',
-                    url: '/actions/create'
+                    url: '/api/actions/create'
                 },
                 'createSolution': {
                     method: 'POST',
-                    url: '/actions/create',
+                    url: '/api/actions/create',
                     params: {
                         solutionName: '@solutionName'
                     }
@@ -248,7 +252,7 @@ module dockyard.services {
             {
                 'getAvailableActivities': {
                     method: 'GET',
-                    url: '/route_nodes/available/',
+                    url: '/api/routenodes/available/',
                     isArray: true
                 }
             })

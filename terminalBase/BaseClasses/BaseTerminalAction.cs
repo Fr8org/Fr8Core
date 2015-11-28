@@ -70,7 +70,7 @@ namespace TerminalBase.BaseClasses
             var httpClient = new HttpClient();
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "field/exists";
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/field/exists";
             using (var response = await httpClient.PostAsJsonAsync(url, requiredFieldList))
             {
                 var content = await response.Content.ReadAsStringAsync();

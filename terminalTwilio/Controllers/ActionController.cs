@@ -1,7 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Threading.Tasks;
+using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using TerminalBase.BaseClasses;
-using System.Threading.Tasks;
 
 namespace terminalTwilio.Controllers
 {    
