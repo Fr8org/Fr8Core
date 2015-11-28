@@ -127,8 +127,7 @@ namespace terminalTwilio.Actions
             return curActionDO;
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO,
-            Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var processPayload = await GetProcessPayload(curActionDO, containerId);
 
@@ -136,28 +135,44 @@ namespace terminalTwilio.Actions
             if (controlsCrate == null)
                 return null;
 
-            var smsInfo = ParseSMSNumberAndMsg(controlsCrate);
-
-            string smsNumber = smsInfo.Key;
-            string smsBody = smsInfo.Value;
-
-            if (String.IsNullOrEmpty(smsNumber))
+            KeyValuePair<string, string> smsInfo;
+            try
             {
-                return null;
-            }
-            else
-            {
-                try
-                {
-                    _twilio.SendSms(smsNumber, smsBody);
-                    EventManager.TwilioSMSSent(smsNumber, smsBody);
-                }
-                catch (Exception ex)
-                {
-                    EventManager.TwilioSMSSendFailure(smsNumber, smsBody, ex.Message);
-                }
-            }
+                smsInfo= ParseSMSNumberAndMsg(controlsCrate);
+                string smsNumber = smsInfo.Key;
+                string smsBody = smsInfo.Value;
 
+                if (String.IsNullOrEmpty(smsNumber))
+                {
+                    return null;
+                }
+                else
+                {
+                    try
+                    {
+                        _twilio.SendSms(smsNumber, smsBody);
+                        EventManager.TwilioSMSSent(smsNumber, smsBody);
+                    }
+                    catch (Exception ex)
+                    {
+                        EventManager.TwilioSMSSendFailure(smsNumber, smsBody, ex.Message);
+                    }
+                }
+            }
+            catch (ApplicationException appEx)
+            {
+                var textBlock = new TextBlock
+                {
+                    Label = "Twilio Number",
+                    Value = appEx.Message,
+                    CssClass = "alert alert-warning"
+                };
+                            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(PackControlsCrate(textBlock));
+            }
+            }
             return processPayload;
         }
 
@@ -210,12 +225,10 @@ namespace terminalTwilio.Actions
             {
                 case "specific":
                     return control.Value;
-
                 case "upstream":
                     return control.Value;
-
                 default:
-                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+                    throw new ApplicationException("Could not extract number, unknown mode.");
             }
         }
     }
