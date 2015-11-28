@@ -57,6 +57,9 @@ namespace Data.Infrastructure
         public delegate void UserRegistrationHandler(Fr8AccountDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
 
+        public delegate void Fr8AccountTerminalRegistrationHandler(TerminalDO terminalDO);
+        public static event Fr8AccountTerminalRegistrationHandler AlertFr8AccountTerminalRegistration;
+
         public delegate void UserRegistrationErrorHandler(Exception ex);
         public static event UserRegistrationErrorHandler AlertUserRegistrationError;
 
@@ -290,6 +293,12 @@ namespace Data.Infrastructure
         {
             UserRegistrationErrorHandler handler = AlertUserRegistrationError;
             if (handler != null) handler(ex);
+        }
+
+        public static void Fr8AccountTerminalRegistration(TerminalDO terminalDO)
+        {
+            if (AlertFr8AccountTerminalRegistration != null)
+                AlertFr8AccountTerminalRegistration(terminalDO);
         }
 
         //public static void BookingRequestCheckedOut(int bookingRequestId, string bookerId)
