@@ -26,7 +26,7 @@ namespace terminalPapertrail
             public void Configuration(IAppBuilder app)
             {
                 var config = new HttpConfiguration();
-                BaseTerminalWebApiConfig.Register("Papertrail", config);
+                WebApiConfig.Register(config);
                 app.UseWebApi(config);
             }
         }

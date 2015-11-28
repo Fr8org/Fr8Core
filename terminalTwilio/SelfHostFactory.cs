@@ -29,7 +29,7 @@ namespace terminalTwilio
             {
                 var config = new HttpConfiguration();
 
-                BaseTerminalWebApiConfig.Register("Twilio", config);
+                WebApiConfig.Register(config);
 
                 config.Services.Replace(typeof(IHttpControllerTypeResolver), new TwilioControllerTypeResolver());
 

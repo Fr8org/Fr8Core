@@ -27,13 +27,11 @@ namespace terminalSalesforce
             public void Configuration(IAppBuilder app)
             {
                 var config = new HttpConfiguration();
-
-                BaseTerminalWebApiConfig.Register("Salesforce", config);
+                WebApiConfig.Register(config);
                 config.Services.Replace(
                     typeof(IHttpControllerTypeResolver),
                     new SalesForceControllerTypeResolver()
                 );
-
                 app.UseWebApi(config);
             }
         }

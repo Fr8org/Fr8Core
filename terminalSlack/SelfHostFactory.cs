@@ -14,7 +14,7 @@ namespace terminalSlack
             {
                 var config = new HttpConfiguration();
 
-                BaseTerminalWebApiConfig.Register("Slack", config);
+                WebApiConfig.Register(config);
             }
         }
 
