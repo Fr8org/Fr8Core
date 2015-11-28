@@ -178,12 +178,12 @@ namespace HubWeb.Controllers
                 using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     _emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
-                    string toRecipient = "info@kwasant.com";
+                    string toRecipient = "info@fr8.co";
                     string fromAddress = emailId;
 
                     // EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
                     string subject = "Customer query";
-                    EmailDO emailDO = _email.GenerateBasicMessage(uow, subject, message, fromAddress, toRecipient);
+                    _email.Send(uow, subject, message, fromAddress, toRecipient);
                     //uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                     uow.SaveChanges();
                 }
