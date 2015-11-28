@@ -434,6 +434,10 @@
     <Compile Include="Migrations\201511170753503_RouteDO_Tag.Designer.cs">
       <DependentUpon>201511170753503_RouteDO_Tag.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511192035266_Added_Description_ActivityTemplate.cs" />
+    <Compile Include="Migrations\201511192035266_Added_Description_ActivityTemplate.Designer.cs">
+      <DependentUpon>201511192035266_Added_Description_ActivityTemplate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.cs" />
     <Compile Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.Designer.cs">
       <DependentUpon>201511200612313_RouteNode_Id_Int32_To_Guid.cs</DependentUpon>
@@ -441,6 +445,18 @@
     <Compile Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs" />
     <Compile Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.Designer.cs">
       <DependentUpon>201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511250912363_Add_Description_To_Terminal.cs" />
+    <Compile Include="Migrations\201511250912363_Add_Description_To_Terminal.Designer.cs">
+      <DependentUpon>201511250912363_Add_Description_To_Terminal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511281709584_Merge2_Migration.cs" />
+    <Compile Include="Migrations\201511281709584_Merge2_Migration.Designer.cs">
+      <DependentUpon>201511281709584_Merge2_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511281946401_Empty.cs" />
+    <Compile Include="Migrations\201511281946401_Empty.Designer.cs">
+      <DependentUpon>201511281946401_Empty.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201511261934585_RenameCollectFormDataSolution.cs" />
     <Compile Include="Migrations\201511261934585_RenameCollectFormDataSolution.Designer.cs">
@@ -457,6 +473,7 @@
     <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
+    <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
     <Compile Include="Repositories\WebServiceRepository.cs" />
     <Compile Include="States\ActivityCategory.cs" />
     <Compile Include="States\AuthenticationType.cs" />
@@ -634,6 +651,7 @@
     <Compile Include="Validations\OutboundEmailValidatorBase.cs" />
     <Compile Include="Validations\OutboundHtmlEmailValidator.cs" />
     <Compile Include="Validations\OutboundTemplatedEmailValidator.cs" />
+    <Compile Include="Validations\TerminalValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\Validators.cs" />
   </ItemGroup>
@@ -743,11 +761,23 @@
     <EmbeddedResource Include="Migrations\201511170753503_RouteDO_Tag.resx">
       <DependentUpon>201511170753503_RouteDO_Tag.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511192035266_Added_Description_ActivityTemplate.resx">
+      <DependentUpon>201511192035266_Added_Description_ActivityTemplate.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.resx">
       <DependentUpon>201511200612313_RouteNode_Id_Int32_To_Guid.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.resx">
       <DependentUpon>201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511250912363_Add_Description_To_Terminal.resx">
+      <DependentUpon>201511250912363_Add_Description_To_Terminal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511281709584_Merge2_Migration.resx">
+      <DependentUpon>201511281709584_Merge2_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511281946401_Empty.resx">
+      <DependentUpon>201511281946401_Empty.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511261934585_RenameCollectFormDataSolution.resx">
       <DependentUpon>201511261934585_RenameCollectFormDataSolution.cs</DependentUpon>

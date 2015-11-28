@@ -266,6 +266,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Tests\Actions\Extract_From_DocuSign_Envelope_v1Tests.cs" />
     <Compile Include="Tests\Actions\Monitor_DocuSignTests.cs" />
+    <Compile Include="Tests\Actions\Send_DocuSign_Envelope_v1Tests.cs" />
     <Compile Include="Tests\DocusignApiHelper.cs" />
     <Compile Include="Tests\Fixtures\AppSettingsFixture.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - DocusignAccount.cs" />

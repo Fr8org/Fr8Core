@@ -134,8 +134,6 @@ module dockyard.directives.paneConfigureAction {
                 }
 
                 function onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
-                    debugger;
-
                     if (!newValue || !newValue.fields) {
                          return;
                     }
@@ -147,8 +145,6 @@ module dockyard.directives.paneConfigureAction {
                     ActionService.save({ id: $scope.currentAction.id }, $scope.currentAction, null, null)
                         .$promise
                         .then(function () {
-                            debugger;
-
                             if ($scope.currentAction.childrenActions
                                 && $scope.currentAction.childrenActions.length > 0) {
 
@@ -162,7 +158,7 @@ module dockyard.directives.paneConfigureAction {
                 function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
 
                     var field = eventArgs.field;
-
+                    if (field.events === null) return;
                     // Find the onChange event object
                     var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onChange' }, true);
                     if (eventHandlerList.length == 0) return;
@@ -213,8 +209,6 @@ module dockyard.directives.paneConfigureAction {
 
                     ActionService.configure($scope.currentAction).$promise
                         .then((res: interfaces.IActionVM) => {
-                            debugger;
-
                             if (res.childrenActions && res.childrenActions.length > 0) {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
@@ -306,8 +300,6 @@ module dockyard.directives.paneConfigureAction {
                     var childWindow;
 
                     var messageListener = function (event) {
-                        debugger;
-
                         if (!event.data || event.data != 'external-auth-success') {
                             return;
                         }
@@ -317,7 +309,7 @@ module dockyard.directives.paneConfigureAction {
                     };
 
                     $http
-                        .get('/authentication/initial_url?id=' + activityTemplateId)
+                        .get('/api/authentication/initial_url?id=' + activityTemplateId)
                         .then(res => {
                             var url = (<any>res.data).url;
                             childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');

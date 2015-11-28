@@ -137,7 +137,7 @@ namespace TerminalBase.BaseClasses
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
                 default:
-                    response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDTO });
+                    response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
                     return response;
             }
 
