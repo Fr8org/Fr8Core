@@ -31,7 +31,7 @@ namespace HubWeb
             ConfigureAuth(app);
             ConfigureHangfire(app, "DockyardDB");
 
-            await RegisterTerminalActions();
+            await RegisterTerminalActions();    
 
             app.Use(async (context, next) =>
             {

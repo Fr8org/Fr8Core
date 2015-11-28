@@ -19,7 +19,9 @@ namespace Data.Interfaces.DataTransferObjects
         public string Endpoint { get; set; }
         [JsonProperty("subscriptionRequired")]
         public bool SubscriptionRequired { get; set; }
+        [JsonIgnore]
         public virtual Fr8AccountDO UserDO { get; set; }
-
+        [JsonProperty("description")]
+        public string Description { get; set; }
     }
 }

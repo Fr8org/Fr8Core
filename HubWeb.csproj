@@ -143,13 +143,13 @@
     <Reference Include="Microsoft.CSharp" />
     
     <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>		     
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
      
     <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>	
+      <HintPath>packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
       <Private>True</Private>
     </Reference>
     
@@ -346,6 +346,7 @@
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
     <Compile Include="Controllers\ManageFileController.cs" />
+    <Compile Include="Controllers\TerminalsController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\WebServicesController.cs" />
     <Compile Include="DependencyResolution\IoC.cs" />
@@ -751,6 +752,8 @@
     <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
     <Content Include="_PowerShellScripts\CheckWebSettings.ps1" />
     <Content Include="Service References\Application Insights\ConnectedService.json" />
+    <Content Include="Views\AngularTemplate\TerminalForm.cshtml" />
+    <Content Include="Views\AngularTemplate\TerminalList.cshtml" />
     <Content Include="Views\Welcome\Index.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -771,6 +774,8 @@
     <Content Include="Scripts\lib\jquery.blockui.min.js" />
     <Content Include="Views\Sandbox\Index.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\TerminalListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\WebServiceListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\WebServiceFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionController.ts" />
@@ -799,6 +804,7 @@
     <TypeScriptCompile Include="Scripts\app\filters\RouteState.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\ITerminal.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IUser.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IWebService.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActionGroup.ts" />
@@ -820,6 +826,8 @@
     <TypeScriptCompile Include="Scripts\app\model\ContainerDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Route.ts" />
     <TypeScriptCompile Include="Scripts\app\model\RouteBuilderState.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\TerminalActionSetDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\TerminalDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\User.ts" />
     <TypeScriptCompile Include="Scripts\app\model\WebServiceActionSetDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\WebServiceDTO.ts" />
@@ -829,6 +837,7 @@
     <TypeScriptCompile Include="Scripts\app\services\ManageFileService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\PusherNotifierService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ReportService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\TerminalService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UIHelperService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UserService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\WebServiceService.ts" />
