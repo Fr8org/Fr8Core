@@ -20,7 +20,7 @@ namespace terminalFr8Core.Actions
     {
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var controlsMS = Crate.GetStorage(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -43,15 +43,15 @@ namespace terminalFr8Core.Actions
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
             }
-//
-//            var cratePayload = Crate.Create(
-//                "Manual Payload Data",
-//                JsonConvert.SerializeObject(userDefinedPayload),
-//                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
-//                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
-//                );
-//
-//            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { cratePayload });
+            //
+            //            var cratePayload = Crate.Create(
+            //                "Manual Payload Data",
+            //                JsonConvert.SerializeObject(userDefinedPayload),
+            //                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
+            //                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
+            //                );
+            //
+            //            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { cratePayload });
 
             return processPayload;
         }
@@ -90,13 +90,16 @@ namespace terminalFr8Core.Actions
                 throw new ApplicationException("Could not find FieldListControl.");
             }
 
-            var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
-            userDefinedPayload.ForEach(x => x.Value = x.Key);
-
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            if (fieldListControl.Value != null)
             {
-                updater.CrateStorage.RemoveByLabel("ManuallyAddedPayload");
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardDesignTimeFieldsCM() { Fields = userDefinedPayload }));
+                var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
+                userDefinedPayload.ForEach(x => x.Value = x.Key);
+
+                using (var updater = Crate.UpdateStorage(curActionDO))
+                {
+                    updater.CrateStorage.RemoveByLabel("ManuallyAddedPayload");
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardDesignTimeFieldsCM() { Fields = userDefinedPayload }));
+                }
             }
 
             return Task.FromResult(curActionDO);

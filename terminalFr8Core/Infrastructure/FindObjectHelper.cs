@@ -22,7 +22,7 @@ namespace terminalFr8Core.Infrastructure
             BaseTerminalAction action, ActionDO actionDO)
         {
             var upstreamCrates = await action.GetCratesByDirection<StandardDesignTimeFieldsCM>(
-                actionDO.Id,
+                actionDO,
                 CrateDirection.Upstream
             );
 

@@ -123,7 +123,7 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return await GetProcessPayload(containerId);
+            return await GetProcessPayload(actionDO, containerId);
         }
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -132,7 +132,7 @@ namespace terminalDocuSign.Actions
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.AddRange(await PackSources());
+                updater.CrateStorage.AddRange(await PackSources(curActionDO));
             }
 
             return curActionDO;
@@ -150,7 +150,7 @@ namespace terminalDocuSign.Actions
             if (controls.UseTemplate.Selected)
             {
                 const string firstTemplateName = "Monitor_DocuSign";
-                var firstActionTemplate = (await FindTemplates(x => x.Name == "Monitor_DocuSign")).FirstOrDefault();
+                var firstActionTemplate = (await FindTemplates(curActionDO, x => x.Name == "Monitor_DocuSign")).FirstOrDefault();
 
                 if (firstActionTemplate == null)
                 {
@@ -190,35 +190,24 @@ namespace terminalDocuSign.Actions
             return curActionDO;
         }
         
-        private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(Predicate<ActivityTemplateDO> query)
+        private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActionDO actionDO, Predicate<ActivityTemplateDO> query)
         {
-            var hubUrl = ConfigurationManager.AppSettings["CoreWebServerUrl"].TrimEnd('/') + "/route_nodes/available";
-            var httpClient = new HttpClient();
-
-            return JsonConvert.DeserializeObject<IEnumerable<ActivityTemplateCategoryDTO>>(await httpClient.GetStringAsync(hubUrl))
-                .SelectMany(x => x.Activities)
-                .Select(Mapper.Map<ActivityTemplateDO>).Where(x => query(x));
+            var templates = await HubCommunicator.GetActivityTemplates(actionDO);
+            return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
         
-        private async Task<IEnumerable<Crate>> PackSources()
+        private async Task<IEnumerable<Crate>> PackSources(ActionDO actionDO)
         {
             var sources = new List<Crate>();
-
             sources.Add(Crate.CreateDesignTimeFieldsCrate("AvailableForms", new FieldDTO("key", "value")));
 
-            var hubUrl = ConfigurationManager.AppSettings["CoreWebServerUrl"].TrimEnd('/') + "/route_nodes/available";
-            var httpClient = new HttpClient();
-
-            var catagories = JsonConvert.DeserializeObject<IEnumerable<ActivityTemplateCategoryDTO>>(await httpClient.GetStringAsync(hubUrl)).FirstOrDefault(x =>
-            {
-                ActivityCategory category;
-
-                return Enum.TryParse(x.Name, out category) && category == ActivityCategory.Forwarders;
-            });
-
-            var templates = catagories != null ? catagories.Activities : new ActivityTemplateDTO[0];
-
-            sources.Add(Crate.CreateDesignTimeFieldsCrate("AvailableActions", templates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()));
+            var templates = await HubCommunicator.GetActivityTemplates(actionDO, ActivityCategory.Forwarders);
+            sources.Add(
+                Crate.CreateDesignTimeFieldsCrate(
+                    "AvailableActions",
+                    templates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()
+                )
+            );
 
             return sources;
         }
