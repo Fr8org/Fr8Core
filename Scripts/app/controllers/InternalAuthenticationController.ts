@@ -32,7 +32,7 @@
                     Password: $scope.formData.password
                 };
 
-                $http.post('/authentication/token', data)
+                $http.post('/api/authentication/token', data)
                     .then(function (res: any) {
 
                         if (res.data.error) {

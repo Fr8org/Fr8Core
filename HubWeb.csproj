@@ -141,18 +141,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    
     <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>		     
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-     
     <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>	
+      <HintPath>packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    
     <Reference Include="Microsoft.Owin.Hosting">
       <HintPath>packages\Microsoft.Owin.Hosting.2.0.2\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
     </Reference>
@@ -322,32 +319,33 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\AlarmController.cs" />
-    <Compile Include="Controllers\AuthenticationController.cs" />
+    <Compile Include="Controllers\Api\AuthenticationController.cs" />
+    <Compile Include="Controllers\Api\FieldController.cs" />
+    <Compile Include="Controllers\Api\ActionListController.cs" />
+    <Compile Include="Controllers\Api\ActionsController.cs" />
+    <Compile Include="Controllers\Api\CriteriaController.cs" />
+    <Compile Include="Controllers\Api\Fr8EventController.cs" />
+    <Compile Include="Controllers\Api\AlarmsController.cs" />
     <Compile Include="Controllers\WelcomeController.cs" />
-    <Compile Include="Controllers\FieldController.cs" />
-    <Compile Include="Controllers\ActionListController.cs" />
-    <Compile Include="Controllers\ActionController.cs" />
-    <Compile Include="Controllers\CriteriaController.cs" />
-    <Compile Include="Controllers\Fr8EventController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\Helpers\RouteMappingHelper.cs" />
-    <Compile Include="Controllers\ManifestController.cs" />
-    <Compile Include="Controllers\RouteNodesController.cs" />
+    <Compile Include="Controllers\Api\ManifestsController.cs" />
+    <Compile Include="Controllers\Api\RouteNodesController.cs" />
     <Compile Include="Controllers\AuthenticationCallbackController.cs" />
-    <Compile Include="Controllers\FilesController.cs" />
+    <Compile Include="Controllers\Api\FilesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
-    <Compile Include="Controllers\SubrouteController.cs" />
-    <Compile Include="Controllers\RouteController.cs" />
-    <Compile Include="Controllers\EventController.cs" />
+    <Compile Include="Controllers\Api\SubrouteController.cs" />
+    <Compile Include="Controllers\Api\RoutesController.cs" />
+    <Compile Include="Controllers\Api\EventController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
-    <Compile Include="Controllers\ContainerController.cs" />
+    <Compile Include="Controllers\Api\ContainerController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
-    <Compile Include="Controllers\ManageFileController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="Controllers\WebServicesController.cs" />
+    <Compile Include="Controllers\Api\TerminalsController.cs" />
+    <Compile Include="Controllers\Api\ManageFileController.cs" />
+    <Compile Include="Controllers\Api\UserController.cs" />
+    <Compile Include="Controllers\Api\WebServicesController.cs" />
     <Compile Include="DependencyResolution\IoC.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
@@ -387,7 +385,7 @@
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
-    <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
@@ -529,6 +527,7 @@
     <Content Include="Content\img\welcome\logo.png" />
     <Content Include="Content\img\welcome\right-side-bg.jpg" />
     <Content Include="Content\img\welcome\routeBuilder.png" />
+    <Content Include="Documentation\UpstreamCrates.html" />
     <Content Include="fr8terminals.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />
@@ -751,6 +750,8 @@
     <Content Include="_PowerShellScripts\UpdateTerminalUrl.ps1" />
     <Content Include="_PowerShellScripts\CheckWebSettings.ps1" />
     <Content Include="Service References\Application Insights\ConnectedService.json" />
+    <Content Include="Views\AngularTemplate\TerminalForm.cshtml" />
+    <Content Include="Views\AngularTemplate\TerminalList.cshtml" />
     <Content Include="Views\Welcome\Index.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -771,6 +772,8 @@
     <Content Include="Scripts\lib\jquery.blockui.min.js" />
     <Content Include="Views\Sandbox\Index.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\TerminalListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\WebServiceListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\WebServiceFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionController.ts" />
@@ -800,6 +803,7 @@
     <TypeScriptCompile Include="Scripts\app\filters\RouteState.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\ITerminal.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IUser.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IWebService.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActionGroup.ts" />
@@ -821,6 +825,8 @@
     <TypeScriptCompile Include="Scripts\app\model\ContainerDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Route.ts" />
     <TypeScriptCompile Include="Scripts\app\model\RouteBuilderState.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\TerminalActionSetDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\TerminalDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\User.ts" />
     <TypeScriptCompile Include="Scripts\app\model\WebServiceActionSetDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\WebServiceDTO.ts" />
@@ -830,6 +836,7 @@
     <TypeScriptCompile Include="Scripts\app\services\ManageFileService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\PusherNotifierService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ReportService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\TerminalService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UIHelperService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UserService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\WebServiceService.ts" />
@@ -4086,7 +4093,6 @@
     <Content Include="Views\Shared\403.cshtml" />
     <Content Include="Views\AngularTemplate\TextSource.cshtml" />
     <Content Include="Views\AngularTemplate\_RouteList.cshtml" />
-    <Content Include="Views\AngularTemplate\SolutionList.cshtml" />
     <Content Include="Views\AngularTemplate\_DeleteRouteModal.cshtml" />
     <Content Include="Views\AngularTemplate\Solution.cshtml" />
     <Content Include="Views\AuthenticationCallback\Error.cshtml" />

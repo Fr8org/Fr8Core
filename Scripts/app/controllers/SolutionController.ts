@@ -90,7 +90,6 @@ module dockyard.controllers {
         }
 
         private onChildActionsDetected() {
-            debugger;
             this.$state.transitionTo('routeBuilder', { id: this.$scope.route.id });
         }
 

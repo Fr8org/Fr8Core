@@ -33,7 +33,7 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [Route("files")]
+        [ActionName("files")]
         public async Task<IHttpActionResult> Post()
         {
             FileDO fileDO = null;
