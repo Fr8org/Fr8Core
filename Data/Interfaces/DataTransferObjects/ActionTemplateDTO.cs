@@ -39,5 +39,7 @@ namespace Data.Interfaces.DataTransferObjects
         {
             AuthenticationType = States.AuthenticationType.None;
         }
+
+        public string Description { get; set; }
     }
 }

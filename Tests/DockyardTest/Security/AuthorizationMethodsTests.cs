@@ -165,7 +165,7 @@ namespace DockyardTest.Security
             var actionDTO = new ActionDTO();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", tokenDO.TerminalID);
+                var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", tokenDO.TerminalID);
                 activityTemplateDO.AuthenticationType = AuthenticationType.Internal; 
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
@@ -210,7 +210,7 @@ namespace DockyardTest.Security
         public void CanAuthenticateInternal()
         {   
             var tokenDO = CreateAndAddTokenDO();
-            var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", tokenDO.TerminalID);
+            var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", tokenDO.TerminalID);
             activityTemplateDO.AuthenticationType = AuthenticationType.Internal;
             activityTemplateDO.Terminal = tokenDO.Terminal;
 
@@ -250,7 +250,7 @@ namespace DockyardTest.Security
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", terminalDO.Id);
+                var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", terminalDO.Id);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
             }
@@ -280,7 +280,7 @@ namespace DockyardTest.Security
         {           
             var tokenDo = CreateAndAddTokenDO();
 
-            var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", tokenDo.TerminalID);
+            var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", tokenDo.TerminalID);
             activityTemplateDO.AuthenticationType = AuthenticationType.Internal;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {   
@@ -310,7 +310,7 @@ namespace DockyardTest.Security
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", terminalDO.Id);
+                var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", terminalDO.Id);
                 activityTemplateDO.AuthenticationType = AuthenticationType.Internal;
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 actionDTO.ActivityTemplateId = activityTemplateDO.Id;
@@ -331,7 +331,7 @@ namespace DockyardTest.Security
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", tokenDO.TerminalID);
+                var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", tokenDO.TerminalID);
                 activityTemplateDO.AuthenticationType = AuthenticationType.Internal;
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 actionDTO.ActivityTemplateId = activityTemplateDO.Id;
