@@ -536,6 +536,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private TerminalSubscriptionRepository _terminalSubscriptionRepository;
+
+        public ITerminalSubscriptionRepository TerminalSubscriptionRepository
+        {
+            get
+            {
+                return _terminalSubscriptionRepository ?? (_terminalSubscriptionRepository = new TerminalSubscriptionRepository(this));
+
+            }
+        }
 
         private SubscriptionRepository _subscriptionRepository;
 

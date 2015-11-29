@@ -50,6 +50,7 @@ namespace terminalSlack.Controllers
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.External,
                 Version = "1",
+                Description = "Publish To Slack: Description",
                 MinPaneWidth = 330
             };
 

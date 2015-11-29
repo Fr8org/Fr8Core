@@ -53,10 +53,9 @@ module dockyard.controllers {
                     var result = RouteService.save($scope.ptvm);
 
                     result.$promise
-                        .then(function () {
-                            console.log(result);
+                        .then(() => {
                             $rootScope.lastResult = "success";
-                            window.location.href = '#processes/' + result.id + '/builder';
+                            window.location.href = '#routes/' + result.id + '/builder';
                         })
                         .catch(function (e) {
                             switch (e.status) {

@@ -21,8 +21,7 @@
 
             $scope.formData = {
                 username: 'docusign_developer@dockyard.company',
-                password: 'grolier34',
-                domain: "dockyard.company"
+                password: 'grolier34'
             };
 
             $scope.submitForm = function () {
@@ -34,11 +33,10 @@
                 var data = {
                     ActivityTemplateId: $scope.activityTemplateId,
                     Username: $scope.formData.username,
-                    Password: $scope.formData.password,
-                    Domain: $scope.formData.domain
+                    Password: $scope.formData.password
                 };
 
-                $http.post('/authentication/token', data)
+                $http.post('/api/authentication/token', data)
                     .then(function (res: any) {
 
                         if (res.data.error) {

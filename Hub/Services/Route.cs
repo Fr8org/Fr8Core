@@ -346,11 +346,9 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return EnumerateActivities<RouteNodeDO>(uow.RouteRepository.GetByKey(curRouteId)).FirstOrDefault();
+                return GetInitialActivity(uow, uow.RouteRepository.GetByKey(curRouteId));
             }
         }
-
-
 
         public RouteNodeDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute)
         {

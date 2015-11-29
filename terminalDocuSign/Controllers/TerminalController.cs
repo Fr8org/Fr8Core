@@ -88,14 +88,24 @@ namespace terminalDocuSign.Controllers
 
             var collectFormDataSolution = new ActivityTemplateDTO
             {
-                Name = "Collect_Form_Data_Solution",
-                Label = "Collect Form Data Solution",
+				Name = "Extract_Data_From_Envelopes",
+				Label = "Extract Data From Envelopes",
                 Version = "1",
                 Category = ActivityCategory.Solution,
                 Terminal = terminal,
                 MinPaneWidth = 380
             };
 
+            var richDocumentNotificationsSolution = new ActivityTemplateDTO
+            {
+                Name = "Rich_Document_Notifications",
+                Label = "Rich Document Notifications",
+                Version = "1",
+                Category = ActivityCategory.Solution,
+                AuthenticationType = AuthenticationType.Internal,
+                Terminal = terminal,
+                MinPaneWidth = 380
+            };
 
 
             var actionList = new List<ActivityTemplateDTO>()
@@ -105,14 +115,16 @@ namespace terminalDocuSign.Controllers
                 sendDocuSignEnvelopeActionTemplate,
                 recordDocuSignEvents,
                 mailMergeActionTemplate,
-                collectFormDataSolution
+                collectFormDataSolution,
+                richDocumentNotificationsSolution
             };
 
-            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
                 Actions = actionList
             };
+
             return Json(curStandardFr8TerminalCM);
         }
     }

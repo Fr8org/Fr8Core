@@ -6,12 +6,18 @@
                 <div class="col-md-12 col-sm-12" ng-cloak>
                     <table class="select-action-category" style="margin: 0;">
                         <thead>
-                            <tr><th>Available Solutions</th></tr>
+                            <tr>
+                                <th>Available Solutions</th>
+                                <th>Solution Description</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr class="select-action-list2" ng-repeat="activity in (activityCategories | filter: {name: 'Solution'})[0].activities">
                                 <td class="select-action-row2" ng-click="onSolutionSelected(activity)">
                                     {{activity.label}}
+                                </td>
+                                <td class="select-action-row2" ng-click="onSolutionSelected(activity)">
+                                    {{activity.description}}
                                 </td>
                             </tr>
                         </tbody>
