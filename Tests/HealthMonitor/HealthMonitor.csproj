@@ -90,6 +90,10 @@
       <Project>{a6e317fa-2eb0-4447-8ecd-6725f6b78435}</Project>
       <Name>terminalDocuSignTests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\terminalPapertrailTests\terminalPapertrailTests.csproj">
+      <Project>{8f5be349-6d11-44ad-a1cc-b5bb5eb4b179}</Project>
+      <Name>terminalPapertrailTests</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
