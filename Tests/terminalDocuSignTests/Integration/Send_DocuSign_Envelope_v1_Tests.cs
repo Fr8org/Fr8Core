@@ -113,7 +113,7 @@ namespace terminalDocuSignTests
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test]
-        public async void Send_DocuSign_Initial_Configuration_Check_Crate_Structure()
+        public async void Send_DocuSign_Envelope_Initial_Configuration_Check_Crate_Structure()
         {
             var responseActionDTO = await ConfigureInitial();
 
@@ -134,7 +134,7 @@ namespace terminalDocuSignTests
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
         )]
-        public async void Send_DocuSign_Initial_Configuration_NoAuth()
+        public async void Send_DocuSign_Envelope_Initial_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -151,7 +151,7 @@ namespace terminalDocuSignTests
         /// Validate correct crate-storage structure in follow-up configuration response.
         /// </summary>
         [Test]
-        public async void Send_DocuSign_FollowUp_Configuration_Check_Crate_Structure()
+        public async void Send_DocuSign_Envelope_FollowUp_Configuration_Check_Crate_Structure()
         {
             var responseFollowUpActionDTO = await ConfigureFollowUp();
 
@@ -172,7 +172,7 @@ namespace terminalDocuSignTests
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
         )]
-        public async void Send_DocuSign_FollowUp_Configuration_NoAuth()
+        public async void Send_DocuSign_Envelope_FollowUp_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -198,31 +198,50 @@ namespace terminalDocuSignTests
         /// Test run-time for action from Monitor_DocuSign_FollowUp_Configuration_TemplateValue.
         /// </summary>
         [Test]
-        public async void Send_DocuSign_Run()
+        public async void Send_DocuSign_Envelope_Run_With_Specific_Recipient()
         {
             var runUrl = GetTerminalRunUrl();
-
             var configureUrl = GetTerminalConfigureUrl();
-
             var requestActionDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_ActionDTO();
-
             var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
-
             var storage = _crateManager.GetStorage(responseActionDTO);
 
-            SendDocuSignEnvelope_SelectFirstTemplate(storage);
+            SendDocuSignEnvelope_SetSpecificRecipient(storage);
 
             using (var updater = _crateManager.UpdateStorage(requestActionDTO))
             {
                 updater.CrateStorage = storage;
             }
-
             
             var responsePayloadDTO = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
-
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Count());
+            Assert.AreEqual(0, crateStorage.Count());
+        }
 
+        /// <summary>
+        /// Wait for HTTP-500 exception when Auth-Token is not passed to run.
+        /// </summary>
+        [Test]
+        [ExpectedException(
+            ExpectedException = typeof(RestfulServiceException),
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No auth token provided.""}"
+        )]
+        public async void Send_DocuSign_Envelope_Run_NoAuth()
+        {
+            var runUrl = GetTerminalRunUrl();
+            var configureUrl = GetTerminalConfigureUrl();
+            var requestActionDTO = HealthMonitor_FixtureData.Send_DocuSign_Envelope_v1_Example_ActionDTO();
+            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+            var storage = _crateManager.GetStorage(responseActionDTO);
+
+            SendDocuSignEnvelope_SetSpecificRecipient(storage);
+
+            using (var updater = _crateManager.UpdateStorage(requestActionDTO))
+            {
+                updater.CrateStorage = storage;
+            }
+            requestActionDTO.AuthToken = null;
+            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
         }
 
 
@@ -243,6 +262,14 @@ namespace terminalDocuSignTests
             // exact same way we do on front-end.
             var docuSignTemplateControlDTO = controlsMS.Controls.Single(x => x.Name == "target_docusign_template");
             docuSignTemplateControlDTO.Value = fieldsMS.Fields.First().Value;
+        }
+
+        private void SendDocuSignEnvelope_SetSpecificRecipient(CrateStorage curCrateStorage)
+        {
+            var controls = curCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var recipient = controls.Controls.Single(c => c.Name == "Recipient") as TextSource;
+            recipient.ValueSource = "specific";
+            recipient.Value = "test@test.com";
         }
     }
 }
