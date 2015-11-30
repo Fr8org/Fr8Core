@@ -98,7 +98,7 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionRemoved],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsReconfiguration],
-                (event: ng.IAngularEvent, childActions: any) => this.PaneConfigureAction_ChildActionsReconfiguration(childActions));
+                (event: ng.IAngularEvent, childActionReconfigEventArgs: pca.ChildActionReconfigurationEventArgs) => this.PaneConfigureAction_ChildActionsReconfiguration(childActionReconfigEventArgs));
 
             //Process Select Action Pane events
             this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActivityTypeSelected],
@@ -341,12 +341,10 @@ module dockyard.controllers {
             
         }
 
-        private PaneConfigureAction_ChildActionsReconfiguration(actions: Array<interfaces.IActionVM>) {
-            for (var i = 0; i < actions.length; i++) {
-                this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_ReloadAction], actions[i]);
+        private PaneConfigureAction_ChildActionsReconfiguration(childActionReconfigEventArgs: pca.ChildActionReconfigurationEventArgs) {
+            for (var i = 0; i < childActionReconfigEventArgs.actions.length; i++) {
+                this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_ReloadAction], new pca.ReloadActionEventArgs(childActionReconfigEventArgs.actions[i]));
             }
-            
-            //this.reloadRoute();
         }
     }
 

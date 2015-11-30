@@ -72,7 +72,21 @@ module dockyard.directives.paneConfigureAction {
     }
 
     export class CancelledEventArgs extends CancelledEventArgsBase { }
-    
+
+    export class ReloadActionEventArgs {
+        public action: interfaces.IActionDTO;
+        constructor(action: interfaces.IActionDTO) {
+            this.action = action;
+        }
+    }
+
+    export class ChildActionReconfigurationEventArgs {
+        public actions: Array<interfaces.IActionDTO>;
+        constructor(actions: Array<interfaces.IActionDTO>) {
+            this.actions = actions;
+        }
+    }
+
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class PaneConfigureAction implements ng.IDirective {
@@ -120,8 +134,8 @@ module dockyard.directives.paneConfigureAction {
                     loadConfiguration();
                 });
 
-                $scope.$on(MessageType[MessageType.PaneConfigureAction_ReloadAction], (event :ng.IAngularEvent, action: interfaces.IActionVM) => {
-                    reloadAction(action);
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_ReloadAction], (event: ng.IAngularEvent, reloadActionEventArgs: ReloadActionEventArgs) => {
+                    reloadAction(reloadActionEventArgs);
                 });
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_RenderConfiguration],
@@ -138,18 +152,18 @@ module dockyard.directives.paneConfigureAction {
                     }
                 }
 
-                function reloadAction(action: interfaces.IActionVM) {
+                function reloadAction(reloadActionEventArgs: ReloadActionEventArgs) {
                     //is this a reload call for me?
-                    if (action.id !== $scope.currentAction.id) {
+                    if (reloadActionEventArgs.action.id !== $scope.currentAction.id) {
                         return;
                     }
-                    $scope.currentAction = action;
+                    $scope.currentAction = <interfaces.IActionVM>reloadActionEventArgs.action;
                     $scope.processConfiguration();
                     if ($scope.currentAction.childrenActions
                         && $scope.currentAction.childrenActions.length > 0) {
 
                         if ($scope.reconfigureChildrenActions) {
-                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], $scope.currentAction.childrenActions);
+                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], new ChildActionReconfigurationEventArgs($scope.currentAction.childrenActions));
                         }
                     }
                 }
@@ -170,7 +184,7 @@ module dockyard.directives.paneConfigureAction {
                                 && $scope.currentAction.childrenActions.length > 0) {
 
                                 if ($scope.reconfigureChildrenActions) {
-                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], $scope.currentAction.childrenActions);
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], new ChildActionReconfigurationEventArgs($scope.currentAction.childrenActions));
                                 }
                             }
                     });
