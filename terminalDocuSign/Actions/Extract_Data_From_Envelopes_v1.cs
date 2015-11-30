@@ -120,7 +120,8 @@ namespace terminalDocuSign.Actions
 				CrateStorage = Crate.EmptyStorageAsStr(),
 				CreateDate = DateTime.UtcNow,
 				Ordering = 1,
-				Name = "First action"
+				Name = "First action",
+                Label = firstActionTemplate.Label
 			};
 
 			curActionDO.ChildNodes.Add(firstAction);
@@ -136,7 +137,8 @@ namespace terminalDocuSign.Actions
                     CrateStorage = Crate.EmptyStorageAsStr(),
                     CreateDate = DateTime.UtcNow,
                     Ordering = 2,
-                    Name = "Final action"
+                    Name = "Final action",
+                    Label = controls.FinalActionsList.selectedKey
                 };
 
                 curActionDO.ChildNodes.Add(finalAction);
