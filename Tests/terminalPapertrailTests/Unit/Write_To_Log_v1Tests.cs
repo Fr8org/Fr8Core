@@ -12,7 +12,7 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 
-namespace terminalPapertrailTests.Integration
+namespace terminalPapertrailTests.Unit
 {
     /// <summary>
     /// Mark test case class with [Explicit] attiribute.
