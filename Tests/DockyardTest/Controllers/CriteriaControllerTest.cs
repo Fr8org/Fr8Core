@@ -28,7 +28,7 @@ namespace DockyardTest.Controllers
             {
                 var controller = CreateController<CriteriaController>();
 
-                var actionResult = controller.GetBySubrouteId(_curSubroute.Id);
+                var actionResult = controller.BySubrouteId(_curSubroute.Id);
 
                 var okResult = actionResult as OkNegotiatedContentResult<CriteriaDTO>;
 
