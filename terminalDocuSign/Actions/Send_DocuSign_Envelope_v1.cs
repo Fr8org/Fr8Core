@@ -159,10 +159,9 @@ namespace terminalDocuSign.Actions
 
                     updater.CrateStorage = new CrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
                 }
-
-                await UpdateUpstreamCrate(curActionDO);
-
             }
+
+            await UpdateUpstreamCrate(curActionDO);
 
             return curActionDO;
         }
