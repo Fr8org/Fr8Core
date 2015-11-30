@@ -50,9 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Unit\HealthMonitor_FixtureData.cs" />
+    <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Terminal_Discover_v1_Tests.cs" />
-    <Compile Include="Unit\Write_To_Log_v1Tests.cs" />
+    <Compile Include="Integration\Write_To_Log_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

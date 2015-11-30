@@ -14,6 +14,20 @@ namespace HubWeb
 
 			// Web API routes
 
+            config.Routes.MapHttpRoute(
+               name: "DefaultApiFr8Events",
+               routeTemplate: "api/v1/fr8_events",
+               defaults: new { action = "ProcessDockyardEvents", controller = "Fr8Event" },
+               constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Post) }
+               );
+
+            config.Routes.MapHttpRoute(
+               name: "DefaultApiIncomingEvents",
+               routeTemplate: "api/v1/events",
+               defaults: new { action = "ProcessIncomingEvents", controller = "Event" },
+               constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Post) }
+               );
+
 			config.Routes.MapHttpRoute(
 				name : "DefaultApiWithAction",
 				routeTemplate : "api/v1/{controller}/{action}/{id}",
@@ -43,6 +57,8 @@ namespace HubWeb
                 defaults: new { id = RouteParameter.Optional, action = "Delete" },
                 constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Delete) }
                 );
+
+            
 
             //config.Routes.MapHttpRoute(
             //    name: "DefaultApi",

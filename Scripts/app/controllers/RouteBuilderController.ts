@@ -18,11 +18,12 @@ module dockyard.controllers {
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
         current: model.RouteBuilderState;
-        actionGroups: model.ActionGroup[]
+        actionGroups: model.ActionGroup[];
 
         addAction(): void;
         deleteAction: (action: model.ActionDTO) => void;
         selectAction(action): void;
+        isBusy: () => boolean;
     }
 
     //Setup aliases
@@ -53,6 +54,8 @@ module dockyard.controllers {
             '$state'
         ];
 
+        private _longRunningActionsCounter: number;
+
         constructor(
             private $scope: IRouteBuilderScope,
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
@@ -79,6 +82,12 @@ module dockyard.controllers {
                 this.addAction();
             }
 
+            this.$scope.isBusy =  () => {
+                return this._longRunningActionsCounter > 0;
+            };
+
+            this._longRunningActionsCounter = 0;
+
             $scope.deleteAction = <() => void> angular.bind(this, this.deleteAction);
 
             this.$scope.selectAction = (action: model.ActionDTO) => {
@@ -98,7 +107,7 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionRemoved],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsReconfiguration],
-                (event: ng.IAngularEvent) => this.PaneConfigureAction_ChildActionsReconfiguration());
+                (event: ng.IAngularEvent, childActionReconfigEventArgs: pca.ChildActionReconfigurationEventArgs) => this.PaneConfigureAction_ChildActionsReconfiguration(childActionReconfigEventArgs));
 
             //Process Select Action Pane events
             this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActivityTypeSelected],
@@ -113,6 +122,9 @@ module dockyard.controllers {
             //Handles Save Request From PaneSelectAction
             this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_InitiateSaveAction],
                 (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_InitiateSaveAction(eventArgs));
+
+            this.$scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation],
+                (event: ng.IAngularEvent, eventArgs: pwd.LongRunningOperationEventArgs) => this.PaneWorkflowDesigner_LongRunningOperation(eventArgs));
         }
 
         private loadRoute() {
@@ -336,8 +348,23 @@ module dockyard.controllers {
                 );
         }
 
-        private PaneConfigureAction_ChildActionsReconfiguration() {
-            this.reloadRoute();
+        private updateChildActionsRecursive(curAction: interfaces.IActionVM) {
+            this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);
+            
+        }
+
+        private PaneConfigureAction_ChildActionsReconfiguration(childActionReconfigEventArgs: pca.ChildActionReconfigurationEventArgs) {
+            for (var i = 0; i < childActionReconfigEventArgs.actions.length; i++) {
+                this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_ReloadAction], new pca.ReloadActionEventArgs(childActionReconfigEventArgs.actions[i]));
+            }
+        }
+
+        private PaneWorkflowDesigner_LongRunningOperation(eventArgs: dockyard.directives.paneWorkflowDesigner.LongRunningOperationEventArgs) {
+            this._longRunningActionsCounter += eventArgs.flag === pwd.LongRunningOperationFlag.Started ? 1 : -1;
+
+            if (this._longRunningActionsCounter < 0) {
+                this._longRunningActionsCounter = 0;
+            }
         }
     }
 
