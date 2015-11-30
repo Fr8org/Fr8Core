@@ -162,6 +162,20 @@ module dockyard.directives.paneConfigureAction {
                 
                         $scope.loadConfiguration();
                     }
+                    if (fieldEvent.handler === 'focusConfig') {
+                        var cccc = $scope.currentAction.crateStorage;
+                        angular.forEach(cccc.crates[1].contents, function (val, key) {
+                            val[1].value = val[1].value + '[' + val[2].value + ']';
+                        });
+
+                        crateHelper.mergeControlListCrate(
+                            $scope.currentAction.configurationControls,
+                            $scope.currentAction.crateStorage
+                            );
+                        $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                
+                        $scope.loadConfiguration();
+                    }
                 }
 
                 function onClickEvent(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {

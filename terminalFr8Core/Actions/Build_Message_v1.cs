@@ -70,7 +70,7 @@ namespace terminalFr8Core.Actions
             };
 
             var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO.Id, "Available Run-Time Objects");
-
+            //added focusConfig in PaneConfigureAction.ts
             var fieldSelectObjectTypes = new DropDownListControlDefinitionDTO()
             {
                 Label = "Available Fields",
