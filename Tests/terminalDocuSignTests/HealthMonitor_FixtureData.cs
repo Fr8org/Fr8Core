@@ -62,5 +62,30 @@ namespace terminalDocuSignTests
                 ActivityTemplateId = activityTemplate.Id
             };
         }
+
+        public static ActionDTO Record_Docusign_v1_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = Record_DocuSign_v1_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Record_DocuSign",
+                Label = "Record DocuSign",
+                AuthToken = DocuSign_AuthToken(),
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
+        public static ActivityTemplateDTO Record_DocuSign_v1_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 3,
+                Name = "Receive_DocuSign_Envelope_TEST",
+                Version = "1"
+            };
+        }
     }
 }
