@@ -131,30 +131,45 @@ namespace terminalDocuSignTests.Integration
             var runUrl = GetTerminalRunUrl();
 
             var actionDTO = HealthMonitor_FixtureData.Record_Docusign_v1_InitialConfiguration_ActionDTO();
+
+            var date = DateTime.Now.ToShortDateString();
+            var envelopeId = Guid.NewGuid().ToString();
+            var accountId = "foo@bar.com";
+            var eventId = Guid.NewGuid().ToString();
+            var recipientId = Guid.NewGuid().ToString();
             
             AddPayloadCrate(
-                actionDTO,
-                new EventReportCM()
-                {                    
-                    EventPayload = new CrateStorage()
-                    {
+               actionDTO,
+               new EventReportCM()
+               {
+                   EventPayload = new CrateStorage()
+                   {
                         Data.Crates.Crate.FromContent(
                             "EventReport",
                             new StandardPayloadDataCM(
-                                new FieldDTO("DocuSign Envelope Manifest", "test1"),
-                                new FieldDTO("DocuSign Event Manifest", "test2")
+                                new FieldDTO("CompletedDate", date),
+                                new FieldDTO("CreateDate", date),
+                                new FieldDTO("DeliveredDate", date),
+                                new FieldDTO("EnvelopeId", envelopeId),
+                                new FieldDTO("Email", accountId),
+                                new FieldDTO("SentDate", date),
+                                new FieldDTO("Status", "test_status"),
+                                new FieldDTO("EventId", eventId),
+                                new FieldDTO("Object", "test_object"),
+                                new FieldDTO("RecipientId", recipientId)
                             )
                         )
-                    }
-                }
-            );
+                   },
+                   EventNames = "Receive Envelope"
+               }
+           );
 
             var responsePayloadDTO =
                 await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
             
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Manifest").Count());
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Event Manifest").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEnvelopeCM>(x => x.Label == "DocuSign Envelope Manifest").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEventCM>(x => x.Label == "DocuSign Event Manifest").Count());
         }
     }
 }
