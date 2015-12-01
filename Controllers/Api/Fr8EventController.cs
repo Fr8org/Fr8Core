@@ -27,7 +27,6 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [ActionName("fr8_events")]
         public async Task<IHttpActionResult> ProcessDockyardEvents(CrateDTO raw)
         {
             //check if its not null

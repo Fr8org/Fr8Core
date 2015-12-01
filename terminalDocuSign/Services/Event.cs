@@ -73,7 +73,7 @@ namespace terminalDocuSign.Services
             //prepare the event report
             var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
 
-            string url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/fr8_events";
+            string url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/api/v1/fr8_events";
             var response = await new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), _crate.ToDto(curEventReport));
 
             var content = await response.Content.ReadAsStringAsync();
@@ -121,8 +121,9 @@ namespace terminalDocuSign.Services
                     SentDate = docuSignEnvelopeInformation.EnvelopeStatus.SentDate,
                     DeliveredDate = docuSignEnvelopeInformation.EnvelopeStatus.DeliveredDate,
                     CompletedDate = docuSignEnvelopeInformation.EnvelopeStatus.CompletedDate,
-                    Email = docuSignEnvelopeInformation.EnvelopeStatus.ExternalAccountId,
-                    EventId = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status).ToString()
+                    HolderEmail = docuSignEnvelopeInformation.EnvelopeStatus.ExternalAccountId,
+                    EventId = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status).ToString(),
+                    Subject = docuSignEnvelopeInformation.EnvelopeStatus.Subject
                 });
             }
             catch (ArgumentException)
@@ -164,9 +165,9 @@ namespace terminalDocuSign.Services
 
             returnList.Add(new FieldDTO("DeliveredDate", curEvent.DeliveredDate));
             returnList.Add(new FieldDTO("CompletedDate", curEvent.CompletedDate));
-            returnList.Add(new FieldDTO("Email", curEvent.Email));
+            returnList.Add(new FieldDTO("HolderEmail", curEvent.HolderEmail));
             returnList.Add(new FieldDTO("EventId", curEvent.EventId));
-
+            returnList.Add(new FieldDTO("Subject", curEvent.Subject));
             return returnList;
             }
     }
