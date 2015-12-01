@@ -165,9 +165,9 @@ namespace terminalDocuSign.Services
 
             returnList.Add(new FieldDTO("DeliveredDate", curEvent.DeliveredDate));
             returnList.Add(new FieldDTO("CompletedDate", curEvent.CompletedDate));
-            returnList.Add(new FieldDTO("Email", curEvent.HolderEmail));
+            returnList.Add(new FieldDTO("HolderEmail", curEvent.HolderEmail));
             returnList.Add(new FieldDTO("EventId", curEvent.EventId));
-
+            returnList.Add(new FieldDTO("Subject", curEvent.Subject));
             return returnList;
             }
     }

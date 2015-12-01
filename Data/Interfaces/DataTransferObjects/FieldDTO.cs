@@ -23,6 +23,11 @@ namespace Data.Interfaces.DataTransferObjects
         {
         }
 
+        public FieldDTO(string key)
+        {
+            Key = key;
+        }
+
         public FieldDTO(string key, string value)
         {
             Key = key;
