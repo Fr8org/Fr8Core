@@ -50,12 +50,7 @@ namespace terminalDocuSignTests.Integration
         {
             Assert.IsNotNull(control.Subscriptions);
             Assert.IsTrue(control.Subscriptions.Count > 0);
-        }
-
-        private void AssertCrateLabel(Crate crate, string label)
-        {
-            Assert.AreEqual(crate.Label, label);
-        }
+        }        
 
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.
