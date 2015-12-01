@@ -3,6 +3,7 @@ using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
+using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -11,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace terminalDocuSignTests
 {
@@ -116,6 +118,43 @@ namespace terminalDocuSignTests
             requestActionDTO.AuthToken = null;
 
             await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
+        }
+
+        /// <summary>
+        /// Test run-time for action Run().
+        /// </summary>
+        [Test]
+        public async void Receive_DocuSign_Envelope_Run()
+        {
+            var envelopeId = Guid.NewGuid().ToString();
+
+            var runUrl = GetTerminalRunUrl();
+
+            var actionDTO = HealthMonitor_FixtureData.Record_Docusign_v1_InitialConfiguration_ActionDTO();
+            
+            AddPayloadCrate(
+                actionDTO,
+                new EventReportCM()
+                {                    
+                    EventPayload = new CrateStorage()
+                    {
+                        Data.Crates.Crate.FromContent(
+                            "EventReport",
+                            new StandardPayloadDataCM(
+                                new FieldDTO("DocuSign Envelope Manifest", "test1"),
+                                new FieldDTO("DocuSign Event Manifest", "test2")
+                            )
+                        )
+                    }
+                }
+            );
+
+            var responsePayloadDTO =
+                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            
+            var crateStorage = Crate.GetStorage(responsePayloadDTO);
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Manifest").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Event Manifest").Count());
         }
     }
 }
