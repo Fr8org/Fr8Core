@@ -258,8 +258,8 @@ module dockyard.directives.paneConfigureAction {
                         var authMS = <any>authCrate.contents;
 
                         // Dockyard auth mode.
-                        if (authMS.Mode == 1) {
-                            startInternalAuthentication($scope.currentAction.activityTemplate.id);
+                        if (authMS.Mode == 1 || authMS.Mode == 3) {
+                            startInternalAuthentication($scope.currentAction.activityTemplate.id, authMS.Mode);
                         }
 
                         // External auth mode.                           
@@ -280,11 +280,12 @@ module dockyard.directives.paneConfigureAction {
                     }, 1000);
                 }
 
-                function startInternalAuthentication(activityTemplateId: number) {
+                function startInternalAuthentication(activityTemplateId: number, mode: number) {
                     var self = this;
 
                     var modalScope = <any>$scope.$new(true);
                     modalScope.activityTemplateId = activityTemplateId;
+                    modalScope.mode = mode;
 
                     $modal.open({
                         animation: true,

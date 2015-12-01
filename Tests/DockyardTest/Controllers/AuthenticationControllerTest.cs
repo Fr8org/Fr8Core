@@ -97,7 +97,7 @@ namespace DockyardTest.Controllers
         {
             var tokenDO = CreateAndAddTokenDO();
 
-            var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", tokenDO.TerminalID);
+            var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", tokenDO.TerminalID);
             activityTemplateDO.AuthenticationType = AuthenticationType.Internal;
             activityTemplateDO.Terminal = tokenDO.Terminal;
 

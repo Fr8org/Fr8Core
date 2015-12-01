@@ -229,11 +229,12 @@ namespace DockyardTest.Security
             var credentialsDTO = new CredentialsDTO()
             {
                 Username = "Username",
-                Password = "Password"
+                Password = "Password",
+                Domain = "Domain"
             };
 
             var result = _authorization.AuthenticateInternal(
-               tokenDO.UserDO, activityTemplateDO, credentialsDTO.Username, credentialsDTO.Password);
+               tokenDO.UserDO, activityTemplateDO, credentialsDTO.Domain, credentialsDTO.Username, credentialsDTO.Password);
 
             //Assert
             Mock<IRestfulServiceClient> restClientMock = Mock.Get(ObjectFactory.GetInstance<IRestfulServiceClient>());
@@ -361,7 +362,7 @@ namespace DockyardTest.Security
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", terminalDO.Id);
+                var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", terminalDO.Id);
                 activityTemplateDO.AuthenticationType = AuthenticationType.Internal;
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 actionDTO.ActivityTemplateId = activityTemplateDO.Id;
