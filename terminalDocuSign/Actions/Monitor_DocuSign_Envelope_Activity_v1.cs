@@ -141,9 +141,9 @@ namespace terminalDocuSign.Actions
                     case "template":
                         //filter the incoming envelope by template value selected by the user
                         var curAvailableTemplates = Crate.GetStorage(curActionDO).CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").Single().Content;
-
-                        //if the incoming enveloped is prepared using selected template, get the envelope ID
-                        if (curAvailableTemplates.Fields.Single(field => field.Value.Equals(curSelectedValue)).Value.Equals(curSelectedValue))
+                        var selectedTemplateName = curAvailableTemplates.Fields.Single(a => a.Value == curSelectedValue).Key;
+                        var incommingTemplate = GetValueForKey(processPayload, "TemplateName");
+                        if (selectedTemplateName == incommingTemplate)
                         {
                             envelopeId = GetValueForKey(processPayload, "EnvelopeId");
                         }
