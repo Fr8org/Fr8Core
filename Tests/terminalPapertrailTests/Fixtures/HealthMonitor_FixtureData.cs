@@ -3,7 +3,7 @@ using System;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 
-namespace terminalPapertrailTests.Unit
+namespace terminalPapertrailTests.Fixtures
 {
     public class HealthMonitor_FixtureData
     {
