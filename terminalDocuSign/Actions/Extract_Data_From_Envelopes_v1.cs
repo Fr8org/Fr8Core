@@ -105,8 +105,8 @@ namespace terminalDocuSign.Actions
             curActionDO.ChildNodes = new List<RouteNodeDO>();
 
 			// Always use default template for solution
-			const string firstTemplateName = "Monitor_DocuSign";
-			var firstActionTemplate = (await FindTemplates(curActionDO, x => x.Name == "Monitor_DocuSign")).FirstOrDefault();
+			const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";
+			var firstActionTemplate = (await FindTemplates(curActionDO, x => x.Name == "Monitor_DocuSign_Envelope_Activity")).FirstOrDefault();
 
 			if (firstActionTemplate == null)
 			{
