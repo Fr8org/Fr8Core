@@ -17,12 +17,6 @@ namespace terminalDocuSign.Infrastructure.DocuSignParserModels
         [XmlElement("DocumentStatuses")]
         public DocumentStatuses DocumentStatuses { get; set; }
 
-        [XmlElement("Subject")]
-        public string Subject { get; set; }
-
-        [XmlElement("HolderEmail")]
-        public string HolderEmail { get; set; }
-
         [XmlElement("Email")]
         public string ExternalAccountId { get; set; }
 
