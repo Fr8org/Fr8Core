@@ -93,7 +93,7 @@ namespace terminalDocuSignTests
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Record_Docusign_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = null;
 
             await HttpPostAsync<ActionDTO, JToken>(
@@ -114,7 +114,7 @@ namespace terminalDocuSignTests
         {
             var runUrl = GetTerminalRunUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Receive_DocuSign_Envelope_v1_Example_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Record_Docusign_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = null;
 
             await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
@@ -124,10 +124,8 @@ namespace terminalDocuSignTests
         /// Test run-time for action Run().
         /// </summary>
         [Test]
-        public async void Receive_DocuSign_Envelope_Run()
+        public async void Record_DocuSign_Envelope_Run()
         {
-            var envelopeId = Guid.NewGuid().ToString();
-
             var runUrl = GetTerminalRunUrl();
 
             var actionDTO = HealthMonitor_FixtureData.Record_Docusign_v1_InitialConfiguration_ActionDTO();

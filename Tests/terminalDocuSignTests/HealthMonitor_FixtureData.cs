@@ -65,7 +65,7 @@ namespace terminalDocuSignTests
 
         public static ActionDTO Record_Docusign_v1_InitialConfiguration_ActionDTO()
         {
-            var activityTemplate = Record_DocuSign_v1_ActivityTemplate();
+            var activityTemplate = Record_DocuSign_Envelope_v1_ActivityTemplate();
 
             return new ActionDTO()
             {
@@ -78,7 +78,7 @@ namespace terminalDocuSignTests
             };
         }
 
-        public static ActivityTemplateDTO Record_DocuSign_v1_ActivityTemplate()
+        public static ActivityTemplateDTO Record_DocuSign_Envelope_v1_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
             {
@@ -86,6 +86,6 @@ namespace terminalDocuSignTests
                 Name = "Receive_DocuSign_Envelope_TEST",
                 Version = "1"
             };
-        }
+        }        
     }
 }
