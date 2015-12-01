@@ -11,6 +11,7 @@ using System.Web.Http;
 
 namespace terminalSalesforce.Controllers
 {
+    [RoutePrefix("terminals/terminalSalesforce")]
     public class EventController : ApiController
     {
         private IEvent _event;
@@ -26,10 +27,8 @@ namespace terminalSalesforce.Controllers
         [Route("events")]
         public async Task<string> ProcessIncomingNotification()
         {
-            //_event.Process(await Request.Content.ReadAsStringAsync());
-            TerminalBase.Infrastructure.BaseTerminalEvent.EventParser parser = new BaseTerminalEvent.EventParser(_event.ProcessEvent);
             string eventPayLoadContent = Request.Content.ReadAsStringAsync().Result;
-            await _baseTerminalEvent.Process(eventPayLoadContent, parser);
+            await _baseTerminalEvent.Process(eventPayLoadContent, _event.ProcessEvent);
 
             //We need to acknowledge the request from Salesforce
             //Creating a SOAP XML response to acknowledge

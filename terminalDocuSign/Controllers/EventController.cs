@@ -6,6 +6,7 @@ using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Controllers
 {
+    [RoutePrefix("terminals/terminalDocuSign")]
     public class EventController : ApiController
     {
         private IEvent _event;
@@ -19,9 +20,11 @@ namespace terminalDocuSign.Controllers
 
         [HttpPost]
         [Route("events")]
-        public async Task<object> ProcessIncomingNotification()
+        public async Task<IHttpActionResult> ProcessIncomingNotification()
         {
-            return await _event.Process(await Request.Content.ReadAsStringAsync());
+            string eventPayLoadContent = await Request.Content.ReadAsStringAsync();
+            await _baseTerminalEvent.Process(eventPayLoadContent, _event.Process);
+            return Ok("Processed DocuSign event notification successfully.");
         }
     }
 }
