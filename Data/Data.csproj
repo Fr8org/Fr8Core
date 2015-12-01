@@ -450,6 +450,10 @@
     <Compile Include="Migrations\201511250912363_Add_Description_To_Terminal.Designer.cs">
       <DependentUpon>201511250912363_Add_Description_To_Terminal.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511271920340_RenameMonitorDocuSignAction.cs" />
+    <Compile Include="Migrations\201511271920340_RenameMonitorDocuSignAction.Designer.cs">
+      <DependentUpon>201511271920340_RenameMonitorDocuSignAction.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201511281709584_Merge2_Migration.cs" />
     <Compile Include="Migrations\201511281709584_Merge2_Migration.Designer.cs">
       <DependentUpon>201511281709584_Merge2_Migration.cs</DependentUpon>
@@ -772,6 +776,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511250912363_Add_Description_To_Terminal.resx">
       <DependentUpon>201511250912363_Add_Description_To_Terminal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511271920340_RenameMonitorDocuSignAction.resx">
+      <DependentUpon>201511271920340_RenameMonitorDocuSignAction.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511281709584_Merge2_Migration.resx">
       <DependentUpon>201511281709584_Merge2_Migration.cs</DependentUpon>

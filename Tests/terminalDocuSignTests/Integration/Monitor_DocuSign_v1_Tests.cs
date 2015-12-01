@@ -11,8 +11,9 @@ using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using terminalDocuSignTests.Fixtures;
 
-namespace terminalDocuSignTests
+namespace terminalDocuSignTests.Integration
 {
     /// <summary>
     /// Mark test case class with [Explicit] attiribute.

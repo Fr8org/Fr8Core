@@ -1,7 +1,7 @@
 ﻿using System;
 using Data.Interfaces.DataTransferObjects;
 
-namespace terminalDocuSignTests
+namespace terminalDocuSignTests.Fixtures
 {
     public class HealthMonitor_FixtureData
     {

@@ -114,7 +114,6 @@ namespace HubWeb.Controllers
         //}
 
         [HttpPost]
-        [ActionName("events")]
         public async Task<IHttpActionResult> ProcessIncomingEvents(
             [FromUri(Name = "dockyard_terminal")] string terminalName,
             [FromUri(Name = "version")] string terminalVersion)

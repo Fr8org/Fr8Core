@@ -7,7 +7,7 @@ using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 
-namespace terminalTests.Integration
+namespace terminalFr8CoreTests.Integration
 {
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
