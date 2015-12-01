@@ -41,6 +41,10 @@
         controls: Array<ControlDefinitionDTO>;
     }
 
+    export class RunRoutePane extends ControlDefinitionDTO {
+        children: Array<ControlDefinitionDTO>;
+    }
+
     export class RadioButtonGroup extends ControlDefinitionDTO {
         groupName: string;
         radios: Array<RadioButtonOption>;
