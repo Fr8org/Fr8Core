@@ -18,7 +18,21 @@ module dockyard.directives.paneWorkflowDesigner {
         PaneWorkflowDesigner_ActionNameUpdated,
         PaneWorkflowDesigner_ReplaceTempIdForProcessNodeTemplate,
         PaneWorkflowDesigner_ActionTempIdReplaced,
-        PaneWorkflowDesigner_UpdateActivityTemplateId
+        PaneWorkflowDesigner_UpdateActivityTemplateId,
+        PaneWorkflowDesigner_LongRunningOperation,
+    }
+
+    export enum LongRunningOperationFlag {
+        Started,
+        Stopped
+    }
+
+    export class LongRunningOperationEventArgs {
+        public flag: LongRunningOperationFlag;
+
+        constructor(flag: LongRunningOperationFlag) {
+            this.flag = flag;
+        }
     }
 
     export class RenderEventArgs {
