@@ -83,7 +83,7 @@ namespace terminalDocuSignTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = 3,
-                Name = "Receive_DocuSign_Envelope_TEST",
+                Name = "Record_DocuSign_Events_TEST",
                 Version = "1"
             };
         }        

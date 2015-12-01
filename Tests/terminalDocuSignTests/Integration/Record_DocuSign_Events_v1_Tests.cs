@@ -12,9 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using terminalDocuSignTests.Fixtures;
 
-
-namespace terminalDocuSignTests
+namespace terminalDocuSignTests.Integration
 {
     [Explicit]
     public class Record_DocuSign_Events_v1_Tests : BaseHealthMonitorTest
@@ -26,6 +26,7 @@ namespace terminalDocuSignTests
 
         private void AssertCrateTypes(CrateStorage crateStorage)
         {
+
             Assert.AreEqual(3, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
@@ -41,12 +42,13 @@ namespace terminalDocuSignTests
             // with Label == "Monitor All DocuSign events"
             // with Value == "This Action doesn't require any configuration."
             Assert.IsTrue(control.Controls[0] is TextBlock);
-            Assert.AreEqual("Monitor All DocuSign events", control.Controls[0].Name);
+            Assert.AreEqual("Monitor All DocuSign events", control.Controls[0].Label);
             Assert.AreEqual("This Action doesn't require any configuration.", control.Controls[0].Value);
         }
 
         private void AssertList(EventSubscriptionCM control)
         {
+            Assert.IsNotNull(control.Subscriptions);
             Assert.IsTrue(control.Subscriptions.Count > 0);
         }
 
@@ -113,7 +115,7 @@ namespace terminalDocuSignTests
         public async void Record_DocuSign_Events_Run_NoAuth()
         {
             var runUrl = GetTerminalRunUrl();
-
+            
             var requestActionDTO = HealthMonitor_FixtureData.Record_Docusign_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = null;
 
