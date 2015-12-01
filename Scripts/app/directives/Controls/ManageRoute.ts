@@ -1,6 +1,9 @@
 ﻿/// <reference path="../../_all.ts" />
 
 module dockyard.directives {
+
+    import pwd = dockyard.directives.paneWorkflowDesigner;
+
     'use strict';
 
     export function ManageRoute(): ng.IDirective {
@@ -45,12 +48,6 @@ module dockyard.directives {
                     $q: ng.IQService,
                     $location: ng.ILocationService
                 ) {
-                    var _isBusy = false;
-
-                    $scope.isBusy = function () {
-                        return _isBusy;
-                    };
-                    
                     $scope.saveRoute = function () {
                         if (!$scope.saveRouteName) {
                             return;
@@ -58,7 +55,8 @@ module dockyard.directives {
 
                         $scope.copySuccess = null;
                         $scope.error = null;
-                        _isBusy = true;
+
+                        $scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation], new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Started));
 
                         getRoute($q, $http, $scope.currentAction.id)
                             .then(function (route) {
@@ -75,12 +73,12 @@ module dockyard.directives {
                                         $scope.error = err;
                                     })
                                     .finally(function () {
-                                        _isBusy = false;
+                                    $scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation], new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Stopped));
                                     });
                             })
                             .catch(function (err) {
                                 $scope.error = err;
-                                _isBusy = true;
+                                $scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation], new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Stopped));
                             });
                     };
                 }
@@ -94,7 +92,6 @@ module dockyard.directives {
         saveRouteName: string;
         copySuccess: any;
         saveRoute: () => void;
-        isBusy: () => boolean;
     }
 }
 

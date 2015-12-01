@@ -1,9 +1,10 @@
 ﻿/// <reference path="../../_all.ts" />
 
 module dockyard.directives {
+    import pwd = dockyard.directives.paneWorkflowDesigner;
     'use strict';
 
-    export function RunRoutePane($compile: ng.ICompileService): ng.IDirective {
+    export function RunRouteButton ($compile: ng.ICompileService): ng.IDirective {
         var runContainer = function ($q, $http, routeId): ng.IPromise<any> {
             var url = '/api/routes/run?routeId=' + routeId;
 
@@ -31,39 +32,25 @@ module dockyard.directives {
                     });
             });
         };
-
-        var link = (scope: IRunRoutePaneScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
-            if (angular.isArray(scope.field.children) || scope.field.children.length > 0) {
-                $compile('<div ng-repeat="control in field.children"><configuration-control current-action="currentAction" field="control" /></div>')(scope, function (cloned, scope) {
-                    element.find('#content').replaceWith(cloned);
-                });
-            }
-        };
-
+        
         return {
             restrict: 'E',
-            templateUrl: '/AngularTemplate/RunRoutePane',
-            link: link,
+            templateUrl: '/AngularTemplate/RunRouteButton',
             scope: {
                 currentAction: '=',
-                field: '=',
             },
             controller: ['$scope', '$http', '$q', '$location', 
                 function (
-                    $scope: IRunRoutePaneScope,
+                    $scope: IRunRouteButtonScope,
                     $http: ng.IHttpService,
                     $q: ng.IQService,
                     $location: ng.ILocationService
                 ) {
-                    var _isBusy = false;
-
-                    $scope.isBusy = function () {
-                        return _isBusy;
-                    };
 
                     $scope.runNow = function () {
                         $scope.error = null;
-                        _isBusy = true;
+
+                        $scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation], new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Started));
 
                         getRoute($q, $http, $scope.currentAction.id)
                             .then(function (route) {
@@ -76,12 +63,12 @@ module dockyard.directives {
                                         $scope.error = err;
                                     })
                                     .finally(function () {
-                                        _isBusy = false;
+                                        $scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation], new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Stopped));
                                     });
                             })
                             .catch(function (err) {
                                 $scope.error = err;
-                                _isBusy = false;
+                                $scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation], new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Stopped));
                             });
                     };
                 }
@@ -89,13 +76,11 @@ module dockyard.directives {
         }
     }
 
-    export interface IRunRoutePaneScope extends ng.IScope {
+    export interface IRunRouteButtonScope extends ng.IScope {
         currentAction: model.ActionDTO;
-        field: model.RunRoutePane;
         error: string;
         runNow: () => void;
-        isBusy: () => boolean;
     }
 }
 
-app.directive('runRoutePane', dockyard.directives.RunRoutePane); 
+app.directive('runRouteButton', dockyard.directives.RunRouteButton); 

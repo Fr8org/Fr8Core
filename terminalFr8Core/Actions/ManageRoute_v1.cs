@@ -49,18 +49,17 @@ namespace terminalFr8Core.Actions
         private void AddRunNowButton(CrateStorage crateStorage)
         {
             AddControl(crateStorage,
-                new RunRoutePane
+                new RunRouteButton()
                 {
                     Name = "RunRoute",
                     Label = "Run Route",
-                    Children =
-                    {
-                        new ControlDefinitionDTO(ControlTypes.ManageRoute)
-                        {
-                            Name = "ManageRoute",
-                            Label = "Manage Route"
-                        }
-                    }
+                });
+
+            AddControl(crateStorage,
+                new ControlDefinitionDTO(ControlTypes.ManageRoute)
+                {
+                    Name = "ManageRoute",
+                    Label = "Manage Route"
                 });
         }
 

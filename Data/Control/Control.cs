@@ -39,7 +39,7 @@ namespace Data.Control
         public const string QueryBuilder = "QueryBuilder";
         public const string ManageRoute = "ManageRoute";
         public const string Duration = "Duration";
-        public const string RunRoutePane = "RunRoutePane";
+        public const string RunRouteButton = "RunRouteButton";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -50,22 +50,11 @@ namespace Data.Control
         }
     }
 
-    public class RunRoutePane : ControlDefinitionDTO
+    public class RunRouteButton : ControlDefinitionDTO
     {
-        private readonly List<ControlDefinitionDTO> _children = new List<ControlDefinitionDTO>();
-
-        [JsonProperty("children")]
-        public List<ControlDefinitionDTO> Children
+        public RunRouteButton()
         {
-            get
-            {
-                return _children;
-            }
-        }
-
-        public RunRoutePane()
-        {
-            Type = ControlTypes.RunRoutePane;
+            Type = ControlTypes.RunRouteButton;
         }
     }
 
