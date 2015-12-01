@@ -1,13 +1,13 @@
 ﻿
-﻿using AutoMapper;
+using AutoMapper;
 using Data.Entities;
 using TerminalBase.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-﻿using Data.Control;
-﻿using Data.Crates;
+using Data.Control;
+using Data.Crates;
 using Hub.Managers;
 using Newtonsoft.Json;
 using Data.Interfaces;
@@ -205,7 +205,7 @@ namespace terminalDocuSign.Actions
             }
 
             var crate = eventReportMS.EventPayload.CratesOfType<StandardPayloadDataCM>().First();
-            
+
             if (crate == null)
             {
                 return null;
@@ -225,7 +225,7 @@ namespace terminalDocuSign.Actions
             var docuSignAuthDTO = JsonConvert
                 .DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
-         
+
             var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             var eventFields = PackCrate_DocuSignEventFields();
@@ -250,7 +250,6 @@ namespace terminalDocuSign.Actions
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                UpgrateDocusignEventFields(updater.CrateStorage);
                 UpdateSelectedTemplateId(updater.CrateStorage);
                 UpdateSelectedEvents(updater.CrateStorage);
             }
@@ -380,7 +379,7 @@ namespace terminalDocuSign.Actions
                 Label = "Monitor for Envelopes that:",
                 GroupName = "TemplateRecipientPicker",
                 Name = "TemplateRecipientPicker",
-                Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")},
+                Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") },
                 Radios = new List<RadioButtonOption>()
                 {
                     new RadioButtonOption()
@@ -436,25 +435,22 @@ namespace terminalDocuSign.Actions
                 fields);
             return createDesignTimeFields;
         }
-        // If we have "old" version of this action - rename EnvelopeId to TemplateId
-        private void UpgrateDocusignEventFields(CrateStorage storage)
-        {
-            foreach (var crate in storage.CratesOfType<StandardDesignTimeFieldsCM>().Where(x => x.Label == "DocuSign Event Fields"))
-            {
-                foreach (var field in crate.Content.Fields)
-                {
-                    if (field.Key == "EnvelopeId")
-                    {
-                        field.Key = "TemplateId";
-                    }
-                }
-            }
-        }
-
+    
         private Crate PackCrate_DocuSignEventFields()
         {
             return Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields",
-                new FieldDTO {Key = "TemplateId", Value = string.Empty});
+                new FieldDTO("TemplateId", Guid.NewGuid().ToString()),
+                new FieldDTO("RecipientEmail", Guid.NewGuid().ToString()),
+                new FieldDTO("DocumentName", Guid.NewGuid().ToString()),
+                new FieldDTO("TemplateName", Guid.NewGuid().ToString()),
+                new FieldDTO("Status", Guid.NewGuid().ToString()),
+                new FieldDTO("CreateDate", Guid.NewGuid().ToString()),
+                new FieldDTO("SentDate", Guid.NewGuid().ToString()),
+                new FieldDTO("DeliveredDate", Guid.NewGuid().ToString()),
+                new FieldDTO("CompletedDate", Guid.NewGuid().ToString()),
+                new FieldDTO("HolderEmail", Guid.NewGuid().ToString()),
+                new FieldDTO("Subject", Guid.NewGuid().ToString())
+                );
         }
     }
 }
