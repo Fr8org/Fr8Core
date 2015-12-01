@@ -8,7 +8,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_Reconfigure,
         PaneConfigureAction_RenderConfiguration,
         PaneConfigureAction_ChildActionsDetected,
-        PaneConfigureAction_ChildActionsReconfiguration
+        PaneConfigureAction_ChildActionsReconfiguration,
+        PaneConfigureAction_ReloadAction
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
@@ -71,7 +72,21 @@ module dockyard.directives.paneConfigureAction {
     }
 
     export class CancelledEventArgs extends CancelledEventArgsBase { }
-    
+
+    export class ReloadActionEventArgs {
+        public action: interfaces.IActionDTO;
+        constructor(action: interfaces.IActionDTO) {
+            this.action = action;
+        }
+    }
+
+    export class ChildActionReconfigurationEventArgs {
+        public actions: Array<interfaces.IActionDTO>;
+        constructor(actions: Array<interfaces.IActionDTO>) {
+            this.actions = actions;
+        }
+    }
+
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class PaneConfigureAction implements ng.IDirective {
@@ -115,8 +130,12 @@ module dockyard.directives.paneConfigureAction {
                 $scope.onConfigurationChanged = onConfigurationChanged;
                 $scope.processConfiguration = processConfiguration;
 
-                $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], function () {
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], () => {
                     loadConfiguration();
+                });
+
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_ReloadAction], (event: ng.IAngularEvent, reloadActionEventArgs: ReloadActionEventArgs) => {
+                    reloadAction(reloadActionEventArgs);
                 });
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_RenderConfiguration],
@@ -133,6 +152,22 @@ module dockyard.directives.paneConfigureAction {
                     }
                 }
 
+                function reloadAction(reloadActionEventArgs: ReloadActionEventArgs) {
+                    //is this a reload call for me?
+                    if (reloadActionEventArgs.action.id !== $scope.currentAction.id) {
+                        return;
+                    }
+                    $scope.currentAction = <interfaces.IActionVM>reloadActionEventArgs.action;
+                    $scope.processConfiguration();
+                    if ($scope.currentAction.childrenActions
+                        && $scope.currentAction.childrenActions.length > 0) {
+
+                        if ($scope.reconfigureChildrenActions) {
+                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], new ChildActionReconfigurationEventArgs($scope.currentAction.childrenActions));
+                        }
+                    }
+                }
+
                 function onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
                     if (!newValue || !newValue.fields) {
                          return;
@@ -144,15 +179,15 @@ module dockyard.directives.paneConfigureAction {
                     $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
                     ActionService.save({ id: $scope.currentAction.id }, $scope.currentAction, null, null)
                         .$promise
-                        .then(function () {
+                        .then(() => {
                             if ($scope.currentAction.childrenActions
                                 && $scope.currentAction.childrenActions.length > 0) {
 
                                 if ($scope.reconfigureChildrenActions) {
-                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration]);
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], new ChildActionReconfigurationEventArgs($scope.currentAction.childrenActions));
                                 }
                             }
-                        });
+                    });
                 };
 
                 function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
@@ -169,7 +204,7 @@ module dockyard.directives.paneConfigureAction {
                             $scope.currentAction.configurationControls,
                             $scope.currentAction.crateStorage
                         );
-                        $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                        $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
                 
                         $scope.loadConfiguration();
                     }
@@ -191,7 +226,7 @@ module dockyard.directives.paneConfigureAction {
                                 scope.currentAction.configurationControls,
                                 scope.currentAction.crateStorage
                             );
-                            scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                            scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
                             loadConfiguration();
                         }
                     }
