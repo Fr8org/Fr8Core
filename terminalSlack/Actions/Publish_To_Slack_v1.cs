@@ -37,7 +37,7 @@ namespace terminalSlack.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(actionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
@@ -174,7 +174,7 @@ namespace terminalSlack.Actions
         private async Task<Crate> CreateAvailableFieldsCrate(ActionDO actionDO)
         {
             var curUpstreamFields =
-                (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO.Id, CrateDirection.Upstream))
+                (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream))
 
                 .Where(x => x.Label != "Available Channels")
                 .SelectMany(x => x.Content.Fields)

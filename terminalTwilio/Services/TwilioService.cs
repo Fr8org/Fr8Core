@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using Twilio;
 using Hub.ExternalServices;
+using Twilio;
 using Utilities.Configuration.Azure;
 
 namespace terminalTwilio.Services

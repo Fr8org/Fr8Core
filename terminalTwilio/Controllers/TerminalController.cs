@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Web.Http;
-using Data.Entities;
-using Data.States;
 using System.Web.Http.Description;
 using Data.Interfaces.DataTransferObjects;
-using Utilities.Configuration.Azure;
 using Data.Interfaces.Manifests;
+using Data.States;
+using Utilities.Configuration.Azure;
 
 namespace terminalTwilio.Controllers
 {
@@ -17,7 +16,7 @@ namespace terminalTwilio.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverTerminals()
         {
-            var terminal = new TerminalDTO()
+            var terminal = new TerminalDTO
             {
                 Name = "terminalTwilio",
                 TerminalStatus = TerminalStatus.Active,
@@ -38,6 +37,7 @@ namespace terminalTwilio.Controllers
                 Tags = "Twillio",
                 Category = ActivityCategory.Forwarders,
                 Version = "1",
+                Description = "Send Via Twilio: Description",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
                 MinPaneWidth = 330,
@@ -49,7 +49,7 @@ namespace terminalTwilio.Controllers
                 sendViaTwilioTemplate
             };
 
-            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM
             {
                 Definition = terminal,
                 Actions = actionList

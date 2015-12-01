@@ -34,6 +34,7 @@ namespace terminalSendGrid.Controllers
                 Name = "SendEmailViaSendGrid",
                 Label = "Send Email Via Send Grid",
                 Version = "1",
+                Description = "Send Email Via Send Grid: Description",
                 Tags = "Notifier",
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.None,
