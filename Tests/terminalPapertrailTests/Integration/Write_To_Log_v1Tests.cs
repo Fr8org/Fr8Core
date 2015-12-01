@@ -11,8 +11,9 @@ using HealthMonitor.Utility;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
+using terminalPapertrailTests.Fixtures;
 
-namespace terminalPapertrailTests.Unit
+namespace terminalPapertrailTests.Integration
 {
     /// <summary>
     /// Mark test case class with [Explicit] attiribute.

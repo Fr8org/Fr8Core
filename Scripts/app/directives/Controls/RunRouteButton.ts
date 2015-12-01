@@ -1,12 +1,24 @@
 ﻿/// <reference path="../../_all.ts" />
 
 module dockyard.directives {
-
     import pwd = dockyard.directives.paneWorkflowDesigner;
-
     'use strict';
 
-    export function ManageRoute(): ng.IDirective {
+    export function RunRouteButton ($compile: ng.ICompileService): ng.IDirective {
+        var runContainer = function ($q, $http, routeId): ng.IPromise<any> {
+            var url = '/api/routes/run?routeId=' + routeId;
+
+            return $q(function (resolve, reject) {
+                $http.post(url)
+                    .then(function (res) {
+                        resolve(res.data);
+                    })
+                    .catch(function (err) {
+                        reject(err);
+                    });
+            });
+        };
+
         var getRoute = function ($q, $http, actionId): ng.IPromise<any> {
             var url = '/api/routes/getByAction/' + actionId;
 
@@ -21,59 +33,37 @@ module dockyard.directives {
             });
         };
         
-        var copyRoute = function ($q, $http, routeId, routeName): ng.IPromise<any> {
-            var url = '/api/routes/copy?id=' + routeId + '&name=' + routeName;
-
-            return $q(function (resolve, reject) {
-                $http.post(url)
-                    .then(function (res) {
-                        resolve(res.data.id);
-                    })
-                    .catch(function (err) {
-                        reject(err);
-                    });
-            });
-        };
-
         return {
             restrict: 'E',
-            templateUrl: '/AngularTemplate/ManageRoute',
+            templateUrl: '/AngularTemplate/RunRouteButton',
             scope: {
-                currentAction: '='
+                currentAction: '=',
             },
             controller: ['$scope', '$http', '$q', '$location', 
                 function (
-                    $scope: IManageRouteScope,
+                    $scope: IRunRouteButtonScope,
                     $http: ng.IHttpService,
                     $q: ng.IQService,
                     $location: ng.ILocationService
                 ) {
-                    $scope.saveRoute = function () {
-                        if (!$scope.saveRouteName) {
-                            return;
-                        }
 
-                        $scope.copySuccess = null;
+                    $scope.runNow = function () {
                         $scope.error = null;
 
                         $scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation], new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Started));
 
                         getRoute($q, $http, $scope.currentAction.id)
                             .then(function (route) {
-                                copyRoute($q, $http, route.id, $scope.saveRouteName)
-                                    .then(function (id) {
-                                        $scope.copySuccess = {
-                                            id: id,
-                                            name: $scope.saveRouteName
-                                        };
-
-                                        $scope.saveRouteName = null;
+                                runContainer($q, $http, route.id)
+                                    .then(function (container) {
+                                        var path = '/findObjects/' + container.id + '/results';
+                                        $location.path(path);
                                     })
                                     .catch(function (err) {
                                         $scope.error = err;
                                     })
                                     .finally(function () {
-                                    $scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation], new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Stopped));
+                                        $scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation], new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Stopped));
                                     });
                             })
                             .catch(function (err) {
@@ -86,13 +76,11 @@ module dockyard.directives {
         }
     }
 
-    export interface IManageRouteScope extends ng.IScope {
+    export interface IRunRouteButtonScope extends ng.IScope {
         currentAction: model.ActionDTO;
         error: string;
-        saveRouteName: string;
-        copySuccess: any;
-        saveRoute: () => void;
+        runNow: () => void;
     }
 }
 
-app.directive('manageRoute', dockyard.directives.ManageRoute); 
+app.directive('runRouteButton', dockyard.directives.RunRouteButton); 
