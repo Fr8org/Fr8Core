@@ -10,7 +10,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
-
+using TerminalSqlUtilities;
 using TerminalBase.BaseClasses;
 using Utilities.Configuration.Azure;
 
@@ -18,6 +18,8 @@ namespace terminalFr8Core.Infrastructure
 {
     internal class FindObjectHelper
     {
+        private const string DefaultDbProvider = "System.Data.SqlClient";
+
         public async Task<Dictionary<string, DbType>> ExtractColumnTypes(
             BaseTerminalAction action, ActionDO actionDO)
         {
@@ -54,15 +56,86 @@ namespace terminalFr8Core.Infrastructure
             return Convert.ToString(value);
         }
 
-        public async Task LaunchContainer(int routeId)
+        private void ListAllDbColumns(string connectionString, Action<IEnumerable<ColumnInfo>> callback)
         {
-            var httpClient = new HttpClient();
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routes/run?routeId=" + routeId.ToString();
+            var provider = DbProvider.GetDbProvider(DefaultDbProvider);
 
-            using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
+            using (var conn = provider.CreateConnection(connectionString))
             {
-                await response.Content.ReadAsStringAsync();
+                conn.Open();
+
+                using (var tx = conn.BeginTransaction())
+                {
+                    var columns = provider.ListAllColumns(tx);
+
+                    if (callback != null)
+                    {
+                        callback.Invoke(columns);
+                    }
+                }
+            }
+        }
+
+        public List<FieldDTO> RetrieveTableDefinitions(string connectionString)
+        {
+            var fieldsList = new List<FieldDTO>();
+
+            ListAllDbColumns(connectionString, columns =>
+            {
+                foreach (var column in columns)
+                {
+                    var fullColumnName = GetColumnName(column);
+
+                    fieldsList.Add(new FieldDTO()
+                    {
+                        Key = fullColumnName,
+                        Value = fullColumnName
+                    });
+                }
+            });
+
+            return fieldsList;
+        }
+
+        public List<FieldDTO> RetrieveColumnTypes(string connectionString)
+        {
+            var fieldsList = new List<FieldDTO>();
+
+            ListAllDbColumns(connectionString, columns =>
+            {
+                foreach (var column in columns)
+                {
+                    var fullColumnName = GetColumnName(column);
+
+                    fieldsList.Add(new FieldDTO()
+                    {
+                        Key = fullColumnName,
+                        Value = column.DbType.ToString()
+                    });
+                }
+            });
+
+            return fieldsList;
+        }
+
+        public string GetColumnName(ColumnInfo columnInfo)
+        {
+            if (string.IsNullOrEmpty(columnInfo.TableInfo.SchemaName))
+            {
+                return string.Format(
+                    "{0}.{1}",
+                    columnInfo.TableInfo.TableName,
+                    columnInfo.ColumnName
+                );
+            }
+            else
+            {
+                return string.Format(
+                    "{0}.{1}.{2}",
+                    columnInfo.TableInfo.SchemaName,
+                    columnInfo.TableInfo.TableName,
+                    columnInfo.ColumnName
+                );
             }
         }
     }
