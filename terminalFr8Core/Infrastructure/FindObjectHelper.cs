@@ -16,7 +16,7 @@ using Utilities.Configuration.Azure;
 
 namespace terminalFr8Core.Infrastructure
 {
-    internal class FindObjectHelper
+    public class FindObjectHelper
     {
         private const string DefaultDbProvider = "System.Data.SqlClient";
 
@@ -78,13 +78,33 @@ namespace terminalFr8Core.Infrastructure
 
         public List<FieldDTO> RetrieveTableDefinitions(string connectionString)
         {
+            var tableNames = new HashSet<string>();
+
+            ListAllDbColumns(connectionString, columns =>
+            {
+                foreach (var column in columns)
+                {
+                    tableNames.Add(column.TableInfo.ToString());
+                }
+            });
+
+            var fieldsList = tableNames
+                .Select(x => new FieldDTO(x, x))
+                .OrderBy(x => x.Key)
+                .ToList();
+
+            return fieldsList;
+        }
+
+        public List<FieldDTO> RetrieveColumnDefinitions(string connectionString)
+        {
             var fieldsList = new List<FieldDTO>();
 
             ListAllDbColumns(connectionString, columns =>
             {
                 foreach (var column in columns)
                 {
-                    var fullColumnName = GetColumnName(column);
+                    var fullColumnName = column.ToString();
 
                     fieldsList.Add(new FieldDTO()
                     {
@@ -105,7 +125,7 @@ namespace terminalFr8Core.Infrastructure
             {
                 foreach (var column in columns)
                 {
-                    var fullColumnName = GetColumnName(column);
+                    var fullColumnName = column.ToString();
 
                     fieldsList.Add(new FieldDTO()
                     {
@@ -116,27 +136,6 @@ namespace terminalFr8Core.Infrastructure
             });
 
             return fieldsList;
-        }
-
-        public string GetColumnName(ColumnInfo columnInfo)
-        {
-            if (string.IsNullOrEmpty(columnInfo.TableInfo.SchemaName))
-            {
-                return string.Format(
-                    "{0}.{1}",
-                    columnInfo.TableInfo.TableName,
-                    columnInfo.ColumnName
-                );
-            }
-            else
-            {
-                return string.Format(
-                    "{0}.{1}.{2}",
-                    columnInfo.TableInfo.SchemaName,
-                    columnInfo.TableInfo.TableName,
-                    columnInfo.ColumnName
-                );
-            }
         }
     }
 }

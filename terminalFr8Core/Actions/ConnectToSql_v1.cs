@@ -84,7 +84,7 @@ namespace terminalFr8Core.Actions
             {
                 try
                 {
-                    var tableDefinitions = FindObjectHelper.RetrieveTableDefinitions(connectionString);
+                    var tableDefinitions = FindObjectHelper.RetrieveColumnDefinitions(connectionString);
                     var tableDefinitionCrate = 
                         Crate.CreateDesignTimeFieldsCrate(
                             "Sql Table Definitions",
