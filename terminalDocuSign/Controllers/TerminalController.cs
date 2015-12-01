@@ -34,8 +34,8 @@ namespace terminalDocuSign.Controllers
             var waitForDocusignEventActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "Monitor_DocuSign",
-                Label = "Monitor DocuSign",
+                Name = "Monitor_DocuSign_Envelope_Activity",
+                Label = "Monitor DocuSign Envelope Activity",
                 Category = ActivityCategory.Monitors,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,

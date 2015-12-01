@@ -1,6 +1,4 @@
-﻿
-﻿using AutoMapper;
-using Data.Entities;
+﻿using Data.Entities;
 using TerminalBase.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -10,7 +8,6 @@ using System.Threading.Tasks;
 ﻿using Data.Crates;
 using Hub.Managers;
 using Newtonsoft.Json;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using TerminalBase;
@@ -22,7 +19,7 @@ using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {
-    public class Monitor_DocuSign_v1 : BaseTerminalAction
+	public class Monitor_DocuSign_Envelope_Activity_v1 : BaseTerminalAction
     {
         DocuSignManager _docuSignManager = new DocuSignManager();
 
@@ -76,12 +73,20 @@ namespace terminalDocuSign.Actions
             }
             else
             {
-                //get the option which is selected from the Template/Recipient picker
-                var pickedControl = group.Radios.Single(r => r.Selected);
+	            if (group.Radios.Any(x => x.Selected))
+	            {
+					//get the option which is selected from the Template/Recipient picker
+					var pickedControl = group.Radios.Single(r => r.Selected);
 
-                //set the output values
-                selectedOption = pickedControl.Name;
-                selectedValue = pickedControl.Controls[0].Value;
+					//set the output values
+					selectedOption = pickedControl.Name;
+					selectedValue = pickedControl.Controls[0].Value;
+	            }
+	            else
+	            {
+		            selectedOption = string.Empty;
+		            selectedValue = string.Empty;
+	            }
             }
         }
 
@@ -325,6 +330,14 @@ namespace terminalDocuSign.Actions
 
         private Crate PackCrate_ConfigurationControls()
         {
+			var textArea = new TextArea
+			{
+				IsReadOnly = true,
+				Label = "",
+				Value = "<p>Process incoming DocuSign Envelope notifications if the following are true:</p>" +
+						"<div>The following event(s) just occurred:</div>"
+			};
+
             var fieldEnvelopeSent = new CheckBox()
             {
                 Label = "Envelope Sent",
@@ -366,18 +379,19 @@ namespace terminalDocuSign.Actions
             };
 
             return PackControlsCrate(
-                PackCrate_TemplateRecipientPicker(),
+				textArea,
                 fieldEnvelopeSent,
                 fieldEnvelopeReceived,
                 fieldRecipientSigned,
-                fieldEventRecipientSent);
+                fieldEventRecipientSent,
+				PackCrate_TemplateRecipientPicker());
         }
 
         private ControlDefinitionDTO PackCrate_TemplateRecipientPicker()
         {
             var templateRecipientPicker = new RadioButtonGroup()
             {
-                Label = "Monitor for Envelopes that:",
+                Label = "The envelope:",
                 GroupName = "TemplateRecipientPicker",
                 Name = "TemplateRecipientPicker",
                 Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")},
@@ -385,9 +399,9 @@ namespace terminalDocuSign.Actions
                 {
                     new RadioButtonOption()
                     {
-                        Selected = true,
+                        Selected = false,
                         Name = "recipient",
-                        Value = "Are sent to the recipient",
+                        Value = "Was sent to a specific recipient",
                         Controls = new List<ControlDefinitionDTO>
                         {
                             new TextBox()
@@ -403,7 +417,7 @@ namespace terminalDocuSign.Actions
                     {
                         Selected = false,
                         Name = "template",
-                        Value = "Use the template",
+                        Value = "Was based on a specific template",
                         Controls = new List<ControlDefinitionDTO>
                         {
                             new DropDownList()
