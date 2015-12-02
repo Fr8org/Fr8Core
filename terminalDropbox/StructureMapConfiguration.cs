@@ -8,7 +8,7 @@ using terminalDropbox.Services;
 
 namespace terminalDropbox
 {
-    public class PluginDropboxStructureMapBootstrapper
+    public class TerminalDropboxStructureMapBootstrapper
     {
         public enum DependencyType
         {

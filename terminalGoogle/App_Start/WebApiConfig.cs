@@ -7,12 +7,7 @@ namespace terminalGoogle
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register(config);
-
-            config.Routes.MapHttpRoute(
-                name: "TerminalGoogleServer",
-                routeTemplate: "terminalGoogle/{controller}/{id}"
-            );
+            BaseTerminalWebApiConfig.Register("Google", config);
         }
     }
 }

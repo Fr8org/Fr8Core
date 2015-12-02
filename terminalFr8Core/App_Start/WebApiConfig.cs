@@ -12,11 +12,7 @@ namespace terminalFr8Core
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register(config);
-            config.Routes.MapHttpRoute(
-                name: "TerminalFr8CoreServer",
-                routeTemplate: "terminalFr8Core/{controller}/{id}"
-            );
+            BaseTerminalWebApiConfig.Register("Fr8Core", config);
         }
     }
-    }
+}

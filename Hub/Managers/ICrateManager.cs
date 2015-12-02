@@ -32,6 +32,7 @@ namespace Hub.Managers
 
         bool IsEmptyStorage(CrateStorageDTO storageDto);
         string EmptyStorageAsStr();
+        string CrateStorageAsStr(CrateStorage storage);
 
         void AddLogMessage(string label, List<LogItemDTO> logItemList, ContainerDO containerDO);
         Crate CreateAuthenticationCrate(string label, AuthenticationMode mode);
