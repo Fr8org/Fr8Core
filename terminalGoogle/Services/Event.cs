@@ -48,9 +48,10 @@ namespace terminalGoogle.Services
                 ExternalAccountId = externalAccountId.Value
             };
 
+            //prepare the event report
             var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
 
-            var url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";
+            string url = Regex.Match(CloudConfigurationManager.GetSetting("CoreWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/api/v1/fr8_events";
             var response = await new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), _crate.ToDto(curEventReport));
 
             var content = await response.Content.ReadAsStringAsync();
