@@ -33,6 +33,16 @@ namespace terminalDocuSignTests.Fixtures
             };
         }
 
+        public static ActivityTemplateDTO Send_DocuSign_Envelope_v1_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 3,
+                Name = "Send_DocuSign_Envelope_TEST",
+                Version = "1"
+            };
+        }
+
         public static ActionDTO Monitor_DocuSign_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Monitor_DocuSign_v1_ActivityTemplate();
@@ -87,5 +97,20 @@ namespace terminalDocuSignTests.Fixtures
                 Version = "1"
             };
         }        
+
+        public static ActionDTO Send_DocuSign_Envelope_v1_Example_ActionDTO()
+        {
+            var activityTemplate = Send_DocuSign_Envelope_v1_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Send_DocuSign",
+                Label = "Send DocuSign",
+                AuthToken = DocuSign_AuthToken(),
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
     }
 }
