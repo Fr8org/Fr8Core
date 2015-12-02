@@ -193,7 +193,7 @@ namespace terminalFr8Core.Actions
                     Required = true,
                     Source = new FieldSourceDTO
                     {
-                        Label = "QueryableCriteria",
+                        Label = "Queryable Criteria",
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 }
@@ -225,7 +225,7 @@ namespace terminalFr8Core.Actions
 
             UpdateDesignTimeCrateValue(
                 updater.CrateStorage,
-                "QueryableCriteria",
+                "Queryable Criteria",
                 criteria.ToArray()
             );
         }
