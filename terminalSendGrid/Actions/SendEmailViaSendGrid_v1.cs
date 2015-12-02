@@ -77,7 +77,7 @@ namespace terminalSendGrid.Actions
         private ControlDefinitionDTO CreateEmailAddressRadioButtonGroup()
         {
             var control = CreateSpecificOrUpstreamValueChooser(
-                "For the Email Address, use",
+                "For the Email Address",
                 "EmailAddress",
                 "Upstream Terminal-Provided Fields"
             );
@@ -92,7 +92,7 @@ namespace terminalSendGrid.Actions
         private ControlDefinitionDTO CreateEmailSubjectRadioButtonGroup()
         {
             var control = CreateSpecificOrUpstreamValueChooser(
-                "For the Email Subject, use",
+                "For the Email Subject",
                 "EmailSubject",
                 "Upstream Terminal-Provided Fields"
             );
@@ -107,7 +107,7 @@ namespace terminalSendGrid.Actions
         private ControlDefinitionDTO CreateEmailBodyRadioButtonGroup()
         {
             var control = CreateSpecificOrUpstreamValueChooser(
-                "For the Email Body, use",
+                "For the Email Body",
                 "EmailBody",
                 "Upstream Terminal-Provided Fields"
             );
