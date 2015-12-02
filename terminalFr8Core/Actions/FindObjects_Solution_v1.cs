@@ -67,16 +67,20 @@ namespace terminalFr8Core.Actions
                 if (NeedsRemoveQueryBuilder(updater))
                 {
                     RemoveQueryBuilder(updater);
+                    RemoveRunButton(updater);
                 }
 
                 if (NeedsCreateQueryBuilder(updater))
                 {
                     AddQueryBuilder(updater);
+                    AddRunButton(updater);
                     UpdateQueryableCriteriaCrate(updater);
                 }
 
                 UpdatePrevSelectedObject(updater);
             }
+
+            UpdateChildActions(actionDO);
 
             return Task.FromResult(actionDO);
         }
@@ -228,6 +232,23 @@ namespace terminalFr8Core.Actions
                 "Queryable Criteria",
                 criteria.ToArray()
             );
+        }
+
+        private void AddRunButton(ICrateStorageUpdater updater)
+        {
+            AddControl(
+                updater.CrateStorage,
+                new RunRouteButton()
+                {
+                    Name = "RunRoute",
+                    Label = "Run Route",
+                }
+            );
+        }
+
+        private void RemoveRunButton(ICrateStorageUpdater updater)
+        {
+            RemoveControl(updater.CrateStorage, "RunRoute");
         }
 
         private string GetConnectionString()
