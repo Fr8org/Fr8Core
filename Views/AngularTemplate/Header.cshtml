@@ -104,20 +104,6 @@
 					</ul>
 				</li>
                 
-                
-                @if (User.IsInRole("Admin")) {
-				<li class="menu-dropdown classic-menu-dropdown">
-					<a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
-					<ul class="dropdown-menu">
-
-						<li><a href="#/form-tools">Create Accounts</a></li>
-                        <li><a href="#/accounts">Manage Dockyard Accounts</a></li>											
-						<li><a href="#/webservices">Show Web Services</a></li>
-									
-					</ul>
-				</li>
-                }
-                
                 <li class="menu-dropdown classic-menu-dropdown">
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">Reports <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
@@ -137,6 +123,7 @@
 
                     </ul>
                 </li>
+
                 <li class="menu-dropdown classic-menu-dropdown">
                     <a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">Developer <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
@@ -144,6 +131,20 @@
                         <li><a href="#/terminals">Developer Home</a></li>
                     </ul>
                 </li>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right:0;">
+                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu">
+
+                            <li><a href="#/form-tools">Create Accounts</a></li>
+                            <li><a href="#/accounts">Manage Dockyard Accounts</a></li>
+                            <li><a href="#/webservices">Show Web Services</a></li>
+
+                        </ul>
+                    </li>
+                }
 			</ul>
 		</div>
 		<!-- END MEGA MENU -->
