@@ -3,14 +3,12 @@
     export class InternalAuthenticationController {
         public static $inject = [
             '$scope',
-            '$http',
-            'urlPrefix'
+            '$http'
         ];
 
         constructor(
             private $scope,
-            private $http: ng.IHttpService,
-            private urlPrefix: string) {
+            private $http: ng.IHttpService) {
 
             $scope.authError = false;
             $scope.authErrorText = null;
