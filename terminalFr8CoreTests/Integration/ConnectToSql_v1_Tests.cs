@@ -44,6 +44,14 @@ namespace terminalTests.Integration
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Upstream Terminal-Provided Fields"));
         }
 
+        private void AssertConfigureCrate(CrateStorage crateStorage)
+        {
+            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
+
+            AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
+        }
+
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
@@ -65,10 +73,7 @@ namespace terminalTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.AreEqual(1, crateStorage.Count);
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-
-            AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
+            AssertConfigureCrate(crateStorage);
         }
         
 
@@ -76,7 +81,7 @@ namespace terminalTests.Integration
         /// Validate correct crate-storage structure in follow-up configuration response.
         /// </summary>
         [Test]
-        public async void ConnectToSql_FollowUp_Configuration_Check_Crate_Structure()
+        public async void ConnectToSql_FollowUp_Configuration_Wrong_Connection_String_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -99,8 +104,29 @@ namespace terminalTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            //AssertCrateTypes(crateStorage);
-            AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
+
+            AssertConfigureCrate(crateStorage);
+        }
+
+        /// <summary>
+        /// Test run-time for action Run().
+        /// </summary>
+        [Test]
+        public async void ConnectToSql_Run()
+        {
+            var runUrl = GetTerminalRunUrl();
+
+            var actionDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
+
+            AddPayloadCrate(
+               actionDTO,
+               new EventReportCM()
+           );
+
+            var responsePayloadDTO =
+                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+
+            Assert.IsNull(responsePayloadDTO);
         }
     }
 }
