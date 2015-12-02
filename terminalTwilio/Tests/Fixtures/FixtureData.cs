@@ -1,10 +1,8 @@
-﻿using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using Data.Crates;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 
@@ -19,15 +17,15 @@ namespace terminalTwilio.Tests.Fixtures
 
         public static ActionDO ConfigureTwilioAction()
         {
-            var actionTemplate = FixtureData.TwilioActionTemplateDTO();
+            var actionTemplate = TwilioActionTemplateDTO();
 
-            var actionDO = new ActionDO()
+            var actionDO = new ActionDO
             {
                 Name = "testaction",
                 Id = TestGuid_Id_57(),
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                CrateStorage = "",
+                CrateStorage = ""
             };
 
             return actionDO;
@@ -45,18 +43,34 @@ namespace terminalTwilio.Tests.Fixtures
 
         public static Crate CrateDTOForTwilioConfiguration()
         {
-            var confControls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>("{\"Controls\":[{\"groupName\":\"SMSNumber_Group\",\"radios\":[{\"selected\":false,\"name\":\"SMSNumberOption\",\"value\":null,\"controls\":[{\"name\":\"SMS_Number\",\"required\":true,\"value\":null,\"label\":\"SMS Number\",\"type\":\"TextBox\",\"selected\":false,\"events\":null,\"source\":null}]},{\"selected\":true,\"name\":\"SMSNumberOption\",\"value\":null,\"controls\":[{\"listItems\":[{\"Key\":\"+15005550006\",\"Value\":\"+15005550006\"}],\"name\":\"upstream_crate\",\"required\":false,\"value\":\"+15005550006\",\"label\":\"a value from Upstream Crate:\",\"type\":\"DropDownList\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":{\"manifestType\":\"Standard Design-Time Fields\",\"label\":\"Available Fields\"}}]}],\"name\":null,\"required\":false,\"value\":null,\"label\":\"For the SMS Number use:\",\"type\":\"RadioButtonGroup\",\"selected\":false,\"events\":null,\"source\":null},{\"name\":\"SMS_Body\",\"required\":true,\"value\":\"DocuSign Sent\",\"label\":\"SMS Body\",\"type\":\"TextBox\",\"selected\":false,\"events\":null,\"source\":null}]}", new ControlDefinitionDTOConverter());
+            var confControls =
+                JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
+                    "{\"Controls\": [{\"initialLabel\": \"For the SMS Number Use:\",\"upstreamSourceLabel\": null,\"valueSource\": \"specific\",\"listItems\": [],\"name\": \"Recipient\",\"required\": false,\"value\": \"+15005550006\",\"label\": null,\"type\": \"TextSource\",\"selected\": false,\"events\": null,\"source\": {\"manifestType\": \"Standard Design-Time Fields\",\"label\": \"Upstream Terminal-Provided Fields\"}},{\"name\": \"SMS_Body\",\"required\": true,\"value\": \"DO-1437 test\",\"label\": \"SMS Body\",\"type\": \"TextBox\",\"selected\": false,\"events\": null,\"source\": null}]}",
+                    new ControlDefinitionDTOConverter());
 
-            return Data.Crates.Crate.FromContent("Configuration_Controls", confControls);
+            return Crate.FromContent("Configuration_Controls", confControls);
         }
+
         public static AuthorizationTokenDO AuthTokenDOTest1()
         {
-            return new AuthorizationTokenDO()
+            return new AuthorizationTokenDO
             {
-                Token = @"{""Email"":""docusign_developer@dockyard.company"",""ApiPassword"":""VIXdYMrnnyfmtMaktD+qnD4sBdU=""}",
+                Token =
+                    @"{""Email"":""docusign_developer@dockyard.company"",""ApiPassword"":""VIXdYMrnnyfmtMaktD+qnD4sBdU=""}",
                 ExternalAccountId = "docusign_developer@dockyard.company",
-                UserID = "0addea2e-9f27-4902-a308-b9f57d811c0a",
+                UserID = "0addea2e-9f27-4902-a308-b9f57d811c0a"
 
+            };
+        }
+
+        public static StandardDesignTimeFieldsCM TestFields()
+        {
+            return new StandardDesignTimeFieldsCM
+            {
+                Fields = new List<FieldDTO>
+                {
+                    new FieldDTO("key", "value")
+                }
             };
         }
     }

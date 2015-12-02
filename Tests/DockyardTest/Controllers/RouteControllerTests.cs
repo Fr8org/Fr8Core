@@ -58,7 +58,7 @@ namespace DockyardTest.Controllers
             var routeDto = FixtureData.CreateTestRouteDTO();
 
             //Act
-            RouteController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            var ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var response = ptc.Post(routeDto);
 
             //Assert
@@ -82,7 +82,7 @@ namespace DockyardTest.Controllers
             routeDto.Name = String.Empty;
 
             //Act
-            RouteController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address); ;
+            var ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address); ;
             var response = ptc.Post(routeDto);
 
             //Assert
@@ -95,7 +95,7 @@ namespace DockyardTest.Controllers
         public void RouteController_Will_ReturnEmptyOkResult_If_No_Route_Found()
         {
             //Act
-            RouteController routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            RoutesController routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
 
             //Assert
             var postResult = routeController.Get(FixtureData.GetTestGuidById(55));
@@ -163,7 +163,7 @@ namespace DockyardTest.Controllers
             //Arrange 
             var routeDto = FixtureData.CreateTestRouteDTO();
 
-            RouteController routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            var routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var postResult = routeController.Post(routeDto) as OkNegotiatedContentResult<RouteEmptyDTO>;
 
             Assert.NotNull(postResult);
@@ -189,7 +189,7 @@ namespace DockyardTest.Controllers
             routeDto.Name = String.Empty;
 
             //Act
-            RouteController routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            var routeController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             routeController.Post(routeDto);
 
             //Assert
@@ -251,7 +251,7 @@ namespace DockyardTest.Controllers
             externalEventList.AddRange(new int?[] { 1, 3 });
 
             //Act: first add a process template, then modify it. 
-            RouteController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            RoutesController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var response = ptc.Post(routeDto);
             routeDto.Name = "updated";
             response = ptc.Post(routeDto, true);
@@ -272,7 +272,7 @@ namespace DockyardTest.Controllers
         [Test]
         public void ShouldGetFullRoute()
         {
-            var curRouteController = new RouteController();
+            var curRouteController = new RoutesController();
             var curRouteDO = FixtureData.TestRoute3();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -293,9 +293,9 @@ namespace DockyardTest.Controllers
         }
 
         // Current user shoud be resolved using mocked ISecurityServices.
-        private static RouteController CreateRouteController(string userId, string email)
+        private static RoutesController CreateRouteController(string userId, string email)
         {
-            return new RouteController();
+            return new RoutesController();
         }
     }
 }

@@ -8,7 +8,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_Reconfigure,
         PaneConfigureAction_RenderConfiguration,
         PaneConfigureAction_ChildActionsDetected,
-        PaneConfigureAction_ChildActionsReconfiguration
+        PaneConfigureAction_ChildActionsReconfiguration,
+        PaneConfigureAction_ReloadAction
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
@@ -71,7 +72,21 @@ module dockyard.directives.paneConfigureAction {
     }
 
     export class CancelledEventArgs extends CancelledEventArgsBase { }
-    
+
+    export class ReloadActionEventArgs {
+        public action: interfaces.IActionDTO;
+        constructor(action: interfaces.IActionDTO) {
+            this.action = action;
+        }
+    }
+
+    export class ChildActionReconfigurationEventArgs {
+        public actions: Array<interfaces.IActionDTO>;
+        constructor(actions: Array<interfaces.IActionDTO>) {
+            this.actions = actions;
+        }
+    }
+
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class PaneConfigureAction implements ng.IDirective {
@@ -115,8 +130,12 @@ module dockyard.directives.paneConfigureAction {
                 $scope.onConfigurationChanged = onConfigurationChanged;
                 $scope.processConfiguration = processConfiguration;
 
-                $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], function () {
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], () => {
                     loadConfiguration();
+                });
+
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_ReloadAction], (event: ng.IAngularEvent, reloadActionEventArgs: ReloadActionEventArgs) => {
+                    reloadAction(reloadActionEventArgs);
                 });
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_RenderConfiguration],
@@ -133,9 +152,23 @@ module dockyard.directives.paneConfigureAction {
                     }
                 }
 
-                function onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
-                    debugger;
+                function reloadAction(reloadActionEventArgs: ReloadActionEventArgs) {
+                    //is this a reload call for me?
+                    if (reloadActionEventArgs.action.id !== $scope.currentAction.id) {
+                        return;
+                    }
+                    $scope.currentAction = <interfaces.IActionVM>reloadActionEventArgs.action;
+                    $scope.processConfiguration();
+                    if ($scope.currentAction.childrenActions
+                        && $scope.currentAction.childrenActions.length > 0) {
 
+                        if ($scope.reconfigureChildrenActions) {
+                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], new ChildActionReconfigurationEventArgs($scope.currentAction.childrenActions));
+                        }
+                    }
+                }
+
+                function onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
                     if (!newValue || !newValue.fields) {
                          return;
                     }
@@ -146,23 +179,21 @@ module dockyard.directives.paneConfigureAction {
                     $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
                     ActionService.save({ id: $scope.currentAction.id }, $scope.currentAction, null, null)
                         .$promise
-                        .then(function () {
-                            debugger;
-
+                        .then(() => {
                             if ($scope.currentAction.childrenActions
                                 && $scope.currentAction.childrenActions.length > 0) {
 
                                 if ($scope.reconfigureChildrenActions) {
-                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration]);
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsReconfiguration], new ChildActionReconfigurationEventArgs($scope.currentAction.childrenActions));
                                 }
                             }
-                        });
+                    });
                 };
 
                 function onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
 
                     var field = eventArgs.field;
-
+                    if (field.events === null) return;
                     // Find the onChange event object
                     var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onChange' }, true);
                     if (eventHandlerList.length == 0) return;
@@ -173,7 +204,7 @@ module dockyard.directives.paneConfigureAction {
                             $scope.currentAction.configurationControls,
                             $scope.currentAction.crateStorage
                         );
-                        $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                        $scope.currentAction.crateStorage.crateDTO = $scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
                 
                         $scope.loadConfiguration();
                     }
@@ -195,7 +226,7 @@ module dockyard.directives.paneConfigureAction {
                                 scope.currentAction.configurationControls,
                                 scope.currentAction.crateStorage
                             );
-                            scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                            scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
                             loadConfiguration();
                         }
                     }
@@ -213,8 +244,6 @@ module dockyard.directives.paneConfigureAction {
 
                     ActionService.configure($scope.currentAction).$promise
                         .then((res: interfaces.IActionVM) => {
-                            debugger;
-
                             if (res.childrenActions && res.childrenActions.length > 0) {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
@@ -264,8 +293,8 @@ module dockyard.directives.paneConfigureAction {
                         var authMS = <any>authCrate.contents;
 
                         // Dockyard auth mode.
-                        if (authMS.Mode == 1) {
-                            startInternalAuthentication($scope.currentAction.activityTemplate.id);
+                        if (authMS.Mode == 1 || authMS.Mode == 3) {
+                            startInternalAuthentication($scope.currentAction.activityTemplate.id, authMS.Mode);
                         }
 
                         // External auth mode.                           
@@ -286,11 +315,12 @@ module dockyard.directives.paneConfigureAction {
                     }, 1000);
                 }
 
-                function startInternalAuthentication(activityTemplateId: number) {
+                function startInternalAuthentication(activityTemplateId: number, mode: number) {
                     var self = this;
 
                     var modalScope = <any>$scope.$new(true);
                     modalScope.activityTemplateId = activityTemplateId;
+                    modalScope.mode = mode;
 
                     $modal.open({
                         animation: true,
@@ -306,8 +336,6 @@ module dockyard.directives.paneConfigureAction {
                     var childWindow;
 
                     var messageListener = function (event) {
-                        debugger;
-
                         if (!event.data || event.data != 'external-auth-success') {
                             return;
                         }
@@ -317,7 +345,7 @@ module dockyard.directives.paneConfigureAction {
                     };
 
                     $http
-                        .get('/authentication/initial_url?id=' + activityTemplateId)
+                        .get('/api/authentication/initial_url?id=' + activityTemplateId)
                         .then(res => {
                             var url = (<any>res.data).url;
                             childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');

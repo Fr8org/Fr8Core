@@ -34,8 +34,8 @@ namespace terminalDocuSign.Controllers
             var waitForDocusignEventActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "Monitor_DocuSign",
-                Label = "Monitor DocuSign",
+                Name = "Monitor_DocuSign_Envelope_Activity",
+                Label = "Monitor DocuSign Envelope Activity",
                 Category = ActivityCategory.Monitors,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,
@@ -88,8 +88,8 @@ namespace terminalDocuSign.Controllers
 
             var collectFormDataSolution = new ActivityTemplateDTO
             {
-                Name = "Collect_Form_Data_Solution",
-                Label = "Collect Form Data Solution",
+				Name = "Extract_Data_From_Envelopes",
+				Label = "Extract Data From Envelopes",
                 Version = "1",
                 Category = ActivityCategory.Solution,
                 Terminal = terminal,

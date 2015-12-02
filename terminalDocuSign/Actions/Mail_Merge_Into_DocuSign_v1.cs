@@ -68,7 +68,7 @@ namespace terminalDocuSign.Actions
         {
             var httpClient = new HttpClient();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-            + "route_nodes/available/?tag=" + tag;
+            + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/available?tag=" + tag;
 
             using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
             {
@@ -171,7 +171,7 @@ namespace terminalDocuSign.Actions
                     if (dataSourceActTempl == null) return curActionDO;
                     curActionDO.ChildNodes.Add(new ActionDO()
                     {
-                        ActivityTemplate = dataSourceActTempl,
+                        ActivityTemplateId = dataSourceActTempl.Id,
                         IsTempId = true,
                         Name = dataSourceActTempl.Name,
                         Label = dataSourceActTempl.Label,
@@ -185,7 +185,7 @@ namespace terminalDocuSign.Actions
 
                     curActionDO.ChildNodes.Add(new ActionDO()
                     {
-                        ActivityTemplate = mapFieldActTempl,
+                        ActivityTemplateId = dataSourceActTempl.Id,
                         IsTempId = true,
                         Name = mapFieldActTempl.Name,
                         Label = mapFieldActTempl.Label,
@@ -198,7 +198,7 @@ namespace terminalDocuSign.Actions
                     if (mapFieldActTempl == null) return curActionDO;
                     curActionDO.ChildNodes.Add(new ActionDO()
                     {
-                        ActivityTemplate = sendDocuSignEnvActTempl,
+                        ActivityTemplateId = dataSourceActTempl.Id,
                         IsTempId = true,
                         Name = sendDocuSignEnvActTempl.Name,
                         CrateStorage = Crate.EmptyStorageAsStr(),

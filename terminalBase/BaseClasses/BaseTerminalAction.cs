@@ -70,7 +70,7 @@ namespace TerminalBase.BaseClasses
             var httpClient = new HttpClient();
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "field/exists";
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/field/exists";
             using (var response = await httpClient.PostAsJsonAsync(url, requiredFieldList))
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -170,7 +170,7 @@ namespace TerminalBase.BaseClasses
             // return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
         }
 
-        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActionDO actionDO, CrateDirection direction)
+        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActionDO actionDO, CrateDirection direction)
         {
             //1) Build a merged list of the upstream design fields to go into our drop down list boxes
             StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();

@@ -9,7 +9,7 @@
 </ul>
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
-<div ng-controller="RouteBuilderController" class="margin-top-10">
+<div ng-controller="RouteBuilderController" class="margin-top-10" block-if="isBusy()" stop-click-propagation>
     <designer-header route="current.route"></designer-header>
     <div class="route-builder-container" layout-container>
         <div ng-repeat="group in actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
@@ -36,7 +36,7 @@
                 </div>
                 <div class="action-arrow-right" ng-repeat-end></div>
 
-                <div class="action action-to-add" ng-click="addAction()">
+                <div class="action-to-add" ng-click="addAction()">
                     <p class="action-name">Click to add action</p>
                 </div>
             </div>
@@ -44,4 +44,5 @@
     </div>
     <!-- END MAIN CONTENT -->
     <pane-select-action></pane-select-action>
+
 </div>

@@ -52,7 +52,7 @@ namespace terminalSlack.Services
             var curEventReport = Data.Crates.Crate.FromContent("Standard Event Report", eventReportContent);
             var curEventReportDTO = _crate.ToDto(curEventReport);
 
-            var url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/fr8_events";
+            var url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/api/v1/fr8_events";
             new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), curEventReportDTO);
         }
 

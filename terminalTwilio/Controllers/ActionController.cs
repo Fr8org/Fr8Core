@@ -1,8 +1,11 @@
+<<<<<<< HEAD
 ﻿using System;
+=======
+﻿using System.Threading.Tasks;
+>>>>>>> dev
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using TerminalBase.BaseClasses;
-using System.Threading.Tasks;
 
 namespace terminalTwilio.Controllers
 {    
