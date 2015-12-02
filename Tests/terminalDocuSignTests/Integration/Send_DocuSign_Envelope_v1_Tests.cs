@@ -15,6 +15,7 @@ using Hub.StructureMap;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
+using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Fixtures;
 
 namespace terminalDocuSignTests
