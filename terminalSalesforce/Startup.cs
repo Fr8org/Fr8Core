@@ -9,6 +9,7 @@ using Owin;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 using terminalSalesforce;
+using TerminalBase.Infrastructure;
 
 [assembly: OwinStartup(typeof(terminalSalesforce.Startup))]
 
@@ -19,7 +20,7 @@ namespace terminalSalesforce
         public void Configuration(IAppBuilder app)
         {            
             TerminalSalesforceStructureMapBootstrapper.ConfigureDependencies(TerminalSalesforceStructureMapBootstrapper.DependencyType.LIVE);
-
+            TerminalBootstrapper.ConfigureLive();
             StartHosting("terminal_Salesforce");
         }
     }
