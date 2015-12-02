@@ -56,6 +56,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
+    <Compile Include="Integration\Monitor_DocuSign_v1_Tests.cs" />
+    <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
     <Compile Include="Fixtures\FixtureData.cs" />
     <Compile Include="HealthMonitor_FixtureData.cs" />
     <Compile Include="Monitor_DocuSign_v1_Tests.cs" />

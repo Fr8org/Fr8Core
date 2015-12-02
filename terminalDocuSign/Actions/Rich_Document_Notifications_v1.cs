@@ -197,7 +197,7 @@ namespace terminalDocuSign.Actions
                 Label = "Monitor DocuSign"
             };
 
-            var monitorDocuSignTerminalAction = new Monitor_DocuSign_v1();
+            var monitorDocuSignTerminalAction = new Monitor_DocuSign_Envelope_Activity_v1();
             monitorDocuSignAction = await monitorDocuSignTerminalAction
                 .Configure(monitorDocuSignAction, authTokenDO);
 
