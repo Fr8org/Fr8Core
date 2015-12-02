@@ -12,14 +12,64 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
+        public class GuidIdStore
+        {
+            private readonly static GuidIdStore _instance = new GuidIdStore();
+
+            public static GuidIdStore Instance
+            {
+                get { return _instance; }
+            }
+
+
+            private Dictionary<int, Guid> _guids = new Dictionary<int, Guid>();
+            private Dictionary<Guid, int> _reverse = new Dictionary<Guid, int>();
+
+            public Guid Get(int id)
+            {
+                lock (_guids)
+                {
+                    Guid result;
+                    if (!_guids.TryGetValue(id, out result))
+                    {
+                        result = Guid.NewGuid();
+                        _guids.Add(id, result);
+                        _reverse.Add(result, id);
+                    }
+
+                    return result;
+                }
+            }
+
+            public int Reverse(Guid guid)
+            {
+                int result;
+                if (!_reverse.TryGetValue(guid, out result))
+                {
+                    throw new ApplicationException("No Guid -> Int map found.");
+                }
+
+                return result;
+            }
+        }
+
+        public static Guid GetTestGuidById(int id)
+        {
+            return GuidIdStore.Instance.Get(id);
+        }
+
+        public static int GetTestIdByGuid(Guid guid)
+        {
+            return GuidIdStore.Instance.Reverse(guid);
+        }
 
         public static RouteNodeDO TestActivity57()
         {
             return new RouteNodeDO
             {
-                Id = 57,
+                Id = GetTestGuidById(57),
                 Ordering = 2,
-                ParentRouteNodeId = 54
+                ParentRouteNodeId = GetTestGuidById(54)
             };
 
         }
@@ -28,9 +78,9 @@ namespace UtilitiesTesting.Fixtures
         {
             return new RouteNodeDO
             {
-                Id = 57,
+                Id = GetTestGuidById(57),
                 Ordering = 2,
-                ParentRouteNodeId = 54
+                ParentRouteNodeId = GetTestGuidById(54)
             };
 
         }
@@ -39,81 +89,81 @@ namespace UtilitiesTesting.Fixtures
         {
             var tree = new RouteNodeDO
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Ordering = 1,
                 ChildNodes = new List<RouteNodeDO>
                 {
                     new RouteNodeDO
                     {
-                        Id = 23,
+                        Id = GetTestGuidById(23),
                         Ordering = 1,
-                        ParentRouteNodeId = 1
+                        ParentRouteNodeId = GetTestGuidById(1)
                     },
                     new RouteNodeDO
                     {
-                        Id = 43,
-                        ParentRouteNodeId = 1,
+                        Id = GetTestGuidById(43),
+                        ParentRouteNodeId = GetTestGuidById(1),
                         Ordering = 2,
                         ChildNodes = new List<RouteNodeDO>
                         {
                             new RouteNodeDO
                             {
-                                Id = 44,
+                                Id = GetTestGuidById(44),
                                 Ordering = 1,
-                                ParentRouteNodeId = 43
+                                ParentRouteNodeId = GetTestGuidById(43)
                             },
                             new RouteNodeDO
                             {
-                                Id = 46,
+                                Id = GetTestGuidById(46),
                                 Ordering = 2,
-                                ParentRouteNodeId = 43
+                                ParentRouteNodeId = GetTestGuidById(43)
                             },
                             new RouteNodeDO
                             {
-                                Id = 48,
+                                Id = GetTestGuidById(48),
                                 Ordering = 3,
-                                ParentRouteNodeId = 43
+                                ParentRouteNodeId = GetTestGuidById(43)
                             },
 
                         }
                     },
                     new RouteNodeDO
                     {
-                        Id = 52,
+                        Id = GetTestGuidById(52),
                         Ordering = 3,
-                        ParentRouteNodeId = 1,
+                        ParentRouteNodeId = GetTestGuidById(1),
                         ChildNodes = new List<RouteNodeDO>
                         {
                             new RouteNodeDO
                             {
-                                Id = 53,
+                                Id = GetTestGuidById(53),
                                 Ordering = 1,
-                                ParentRouteNodeId = 52
+                                ParentRouteNodeId = GetTestGuidById(52)
                             },
                             new RouteNodeDO
                             {
-                                Id = 54,
-                                ParentRouteNodeId = 52,
+                                Id = GetTestGuidById(54),
+                                ParentRouteNodeId = GetTestGuidById(52),
                                 Ordering = 2,
 
                                 ChildNodes = new List<RouteNodeDO>
                                 {
                                     new RouteNodeDO
                                     {
-                                        Id = 56,
-                                        ParentRouteNodeId = 54,
+                                        Id = GetTestGuidById(56),
+                                        ParentRouteNodeId = GetTestGuidById(54),
                                         Ordering = 1
                                     },
                                     new RouteNodeDO
                                     {
-                                        Id = 57,
-                                        ParentRouteNodeId = 54,
+                                        Id = GetTestGuidById(57),
+                                        ParentRouteNodeId = GetTestGuidById(54),
                                         Ordering = 2
                                     },
                                     new RouteNodeDO
                                     {
-                                        Id = 58,
-                                        ParentRouteNodeId = 54,
+                                        Id = GetTestGuidById(58),
+                                        ParentRouteNodeId = GetTestGuidById(54),
                                         Ordering = 3
                                     },
 
@@ -121,8 +171,8 @@ namespace UtilitiesTesting.Fixtures
                             },
                             new RouteNodeDO
                             {
-                                Id = 55,
-                                ParentRouteNodeId = 52,
+                                Id = GetTestGuidById(55),
+                                ParentRouteNodeId = GetTestGuidById(52),
                                 Ordering = 3
                             },
 
@@ -130,41 +180,41 @@ namespace UtilitiesTesting.Fixtures
                     },
                     new RouteNodeDO
                     {
-                        Id = 59,
+                        Id = GetTestGuidById(59),
                         Ordering = 4,
-                        ParentRouteNodeId = 1,
+                        ParentRouteNodeId = GetTestGuidById(1),
                         ChildNodes = new List<RouteNodeDO>
                         {
                             new RouteNodeDO
                             {
-                                Id = 60,
-                                ParentRouteNodeId = 59,
+                                Id = GetTestGuidById(60),
+                                ParentRouteNodeId = GetTestGuidById(59),
                                 Ordering = 1
                             },
                             new RouteNodeDO
                             {
-                                Id = 61,
-                                ParentRouteNodeId = 59,
+                                Id = GetTestGuidById(61),
+                                ParentRouteNodeId = GetTestGuidById(59),
                                 Ordering = 2,
 
                                 ChildNodes = new List<RouteNodeDO>
                                 {
                                     new RouteNodeDO
                                     {
-                                        Id = 63,
-                                        ParentRouteNodeId = 61,
+                                        Id = GetTestGuidById(63),
+                                        ParentRouteNodeId = GetTestGuidById(61),
                                         Ordering = 1
                                     },
                                     new RouteNodeDO
                                     {
-                                        Id = 64,
-                                        ParentRouteNodeId = 61,
+                                        Id = GetTestGuidById(64),
+                                        ParentRouteNodeId = GetTestGuidById(61),
                                         Ordering = 2
                                     },
                                     new RouteNodeDO
                                     {
-                                        Id = 65,
-                                        ParentRouteNodeId = 61,
+                                        Id = GetTestGuidById(65),
+                                        ParentRouteNodeId = GetTestGuidById(61),
                                         Ordering = 3
                                     },
                                 }
@@ -172,8 +222,8 @@ namespace UtilitiesTesting.Fixtures
 
                             new RouteNodeDO
                             {
-                                Id = 62,
-                                ParentRouteNodeId = 59,
+                                Id = GetTestGuidById(62),
+                                ParentRouteNodeId = GetTestGuidById(59),
                                 Ordering = 3
                             },
                         },
@@ -190,7 +240,7 @@ namespace UtilitiesTesting.Fixtures
 
         private static void FixParentActivityReferences(RouteNodeDO root)
         {
-            var activitiesIndex = new Dictionary<int, RouteNodeDO>();
+            var activitiesIndex = new Dictionary<Guid, RouteNodeDO>();
 
             TraverseActivityTree(root, activitiesIndex);
 
@@ -207,7 +257,7 @@ namespace UtilitiesTesting.Fixtures
             }
         }
 
-        private static void TraverseActivityTree(RouteNodeDO root, Dictionary<int, RouteNodeDO> allActivities)
+        private static void TraverseActivityTree(RouteNodeDO root, Dictionary<Guid, RouteNodeDO> allActivities)
         {
             allActivities.Add(root.Id, root);
 

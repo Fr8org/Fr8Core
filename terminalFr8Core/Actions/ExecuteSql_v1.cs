@@ -7,13 +7,14 @@ using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
 using terminalFr8Core.Infrastructure;
 using Data.Entities;
+using Data.States;
 
 namespace terminalFr8Core.Actions
 {
@@ -134,8 +135,8 @@ namespace terminalFr8Core.Actions
         private async Task<string> ExtractConnectionString(ActionDO actionDO)
         {
             var upstreamCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(
-                actionDO.Id,
-                GetCrateDirection.Upstream
+                actionDO,
+                CrateDirection.Upstream
             );
 
             if (upstreamCrates == null) { return null; }
@@ -158,7 +159,7 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var findObjectHelper = new FindObjectHelper();
-            var payload = await GetProcessPayload(containerId);
+            var payload = await GetProcessPayload(curActionDO, containerId);
 
             var columnTypes = await findObjectHelper.ExtractColumnTypes(this, curActionDO);
             if (columnTypes == null)

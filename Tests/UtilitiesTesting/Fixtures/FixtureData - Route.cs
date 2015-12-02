@@ -19,7 +19,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var route = new RouteDO
             {
-				Id = 33,
+                Id = GetTestGuidById(33),
                 Description = "descr 1",
                 Name = "template1",
                 RouteState = RouteState.Active,
@@ -33,7 +33,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var route = new RouteDO
             {
-                Id = 50,
+                Id = GetTestGuidById(50),
                 Description = "descr 2",
                 Name = "template2",
                 RouteState = RouteState.Active,
@@ -48,7 +48,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var healthRoute = new RouteDO
             {
-                Id = 23,
+                Id = GetTestGuidById(23),
                 Description = "DO-866 HealthDemo Integration Test",
                 Name = "HealthDemoIntegrationTest",
                 RouteState = RouteState.Active,
@@ -60,7 +60,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var curRouteDO = new RouteDO
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Description = "DO-982 Process Node Template Test",
                 Name = "RouteWithSubroutes",
                 RouteState = RouteState.Active,
@@ -70,7 +70,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 var curSubrouteDO = new SubrouteDO()
                 {
-                    Id = i,
+                    Id = GetTestGuidById(i),
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curRouteDO,
                 };
@@ -82,28 +82,28 @@ namespace UtilitiesTesting.Fixtures
 
         public static RouteDO TestRouteWithSubscribeEvent()
         {
-            RouteDO processTemplateDO;
+            RouteDO routeDO;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Fr8AccountDO testUser = TestDockyardAccount1();
                 uow.UserRepository.Add(testUser);
 
-                processTemplateDO = new RouteDO()
+                routeDO = new RouteDO()
                 {
-                    Id = 23,
+                    Id = GetTestGuidById(23),
                     Description = "HealthDemo Integration Test",
                     Name = "StandardEventTesting",
                     RouteState = RouteState.Active,
                     Fr8Account = testUser
                 };
-                uow.RouteRepository.Add(processTemplateDO);
+                uow.RouteRepository.Add(routeDO);
 
                 var actionTemplate = ActionTemplate();
 
                 var containerDO = new ContainerDO()
                 {
                     Id = TestContainer_Id_1(),
-                    RouteId = processTemplateDO.Id,
+                    RouteId = routeDO.Id,
                     ContainerState = 1
                 };
 
@@ -118,21 +118,21 @@ namespace UtilitiesTesting.Fixtures
 
                 SubrouteDO subrouteDO = new SubrouteDO()
                 {
-                    ParentRouteNode = processTemplateDO,
+                    ParentRouteNode = routeDO,
                     StartingSubroute = true
                 };
                 uow.SubrouteRepository.Add(subrouteDO);
-                processTemplateDO.ChildNodes = new List<RouteNodeDO> {subrouteDO};
-                processTemplateDO.StartingSubroute = subrouteDO;
+                routeDO.ChildNodes = new List<RouteNodeDO> {subrouteDO};
+                routeDO.StartingSubroute = subrouteDO;
 
 
                 var actionDo = new ActionDO()
                 {
-                    ParentRouteNode = processTemplateDO,
-                    ParentRouteNodeId = processTemplateDO.Id,
+                    ParentRouteNode = routeDO,
+                    ParentRouteNodeId = routeDO.Id,
                     Name = "testaction",
 
-                    Id = 1,
+                    Id = GetTestGuidById(1),
                     ActivityTemplateId = actionTemplate.Id,
                     ActivityTemplate = actionTemplate,
                     Ordering = 1
@@ -157,14 +157,14 @@ namespace UtilitiesTesting.Fixtures
                 uow.SaveChanges();
             }
 
-            return processTemplateDO;
+            return routeDO;
         }
 
         public static RouteDO TestRoute3()
         {
             var curRouteDO = new RouteDO
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Description = "DO-1040 Process Template Test",
                 Name = "Poress template",
                 RouteState = RouteState.Active,
@@ -174,7 +174,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 var curSubrouteDO = new SubrouteDO()
                 {
-                    Id = i,
+                    Id = GetTestGuidById(i),
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curRouteDO,
                     ChildNodes = FixtureData.TestActionList1(),
@@ -189,7 +189,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var curRouteDO = new RouteDO
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Description = "DO-1040 Process Template Test",
                 Name = "Poress template",
                 RouteState = RouteState.Active,
@@ -199,7 +199,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 var curSubrouteDO = new SubrouteDO()
                 {
-                    Id = i,
+                    Id = GetTestGuidById(i),
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curRouteDO,
                     ChildNodes = FixtureData.TestActionListParentActivityID12()
@@ -214,7 +214,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var curRouteDO = new RouteDO
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Description = "DO-1124 Proper  deletion of Route",
                 Name = "TestRouteWithStartingSubroutes",
                 RouteState = RouteState.Active,
@@ -222,7 +222,7 @@ namespace UtilitiesTesting.Fixtures
 
             var curSubrouteDO = new SubrouteDO()
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Name = string.Format("curSubrouteDO-{0}", 1),
                 ParentRouteNode = curRouteDO,
                 StartingSubroute = true
@@ -239,7 +239,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var curRouteDO = new RouteDO
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Description = "DO-1124 Proper  deletion of Route",
                 Name = "TestRouteWithStartingSubroutes",
                 RouteState = RouteState.Active,
@@ -247,7 +247,7 @@ namespace UtilitiesTesting.Fixtures
 
             var curSubrouteDO = new SubrouteDO()
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Name = string.Format("curSubrouteDO-{0}", 1),
                 ParentRouteNode = curRouteDO,
                 StartingSubroute = true
@@ -299,7 +299,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var route = new RouteDO
             {
-                Id = 30,
+                Id = GetTestGuidById(30),
                 Description = "Description 4",
                 Name = "Route 4",
                 RouteState = RouteState.Active,
@@ -312,7 +312,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var route = new RouteDO
             {
-                Id = 40,
+                Id = GetTestGuidById(40),
                 Description = "Description 5",
                 Name = "Route 5",
                 RouteState = RouteState.Active,
@@ -324,7 +324,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var curRouteDO = new RouteDO
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Description = "DO-1419 Container Create Adds Logs Test",
                 Name = "Container Create",
                 RouteState = RouteState.Active

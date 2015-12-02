@@ -3,13 +3,13 @@ module dockyard.tests.utils.fixtures {
 
     export class FieldDTO {
 
-        public static newProcessTemplate = <interfaces.IRouteVM> {
+        public static newRoute = <interfaces.IRouteVM> {
             name: 'Test',
             description: 'Description',
             routeState: 1
         };
 
-        public static filePickerField: model.FileControlDefinitionDTO = {
+        public static filePickerField: model.File = {
             type: 'FilePicker',
             fieldLabel: 'FilePicker Test',
             name: 'FilePickerTest',
@@ -17,7 +17,7 @@ module dockyard.tests.utils.fixtures {
             value: null
         };
 
-        public static textField: model.TextBoxControlDefinitionDTO = {
+        public static textField: model.TextBox = {
             required: true,
             type: 'TextBox',
             fieldLabel: 'test',
@@ -28,7 +28,7 @@ module dockyard.tests.utils.fixtures {
 
         public static textBlock: model.TextBlock = new model.TextBlock('<span>teststs</span>', 'well well-lg');
 
-        public static dropDownListBox: model.DropDownListControlDefinitionDTO = {
+        public static dropDownListBox: model.DropDownList = {
             listItems: [{ key: 'test1', value: 'value1' }, { key: 'test2', value: 'value2' }, { key: 'test3', value: 'value3' }],
             source: {
                 manifestType: 'testManifest',
@@ -38,10 +38,11 @@ module dockyard.tests.utils.fixtures {
             fieldLabel: 'DropDownList Test',
             name: 'DropDownList',
             events: [],
-            value: 'value3'
+            value: 'value3',
+            selectedKey: 'test3'
         };
 
-        public static radioButtonGroupField: model.RadioButtonGroupControlDefinitionDTO = {
+        public static radioButtonGroupField: model.RadioButtonGroup = {
             groupName: 'SMSNumber_Group',
             radios: [
                 {
@@ -84,6 +85,34 @@ module dockyard.tests.utils.fixtures {
             fieldLabel: "For the SMS Number use:",
             type: "RadioButtonGroup",
             events: null
+        };
+
+
+        public static designTimeField = {
+            Key: 'test2',
+            Value: 'value'
+        };
+        
+        public static fieldList = {
+            value: JSON.stringify([FieldDTO.designTimeField]),
+            field: 'test2'
+        };
+
+
+        public static textSource: model.TextSource = {
+            type: "TextSource",
+            events: [],
+            initialLabel: 'test label',
+            value: null,
+            source: {
+                manifestType: 'testManifest',
+                label: 'testLabel'
+            },
+            valueSource: 'test',
+            listItems: [{ key: 'test1', value: 'value1' }, { key: 'test2', value: 'value2' }, { key: 'test3', value: 'value3' }],
+            name: 'test name',
+            fieldLabel: 'test label',
+            selectedKey: null
         };
     }
 } 

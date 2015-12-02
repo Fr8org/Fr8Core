@@ -10,7 +10,7 @@ module dockyard.controllers {
         ptvm: interfaces.IRouteVM;
         submit: (isValid: boolean) => void;
         errorMessage: string;
-        processBuilder: any
+        routeBuilder: any
     }
 
     class RouteFormController {
@@ -53,21 +53,20 @@ module dockyard.controllers {
                     var result = RouteService.save($scope.ptvm);
 
                     result.$promise
-                        .then(function () {
-                            console.log(result);
+                        .then(() => {
                             $rootScope.lastResult = "success";
-                            window.location.href = '#processes/' + result.id + '/builder';
+                            window.location.href = '#routes/' + result.id + '/builder';
                         })
                         .catch(function (e) {
                             switch (e.status) {
                                 case 404:
-                                    $scope.errorMessage = StringService.processTemplate["error404"];
+                                    $scope.errorMessage = StringService.route["error404"];
                                     break;
                                 case 400:
-                                    $scope.errorMessage = StringService.processTemplate["error400"];
+                                    $scope.errorMessage = StringService.route["error400"];
                                     break;
                                 default:
-                                    $scope.errorMessage = StringService.processTemplate["error"];
+                                    $scope.errorMessage = StringService.route["error"];
                                     break;
                             }
                         });

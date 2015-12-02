@@ -56,10 +56,10 @@ module dockyard.tests.unit.directives.controls {
 
         it('Should update selected field on radio button click', () => {
             expect(element.find('input[type=radio]:checked').length).toBe(0);
-            expect((<model.RadioButtonGroupControlDefinitionDTO>scope.field).radios[0].selected).toBe(false);
+            expect((<model.RadioButtonGroup>scope.field).radios[0].selected).toBe(false);
             element.find('input[type=radio]').first().prop("checked", true).trigger("click");
             scope.$digest();
-            expect((<model.RadioButtonGroupControlDefinitionDTO>scope.field).radios[0].selected).toBe(true);
+            expect((<model.RadioButtonGroup>scope.field).radios[0].selected).toBe(true);
             expect(element.find('input[type=radio]:checked').length).toBe(1);
         });
     });
@@ -102,13 +102,13 @@ module dockyard.tests.unit.directives.controls {
 
         it('Should update only self group value on radio click', () => {
             expect(element1.find('input[type=radio]:checked').length).toBe(0);
-            expect((<model.RadioButtonGroupControlDefinitionDTO>scope.field1).radios[0].selected).toBe(false);
+            expect((<model.RadioButtonGroup>scope.field1).radios[0].selected).toBe(false);
             element1.find('input[type=radio]').first().prop("checked", true).trigger("click");
             scope.$digest();
-            expect((<model.RadioButtonGroupControlDefinitionDTO>scope.field1).radios[0].selected).toBe(true);
+            expect((<model.RadioButtonGroup>scope.field1).radios[0].selected).toBe(true);
             expect(element1.find('input[type=radio]:checked').length).toBe(1);
 
-            expect((<model.RadioButtonGroupControlDefinitionDTO>scope.field2).radios[0].selected).toBe(false);
+            expect((<model.RadioButtonGroup>scope.field2).radios[0].selected).toBe(false);
             expect(element2.find('input[type=radio]:checked').length).toBe(0);
         });
     });

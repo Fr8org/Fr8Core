@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Reflection;
-using Data.Interfaces.DataTransferObjects;
-using System.Web.Http;
-using TerminalBase.Infrastructure;
 using System.Threading.Tasks;
-using Utilities.Configuration.Azure;
-using Data.Entities;
+using System.Web.Http;
 using AutoMapper;
+using StructureMap;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using TerminalBase.Infrastructure;
+using Utilities.Configuration.Azure;
 
 namespace TerminalBase.BaseClasses
 {
@@ -27,7 +28,7 @@ namespace TerminalBase.BaseClasses
         [HttpGet]
         public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError)
         {
-            var exceptionMessage = string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
+            var exceptionMessage = terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
             return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name));
         }
 
@@ -53,6 +54,18 @@ namespace TerminalBase.BaseClasses
             return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Incident");
         }
 
+
+        private void BindTestHubCommunicator(object curObject)
+        {
+            var baseTerminalAction = curObject as BaseTerminalAction;
+
+            if (baseTerminalAction == null)
+            {
+                return;
+            }
+
+            baseTerminalAction.HubCommunicator = new TestMonitoringHubCommunicator();
+        }
         
         /// <summary>
         /// Reports event when process an action
@@ -71,16 +84,30 @@ namespace TerminalBase.BaseClasses
             if (curActionDTO.ActivityTemplate == null)
                 throw new ArgumentException("ActivityTemplate is null", "curActionDTO");
 
-            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curTerminal, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
+            var isTestActivityTemplate = false;
+            var activityTemplateName = curActionDTO.ActivityTemplate.Name;
+            if (activityTemplateName.EndsWith("_TEST"))
+            {
+                isTestActivityTemplate = true;
+                activityTemplateName = activityTemplateName
+                    .Substring(0, activityTemplateName.Length - "_TEST".Length);
+            }
+
+            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curTerminal, activityTemplateName, curActionDTO.ActivityTemplate.Version);
 
             Type calledType = Type.GetType(curAssemblyName + ", " + curTerminal);
             if (calledType == null)
-                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} terminal.", 
+                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} terminal.",
                     curActionDTO.ActivityTemplate.Name,
                     curActionDTO.ActivityTemplate.Version,
                     curTerminal), "curActionDTO");
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
+
+            if (isTestActivityTemplate)
+            {
+                BindTestHubCommunicator(curObject);
+            }
 
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
@@ -111,8 +138,8 @@ namespace TerminalBase.BaseClasses
                     }
                 default:
                     response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-            return response;
-        }
+                    return response;
+            }
 
 
         }

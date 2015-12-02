@@ -1,5 +1,6 @@
 ﻿using System;
 using DocuSign.Integrations.Client;
+using TerminalBase.Errors;
 using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Infrastructure
@@ -42,8 +43,8 @@ namespace terminalDocuSign.Infrastructure
             if (curDocuSignAccount.Login())
                 return curDocuSignAccount;
 
-            throw new InvalidOperationException(
-                "Cannot log in to DocuSign. Please check the authentication information on web.config.");
+            throw new AuthorizationTokenExpiredException(
+                "Cannot log in to DocuSign. " + (curDocuSignAccount.RestError != null ? curDocuSignAccount.RestError.Serialize() : ""));
         }
         
         private void ConfigureDocuSignIntegration()

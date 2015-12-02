@@ -7,6 +7,7 @@ using System.Web.Security;
 using System.Web.SessionState;
 using Data.Infrastructure.AutoMapper;
 using Hub.StructureMap;
+using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core
 {
@@ -17,6 +18,7 @@ namespace terminalFr8Core
             GlobalConfiguration.Configure(WebApiConfig.Register);
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
+            TerminalBootstrapper.ConfigureLive();
         }
     }
 }

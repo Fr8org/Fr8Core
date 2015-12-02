@@ -3,9 +3,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
+﻿using Data.Control;
+﻿using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+
 using Hub.Interfaces;
 using Hub.Managers;
 using Newtonsoft.Json;
@@ -17,17 +18,16 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Data.Entities;
 using Data.Crates;
+﻿using Data.States;
 
 namespace terminalDocuSign.Actions
 {
     public class Receive_DocuSign_Envelope_v1 : BaseTerminalAction
     {
         private readonly DocuSignManager _docuSignManager;
-        private readonly IRouteNode _routeNode;
 
         public Receive_DocuSign_Envelope_v1()
         {
-            _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _docuSignManager = new DocuSignManager();
         }
 
@@ -51,14 +51,15 @@ namespace terminalDocuSign.Actions
             return; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO,
+            Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(actionDO, containerId);
 
             //Get envlopeId
             string envelopeId = GetEnvelopeId(processPayload);
@@ -131,15 +132,15 @@ namespace terminalDocuSign.Actions
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
             //get envelopeIdFromUpstreamActions
-            var upstream = await _routeNode.GetCratesByDirection<StandardDesignTimeFieldsCM>(curActionDO.Id, GetCrateDirection.Upstream);
+            var upstream = await GetCratesByDirection<StandardDesignTimeFieldsCM>(curActionDO, CrateDirection.Upstream);
 
-            var envelopeId = upstream.SelectMany(x => x.Content.Fields).FirstOrDefault(x => x.Key == "EnvelopeId");
+            var templateId = upstream.SelectMany(x => x.Content.Fields).FirstOrDefault(x => x.Key == "TemplateId");
 
             //In order to Receive a DocuSign Envelope as fr8, an upstream action needs to provide a DocuSign EnvelopeID.
-            TextBlockControlDefinitionDTO textBlock;
-            if (envelopeId != null)
+            TextBlock textBlock;
+            if (templateId != null)
             {
-                textBlock = new TextBlockControlDefinitionDTO
+                textBlock = new TextBlock
                 {
                     Label = "Docu Sign Envelope",
                     Value = "This Action doesn't require any configuration.",
@@ -148,10 +149,10 @@ namespace terminalDocuSign.Actions
             }
             else
             {
-                textBlock = new TextBlockControlDefinitionDTO
+                textBlock = new TextBlock
                 {
                     Label = "Docu Sign Envelope",
-                    Value = "In order to Receive a DocuSign Envelope as fr8, an upstream action needs to provide a DocuSign EnvelopeID.",
+                    Value = "In order to Receive a DocuSign Envelope as fr8, an upstream action needs to provide a DocuSign TemplateId.",
                     CssClass = "alert alert-warning"
                 };
             }
@@ -163,12 +164,12 @@ namespace terminalDocuSign.Actions
             }
 
             // var templateId = upstream.SelectMany(x => x.Content.Fields).FirstOrDefault(x => x.Key == "TemplateId");
-            var templateId = envelopeId.Value;
+            //var templateId = templateId.Value;
 
             // If DocuSignTemplate Id was found, then add design-time fields.
-            if (!string.IsNullOrEmpty(templateId))
+            if (templateId != null && !string.IsNullOrEmpty(templateId.Value))
             {
-                _docuSignManager.ExtractFieldsAndAddToCrate(templateId, docuSignAuthDTO, curActionDO);
+                _docuSignManager.ExtractFieldsAndAddToCrate(templateId.Value, docuSignAuthDTO, curActionDO);
             }
             return curActionDO;
         }

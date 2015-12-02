@@ -1,22 +1,22 @@
 ﻿using System.Linq;
-using UtilitiesTesting;
-using terminalDocuSign.Actions;
-using Data.Interfaces.DataTransferObjects;
-using UtilitiesTesting.Fixtures;
-using Data.Interfaces;
 using System.Threading.Tasks;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
+using AutoMapper;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
+using Hub.Managers;
+using TerminalBase.Infrastructure;
+using terminalDocuSign.Actions;
 using terminalDocuSign.Tests.Fixtures;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using Utilities.Configuration.Azure;
-using AutoMapper;
-using Data.Entities;
-
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace terminalDocuSign.Tests.Actions
 {
@@ -24,16 +24,18 @@ namespace terminalDocuSign.Tests.Actions
     [Category("terminalDocuSign")]
     public class Monitor_DocuSignTests : BaseTest
     {
-        Monitor_DocuSign_v1 _monitor_DocuSign;
+        Monitor_DocuSign_Envelope_Activity_v1 _monitor_DocuSign;
 
-        public Monitor_DocuSignTests()
+        public override void SetUp()
         {
             base.SetUp();
+            TerminalBootstrapper.ConfigureTest();
+
             TerminalDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
             TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
 
-            _monitor_DocuSign = new Monitor_DocuSign_v1();
+            _monitor_DocuSign = new Monitor_DocuSign_Envelope_Activity_v1();
         }
 
         [Test]
@@ -101,7 +103,7 @@ namespace terminalDocuSign.Tests.Actions
             object[] parameters = new object[] { curPayloadDTO, "EnvelopeId" };
 
             //Act
-            var result = (string)ClassMethod.Invoke(typeof(Monitor_DocuSign_v1), "GetValueForKey", parameters);
+            var result = (string)ClassMethod.Invoke(typeof(Monitor_DocuSign_Envelope_Activity_v1), "GetValueForKey", parameters);
 
             //Assert
             Assert.AreEqual("EnvelopeIdValue", result);

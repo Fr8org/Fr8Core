@@ -12,10 +12,14 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Http;
+using Data.Control;
 using Data.Crates;
-using Hub.Enums;
+
 using Hub.Interfaces;
 using Hub.Managers;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 
 namespace Hub.Services
@@ -62,7 +66,7 @@ namespace Hub.Services
             }
         }
 
-        public ActionDO GetById(int id)
+        public ActionDO GetById(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -128,7 +132,11 @@ namespace Hub.Services
 
             if (submittedAction.IsTempId)
             {
-                submittedAction.Id = 0;
+                if (submittedAction.Id == Guid.Empty)
+                {
+                    submittedAction.Id = Guid.NewGuid();
+                }
+
                 existingAction = submittedAction;
                 submittedAction.IsTempId = false;
 
@@ -176,17 +184,17 @@ namespace Hub.Services
             {
                 existingAction = uow.ActionRepository.GetByKey(submittedAction.Id);
 
-            if (existingAction == null)
-            {
-                throw new Exception("Action was not found");
-            }
+                if (existingAction == null)
+                {
+                    throw new Exception("Action was not found");
+                }
 
-            // Update properties
+                // Update properties
                 UpdateActionProperties(existingAction, submittedAction);
 
                 // Sync nested action structure
                 if (submittedAction.ChildNodes != null)
-            {
+                {
                 // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
                 // desired set of children. 
                     var newChildren = submittedAction.ChildNodes.OfType<ActionDO>().Where(x => !x.IsTempId).ToDictionary(x => x.Id, y => y);
@@ -222,7 +230,7 @@ namespace Hub.Services
             return existingAction;
         }
 
-        public ActionDO GetById(IUnitOfWork uow, int id)
+        public ActionDO GetById(IUnitOfWork uow, Guid id)
         {
             return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).FirstOrDefault(i => i.Id == id);
         }
@@ -238,12 +246,12 @@ namespace Hub.Services
 
             var action = new ActionDO
             {
+                Id = Guid.NewGuid(),
                 ActivityTemplate = template,
                 Name = name,
                 Label = label,
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1
-
             };
 
             uow.ActionRepository.Add(action);
@@ -253,7 +261,7 @@ namespace Hub.Services
             return action;
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false)
         {
             if (parentNodeId != null && createRoute)
             {
@@ -275,7 +283,7 @@ namespace Hub.Services
             }
             else
             {
-                parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId.Value);
+                parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId);
             }
 
             var action = Create(uow, actionTemplateId, name, label, parentNode);
@@ -314,6 +322,18 @@ namespace Hub.Services
                 EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message);
                 throw;
             }
+                catch (RestfulServiceException e)
+                {
+                    // terminal requested token invalidation
+                    if (e.StatusCode == 419)
+                    {
+                        _authorizationToken.InvalidateToken(userId, tempActionDTO);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             catch (Exception e)
             {
 
@@ -362,7 +382,7 @@ namespace Hub.Services
             return SaveOrUpdateAction(submittedAction);
         }
 
-        public void Delete(int id)
+        public void Delete(Guid id)
         {
             //we are using Kludge solution for now
             //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering

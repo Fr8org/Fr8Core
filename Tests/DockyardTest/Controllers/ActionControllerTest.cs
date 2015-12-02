@@ -55,12 +55,12 @@ namespace DockyardTest.Controllers
                 //Arrange is done with empty action list
 
                 //Act
-                var actualAction = CreateActionWithId(1);
+                var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
 
                 actualAction.IsTempId = true;
                 actualAction.ParentRouteNodeId = subroute.Id;
                 
-                var controller = new ActionController();
+                var controller = new ActionsController();
                 controller.Save(actualAction);
 
                 //Assert
@@ -93,11 +93,11 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();
 
                 //Act
-                var actualAction = CreateActionWithId(2);
+                var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(2));
                 actualAction.IsTempId = true;
                 actualAction.ParentRouteNodeId = subroute.Id;
 
-                var controller = new ActionController();
+                var controller = new ActionsController();
                 controller.Save(actualAction);
 
                 //Assert
@@ -124,9 +124,9 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();
 
                 //Act
-                var actualAction = CreateActionWithId(1);
+                var actualAction = CreateActionWithId(FixtureData.GetTestGuidById(1));
 
-                var controller = new ActionController();
+                var controller = new ActionsController();
                 controller.Save(actualAction);
 
                 //Assert
@@ -263,10 +263,10 @@ namespace DockyardTest.Controllers
             {
                 var subRouteMock = new Mock<ISubroute>();
 
-                subRouteMock.Setup(a => a.DeleteAction(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(true);
+                subRouteMock.Setup(a => a.DeleteAction(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(true);
 
                 ActionDO actionDO = new FixtureData(uow).TestAction3();
-                var controller = new ActionController(subRouteMock.Object);
+                var controller = new ActionsController(subRouteMock.Object);
                 await controller.Delete(actionDO.Id);
                 subRouteMock.Verify(a => a.DeleteAction(null, actionDO.Id, false));
             }
@@ -279,10 +279,10 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Mock<IAction> actionMock = new Mock<IAction>();
-                actionMock.Setup(a => a.GetById(It.IsAny<IUnitOfWork>(), It.IsAny<int>()));
+                actionMock.Setup(a => a.GetById(It.IsAny<IUnitOfWork>(), It.IsAny<Guid>()));
 
                 ActionDO actionDO = new FixtureData(uow).TestAction3();
-                var controller = new ActionController(actionMock.Object);
+                var controller = new ActionsController(actionMock.Object);
                 controller.Get(actionDO.Id);
                 actionMock.Verify(a => a.GetById(It.IsAny<IUnitOfWork>(), actionDO.Id));
             }
@@ -329,7 +329,7 @@ namespace DockyardTest.Controllers
         /// <summary>
         /// Creates a new Action with the given action ID
         /// </summary>
-        private ActionDTO CreateActionWithId(int actionId)
+        private ActionDTO CreateActionWithId(Guid actionId)
         {
             return new ActionDTO
             {
@@ -363,8 +363,8 @@ namespace DockyardTest.Controllers
 
         public async void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
         {
-            var controller = new ActionController();
-            ActionDTO actionDesignDTO = CreateActionWithId(2);
+            var controller = new ActionsController();
+            ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.ActivityTemplate = FixtureData.TestActionTemplateDTOV2();
             var actionResult = await controller.Configure(actionDesignDTO);
 
@@ -378,9 +378,9 @@ namespace DockyardTest.Controllers
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public async void ActionController_GetConfigurationSettings_IdIsMissing()
         {
-            var controller = new ActionController();
-            ActionDTO actionDesignDTO = CreateActionWithId(2);
-            actionDesignDTO.Id = 0;
+            var controller = new ActionsController();
+            ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
+            actionDesignDTO.Id = Guid.Empty;
             var actionResult = await controller.Configure(actionDesignDTO);
 
             var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
@@ -393,8 +393,8 @@ namespace DockyardTest.Controllers
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public async void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
         {
-            var controller = new ActionController();
-            ActionDTO actionDesignDTO = CreateActionWithId(2);
+            var controller = new ActionsController();
+            ActionDTO actionDesignDTO = CreateActionWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.ActivityTemplateId = 0;
             var actionResult = await controller.Configure(actionDesignDTO);
 

@@ -14,10 +14,15 @@
 
             $scope.authError = false;
             $scope.authErrorText = null;
+            $scope.mode = $scope.mode;
+
+            // 3 - AuthenticationMode.InternalModeWithDomain
+            $scope.showDomain = $scope.mode == 3 ? 1 : 0;
 
             $scope.formData = {
                 username: 'docusign_developer@dockyard.company',
-                password: 'grolier34'
+                password: 'grolier34',
+                domain: "dockyard.company"
             };
 
             $scope.submitForm = function () {
@@ -29,10 +34,11 @@
                 var data = {
                     ActivityTemplateId: $scope.activityTemplateId,
                     Username: $scope.formData.username,
-                    Password: $scope.formData.password
+                    Password: $scope.formData.password,
+                    Domain: $scope.formData.domain
                 };
 
-                $http.post('/authentication/token', data)
+                $http.post('/api/authentication/token', data)
                     .then(function (res: any) {
 
                         if (res.data.error) {

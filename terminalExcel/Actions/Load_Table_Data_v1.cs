@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using StructureMap;
@@ -47,7 +48,7 @@ namespace terminalExcel.Actions
                     },
                 }));
 
-                Controls.Add(new TextBlockControlDefinitionDTO
+                Controls.Add(new TextBlock
                 {
                     Label = "",
                     Value = "This Action will try to extract a table of rows from the first spreadsheet in the file. The rows should have a header row.",
@@ -56,7 +57,7 @@ namespace terminalExcel.Actions
                 
                 if (includeTextBlockControl)
                 {
-                    Controls.Add(new TextBlockControlDefinitionDTO
+                    Controls.Add(new TextBlock
                     {
                         Label = "",
                         Value = "File successfully uploaded.",
@@ -77,10 +78,10 @@ namespace terminalExcel.Actions
 
         private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, Guid containerId)
         {
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var tableDataMS = await GetTargetTableData(
-                curActionDO.Id,
+                curActionDO,
                 Crate.GetStorage(curActionDO)
             );
 
@@ -100,7 +101,7 @@ namespace terminalExcel.Actions
             return processPayload;            
         }
 
-        private async Task<StandardTableDataCM> GetTargetTableData(int actionId, CrateStorage curCrateStorageDTO)
+        private async Task<StandardTableDataCM> GetTargetTableData(ActionDO actionDO, CrateStorage curCrateStorageDTO)
         {
             // Find crates of manifest type Standard Table Data
             var standardTableDataCrates = curCrateStorageDTO.CratesOfType<StandardTableDataCM>();
@@ -108,15 +109,15 @@ namespace terminalExcel.Actions
             // If no crate of manifest type "Standard Table Data" found, try to find upstream for a crate of type "Standard File Handle"
             if (!standardTableDataCrates.Any())
             {
-                return await GetUpstreamTableData(actionId, curCrateStorageDTO);
+                return await GetUpstreamTableData(actionDO);
             }
 
             return standardTableDataCrates.First().Content;
         }
 
-        private async Task<StandardTableDataCM> GetUpstreamTableData(int actionId, CrateStorage curCrateStorageDTO)
+        private async Task<StandardTableDataCM> GetUpstreamTableData(ActionDO actionDO)
         {
-            var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(actionId);
+            var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(actionDO);
 
             //if no "Standard File Handle" crate found then return
             if (!upstreamFileHandleCrates.Any())
@@ -162,11 +163,11 @@ namespace terminalExcel.Actions
         /// </summary>
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.Id > 0)
+            if (curActionDO.Id != Guid.Empty)
             {
 
                 //Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-                Crate upstreamFieldsCrate = await MergeUpstreamFields(curActionDO.Id, "Select Excel File");
+                Crate upstreamFieldsCrate = await MergeUpstreamFields(curActionDO, "Select Excel File");
 
                 using (var updater = Crate.UpdateStorage(curActionDO))
                 {

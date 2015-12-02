@@ -2,18 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
 using Data.Entities;
+using Data.States;
 
 namespace terminalSlack.Actions
 {
@@ -35,7 +37,7 @@ namespace terminalSlack.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(actionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
@@ -123,7 +125,7 @@ namespace terminalSlack.Actions
 
         private Crate PackCrate_ConfigurationControls()
         {
-            var fieldSelectChannel = new DropDownListControlDefinitionDTO()
+            var fieldSelectChannel = new DropDownList()
             {
                 Label = "Select Slack Channel",
                 Name = "Selected_Slack_Channel",
@@ -139,7 +141,7 @@ namespace terminalSlack.Actions
                 }
             };
 
-            var fieldSelectMessageField = new DropDownListControlDefinitionDTO()
+            var fieldSelectMessageField = new DropDownList()
             {
                 Label = "Select Message Field",
                 Name = "Select_Message_Field",
@@ -172,7 +174,7 @@ namespace terminalSlack.Actions
         private async Task<Crate> CreateAvailableFieldsCrate(ActionDO actionDO)
         {
             var curUpstreamFields =
-                (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO.Id, GetCrateDirection.Upstream))
+                (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream))
 
                 .Where(x => x.Label != "Available Channels")
                 .SelectMany(x => x.Content.Fields)

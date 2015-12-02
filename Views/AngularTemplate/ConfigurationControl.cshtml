@@ -40,7 +40,7 @@
         -->
     <div ng-if='field.type == "RadioButtonGroup"'>
         <label class='control-label'>{{::field.label}}</label>
-        <radio-button-group field='field' current-action='currentAction'></radio-button-group>
+        <radio-button-group field='field' current-action='currentAction' change='onChange'></radio-button-group>
     </div>  
     
     <!--
@@ -133,6 +133,13 @@
     <div ng-if='field.type == "Duration"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
         <duration field="field"></duration>
+    </div>
+
+    <!--
+        RunRoute button
+    -->
+    <div ng-if='field.type == "RunRouteButton"'>
+        <run-route-button current-action='currentAction' field="field"></run-route-button>
     </div>
 
     <!-- Add more configuration field templates below -->

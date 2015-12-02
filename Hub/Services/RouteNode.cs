@@ -10,7 +10,8 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Hub.Enums;
+using Data.States;
+
 using Hub.Interfaces;
 using Hub.Managers;
 using Utilities.Configuration.Azure;
@@ -206,7 +207,7 @@ namespace Hub.Services
 
 
 
-        public async Task Process(int curActivityId, ContainerDO containerDO)
+        public async Task Process(Guid curActivityId, ContainerDO containerDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -233,8 +234,8 @@ namespace Hub.Services
             curActivityTemplates = uow.ActivityTemplateRepository
                 .GetAll()
                 .OrderBy(t => t.Category)
-                .ToList()
-                .Select(Mapper.Map<ActivityTemplateDTO>);
+                .Select(Mapper.Map<ActivityTemplateDTO>)
+                .ToList();
 
 
             //we're currently bypassing the subscription logic until we need it
@@ -259,8 +260,8 @@ namespace Hub.Services
                 .Where(predicate)
                 .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                 .OrderBy(t => t.Category)
-                .ToList()
-                .Select(Mapper.Map<ActivityTemplateDTO>);
+                .Select(Mapper.Map<ActivityTemplateDTO>)
+                .ToList();
         }
 
         public IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount)
@@ -271,8 +272,8 @@ namespace Hub.Services
                 .Where(at => at.Category == Data.States.ActivityCategory.Solution 
                     && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                 .OrderBy(t => t.Category)
-                .ToList()
-                .Select(Mapper.Map<ActivityTemplateDTO>);
+                .Select(Mapper.Map<ActivityTemplateDTO>)
+                .ToList();
 
             //we're currently bypassing the subscription logic until we need it
             //we're bypassing the pluginregistration logic here because it's going away in V2
@@ -294,14 +295,12 @@ namespace Hub.Services
             {
                 curActivityTemplates = uow.ActivityTemplateRepository
                     .GetQuery()
-                    .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
+                    .Where(at => at.ActivityTemplateState == Data.States.ActivityTemplateState.Active).AsEnumerable().ToArray()
                     .GroupBy(t => t.Category)
                     .OrderBy(c => c.Key)
-                    //lets load them all before memory processing
-                    .AsEnumerable()
                     .Select(c => new ActivityTemplateCategoryDTO
                     {
-                        Activities = c.Select(Mapper.Map<ActivityTemplateDTO>),
+                        Activities = c.Select(Mapper.Map<ActivityTemplateDTO>).ToList(),
                         Name = c.Key.ToString()
                     })
                     .ToList();
@@ -310,17 +309,18 @@ namespace Hub.Services
             return curActivityTemplates;
         }
         
-        public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(int activityId, GetCrateDirection direction)
+        public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(
+            Guid activityId, CrateDirection direction)
         { 
             var httpClient = new HttpClient();
 
             // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
-            var directionSuffix = (direction == GetCrateDirection.Upstream)
+            var directionSuffix = (direction == CrateDirection.Upstream)
                 ? "upstream_actions/"
                 : "downstream_actions/";
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "route_nodes/"
+                +"api/"+ CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
                 + directionSuffix
                 + "?id=" + activityId;
 

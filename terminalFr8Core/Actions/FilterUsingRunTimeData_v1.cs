@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Web.Razor.Generator;
 using AutoMapper;
+using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
@@ -12,7 +13,8 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+using Data.States;
+
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -33,7 +35,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetProcessPayload(containerId);
+            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
 
             var controlsMS = Action.GetControlsManifest(curActionDO);
 
@@ -201,7 +203,7 @@ namespace terminalFr8Core.Actions
 
         private Crate CreateControlsCrate()
         {
-            var fieldFilterPane = new FilterPaneControlDefinitionDTO()
+            var fieldFilterPane = new FilterPane()
             {
                 Label = "Execute Actions If:",
                 Name = "Selected_Filter",
@@ -221,11 +223,11 @@ namespace terminalFr8Core.Actions
         /// </summary>
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.Id > 0)
+            if (curActionDO.Id != Guid.Empty)
             {
                 //this conversion from actiondto to Action should be moved back to the controller edge
                 var curUpstreamFields =
-                    (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream))
+                    (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
                     .Fields
                     .ToArray();
 
@@ -238,7 +240,7 @@ namespace terminalFr8Core.Actions
                 using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
                 {
                     updater.CrateStorage = AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
-            }
+                }
             }
             else
             {

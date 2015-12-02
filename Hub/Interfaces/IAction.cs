@@ -6,7 +6,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+
 
 namespace Hub.Interfaces
 {
@@ -17,14 +17,14 @@ namespace Hub.Interfaces
         ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO currentActionDo);
         Task<ActionDTO> Configure(string userId, ActionDO curActionDO, bool saveResult = true);
         //Task<ActionDO> SaveUpdateAndConfigure(IUnitOfWork uow, ActionDO submittedActionDo);
-        ActionDO GetById(int id);
-        ActionDO GetById(IUnitOfWork uow, int id);
+        ActionDO GetById(Guid id);
+        ActionDO GetById(IUnitOfWork uow, Guid id);
         //void Delete(int id); -> Delete is moved to ProcessNodeTemplate
         ActionDO MapFromDTO(ActionDTO curActionDTO);
         ActionDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, RouteNodeDO parentNode);
-        Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId,
-            int actionTemplateId, string name, string label = null,
-            int? parentNodeId = null, bool createRoute = false);
+
+        Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name,
+                                             string label = null, Guid? parentNodeId = null, bool createRoute = false);
         
         Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow);
         Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO);

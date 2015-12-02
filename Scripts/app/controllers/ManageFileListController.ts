@@ -86,7 +86,7 @@ module dockyard.controllers {
         }
 
         //this function will be called on every reloadData call to data-table
-        //angular removes $promise property of _processTemplates after successful load
+        //angular removes $promise property of _routes after successful load
         //so we need to manage promises manually
         private ResolveFilesPromise() {
             if (this._manageFiles.$promise) {

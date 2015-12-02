@@ -19,37 +19,15 @@ namespace terminalGoogle.Services
 {
     public class GoogleSheet : IGoogleSheet
     {
-        private OAuth2Parameters CreateOAuth2Parameters(
-            string accessCode = null,
-            string accessToken = null,
-            string refreshToken = null,
-            string state = null)
+        private readonly IGoogleIntegration _googleIntegration;
+        public GoogleSheet()
         {
-            return new OAuth2Parameters
-            {
-                ClientId = CloudConfigurationManager.GetSetting("GoogleClientId"),
-                ClientSecret = CloudConfigurationManager.GetSetting("GoogleClientSecret"),
-                Scope = CloudConfigurationManager.GetSetting("GoogleScope"),
-                RedirectUri = CloudConfigurationManager.GetSetting("GoogleRedirectUri"),
-                AccessCode = accessCode,
-                AccessToken = accessToken,
-                RefreshToken = refreshToken,
-                State = state,
-                AccessType = "offline",
-                ApprovalPrompt = "force"
-            };
-        }
-
-        private GOAuth2RequestFactory CreateRequestFactory(GoogleAuthDTO authDTO)
-        {
-            var parameters = CreateOAuth2Parameters(accessToken: authDTO.AccessToken, refreshToken: authDTO.RefreshToken);
-            // Initialize the variables needed to make the request
-            return new GOAuth2RequestFactory(null, "fr8", parameters);
+            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
         }
 
         private IEnumerable<SpreadsheetEntry> EnumerateSpreadsheets(GoogleAuthDTO authDTO)
         {
-            GOAuth2RequestFactory requestFactory = CreateRequestFactory(authDTO);
+            GOAuth2RequestFactory requestFactory = _googleIntegration.CreateRequestFactory(authDTO);
             SpreadsheetsService service = new SpreadsheetsService("fr8");
             service.RequestFactory = requestFactory;
             // Instantiate a SpreadsheetQuery object to retrieve spreadsheets.
@@ -58,24 +36,6 @@ namespace terminalGoogle.Services
             // Make a request to the API and get all spreadsheets.
             SpreadsheetFeed feed = service.Query(query);
             return feed.Entries.Cast<SpreadsheetEntry>();
-        }
-
-        public string CreateOAuth2AuthorizationUrl(string state = null)
-        {
-            var parameters = CreateOAuth2Parameters(state: state);
-            return OAuthUtil.CreateOAuth2AuthorizationUrl(parameters);
-        }
-
-        public GoogleAuthDTO GetToken(string code)
-        {
-            var parameters = CreateOAuth2Parameters(accessCode: code);
-            OAuthUtil.GetAccessToken(parameters);
-            return new GoogleAuthDTO()
-            {
-                AccessToken = parameters.AccessToken,
-                Expires = parameters.TokenExpiry,
-                RefreshToken = parameters.RefreshToken
-            };
         }
 
         public Dictionary<string, string> EnumerateSpreadsheetsUris(GoogleAuthDTO authDTO)

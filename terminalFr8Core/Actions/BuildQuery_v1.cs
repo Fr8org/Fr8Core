@@ -8,12 +8,14 @@ using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalFr8Core.Infrastructure;
 using Data.Entities;
+using Data.States;
+using Data.Control;
 
 namespace terminalFr8Core.Actions
 {
@@ -120,8 +122,8 @@ namespace terminalFr8Core.Actions
         private async Task<List<FieldDTO>> ExtractColumnDefinitions(ActionDO actionDO)
         {
             var upstreamCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(
-                actionDO.Id,
-                GetCrateDirection.Upstream
+                actionDO,
+                CrateDirection.Upstream
             );
 
             if (upstreamCrates == null) { return null; }
@@ -181,7 +183,7 @@ namespace terminalFr8Core.Actions
         {
             AddControl(
                 storage,
-                new DropDownListControlDefinitionDTO()
+                new DropDownList()
                 {
                     Label = "Select Object",
                     Name = "SelectObjectDdl",
@@ -294,7 +296,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private void AddQueryBuilder(CrateStorage storage)
         {
-            var queryBuilder = new QueryBuilderControlDefinitionDTO()
+            var queryBuilder = new QueryBuilder()
             {
                 Label = "Please, specify query:",
                 Name = "SelectedQuery",
@@ -315,7 +317,7 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
             var stroage = Crate.GetStorage(curActionDO);
             var selectedObject = ExtractSelectedObject(stroage);
             if (string.IsNullOrEmpty(selectedObject))

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Data.Control;
 using Data.Crates;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Enums;
+
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
@@ -129,7 +130,7 @@ namespace terminalSendGrid.Actions
         private async Task<Crate> GetAvailableDataFields(ActionDO curActionDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
                     .Fields
                     .ToArray();
 
@@ -164,7 +165,7 @@ namespace terminalSendGrid.Actions
         {
             var fromAddress = _configRepository.Get("OutboundFromAddress");
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var emailAddress = ExtractSpecificOrUpstreamValue(
                 Crate.GetStorage(curActionDO.CrateStorage),

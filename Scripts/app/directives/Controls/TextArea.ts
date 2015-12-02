@@ -3,7 +3,7 @@ module dockyard.directives.textBlock {
     'use strict';
 
     export interface ITextAreaScope extends ng.IScope {
-        field: model.TextAreaControlDefinitionDTO;
+        field: model.TextArea;
         buttonSet: Array<Array<String>>;
         style:string;
         isDisabled: boolean;

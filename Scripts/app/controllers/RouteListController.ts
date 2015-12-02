@@ -7,16 +7,16 @@ module dockyard.controllers {
     'use strict';
 
     export interface IRouteListScope extends ng.IScope {
-        executeProcessTemplate: (processTemplate: interfaces.IRouteVM) => void;
-        goToProcessTemplatePage: (processTemplate: interfaces.IRouteVM) => void;
-        goToProcessTemplateDetailsPage: (processTemplate: interfaces.IRouteVM) => void;
-        deleteProcessTemplate: (processTemplate: interfaces.IRouteVM) => void;
-        activateProcessTemplate: (processTemplate: interfaces.IRouteVM) => void;
-        deactivateProcessTemplate: (processTemplate: interfaces.IRouteVM) => void;
+        executeRoute: (route: interfaces.IRouteVM) => void;
+        goToRoutePage: (route: interfaces.IRouteVM) => void;
+        goToRouteDetailsPage: (route: interfaces.IRouteVM) => void;
+        deleteRoute: (route: interfaces.IRouteVM) => void;
+        activateRoute: (route: interfaces.IRouteVM) => void;
+        deactivateRoute: (route: interfaces.IRouteVM) => void;
         dtOptionsBuilder: any;
         dtColumnDefs: any;
-        activeProcessTemplates: Array<interfaces.IRouteVM>;
-        inActiveProcessTemplates: Array<interfaces.IRouteVM>;
+        activeRoutes: Array<interfaces.IRouteVM>;
+        inActiveRoutes: Array<interfaces.IRouteVM>;
     }
 
     /*
@@ -38,7 +38,7 @@ module dockyard.controllers {
 
         constructor(
             private $scope: IRouteListScope,
-            private ProcessTemplateService: services.IRouteService,
+            private RouteService: services.IRouteService,
             private $modal,
             private DTOptionsBuilder,
             private DTColumnDefBuilder,
@@ -52,14 +52,14 @@ module dockyard.controllers {
             //Load Process Templates view model
             $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withDisplayLength(10);   
             $scope.dtColumnDefs = this.getColumnDefs(); 
-            $scope.activeProcessTemplates = ProcessTemplateService.getbystatus({ id: null, status: 2 });   
-            $scope.inActiveProcessTemplates = ProcessTemplateService.getbystatus({ id: null, status: 1 });
-            $scope.executeProcessTemplate = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.executeProcessTemplate);
-            $scope.goToProcessTemplatePage = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.goToProcessTemplatePage);
-            $scope.goToProcessTemplateDetailsPage = <(processTemplate: interfaces.IRouteVM) => void>angular.bind(this, this.goToProcessTemplateDetailsPage);
-            $scope.deleteProcessTemplate = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.deleteProcessTemplate);
-            $scope.activateProcessTemplate = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.activateProcessTemplate);
-            $scope.deactivateProcessTemplate = <(processTemplate: interfaces.IRouteVM) => void> angular.bind(this, this.deactivateProcessTemplate);
+            $scope.activeRoutes = RouteService.getbystatus({ id: null, status: 2 });   
+            $scope.inActiveRoutes = RouteService.getbystatus({ id: null, status: 1 });
+            $scope.executeRoute = <(route: interfaces.IRouteVM) => void> angular.bind(this, this.executeRoute);
+            $scope.goToRoutePage = <(route: interfaces.IRouteVM) => void> angular.bind(this, this.goToRoutePage);
+            $scope.goToRouteDetailsPage = <(route: interfaces.IRouteVM) => void>angular.bind(this, this.goToRouteDetailsPage);
+            $scope.deleteRoute = <(route: interfaces.IRouteVM) => void> angular.bind(this, this.deleteRoute);
+            $scope.activateRoute = <(route: interfaces.IRouteVM) => void> angular.bind(this, this.activateRoute);
+            $scope.deactivateRoute = <(route: interfaces.IRouteVM) => void> angular.bind(this, this.deactivateRoute);
         }
 
         private getColumnDefs() {
@@ -71,27 +71,36 @@ module dockyard.controllers {
             ];
         }
 
-        private activateProcessTemplate(processTemplate) {
-            this.ProcessTemplateService.activate(processTemplate);
+        private activateRoute(route) {
+            this.RouteService.activate(route);
             location.reload();
         };
-        private deactivateProcessTemplate(processTemplate) {
-            this.ProcessTemplateService.deactivate(processTemplate);
+        private deactivateRoute(route) {
+            this.RouteService.deactivate(route);
             location.reload();
         };
-        private executeProcessTemplate(processTemplateId, $event) {
-            this.ProcessTemplateService.execute({ id: processTemplateId });
+        private executeRoute(routeId, $event) {
+			if ($event.ctrlKey) {
+				this.$modal.open({
+					animation: true,
+					templateUrl: '/AngularTemplate/_AddPayloadModal',
+					controller: 'PayloadFormController', resolve: { routeId: () => routeId }
+				});
+        }
+			else {
+				this.RouteService.execute({ id: routeId }, null, null, null);
+			}
         }
 
-        private goToProcessTemplatePage(processTemplateId) {
-            this.$state.go('processBuilder', { id: processTemplateId });
+        private goToRoutePage(routeId) {
+            this.$state.go('routeBuilder', { id: routeId });
         }
 
-        private goToProcessTemplateDetailsPage(processTemplateId) {
-            this.$state.go('routeDetails', { id: processTemplateId });
+        private goToRouteDetailsPage(routeId) {
+            this.$state.go('routeDetails', { id: routeId });
         }
 
-        private deleteProcessTemplate(processTemplateId: number, isActive: boolean) {
+        private deleteRoute(routeId: string, isActive: boolean) {
             //to save closure of our controller
             var self = this;
             this.$modal.open({
@@ -101,11 +110,11 @@ module dockyard.controllers {
 
             }).result.then(() => {
                 //Deletion confirmed
-                this.ProcessTemplateService.delete({ id: processTemplateId }).$promise.then(() => {
-                    var procTemplates = isActive ? self.$scope.activeProcessTemplates : self.$scope.inActiveProcessTemplates;
+                this.RouteService.delete({ id: routeId }).$promise.then(() => {
+                    var procTemplates = isActive ? self.$scope.activeRoutes : self.$scope.inActiveRoutes;
                     //now loop through our existing templates and remove from local memory
                     for (var i = 0; i < procTemplates.length; i++) {
-                        if (procTemplates[i].id === processTemplateId) {
+                        if (procTemplates[i].id === routeId) {
                             procTemplates.splice(i, 1);
                             break;
                         }

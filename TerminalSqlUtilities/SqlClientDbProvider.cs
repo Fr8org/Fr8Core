@@ -150,15 +150,18 @@ namespace TerminalSqlUtilities
                         var schemaName = reader.GetString(0);
                         var tableName = reader.GetString(1);
                         var columnName = reader.GetString(2);
-                        var dbType = MapDbType(reader.GetString(3));
+                        DbType dbType;
 
-                        columns.Add(
-                            new ColumnInfo(
-                                new TableInfo(schemaName, tableName),
-                                columnName,
-                                dbType
-                            )
-                        );
+                        if (TryMapDbType(reader.GetString(3), out dbType))
+                        {
+                            columns.Add(
+                                new ColumnInfo(
+                                    new TableInfo(schemaName, tableName),
+                                    columnName,
+                                    dbType
+                                    )
+                                );
+                        }
                     }
 
                     return columns;
@@ -169,38 +172,41 @@ namespace TerminalSqlUtilities
         /// <summary>
         /// Map string data-type name to System.Data.DbType.
         /// </summary>
-        private DbType MapDbType(string dataType)
+        private bool TryMapDbType(string dataType, out DbType dbType)
         {
             var dataTypeUpper = dataType.ToUpper();
 
             if (dataTypeUpper.Contains("VARCHAR"))
             {
-                return DbType.String;
+                dbType = DbType.String;
             }
             else if (dataTypeUpper == "INT")
             {
-                return DbType.Int32;
+                dbType = DbType.Int32;
             }
             else if (dataTypeUpper.Contains("DATE") || dataTypeUpper.Contains("TIME"))
             {
-                return DbType.DateTime;
+                dbType = DbType.DateTime;
             }
             else if (dataTypeUpper == "BIT")
             {
-                return DbType.Boolean;
+                dbType = DbType.Boolean;
             }
             else if (dataTypeUpper.Contains("BINARY"))
             {
-                return DbType.Binary;
+                dbType = DbType.Binary;
             }
             else if (dataTypeUpper == "UNIQUEIDENTIFIER")
             {
-                return DbType.Guid;
+                dbType = DbType.Guid;
             }
             else
             {
-                throw new NotSupportedException("Unknown data type");
+                dbType = DbType.Object;
+                return false;
             }
+
+            return true;
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Data.Control;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -43,7 +44,7 @@ namespace terminalSalesforce.Actions
         {
             PayloadDTO processPayload = null;
 
-            processPayload = await GetProcessPayload(containerId);
+            processPayload = await GetProcessPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
@@ -71,14 +72,14 @@ namespace terminalSalesforce.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO= null)
         {
-            var firstNameCrate = new TextBoxControlDefinitionDTO()
+            var firstNameCrate = new TextBox()
             {
                 Label = "First Name",
                 Name = "firstName",
                 Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
 
             };
-            var lastName = new TextBoxControlDefinitionDTO()
+            var lastName = new TextBox()
             {
                 Label = "Last Name",
                 Name = "lastName",
@@ -86,7 +87,7 @@ namespace terminalSalesforce.Actions
                 Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
             };
 
-            var mobileNumber = new TextBoxControlDefinitionDTO()
+            var mobileNumber = new TextBox()
             {
                 Label = "Mobile Phone",
                 Name = "mobilePhone",
@@ -94,7 +95,7 @@ namespace terminalSalesforce.Actions
                 Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
             };
 
-            var email = new TextBoxControlDefinitionDTO()
+            var email = new TextBox()
             {
                 Label = "Email",
                 Name = "email",

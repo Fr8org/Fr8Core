@@ -3,7 +3,7 @@ module dockyard.tests.utils.fixtures {
 
     export class ActionDTO {
 
-        public static newProcessTemplate = <interfaces.IRouteVM> {
+        public static newRoute = <interfaces.IRouteVM> {
             name: 'Test',
             description: 'Description',
             routeState: 1
@@ -81,9 +81,9 @@ module dockyard.tests.utils.fixtures {
                 crates: [{
                     id: "37ea608f-eead-4d0f-b75f-8033474e6030",
                     label: "Configuration_Controls",
-                    contents: angular.fromJson("{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard Configuration Controls\"}"),
+                    contents: angular.fromJson("{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard UI Controls\"}"),
                     parentCrateId: null,
-                    manifestType: "Standard Configuration Controls",                    
+                    manifestType: "Standard UI Controls",                    
                     manufacturer: null
                 }]
             },
@@ -99,7 +99,7 @@ module dockyard.tests.utils.fixtures {
             },
             isTempId: false,
             currentView: null,
-            id: 81,
+            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8',
             name: "Write_To_Sql_Server"
         };
 
@@ -108,9 +108,9 @@ module dockyard.tests.utils.fixtures {
                 crates: [{
                     id: "37ea608f-eead-4d0f-b75f-8033474e6030",
                     label: "Configuration_Controls",
-                    contents: angular.fromJson("{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard Configuration Controls\"}"),
+                    contents: angular.fromJson("{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard UI Controls\"}"),
                     parentCrateId: null,
-                    manifestType: "Standard Configuration Controls",
+                    manifestType: "Standard UI Controls",
                     manufacturer: null
                 }, {
                         id: "37ea608f-eead-4d0f-b75f-8033474e6030",
@@ -133,7 +133,7 @@ module dockyard.tests.utils.fixtures {
             },
             isTempId: false,
             currentView: null,
-            id: 81,
+            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8',
             name: "Write_To_Sql_Server"
         };
 
@@ -142,9 +142,9 @@ module dockyard.tests.utils.fixtures {
                 crates: [{
                     id: "37ea608f-eead-4d0f-b75f-8033474e6030",
                     label: "Configuration_Controls",
-                    contents: angular.fromJson("{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard Configuration Controls\"}"),
+                    contents: angular.fromJson("{\"Controls\":[{\"name\":\"connection_string\",\"required\":true,\"value\":null,\"label\":\"SQL Connection String\",\"type\":\"TextBox\",\"selected\":false,\"events\":[{\"name\":\"onChange\",\"handler\":\"requestConfig\"}],\"source\":null}],\"ManifestType\":6,\"ManifestId\":6,\"ManifestName\":\"Standard UI Controls\"}"),
                     parentCrateId: null,
-                    manifestType: "Standard Configuration Controls",
+                    manifestType: "Standard UI Controls",
                     manufacturer: null
                 }, {
                         id: "37ea608f-eead-4d0f-b75f-8033474e6030",
@@ -167,7 +167,7 @@ module dockyard.tests.utils.fixtures {
             },
             isTempId: false,
             currentView: null,
-            id: 81,
+            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8',
             name: "Write_To_Sql_Server"
         };
 

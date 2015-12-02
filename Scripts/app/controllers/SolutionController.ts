@@ -31,7 +31,7 @@ module dockyard.controllers {
                 this.onChildActionsDetected();
             });
 
-            $scope.action = new model.ActionDTO(0, 0, false);
+            $scope.action = new model.ActionDTO('0', '0', false);
 
             var solutionNameOrId = $stateParams["solutionName"];
             if (!solutionNameOrId) {
@@ -42,12 +42,12 @@ module dockyard.controllers {
             // If an positive integer is supplied, consider the value actionId
             // Otherwise consider the value solution name
             if (/[0-9]+$/.test(solutionNameOrId))
-                this.editExistingSolution(<number>solutionNameOrId, $scope);
+                this.editExistingSolution(<string>solutionNameOrId, $scope);
             else
                 this.createNewSolution(solutionNameOrId, $scope);
         }
 
-        private editExistingSolution(actionId: number, $scope: ISolutionScope) {
+        private editExistingSolution(actionId: string, $scope: ISolutionScope) {
             if ($scope.action != null && $scope.action.id === actionId) {
                 // don't need to load the action 
                 $scope.action.childrenActions = [];
@@ -90,7 +90,7 @@ module dockyard.controllers {
         }
 
         private onChildActionsDetected() {
-            this.$state.transitionTo('processBuilder', { id: this.$scope.route.id });
+            this.$state.transitionTo('routeBuilder', { id: this.$scope.route.id });
         }
 
     }

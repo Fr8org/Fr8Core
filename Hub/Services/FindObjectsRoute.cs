@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
@@ -19,6 +20,7 @@ namespace Hub.Services
 
             var route = new RouteDO()
             {
+                Id = Guid.NewGuid(),
                 Name = generatedRouteName,
                 Description = "Find Objects ",
                 Fr8Account = account,
@@ -28,12 +30,14 @@ namespace Hub.Services
 
             var subroute = new SubrouteDO()
             {
+                Id = Guid.NewGuid(),
                 ParentRouteNode = route
             };
 
             var connectToSqlActivityTemplate = _activityTemplate.GetByName(uow, "ConnectToSql_v1");
             var connectToSqlAction = new ActionDO()
             {
+                Id = Guid.NewGuid(),
                 ParentRouteNode = subroute,
                 Ordering = 1,
                 ActivityTemplate = connectToSqlActivityTemplate,
@@ -44,6 +48,7 @@ namespace Hub.Services
             var buildQueryActivityTemplate = _activityTemplate.GetByName(uow, "BuildQuery_v1");
             var buildQueryAction = new ActionDO()
             {
+                Id = Guid.NewGuid(),
                 ParentRouteNode = subroute,
                 Ordering = 2,
                 ActivityTemplate = buildQueryActivityTemplate,
@@ -54,6 +59,7 @@ namespace Hub.Services
             var executeSqlActivityTemplate = _activityTemplate.GetByName(uow, "ExecuteSql_v1");
             var executeSqlAction = new ActionDO()
             {
+                Id = Guid.NewGuid(),
                 ParentRouteNode = subroute,
                 Ordering = 3,
                 ActivityTemplate = executeSqlActivityTemplate,
@@ -64,6 +70,7 @@ namespace Hub.Services
             var manageRouteActivityTemplate = _activityTemplate.GetByName(uow, "ManageRoute_v1");
             var manageRouteAction = new ActionDO()
             {
+                Id = Guid.NewGuid(),
                 ParentRouteNode = subroute,
                 Ordering = 4,
                 ActivityTemplate = manageRouteActivityTemplate,

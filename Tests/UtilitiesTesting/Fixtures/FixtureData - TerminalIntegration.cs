@@ -25,7 +25,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new RouteDO()
             {
-                Id=1000,
+                Id = GetTestGuidById(1000),
                 Name = "Test Route Name",
                 Description = "Test Route Description",
                 RouteState = RouteState.Active,
@@ -36,7 +36,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new SubrouteDO()
             {
-                Id = 1001,
+                Id = GetTestGuidById(1001),
                 Name = "Test Subroute"
             };
         }
@@ -111,6 +111,32 @@ namespace UtilitiesTesting.Fixtures
                 Version = "1",
                 Terminal = TestTerminal_DocuSign(),
                 AuthenticationType = AuthenticationType.Internal
+            };
+        }
+
+        public static ActivityTemplateDO TestActivityTemplateDO_RecordDocuSignEvents()
+        {
+            return new ActivityTemplateDO()
+            {
+                Name = "Record_DocuSign_Events",
+                Label = "Record DocuSign Events",
+                Version = "1",
+                Category = ActivityCategory.Forwarders,
+                Terminal = TestTerminal_DocuSign(),
+                AuthenticationType = AuthenticationType.Internal,
+                MinPaneWidth = 330
+            };
+        }
+
+        public static ActivityTemplateDO TestActivityTemplateDO_StoreMTData()
+        {
+            return new ActivityTemplateDO()
+            {
+                Name = "StoreMTData",
+                Label = "Store MT Data",
+                Category = ActivityCategory.Processors,
+                Terminal = TestTerminal_Core(),
+                Version = "1"
             };
         }
 

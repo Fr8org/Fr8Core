@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Razor.Generator;
+using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Enums;
+using Data.States;
+
 using Hub.Managers;
 using StructureMap;
 using TerminalBase.Infrastructure;
@@ -41,7 +43,7 @@ namespace terminalFr8Core.Actions
             var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(actionDO, containerId);
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
             {
@@ -89,7 +91,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private Crate CreateStandardConfigurationControls()
         {
-            var fieldFilterPane = new MappingPaneControlDefinitionDTO()
+            var fieldFilterPane = new MappingPane()
             {
                 Label = "Configure Mapping",
                 Name = "Selected_Mapping",
@@ -107,12 +109,12 @@ namespace terminalFr8Core.Actions
             Crate getErrorMessageCrate = null;
 
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
                 .Fields
                 .ToArray();
 
             var curDownstreamFields =
-                (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Downstream))
+                (await GetDesignTimeFields(curActionDO, CrateDirection.Downstream))
                 .Fields
                 .ToArray();
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
@@ -63,7 +64,7 @@ namespace terminalGoogle.Actions
         private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(
             ActionDO curActionDO, Guid containerId)
         {
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var tableDataMS = await GetTargetTableData(curActionDO);
 
@@ -100,7 +101,7 @@ namespace terminalGoogle.Actions
 
         private async Task<StandardTableDataCM> GetUpstreamTableData(ActionDO curActionDO)
         {
-            var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(curActionDO.Id);
+            var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(curActionDO);
 
             //if no "Standard File Handle" crate found then return
             if (!upstreamFileHandleCrates.Any())
@@ -127,7 +128,7 @@ namespace terminalGoogle.Actions
         {
             var controlList = new List<ControlDefinitionDTO>();
 
-            var spreadsheetControl = new DropDownListControlDefinitionDTO()
+            var spreadsheetControl = new DropDownList()
             {
                 Label = "Select a Google Spreadsheet",
                 Name = "select_spreadsheet",
@@ -152,7 +153,7 @@ namespace terminalGoogle.Actions
             };
             controlList.Add(spreadsheetControl);
 
-            var textBlockControlField = new TextBlockControlDefinitionDTO()
+            var textBlockControlField = new TextBlock()
             {
                 Label = "",
                 Value = "This Action will try to extract a table of rows from the first worksheet in the selected spreadsheet. The rows should have a header row.",
@@ -165,9 +166,9 @@ namespace terminalGoogle.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.Id > 0)
+            if (curActionDO.Id != Guid.Empty)
             {
                 //build a controls crate to render the pane
                 var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
@@ -184,7 +185,8 @@ namespace terminalGoogle.Actions
                 throw new ArgumentException(
                     "Configuration requires the submission of an Action that has a real ActionId");
             }
-            return curActionDO;
+
+            return Task.FromResult(curActionDO);
         }
 
         /// <summary>

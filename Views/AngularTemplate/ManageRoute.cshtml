@@ -1,8 +1,5 @@
-﻿<div block-if="isBusy()" stop-click-propagation style="padding: 10px;">
-    <div ng-show="error">{{error}}</div>
-    <a href class="btn btn-primary" ng-click="runNow()">Run Now</a>
-
-    <div style="margin-top: 30px;">
+﻿<div style="padding: 10px;">
+    <div>
         <div class="form-group">
             <label>Name:</label>
             <input type="text" class="form-control" ng-model="saveRouteName" />
@@ -11,6 +8,6 @@
     </div>
 
     <div style="margin-top: 30px;" ng-show="copySuccess">
-        Saved to &laquo;<a href="/Dashboard#/processes/{{copySuccess.id}}/builder" target="_blank">{{copySuccess.name}}</a>&raquo; route.
+        Saved to &laquo;<a href="/Dashboard#/routes/{{copySuccess.id}}/builder" target="_blank">{{copySuccess.name}}</a>&raquo; route.
     </div>
 </div>

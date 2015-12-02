@@ -1,28 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hub.Managers.APIManagers.Transmitters.Restful
 {
     public class RestfulServiceException : ApplicationException
     {
-        public RestfulServiceException()
+        public int StatusCode
         {
-            
+            get; 
+            private set;
         }
 
-        public RestfulServiceException(string message)
+        public RestfulServiceException(int statusCode)
+        {
+            StatusCode = statusCode;
+        }
+
+        public RestfulServiceException(int statusCode, string message)
             : base(message)
         {
-            
+            StatusCode = statusCode;
         }
 
-        public RestfulServiceException(string message, Exception innerException)
+        public RestfulServiceException(int statusCode, string message, Exception innerException)
             : base(message, innerException)
         {
-            
+            StatusCode = statusCode;
         }
     }
 }

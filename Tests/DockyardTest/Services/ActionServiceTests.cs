@@ -20,6 +20,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
 using Newtonsoft.Json.Linq;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Action = Hub.Services.Action;
@@ -49,6 +50,8 @@ namespace DockyardTest.Services
         public override void SetUp()
         {
             base.SetUp();
+            TerminalBootstrapper.ConfigureTest();
+
             _action = ObjectFactory.GetInstance<IAction>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
@@ -243,7 +246,7 @@ namespace DockyardTest.Services
                     {
                         var newAction = new ActionDO
                         {
-                            Id = addCounter + 666,
+                            Id = FixtureData.GetTestGuidById(addCounter + 666),
                             ParentRouteNode = a,
                             Name = "____New " + addCounter
                         };
@@ -259,11 +262,12 @@ namespace DockyardTest.Services
                 {
                     Visit(updatedTree, a =>
                     {
-                        if (a.Id > 666)
+                        // if (a.Id > 666)
+                        if (FixtureData.GetTestIdByGuid(a.Id) > 666)
                         {
                             var newAction = new ActionDO
                             {
-                                Id = addCounter + 666,
+                                Id = FixtureData.GetTestGuidById(addCounter + 666),
                                 ParentRouteNode = a,
                                 Name = "____New " + addCounter
                             };
@@ -306,7 +310,7 @@ namespace DockyardTest.Services
                 uow.TerminalRepository.Add(terminal);
                 uow.SaveChanges();
 
-                var template = new ActivityTemplateDO("Template1", "label", "1", terminal.Id);
+                var template = new ActivityTemplateDO("Template1", "label", "1", "description", terminal.Id);
                 uow.ActivityTemplateRepository.Add(template);
                 var parent = new ActionDO();
                 uow.ActionRepository.Add(parent);
