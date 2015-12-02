@@ -62,5 +62,30 @@ namespace terminalDocuSignTests.Fixtures
                 ActivityTemplateId = activityTemplate.Id
             };
         }
+
+        public static ActionDTO Record_Docusign_v1_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = Record_DocuSign_Envelope_v1_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Record_DocuSign",
+                Label = "Record DocuSign",
+                AuthToken = DocuSign_AuthToken(),
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
+        public static ActivityTemplateDTO Record_DocuSign_Envelope_v1_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 3,
+                Name = "Record_DocuSign_Events_TEST",
+                Version = "1"
+            };
+        }        
     }
 }
