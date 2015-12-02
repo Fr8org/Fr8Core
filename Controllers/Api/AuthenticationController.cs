@@ -50,6 +50,7 @@ namespace HubWeb.Controllers
             var error = await _authorization.AuthenticateInternal(
                 account,
                 activityTemplate,
+                credentials.Domain,
                 credentials.Username,
                 credentials.Password);
 
