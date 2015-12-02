@@ -21,10 +21,12 @@ namespace terminalFr8Core.Actions
     public class FindObjects_Solution_v1 : BaseTerminalAction
     {
         public FindObjectHelper FindObjectHelper { get; set; }
+        public ExplicitConfigurationHelper ExplicitConfigurationHelper { get; set; }
 
         public FindObjects_Solution_v1()
         {
             FindObjectHelper = new FindObjectHelper();
+            ExplicitConfigurationHelper = new ExplicitConfigurationHelper();
         }
 
         #region Configration.
@@ -57,7 +59,7 @@ namespace terminalFr8Core.Actions
             return Task.FromResult(actionDO);
         }
 
-        protected override Task<ActionDO> FollowupConfigurationResponse(
+        protected async override Task<ActionDO> FollowupConfigurationResponse(
             ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(actionDO))
@@ -80,9 +82,9 @@ namespace terminalFr8Core.Actions
                 UpdatePrevSelectedObject(updater);
             }
 
-            UpdateChildActions(actionDO);
+            await UpdateChildActions(actionDO);
 
-            return Task.FromResult(actionDO);
+            return actionDO;
         }
 
         private string GetCurrentSelectedObject(ICrateStorageUpdater updater)
@@ -257,5 +259,80 @@ namespace terminalFr8Core.Actions
         }
 
         #endregion Configration.
+
+        #region Child action management.
+
+        private async Task<ActivityTemplateDTO> ExtractActivityTemplate(ActionDO actionDO, string name)
+        {
+            var activityTemplate =
+                (await HubCommunicator.GetActivityTemplates(actionDO))
+                .FirstOrDefault(x => x.Name == name);
+
+            return activityTemplate;
+        }
+
+        private async Task<ActionDO> CreateConnectToSqlAction(ActionDO actionDO)
+        {
+            var activityTemplateName = "ConnectToSql";
+            var activityTemplateDTO = await ExtractActivityTemplate(actionDO, activityTemplateName);
+
+            if (activityTemplateDTO == null)
+            {
+                throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));
+            }
+
+            var connectToSqlActionDO = new ActionDO()
+            {
+                IsTempId = true,
+                ActivityTemplateId = activityTemplateDTO.Id,
+                CrateStorage = Crate.EmptyStorageAsStr(),
+                CreateDate = DateTime.Now,
+                Ordering = 1,
+                Name = "Connect To Sql",
+                Label = "Connect To Sql"
+            };
+
+            // var connectToSqlAction = new ConnectToSql_v1();
+            // connectToSqlActionDO = await connectToSqlAction
+            //     .Configure(connectToSqlActionDO, null);
+            // 
+            // ApplyConnectToSqlActionParameters(connectToSqlActionDO);
+            // 
+            // await connectToSqlAction.Configure(connectToSqlActionDO, null);
+
+            connectToSqlActionDO = await ExplicitConfigurationHelper
+                .Configure(connectToSqlActionDO, activityTemplateDTO);
+
+            ApplyConnectToSqlActionParameters(connectToSqlActionDO);
+
+            await ExplicitConfigurationHelper.Configure(connectToSqlActionDO, activityTemplateDTO);
+
+            return connectToSqlActionDO;
+        }
+
+        private void ApplyConnectToSqlActionParameters(ActionDO actionDO)
+        {
+            using (var updater = Crate.UpdateStorage(actionDO))
+            {
+                var controls = updater.CrateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
+                    .First();
+
+                controls.Controls[0].Value = GetConnectionString();
+            }
+        }
+
+        private async Task UpdateChildActions(ActionDO actionDO)
+        {
+            actionDO.ChildNodes = new List<RouteNodeDO>();
+
+            var connectToSqlActionDO = await CreateConnectToSqlAction(actionDO);
+            actionDO.ChildNodes.Add(connectToSqlActionDO);
+
+            // var buildQueryActionDO = await CreateBuildQueryAction(actionDO);
+            // actionDO.ChildNodes.Add(buildQueryActionDO);
+        }
+
+        #endregion Child action management.
     }
 }
