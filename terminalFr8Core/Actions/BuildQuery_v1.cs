@@ -251,33 +251,8 @@ namespace terminalFr8Core.Actions
             var columnDefinitions = await ExtractColumnDefinitions(actionDO);
             var columnTypeMap = await findObjectHelper.ExtractColumnTypes(this, actionDO);
 
-            if (columnDefinitions == null || columnTypeMap == null)
-            {
-                columnDefinitions = new List<FieldDTO>();
-            }
-
-            var supportedColumnTypes = new HashSet<DbType>() { DbType.String, DbType.Int32, DbType.Boolean };
-
-            // Match columns and filter by supported column type.
-            List<FieldDTO> matchedColumns;
-            if (string.IsNullOrEmpty(selectedObject))
-            {
-                matchedColumns = new List<FieldDTO>();
-            }
-            else
-            {
-                matchedColumns = columnDefinitions
-                    .Where(x => x.Key.StartsWith(selectedObject))
-                    .Where(x => supportedColumnTypes.Contains(columnTypeMap[x.Key]))
-                    .Select(x =>
-                    {
-                        var tokens = x.Key.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-                        var columnName = tokens[tokens.Length - 1];
-
-                        return new FieldDTO() { Key = columnName, Value = columnName };
-                    })
-                    .ToList();
-            }
+            var matchedColumns = findObjectHelper.MatchColumnsForSelectedObject(
+                columnDefinitions, selectedObject, columnTypeMap);
 
             return matchedColumns;
         }

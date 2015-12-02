@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
@@ -66,13 +67,12 @@ namespace terminalFr8Core.Actions
                 if (NeedsRemoveQueryBuilder(updater))
                 {
                     RemoveQueryBuilder(updater);
-                    RemoveQueryableCriteriaCrate(updater);
                 }
 
                 if (NeedsCreateQueryBuilder(updater))
                 {
                     AddQueryBuilder(updater);
-                    AddQueryableCriteriaCrate(updater);
+                    UpdateQueryableCriteriaCrate(updater);
                 }
 
                 UpdatePrevSelectedObject(updater);
@@ -81,20 +81,29 @@ namespace terminalFr8Core.Actions
             return Task.FromResult(actionDO);
         }
 
-        private bool NeedsCreateQueryBuilder(ICrateStorageUpdater updater)
+        private string GetCurrentSelectedObject(ICrateStorageUpdater updater)
         {
             var selectObjectDdl = FindControl(updater.CrateStorage, "SelectObjectDdl") as DropDownList;
             if (selectObjectDdl == null)
             {
+                return null;
+            }
+
+            return selectObjectDdl.Value;
+        }
+
+        private bool NeedsCreateQueryBuilder(ICrateStorageUpdater updater)
+        {
+            var currentSelectedObject = GetCurrentSelectedObject(updater);
+
+            if (string.IsNullOrEmpty(currentSelectedObject))
+            {
                 return false;
             }
 
-            if (!string.IsNullOrEmpty(selectObjectDdl.Value))
+            if (FindControl(updater.CrateStorage, "QueryBuilder") == null)
             {
-                if (FindControl(updater.CrateStorage, "QueryBuilder") == null)
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;
@@ -102,11 +111,7 @@ namespace terminalFr8Core.Actions
 
         private bool NeedsRemoveQueryBuilder(ICrateStorageUpdater updater)
         {
-            var selectObjectDdl = FindControl(updater.CrateStorage, "SelectObjectDdl") as DropDownList;
-            if (selectObjectDdl == null)
-            {
-                return false;
-            }
+            var currentSelectedObject = GetCurrentSelectedObject(updater);
 
             var prevSelectedValue = "";
 
@@ -125,7 +130,7 @@ namespace terminalFr8Core.Actions
                 }
             }
 
-            if (selectObjectDdl.Value != prevSelectedValue)
+            if (currentSelectedObject != prevSelectedValue)
             {
                 if (FindControl(updater.CrateStorage, "QueryBuilder") != null)
                 {
@@ -168,18 +173,12 @@ namespace terminalFr8Core.Actions
 
         private void UpdatePrevSelectedObject(ICrateStorageUpdater updater)
         {
-            var selectedObjectValue = "";
-
-            var selectObjectDdl = FindControl(updater.CrateStorage, "SelectObjectDdl") as DropDownList;
-            if (selectObjectDdl != null)
-            {
-                selectedObjectValue = selectObjectDdl.Value;
-            }
+            var currentSelectedObject = GetCurrentSelectedObject(updater) ?? "";
 
             UpdateDesignTimeCrateValue(
                 updater.CrateStorage,
                 "PrevSelectedObject",
-                new FieldDTO("PrevSelectedObject", selectedObjectValue)
+                new FieldDTO("PrevSelectedObject", currentSelectedObject)
             );
         }
 
@@ -206,14 +205,29 @@ namespace terminalFr8Core.Actions
             RemoveControl(updater.CrateStorage, "QueryBuilder");
         }
 
-        private void AddQueryableCriteriaCrate(ICrateStorageUpdater updater)
+        private void UpdateQueryableCriteriaCrate(ICrateStorageUpdater updater)
         {
+            var supportedColumnTypes = new HashSet<DbType>()
+            {
+                DbType.String,
+                DbType.Int32,
+                DbType.Boolean
+            };
 
-        }
+            var currentSelectedObject = GetCurrentSelectedObject(updater);
 
-        private void RemoveQueryableCriteriaCrate(ICrateStorageUpdater updater)
-        {
+            var criteria = new List<FieldDTO>();
+            if (!string.IsNullOrEmpty(currentSelectedObject))
+            {
+                var columns = FindObjectHelper.MatchColumnsForSelectedObject(GetConnectionString(), currentSelectedObject);
+                criteria.AddRange(columns);
+            }
 
+            UpdateDesignTimeCrateValue(
+                updater.CrateStorage,
+                "QueryableCriteria",
+                criteria.ToArray()
+            );
         }
 
         private string GetConnectionString()

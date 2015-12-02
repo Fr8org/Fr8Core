@@ -42,12 +42,7 @@ namespace terminalFr8Core.Infrastructure
             var columnTypeFields = columnTypes.Fields;
             if (columnTypeFields == null) { return null; }
 
-            var columnTypeMap = new Dictionary<string, DbType>();
-            foreach (var columnType in columnTypeFields)
-            {
-                columnTypeMap.Add(columnType.Key, (DbType)Enum.Parse(typeof(DbType), columnType.Value));
-            }
-
+            var columnTypeMap = GetColumnTypeMap(columnTypeFields);
             return columnTypeMap;
         }
 
@@ -136,6 +131,63 @@ namespace terminalFr8Core.Infrastructure
             });
 
             return fieldsList;
+        }
+
+        public Dictionary<string, DbType> GetColumnTypeMap(List<FieldDTO> columnTypeFields)
+        {
+            var columnTypeMap = new Dictionary<string, DbType>();
+            foreach (var columnType in columnTypeFields)
+            {
+                columnTypeMap.Add(columnType.Key, (DbType)Enum.Parse(typeof(DbType), columnType.Value));
+            }
+
+            return columnTypeMap;
+        }
+
+        public List<FieldDTO> MatchColumnsForSelectedObject(string connectionString, string selectedObject)
+        {
+            var columnDefinitions = RetrieveColumnDefinitions(connectionString);
+            var columnTypes = RetrieveColumnTypes(connectionString);
+            var columnTypeMap = GetColumnTypeMap(columnTypes);
+
+            var result = MatchColumnsForSelectedObject(
+                columnDefinitions, selectedObject, columnTypeMap);
+
+            return result;
+        }
+
+        public List<FieldDTO> MatchColumnsForSelectedObject(IEnumerable<FieldDTO> columnDefinitions,
+            string selectedObject, IDictionary<string, DbType> columnTypeMap)
+        {
+            if (columnDefinitions == null || columnTypeMap == null)
+            {
+                columnDefinitions = new List<FieldDTO>();
+            }
+
+            var supportedColumnTypes = new HashSet<DbType>() { DbType.String, DbType.Int32, DbType.Boolean };
+
+            // Match columns and filter by supported column type.
+            List<FieldDTO> matchedColumns;
+            if (string.IsNullOrEmpty(selectedObject))
+            {
+                matchedColumns = new List<FieldDTO>();
+            }
+            else
+            {
+                matchedColumns = columnDefinitions
+                    .Where(x => x.Key.StartsWith(selectedObject))
+                    .Where(x => supportedColumnTypes.Contains(columnTypeMap[x.Key]))
+                    .Select(x =>
+                    {
+                        var tokens = x.Key.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+                        var columnName = tokens[tokens.Length - 1];
+
+                        return new FieldDTO() { Key = columnName, Value = columnName };
+                    })
+                    .ToList();
+            }
+
+            return matchedColumns;
         }
     }
 }
