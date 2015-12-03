@@ -11,6 +11,16 @@ namespace Data.Interfaces.Manifests
             Fields = new List<FieldDTO>();
         }
 
+        public StandardDesignTimeFieldsCM(IEnumerable<FieldDTO> fields) : this()
+        {
+            Fields.AddRange(fields);
+        }
+
+        public StandardDesignTimeFieldsCM(params FieldDTO[] fields) : this()
+        {
+            Fields.AddRange(fields);
+        }
+
         public List<FieldDTO> Fields { get; set; }
     }
 }

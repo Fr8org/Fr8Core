@@ -224,7 +224,8 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private string ExtractSelectedObjectFromCrate(CrateStorage storage)
         {
-            var fields = storage.CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == "Selected Object");
+            var fields = storage.CratesOfType<StandardDesignTimeFieldsCM>()
+                .FirstOrDefault(x => x.Label == "Selected Object");
 
             if (fields == null || fields.Content.Fields.Count == 0)
             {
@@ -368,13 +369,13 @@ namespace terminalFr8Core.Actions
             var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var actionCrateStorage = Crate.GetStorage(curActionDO);
-            var selectedObject = ExtractSelectedObjectFromCrate(actionCrateStorage);
-            if (string.IsNullOrEmpty(selectedObject))
+            
+            var sqlQueryCM = ExtractSelectedQueryFromCrate(actionCrateStorage);
+            if (sqlQueryCM == null)
             {
-                throw new ApplicationException("No query object was selected.");
+                throw new ApplicationException("Selected Query crate was not found in Action's CrateStorage");
             }
 
-            var sqlQueryCM = ExtractSelectedQueryFromCrate(actionCrateStorage);
             var sqlQueryCrate = Crate<StandardQueryCM>.FromContent("Sql Query", sqlQueryCM);
 
             using (var updater = Crate.UpdateStorage(processPayload))

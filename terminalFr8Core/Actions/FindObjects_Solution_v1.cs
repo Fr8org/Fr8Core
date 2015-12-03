@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
@@ -66,13 +67,13 @@ namespace terminalFr8Core.Actions
             {
                 var crateStorage = updater.CrateStorage;
 
-                if (NeedsRemoveQueryBuilder(updater))
+                if (NeedsRemoveQueryBuilder(crateStorage))
                 {
                     RemoveQueryBuilder(updater);
                     RemoveRunButton(updater);
                 }
 
-                if (NeedsCreateQueryBuilder(updater))
+                if (NeedsCreateQueryBuilder(crateStorage))
                 {
                     AddQueryBuilder(updater);
                     AddRunButton(updater);
@@ -87,9 +88,9 @@ namespace terminalFr8Core.Actions
             return actionDO;
         }
 
-        private string GetCurrentSelectedObject(ICrateStorageUpdater updater)
+        private string GetCurrentSelectedObject(CrateStorage storage)
         {
-            var selectObjectDdl = FindControl(updater.CrateStorage, "SelectObjectDdl") as DropDownList;
+            var selectObjectDdl = FindControl(storage, "SelectObjectDdl") as DropDownList;
             if (selectObjectDdl == null)
             {
                 return null;
@@ -98,16 +99,31 @@ namespace terminalFr8Core.Actions
             return selectObjectDdl.Value;
         }
 
-        private bool NeedsCreateQueryBuilder(ICrateStorageUpdater updater)
+        private List<FilterConditionDTO> GetCurrentSelectedConditions(CrateStorage storage)
         {
-            var currentSelectedObject = GetCurrentSelectedObject(updater);
+            var queryBuilder = FindControl(storage, "QueryBuilder");
+            if (queryBuilder == null || queryBuilder.Value == null)
+            {
+                return new List<FilterConditionDTO>();
+            }
+
+            var conditions = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
+                queryBuilder.Value
+            );
+
+            return conditions;
+        }
+
+        private bool NeedsCreateQueryBuilder(CrateStorage storage)
+        {
+            var currentSelectedObject = GetCurrentSelectedObject(storage);
 
             if (string.IsNullOrEmpty(currentSelectedObject))
             {
                 return false;
             }
 
-            if (FindControl(updater.CrateStorage, "QueryBuilder") == null)
+            if (FindControl(storage, "QueryBuilder") == null)
             {
                 return true;
             }
@@ -115,13 +131,13 @@ namespace terminalFr8Core.Actions
             return false;
         }
 
-        private bool NeedsRemoveQueryBuilder(ICrateStorageUpdater updater)
+        private bool NeedsRemoveQueryBuilder(CrateStorage storage)
         {
-            var currentSelectedObject = GetCurrentSelectedObject(updater);
+            var currentSelectedObject = GetCurrentSelectedObject(storage);
 
             var prevSelectedValue = "";
 
-            var prevSelectedObjectFields = updater.CrateStorage
+            var prevSelectedObjectFields = storage
                 .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "PrevSelectedObject")
                 .FirstOrDefault();
 
@@ -138,7 +154,7 @@ namespace terminalFr8Core.Actions
 
             if (currentSelectedObject != prevSelectedValue)
             {
-                if (FindControl(updater.CrateStorage, "QueryBuilder") != null)
+                if (FindControl(storage, "QueryBuilder") != null)
                 {
                     return true;
                 }
@@ -179,7 +195,7 @@ namespace terminalFr8Core.Actions
 
         private void UpdatePrevSelectedObject(ICrateStorageUpdater updater)
         {
-            var currentSelectedObject = GetCurrentSelectedObject(updater) ?? "";
+            var currentSelectedObject = GetCurrentSelectedObject(updater.CrateStorage) ?? "";
 
             UpdateDesignTimeCrateValue(
                 updater.CrateStorage,
@@ -220,7 +236,7 @@ namespace terminalFr8Core.Actions
                 DbType.Boolean
             };
 
-            var currentSelectedObject = GetCurrentSelectedObject(updater);
+            var currentSelectedObject = GetCurrentSelectedObject(updater.CrateStorage);
 
             var criteria = new List<FieldDTO>();
             if (!string.IsNullOrEmpty(currentSelectedObject))
@@ -273,6 +289,8 @@ namespace terminalFr8Core.Actions
 
         private async Task<ActionDO> CreateConnectToSqlAction(ActionDO actionDO)
         {
+            var connectionString = GetConnectionString();
+
             var activityTemplateName = "ConnectToSql";
             var activityTemplateDTO = await ExtractActivityTemplate(actionDO, activityTemplateName);
 
@@ -285,41 +303,98 @@ namespace terminalFr8Core.Actions
             {
                 IsTempId = true,
                 ActivityTemplateId = activityTemplateDTO.Id,
-                CrateStorage = Crate.EmptyStorageAsStr(),
+                CrateStorage = Crate.CrateStorageAsStr(
+                    new CrateStorage()
+                    {
+                        Crate<StandardDesignTimeFieldsCM>.FromContent(
+                            "Sql Connection String",
+                            new StandardDesignTimeFieldsCM(
+                                new FieldDTO(connectionString, connectionString)
+                            )
+                        ),
+                        Crate<StandardDesignTimeFieldsCM>.FromContent(
+                            "Sql Table Definitions",
+                            new StandardDesignTimeFieldsCM(
+                                FindObjectHelper.RetrieveColumnDefinitions(connectionString)
+                            )
+                        ),
+                        Crate<StandardDesignTimeFieldsCM>.FromContent(
+                            "Sql Column Types",
+                            new StandardDesignTimeFieldsCM(
+                                FindObjectHelper.RetrieveColumnTypes(connectionString)
+                            )
+                        )
+                    }
+                ),
                 CreateDate = DateTime.Now,
                 Ordering = 1,
                 Name = "Connect To Sql",
                 Label = "Connect To Sql"
             };
 
-            // var connectToSqlAction = new ConnectToSql_v1();
-            // connectToSqlActionDO = await connectToSqlAction
-            //     .Configure(connectToSqlActionDO, null);
-            // 
-            // ApplyConnectToSqlActionParameters(connectToSqlActionDO);
-            // 
-            // await connectToSqlAction.Configure(connectToSqlActionDO, null);
-
-            connectToSqlActionDO = await ExplicitConfigurationHelper
-                .Configure(connectToSqlActionDO, activityTemplateDTO);
-
-            ApplyConnectToSqlActionParameters(connectToSqlActionDO);
-
-            await ExplicitConfigurationHelper.Configure(connectToSqlActionDO, activityTemplateDTO);
-
             return connectToSqlActionDO;
         }
 
-        private void ApplyConnectToSqlActionParameters(ActionDO actionDO)
+        private async Task<ActionDO> CreateBuildQueryAction(ActionDO actionDO)
         {
-            using (var updater = Crate.UpdateStorage(actionDO))
-            {
-                var controls = updater.CrateStorage
-                    .CrateContentsOfType<StandardConfigurationControlsCM>()
-                    .First();
+            var crateStorage = Crate.GetStorage(actionDO);
+            var selectedObject = GetCurrentSelectedObject(crateStorage);
+            var selectedConditions = GetCurrentSelectedConditions(crateStorage);
 
-                controls.Controls[0].Value = GetConnectionString();
+            var activityTemplateName = "BuildQuery";
+            var activityTemplateDTO = await ExtractActivityTemplate(actionDO, activityTemplateName);
+
+            if (activityTemplateDTO == null)
+            {
+                throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));
             }
+
+            var buildQueryActionDO = new ActionDO()
+            {
+                IsTempId = true,
+                ActivityTemplateId = activityTemplateDTO.Id,
+                CrateStorage = Crate.CrateStorageAsStr(
+                    new CrateStorage()
+                    {
+                        Crate<StandardQueryCM>.FromContent(
+                            "Selected Query",
+                            new StandardQueryCM(
+                                new QueryDTO(selectedObject, selectedConditions)
+                            )
+                        )
+                    }
+                ),
+                CreateDate = DateTime.Now,
+                Ordering = 2,
+                Name = "Build Query",
+                Label = "Build Query"
+            };
+
+            return buildQueryActionDO;
+        }
+
+        private async Task<ActionDO> CreateExecuteSqlAction(ActionDO actionDO)
+        {
+            var activityTemplateName = "ExecuteSql";
+            var activityTemplateDTO = await ExtractActivityTemplate(actionDO, activityTemplateName);
+
+            if (activityTemplateDTO == null)
+            {
+                throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));
+            }
+
+            var executeSqlActionDO = new ActionDO()
+            {
+                IsTempId = true,
+                ActivityTemplateId = activityTemplateDTO.Id,
+                CrateStorage = Crate.EmptyStorageAsStr(),
+                CreateDate = DateTime.Now,
+                Ordering = 3,
+                Name = "Execute Sql",
+                Label = "Execute Sql"
+            };
+
+            return executeSqlActionDO;
         }
 
         private async Task UpdateChildActions(ActionDO actionDO)
@@ -329,10 +404,25 @@ namespace terminalFr8Core.Actions
             var connectToSqlActionDO = await CreateConnectToSqlAction(actionDO);
             actionDO.ChildNodes.Add(connectToSqlActionDO);
 
-            // var buildQueryActionDO = await CreateBuildQueryAction(actionDO);
-            // actionDO.ChildNodes.Add(buildQueryActionDO);
+            if (FindControl(Crate.GetStorage(actionDO), "QueryBuilder") != null)
+            {
+                var buildQueryActionDO = await CreateBuildQueryAction(actionDO);
+                actionDO.ChildNodes.Add(buildQueryActionDO);
+
+                var executeSqlActionDO = await CreateExecuteSqlAction(actionDO);
+                actionDO.ChildNodes.Add(executeSqlActionDO);
+            }
         }
 
         #endregion Child action management.
+
+        #region Execution
+
+        public Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            return Task.FromResult<PayloadDTO>(null);
+        }
+
+        #endregion
     }
 }
