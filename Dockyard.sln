@@ -99,7 +99,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthMonitorUtility", "Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalPapertrailTests", "Tests\terminalPapertrailTests\terminalPapertrailTests.csproj", "{8F5BE349-6D11-44AD-A1CC-B5BB5EB4B179}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalGoogleTests", "..\terminalGoogleTests\terminalGoogleTests.csproj", "{7B9F082B-E017-46B8-A4D4-91C424B7A087}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalGoogleTests", "terminalGoogleTests\terminalGoogleTests.csproj", "{7B9F082B-E017-46B8-A4D4-91C424B7A087}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
