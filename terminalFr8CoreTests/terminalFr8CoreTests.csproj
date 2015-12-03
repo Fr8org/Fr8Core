@@ -140,6 +140,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Integration\ConnectToSql_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
     <Compile Include="Unit\FilterUsingRunTimeData_v1Tests.cs" />
     <Compile Include="Unit\SelectFr8Object_v1Tests.cs" />
