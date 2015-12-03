@@ -333,7 +333,7 @@ namespace Hub.Services
                 emailDO.AddEmailRecipient(EmailParticipantType.To,
                     uow.EmailAddressRepository.GetOrCreateEmailAddress(userEmail));
                 emailDO.Subject = "Password Recovery Request";
-                string htmlText = string.Format("Please reset your password by clicking this link: <a href='{0}' </br> Reset password link will be expired within 15 minutes.",callbackUrl);
+                string htmlText = string.Format("Please reset your password by clicking this <a href='{0}'>link:</a> <br> <b>Note: </b> Reset password link will be expired after 15 minutes.", callbackUrl);
                 emailDO.HTMLText = htmlText;
 
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("ForgotPassword_template"),
