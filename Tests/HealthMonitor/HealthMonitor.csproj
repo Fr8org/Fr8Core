@@ -94,6 +94,10 @@
       <Project>{a6e317fa-2eb0-4447-8ecd-6725f6b78435}</Project>
       <Name>terminalDocuSignTests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\terminalExcelTests\terminalExcelTests.csproj">
+      <Project>{a854eb96-b28a-42fc-8209-3e5e9d6b208c}</Project>
+      <Name>terminalExcelTests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\terminalPapertrailTests\terminalPapertrailTests.csproj">
       <Project>{8f5be349-6d11-44ad-a1cc-b5bb5eb4b179}</Project>
       <Name>terminalPapertrailTests</Name>

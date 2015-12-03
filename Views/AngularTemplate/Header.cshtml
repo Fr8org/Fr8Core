@@ -68,14 +68,20 @@
                         <li class="dropdown-submenu">
                             <a href="javascript:;" class="dropdown-toggle">DocuSign</a>
                             <ul class="dropdown-menu">
-
-                                <li ng-repeat="activity in (activityCategories | filter: {name: 'Solution', $: 'DocuSign'})[0].activities">
+                                <li ng-repeat="activity in (activityCategories | filter: {name: 'Solution'})[0].activities | filter: { terminal: { name: 'terminalDocuSign' } }">
                                     <a ng-href="#/solution/{{activity.name}}">{{activity.label}}</a>
+                                </li>
+                            </ul>
                         </li>
-
-                    </ul>
-                </li>
-										</ul>
+                        <li class="dropdown-submenu">
+                            <a href="javascript:;" class="dropdown-toggle">Other</a>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="activity in (activityCategories | filter: { name: 'Solution', $: 'Fr8Core' })[0].activities | filter: { terminal: { name: 'terminalFr8Core' } }">
+                                    <a ng-href="#/solution/{{activity.name}}">{{activity.label}}</a>
+                                </li>
+                            </ul>
+                        </li>
+					</ul>
                 </li>
 								
                 <li class="menu-dropdown classic-menu-dropdown">
@@ -98,20 +104,6 @@
 					</ul>
 				</li>
                 
-                
-                @if (User.IsInRole("Admin")) {
-				<li class="menu-dropdown classic-menu-dropdown">
-					<a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
-					<ul class="dropdown-menu">
-
-						<li><a href="#/form-tools">Create Accounts</a></li>
-                        <li><a href="#/accounts">Manage Dockyard Accounts</a></li>											
-						<li><a href="#/webservices">Show Web Services</a></li>
-									
-					</ul>
-				</li>
-                }
-                
                 <li class="menu-dropdown classic-menu-dropdown">
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">Reports <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
@@ -131,6 +123,7 @@
 
                     </ul>
                 </li>
+
                 <li class="menu-dropdown classic-menu-dropdown">
                     <a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">Developer <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
@@ -138,6 +131,20 @@
                         <li><a href="#/terminals">Developer Home</a></li>
                     </ul>
                 </li>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right:0;">
+                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu">
+
+                            <li><a href="#/form-tools">Create Accounts</a></li>
+                            <li><a href="#/accounts">Manage Dockyard Accounts</a></li>
+                            <li><a href="#/webservices">Show Web Services</a></li>
+
+                        </ul>
+                    </li>
+                }
 			</ul>
 		</div>
 		<!-- END MEGA MENU -->

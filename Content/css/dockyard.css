@@ -494,6 +494,12 @@ input[type=radio]:checked ~ label .control-label-hidden {
     vertical-align: middle;
 }
 
+.run-pane-button {
+    display: block;
+    margin-left: auto;
+    margin-right: auto
+}
+
 .counter-control > * {
     display: block;
     text-align: center;

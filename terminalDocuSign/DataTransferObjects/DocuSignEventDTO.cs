@@ -18,7 +18,8 @@ namespace terminalDocuSign.DataTransferObjects
         public string SentDate { get; set; }
         public string DeliveredDate { get; set; }
         public string CompletedDate { get; set; }
-        public string Email { get; set; }
+        public string HolderEmail { get; set; }
         public string EventId { get; set; }
+        public string Subject { get; set; }
     }
 }
