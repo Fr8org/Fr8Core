@@ -43,6 +43,7 @@
     <!-- BEGIN TOAST STYLES-->
     <link href="/bower_components/ngToast/dist/ngToast.min.css" rel="stylesheet">
     <!-- END TOAST STYLES-->
+    <link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.min.css" />
 
     <link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />
 </head>
@@ -102,7 +103,6 @@
     <script src="~/bower_components/spin.js/spin.min.js"></script>
     <script src="~/bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
 
-
     @Html.Partial("_AngularAppScripts")
     <script type="text/javascript">
         /* Init Metronic's core jquery plugins and layout scripts */
@@ -116,7 +116,6 @@
         window.analytics.load("@(new ConfigRepository().Get("SegmentWriteKey"))");
         window.analytics.page('Admin');
     </script>
-    <script type="text/javascript">  var appInsights = window.appInsights || function (config) { function r(config) { t[config] = function () { var i = arguments; t.queue.push(function () { t[config].apply(t, i) }) } } var t = { config: config }, u = document, e = window, o = "script", s = u.createElement(o), i, f; for (s.src = config.url || "//az416426.vo.msecnd.net/scripts/a/ai.0.js", u.getElementsByTagName(o)[0].parentNode.appendChild(s), t.cookie = u.cookie, t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace"]; i.length;) r("track" + i.pop()); return r("setAuthenticatedUserContext"), r("clearAuthenticatedUserContext"), config.disableExceptionTracking || (i = "onerror", r("_" + i), f = e[i], e[i] = function (config, r, u, e, o) { var s = f && f(config, r, u, e, o); return s !== !0 && t["_" + i](config, r, u, e, o), s }), t }({ instrumentationKey: "9db0241b-6f3d-404d-adeb-3839bcb6e313" }); window.appInsights = appInsights; appInsights.trackPageView();</script>
     <!-- END JAVASCRIPTS -->
 </body>
 <!-- END BODY -->
