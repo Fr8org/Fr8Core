@@ -96,6 +96,9 @@
     <Compile Include="Errors\TerminalErrorCode.cs" />
     <Compile Include="Infrastructure\BaseTerminalEvent.cs" />
     <Compile Include="Infrastructure\DefaultHubCommunicator.cs" />
+    <Compile Include="Infrastructure\DataHubCommunicatorBase.cs" />
+    <Compile Include="Infrastructure\ExplicitConfigurationHelper.cs" />
+    <Compile Include="Infrastructure\ExplicitDataHubCommunicator.cs" />
     <Compile Include="Infrastructure\IHubCommunicator.cs" />
     <Compile Include="Infrastructure\States\ConfigurationRequestType.cs" />
     <Compile Include="Infrastructure\JsonParser.cs" />

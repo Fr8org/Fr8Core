@@ -66,6 +66,18 @@ namespace TerminalBase.BaseClasses
 
             baseTerminalAction.HubCommunicator = new TestMonitoringHubCommunicator();
         }
+
+        private void BindExplicitDataHubCommunicator(object curObject)
+        {
+            var baseTerminalAction = curObject as BaseTerminalAction;
+
+            if (baseTerminalAction == null)
+            {
+                return;
+            }
+
+            baseTerminalAction.HubCommunicator = new ExplicitDataHubCommunicator();
+        }
         
         /// <summary>
         /// Reports event when process an action
@@ -107,6 +119,10 @@ namespace TerminalBase.BaseClasses
             if (isTestActivityTemplate)
             {
                 BindTestHubCommunicator(curObject);
+            }
+            else if (curActionDTO.IsExplicitData)
+            {
+                BindExplicitDataHubCommunicator(curObject);
             }
 
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
