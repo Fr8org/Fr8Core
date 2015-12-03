@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.40418.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubWeb", "HubWeb.csproj", "{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}"
 EndProject
@@ -98,6 +98,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthMonitorUtility", "Tes
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalPapertrailTests", "Tests\terminalPapertrailTests\terminalPapertrailTests.csproj", "{8F5BE349-6D11-44AD-A1CC-B5BB5EB4B179}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalGoogleTests", "..\terminalGoogleTests\terminalGoogleTests.csproj", "{7B9F082B-E017-46B8-A4D4-91C424B7A087}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -525,6 +527,18 @@ Global
 		{8F5BE349-6D11-44AD-A1CC-B5BB5EB4B179}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F5BE349-6D11-44AD-A1CC-B5BB5EB4B179}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8F5BE349-6D11-44AD-A1CC-B5BB5EB4B179}.Release|x86.ActiveCfg = Release|Any CPU
+		{7B9F082B-E017-46B8-A4D4-91C424B7A087}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
+		{7B9F082B-E017-46B8-A4D4-91C424B7A087}.alexlocal|Any CPU.Build.0 = Release|Any CPU
+		{7B9F082B-E017-46B8-A4D4-91C424B7A087}.alexlocal|x86.ActiveCfg = Release|Any CPU
+		{7B9F082B-E017-46B8-A4D4-91C424B7A087}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B9F082B-E017-46B8-A4D4-91C424B7A087}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B9F082B-E017-46B8-A4D4-91C424B7A087}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7B9F082B-E017-46B8-A4D4-91C424B7A087}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B9F082B-E017-46B8-A4D4-91C424B7A087}.Dev|Any CPU.Build.0 = Debug|Any CPU
+		{7B9F082B-E017-46B8-A4D4-91C424B7A087}.Dev|x86.ActiveCfg = Debug|Any CPU
+		{7B9F082B-E017-46B8-A4D4-91C424B7A087}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B9F082B-E017-46B8-A4D4-91C424B7A087}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B9F082B-E017-46B8-A4D4-91C424B7A087}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -554,5 +568,6 @@ Global
 		{A6E317FA-2EB0-4447-8ECD-6725F6B78435} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{459FE39A-A5CC-41D8-B06E-8FAE3A1A623B} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{8F5BE349-6D11-44AD-A1CC-B5BB5EB4B179} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
+		{7B9F082B-E017-46B8-A4D4-91C424B7A087} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 	EndGlobalSection
 EndGlobal
