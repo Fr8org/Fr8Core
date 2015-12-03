@@ -151,15 +151,16 @@ app.directive('dropdownMenuHover', function () {
 //    };
 //}]);
 
-app.directive('stopClickPropagation', () => {
+app.directive('stopClickPropagation', ['$rootScope', ($rootScope) => {
     return {
         link: (scope: ng.IScope, elem: ng.IAugmentedJQuery) => {
             elem.bind('click', (event) => {
+                angular.element(document.body).trigger(event); // This makes the handlers that are bound to the body to be called, without triggering any child nodes events
                 event.stopPropagation();
             });
         }
     };
-});
+}]);
 
 // temporary solution to reload configuration when action header is clicked.
 app.directive('transferClickConfigurePane', () => {

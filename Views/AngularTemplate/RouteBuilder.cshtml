@@ -9,14 +9,14 @@
 </ul>
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
-<div ng-controller="RouteBuilderController" class="margin-top-10">
+<div ng-controller="RouteBuilderController" class="margin-top-10" block-if="isBusy()" stop-click-propagation>
     <designer-header route="current.route"></designer-header>
     <div class="route-builder-container" layout-container>
         <div ng-repeat="group in actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
             <div class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
             <div>
-                <div class="action" layout-action ng-repeat-start="action in group.actions" ng-style="{'width' : action.activityTemplate.minPaneWidth || 330 + 'px'}">
-                    <div class="action-header" dropdown transfer-click-configure-pane>
+                <div class="action" ng-class="{'solution-action': action.activityTemplate.category==='Solution'  && mode !== 'Solution'}" layout-action ng-repeat-start="action in group.actions" ng-style="{'width' : action.activityTemplate.minPaneWidth || 330 + 'px'}">
+                    <div class="action-header solution-action-header" dropdown transfer-click-configure-pane>
                         <p class="action-name">
                             {{action.label}}
                         </p>
@@ -44,4 +44,5 @@
     </div>
     <!-- END MAIN CONTENT -->
     <pane-select-action></pane-select-action>
+
 </div>
