@@ -37,7 +37,7 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
         public object Activate(ActionDO curActionDO)
@@ -159,10 +159,9 @@ namespace terminalDocuSign.Actions
 
                     updater.CrateStorage = new CrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
                 }
-
-                await UpdateUpstreamCrate(curActionDO);
-
             }
+
+            await UpdateUpstreamCrate(curActionDO);
 
             return curActionDO;
         }
