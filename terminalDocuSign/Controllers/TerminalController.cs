@@ -106,6 +106,18 @@ namespace terminalDocuSign.Controllers
                 Terminal = terminal,
                 MinPaneWidth = 380
             };
+            
+            
+            var queryDocusign = new ActivityTemplateDTO
+            {
+                Name = "Query_DocuSign",
+                Label = "Query DocuSign",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                AuthenticationType = AuthenticationType.Internal,
+                Terminal = terminal,
+                MinPaneWidth = 380
+            };
 
 
             var actionList = new List<ActivityTemplateDTO>()
@@ -116,7 +128,8 @@ namespace terminalDocuSign.Controllers
                 recordDocuSignEvents,
                 mailMergeActionTemplate,
                 collectFormDataSolution,
-                richDocumentNotificationsSolution
+                richDocumentNotificationsSolution,
+                queryDocusign,
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

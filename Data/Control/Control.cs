@@ -280,6 +280,16 @@ namespace Data.Control
 
         [JsonProperty("label")]
         public string Label { get; set; }
+
+        public FieldSourceDTO()
+        {
+        }
+
+        public FieldSourceDTO(string manifestType, string label)
+        {
+            ManifestType = manifestType;
+            Label = label;
+        }
     }
 
     public class ControlEvent
@@ -310,6 +320,9 @@ namespace Data.Control
 
     public class RadioButtonOption : ISupportsNestedFields
     {
+        [JsonIgnore]
+        public string[] Bindings { get; set; }
+
         public RadioButtonOption()
         {
             Controls = new List<ControlDefinitionDTO>();
