@@ -23,14 +23,14 @@ namespace terminalGoogle.Controllers
         [Route("activate")]
         public ActionDTO Activate(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_baseTerminalController.HandleFr8Request(curTerminal, "Activate", curActionDTO);
+            return ((Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, "Activate", curActionDTO)).Result;
         }
 
         [HttpPost]
         [Route("deactivate")]
         public ActionDTO Deactivate(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_baseTerminalController.HandleFr8Request(curTerminal, "Deactivate", curActionDTO);
+            return ((Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, "Deactivate", curActionDTO)).Result;
         }
 
         [HttpPost]

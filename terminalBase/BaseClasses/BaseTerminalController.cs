@@ -136,6 +136,36 @@ namespace TerminalBase.BaseClasses
                         Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
+                case "Activate":
+                    {
+                        Task<ActionDO> resutlActionDO;
+
+                        var param = curMethodInfo.GetParameters();
+                        if (param.Length == 2)
+                            resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                        else
+                        {
+                            response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+                            return response;
+                        }
+
+                        return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                    }
+                case "Deactivate":
+                    {
+                        Task<ActionDO> resutlActionDO;
+
+                        var param = curMethodInfo.GetParameters();
+                        if(param.Length == 2)
+                            resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                        else
+                        {
+                            response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+                            return response;
+                        }
+
+                        return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                    }
                 default:
                     response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
                     return response;

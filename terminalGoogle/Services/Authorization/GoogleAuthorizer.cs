@@ -6,6 +6,7 @@ using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Mvc;
 using Google.Apis.Auth.OAuth2.Web;
 using Hub.Managers.APIManagers.Authorizers;
+using terminalGoogle.DataTransferObjects;
 
 namespace terminalGoogle.Services
 {
@@ -32,6 +33,11 @@ namespace terminalGoogle.Services
         }
 
         public FlowMetadata CreateFlowMetadata(string userId, string email = null, string callbackUrl = null)
+        {
+            return new AppFlowMetadata(userId, email, callbackUrl);
+        }
+
+        public FlowMetadata CreateFlowMetadata(GoogleAuthDTO userId, string email = null, string callbackUrl = null)
         {
             return new AppFlowMetadata(userId, email, callbackUrl);
         }

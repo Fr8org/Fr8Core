@@ -138,5 +138,80 @@ namespace terminalGoogleTests.Unit
                 requestActionDTO
             );
         }
+
+        /// <summary>
+        /// Validate google app script is uploaded in users google drive
+        /// </summary>
+        [Test, Category("Integration.terminalGoogle")]
+        public async void Receive_Google_Form_Activate_Check_Script_Exist()
+        {
+            //Arrange
+            var configureUrl = GetTerminalActivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = fixture.Receive_Google_Form_v1_ActivateDeactivate_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+
+            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+            var formID = crateStorage.CrateContentsOfType<StandardPayloadDataCM>().SingleOrDefault();
+
+            Assert.Greater(0, formID.PayloadObjects.SelectMany(s => s.PayloadObject).Count());
+        }
+
+        /// <summary>
+        /// Should throw exception if cannot extract any data from google form
+        /// </summary>
+        [Test, Category("Integration.terminalGoogle")]
+        [ExpectedException(
+            ExpectedException = typeof(RestfulServiceException),
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No payload fields extracted""}"
+            )]
+        public async void Receive_Google_Form_Run_WithInvalidPapertrailUrl_ShouldThrowException()
+        {
+            //Arrange
+            var runUrl = GetTerminalRunUrl();
+
+            //prepare the action DTO with valid target URL
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var actionDTO = fixture.Receive_Google_Form_v1_Run_EmptyPayload();
+
+            //Act
+            var responsePayloadDTO = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+        }
+
+        /// <summary>
+        /// Should return more than one payload fielddto for the response
+        /// </summary>
+        [Test, Category("Integration.terminalGoogle")]
+        public async void Receive_Google_Form_Run_Returns_Payload()
+        {
+            //Arrange
+            var runUrl = GetTerminalRunUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var actionDTO = fixture.Receive_Google_Form_v1_Run_ActionDTO();
+
+            //Act
+            var responsePayloadDTO =
+                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+
+            //Assert
+            var crateStorage = Crate.FromDto(responsePayloadDTO.CrateStorage);
+
+            var standardDesignTimeFieldsCM = crateStorage.CrateContentsOfType<StandardPayloadDataCM>().SingleOrDefault();
+
+            Assert.IsNotNull(standardDesignTimeFieldsCM);
+            var fields = standardDesignTimeFieldsCM.PayloadObjects.SelectMany(s => s.PayloadObject);
+            Assert.Greater(0, fields.Count());
+        }
     }
 }
