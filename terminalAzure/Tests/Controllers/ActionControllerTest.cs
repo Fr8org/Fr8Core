@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -40,13 +41,13 @@ namespace terminalAzure.Tests.Controllers
         [Test]
         public async void HandleDockyardRequest_TerminalTypeIsAzureSqlServer_ResponseInitialConfiguration()
         {
-            string curTerminal  = "terminalAzure";
+            string curTerminal = "terminalAzure";
             string curActionPath = "Configure";
 
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
 
-            ActionDTO actionDTO = await (Task<ActionDTO>)_baseTerminalController.HandleFr8Request(curTerminal, curActionPath, curActionDTO);
-
+            object response = await _baseTerminalController.HandleFr8Request(curTerminal, curActionPath, curActionDTO);
+            ActionDTO actionDTO = (ActionDTO) response;
             Assert.AreEqual("Standard UI Controls", _crateManager.FromDto(actionDTO.CrateStorage).First().ManifestType.Type);
         }
     }

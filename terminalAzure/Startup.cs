@@ -48,7 +48,7 @@ namespace terminalAzure
 
             if (!selfHost)
             {
-                StartHosting("terminal_azure_sql_server");
+                StartHosting("terminal_Azure");
             }
         }
 
