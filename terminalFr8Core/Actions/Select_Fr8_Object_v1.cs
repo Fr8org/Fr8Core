@@ -148,9 +148,9 @@ namespace terminalFr8Core.Actions
 		}
 
 		#region Execution
-	    public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId)
+		public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
 	    {
-		    return await GetProcessPayload(curActionDO, containerId);
+			return await GetProcessPayload(actionDO, containerId);
 	    }
 		#endregion
 	}
