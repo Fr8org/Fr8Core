@@ -37,7 +37,7 @@ namespace terminalQuickBooks.Controllers
                 Label = "Create Journal Entry",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.None,//AuthenticationType.Internal,
+                AuthenticationType = AuthenticationType.External,
                 MinPaneWidth = 330
             };
 

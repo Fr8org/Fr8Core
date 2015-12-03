@@ -53,7 +53,8 @@ namespace terminalQuickBooks
             return new Type[] {
                     typeof(Controllers.ActionController),
                     typeof(Controllers.EventController),
-                    typeof(Controllers.TerminalController)
+                    typeof(Controllers.TerminalController),
+                    typeof(Controllers.AuthenticationController)
                 };
         }
     }
