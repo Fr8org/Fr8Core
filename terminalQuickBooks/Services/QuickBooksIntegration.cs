@@ -9,16 +9,21 @@ using System.Web;
 using DevDefined.OAuth.Consumer;
 using DevDefined.OAuth.Framework;
 using DevDefined.OAuth.Storage.Basic;
+using Intuit.Ipp.Core;
+using Intuit.Ipp.Data;
+using Intuit.Ipp.Security;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using terminalQuickBooks.Interfaces;
 using Utilities.Configuration.Azure;
 
+
 namespace terminalQuickBooks.Services
 {
     public class QuickBooksIntegration : IQuickBooksIntegration
     {
-        private static readonly ConcurrentDictionary<string, string> TokenSecrets = new ConcurrentDictionary<string, string>(); 
+        private static readonly ConcurrentDictionary<string, string> TokenSecrets = new ConcurrentDictionary<string, string>();
+        private const string TokenSeperator = ";;;;;;;";
         /// <summary>
         /// Build external QuickBooks OAuth url.
         /// </summary>
@@ -48,11 +53,11 @@ namespace terminalQuickBooks.Services
                                     CloudConfigurationManager.GetSetting("QuickBooksOAuthAccessUrl").ToString(CultureInfo.InvariantCulture));
         }
 
-        public async Task<string> GetOAuthToken(string oauthToken, string oauthVerifier)
+        public async Task<string> GetOAuthToken(string oauthToken, string oauthVerifier, string realmId)
         {
             var oauthSession = CreateSession();
             string tokenSecret;
-            TokenSecrets.TryGetValue(oauthToken, out tokenSecret);
+            TokenSecrets.TryRemove(oauthToken, out tokenSecret);
 
             IToken reqToken = new RequestToken
             {
@@ -61,8 +66,42 @@ namespace terminalQuickBooks.Services
                 ConsumerKey = CloudConfigurationManager.GetSetting("QuickBooksConsumerKey").ToString(CultureInfo.InvariantCulture)
             };
             var accToken = oauthSession.ExchangeRequestTokenForAccessToken(reqToken, oauthVerifier);
+            
+            return accToken.Token+TokenSeperator+accToken.TokenSecret+TokenSeperator+realmId;
+        }
 
-            return accToken.Token;
+        private ServiceContext CreateServiceContext(string accessToken)
+        {
+            var tokens = accessToken.Split(new[] { TokenSeperator }, StringSplitOptions.None);
+            var accToken = tokens[0];
+            var accTokenSecret = tokens[1];
+            var companyID = tokens[2];
+            var oauthValidator = new OAuthRequestValidator(accToken, accTokenSecret, CloudConfigurationManager.GetSetting("QuickBooksConsumerKey").ToString(CultureInfo.InvariantCulture), CloudConfigurationManager.GetSetting("QuickBooksConsumerSecret").ToString(CultureInfo.InvariantCulture));
+            return new ServiceContext(CloudConfigurationManager.GetSetting("QuickBooksAppToken").ToString(CultureInfo.InvariantCulture), companyID, IntuitServicesType.QBO, oauthValidator);
+        }
+
+        public void CreateJournalEntry()
+        {
+            //move this to constructor of a seperate class
+            var sc = CreateServiceContext("");
+            var creditLine = new Line();
+            creditLine.Description = "nov portion of rider insurance";
+            creditLine.Amount = new Decimal(100.00);
+            creditLine.AmountSpecified = true;
+            creditLine.DetailType = LineDetailTypeEnum.JournalEntryLineDetail;
+            creditLine.DetailTypeSpecified = true;
+            var journalEntryLineDetailCredit = new JournalEntryLineDetail
+            {
+                PostingType = PostingTypeEnum.Credit,
+                PostingTypeSpecified = true,
+                AccountRef = new ReferenceType() {name = "Accumulated Depreciation", Value = "36"}
+            };
+
+            
+
+            var je = new Intuit.Ipp.Data.JournalEntry();
+            
+            
         }
 
     }

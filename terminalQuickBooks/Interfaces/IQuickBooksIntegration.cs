@@ -9,6 +9,6 @@ namespace terminalQuickBooks.Interfaces
     public interface IQuickBooksIntegration
     {
         string CreateAuthUrl();
-        Task<string> GetOAuthToken(string oauthToken, string oauthVerifier);
+        Task<string> GetOAuthToken(string oauthToken, string oauthVerifier, string realmId);
     }
 }

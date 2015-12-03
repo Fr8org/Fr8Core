@@ -52,7 +52,7 @@ namespace terminalQuickBooks.Controllers
                     throw new ApplicationException("OAuth Token or OAuth Verifier or Realm ID or Data Source is empty.");
                 }
 
-                var oauthToken = await _quickBooksIntegration.GetOAuthToken(oauth_token, oauth_verifier);
+                var oauthToken = await _quickBooksIntegration.GetOAuthToken(oauth_token, oauth_verifier, realm_id);
 
                 return new AuthorizationTokenDTO()
                 {
