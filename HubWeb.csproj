@@ -722,8 +722,8 @@
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
     <Content Include="Scripts\app\_compiled.js" />
-    <Content Include="Scripts\lib\jpattern.js" />
-    <Content Include="Scripts\tests\integration\ContainerControllerTests.js" />
+    <TypeScriptCompile Include="Scripts\tests\utils\jpattern.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\ContainerControllerTests.ts" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />
     <Content Include="Views\AngularTemplate\ConfigurationControl.cshtml" />
