@@ -19,6 +19,9 @@ var app = angular.module("app", [
     "ApplicationInsightsModule"
 ]);
 
+/* For compatibility with older versions of script files. Can be safely deleted later. */
+app.constant('urlPrefix', '/api');
+
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
 app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
     $ocLazyLoadProvider.config({
