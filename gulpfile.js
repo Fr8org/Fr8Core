@@ -1,4 +1,4 @@
-var gulp = require('gulp');
+    var gulp = require('gulp');
 var bower = require('gulp-bower');
 var concat = require('gulp-concat');
 var sourcemaps = require('gulp-sourcemaps');
