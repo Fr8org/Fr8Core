@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using terminalFr8CoreTests.Fixtures;
+using Hub.Managers;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace terminalTests.Integration
 {
@@ -21,16 +23,29 @@ namespace terminalTests.Integration
             get { return "terminalFr8Core"; }
         }
 
-        private void AssertControls(StandardConfigurationControlsCM control)
+        private void AssertConfigureControls(StandardConfigurationControlsCM control)
         {
             Assert.AreEqual(1, control.Controls.Count);
 
-            // Assert that first control is a TextBlock 
+            // Assert that first control is a TextBox 
             // with Label == "SQL Connection String"
             // with Name == "ConnectionString"
             Assert.IsTrue(control.Controls[0] is TextBox);
             Assert.AreEqual("SQL Connection String", control.Controls[0].Label);
             Assert.AreEqual("ConnectionString", control.Controls[0].Name);
+        }
+
+        private void AssertErrorControls(StandardConfigurationControlsCM control)
+        {
+            Assert.AreEqual(2, control.Controls.Count);
+
+            Assert.IsTrue(control.Controls[0] is TextBlock);
+            Assert.AreEqual("Connection String", control.Controls[0].Label);
+            Assert.AreEqual("ConnectionString", control.Controls[0].Name);
+            
+            Assert.IsTrue(control.Controls[1] is TextBlock);
+            Assert.AreEqual("Unexpected error", control.Controls[1].Label);
+            Assert.AreEqual("ErrorLabel", control.Controls[1].Name);
         }
 
         private void AssertFollowUpCrateTypes(CrateStorage crateStorage)
@@ -49,7 +64,31 @@ namespace terminalTests.Integration
             Assert.AreEqual(1, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
 
-            AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
+            AssertConfigureControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
+        }
+
+        private Crate CreateConnectionStringCrate()
+        {
+            var control = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString1();
+            control.Name = "ConnectionString";
+            control.Label = "Connection String";
+
+            return PackControlsCrate(control);
+        }
+
+        private Crate CreateWrongConnectionStringCrate()
+        {
+            var control = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString1();
+            control.Name = "ConnectionString";
+            control.Label = "Connection String";
+            control.Value = "Wrong connection string";
+
+            return PackControlsCrate(control);
+        }
+
+        private Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
+        {
+            return Crate<StandardConfigurationControlsCM>.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(controlsList));
         }
 
         /// <summary>
@@ -78,10 +117,10 @@ namespace terminalTests.Integration
         
 
         /// <summary>
-        /// Validate correct crate-storage structure in follow-up configuration response.
+        /// Validate correct crate-storage structure in follow-up configuration response with error connetcion string
         /// </summary>
         [Test]
-        public async void ConnectToSql_FollowUp_Configuration_Wrong_Connection_String_Check_Crate_Structure()
+        public async void ConnectToSql_FollowUp_Configuration_No_Connection_String_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -106,6 +145,80 @@ namespace terminalTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
             AssertConfigureCrate(crateStorage);
+        }        
+
+        /// <summary>
+        /// Validate correct crate-storage structure in follow-up configuration response 
+        /// </summary>
+        [Test]
+        public async void ConnectToSql_FollowUp_Configuration_Wrong_ConnetcioString_Check_Crate_Structure()
+        {
+            var configureUrl = GetTerminalConfigureUrl();
+
+            var requestActionDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
+
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );            
+
+            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            {
+                updater.CrateStorage.RemoveByLabel("Configuration_Controls");
+                updater.CrateStorage.Add(CreateWrongConnectionStringCrate());
+            }
+            
+            responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    responseActionDTO
+                );
+
+            Assert.NotNull(responseActionDTO);
+            Assert.NotNull(responseActionDTO.CrateStorage);
+            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+
+            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+
+            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
+            AssertErrorControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
+        }
+
+        /// <summary>
+        /// Validate correct crate-storage structure in follow-up configuration response 
+        /// </summary>
+        [Test]
+        public async void ConnectToSql_FollowUp_Configuration_Check_Crate_Structure()
+        {
+            var configureUrl = GetTerminalConfigureUrl();
+
+            var requestActionDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
+
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            {
+                updater.CrateStorage.RemoveByLabel("Configuration_Controls");
+                updater.CrateStorage.Add(CreateConnectionStringCrate());
+            }
+
+            responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    responseActionDTO
+                );
+
+            Assert.NotNull(responseActionDTO);
+            Assert.NotNull(responseActionDTO.CrateStorage);
+            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+
+            // TODO: check crates
         }
 
         /// <summary>
