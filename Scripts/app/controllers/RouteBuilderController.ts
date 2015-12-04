@@ -20,7 +20,7 @@ module dockyard.controllers {
         current: model.RouteBuilderState;
         actionGroups: model.ActionGroup[];
 
-        addAction(): void;
+        addAction(group: model.ActionGroup): void;
         deleteAction: (action: model.ActionDTO) => void;
         selectAction(action): void;
         isBusy: () => boolean;
@@ -78,8 +78,8 @@ module dockyard.controllers {
             this.setupMessageProcessing();
             $timeout(() => this.loadRoute(), 500, true);
 
-            this.$scope.addAction = () => {
-                this.addAction();
+            this.$scope.addAction = (group: model.ActionGroup) => {
+                this.addAction(group);
             }
 
             this.$scope.isBusy =  () => {
@@ -92,7 +92,7 @@ module dockyard.controllers {
 
             this.$scope.selectAction = (action: model.ActionDTO) => {
                 if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
-                    this.selectAction(action);
+                    this.selectAction(action, null);
             }
 
         }
@@ -177,13 +177,13 @@ module dockyard.controllers {
                 }
             }
 
-        private addAction() {
+        private addAction(group: model.ActionGroup) {
             console.log('Add action');
             var self = this;
             var promise = this.RouteBuilderService.saveCurrent(this.$scope.current);
             promise.then((result: model.RouteBuilderState) => {
                 //we should just raise an event for this
-                self.$scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_ActionAdd],new psa.ActionAddEventArgs());
+                self.$scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_ActionAdd], new psa.ActionAddEventArgs(group));
             });
         }
 
@@ -227,16 +227,16 @@ module dockyard.controllers {
             this.$scope.current.action = action.toActionVM();
             this.$scope.current.action.activityTemplate = activityTemplate;
             this.$scope.current.action.activityTemplateId = activityTemplate.id;
-            this.$scope.actionGroups[0].actions.push(action);
+            this.$scope.current.action.parentRouteNodeId = eventArgs.group.parentId;
 
-            this.selectAction(action);
+            this.selectAction(action, eventArgs.group);
         }
 
         /*
             Handles message 'WorkflowDesignerPane_ActionSelected'. 
             This message is sent when user is selecting an existing action or after addng a new action. 
         */
-        private selectAction(action: model.ActionDTO) {
+        private selectAction(action: model.ActionDTO, group: model.ActionGroup) {
             
             console.log("Action selected: " + action.id);
             var originalId,
@@ -272,7 +272,7 @@ module dockyard.controllers {
                         : action.id;
 
                     //Whether user selected a new action or just clicked on the current one
-                    var actionChanged = action.id != originalId
+                    var actionChanged = action.id != originalId;
                 
                     // Determine if we need to load action from the db or we can just use 
                     // the one returned from the above saveCurrent operation.
@@ -283,12 +283,11 @@ module dockyard.controllers {
                     throw Error('Action has not been persisted. Process Builder cannot proceed ' +
                         'to action type selection for an unpersisted action.');
                 }
-                if (canBypassActionLoading) {
+                if (canBypassActionLoading && group !== null) {
                     this.$scope.current.action = result.action;
-                    var actions = this.$scope.actionGroups[0].actions;
-                    actions[actions.length - 1] = result.action;
+                    group.actions.push(result.action);
                     if (result.action.childrenActions.length) {
-                        this.$scope.actionGroups.push(new model.ActionGroup(result.action.childrenActions));
+                        this.$scope.actionGroups.push(new model.ActionGroup(result.action.childrenActions, result.action.id));
                     }
                 }
                 else {
@@ -304,9 +303,6 @@ module dockyard.controllers {
         */
         private PaneWorkflowDesigner_TemplateSelected(eventArgs: pwd.TemplateSelectedEventArgs) {
             console.log("RouteBuilderController: template selected");
-
-            var scope = this.$scope,
-                that = this;
 
             this.RouteBuilderService.saveCurrent(this.$scope.current)
                 .then((result: model.RouteBuilderState) => {

@@ -26,11 +26,13 @@ module dockyard.directives.paneSelectAction {
     }
 
     export class ActivityTypeSelectedEventArgs {
-        public activityTemplate: interfaces.IActivityTemplateVM
+        public activityTemplate: interfaces.IActivityTemplateVM;
+        public group: model.ActionGroup;
 
-        constructor(activityTemplate: interfaces.IActivityTemplateVM) {
+        constructor(activityTemplate: interfaces.IActivityTemplateVM, group: model.ActionGroup) {
             // Clone Action to prevent any issues due to possible mutation of source object
             this.activityTemplate = angular.extend({}, activityTemplate);
+            this.group = group;
         }
     }
 
@@ -85,7 +87,9 @@ module dockyard.directives.paneSelectAction {
     }
 
     export class ActionAddEventArgs {
-        constructor() {
+        public group: model.ActionGroup;
+        constructor(group: model.ActionGroup) {
+            this.group = group;
         }
     }
 
@@ -122,11 +126,11 @@ module dockyard.directives.paneSelectAction {
                 this._$element = $element;
                 this._$scope = $scope;
 
-                $scope.$on(MessageType[MessageType.PaneSelectAction_ActionAdd], <any>angular.bind(this, this.onActionAdd));
+                $scope.$on(MessageType[MessageType.PaneSelectAction_ActionAdd], (event: ng.IAngularEvent, eventArgs: ActionAddEventArgs) => this.onActionAdd(eventArgs));
             };
         }
 
-        private onActionAdd() {
+        private onActionAdd(addActionArgs: ActionAddEventArgs) {
 			/*
 		   //we should list available actions to user and let him select one
 		   this.ActivityTemplateService.getAvailableActivities().$promise.then((categoryList: Array<interfaces.IActivityCategoryDTO>) => {
@@ -164,7 +168,7 @@ module dockyard.directives.paneSelectAction {
 			})
 			.result.then((selectedActivity: interfaces.IActivityTemplateVM) => {
 				//now we should emit an activity type selected event
-				var eventArgs = new ActivityTypeSelectedEventArgs(selectedActivity);
+                var eventArgs = new ActivityTypeSelectedEventArgs(selectedActivity, addActionArgs.group);
 				this._$scope.$emit(MessageType[MessageType.PaneSelectAction_ActivityTypeSelected], eventArgs);
 			});
         }

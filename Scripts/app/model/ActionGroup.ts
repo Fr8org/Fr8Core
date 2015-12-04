@@ -9,8 +9,11 @@
         public arrowLength: number = 0;
         public arrowOffsetLeft: number = 0;
 
-        constructor(actions) {
+        public parentId: string;
+
+        constructor(actions, parentId) {
             this.actions = actions;
+            this.parentId = parentId;
         }
     }
 }

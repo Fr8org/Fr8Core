@@ -115,7 +115,7 @@ gulp.task('compile_js', function () {
 });
 
 gulp.task('watch_js', ['compile_js'], function () {
-    gulp.watch('Source/app/**/*.js', ['compile_js']);
+    gulp.watch('Scripts/app/**/*.js', ['compile_js']);
 });
 
 gulp.task('default', ['bower', 'concattemplates', 'compile_js']);

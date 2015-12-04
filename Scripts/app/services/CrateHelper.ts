@@ -27,6 +27,14 @@
             return this.hasCrateOfManifestType(crateStorage, 'Standard UI Controls');
         }
 
+        public hasCustomProcessingConfigurationCrate(crateStorage: model.CrateStorage): boolean {
+            return this.hasCrateOfManifestType(crateStorage, 'Custom Processing Configuration');
+        }
+
+        public getCustomProcessingConfigurationCrate(crateStorage: model.CrateStorage): model.Crate {
+            return this.findByManifestType(crateStorage, 'Custom Processing Configuration');
+        }
+
 
         public findByLabel(crateStorage: model.CrateStorage, label: string): model.Crate {
             // Check that CrateStorage is not empty.

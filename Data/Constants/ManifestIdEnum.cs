@@ -83,7 +83,10 @@ namespace Data.Constants
         StandardFileList = 24,
 
         [Display(Name = "Docusign Recipient")]
-        DocuSignRecipient = 26
+        DocuSignRecipient = 26,
+
+        [Display(Name = "Custom Processing Configuration")]
+        CustomProcessingConfiguration = 27
     }
 }
 
