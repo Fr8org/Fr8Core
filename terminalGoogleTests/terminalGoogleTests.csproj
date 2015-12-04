@@ -51,7 +51,7 @@
   <ItemGroup>
     <Compile Include="Integration\Terminal_Discover_v1_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unit\HealthMonitor_FixtureData.cs" />
+    <Compile Include="Unit\Extract_Spreadsheet_Data_v1Tests.cs" />
     <Compile Include="Unit\Receive_Google_Form_v1_Tests.cs" />
   </ItemGroup>
   <ItemGroup>
