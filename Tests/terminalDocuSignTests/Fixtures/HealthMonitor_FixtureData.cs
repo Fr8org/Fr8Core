@@ -18,7 +18,7 @@ namespace terminalDocuSignTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = 1,
-                Name = "Monitor_DocuSign_TEST",
+                Name = "Monitor_DocuSign_Envelope_Activity_TEST",
                 Version = "1"
             };
         }
