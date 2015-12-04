@@ -402,8 +402,7 @@ namespace terminalDocuSign.Actions
                                 Source = new FieldSourceDTO
                                 {
                                     Label = "Available Templates",
-                                    ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                                    FilterByTag = "EmailAddress"
+                                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                                 },
                                 Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
                             }
