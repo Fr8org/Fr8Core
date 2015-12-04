@@ -43,7 +43,7 @@ namespace terminalGoogleTests.Unit
         {
             Crate crate;
 
-            var curFields = new List<FieldDTO>() { new FieldDTO(){ Key = "Survey Form", Value = "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8"} }.ToArray();
+            var curFields = new List<FieldDTO>() { new FieldDTO() { Key = "Survey Form", Value = "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8" } }.ToArray();
             crate = CrateManager.CreateDesignTimeFieldsCrate("Available Forms", curFields);
 
             return crate;
@@ -78,7 +78,7 @@ namespace terminalGoogleTests.Unit
                 Label = "Select Google Form",
                 Name = "Selected_Google_Form",
                 Required = true,
-                selectedKey =  "Survey Form",
+                selectedKey = "Survey Form",
                 Value = "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8",
                 Source = new FieldSourceDTO
                 {
@@ -258,15 +258,32 @@ namespace terminalGoogleTests.Unit
             };
             using (var updater = CrateManager.UpdateStorage(curActionDTO))
             {
-                //updater.CrateStorage.Add(Extract_Spreadsheet_Data_v1_Payload_Empty_Raw());
+                updater.CrateStorage.Add(Extract_Spreadsheet_Data_v1_Payload_Raw());
             }
             return curActionDTO;
 
         }
 
-        //private Crate Extract_Spreadsheet_Data_v1_Payload_Empty_Raw()
-        //{
-            
-        //}
+        private static Crate Extract_Spreadsheet_Data_v1_Payload_Raw()
+        {
+            var curDataTable = new StandardTableDataCM()
+            {
+                FirstRowHeaders = true,
+                Table = new List<TableRowDTO>()
+                {
+                    new TableRowDTO()
+                    {
+                       Row = new List<TableCellDTO>()
+                       {
+                           TableCellDTO.Create("(2,1)","_cn6ca"),
+                           TableCellDTO.Create("(2,2)","_cokwr")
+                       }
+                    }
+                }
+            };
+            //prepare the event report
+            var curCrate = Crate.FromContent("", curDataTable);
+            return curCrate;
+        }
     }
 }

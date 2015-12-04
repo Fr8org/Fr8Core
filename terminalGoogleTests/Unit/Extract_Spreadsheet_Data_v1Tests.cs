@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -21,7 +22,6 @@ namespace terminalGoogleTests.Integration
     [Explicit]
     public class Extract_Spreadsheet_Data_v1Tests: BaseHealthMonitorTest
     {
-
         public override string TerminalName
         {
             get { return "terminalGoogle"; }
@@ -84,10 +84,37 @@ namespace terminalGoogleTests.Integration
         /////////////
         /// Followup Configuration Tests Begin
         /////////////
-
+        [Test, Category("Integration.terminalGoogle")]
          public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_With_Zero_Upstream_Crates()
         {
-            var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
+            var configureUrl = GetTerminalConfigureUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Run_ActionDTO_With_Crates();
+
+            //Act
+            //Call first time for the initial configuration
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Call second time for the follow up configuration
+            responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+            //Assert
+            Assert.NotNull(responseActionDTO);
+            Assert.NotNull(responseActionDTO.CrateStorage);
+            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+
+            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+            AssertCrateTypes(crateStorage);
+
+            AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
 
         }
 
@@ -107,7 +134,6 @@ namespace terminalGoogleTests.Integration
             //prepare the action DTO with valid target URL
             var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
             
-
             //Act
             var responsePayloadDTO = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
