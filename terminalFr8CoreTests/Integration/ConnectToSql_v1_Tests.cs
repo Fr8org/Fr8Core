@@ -50,13 +50,13 @@ namespace terminalTests.Integration
 
         private void AssertFollowUpCrateTypes(CrateStorage crateStorage)
         {
-            Assert.AreEqual(5, crateStorage.Count);
-
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Templates"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "DocuSignTemplateUserDefinedFields"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "DocuSignTemplateStandardFields"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Upstream Terminal-Provided Fields"));
+            Assert.AreEqual(4, crateStorage.Count);
+            Assert.AreEqual(3, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
+            
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Sql Table Definitions"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Sql Column Types"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Sql Connection String"));
         }
 
         private void AssertConfigureCrate(CrateStorage crateStorage)
@@ -218,7 +218,9 @@ namespace terminalTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage);
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
-            // TODO: check crates
+            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+
+            AssertFollowUpCrateTypes(crateStorage);            
         }
 
         /// <summary>
