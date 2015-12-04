@@ -7,13 +7,16 @@ app.run([
         var validation = (url) => {
             return url.indexOf("/apimock") === -1;
         }
+        // Fake AppInsights request
+        httpBackend.when('POST', 'https://dc.services.visualstudio.com/v2/track').respond({});
+
         httpBackend.whenGET(validation).passThrough();
         httpBackend.whenGET(validation).passThrough();
         httpBackend.whenGET(validation).passThrough();
         httpBackend.whenPOST(validation).passThrough();
         httpBackend.whenPUT(validation).passThrough();
         httpBackend.whenDELETE(validation).passThrough();
-    }
+    }   
 ]);
 
 // this is the to delay mock http requests
