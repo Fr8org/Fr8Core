@@ -161,8 +161,8 @@ namespace TerminalBase.BaseClasses
                             resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         else
                         {
-                            response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-                            return response;
+                            response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+                            return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
                         }
 
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
@@ -176,8 +176,8 @@ namespace TerminalBase.BaseClasses
                             resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         else
                         {
-                            response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-                            return response;
+                            response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+                            return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
                         }
 
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
