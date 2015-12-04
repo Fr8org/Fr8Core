@@ -212,7 +212,7 @@ namespace Data.Control
 
         public TextSource() { }
 
-        public TextSource(string initialLabel, string upstreamSourceLabel, string name)
+        public TextSource(string initialLabel, string upstreamSourceLabel, string name, string filterByTag = null)
         {
             Type = ControlTypes.TextSource;
             this.InitialLabel = initialLabel;
@@ -220,7 +220,8 @@ namespace Data.Control
             Source = new FieldSourceDTO
             {
                 Label = upstreamSourceLabel,
-                ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                FilterByTag = filterByTag
             };
         }
     }

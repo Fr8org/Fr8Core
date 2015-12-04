@@ -54,6 +54,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/TerminalService.js',
         'Scripts/app/filters/RouteState.js',
         'Scripts/app/filters/ContainerState.js',
+        'Scripts/app/filters/FilterByTag.js',
         'Scripts/app/directives/EventArgsBase.js',
         'Scripts/app/directives/directives.js',
         'Scripts/app/directives/indiClick.js',
