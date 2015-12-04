@@ -70,8 +70,6 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            System.Diagnostics.Debugger.Launch();
-
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 RemoveControl(updater.CrateStorage, "ErrorLabel");
