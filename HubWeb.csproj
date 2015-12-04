@@ -721,7 +721,6 @@
     <Content Include="Documentation\UploadBrandProfiles.html" />
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
-    <Content Include="Scripts\app\_compiled.js" />
     <Content Include="Scripts\lib\jpattern.js" />
     <Content Include="Scripts\tests\integration\ContainerControllerTests.js" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
