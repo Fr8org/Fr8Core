@@ -15,8 +15,7 @@ var app = angular.module("app", [
     "ui.select",
     "pusher-angular",
     "ngToast",
-    "frapontillo.bootstrap-switch",
-    "ApplicationInsightsModule"
+    "frapontillo.bootstrap-switch"
 ]);
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
@@ -69,12 +68,6 @@ app.controller('FooterController', ['$scope', function ($scope) {
         Layout.initFooter(); // init footer
     });
 }]);
-
-/* Set Application Insights */
-app.config(function (applicationInsightsServiceProvider) {
-    var options = { applicationName: 'HubWeb' };
-    applicationInsightsServiceProvider.configure('9fe8d4d4-a6c3-4221-9996-a03538150e24', options);
-});
 
 /* Setup Rounting For All Pages */
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
