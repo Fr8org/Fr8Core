@@ -6,8 +6,9 @@
 
 module dockyard.filters.filterByTag {
     'use strict';
-    app.filter('FilterByTag', () => 
-        function (list: model.DropDownListItem[], filterByTag: string): model.DropDownListItem[]{
+
+    export var factory = () =>
+        function (list: model.DropDownListItem[], filterByTag: string): model.DropDownListItem[] {
             var result = [];
             if (filterByTag) {
                 list.forEach((item) => {
@@ -18,5 +19,7 @@ module dockyard.filters.filterByTag {
             }
 
             return result;
-    });
+        };
+
+    app.filter('FilterByTag', factory);
 }

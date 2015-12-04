@@ -6,13 +6,14 @@ module dockyard.tests.controller {
 
     import CrateHelper = dockyard.services.CrateHelper;
     import fx = utils.fixtures;
+    import filterByTagFactory = dockyard.filters.filterByTag.factory;
 
 
     describe('CrateHelper', () => {
 
         var ch, crateStorage, emptyStorage, duplicateCrateStorage, controlList, fields;
         beforeEach(() => {
-            ch = new CrateHelper();
+            ch = new CrateHelper(filterByTagFactory());
             crateStorage = $.extend(true, {}, fx.CrateHelper.sampleStorage);
             emptyStorage = $.extend(true, {}, fx.CrateHelper.emptyStorage);
             duplicateCrateStorage = $.extend(true, {}, fx.CrateHelper.duplicateStorage);
