@@ -4309,7 +4309,7 @@
     <ItemGroup>
       <_CustomFiles Include="Scripts\app\_compiled.js" />
       <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
-        <DestinationRelativePath>build\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+        <DestinationRelativePath>Scripts\app\%(Filename)%(Extension)</DestinationRelativePath>
       </FilesForPackagingFromProject>
     </ItemGroup>
     <Message Text="CollectGulpOutput list: %(_CustomFiles.Identity)" />
