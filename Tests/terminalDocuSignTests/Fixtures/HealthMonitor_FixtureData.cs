@@ -1,7 +1,7 @@
 ﻿using System;
 using Data.Interfaces.DataTransferObjects;
 
-namespace terminalDocuSignTests
+namespace terminalDocuSignTests.Fixtures
 {
     public class HealthMonitor_FixtureData
     {
@@ -33,6 +33,16 @@ namespace terminalDocuSignTests
             };
         }
 
+        public static ActivityTemplateDTO Send_DocuSign_Envelope_v1_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 3,
+                Name = "Send_DocuSign_Envelope_TEST",
+                Version = "1"
+            };
+        }
+
         public static ActionDTO Monitor_DocuSign_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Monitor_DocuSign_v1_ActivityTemplate();
@@ -57,6 +67,46 @@ namespace terminalDocuSignTests
                 Id = Guid.NewGuid(),
                 Name = "Receive_DocuSign",
                 Label = "Receive DocuSign",
+                AuthToken = DocuSign_AuthToken(),
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
+        public static ActionDTO Record_Docusign_v1_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = Record_DocuSign_Envelope_v1_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Record_DocuSign",
+                Label = "Record DocuSign",
+                AuthToken = DocuSign_AuthToken(),
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
+        public static ActivityTemplateDTO Record_DocuSign_Envelope_v1_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 3,
+                Name = "Record_DocuSign_Events_TEST",
+                Version = "1"
+            };
+        }        
+
+        public static ActionDTO Send_DocuSign_Envelope_v1_Example_ActionDTO()
+        {
+            var activityTemplate = Send_DocuSign_Envelope_v1_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Send_DocuSign",
+                Label = "Send DocuSign",
                 AuthToken = DocuSign_AuthToken(),
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id

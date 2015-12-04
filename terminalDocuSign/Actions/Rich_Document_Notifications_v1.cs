@@ -350,5 +350,10 @@ namespace terminalDocuSign.Actions
 
             return availableHandlersCrate;
         }
+
+        public Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            return Task.FromResult<PayloadDTO>(null);
+        }
     }
 }

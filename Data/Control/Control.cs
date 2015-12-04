@@ -39,6 +39,7 @@ namespace Data.Control
         public const string QueryBuilder = "QueryBuilder";
         public const string ManageRoute = "ManageRoute";
         public const string Duration = "Duration";
+        public const string RunRouteButton = "RunRouteButton";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -48,6 +49,15 @@ namespace Data.Control
             Type = ControlTypes.CheckBox;
         }
     }
+
+    public class RunRouteButton : ControlDefinitionDTO
+    {
+        public RunRouteButton()
+        {
+            Type = ControlTypes.RunRouteButton;
+        }
+    }
+
     public class DropDownList : ControlDefinitionDTO
     {
         [JsonProperty("listItems")]

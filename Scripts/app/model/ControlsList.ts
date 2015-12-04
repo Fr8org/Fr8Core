@@ -40,7 +40,7 @@
         selected: boolean;
         controls: Array<ControlDefinitionDTO>;
     }
-
+    
     export class RadioButtonGroup extends ControlDefinitionDTO {
         groupName: string;
         radios: Array<RadioButtonOption>;
