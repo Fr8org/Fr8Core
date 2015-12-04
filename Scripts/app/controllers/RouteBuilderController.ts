@@ -369,7 +369,7 @@ module dockyard.controllers {
     }
 
     app.run([
-        "$httpBackend", "urlPrefix", ($httpBackend, urlPrefix) => {
+        "$httpBackend", ($httpBackend) => {
             var actions: interfaces.IActionDTO =
                 {
                     name: "test action type",
@@ -384,11 +384,11 @@ module dockyard.controllers {
                 };
 
             $httpBackend
-                .whenGET(urlPrefix + "/Action/1")
+                .whenGET("/api/Action/1")
                 .respond(actions);
 
             $httpBackend
-                .whenPOST(urlPrefix + "/Action/1")
+                .whenPOST("/api/Action/1")
                 .respond(function (method, url, data) {
                     return data;
                 });

@@ -1,7 +1,5 @@
 ﻿// to enable disable, service hitting real backend comment this line and 
 // uncomment second line
-//app.constant('urlPrefix', '/apimocks');
-app.constant('urlPrefix', '/api');
 app.run([
     '$httpBackend', httpBackend => {
         var validation = (url) => {
@@ -10,8 +8,6 @@ app.run([
         // Fake AppInsights request
         httpBackend.when('POST', 'https://dc.services.visualstudio.com/v2/track').respond({});
 
-        httpBackend.whenGET(validation).passThrough();
-        httpBackend.whenGET(validation).passThrough();
         httpBackend.whenGET(validation).passThrough();
         httpBackend.whenPOST(validation).passThrough();
         httpBackend.whenPUT(validation).passThrough();

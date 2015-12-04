@@ -47,7 +47,6 @@ module dockyard.controllers {
             'ActionService',
             '$q',
             '$http',
-            'urlPrefix',
             'RouteService',
             '$timeout',
             'CriteriaServiceWrapper',
@@ -68,7 +67,6 @@ module dockyard.controllers {
             private ActionService: services.IActionService,
             private $q: ng.IQService,
             private $http: ng.IHttpService,
-            private urlPrefix: string,
             private RouteService: services.IRouteService,
             private $timeout: ng.ITimeoutService,
             private CriteriaServiceWrapper: services.ICriteriaServiceWrapper,
@@ -188,7 +186,7 @@ module dockyard.controllers {
     }
 
     app.run([
-        "$httpBackend", "urlPrefix", ($httpBackend, urlPrefix) => {
+        "$httpBackend", ($httpBackend) => {
             var actions: interfaces.IActionDTO =
                 {
                     name: "test action type",
@@ -203,11 +201,11 @@ module dockyard.controllers {
                 };
 
             $httpBackend
-                .whenGET(urlPrefix + "/Action/1")
+                .whenGET("/api/Action/1")
                 .respond(actions);
 
             $httpBackend
-                .whenPOST(urlPrefix + "/Action/1")
+                .whenPOST("/api/Action/1")
                 .respond(function (method, url, data) {
                     return data;
                 })

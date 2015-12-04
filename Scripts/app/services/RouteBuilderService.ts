@@ -235,7 +235,7 @@ module dockyard.services {
         This service is not intended to be used by anything except CriteriaServiceWrapper,
         that's why its name starts with underscores. 
     */
-    app.factory('__SubrouteService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService): __ISubrouteService =>
+    app.factory('__SubrouteService', ['$resource', ($resource: ng.resource.IResourceService): __ISubrouteService =>
         <__ISubrouteService>$resource('/api/processnodetemplate', null,
             {
                 'add': {

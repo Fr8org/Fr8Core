@@ -141,6 +141,11 @@
       "Includes": [ "*.js" ],
       "Excludes": [ "*.ts" ]
     },
+    {
+      "Path": ".. /app/e2ehttpBackend.js",
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
     { "Path": "../tests/templates/templateCache.js" }
   ],
   "Tests": [{ "Include": "*.js" }],
