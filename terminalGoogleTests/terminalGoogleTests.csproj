@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Unit\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Terminal_Discover_v1_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\Extract_Spreadsheet_Data_v1Tests.cs" />
