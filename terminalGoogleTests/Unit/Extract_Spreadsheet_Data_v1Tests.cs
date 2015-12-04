@@ -85,7 +85,11 @@ namespace terminalGoogleTests.Integration
         /// Followup Configuration Tests Begin
         /////////////
 
+         public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_With_Zero_Upstream_Crates()
+        {
+            var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
 
+        }
 
         /////////////
         /// Followup Configuration End
@@ -94,8 +98,19 @@ namespace terminalGoogleTests.Integration
         /////////////
         /// Run Tests Begin
         /////////////
-        
 
+        public async void Extract_Spreadsheet_Data_v1_Run_With_Zero_Upstream_Crates()
+        {
+            //Arrange
+            var runUrl = GetTerminalRunUrl();
+
+            //prepare the action DTO with valid target URL
+            var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
+            
+
+            //Act
+            var responsePayloadDTO = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+        }
 
         /////////////
         /// Run Tests End

@@ -7,6 +7,8 @@ using Data.Interfaces.Manifests;
 using System.Collections.Generic;
 using Hub.Managers;
 using System.Linq;
+using System.Runtime.InteropServices;
+
 namespace terminalGoogleTests.Unit
 {
     public class HealthMonitor_FixtureData
@@ -239,5 +241,32 @@ namespace terminalGoogleTests.Unit
                 ActivityTemplateId = activityTemplate.Id
             };
         }
+
+        public ActionDTO Extract_Spreadsheet_Data_v1_Run_ActionDTO_With_Crates()
+        {
+
+            var activityTemplate = Extract_Spreadsheet_Data_v1_ActivityTemplate();
+
+            var curActionDTO = new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Extract_Spreadsheet_Data",
+                Label = "Extract Spreadsheet Data",
+                AuthToken = Google_AuthToken(),
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id,
+            };
+            using (var updater = CrateManager.UpdateStorage(curActionDTO))
+            {
+                //updater.CrateStorage.Add(Extract_Spreadsheet_Data_v1_Payload_Empty_Raw());
+            }
+            return curActionDTO;
+
+        }
+
+        //private Crate Extract_Spreadsheet_Data_v1_Payload_Empty_Raw()
+        //{
+            
+        //}
     }
 }
