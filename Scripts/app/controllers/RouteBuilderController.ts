@@ -109,6 +109,9 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsReconfiguration],
                 (event: ng.IAngularEvent, childActionReconfigEventArgs: pca.ChildActionReconfigurationEventArgs) => this.PaneConfigureAction_ChildActionsReconfiguration(childActionReconfigEventArgs));
 
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_AllowsChildActions],
+                (event: ng.IAngularEvent, allowsChildrenEventArgs: pca.AllowsChildrenEventArgs) => this.PaneConfigureAction_ActionAllowsChildren(allowsChildrenEventArgs));
+
             //Process Select Action Pane events
             this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActivityTypeSelected],
                 (event: ng.IAngularEvent, eventArgs: psa.ActivityTypeSelectedEventArgs) => this.PaneSelectAction_ActivityTypeSelected(eventArgs));
@@ -148,6 +151,43 @@ module dockyard.controllers {
             }
 
             this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);  
+        }
+
+        //private doesActionAllowChildren(action: model.ActionDTO): boolean {
+
+        //     if (this.CrateHelper.hasCustomProcessingConfigurationCrate(action.crateStorage)) {
+        //        var customConfig = this.CrateHelper.getCustomProcessingConfigurationCrate(action.crateStorage);
+        //         return (<any>customConfig.contents).AllowChildren;
+        //    }
+
+        //    return false;
+        //}
+
+        private doesAnyChildGroupExist(action: model.ActionDTO): boolean {
+            for (var i = 0; i < this.$scope.actionGroups.length; i++) {
+                if (this.$scope.actionGroups[i].parentId === action.id) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private createChildGroupForAction(action: model.ActionDTO) {
+            if (!this.doesAnyChildGroupExist(action)) {
+                this.$scope.actionGroups.push(new model.ActionGroup([], action.id));
+                //we should re-render
+                if (!_.any(this.$scope.currentSubroute.actions,(a:model.ActionDTO) => { return a.id === action.id; })) {
+                    this.$scope.currentSubroute.actions.push(action);
+                    this.renderRoute(<interfaces.IRouteVM>this.$scope.current.route);
+                }
+                //this.$scope.actionGroups = this.LayoutService.placeActions(actions, this.$scope.current.route.startingSubrouteId);
+                
+            }
+        }
+
+        private PaneConfigureAction_ActionAllowsChildren(allowsChildrenEventArgs: pca.AllowsChildrenEventArgs) {
+            this.createChildGroupForAction(allowsChildrenEventArgs.action);
         }
 
         // If action updated, notify interested parties and update $scope.current.action
@@ -227,8 +267,9 @@ module dockyard.controllers {
             this.$scope.current.action = action.toActionVM();
             this.$scope.current.action.activityTemplate = activityTemplate;
             this.$scope.current.action.activityTemplateId = activityTemplate.id;
-            this.$scope.current.action.parentRouteNodeId = eventArgs.group.parentId;
-
+            if (eventArgs.group.parentId){
+                this.$scope.current.action.parentRouteNodeId = eventArgs.group.parentId;
+            }
             this.selectAction(action, eventArgs.group);
         }
 
@@ -283,6 +324,7 @@ module dockyard.controllers {
                     throw Error('Action has not been persisted. Process Builder cannot proceed ' +
                         'to action type selection for an unpersisted action.');
                 }
+
                 if (canBypassActionLoading && group !== null) {
                     this.$scope.current.action = result.action;
                     group.actions.push(result.action);
@@ -348,6 +390,8 @@ module dockyard.controllers {
             this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);
             
         }
+
+        
 
         private PaneConfigureAction_ChildActionsReconfiguration(childActionReconfigEventArgs: pca.ChildActionReconfigurationEventArgs) {
             for (var i = 0; i < childActionReconfigEventArgs.actions.length; i++) {

@@ -9,7 +9,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_RenderConfiguration,
         PaneConfigureAction_ChildActionsDetected,
         PaneConfigureAction_ChildActionsReconfiguration,
-        PaneConfigureAction_ReloadAction
+        PaneConfigureAction_ReloadAction,
+        PaneConfigureAction_AllowsChildActions
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
@@ -40,6 +41,14 @@ module dockyard.directives.paneConfigureAction {
     }
 
     export class MapFieldsClickedEventArgs {
+        action: model.ActionDTO;
+
+        constructor(action: model.ActionDTO) {
+            this.action = action;
+        }
+    }
+
+    export class AllowsChildrenEventArgs {
         action: model.ActionDTO;
 
         constructor(action: model.ActionDTO) {
@@ -250,6 +259,12 @@ module dockyard.directives.paneConfigureAction {
                                 // and redirect user to the RouteBuilder once if is received.
                                 // It means that solution configuration is complete. 
                                 $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
+                            } else if (crateHelper.hasCustomProcessingConfigurationCrate(res.crateStorage)) {
+                                var customConfig = crateHelper.getCustomProcessingConfigurationCrate(res.crateStorage);
+                                if ((<any>customConfig.contents).AllowChildren) {
+                                    
+                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_AllowsChildActions], new AllowsChildrenEventArgs(res));
+                                }
                             }
 
                             $scope.reconfigureChildrenActions = false;
