@@ -4309,11 +4309,11 @@
   </PropertyGroup>
   <Target Name="CollectGulpOutput">
     <ItemGroup>
-      <_CustomFiles Include="Scripts\app\_compiled.js" />
-      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+      <_CustomGulpFiles Include="Scripts\app\_compiled.js" />
+      <FilesForPackagingFromProject Include="%(_CustomGulpFiles.Identity)">
         <DestinationRelativePath>Scripts\app\%(Filename)%(Extension)</DestinationRelativePath>
       </FilesForPackagingFromProject>
     </ItemGroup>
-    <Message Text="CollectGulpOutput list: %(_CustomFiles.Identity)" />
+    <Message Text="CollectGulpOutput list: %(_CustomGulpFiles.Identity)" />
   </Target>
 </Project>
