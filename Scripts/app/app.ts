@@ -8,7 +8,6 @@ var app = angular.module("app", [
     "ngSanitize",
     'ngResource',
     'ui.bootstrap',
-    "ngMockE2E",
     "datatables",
     "ngFileUpload",
     "textAngular",
@@ -39,7 +38,7 @@ app.factory('settings', ['$rootScope', function ($rootScope) {
         layoutImgPath: Metronic.getAssetsPath() + 'admin/layout/img/',
         layoutCssPath: Metronic.getAssetsPath() + 'admin/layout/css/'
     };
-
+        
     $rootScope.settings = settings;
 
     return settings;
