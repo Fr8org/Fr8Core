@@ -4294,7 +4294,7 @@
   </PropertyGroup>
   <Target Name="GulpBuild" DependsOnTargets="CompileTypeScript">
     <Exec Command="npm install" />
-    <Exec Command="gulp compile_js" />
+    <Exec Command=".\node_modules\.bin\gulp compile_js" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
