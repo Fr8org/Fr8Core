@@ -367,33 +367,5 @@ module dockyard.controllers {
             }
         }
     }
-
-    app.run([
-        "$httpBackend", ($httpBackend) => {
-            var actions: interfaces.IActionDTO =
-                {
-                    name: "test action type",
-                    configurationControls: new model.ControlsList(),
-                    crateStorage: new model.CrateStorage(),
-                    parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
-                    activityTemplate: null,
-                    activityTemplateId: 1,
-                    id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
-                    isTempId: false,
-                    childrenActions: null
-                };
-
-            $httpBackend
-                .whenGET("/api/Action/1")
-                .respond(actions);
-
-            $httpBackend
-                .whenPOST("/api/Action/1")
-                .respond(function (method, url, data) {
-                    return data;
-                });
-        }
-    ]);
-
     app.controller('RouteBuilderController', RouteBuilderController);
 } 
