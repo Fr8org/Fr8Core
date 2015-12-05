@@ -350,14 +350,15 @@ namespace TerminalBase.BaseClasses
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
-            string label, string controlName, string upstreamSourceLabel)
+            string label, string controlName, string upstreamSourceLabel, string filterByTag = "")
         {
             var control = new TextSource(label, upstreamSourceLabel, controlName)
             {
                 Source = new FieldSourceDTO
                 {
                     Label = upstreamSourceLabel,
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                    FilterByTag = filterByTag
                 }
             };
 
@@ -396,7 +397,7 @@ namespace TerminalBase.BaseClasses
                     return textSourceControl.Value;
 
                 case "upstream":
-                    return ExtractDesignTimeFieldValue(runTimeCrateStorage, textSourceControl.Value);
+                    return ExtractFieldValue(runTimeCrateStorage, textSourceControl.selectedKey);
 
                 default:
                     throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
@@ -424,7 +425,7 @@ namespace TerminalBase.BaseClasses
 
                 case "upstream":
                     var recipientField = radioButton.Controls[0];
-                    returnValue = ExtractDesignTimeFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value);
+                    returnValue = ExtractFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value);
                     break;
 
                 default:
@@ -437,7 +438,7 @@ namespace TerminalBase.BaseClasses
         /// Extracts crate with specified label and ManifestType = Standard Design Time,
         /// then extracts field with specified fieldKey.
         /// </summary>
-        protected string ExtractDesignTimeFieldValue(CrateStorage crateStorage, string fieldKey)
+        protected string ExtractFieldValue(CrateStorage crateStorage, string fieldKey)
         {
             var fieldValues = crateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(fieldKey))
                 .Where(s => !string.IsNullOrEmpty(s))
@@ -445,17 +446,6 @@ namespace TerminalBase.BaseClasses
 
             if (fieldValues.Length > 0)
                 return fieldValues[0];
-
-            //foreach (var crate in crates)
-            //{
-            //    var allFields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
-            //    var searchField = allFields.FirstOrDefault(x => x.Key == fieldKey);
-
-            //    if (searchField != null)
-            //    {
-            //        return searchField.Value;
-            //    }
-            //}
 
             throw new ApplicationException("No field found with specified key.");
         }

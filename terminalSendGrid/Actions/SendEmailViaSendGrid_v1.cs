@@ -74,12 +74,13 @@ namespace terminalSendGrid.Actions
         /// Create EmailAddress RadioButtonGroup
         /// </summary>
         /// <returns></returns>
-        private ControlDefinitionDTO CreateEmailAddressRadioButtonGroup()
+        private ControlDefinitionDTO CreateEmailAddressTextSourceControl()
         {
             var control = CreateSpecificOrUpstreamValueChooser(
                 "For the Email Address",
                 "EmailAddress",
-                "Upstream Terminal-Provided Fields"
+                "Upstream Terminal-Provided Fields",
+                "EmailAddress"
             );
 
             return control;
@@ -89,7 +90,7 @@ namespace terminalSendGrid.Actions
         /// Create EmailSubject RadioButtonGroup
         /// </summary>
         /// <returns></returns>
-        private ControlDefinitionDTO CreateEmailSubjectRadioButtonGroup()
+        private ControlDefinitionDTO CreateEmailSubjectTextSourceControl()
         {
             var control = CreateSpecificOrUpstreamValueChooser(
                 "For the Email Subject",
@@ -104,7 +105,7 @@ namespace terminalSendGrid.Actions
         /// Create EmailBody RadioButtonGroup
         /// </summary>
         /// <returns></returns>
-        private ControlDefinitionDTO CreateEmailBodyRadioButtonGroup()
+        private ControlDefinitionDTO CreateEmailBodyTextSourceControl()
         {
             var control = CreateSpecificOrUpstreamValueChooser(
                 "For the Email Body",
@@ -119,9 +120,9 @@ namespace terminalSendGrid.Actions
         {
             var controls = new[]
             {
-                CreateEmailAddressRadioButtonGroup(),
-                CreateEmailSubjectRadioButtonGroup(),
-                CreateEmailBodyRadioButtonGroup()
+                CreateEmailAddressTextSourceControl(),
+                CreateEmailSubjectTextSourceControl(),
+                CreateEmailBodyTextSourceControl()
             };
 
             return Crate.CreateStandardConfigurationControlsCrate("Send Grid", controls);
