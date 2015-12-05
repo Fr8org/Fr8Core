@@ -56,7 +56,7 @@ namespace TerminalBase.BaseClasses
             {
                 return true;
             }
-        
+
             return false;
         }
 
@@ -100,7 +100,7 @@ namespace TerminalBase.BaseClasses
             var fields = designTimeFields.Fields;
             var validationList = fields.Select(f => new FieldValidationDTO(curActionDO.Id, f.Key)).ToList();
             return Crate.ToDto(await ValidateFields(validationList));
-            }
+        }
 
         //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
         protected virtual async Task<CrateStorage> ValidateAction(ActionDO curActionDO)
@@ -108,7 +108,7 @@ namespace TerminalBase.BaseClasses
             return null;
         }
 
-        protected async Task<ActionDO> ProcessConfigurationRequest(ActionDO curActionDO, ConfigurationEvaluator configurationEvaluationResult, AuthorizationTokenDO	 authToken)
+        protected async Task<ActionDO> ProcessConfigurationRequest(ActionDO curActionDO, ConfigurationEvaluator configurationEvaluationResult, AuthorizationTokenDO authToken)
         {
             if (configurationEvaluationResult(curActionDO) == ConfigurationRequestType.Initial)
             {
@@ -120,7 +120,7 @@ namespace TerminalBase.BaseClasses
                 var validationErrors = await ValidateAction(curActionDO);
                 if (validationErrors != null)
                 {
-                    Crate.UpdateStorage	(curActionDO).CrateStorage.AddRange(validationErrors);
+                    Crate.UpdateStorage(curActionDO).CrateStorage.AddRange(validationErrors);
                     return curActionDO;
                 }
                 return await FollowupConfigurationResponse(curActionDO, authToken);
@@ -178,6 +178,7 @@ namespace TerminalBase.BaseClasses
             var curCrates = await HubCommunicator
                 .GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, direction);
 
+
             mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);
 
             return mergedFields;
@@ -207,7 +208,7 @@ namespace TerminalBase.BaseClasses
         {
             return PackControlsCrate(page.Controls.ToArray());
         }
-        
+
         protected Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
             return Crate<StandardConfigurationControlsCM>.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(controlsList));
@@ -219,20 +220,20 @@ namespace TerminalBase.BaseClasses
 
             var controlsCrateMS = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
-//            var controlsCrate = curActionDto.CrateStorage.CrateDTO
-//                .FirstOrDefault(
-//                    x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
-//                    && x.Label == "Configuration_Controls");
-//
-//            if (controlsCrate == null)
-//            {
-//                throw new ApplicationException("No Configuration_Controls crate found.");
-//            }
-//
-//            var controlsCrateMS = JsonConvert
-//                .DeserializeObject<StandardConfigurationControlsCM>(
-//                    controlsCrate.Contents
-//                );
+            //            var controlsCrate = curActionDto.CrateStorage.CrateDTO
+            //                .FirstOrDefault(
+            //                    x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+            //                    && x.Label == "Configuration_Controls");
+            //
+            //            if (controlsCrate == null)
+            //            {
+            //                throw new ApplicationException("No Configuration_Controls crate found.");
+            //            }
+            //
+            //            var controlsCrateMS = JsonConvert
+            //                .DeserializeObject<StandardConfigurationControlsCM>(
+            //                    controlsCrate.Contents
+            //                );
 
             var field = controlsCrateMS.Controls
                 .FirstOrDefault(x => x.Name == fieldName);
@@ -331,16 +332,16 @@ namespace TerminalBase.BaseClasses
                 }
             };
 
-//            var controls = new StandardConfigurationControlsCM()
-//            {
-//                Controls = fields
-//            };
+            //            var controls = new StandardConfigurationControlsCM()
+            //            {
+            //                Controls = fields
+            //            };
 
             var crateControls = Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fields.ToArray());
-//                ,
-//                JsonConvert.SerializeObject(controls),
-//                CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
-//            );
+            //                ,
+            //                JsonConvert.SerializeObject(controls),
+            //                CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+            //            );
 
             return crateControls;
         }
@@ -349,49 +350,15 @@ namespace TerminalBase.BaseClasses
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
-            string label, string controlName, string upstreamSourceLabel)
+            string label, string controlName, string upstreamSourceLabel, string filterByTag = "")
         {
-            var control = new RadioButtonGroup()
+            var control = new TextSource(label, upstreamSourceLabel, controlName)
             {
-                Label = label,
-                GroupName = controlName,
-                Name = controlName,
-                Radios = new List<RadioButtonOption>()
+                Source = new FieldSourceDTO
                 {
-                    new RadioButtonOption()
-                    {
-                        Selected = true,
-                        Name = "specific",
-                        Value = "this specific value",
-                        Controls = new List<ControlDefinitionDTO>
-                        {
-                            new TextBox()
-                            {
-                                Label = "",
-                                Name = "SpecificValue"
-                            }
-                        }
-                    },
-
-                    new RadioButtonOption()
-                    {
-                        Selected = false,
-                        Name = "upstream",
-                        Value = "a value from an Upstream Crate",
-                        Controls = new List<ControlDefinitionDTO>
-                        {
-                            new DropDownList()
-                            {
-                                Label = "",
-                                Name = "UpstreamCrate",
-                                Source = new FieldSourceDTO
-                                {
-                                    Label = upstreamSourceLabel,
-                                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                }
-                            }
-                        }
-                    }
+                    Label = upstreamSourceLabel,
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                    FilterByTag = filterByTag
                 }
             };
 
@@ -400,7 +367,7 @@ namespace TerminalBase.BaseClasses
 
 
         /// <summary>
-        /// Extract value from RadioButtonGroup where specific value or upstream field was specified.
+        /// Extract value from RadioButtonGroup or TextSource where specific value or upstream field was specified.
         /// </summary>
         protected string ExtractSpecificOrUpstreamValue(
             CrateStorage designTimeCrateStorage,
@@ -430,7 +397,7 @@ namespace TerminalBase.BaseClasses
                     return textSourceControl.Value;
 
                 case "upstream":
-                    return ExtractDesignTimeFieldValue(runTimeCrateStorage, textSourceControl.Value);
+                    return ExtractFieldValue(runTimeCrateStorage, textSourceControl.selectedKey);
 
                 default:
                     throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
@@ -458,7 +425,7 @@ namespace TerminalBase.BaseClasses
 
                 case "upstream":
                     var recipientField = radioButton.Controls[0];
-                    returnValue = ExtractDesignTimeFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value);
+                    returnValue = ExtractFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value);
                     break;
 
                 default:
@@ -471,7 +438,7 @@ namespace TerminalBase.BaseClasses
         /// Extracts crate with specified label and ManifestType = Standard Design Time,
         /// then extracts field with specified fieldKey.
         /// </summary>
-        protected string ExtractDesignTimeFieldValue(CrateStorage crateStorage, string fieldKey)
+        protected string ExtractFieldValue(CrateStorage crateStorage, string fieldKey)
         {
             var fieldValues = crateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(fieldKey))
                 .Where(s => !string.IsNullOrEmpty(s))
@@ -480,21 +447,10 @@ namespace TerminalBase.BaseClasses
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            //foreach (var crate in crates)
-            //{
-            //    var allFields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
-            //    var searchField = allFields.FirstOrDefault(x => x.Key == fieldKey);
-
-            //    if (searchField != null)
-            //    {
-            //        return searchField.Value;
-            //    }
-            //}
-
             throw new ApplicationException("No field found with specified key.");
         }
 
-       protected void AddLabelControl(CrateStorage storage, string name, string label, string text)
+        protected void AddLabelControl(CrateStorage storage, string name, string label, string text)
         {
             AddControl(
                 storage,
