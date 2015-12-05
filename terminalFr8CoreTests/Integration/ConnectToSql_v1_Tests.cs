@@ -69,7 +69,7 @@ namespace terminalTests.Integration
 
         private Crate CreateConnectionStringCrate()
         {
-            var control = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString1();
+            var control = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2();
             control.Name = "ConnectionString";
             control.Label = "Connection String";
 
@@ -78,7 +78,7 @@ namespace terminalTests.Integration
 
         private Crate CreateWrongConnectionStringCrate()
         {
-            var control = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString1();
+            var control = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2();
             control.Name = "ConnectionString";
             control.Label = "Connection String";
             control.Value = "Wrong connection string";
