@@ -185,7 +185,7 @@ namespace terminalGoogleTests.Unit
             var actionDTO = fixture.Receive_Google_Form_v1_Run_EmptyPayload();
 
             //Act
-            var responsePayloadDTO = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
 
         /// <summary>
