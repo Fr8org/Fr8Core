@@ -28,7 +28,7 @@ namespace DockyardTest.Controllers
             {
                 var controller = CreateController<CriteriaController>();
 
-                var actionResult = controller.GetBySubrouteId(_curSubroute.Id);
+                var actionResult = controller.BySubrouteId(_curSubroute.Id);
 
                 var okResult = actionResult as OkNegotiatedContentResult<CriteriaDTO>;
 
@@ -52,7 +52,7 @@ namespace DockyardTest.Controllers
                 var route = FixtureData.TestRoute1();
                 uow.RouteRepository.Add(route);
                 uow.SaveChanges();
-                //Add a processnodetemplate to processtemplate 
+                //Add a processnodetemplate to route 
                 _curSubroute = FixtureData.TestSubrouteDO1();
                 _curSubroute.ParentRouteNodeId = route.Id;
                 uow.SubrouteRepository.Add(_curSubroute);

@@ -4,7 +4,7 @@ using Microsoft.Owin;
 using Owin;
 using TerminalBase.BaseClasses;
 using terminalGoogle;
-
+using TerminalBase.Infrastructure;
 using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
 
 [assembly: OwinStartup(typeof(terminalGoogle.Startup))]
@@ -15,11 +15,11 @@ namespace terminalGoogle
     {
         public void Configuration(IAppBuilder app)
         {
+            
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
-
             StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE).ConfigureGoogleDependencies(DependencyType.LIVE);
-
-            StartHosting("terminal_google");
+            TerminalBootstrapper.ConfigureLive();
+            StartHosting("terminal_Google");
         }
     }
 }

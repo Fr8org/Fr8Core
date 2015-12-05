@@ -14,6 +14,7 @@ using Hub.Managers;
 using terminalGoogle.Services;
 using TerminalBase.Infrastructure;
 using AutoMapper;
+using Data.Control;
 
 namespace terminalGoogle.Actions
 {
@@ -80,7 +81,7 @@ namespace terminalGoogle.Actions
 
         private Crate PackCrate_ConfigurationControls()
         {
-            var fieldSelectTemplate = new DropDownListControlDefinitionDTO()
+            var fieldSelectTemplate = new DropDownList()
             {
                 Label = "Select Google Form",
                 Name = "Selected_Google_Form",
@@ -123,11 +124,9 @@ namespace terminalGoogle.Actions
                 );
         }
 
-        public async Task<object> Activate(ActionDTO curActionDTO)
+        public async Task<ActionDO> Activate(ActionDO curActionDTO, AuthorizationTokenDO authTokenDO)
         {
-            var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            
-            var googleAuthDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(curAuthTokenDO.Token);
+            var googleAuthDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
 
             //get form id
             var controlsCrate = Crate.GetStorage(curActionDTO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
@@ -142,12 +141,18 @@ namespace terminalGoogle.Actions
 
             var result = await _googleDrive.UploadAppScript(googleAuthDTO, formId);
 
-            return Task.FromResult(curActionDTO);
+            var fieldResult = new List<FieldDTO>(){ new FieldDTO(){ Key = result, Value = result}};
+            using (var updater = Crate.UpdateStorage(curActionDTO))
+            {
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(fieldResult)));
+            }
+
+            return await Task.FromResult(curActionDTO);
         }
 
-        public object Deactivate(ActionDTO curActionDTO)
+        public async Task<ActionDO> Deactivate(ActionDO curActionDTO, AuthorizationTokenDO authTokenDO)
         {
-            return curActionDTO;
+            return await Task.FromResult(curActionDTO);
         }
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -157,7 +162,7 @@ namespace terminalGoogle.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var processPayload = await GetProcessPayload(containerId);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
             var payloadFields = ExtractPayloadFields(processPayload);
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
             

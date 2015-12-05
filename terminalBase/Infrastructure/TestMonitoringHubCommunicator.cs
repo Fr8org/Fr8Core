@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using StructureMap;
 using Data.Crates;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Hub.Managers;
 
 namespace TerminalBase.Infrastructure
 {
-    public class TestMonitoringHubCommunicator : IHubCommunicator
+    public class TestMonitoringHubCommunicator : DataHubCommunicatorBase
     {
-        public Task<PayloadDTO> GetProcessPayload(Guid containerId)
+        protected override string LabelPrefix
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(
-            Guid routeNodeId, CrateDirection direction)
-        {
-            throw new NotImplementedException();
+            get { return "HealthMonitor"; }
         }
     }
 }

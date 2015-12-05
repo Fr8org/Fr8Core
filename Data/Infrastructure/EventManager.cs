@@ -57,6 +57,9 @@ namespace Data.Infrastructure
         public delegate void UserRegistrationHandler(Fr8AccountDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
 
+        public delegate void Fr8AccountTerminalRegistrationHandler(TerminalDO terminalDO);
+        public static event Fr8AccountTerminalRegistrationHandler AlertFr8AccountTerminalRegistration;
+
         public delegate void UserRegistrationErrorHandler(Exception ex);
         public static event UserRegistrationErrorHandler AlertUserRegistrationError;
 
@@ -138,7 +141,8 @@ namespace Data.Infrastructure
         public delegate void IncidentTwilioSMSSendFailureHandler(string number, string message, string errorMsg);
         public static event IncidentTwilioSMSSendFailureHandler IncidentTwilioSMSSendFailure;
 
-
+        public delegate object AuthenticationCompletedEventHandler(string userId, TerminalDO authenticatedTerminal);
+        public static event AuthenticationCompletedEventHandler EventAuthenticationCompleted;
 
 
         #region Method
@@ -289,6 +293,12 @@ namespace Data.Infrastructure
         {
             UserRegistrationErrorHandler handler = AlertUserRegistrationError;
             if (handler != null) handler(ex);
+        }
+
+        public static void Fr8AccountTerminalRegistration(TerminalDO terminalDO)
+        {
+            if (AlertFr8AccountTerminalRegistration != null)
+                AlertFr8AccountTerminalRegistration(terminalDO);
         }
 
         //public static void BookingRequestCheckedOut(int bookingRequestId, string bookerId)
@@ -469,6 +479,12 @@ namespace Data.Infrastructure
         {
             var handler = EventContainerStateChanged;
             if (handler != null) handler(currentValues);
+        }
+
+        public static void TerminalAuthenticationCompleted(string userId, TerminalDO authenticatedTerminal)
+        {
+            var handler = EventAuthenticationCompleted;
+            if (handler != null) handler(userId, authenticatedTerminal);
         }
 
         #endregion

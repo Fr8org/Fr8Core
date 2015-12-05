@@ -1,11 +1,14 @@
 ﻿/// <reference path="../../_all.ts" />
 
 module dockyard.directives {
+
+    import pwd = dockyard.directives.paneWorkflowDesigner;
+
     'use strict';
 
     export function ManageRoute(): ng.IDirective {
         var getRoute = function ($q, $http, actionId): ng.IPromise<any> {
-            var url = '/routes/getByAction/' + actionId;
+            var url = '/api/routes/getByAction/' + actionId;
 
             return $q(function (resolve, reject) {
                 $http.get(url)
@@ -17,23 +20,9 @@ module dockyard.directives {
                     });
             });
         };
-
-        var runContainer = function ($q, $http, routeId): ng.IPromise<any> {
-            var url = '/routes/run?routeId=' + routeId;
-
-            return $q(function (resolve, reject) {
-                $http.post(url)
-                    .then(function (res) {
-                        resolve(res.data);
-                    })
-                    .catch(function (err) {
-                        reject(err);
-                    });
-            });
-        };
-
+        
         var copyRoute = function ($q, $http, routeId, routeName): ng.IPromise<any> {
-            var url = '/routes/copy?id=' + routeId + '&name=' + routeName;
+            var url = '/api/routes/copy?id=' + routeId + '&name=' + routeName;
 
             return $q(function (resolve, reject) {
                 $http.post(url)
@@ -59,36 +48,6 @@ module dockyard.directives {
                     $q: ng.IQService,
                     $location: ng.ILocationService
                 ) {
-                    var _isBusy = false;
-
-                    $scope.isBusy = function () {
-                        return _isBusy;
-                    };
-
-                    $scope.runNow = function () {
-                        $scope.error = null;
-                        _isBusy = true;
-
-                        getRoute($q, $http, $scope.currentAction.id)
-                            .then(function (route) {
-                                runContainer($q, $http, route.id)
-                                    .then(function (container) {
-                                        var path = '/findObjects/' + container.id + '/results';
-                                        $location.path(path);
-                                    })
-                                    .catch(function (err) {
-                                        $scope.error = err;
-                                    })
-                                    .finally(function () {
-                                        _isBusy = false;
-                                    });
-                            })
-                            .catch(function (err) {
-                                $scope.error = err;
-                                _isBusy = false;
-                            });
-                    };
-
                     $scope.saveRoute = function () {
                         if (!$scope.saveRouteName) {
                             return;
@@ -96,7 +55,8 @@ module dockyard.directives {
 
                         $scope.copySuccess = null;
                         $scope.error = null;
-                        _isBusy = true;
+
+                        $scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation], new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Started));
 
                         getRoute($q, $http, $scope.currentAction.id)
                             .then(function (route) {
@@ -113,12 +73,12 @@ module dockyard.directives {
                                         $scope.error = err;
                                     })
                                     .finally(function () {
-                                        _isBusy = false;
+                                    $scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation], new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Stopped));
                                     });
                             })
                             .catch(function (err) {
                                 $scope.error = err;
-                                _isBusy = true;
+                                $scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation], new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Stopped));
                             });
                     };
                 }
@@ -131,9 +91,7 @@ module dockyard.directives {
         error: string;
         saveRouteName: string;
         copySuccess: any;
-        runNow: () => void;
         saveRoute: () => void;
-        isBusy: () => boolean;
     }
 }
 

@@ -61,6 +61,9 @@
       "Path": "../../bower_components/ngToast/dist/ngToast.min.js"
     },
     {
+      "Path": "../../bower_components/angular-applicationinsights/dist/angular-applicationinsights.min.js"
+    },    
+    {
       "Path": "../../bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"
     },
     {
@@ -106,7 +109,7 @@
       "Excludes": [ "*.ts" ]
     },
     {
-      "Path": "../app/ProcessBuilder/",
+      "Path": "../app/RouteBuilder/",
       "Includes": [ "*.js" ],
       "Excludes": [ "*.ts" ]
     },

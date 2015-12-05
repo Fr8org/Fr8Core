@@ -1,9 +1,10 @@
 ﻿/// <reference path="../../_all.ts" />
+
 module dockyard.directives.dropDownListBox {
     'use strict';
 
     export interface IDropDownListBoxScope extends ng.IScope {
-        field: model.DropDownListControlDefinitionDTO;
+        field: model.DropDownList;
         change: () => (field: model.ControlDefinitionDTO) => void;
         selectedItem: model.FieldDTO;
         setSelectedItem: (item: model.FieldDTO) => void;
@@ -24,7 +25,11 @@ module dockyard.directives.dropDownListBox {
 
             var findAndSetSelectedItem = function () {
                 for (var i = 0; i < $scope.field.listItems.length; i++) {
-                    if ($scope.field.value == $scope.field.listItems[i].value && $scope.field.selectedKey == $scope.field.listItems[i].key) {
+                    if ($scope.field.value == $scope.field.listItems[i].value
+                        && (!$scope.field.hasOwnProperty('selectedKey')
+                            || $scope.field.hasOwnProperty('selectedKey')
+                                && $scope.field.selectedKey == $scope.field.listItems[i].key
+                            )) {
                         $scope.selectedItem = $scope.field.listItems[i];
                         break;
                     }

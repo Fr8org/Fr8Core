@@ -1,5 +1,6 @@
 ﻿using Data.States;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -30,9 +31,18 @@ namespace Data.Interfaces.DataTransferObjects
         public string ComponentActivities { get; set; }
         [JsonProperty("tags")]
         public string Tags { get; set; }
+
+        [JsonConverter(typeof(StringEnumConverter))]
         public ActivityCategory Category { get; set; }
 
         [JsonProperty("minPaneWidth")]
         public int MinPaneWidth { get; set; }
+
+        public ActivityTemplateDTO()
+        {
+            AuthenticationType = States.AuthenticationType.None;
+        }
+
+        public string Description { get; set; }
     }
 }

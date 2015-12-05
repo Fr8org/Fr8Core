@@ -196,7 +196,7 @@ Please register first.");
                                     return RedirectToAction("Index", "Booker");
 
                                 //return RedirectToAction("MyAccount", "User");
-                                return RedirectToAction("Index", "Dashboard");
+                                return RedirectToAction("Index", "Welcome");
                             }
                             break;
                     }
@@ -220,7 +220,6 @@ Please register first.");
         [AllowAnonymous]
         public ActionResult ConfirmEmail(string userId, string code)
         {
-            string returnViewName = "RegistrationSuccessful";
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -236,10 +235,10 @@ Please register first.");
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
-                returnViewName = "Register";
+                return RedirectToAction("Register");
             }
 
-            return RedirectToAction(returnViewName);
+            return RedirectToAction("Index", "Welcome");
         }
 
         [System.Web.Http.HttpPost]
@@ -331,6 +330,9 @@ Please register first.");
                     }
                     else
                     {
+                        // http://forums.asp.net/t/1934149.aspx?Password+Reset+Token+Expiration
+                        // Refer above link for checking the reset password is link expired or not
+                        ModelState.AddModelError("", "Reset password link has been expired. Please generate the new link.");
                         Array.ForEach(result.Errors.ToArray(), e => ModelState.AddModelError("", e));
                     }
                 }

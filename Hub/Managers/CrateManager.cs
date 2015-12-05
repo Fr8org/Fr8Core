@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -65,7 +66,12 @@ namespace Hub.Managers
 
         public string EmptyStorageAsStr()
         {
-            return JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(new CrateStorage()));
+            return CrateStorageAsStr(new CrateStorage());
+        }
+
+        public string CrateStorageAsStr(CrateStorage storage)
+        {
+            return JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(storage));
         }
 
         public Crate CreateAuthenticationCrate(string label, AuthenticationMode mode)

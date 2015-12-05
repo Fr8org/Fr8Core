@@ -125,41 +125,6 @@ namespace Hub.Services
             _activity.Delete(uow, curRoute);
         }
 
-
-        // Manual mapping method to resolve DO-1164.
-        public RouteDTO MapRouteToDto(IUnitOfWork uow, RouteDO curRouteDO)
-        {
-            var subrouteDTOList = uow.SubrouteRepository
-                .GetQuery()
-                .Include(x => x.ChildNodes)
-                .Where(x => x.ParentRouteNodeId == curRouteDO.Id)
-                .OrderBy(x => x.Ordering)
-                .ToList()
-                .Select((SubrouteDO x) =>
-                {
-                    var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
-
-                    pntDTO.Actions = Enumerable.ToList(
-                        x.ChildNodes.OrderBy(y => y.Ordering).Select(Mapper.Map<ActionDTO>)
-                    );
-
-                    return pntDTO;
-                }).ToList();
-
-            RouteDTO result = new RouteDTO()
-            {
-                Description = curRouteDO.Description,
-                Id = curRouteDO.Id,
-                Name = curRouteDO.Name,
-                RouteState = curRouteDO.RouteState,
-                StartingSubrouteId = curRouteDO.StartingSubrouteId,
-                Subroutes = subrouteDTOList
-            };
-
-            return result;
-        }
-
-
         public IList<SubrouteDO> GetSubroutes(RouteDO curRouteDO)
         {
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -327,7 +292,7 @@ namespace Hub.Services
 
         public IList<RouteDO> GetMatchingRoutes(string userId, EventReportCM curEventReport)
         {
-            List<RouteDO> processTemplateSubscribers = new List<RouteDO>();
+            List<RouteDO> routeSubscribers = new List<RouteDO>();
             if (String.IsNullOrEmpty(userId))
                 throw new ArgumentNullException("Parameter UserId is null");
             if (curEventReport == null)
@@ -381,11 +346,9 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return EnumerateActivities<RouteNodeDO>(uow.RouteRepository.GetByKey(curRouteId)).FirstOrDefault();
+                return GetInitialActivity(uow, uow.RouteRepository.GetByKey(curRouteId));
             }
         }
-
-
 
         public RouteNodeDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute)
         {

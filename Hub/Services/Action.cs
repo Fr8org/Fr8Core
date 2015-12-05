@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using Data.Control;
 using Data.Crates;
 
 using Hub.Interfaces;
@@ -260,7 +261,7 @@ namespace Hub.Services
             return action;
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false)
         {
             if (parentNodeId != null && createRoute)
             {
@@ -282,7 +283,7 @@ namespace Hub.Services
             }
             else
             {
-                parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId.Value);
+                parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId);
             }
 
             var action = Create(uow, actionTemplateId, name, label, parentNode);
@@ -312,15 +313,15 @@ namespace Hub.Services
             {
                 curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
 
-                try
-                {
-                    tempActionDTO = await CallTerminalActionAsync<ActionDTO>("configure", curActionDO, Guid.Empty);
-                }
-                catch (ArgumentException e)
-                {
-                    EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message);
-                    throw;
-                }
+            try
+            {
+                tempActionDTO = await CallTerminalActionAsync<ActionDTO>("configure", curActionDO, Guid.Empty);
+            }
+            catch (ArgumentException e)
+            {
+                EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message);
+                throw;
+            }
                 catch (RestfulServiceException e)
                 {
                     // terminal requested token invalidation
@@ -333,8 +334,8 @@ namespace Hub.Services
                         throw;
                     }
                 }
-                catch (Exception e)
-                {
+            catch (Exception e)
+            {
 
                     JsonSerializerSettings settings = new JsonSerializerSettings
                     {
@@ -343,8 +344,8 @@ namespace Hub.Services
 
                     var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
                     EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
-                    throw;
-                }
+                throw;
+            }
 
             }
 
