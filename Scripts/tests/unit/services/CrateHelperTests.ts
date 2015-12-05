@@ -138,7 +138,7 @@ module dockyard.tests.controller {
                 ch.populateListItemsFromDataSource(fields, crateStorage);
 
                 flatFieldList.forEach((field) => {
-                    if (field.type === 'TextSource') {
+                    if (field.type === 'TextSource' && !field.source.filterByTag) {
                         var crate = ch.findByManifestTypeAndLabel(crateStorage, field.source.manifestType, field.source.label);
                         expect(field.listItems.length > 0).toBe(true);
                         expect(field.listItems).toEqual(crate.contents.Fields);
