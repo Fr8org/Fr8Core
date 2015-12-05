@@ -42,7 +42,7 @@ namespace TerminalBase.BaseClasses
 
         public BaseTerminalAction()
         {
-            Crate = ObjectFactory.GetInstance<ICrateManager>();
+            Crate = new CrateManager();
             Action = ObjectFactory.GetInstance<IAction>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
 

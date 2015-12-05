@@ -40,16 +40,16 @@ namespace terminalDocuSignTests.Integration
 
         private void AssertControls(StandardConfigurationControlsCM controls)
         {
-            Assert.AreEqual(5, controls.Controls.Count);
+            Assert.AreEqual(6, controls.Controls.Count);
 
             // Assert that first control is a RadioButtonGroup 
             // with Label == "TemplateRecipientPicker"
             // and event: onChange => requestConfig.
-            Assert.IsTrue(controls.Controls[0] is RadioButtonGroup);
-            Assert.AreEqual("TemplateRecipientPicker", controls.Controls[0].Name);
-            Assert.AreEqual(1, controls.Controls[0].Events.Count);
-            Assert.AreEqual("onChange", controls.Controls[0].Events[0].Name);
-            Assert.AreEqual("requestConfig", controls.Controls[0].Events[0].Handler);
+            Assert.IsTrue(controls.Controls[5] is RadioButtonGroup);
+            Assert.AreEqual("TemplateRecipientPicker", controls.Controls[5].Name);
+            Assert.AreEqual(1, controls.Controls[5].Events.Count);
+            Assert.AreEqual("onChange", controls.Controls[5].Events[0].Name);
+            Assert.AreEqual("requestConfig", controls.Controls[5].Events[0].Handler);
 
             // Assert that 2nd-5th controls are a CheckBoxes
             // with corresponding labels and event: onChange => requestConfig.
@@ -72,7 +72,7 @@ namespace terminalDocuSignTests.Integration
             }
 
             // Assert that radio group contains two radios labeled "recipient" and "template".
-            var radioButtonGroup = (RadioButtonGroup)controls.Controls[0];
+            var radioButtonGroup = (RadioButtonGroup)controls.Controls[5];
             Assert.AreEqual(2, radioButtonGroup.Radios.Count);
             Assert.AreEqual("recipient", radioButtonGroup.Radios[0].Name);
             Assert.AreEqual("template", radioButtonGroup.Radios[1].Name);
@@ -118,7 +118,7 @@ namespace terminalDocuSignTests.Integration
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
-                var radioGroup = (RadioButtonGroup)controls.Controls[0];
+                var radioGroup = (RadioButtonGroup)controls.Controls[5];
                 radioGroup.Radios[0].Selected = true;
                 radioGroup.Radios[1].Selected = false;
 
@@ -150,7 +150,7 @@ namespace terminalDocuSignTests.Integration
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
-                var radioGroup = (RadioButtonGroup)controls.Controls[0];
+                var radioGroup = (RadioButtonGroup)controls.Controls[5];
                 radioGroup.Radios[0].Selected = false;
                 radioGroup.Radios[1].Selected = true;
 
@@ -162,7 +162,7 @@ namespace terminalDocuSignTests.Integration
                 Assert.IsTrue(availableTemplatesCM.Fields.Count > 0);
 
                 templateDdl.Value = availableTemplatesCM.Fields[0].Value;
-                selectedTemplate = templateDdl.Value;
+                selectedTemplate = availableTemplatesCM.Fields[0].Key;
             }
 
             return new Tuple<ActionDTO, string>(responseActionDTO, selectedTemplate);
@@ -272,8 +272,7 @@ namespace terminalDocuSignTests.Integration
                 .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "DocuSign Event Fields")
                 .Single();
 
-            Assert.AreEqual(1, docuSignEventFields.Fields.Where(x => x.Key == "TemplateId").Count());
-            Assert.IsEmpty(docuSignEventFields.Fields.Where(x => x.Key == "TemplateId").Single().Value);
+            Assert.AreEqual(10, docuSignEventFields.Fields.Count);
         }
 
         /// <summary>
@@ -302,8 +301,7 @@ namespace terminalDocuSignTests.Integration
                 .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "DocuSign Event Fields")
                 .Single();
 
-            Assert.AreEqual(1, docuSignEventFields.Fields.Where(x => x.Key == "TemplateId").Count());
-            Assert.AreEqual(actionDTO.Item2, docuSignEventFields.Fields.Where(x => x.Key == "TemplateId").Single().Value);
+            Assert.AreEqual(10, docuSignEventFields.Fields.Count());
         }
 
         /// <summary>
@@ -367,8 +365,8 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Count());
 
             var docuSignPayload = crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Single();
-            Assert.AreEqual(1, docuSignPayload.AllValues().Count(x => x.Key == "EnvelopeId"));
-            Assert.IsTrue(docuSignPayload.AllValues().Any(x => x.Key == "EnvelopeId" && x.Value == envelopeId));
+            Assert.AreEqual(1, docuSignPayload.AllValues().Count(x => x.Key == "RecipientEmail"));
+            Assert.IsTrue(docuSignPayload.AllValues().Any(x => x.Key == "RecipientEmail" && x.Value == "foo@bar.com"));
         }
 
         /// <summary>
@@ -377,6 +375,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         public async void Monitor_DocuSign_Run_TemplateValue()
         {
+            var envelopeId = Guid.NewGuid().ToString();
+
             var runUrl = GetTerminalRunUrl();
 
             var actionDTO = await GetActionDTO_WithTemplateValue();
@@ -389,7 +389,8 @@ namespace terminalDocuSignTests.Integration
                         Data.Crates.Crate.FromContent(
                             "EventReport",
                             new StandardPayloadDataCM(
-                                new FieldDTO("EnvelopeId", actionDTO.Item2)
+                                new FieldDTO("TemplateName", actionDTO.Item2),
+                                new FieldDTO("EnvelopeId", envelopeId)
                             )
                         )
                     }
@@ -403,8 +404,7 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Count());
 
             var docuSignPayload = crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Single();
-            Assert.AreEqual(1, docuSignPayload.AllValues().Count(x => x.Key == "EnvelopeId"));
-            Assert.IsTrue(docuSignPayload.AllValues().Any(x => x.Key == "EnvelopeId" && x.Value == actionDTO.Item2));
+            Assert.AreEqual(10, docuSignPayload.AllValues().Count());
         }
 
         /// <summary>
