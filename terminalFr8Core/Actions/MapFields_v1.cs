@@ -89,16 +89,16 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Create configuration controls crate.
         /// </summary>
-        private Crate CreateStandardConfigurationControls()
+        private void AddMappingPane(CrateStorage storage)
         {
-            var fieldFilterPane = new MappingPane()
+            var mappingPane = new MappingPane()
             {
                 Label = "Configure Mapping",
                 Name = "Selected_Mapping",
                 Required = true
             };
 
-            return PackControlsCrate(fieldFilterPane);
+            AddControl(storage, mappingPane);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            Crate getErrorMessageCrate = null;
+            ControlDefinitionDTO getErrorMessageControl = null;
 
             var curUpstreamFields =
                 (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
@@ -118,35 +118,40 @@ namespace terminalFr8Core.Actions
                 .Fields
                 .ToArray();
 
-            if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
-            {
-                getErrorMessageCrate = GetTextBoxControlForDisplayingError("MapFieldsErrorMessage",
-                         "This action couldn't find either source fields or target fields (or both). " +
-                        "Try configuring some Actions first, then try this page again.");
-                curActionDO.currentView = "MapFieldsErrorMessage";
-            }
-
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
             var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields);
             var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
 
-            var curConfigurationControlsCrate = CreateStandardConfigurationControls();
-
-
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
+                if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
+                {
+                    AddErrorTextBlock(updater.CrateStorage);
+                }
+                else
+                {
+                    AddMappingPane(updater.CrateStorage);
+                }
+
                 updater.CrateStorage.Add(downstreamFieldsCrate);
                 updater.CrateStorage.Add(upstreamFieldsCrate);
-                updater.CrateStorage.Add(curConfigurationControlsCrate);
-
-                if (getErrorMessageCrate != null)
-            {
-                    updater.CrateStorage.Add(getErrorMessageCrate);
-                }
             }
 
             return curActionDO;
+        }
+
+        private void AddErrorTextBlock(CrateStorage storage)
+        {
+            var textBlock = new TextBlock()
+            {
+                Label = "MapFieldsErrorMessage",
+                Value = "This action couldn't find either source fields or target fields (or both). " +
+                        "Try configuring some Actions first, then try this page again.",
+                CssClass = "well well-lg"
+            };
+
+            AddControl(storage, textBlock);
         }
 
         /// <summary>

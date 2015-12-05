@@ -316,36 +316,6 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
-        /// Returning the crate with text field control 
-        /// </summary>
-        protected Crate GetTextBoxControlForDisplayingError(
-            string fieldLabel, string errorMessage)
-        {
-            var fields = new List<ControlDefinitionDTO>()
-            {
-                new TextBlock()
-                {
-                    Label = fieldLabel,
-                    Value = errorMessage,
-                    CssClass = "well well-lg"
-                }
-            };
-
-//            var controls = new StandardConfigurationControlsCM()
-//            {
-//                Controls = fields
-//            };
-
-            var crateControls = Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fields.ToArray());
-//                ,
-//                JsonConvert.SerializeObject(controls),
-//                CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
-//            );
-
-            return crateControls;
-        }
-
-        /// <summary>
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
