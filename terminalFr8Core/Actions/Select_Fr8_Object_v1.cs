@@ -145,7 +145,13 @@ namespace terminalFr8Core.Actions
 
                 return Crate.FromDto(content);
             }
-        }
+		}
 
-    }
+		#region Execution
+		public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+	    {
+			return await GetProcessPayload(actionDO, containerId);
+	    }
+		#endregion
+	}
 }
