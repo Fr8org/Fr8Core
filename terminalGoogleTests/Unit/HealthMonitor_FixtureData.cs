@@ -242,12 +242,12 @@ namespace terminalGoogleTests.Unit
             };
         }
 
-        public ActionDTO Extract_Spreadsheet_Data_v1_Run_ActionDTO_With_Crates()
+        public ActionDTO Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates()
         {
 
             var activityTemplate = Extract_Spreadsheet_Data_v1_ActivityTemplate();
 
-            var curActionDTO = new ActionDTO()
+            var curActionDto = new ActionDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Extract_Spreadsheet_Data",
@@ -256,17 +256,17 @@ namespace terminalGoogleTests.Unit
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id,
             };
-            using (var updater = CrateManager.UpdateStorage(curActionDTO))
+            using (var updater = CrateManager.UpdateStorage(curActionDto))
             {
-                updater.CrateStorage.Add(Extract_Spreadsheet_Data_v1_Payload_Raw());
+                updater.CrateStorage.;
             }
-            return curActionDTO;
+            return curActionDto;
 
         }
 
-        private static Crate Extract_Spreadsheet_Data_v1_Payload_Raw()
+        private static StandardTableDataCM Standard_Table_Data_Column_Only()
         {
-            var curDataTable = new StandardTableDataCM()
+            return new StandardTableDataCM()
             {
                 FirstRowHeaders = true,
                 Table = new List<TableRowDTO>()
@@ -275,15 +275,46 @@ namespace terminalGoogleTests.Unit
                     {
                        Row = new List<TableCellDTO>()
                        {
-                           TableCellDTO.Create("(2,1)","_cn6ca"),
-                           TableCellDTO.Create("(2,2)","_cokwr")
+                           TableCellDTO.Create("(1,1)","_cn6ca")
                        }
+                    },
+                    new TableRowDTO()
+                    {
+                       Row = new List<TableCellDTO>()
+                       {
+                          TableCellDTO.Create("(2,1)","_cokwr")
+                       }
+
                     }
                 }
             };
-            //prepare the event report
-            var curCrate = Crate.FromContent("", curDataTable);
-            return curCrate;
+
         }
+        private Crate PackCrate_GoogleSpreadsheets()
+        {
+            Crate crate;
+
+            var curFields = new List<FieldDTO>()
+            {
+                new FieldDTO() { Key = "Column_Only", Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1L2TxytQKnYLtHlB3fZ4lb91FKSmmoFk6FJipuDW0gWo" },
+                new FieldDTO() { Key = "Row_Only", Value = "https://spreadsheets.google.com/feeds/spreadsheets/private/full/126yxCJDSZHJoR6d8BYk0wW7tZpl2pcl29F8QXIYVGMQ"},
+                new FieldDTO() {Key = "Row_And_Column", Value = "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1v67fCdV9NItrKRgLHPlp3CS2ia9duUkwKQOAUcQciJ0"}
+            }.ToArray();
+            crate = CrateManager.CreateDesignTimeFieldsCrate("Select a Google Spreadsheet", curFields);
+
+            return crate;
+        }
+
+        public StandardFileHandleMS GetUpstreamCrate()
+        {
+            return new StandardFileHandleMS
+            {
+                DockyardStorageUrl = "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1L2TxytQKnYLtHlB3fZ4lb91FKSmmoFk6FJipuDW0gWo",
+                Filename = "Column_Only",
+                Filetype = "Google_Spreadsheet"
+            };
+        }
+
+
     }
 }

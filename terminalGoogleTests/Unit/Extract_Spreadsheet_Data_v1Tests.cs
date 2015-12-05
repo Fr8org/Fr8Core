@@ -90,7 +90,7 @@ namespace terminalGoogleTests.Integration
             var configureUrl = GetTerminalConfigureUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Run_ActionDTO_With_Crates();
+            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
 
             //Act
             //Call first time for the initial configuration
@@ -113,9 +113,7 @@ namespace terminalGoogleTests.Integration
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             AssertCrateTypes(crateStorage);
-
             AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
-
         }
 
         /////////////
@@ -126,18 +124,79 @@ namespace terminalGoogleTests.Integration
         /// Run Tests Begin
         /////////////
 
+        [Test, Category("Integration.terminalGoogle")]
+        [ExpectedException(
+            ExpectedException = typeof(RestfulServiceException),
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}"
+        )]
+        public async void Extract_Spreadsheet_Data_v1_Run_No_Auth()
+        {
+            //Arrange
+            var runUrl = GetTerminalRunUrl();
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+
+            //prepare the action DTO with valid target URL
+            var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
+            actionDTO.AuthToken = null;
+            //Act
+            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+        }
+
+        [Test, Category("Integration.terminalGoogle")]
+        [ExpectedException(
+            ExpectedException = typeof(RestfulServiceException),
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No Standard File Handle crate found in upstream.""}"
+        )]
         public async void Extract_Spreadsheet_Data_v1_Run_With_Zero_Upstream_Crates()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
             //prepare the action DTO with valid target URL
             var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            
+
             //Act
-            var responsePayloadDTO = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
 
+        [Test, Category("Integration.terminalGoogle")]
+        [ExpectedException(
+            ExpectedException = typeof(RestfulServiceException),
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""The method or operation is not implemented.""}"
+        )]
+        public async void Extract_Spreadsheet_Data_v1_Run_With_One_Upstream_Crates()
+        {
+            //Arrange
+            var runUrl = GetTerminalRunUrl();
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+
+            //prepare the action DTO with valid target URL
+            var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
+            AddUpstreamCrate(actionDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
+
+            //Act
+            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+        }
+
+        [Test, Category("Integration.terminalGoogle")]
+        [ExpectedException(
+            ExpectedException = typeof(RestfulServiceException),
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""More than one Standard File Handle crates found upstream.""}"
+        )]
+        public async void Extract_Spreadsheet_Data_v1_Run_With_Two_Upstream_Crates()
+        {
+            //Arrange
+            var runUrl = GetTerminalRunUrl();
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            
+            //prepare the action DTO with valid target URL
+            var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
+            AddUpstreamCrate(actionDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
+            AddUpstreamCrate(actionDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
+            //Act
+            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+        }
         /////////////
         /// Run Tests End
         /////////////

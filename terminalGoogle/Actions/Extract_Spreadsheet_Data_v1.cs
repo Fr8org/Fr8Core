@@ -105,7 +105,7 @@ namespace terminalGoogle.Actions
 
             //if no "Standard File Handle" crate found then return
             if (!upstreamFileHandleCrates.Any())
-                return null;
+                throw new Exception("No Standard File Handle crate found in upstream.");
 
             //if more than one "Standard File Handle" crates found then throw an exception
             if (upstreamFileHandleCrates.Count > 1)
