@@ -106,8 +106,6 @@ namespace terminalFr8Core.Actions
         /// </summary>
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            ControlDefinitionDTO getErrorMessageControl = null;
-
             var curUpstreamFields =
                 (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
                 .Fields
