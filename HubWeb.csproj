@@ -474,6 +474,7 @@
     <Content Include="Content\icons\web_services\DocuSign-Logo.png" />
     <Content Include="Content\icons\web_services\dropbox-icon-64x64.png" />
     <Content Include="Content\icons\web_services\fr8-core-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\jira-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-azure-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-excel-icon-64x64.png" />
     <Content Include="Content\icons\web_services\papertrail-icon-64x64.png" />
