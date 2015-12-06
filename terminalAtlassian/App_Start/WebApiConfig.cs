@@ -10,7 +10,7 @@ namespace terminalAtlassian
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register("DropBox", config);
+            BaseTerminalWebApiConfig.Register("Atlassian", config);
         }
     }
 }
