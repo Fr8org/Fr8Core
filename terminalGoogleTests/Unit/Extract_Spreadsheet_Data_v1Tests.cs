@@ -20,7 +20,7 @@ namespace terminalGoogleTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    public class Extract_Spreadsheet_Data_v1Tests: BaseHealthMonitorTest
+    public class Extract_Spreadsheet_Data_v1Tests : BaseHealthMonitorTest
     {
         public override string TerminalName
         {
@@ -30,7 +30,6 @@ namespace terminalGoogleTests.Integration
         /////////////
         /// Initial Configuration Tests Begin
         /////////////
-
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
@@ -40,7 +39,7 @@ namespace terminalGoogleTests.Integration
             var configureUrl = GetTerminalConfigureUrl();
 
             var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-
+            requestActionDTO.AuthToken = HealthMonitor_FixtureData.Google_AuthToken1();
             var responseActionDTO =
                 await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
@@ -52,16 +51,16 @@ namespace terminalGoogleTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            AssertCrateTypes(crateStorage);
-            AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
+            AssertCrateTypes_OnConfiguration(crateStorage);
+            AssertControls_OnConfiguration(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
         }
-        private void AssertCrateTypes(CrateStorage crateStorage)
+        private void AssertCrateTypes_OnConfiguration(CrateStorage crateStorage)
         {
             Assert.AreEqual(1, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
         }
 
-        private void AssertControls(StandardConfigurationControlsCM controls)
+        private void AssertControls_OnConfiguration(StandardConfigurationControlsCM controls)
         {
             Assert.AreEqual(2, controls.Controls.Count);
 
@@ -77,6 +76,20 @@ namespace terminalGoogleTests.Integration
                             " the selected spreadsheet. The rows should have a header row.", controls.Controls[1].Value);
         }
 
+        [Test, Category("Integration.terminalGoogle")]
+        [ExpectedException(
+            ExpectedException = typeof(RestfulServiceException),
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+        )]
+        public async void Extract_Spreadsheet_Data_v1_Configure_NoActionId()
+        {
+            var configureUrl = GetTerminalConfigureUrl();
+
+            var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
+            requestActionDTO.Id = Guid.Empty;
+
+            await HttpPostAsync<ActionDTO, Action>(configureUrl, requestActionDTO);
+        }
         /////////////
         /// Initial Configuration Tests End
         /////////////
@@ -84,38 +97,109 @@ namespace terminalGoogleTests.Integration
         /////////////
         /// Followup Configuration Tests Begin
         /////////////
+        /// <summary>
+        /// Spreadsheet with the following structure is passed: {{(1,1),(1,2)},{(2,1),(2,2)}}
+        /// Required fields are tested
+        /// </summary> 
         [Test, Category("Integration.terminalGoogle")]
-         public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_With_Zero_Upstream_Crates()
+        public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Row_And_Column_Table()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
 
-            //Act
-            //Call first time for the initial configuration
-            var responseActionDTO =
+            ////Act
+            fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Row_And_Column");
+
+            //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
+             var responseActionDTO =
                 await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
                 );
 
-            //Call second time for the follow up configuration
-            responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
-                    configureUrl,
-                    requestActionDTO
-                );
             //Assert
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            AssertCrateTypes(crateStorage);
-            AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
+            Assert.AreEqual(4, crateStorage.Count);
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
+            Assert.AreEqual(true, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
+            Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
+            Assert.AreEqual("(2,2)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[1].Cell.Value);
         }
+        /// <summary>
+        /// Spreadsheet with the following structure is passed: {{(1,1)},{(2,2)}}
+        /// Required fields are tested
+        /// </summary> 
+        [Test, Category("Integration.terminalGoogle")]
+        public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Column_Only_Table()
+        {
+            var configureUrl = GetTerminalConfigureUrl();
 
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
+
+            ////Act
+            fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Column_Only");
+
+            //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
+            var responseActionDTO =
+               await HttpPostAsync<ActionDTO, ActionDTO>(
+                   configureUrl,
+                   requestActionDTO
+               );
+
+            //Assert
+            Assert.NotNull(responseActionDTO);
+            Assert.NotNull(responseActionDTO.CrateStorage);
+            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+
+            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+            Assert.AreEqual(4, crateStorage.Count);
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
+            Assert.AreEqual(true, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
+            Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
+        }
+        /// <summary>
+        /// Spreadsheet with the following structure is passed: {{(1,1),(1,2)}}
+        /// Required fields are tested
+        /// </summary> 
+        [Test, Category("Integration.terminalGoogle")]
+        public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Row_Only_Table()
+        {
+            var configureUrl = GetTerminalConfigureUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
+
+            ////Act
+            fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Row_Only");
+
+            //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
+            var responseActionDTO =
+               await HttpPostAsync<ActionDTO, ActionDTO>(
+                   configureUrl,
+                   requestActionDTO
+               );
+
+            //Assert
+            Assert.NotNull(responseActionDTO);
+            Assert.NotNull(responseActionDTO.CrateStorage);
+            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+
+            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+            Assert.AreEqual(3, crateStorage.Count);
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
+            Assert.AreEqual(true, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
+            Assert.AreEqual(0, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table.Count);
+        }
         /////////////
         /// Followup Configuration End
         /////////////
@@ -123,7 +207,37 @@ namespace terminalGoogleTests.Integration
         /////////////
         /// Run Tests Begin
         /////////////
+        
+        //To be finished after Action is fixed
 
+        /// <summary>
+        /// Spreadsheet with the following structure is passed: {{(),()}{(2,1)},{(2,2)}}
+        /// Should throw exception
+        /// </summary> 
+        //[Test, Category("Integration.terminalGoogle")]
+        //[ExpectedException(
+        //    ExpectedException = typeof(RestfulServiceException),
+        //    ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No headers found in the Standard Table Data Manifest.""}"
+        //)]
+        //public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Empty_First_Row()
+        //{
+        //    var configureUrl = GetTerminalConfigureUrl();
+        //    var runUrl = GetTerminalRunUrl();
+        //    HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+        //    var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
+            
+        //    ////Act
+        //    fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Empty_First_Row");
+
+        //    //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
+        //    var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+        //    await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, responseActionDTO);
+        //}
+
+
+        /// <summary>
+        /// Run ActionType with no AuthToken provided throws exception.
+        /// </summary>
         [Test, Category("Integration.terminalGoogle")]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
@@ -141,7 +255,9 @@ namespace terminalGoogleTests.Integration
             //Act
             await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
-
+        /// <summary>
+        /// Zero Upstream Crates throws exception.
+        /// </summary>
         [Test, Category("Integration.terminalGoogle")]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
@@ -151,15 +267,16 @@ namespace terminalGoogleTests.Integration
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
-            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
 
-            //prepare the action DTO with valid target URL
+            //prepare the action DTO
             var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
 
             //Act
             await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
-
+        /// <summary>
+        /// One Upstream Crate throws NonImplementedException.
+        /// </summary>
         [Test, Category("Integration.terminalGoogle")]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
@@ -178,7 +295,9 @@ namespace terminalGoogleTests.Integration
             //Act
             await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
-
+        /// <summary>
+        /// Two Upstream Crate throw exception.
+        /// </summary>
         [Test, Category("Integration.terminalGoogle")]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
@@ -189,7 +308,7 @@ namespace terminalGoogleTests.Integration
             //Arrange
             var runUrl = GetTerminalRunUrl();
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            
+
             //prepare the action DTO with valid target URL
             var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
             AddUpstreamCrate(actionDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
@@ -197,41 +316,17 @@ namespace terminalGoogleTests.Integration
             //Act
             await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
-        /////////////
-        /// Run Tests End
-        /////////////
-
-
-
-        [Test, Category("Integration.terminalGoogle")]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
-        )]
-        public async void Extract_Spreadsheet_Data_v1_Configure_NoActionId()
-        {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-            var configureUrl = GetTerminalConfigureUrl();
-
-            var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            requestActionDTO.Id = Guid.Empty;
-
-            await HttpPostAsync<ActionDTO, Action>(configureUrl, requestActionDTO);
-        }
-
         /// <summary>
         /// Test run-time without Auth-Token.
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}"
         )]
         public async void Extract_Spreadsheet_Data_v1_Run_NoAuth()
         {
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
             var configureUrl = GetTerminalConfigureUrl();
 
             var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
@@ -239,5 +334,8 @@ namespace terminalGoogleTests.Integration
 
             await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
         }
+        /////////////
+        /// Run Tests End
+        /////////////
     }
 }

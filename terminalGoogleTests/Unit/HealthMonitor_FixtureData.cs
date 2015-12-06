@@ -28,7 +28,13 @@ namespace terminalGoogleTests.Unit
                 Token = @"{""AccessToken"":""ya29.PwJez2aHwjGxsxcho6TfaFseWjPbi1ThgINsgiawOKLlzyIgFJHkRdq76YrnuiGT3jhr"",""RefreshToken"":""1/HVhoZXzxFrPyC0JVlbEIF_VOBDm_IhrKoLKnt6QpyFRIgOrJDtdun6zK6XiATCKT"",""Expires"":""2015-12-03T11:12:43.0496208+08:00""}"
             };
         }
-
+        public static AuthorizationTokenDTO Google_AuthToken1()
+        {
+            return new AuthorizationTokenDTO()
+            {
+                Token = @"{""AccessToken"":""ya29.OgLf-SvZTHJcdN9tIeNEjsuhIPR4b7KBoxNOuELd0T4qFYEa001kslf31Lme9OQCl6S5"",""RefreshToken"":""1/04H9hNCEo4vfX0nHHEdViZKz1CtesK8ByZ_TOikwVDc"",""Expires"":""2015-11-28T13:29:12.653075+05:00""}"
+            };
+        }
         protected Crate PackControls(StandardConfigurationControlsCM page)
         {
             return PackControlsCrate(page.Controls.ToArray());
@@ -252,59 +258,29 @@ namespace terminalGoogleTests.Unit
                 Id = Guid.NewGuid(),
                 Name = "Extract_Spreadsheet_Data",
                 Label = "Extract Spreadsheet Data",
-                AuthToken = Google_AuthToken(),
+                AuthToken = Google_AuthToken1(),
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id,
             };
-            using (var updater = CrateManager.UpdateStorage(curActionDto))
-            {
-                updater.CrateStorage.;
-            }
+            
             return curActionDto;
 
         }
-
-        private static StandardTableDataCM Standard_Table_Data_Column_Only()
-        {
-            return new StandardTableDataCM()
-            {
-                FirstRowHeaders = true,
-                Table = new List<TableRowDTO>()
-                {
-                    new TableRowDTO()
-                    {
-                       Row = new List<TableCellDTO>()
-                       {
-                           TableCellDTO.Create("(1,1)","_cn6ca")
-                       }
-                    },
-                    new TableRowDTO()
-                    {
-                       Row = new List<TableCellDTO>()
-                       {
-                          TableCellDTO.Create("(2,1)","_cokwr")
-                       }
-
-                    }
-                }
-            };
-
-        }
-        private Crate PackCrate_GoogleSpreadsheets()
+        public Crate PackCrate_GoogleSpreadsheets()
         {
             Crate crate;
 
             var curFields = new List<FieldDTO>()
             {
                 new FieldDTO() { Key = "Column_Only", Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1L2TxytQKnYLtHlB3fZ4lb91FKSmmoFk6FJipuDW0gWo" },
-                new FieldDTO() { Key = "Row_Only", Value = "https://spreadsheets.google.com/feeds/spreadsheets/private/full/126yxCJDSZHJoR6d8BYk0wW7tZpl2pcl29F8QXIYVGMQ"},
-                new FieldDTO() {Key = "Row_And_Column", Value = "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1v67fCdV9NItrKRgLHPlp3CS2ia9duUkwKQOAUcQciJ0"}
+                new FieldDTO() { Key = "Row_Only", Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/126yxCJDSZHJoR6d8BYk0wW7tZpl2pcl29F8QXIYVGMQ"},
+                new FieldDTO() {Key = "Row_And_Column", Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1v67fCdV9NItrKRgLHPlp3CS2ia9duUkwKQOAUcQciJ0"},
+                new FieldDTO(){Key="Empty_First_Row", Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1Nzf_s2OyZTxG8ppxzvypH6s1ePvUT_ALPffZchuM14o"}
             }.ToArray();
             crate = CrateManager.CreateDesignTimeFieldsCrate("Select a Google Spreadsheet", curFields);
 
             return crate;
         }
-
         public StandardFileHandleMS GetUpstreamCrate()
         {
             return new StandardFileHandleMS
@@ -314,7 +290,54 @@ namespace terminalGoogleTests.Unit
                 Filetype = "Google_Spreadsheet"
             };
         }
+        private Crate Extract_Spreadsheet_Data_v1_PackCrate_ConfigurationControls(Tuple<string, string> spreadsheetTuple)
+        {
+            var controlList = new List<ControlDefinitionDTO>();
+            var spreadsheetControl = new DropDownList()
+            {
+                Label = "Select a Google Spreadsheet",
+                Name = "select_spreadsheet",
+                selectedKey = spreadsheetTuple.Item1,
+                Value = spreadsheetTuple.Item2,
+                Selected = true,
+                Source = new FieldSourceDTO
+                {
+                    Label = "Select a Google Spreadsheet",
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                },
+            };
+            controlList.Add(spreadsheetControl);
+            return PackControlsCrate(controlList.ToArray());
+        }
 
+        public void Extract_Spreadsheet_Data_v1_AddPayload(ActionDTO actionDTO, string spreadsheet)
+        {
+            var caseTuple = CaseTuple(spreadsheet);
+            var configurationControlsCrate = Extract_Spreadsheet_Data_v1_PackCrate_ConfigurationControls(caseTuple);
+            var crateDesignTimeFields = PackCrate_GoogleSpreadsheets();
+            using (var updater = CrateManager.UpdateStorage(actionDTO))
+            {
+                updater.CrateStorage.Add(configurationControlsCrate);
+                updater.CrateStorage.Add(crateDesignTimeFields);
+            }
+        }
+
+        public Tuple<string, string> CaseTuple(string spreadsheet)
+        {
+            switch (spreadsheet)
+            {
+                case "Row_And_Column":
+                    return new Tuple<string, string>("Row_And_Column", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1v67fCdV9NItrKRgLHPlp3CS2ia9duUkwKQOAUcQciJ0");
+                case "Row_Only":
+                    return new Tuple<string, string>("Row_Only", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/126yxCJDSZHJoR6d8BYk0wW7tZpl2pcl29F8QXIYVGMQ");
+                case "Column_Only":
+                    return new Tuple<string, string>("Column_Only", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1L2TxytQKnYLtHlB3fZ4lb91FKSmmoFk6FJipuDW0gWo");
+                case "Empty_First_Row":
+                    return new Tuple<string, string>("Empty_First_Row", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1Nzf_s2OyZTxG8ppxzvypH6s1ePvUT_ALPffZchuM14o");
+                default:
+                    return null;
+            }
+        }
 
     }
 }
