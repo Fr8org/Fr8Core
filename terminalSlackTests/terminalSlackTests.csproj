@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C34591DB-D686-4F1B-8E4E-C29D695C43DD}</ProjectGuid>
+    <ProjectGuid>{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>terminalSlackTests</RootNamespace>
