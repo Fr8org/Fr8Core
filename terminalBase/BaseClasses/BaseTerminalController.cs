@@ -152,7 +152,7 @@ namespace TerminalBase.BaseClasses
                         Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
-                case "Activate":
+                case "activate":
                     {
                         Task<ActionDO> resutlActionDO;
 
@@ -167,7 +167,7 @@ namespace TerminalBase.BaseClasses
 
                         return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
-                case "Deactivate":
+                case "deactivate":
                     {
                         Task<ActionDO> resutlActionDO;
 
