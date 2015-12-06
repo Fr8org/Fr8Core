@@ -776,6 +776,7 @@
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <Content Include="_PowerShellScripts\SetupStagingDatabase.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsResultsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
