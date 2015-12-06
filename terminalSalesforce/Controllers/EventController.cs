@@ -1,4 +1,6 @@
-﻿using terminalSalesforce.Infrastructure;
+﻿using System.Net;
+using System.Xml.Linq;
+using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 using TerminalBase.Infrastructure;
 using StructureMap;
@@ -25,7 +27,7 @@ namespace terminalSalesforce.Controllers
 
         [HttpPost]
         [Route("events")]
-        public async Task<string> ProcessIncomingNotification()
+        public async Task<IHttpActionResult> ProcessIncomingNotification()
         {
             string eventPayLoadContent = Request.Content.ReadAsStringAsync().Result;
             await _baseTerminalEvent.Process(eventPayLoadContent, _event.ProcessEvent);
@@ -41,7 +43,8 @@ namespace terminalSalesforce.Controllers
                                   </notificationsResponse>
                               </soapenv:Body>
                             </soapenv:Envelope>";
-            return response;
+            var responeXml = XElement.Parse(response);
+            return Content(HttpStatusCode.OK, responeXml, GlobalConfiguration.Configuration.Formatters.XmlFormatter);
         }
     }
 }
