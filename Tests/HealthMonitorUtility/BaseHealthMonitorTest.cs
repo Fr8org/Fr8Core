@@ -5,6 +5,7 @@ using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using Data.Interfaces.Manifests;
 
 namespace HealthMonitor.Utility
 {
@@ -98,6 +99,11 @@ namespace HealthMonitor.Utility
         public async Task<TResponse> HttpGetAsync<TResponse>(string url)
         {
             return await RestfulServiceClient.GetAsync<TResponse>(new Uri(url));
+        }
+
+        protected Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
+        {
+            return Crate<StandardConfigurationControlsCM>.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(controlsList));
         }
     }
 }
