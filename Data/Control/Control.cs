@@ -270,8 +270,8 @@ namespace Data.Control
 
     }
 
-    
- 
+
+
 
     public class FieldSourceDTO
     {
@@ -280,6 +280,9 @@ namespace Data.Control
 
         [JsonProperty("label")]
         public string Label { get; set; }
+
+
+        public string FilterByTag { get; set; }
     }
 
     public class ControlEvent
