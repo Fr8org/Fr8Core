@@ -48,15 +48,6 @@ namespace terminalFr8Core.Actions
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(mappedFields)));
-//                var actionPayloadCrates = new List<CrateDTO>()
-//                {
-//                    Crate.Create("MappedFields",
-//                        JsonConvert.SerializeObject(mappedFields),
-//                        CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
-//                        CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID)
-//                };
-//
-//                processPayload.UpdateCrateStorageDTO(actionPayloadCrates);
             }
             return processPayload;
         }
@@ -68,23 +59,6 @@ namespace terminalFr8Core.Actions
         {
             return await ProcessConfigurationRequest(actionDO, ConfigurationEvaluator, authTokenDO);
         }
-
-//        private void FillCrateConfigureList(IEnumerable<ActionDO> actions,
-//            List<MappingFieldConfigurationDTO> crateConfigList)
-//        {
-//            foreach (var curAction in actions)
-//            {
-//                var curCrateStorage = curAction.CrateStorageDTO();
-//                foreach (var curCrate in curCrateStorage.CrateDTO)
-//                {
-//                    crateConfigList.Add(new MappingFieldConfigurationDTO()
-//                    {
-//                        Id = curCrate.Id,
-//                        Label = curCrate.Label
-//                    });
-//                }
-//            }
-//        }
 
         /// <summary>
         /// Create configuration controls crate.
@@ -143,7 +117,8 @@ namespace terminalFr8Core.Actions
         {
             var textBlock = new TextBlock()
             {
-                Label = "MapFieldsErrorMessage",
+                Name = "MapFieldsErrorMessage",
+                Label = "Error",
                 Value = "This action couldn't find either source fields or target fields (or both). " +
                         "Try configuring some Actions first, then try this page again.",
                 CssClass = "well well-lg"
@@ -155,9 +130,8 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Check if initial configuration was requested.
         /// </summary>
-            private bool CheckIsInitialConfiguration(ActionDO curAction)
-
-            {
+        private bool CheckIsInitialConfiguration(ActionDO curAction)
+        {
             CrateStorage storage;
 
             // Check nullability for CrateStorage and Crates array length.
@@ -169,37 +143,15 @@ namespace terminalFr8Core.Actions
             var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();
             var downStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").FirstOrDefault();
 
-//            // Check nullability of Upstream and Downstream crates.
-//            var upStreamFieldsCrate = curAction.CrateStorage.CrateDTO.FirstOrDefault(
-//                x => x.Label == "Upstream Plugin-Provided Fields"
-//                    && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
-//
-//            var downStreamFieldsCrate = curAction.CrateStorage.CrateDTO.FirstOrDefault(
-//                x => x.Label == "Downstream Plugin-Provided Fields"
-//                    && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
-//
-//            if (upStreamFieldsCrate == null
-//                || string.IsNullOrEmpty(upStreamFieldsCrate.Contents)
-//                || downStreamFieldsCrate == null
-//                || string.IsNullOrEmpty(downStreamFieldsCrate.Contents))
-//            {
-//                return true;
-//            }
-//
-//            // Check if Upstream and Downstream ManifestSchemas contain empty set of fields.
-//            var upStreamFields = JsonConvert
-//                .DeserializeObject<StandardDesignTimeFieldsCM>(upStreamFieldsCrate.Contents);
-//
-//            var downStreamFields = JsonConvert
-//                .DeserializeObject<StandardDesignTimeFieldsCM>(downStreamFieldsCrate.Contents);
-
-            if (upStreamFields.Fields == null
+            if (upStreamFields == null
+                || upStreamFields.Fields == null
                 || upStreamFields.Fields.Count == 0
+                || downStreamFields == null
                 || downStreamFields.Fields == null
                 || downStreamFields.Fields.Count == 0)
             {
                 return true;
-        }
+            }
 
             // If all rules are passed, then it is not an initial configuration request.
             return false;
@@ -208,7 +160,7 @@ namespace terminalFr8Core.Actions
         /// ConfigurationEvaluator always returns Initial,
         /// since Initial and FollowUp phases are the same for current action.
         /// </summary>
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (CheckIsInitialConfiguration(curActionDO))
             {
