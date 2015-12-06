@@ -25,7 +25,7 @@ namespace terminalSlackTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, System.ComponentModel.Category("Integration.terminalSlack")]
-        public async void Terminal_Papertrail_Discover_()
+        public async void Terminal_Slack_Discover()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
 
