@@ -103,8 +103,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalExcelTests", "Tests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalGoogleTests", "terminalGoogleTests\terminalGoogleTests.csproj", "{62219AA6-9276-4935-B934-F0F50ECEF6FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSlackTests", "terminalSlackTests\terminalSlackTests.csproj", "{C34591DB-D686-4F1B-8E4E-C29D695C43DD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSalesforceTests", "terminalSalesforceTests\terminalSalesforceTests.csproj", "{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}"
 EndProject
 Global
