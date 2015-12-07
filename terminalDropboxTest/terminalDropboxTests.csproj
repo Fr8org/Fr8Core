@@ -141,6 +141,7 @@
   <ItemGroup>
     <Compile Include="Actions\GetFileList_v1Tests.cs" />
     <Compile Include="Fixtures\FixtureData.cs" />
+    <Compile Include="Integration\Terminal_Discovery_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +160,10 @@
     <ProjectReference Include="..\terminalDropbox\terminalDropbox.csproj">
       <Project>{cfba4468-222f-4255-8d94-809acbf7ac47}</Project>
       <Name>terminalDropbox</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tests\HealthMonitorUtility\HealthMonitorUtility.csproj">
+      <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
+      <Name>HealthMonitorUtility</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
