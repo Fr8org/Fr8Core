@@ -100,10 +100,5 @@ namespace HealthMonitor.Utility
         {
             return await RestfulServiceClient.GetAsync<TResponse>(new Uri(url));
         }
-
-        protected Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
-        {
-            return Crate<StandardConfigurationControlsCM>.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(controlsList));
-        }
     }
 }
