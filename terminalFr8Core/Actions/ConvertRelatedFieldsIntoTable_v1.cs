@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using Data.Control;
@@ -21,6 +22,7 @@ namespace terminalFr8Core.Actions
 
     public class ConvertRelatedFieldsIntoTable_v1 : BaseTerminalAction
     {
+        private const string FirstIntegerRegexPattern = "\\d+";
 
         public ConvertRelatedFieldsIntoTable_v1()
         {
@@ -32,24 +34,52 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
+            var storage = Crate.GetStorage(curPayloadDTO);
+            //TODO: filter out crates by using UpstreamDataChooser
 
-            var controlsMS = Action.GetControlsManifest(curActionDO);
+            var prefixValue = GetRowPrefix(curActionDO);
+            
+            
+            var matchRegex = new Regex("^(" + prefixValue + ")[0-9]+");
 
-            ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane);
-            if (filterPaneControl == null)
+            var rows = storage.CratesOfType<StandardPayloadDataCM>() //get payload data
+                .Select(p => p.Content)
+                .SelectMany(p => p.PayloadObjects)
+                .Select(po => po.PayloadObject)
+                .SelectMany(po => po)
+                .Where(f => matchRegex.IsMatch(f.Key))
+                .Select(f => new
+                {
+                    lineNumber = Int32.Parse(Regex.Match(f.Key, FirstIntegerRegexPattern).Value),
+                    field = f
+                })
+                .GroupBy(r => r.lineNumber)
+                .Select(r => new TableRowDTO
+                {
+                    Row = r.Select(f => new TableCellDTO
+                    {
+                        Cell = f.field
+                    }).ToList()
+                });
+
+            var tableDataCrate = Crate.CreateStandardTableDataCrate("AssembledTableData", false, rows.ToArray());
+            using (var updater = Crate.UpdateStorage(curPayloadDTO))
             {
-                throw new ApplicationException("No control found with Type == \"filterPane\"");
-            }
-
-            var valuesCrates = Crate.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>();
-            var curValues = new List<FieldDTO>();
-
-            foreach (var valuesCrate in valuesCrates)
-            {
-                curValues.AddRange(valuesCrate.AllValues());
+                updater.CrateStorage.Add(tableDataCrate);
             }
 
             return curPayloadDTO;
+        }
+
+        private string GetRowPrefix(ActionDO curActionDO)
+        {
+            var actionStorage = Crate.GetStorage(curActionDO);
+            var confControls = actionStorage
+                .CrateContentsOfType<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls")
+                .SelectMany(c => c.Controls);
+
+            var prefixValue = confControls.Single(c => c.Name == "Selected_Table_Prefix").Value;
+            return prefixValue;
         }
 
         /// <summary>
@@ -124,7 +154,7 @@ namespace terminalFr8Core.Actions
                 return ConfigurationRequestType.Initial;
             }
             var storage = Crate.GetStorage(curActionDataPackageDO);
-            var hasControlsCrate = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Configuration_Controls").Any();
+            var hasControlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls").Any();
 
             if (hasControlsCrate)
             {
