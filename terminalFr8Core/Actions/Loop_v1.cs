@@ -48,10 +48,12 @@ namespace terminalFr8Core.Actions
             var storage = Crate.GetStorage(curPayloadDTO);
             var processingCrates = storage.Where(c => c.ManifestType.Type == manifestType && c.Label == label).ToList();
 
+            /*
             if (!processingCrates.Any())
             {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find crate with Manifest Type: \"" + manifestType + "\" and Label: \""+label+"\"");
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + manifestType + "\" and Label: \""+label+"\"");
             }
+            */
 
             //check if we need to end this loop
             if (currentIndex > processingCrates.Count() - 1)
