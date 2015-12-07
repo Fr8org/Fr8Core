@@ -34,7 +34,6 @@ module dockyard.services {
         }
 
         recalculateTop(actionGroups: model.ActionGroup[]) {
-            var processedGroups: model.ActionGroup[] = [actionGroups[0]];
             for (var i = 1; i < actionGroups.length; i++) {
                 var curGroup = actionGroups[i];
                 curGroup.offsetTop = this.calculateOffsetTop(actionGroups[i - 1]);
