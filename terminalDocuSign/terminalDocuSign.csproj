@@ -230,7 +230,14 @@
     <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="DataTransferObjects\DocuSignAuthDTO.cs" />
     <Compile Include="DataTransferObjects\DocuSignEventDTO.cs" />
+    <Compile Include="Infrastructure\DataContracts\CustomField.cs" />
+    <Compile Include="Infrastructure\DataContracts\FolderItem.cs" />
+    <Compile Include="Infrastructure\DataContracts\FolderListResponse.cs" />
+    <Compile Include="Infrastructure\DataContracts\FolderSearchResults.cs" />
+    <Compile Include="Infrastructure\Exceptions\DocusginRestException.cs" />
     <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
+    <Compile Include="Infrastructure\DocusignFolder.cs" />
+    <Compile Include="Infrastructure\DataContracts\DocusignFolderInfo.cs" />
     <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatus.cs" />
     <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatuses.cs" />
     <Compile Include="Infrastructure\DocuSignParserModels\DocuSignEnvelopeInformation.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Data.Interfaces.Manifests;
 using Hub.Managers;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -19,98 +21,66 @@ namespace terminalDocuSign.Actions
 {
     public class Query_DocuSign_v1  : BaseTerminalAction
     {
-        public enum SearchType
-        {
-            ByTemplate, 
-            ByRecipient
-        }
-        
         public class RuntimeConfiguration : Manifest
         {
-            public SearchType SearchType;
-            public string RecipientName;
-            public string SelectedTemplate;
-            public FilterConditionDTO[] Criteria;
+            public string SearchText;
+            public DateTime? FromDate;
+            public DateTime? ToDate;
+            public string Status;
+            public string Folder;
 
             public RuntimeConfiguration()
                 : base(new CrateManifestType("Query_DocuSign_v1_RuntimeConfiguration", 1000000 + 1))
             {
             }
-        }
+        }        
 
         private class ActionUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
-            public TextBox RecipientName { get; set; }
+            public TextBox SearchText { get; set; }
+            
+            [JsonIgnore]
+            public DropDownList Folder { get; set; }
 
             [JsonIgnore]
-            public RadioButtonOption SearchWithRecipient { get; set; }
-
-            [JsonIgnore]
-            public RadioButtonOption WithTemplate { get; set; }
-
-            [JsonIgnore]
-            public DropDownList Template { get; set; }
-
-            [JsonIgnore]
-            public QueryBuilder QueryBuilder { get; set; }
+            public DropDownList Status { get; set; }
 
             public ActionUi()
             {
                 Controls = new List<ControlDefinitionDTO>();
 
-                Controls.Add(new RadioButtonGroup
+                Controls.Add(new TextArea
                 {
-                    Label = "Subject of this Report is Envelopes:",
-                    GroupName = "TemplateRecipientPicker",
-                    Events = new List<ControlEvent> { ControlEvent.RequestConfig},
-                    Radios = new List<RadioButtonOption>
-                    {
-                        (SearchWithRecipient = new RadioButtonOption
-                        {
-                            Name = "SearchWithRecipient",
-                            Value = "Sent to a specific Recipient",
-                            Bindings = new [] { "Selected <> SearchWithRecipient"},
-                            Controls = new List<ControlDefinitionDTO>
-                            {
-                                (RecipientName = new TextBox
-                                {
-                                    Name = "RecipientName",
-                                    Bindings = new [] { "Value <> RecipientName"},
-                                    Events = new List<ControlEvent> { ControlEvent.RequestConfig},
-                                })
-                            }
-                        }),
-
-                        (WithTemplate = new RadioButtonOption
-                        {
-                            Name = "WithTemplate",
-                            Value = "Sent with a specific Template",
-                            Bindings = new [] { "Selected <> SearchWithTemplate"},
-                            Controls = new List<ControlDefinitionDTO> 
-                            {
-                                (Template = new DropDownList
-                                {
-                                    Name = "Template",
-                                    Bindings = new [] { "Value <> SelectedTemplate"},
-                                    Events = new List<ControlEvent> { ControlEvent.RequestConfig},
-                                    Source = new FieldSourceDTO( CrateManifestTypes.StandardDesignTimeFields, "Available Templates")
-                                })
-                            }
-                        })
-                    }
+                    IsReadOnly = true,
+                    Label = "",
+                    Value = "<p>Search for DocuSign Envelopes where the following are true:</p>" +
+                            "<div>Envelope contains text:</div>"
                 });
 
-                Controls.Add((QueryBuilder = new QueryBuilder
+                Controls.Add((SearchText = new TextBox
                 {
-                    Name = "QueryBuilder",
-                    Label = "Additional Search Criteria",
-                    Source = new FieldSourceDTO
-                    {
-                        Label = "Queryable Criteria",
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                    },
+                    Name = "SearchText",
+                    Bindings = new[] {"Value <> SearchText"},
                     Events = new List<ControlEvent> {ControlEvent.RequestConfig},
+                }));
+
+                Controls.Add((Folder = new DropDownList
+                {
+                    Label = "Envelope is in folder:",
+                    Name = "Folder",
+                    Bindings = new[] {"Value <> Folder"},
+                    Events = new List<ControlEvent> {ControlEvent.RequestConfig},
+                    Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "Folders")
+                }));
+
+                Controls.Add((Status = new DropDownList
+                {
+                    Label = "Envelope has status:",
+                    Name = "Status",
+                    Bindings = new[] {"Value <> Status"},
+                    Events = new List<ControlEvent> {ControlEvent.RequestConfig},
+                    Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "Statuses")
                 }));
             }
         }
@@ -127,6 +97,63 @@ namespace terminalDocuSign.Actions
             _docuSignManager = new DocuSignManager();
         }
 
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            var configuration = Crate.GetStorage(curActionDO).CrateContentsOfType<RuntimeConfiguration>().SingleOrDefault();
+
+            if (configuration == null)
+            {
+                throw new Exception("Action was not configured correctly");
+            }
+
+            var payload = await GetProcessPayload(curActionDO, containerId);
+            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            var docusignFolder = new DocusignFolder();
+            var payloadCm = new StandardPayloadDataCM();
+
+            if (string.IsNullOrWhiteSpace(configuration.Folder) || configuration.Folder == "<any>")
+            {
+                foreach (var folder in docusignFolder.GetFolders(docuSignAuthDto.Email, docuSignAuthDto.ApiPassword))
+                {
+                    SearchFolder(configuration, docusignFolder, folder.FolderId, docuSignAuthDto, payloadCm);
+                }
+            }
+            else
+            {
+                SearchFolder(configuration, docusignFolder, configuration.Folder, docuSignAuthDto, payloadCm);
+            }
+
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", payloadCm));
+            }
+
+            return payload;
+        }
+
+        private void SearchFolder(RuntimeConfiguration configuration, DocusignFolder docusignFolder, string folder, DocuSignAuthDTO docuSignAuthDto, StandardPayloadDataCM payload)
+        {
+            var envelopes = docusignFolder.Search(docuSignAuthDto.Email, docuSignAuthDto.ApiPassword, configuration.SearchText, folder, configuration.Status == "<any>" ? null : configuration.Status, configuration.FromDate, configuration.ToDate);
+            
+            foreach (var envelope in envelopes)
+            {
+                var row = new PayloadObjectDTO();
+
+                row.PayloadObject.Add(new FieldDTO("Id", envelope.EnvelopeId));
+                row.PayloadObject.Add(new FieldDTO("Name", envelope.Name));
+                row.PayloadObject.Add(new FieldDTO("Subject", envelope.Subject));
+                row.PayloadObject.Add(new FieldDTO("Status", envelope.Status));
+                row.PayloadObject.Add(new FieldDTO("OwnerName", envelope.OwnerName));
+                row.PayloadObject.Add(new FieldDTO("SenderName", envelope.SenderName));
+                row.PayloadObject.Add(new FieldDTO("SenderEmail", envelope.SenderEmail));
+                row.PayloadObject.Add(new FieldDTO("Shared", envelope.Shared));
+                row.PayloadObject.Add(new FieldDTO("CompletedDate", envelope.CompletedDateTime.ToString(CultureInfo.InvariantCulture)));
+                row.PayloadObject.Add(new FieldDTO("CreatedDateTime", envelope.CreatedDateTime.ToString(CultureInfo.InvariantCulture)));
+
+                payload.PayloadObjects.Add(row);
+            }
+        }
+
         protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
@@ -135,7 +162,7 @@ namespace terminalDocuSign.Actions
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Runtime Configuration", new RuntimeConfiguration()));
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
-                updater.CrateStorage.Add(PackCrate_DocuSignTemplateNames(docuSignAuthDto));
+                updater.CrateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
             }
             
             return Task.FromResult(curActionDO);
@@ -159,39 +186,52 @@ namespace terminalDocuSign.Actions
 
                 var config = updater.CrateStorage.CrateContentsOfType<RuntimeConfiguration>().First();
 
-                config.RecipientName = controls.RecipientName.Value;
-                config.SearchType = controls.SearchWithRecipient.Selected ? SearchType.ByRecipient : SearchType.ByTemplate;
-                config.SelectedTemplate = controls.Template.Value;
-                config.Criteria = JsonConvert.DeserializeObject<FilterConditionDTO[]>(controls.QueryBuilder.Value);
-              
+                config.Folder = controls.Folder.Value;
+                config.Status = controls.Status.Value;
+                config.SearchText = controls.SearchText.Value;
+                
                 updater.CrateStorage.RemoveByLabel("Queryable Criteria");
-
-                switch (config.SearchType)
-                {
-                    case SearchType.ByTemplate:
-                        var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
-                        var crate = _docuSignManager.CrateCrateFromFields(config.SelectedTemplate, docuSignAuthDto, "Queryable Criteria");
-
-                        if (crate != null)
-                        {
-                            updater.CrateStorage.Add(crate);
-                        }
-
-                        break;
-                }
-
+                
                 return curActionDO;
             }
         }
-        
-        protected Crate PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
+
+        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthDTO authDTO)
         {
-            var template = new DocuSignTemplate();
-            var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
-            var fields = templates.Select(x => new FieldDTO { Key = x.Name, Value = x.Id }).ToArray();
-            var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate("Available Templates", fields);
+            var docusignFolder = new DocusignFolder();
+            var folders = docusignFolder.GetFolders(authDTO.Email, authDTO.ApiPassword);
+            var fields = new List<FieldDTO>();
             
-            return createDesignTimeFields;
+            foreach (var folder in folders)
+            {
+                fields.Add(new FieldDTO(folder.Name, folder.FolderId));
+            }
+
+            yield return Data.Crates.Crate.FromContent("Folders", new StandardDesignTimeFieldsCM(fields));
+
+
+            yield return Data.Crates.Crate.FromContent("Statuses", new StandardDesignTimeFieldsCM(new[]
+            {
+                new FieldDTO("Any status", "<any>"),
+                new FieldDTO("Sent", "sent"),
+                new FieldDTO("Delivered", "delivered"),
+                new FieldDTO("Signed", "signed"),
+                new FieldDTO("Completed", "completed"),
+                new FieldDTO("Declined", "declined"),
+                new FieldDTO("Voided", "voided"),
+                new FieldDTO("Timed Out", "timedout"),
+                new FieldDTO("Authoritative Copy", "authoritativecopy"),
+                new FieldDTO("Transfer Completed", "transfercompleted"),
+                new FieldDTO("Template", "template"),
+                new FieldDTO("Correct", "correct"),
+                new FieldDTO("Created", "created"),
+                new FieldDTO("Delivered", "delivered"),
+                new FieldDTO("Signed", "signed"),
+                new FieldDTO("Declined", "declined"),
+                new FieldDTO("Completed", "completed"),
+                new FieldDTO("Fax Pending", "faxpending"),
+                new FieldDTO("Auto Responded", "autoresponded"),
+            }));
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
