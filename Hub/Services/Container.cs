@@ -31,31 +31,40 @@ namespace Hub.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
+        private async Task ProcessAction(ActionDO action, IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            switch (action.ActivityTemplate.Category)
+            {
+                case ActivityCategory.Loop:
+                    await StartLoop(uow, curContainerDO);
+                break;
+
+                default:
+                    await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
+                break;
+
+            }
+        }
+
         private async Task StartLoop(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             var loopAction = curContainerDO.CurrentRouteNode;
-            int a = 0;
+            int index = 0;
             do
             {
+                //Process loop action
+                await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
+                //skip loop action
                 var currentAction = MoveToTheNextActivity(uow, curContainerDO) as ActionDO;
                 do
                 {
-                    //TODO change this mechanism
-                    if (currentAction.Label == "Create Loop")
-                    {
-                        await StartLoop(uow, curContainerDO);
-                    }
-                    else
-                    {
-                        await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
-                    }
+                    await ProcessAction(currentAction, uow, curContainerDO);
                     // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
                 } while ((currentAction = MoveToTheNextActivity(uow, curContainerDO) as ActionDO) != null && currentAction.ParentRouteNodeId != loopAction.ParentRouteNodeId);
 
                 curContainerDO.CurrentRouteNode = loopAction;
-                currentAction = loopAction as ActionDO;
-                a++;
-            } while (a < 3); //check loop ending condition here
+                index++;
+            } while (index < 3); //check loop ending condition here
 
 
         }
@@ -72,14 +81,7 @@ namespace Hub.Services
                 //are processed that there is no Next Activity to set as Current Activity
                 do
                 {
-                    //TODO change this mechanism
-                    if (currentAction.Label == "Create Loop")
-                    {
-                        await StartLoop(uow, curContainerDO);
-                    }
-                    else { 
-                        await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
-                    }
+                    await ProcessAction(currentAction, uow, curContainerDO);
                     // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
                 } while ((currentAction = MoveToTheNextActivity(uow, curContainerDO) as ActionDO) != null);
             }

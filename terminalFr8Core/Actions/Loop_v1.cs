@@ -10,6 +10,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using Newtonsoft.Json;
+using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
@@ -17,7 +18,66 @@ namespace terminalFr8Core.Actions
 {
     public class Loop_v1 : BaseTerminalAction
     {
-        //this should return
+
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
+            //we used current action id to prevent mixing nested loops
+            var loopIdentifierLabel = curActionDO.Id.ToString();
+            var currentIndex = 0;
+            using (var updater = Crate.UpdateStorage(curPayloadDTO))
+            {
+                var operationsData = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>(c => c.Label == loopIdentifierLabel).FirstOrDefault();
+                if (operationsData == null)
+                {
+                    //this should be the first time our loop runs
+                    operationsData = new OperationalStatusCM() { LoopIndex = 0, Break = false };
+                    var operationsCrate = Crate.CreateOperationalStatusCrate(loopIdentifierLabel, operationsData);
+                    updater.CrateStorage.Add(operationsCrate);
+                }
+                else
+                {
+                    operationsData.IncreaseLoopIndex();
+                    currentIndex = operationsData.LoopIndex;
+                }
+            }
+
+            var manifestType = GetSelectedCrateManifestTypeToProcess(curActionDO);
+            var label = GetSelectedLabelToProcess(curActionDO);
+
+            var storage = Crate.GetStorage(curPayloadDTO);
+            var processingCrates = storage.Where(c => c.ManifestType.Type == manifestType && c.Label == label).ToList();
+
+            if (!processingCrates.Any())
+            {
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find crate with Manifest Type: \"" + manifestType + "\" and Label: \""+label+"\"");
+            }
+
+            //check if we need to end this loop
+            if (currentIndex > processingCrates.Count() - 1)
+            {
+                using (var updater = Crate.UpdateStorage(curPayloadDTO))
+                {
+                    var operationsData = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>(c => c.Label == loopIdentifierLabel).FirstOrDefault();
+                    operationsData.BreakLoop();
+                }
+            }
+
+            return curPayloadDTO;
+        }
+
+        private string GetSelectedCrateManifestTypeToProcess(ActionDO curActionDO)
+        {
+            //if unconfigured throw exception
+            return "";
+        }
+
+        private string GetSelectedLabelToProcess(ActionDO curActionDO)
+        {
+            //if unconfigured throw exception
+            return "";
+        }
+
         public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
@@ -70,11 +130,10 @@ namespace terminalFr8Core.Actions
 
         private Crate CreateControlsCrate()
         {
-            var fieldFilterPane = new TextBlock
+            var fieldFilterPane = new DropDownList
             {
                 Label = "Fill the values for other actions",
                 Name = "Selected_Fields",
-                CssClass = "well well-lg",
                 Value = "Sample Loop action"
             };
 

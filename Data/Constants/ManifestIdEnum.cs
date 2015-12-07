@@ -86,7 +86,10 @@ namespace Data.Constants
         DocuSignRecipient = 26,
 
         [Display(Name = "Custom Processing Configuration")]
-        CustomProcessingConfiguration = 27
+        CustomProcessingConfiguration = 27,
+
+        [Display(Name = "Operational Status")]
+        OperationalStatus = 28
     }
 }
 

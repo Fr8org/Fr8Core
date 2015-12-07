@@ -1,4 +1,5 @@
-﻿using Data.States.Templates;
+﻿using Data.States;
+using Data.States.Templates;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AutoMapper;
@@ -25,6 +26,8 @@ namespace Data.Entities
         [NotMapped]
         public bool IsTempId { get; set; }
 
+        public ActionType Type { get; set; }
+
         public string currentView { get; set; }
 
         public override RouteNodeDO Clone()
@@ -35,7 +38,8 @@ namespace Data.Entities
                 Name = this.Name,
                 CrateStorage = this.CrateStorage,
                 Label = this.Label,
-                ActivityTemplateId = this.ActivityTemplateId
+                ActivityTemplateId = this.ActivityTemplateId,
+                Type = this.Type
             };
         }
 
