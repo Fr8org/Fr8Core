@@ -1,4 +1,4 @@
-var gulp = require('gulp');
+    var gulp = require('gulp');
 var bower = require('gulp-bower');
 var concat = require('gulp-concat');
 var sourcemaps = require('gulp-sourcemaps');
@@ -118,4 +118,4 @@ gulp.task('watch_js', ['compile_js'], function () {
     gulp.watch('Scripts/app/**/*.js', ['compile_js']);
 });
 
-gulp.task('default', ['bower', 'concattemplates', 'compile_js']);
+gulp.task('default', ['bower', 'concattemplates']);
