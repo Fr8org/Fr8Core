@@ -48,7 +48,7 @@ namespace terminalFr8Core.Actions
             var storage = Crate.GetStorage(curPayloadDTO);
             var processingCrates = storage.Where(c => c.ManifestType.Type == manifestType && c.Label == label).ToList();
 
-            /*
+            /* should we throw exception?
             if (!processingCrates.Any())
             {
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + manifestType + "\" and Label: \""+label+"\"");
