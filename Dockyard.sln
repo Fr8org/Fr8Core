@@ -103,6 +103,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalExcelTests", "Tests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalGoogleTests", "terminalGoogleTests\terminalGoogleTests.csproj", "{62219AA6-9276-4935-B934-F0F50ECEF6FB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSlackTests", "terminalSlackTests\terminalSlackTests.csproj", "{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		alexlocal|Any CPU = alexlocal|Any CPU
@@ -553,6 +555,18 @@ Global
 		{62219AA6-9276-4935-B934-F0F50ECEF6FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62219AA6-9276-4935-B934-F0F50ECEF6FB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{62219AA6-9276-4935-B934-F0F50ECEF6FB}.Release|x86.ActiveCfg = Release|Any CPU
+		{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
+		{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}.alexlocal|Any CPU.Build.0 = Release|Any CPU
+		{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}.alexlocal|x86.ActiveCfg = Release|Any CPU
+		{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}.Dev|Any CPU.Build.0 = Debug|Any CPU
+		{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}.Dev|x86.ActiveCfg = Debug|Any CPU
+		{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
