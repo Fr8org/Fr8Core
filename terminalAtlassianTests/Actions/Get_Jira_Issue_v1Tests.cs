@@ -45,7 +45,7 @@ namespace terminalDropboxTests.Actions
 
             //Assert
             var jiraIssue = JsonConvert.DeserializeObject<StandardPayloadDataCM>(payloadDTOResult.CrateStorage.Crates[0].Contents.ToString());
-            Assert.AreEqual("DO-1245", jiraIssue.PayloadObjects[0].PayloadObject.First(x => x.Key == "Key").Value);
+            Assert.AreEqual("FR-1245", jiraIssue.PayloadObjects[0].PayloadObject.First(x => x.Key == "Key").Value);
             Assert.AreEqual("admin", jiraIssue.PayloadObjects[0].PayloadObject.First(x => x.Key == "Reporter").Value);
 
         }

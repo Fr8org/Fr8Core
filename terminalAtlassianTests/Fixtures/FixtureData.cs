@@ -37,7 +37,7 @@ namespace terminalAtlassianTests.Fixtures
                 Label = "Jira Key",
                 Name = "jira_key",
                 Required = true,
-                Value = "DO-1245"
+                Value = "FR-1245"
             };
             var fields = new List<ControlDefinitionDTO>()
             {
