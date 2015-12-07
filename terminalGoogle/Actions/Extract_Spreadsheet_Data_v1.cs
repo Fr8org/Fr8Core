@@ -105,7 +105,7 @@ namespace terminalGoogle.Actions
 
             //if no "Standard File Handle" crate found then return
             if (!upstreamFileHandleCrates.Any())
-                return null;
+                throw new Exception("No Standard File Handle crate found in upstream.");
 
             //if more than one "Standard File Handle" crates found then throw an exception
             if (upstreamFileHandleCrates.Count > 1)
@@ -183,7 +183,7 @@ namespace terminalGoogle.Actions
             else
             {
                 throw new ArgumentException(
-                    "Configuration requires the submission of an Action that has a real ActionId");
+                    "Configuration requires the submission of an Action that has a real ActionId.");
             }
 
             return Task.FromResult(curActionDO);
@@ -229,7 +229,7 @@ namespace terminalGoogle.Actions
             var spreadsheets = _google.EnumerateSpreadsheetsUris(authDTO);
             var configControlsCrate = CreateConfigurationControlsCrate(spreadsheets, spreadsheetsFromUserSelection);
 
-            // RFemove previously created configuration control crate
+            // Remove previously created configuration control crate
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Remove<StandardConfigurationControlsCM>();

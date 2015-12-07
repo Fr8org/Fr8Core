@@ -36,6 +36,16 @@ namespace HealthMonitor.Utility
             return GetTerminalUrl() + "/actions/configure";
         }
 
+        public string GetTerminalActivateUrl()
+        {
+            return GetTerminalUrl() + "/actions/activate";
+        }
+
+        public string GetTerminalDeactivateUrl()
+        {
+            return GetTerminalUrl() + "/actions/deactivate";
+        }
+
         public string GetTerminalRunUrl()
         {
             return GetTerminalUrl() + "/actions/run";

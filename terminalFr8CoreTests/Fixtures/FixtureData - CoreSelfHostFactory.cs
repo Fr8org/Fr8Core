@@ -9,6 +9,7 @@ using System.Web.Http.Dispatcher;
 using System.Web.Http.Routing;
 using Microsoft.Owin.Hosting;
 using Owin;
+using Data.Interfaces.DataTransferObjects;
 
 namespace terminalFr8CoreTests.Fixtures
 {
@@ -76,6 +77,30 @@ namespace terminalFr8CoreTests.Fixtures
         public static IDisposable CreateCoreServer_ActivitiesController()
         {
             return WebApp.Start<ActivitiesController_SelfHostStartup>(url: CoreEndPoint);
+        }
+
+        public static ActionDTO ConnectToSql_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = ConnectToSql_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "ConnectToSql_Fr8Core",
+                Label = "ConnectToSql Fr8Core",
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
+        public static ActivityTemplateDTO ConnectToSql_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 1,
+                Name = "ConnectToSql_TEST",
+                Version = "1"
+            };
         }
     }
 }
