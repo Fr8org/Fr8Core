@@ -31,7 +31,7 @@ namespace terminalSalesforceTests.Integration
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
-        [Test, System.ComponentModel.Category("Integration.terminalSalesforce")]
+        [Test, CategoryAttribute("Integration.terminalSalesforce")]
         public async void Terminal_Salesforce_Discover()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
