@@ -21,7 +21,7 @@ namespace terminalDropboxTests.Integration
                 get { return "terminalDropbox"; }
             }
 
-            [Test, System.ComponentModel.Category("Integration.terminalDropbox")]
+            [Test, CategoryAttribute("Integration.terminalDropbox")]
             public async void Discover_Check_Returned_Actions()
             {
                 //Arrange
