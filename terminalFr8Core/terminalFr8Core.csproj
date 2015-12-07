@@ -183,6 +183,7 @@
     <Compile Include="Actions\AddPayloadManually_v1.cs" />
     <Compile Include="Actions\BuildQuery_v1.cs" />
     <Compile Include="Actions\ConnectToSql_v1.cs" />
+    <Compile Include="Actions\ConvertRelatedFieldsIntoTable_v1.cs" />
     <Compile Include="Actions\ExecuteSql_v1.cs" />
     <Compile Include="Actions\FindObjects_Solution_v1.cs" />
     <Compile Include="Actions\ManageRoute_v1.cs" />
