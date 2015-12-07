@@ -8,7 +8,6 @@ var app = angular.module("app", [
     "ngSanitize",
     'ngResource',
     'ui.bootstrap',
-    "ngMockE2E",
     "datatables",
     "ngFileUpload",
     "textAngular",
@@ -18,6 +17,9 @@ var app = angular.module("app", [
     "frapontillo.bootstrap-switch",
     "ApplicationInsightsModule"
 ]);
+
+/* For compatibility with older versions of script files. Can be safely deleted later. */
+app.constant('urlPrefix', '/api');
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
 app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
@@ -36,7 +38,7 @@ app.factory('settings', ['$rootScope', function ($rootScope) {
         layoutImgPath: Metronic.getAssetsPath() + 'admin/layout/img/',
         layoutCssPath: Metronic.getAssetsPath() + 'admin/layout/css/'
     };
-
+        
     $rootScope.settings = settings;
 
     return settings;

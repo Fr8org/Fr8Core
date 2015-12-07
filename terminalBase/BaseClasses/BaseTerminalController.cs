@@ -152,6 +152,36 @@ namespace TerminalBase.BaseClasses
                         Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
+                case "activate":
+                    {
+                        Task<ActionDO> resutlActionDO;
+
+                        var param = curMethodInfo.GetParameters();
+                        if (param.Length == 2)
+                            resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                        else
+                        {
+                            response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+                            return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
+                        }
+
+                        return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                    }
+                case "deactivate":
+                    {
+                        Task<ActionDO> resutlActionDO;
+
+                        var param = curMethodInfo.GetParameters();
+                        if(param.Length == 2)
+                            resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                        else
+                        {
+                            response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+                            return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
+                        }
+
+                        return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                    }
                 default:
                     response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
                     return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
