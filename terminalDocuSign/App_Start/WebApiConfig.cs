@@ -14,12 +14,7 @@ namespace terminalDocuSign
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register(config);
-
-            config.Routes.MapHttpRoute(
-                name: "TerminalDocuSign",
-                routeTemplate: "terminal_docusign/{controller}/{id}"
-            );
+            BaseTerminalWebApiConfig.Register("DocuSign", config);
         }
     }
 }

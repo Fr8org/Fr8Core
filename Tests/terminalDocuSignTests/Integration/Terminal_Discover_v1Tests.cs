@@ -15,7 +15,7 @@ namespace terminalDocuSignTests.Integration
         private const int ActionCount = 7;
         private const string Extract_Data_From_Envelopes_Name = "Extract_Data_From_Envelopes";
         private const string Mail_Merge_Into_DocuSign_Name = "Mail_Merge_Into_DocuSign";
-        private const string Monitor_DocuSign_Name = "Monitor_DocuSign";
+        private const string Monitor_DocuSign_Name = "Monitor_DocuSign_Envelope_Activity";
         private const string Receive_DocuSign_Envelope_Name = "Receive_DocuSign_Envelope";
         private const string Record_DocuSign_Events_Name = "Record_DocuSign_Events";
         private const string Rich_Document_Notification_Name = "Rich_Document_Notifications";
