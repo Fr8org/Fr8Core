@@ -70,13 +70,13 @@ namespace terminalGoogleTests.Unit
 
             //Assert
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            
+
             var standardConfigurationControlsCM = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
             var standardDesignTimeFieldsCM = crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().SingleOrDefault();
             var eventSubscriptionCM = crateStorage.CrateContentsOfType<EventSubscriptionCM>().SingleOrDefault();
 
             var dropdown = standardConfigurationControlsCM.Controls.Where(s => s.GetType() == typeof(DropDownList)).FirstOrDefault();
-            
+
             Assert.IsNotNull(dropdown);
             Assert.AreEqual("Selected_Google_Form", dropdown.Name);
             Assert.AreEqual("Available Forms", dropdown.Source.Label);
@@ -111,7 +111,7 @@ namespace terminalGoogleTests.Unit
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
             var standardDesignTimeFieldsCM = crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().SingleOrDefault();
-            
+
             Assert.IsNotNull(standardDesignTimeFieldsCM);
             Assert.AreEqual(1, crateStorage.Where(s => s.Label == "Available Forms").Count());
 
