@@ -58,6 +58,9 @@ namespace terminalFr8Core.Actions
             {
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + manifestType + "\" and Label: \""+label+"\"");
             }
+
+            var data = crateToProcess.Get();
+            
             //we don't know type of object we are trying to loop
             //but we are sure that it is a list
             var processList = crateToProcess.Get<List<Object>>();
@@ -128,8 +131,8 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            var manifestTypeDropdown = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Manifests");
+            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+            var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Manifests");
 
             if (manifestTypeDropdown.Value != null)
             {
