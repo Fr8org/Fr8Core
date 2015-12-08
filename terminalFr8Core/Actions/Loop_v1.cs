@@ -164,8 +164,7 @@ namespace terminalFr8Core.Actions
                 Label = "Crate Manifest",
                 Name = "Available_Manifests",
                 Value = null,
-                Events = new List<ControlEvent>()
-                { new ControlEvent("onChange", "requestConfig") },
+                Events = new List<ControlEvent>{ new ControlEvent("onChange", "requestConfig") },
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Manifests",
@@ -178,6 +177,7 @@ namespace terminalFr8Core.Actions
                 Label = "Crate Label",
                 Name = "Available_Labels",
                 Value = null,
+                Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") },
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Labels",
