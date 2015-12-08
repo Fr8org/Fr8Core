@@ -183,6 +183,22 @@
             this.populateListItemsFromDataSource(controlsList.fields, crateStorage);
             return controlsList;
         }
+
+        public getAvailableFieldTypes(crateStorage: model.CrateStorage): string[]{
+            try {
+                var fieldsCrate = this.findByLabel(crateStorage, 'Upstream Terminal-Provided Fields');
+            } catch (e) {
+                return [];
+            }
+
+            var fields = <string[]>(<any>fieldsCrate.contents).Fields;
+            var result = [];
+            <string[]>(<any>fieldsCrate.contents).Fields.forEach((field) => {
+                if (result.indexOf(field.tags) === -1) result.push(field.tags);
+            });
+
+            return result;
+        }
     }
 }
 

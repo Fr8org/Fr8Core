@@ -184,6 +184,20 @@ namespace TerminalBase.BaseClasses
             return mergedFields;
         }
 
+        public async virtual Task<List<String>> BuildUpstreamManifestList(ActionDO actionDO)
+        {
+            var curCrates = await HubCommunicator.GetCratesByDirection<Crate>(actionDO, CrateDirection.Upstream);
+
+            return curCrates.Select(f => f.ManifestType.Type).Distinct().ToList();
+        }
+
+        public async virtual Task<List<String>> BuildUpstreamCrateLabelList(ActionDO actionDO)
+        {
+            var curCrates = await HubCommunicator.GetCratesByDirection<Crate>(actionDO, CrateDirection.Upstream);
+
+            return curCrates.Select(f => f.Label).Distinct().ToList();
+        }
+
         public StandardDesignTimeFieldsCM MergeContentFields(List<Crate<StandardDesignTimeFieldsCM>> curCrates)
         {
             StandardDesignTimeFieldsCM tempMS = new StandardDesignTimeFieldsCM();
