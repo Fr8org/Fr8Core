@@ -330,6 +330,9 @@ Please register first.");
                     }
                     else
                     {
+                        // http://forums.asp.net/t/1934149.aspx?Password+Reset+Token+Expiration
+                        // Refer above link for checking the reset password is link expired or not
+                        ModelState.AddModelError("", "Reset password link has been expired. Please generate the new link.");
                         Array.ForEach(result.Errors.ToArray(), e => ModelState.AddModelError("", e));
                     }
                 }

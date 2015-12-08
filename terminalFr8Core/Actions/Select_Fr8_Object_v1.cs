@@ -137,7 +137,7 @@ namespace terminalFr8Core.Actions
             var httpClient = new HttpClient();
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "manifests/"
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/manifests?id="
                 + Int32.Parse(fr8Object);
             using (var response = await httpClient.GetAsync(url))
             {
@@ -145,7 +145,13 @@ namespace terminalFr8Core.Actions
 
                 return Crate.FromDto(content);
             }
-        }
+		}
 
-    }
+		#region Execution
+		public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+	    {
+			return await GetProcessPayload(actionDO, containerId);
+	    }
+		#endregion
+	}
 }

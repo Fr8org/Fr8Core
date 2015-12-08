@@ -14,13 +14,7 @@ namespace terminalAzure
     {
         public static void Register(HttpConfiguration config)
         {
-           
-          BaseTerminalWebApiConfig.Register(config);
-
-            config.Routes.MapHttpRoute(
-                name: "TerminalAzureSqlServer",
-                routeTemplate: "terminal_azure_sql_server/{controller}/{id}"                
-            );
+          BaseTerminalWebApiConfig.Register("Azure",config);
         }
     }
 }

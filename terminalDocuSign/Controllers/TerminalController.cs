@@ -34,8 +34,8 @@ namespace terminalDocuSign.Controllers
             var waitForDocusignEventActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "Monitor_DocuSign",
-                Label = "Monitor DocuSign",
+                Name = "Monitor_DocuSign_Envelope_Activity",
+                Label = "Monitor DocuSign Envelope Activity",
                 Category = ActivityCategory.Monitors,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,
@@ -88,8 +88,8 @@ namespace terminalDocuSign.Controllers
 
             var collectFormDataSolution = new ActivityTemplateDTO
             {
-                Name = "Collect_Form_Data_Solution",
-                Label = "Collect Form Data Solution",
+				Name = "Extract_Data_From_Envelopes",
+				Label = "Extract Data From Envelopes",
                 Version = "1",
                 Category = ActivityCategory.Solution,
                 Terminal = terminal,
@@ -106,6 +106,29 @@ namespace terminalDocuSign.Controllers
                 Terminal = terminal,
                 MinPaneWidth = 380
             };
+            
+            
+            var queryDocusign = new ActivityTemplateDTO
+            {
+                Name = "Query_DocuSign",
+                Label = "Query DocuSign",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                AuthenticationType = AuthenticationType.Internal,
+                Terminal = terminal,
+                MinPaneWidth = 380
+            };
+
+            var searchDocusignHistory = new ActivityTemplateDTO
+            {
+                Name = "Search_DocuSign_History",
+                Label = "Search DocuSign History",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                AuthenticationType = AuthenticationType.Internal,
+                Terminal = terminal,
+                MinPaneWidth = 380
+            };
 
 
             var actionList = new List<ActivityTemplateDTO>()
@@ -116,7 +139,9 @@ namespace terminalDocuSign.Controllers
                 recordDocuSignEvents,
                 mailMergeActionTemplate,
                 collectFormDataSolution,
-                richDocumentNotificationsSolution
+                richDocumentNotificationsSolution,
+                queryDocusign,
+                searchDocusignHistory
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

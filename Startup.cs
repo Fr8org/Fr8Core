@@ -31,7 +31,7 @@ namespace HubWeb
             ConfigureAuth(app);
             ConfigureHangfire(app, "DockyardDB");
 
-            await RegisterTerminalActions();
+            await RegisterTerminalActions();    
 
             app.Use(async (context, next) =>
             {
@@ -280,6 +280,12 @@ namespace HubWeb
                         if (repositaryItem.Tags != registeredItem.Tags)
                         {
                             repositaryItem.Tags = registeredItem.Tags;
+                            needSave = true;
+                        }
+
+                        if (repositaryItem.Description != registeredItem.Description)
+                        {
+                            repositaryItem.Description = registeredItem.Description;
                             needSave = true;
                         }
                         

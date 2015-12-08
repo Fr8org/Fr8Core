@@ -33,7 +33,7 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="row in data">
-                                    <td ng-repeat="item in row">{{item}}</td>
+                                    <td ng-repeat="item in row track by $index">{{item}}</td>
                                 </tr>
                             </tbody>
                         </table>

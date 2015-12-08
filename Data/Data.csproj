@@ -101,24 +101,24 @@
       <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.4\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Security, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.Cookies, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.2.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.OAuth, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.2.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -434,6 +434,10 @@
     <Compile Include="Migrations\201511170753503_RouteDO_Tag.Designer.cs">
       <DependentUpon>201511170753503_RouteDO_Tag.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511192035266_Added_Description_ActivityTemplate.cs" />
+    <Compile Include="Migrations\201511192035266_Added_Description_ActivityTemplate.Designer.cs">
+      <DependentUpon>201511192035266_Added_Description_ActivityTemplate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.cs" />
     <Compile Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.Designer.cs">
       <DependentUpon>201511200612313_RouteNode_Id_Int32_To_Guid.cs</DependentUpon>
@@ -441,6 +445,26 @@
     <Compile Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs" />
     <Compile Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.Designer.cs">
       <DependentUpon>201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511250912363_Add_Description_To_Terminal.cs" />
+    <Compile Include="Migrations\201511250912363_Add_Description_To_Terminal.Designer.cs">
+      <DependentUpon>201511250912363_Add_Description_To_Terminal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511271920340_RenameMonitorDocuSignAction.cs" />
+    <Compile Include="Migrations\201511271920340_RenameMonitorDocuSignAction.Designer.cs">
+      <DependentUpon>201511271920340_RenameMonitorDocuSignAction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511281709584_Merge2_Migration.cs" />
+    <Compile Include="Migrations\201511281709584_Merge2_Migration.Designer.cs">
+      <DependentUpon>201511281709584_Merge2_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511281946401_Empty.cs" />
+    <Compile Include="Migrations\201511281946401_Empty.Designer.cs">
+      <DependentUpon>201511281946401_Empty.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511261934585_RenameCollectFormDataSolution.cs" />
+    <Compile Include="Migrations\201511261934585_RenameCollectFormDataSolution.Designer.cs">
+      <DependentUpon>201511261934585_RenameCollectFormDataSolution.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -453,6 +477,7 @@
     <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
+    <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
     <Compile Include="Repositories\WebServiceRepository.cs" />
     <Compile Include="States\ActivityCategory.cs" />
     <Compile Include="States\AuthenticationType.cs" />
@@ -630,6 +655,7 @@
     <Compile Include="Validations\OutboundEmailValidatorBase.cs" />
     <Compile Include="Validations\OutboundHtmlEmailValidator.cs" />
     <Compile Include="Validations\OutboundTemplatedEmailValidator.cs" />
+    <Compile Include="Validations\TerminalValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\Validators.cs" />
   </ItemGroup>
@@ -739,11 +765,29 @@
     <EmbeddedResource Include="Migrations\201511170753503_RouteDO_Tag.resx">
       <DependentUpon>201511170753503_RouteDO_Tag.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511192035266_Added_Description_ActivityTemplate.resx">
+      <DependentUpon>201511192035266_Added_Description_ActivityTemplate.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511200612313_RouteNode_Id_Int32_To_Guid.resx">
       <DependentUpon>201511200612313_RouteNode_Id_Int32_To_Guid.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.resx">
       <DependentUpon>201511240533318_Standard_Configuration_Controls_To_Standard_UI_Controls.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511250912363_Add_Description_To_Terminal.resx">
+      <DependentUpon>201511250912363_Add_Description_To_Terminal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511271920340_RenameMonitorDocuSignAction.resx">
+      <DependentUpon>201511271920340_RenameMonitorDocuSignAction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511281709584_Merge2_Migration.resx">
+      <DependentUpon>201511281709584_Merge2_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511281946401_Empty.resx">
+      <DependentUpon>201511281946401_Empty.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511261934585_RenameCollectFormDataSolution.resx">
+      <DependentUpon>201511261934585_RenameCollectFormDataSolution.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

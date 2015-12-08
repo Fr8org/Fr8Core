@@ -197,7 +197,7 @@ namespace terminalDocuSign.Actions
                 Label = "Monitor DocuSign"
             };
 
-            var monitorDocuSignTerminalAction = new Monitor_DocuSign_v1();
+            var monitorDocuSignTerminalAction = new Monitor_DocuSign_Envelope_Activity_v1();
             monitorDocuSignAction = await monitorDocuSignTerminalAction
                 .Configure(monitorDocuSignAction, authTokenDO);
 
@@ -349,6 +349,11 @@ namespace terminalDocuSign.Actions
                 );
 
             return availableHandlersCrate;
+        }
+
+        public Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            return Task.FromResult<PayloadDTO>(null);
         }
     }
 }
