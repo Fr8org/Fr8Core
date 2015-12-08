@@ -126,6 +126,7 @@ namespace Data.Infrastructure
                 createdEntity.Entity.BeforeCreate();
             }
 
+
             var saveResult = base.SaveChanges();
 
             foreach (var createdEntity in createdEntityList)
