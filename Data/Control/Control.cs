@@ -323,9 +323,6 @@ namespace Data.Control
 
     public class RadioButtonOption : ISupportsNestedFields
     {
-        [JsonIgnore]
-        public string[] Bindings { get; set; }
-
         public RadioButtonOption()
         {
             Controls = new List<ControlDefinitionDTO>();

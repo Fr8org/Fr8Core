@@ -61,7 +61,6 @@ namespace terminalDocuSign.Actions
                 Controls.Add((SearchText = new TextBox
                 {
                     Name = "SearchText",
-                    Bindings = new[] {"Value <> SearchText"},
                     Events = new List<ControlEvent> {ControlEvent.RequestConfig},
                 }));
 
@@ -69,7 +68,6 @@ namespace terminalDocuSign.Actions
                 {
                     Label = "Envelope is in folder:",
                     Name = "Folder",
-                    Bindings = new[] {"Value <> Folder"},
                     Events = new List<ControlEvent> {ControlEvent.RequestConfig},
                     Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "Folders")
                 }));
@@ -78,7 +76,6 @@ namespace terminalDocuSign.Actions
                 {
                     Label = "Envelope has status:",
                     Name = "Status",
-                    Bindings = new[] {"Value <> Status"},
                     Events = new List<ControlEvent> {ControlEvent.RequestConfig},
                     Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "Statuses")
                 }));

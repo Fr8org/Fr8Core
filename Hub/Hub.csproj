@@ -319,8 +319,6 @@
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Time.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
-    <Compile Include="Utilities\Binding\BindingParser.cs" />
-    <Compile Include="Utilities\Binding\BindingDirection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">

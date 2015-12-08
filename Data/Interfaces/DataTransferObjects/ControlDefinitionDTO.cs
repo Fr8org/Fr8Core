@@ -15,9 +15,6 @@ namespace Data.Interfaces.DataTransferObjects
         {
             Type = type;
         }
-
-        [JsonIgnore]
-        public string[] Bindings { get; set; }
         
         [JsonProperty("name")]
         public string Name { get; set; }
