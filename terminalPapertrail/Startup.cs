@@ -17,7 +17,7 @@ namespace terminalPapertrail
     {
         public void Configuration(IAppBuilder app)
         {
-            StartHosting("terminal_papertrail");
+            StartHosting("terminal_Papertrail");
         }
     }
 }

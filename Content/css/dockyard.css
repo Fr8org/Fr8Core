@@ -2,7 +2,7 @@
     cursor: pointer;
 }
 
-.table-process-templates td button {
+.table-routes td button {
     float: right;
 }
 
@@ -66,7 +66,7 @@
 
 /* Added for Showing Steps in Activity Pane*/
 .processActionStep {
-    background-image: URL("/Content/img/ProcessBuilder/circle.png");
+    background-image: URL("/Content/img/RouteBuilder/circle.png");
     display: inline-flex;
     width: 80px;
     height: 50px;
@@ -79,7 +79,7 @@
 }
 
 .processActionStepSelected {
-    background-image: URL("/Content/img/ProcessBuilder/circle-selected.png");
+    background-image: URL("/Content/img/RouteBuilder/circle-selected.png");
     display: inline-flex;
     width: 75px;
     height: 50px;
@@ -96,7 +96,7 @@
     margin-top: -15px;
 }
 
-/* Process Builder */
+/* Route Builder */
 
 .designer-header {
     background: transparent;
@@ -121,7 +121,7 @@
     display: inline-block;
 }
 
-.designer-header-title.design-header-title-editing .process-template-name, .designer-header-title.design-header-title-editing .designer-header-glyphicon {
+.designer-header-title.design-header-title-editing .route-name, .designer-header-title.design-header-title-editing .designer-header-glyphicon {
     display: none;
 }
 
@@ -132,7 +132,7 @@
     cursor: pointer;
 }
 
-.process-template-name {
+.route-name {
     display: inline-block;
     vertical-align: top;
 }
@@ -161,7 +161,7 @@
         background-color: #428bca;
     }
 
-.process-builder-container {
+.route-builder-container {
     height: 800px;
     overflow-y: auto;
     position: relative;
@@ -241,11 +241,29 @@
         color: white;
     }
 
+.solution-action{
+        min-height:180px;
+}
+.solution-action .solution-action-header {
+        background-color: #3F48CC;
+}
+.solution-action .pane-configure-action {
+        min-height:180px;
+}
+
 .action-to-add {
+	display: inline-block;
+	background-color: white;
+	box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px 0px, rgba(0, 0, 0, 0.137255) 0px 1px 1px 0px, rgba(0, 0, 0, 0.117647) 0px 2px 1px -1px;
     cursor: pointer;
     opacity: 0.5;
-    margin-left: -3px;
-    height: 300px;
+    margin-bottom: 48px;
+    height: 150px;
+	width: 150px;
+	vertical-align: middle;
+	border-radius: 50% !important;
+	text-align: center;
+	line-height: 150px; 
 }
 
     .action-to-add:hover {
@@ -263,26 +281,60 @@
     width: 100%;
 }
 
+.solution-action .pane-configure-action {
+        min-height:180px;
+}
+
 .action-group {
     display: inline-block;
     position: absolute;
 }
 
 .pane-configure-action-returnToSolution {
-    height: 224px;
-    text-align: center;
+    height: 180px;
 }
 
 .pane-configure-action-returnToSolution:before {
-    content: '';
     height: 100%;
     display: inline-block;
     vertical-align: middle;
 }
 
-.pane-configure-action-returnToSolution .btn {
-    vertical-align: middle;
+.solution-parts{
+    max-height: 120px;
+    display: block;
+    overflow: auto;
+    width: 100%;
 }
+
+.return-to-solution-container{
+    display: block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+.return-to-solution-container a {
+    vertical-align: middle;		    
+    text-decoration:none;
+    margin-top:10px;
+}
+
+
+.return-to-solution {
+    color: #8ea3b6;
+    font-size: 14px;
+    bottom:1px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.pane-configure-action-returnToSolution > label:first-child {
+   margin-bottom:20px;
+}
+.pane-configure-action-returnToSolution label {
+   display:block;
+}		
 
 /* Select Action */
 .select-action-modal .modal-dialog {
@@ -409,7 +461,7 @@ input[type=radio]:checked ~ div.nested-controls {
     margin: 0;
 }
 
-.ui-select-match > span, .nested-controls input {
+.ui-select-match > span, .nested-controls input, .small-input {
     height: 26px;
     padding-top: 3px;
     padding-bottom: 3px;
@@ -486,6 +538,12 @@ input[type=radio]:checked ~ label .control-label-hidden {
     vertical-align: middle;
 }
 
+.run-pane-button {
+    display: block;
+    margin-left: auto;
+    margin-right: auto
+}
+
 .counter-control > * {
     display: block;
     text-align: center;
@@ -493,4 +551,16 @@ input[type=radio]:checked ~ label .control-label-hidden {
 
 .counter-input {
     width: 42px;
+}
+
+
+a.documentation-link {
+    color: #aaa;
+    margin-left: 5px;
+}
+
+
+/* Long ajax cursor */
+.long-ajax-cursor {
+    cursor: progress;
 }

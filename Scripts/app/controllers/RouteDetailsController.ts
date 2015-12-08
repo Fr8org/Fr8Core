@@ -7,7 +7,7 @@ module dockyard.controllers {
         ptvm: interfaces.IRouteVM;
         submit: (isValid: boolean) => void;
         errorMessage: string;
-        processBuilder: any,
+        routeBuilder: any,
         id: string
     }
 

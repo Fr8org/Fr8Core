@@ -125,45 +125,19 @@ namespace Hub.Services
             _activity.Delete(uow, curRoute);
         }
 
-
-        // Manual mapping method to resolve DO-1164.
-        public RouteDTO MapRouteToDto(IUnitOfWork uow, RouteDO curRouteDO)
-        {
-            var subrouteDTOList = uow.SubrouteRepository
-                .GetQuery()
-                .Include(x => x.ChildNodes)
-                .Where(x => x.ParentRouteNodeId == curRouteDO.Id)
-                .OrderBy(x => x.Ordering)
-                .ToList()
-                .Select((SubrouteDO x) =>
-                {
-                    var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
-
-                    pntDTO.Actions = Enumerable.ToList(
-                        x.ChildNodes.OrderBy(y => y.Ordering).Select(Mapper.Map<ActionDTO>)
-                    );
-
-                    return pntDTO;
-                }).ToList();
-
-            RouteDTO result = new RouteDTO()
-            {
-                Description = curRouteDO.Description,
-                Id = curRouteDO.Id,
-                Name = curRouteDO.Name,
-                RouteState = curRouteDO.RouteState,
-                StartingSubrouteId = curRouteDO.StartingSubrouteId,
-                Subroutes = subrouteDTOList
-            };
-
-            return result;
-        }
-
-
         public IList<SubrouteDO> GetSubroutes(RouteDO curRouteDO)
         {
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                //var queryableRepo = unitOfWork.SubrouteRepository
+                //.GetQuery()
+                //.Include(x => x.ChildNodes)
+                //.Where(x => x.ParentRouteNodeId == curRouteDO.Id)
+                //.OrderBy(x => x.Id)
+                //.ToList();
+
+                //return queryableRepo;
+
                 var queryableRepo = unitOfWork.RouteRepository.GetQuery()
                     .Include("Subroutes")
                     .Where(x => x.Id == curRouteDO.Id);
@@ -200,7 +174,7 @@ namespace Hub.Services
 
 
 
-        public string Activate(RouteDO curRoute)
+        public async Task<string> Activate(RouteDO curRoute)
         {
             if (curRoute.Subroutes == null)
             {
@@ -208,12 +182,15 @@ namespace Hub.Services
             }
 
             string result = "no action";
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var route = uow.RouteRepository.GetByKey(curRoute.Id);
 
-            foreach (var curActionDO in EnumerateActivities<ActionDO>(curRoute))
+                foreach (var curActionDO in EnumerateActivities<ActionDO>(route))
             {
                 try
                 {
-                    _action.Activate(curActionDO).Wait();
+                        var resultActivate = await _action.Activate(curActionDO);
 
                     result = "success";
                 }
@@ -223,8 +200,7 @@ namespace Hub.Services
                 }
             }
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
+            
                 uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Active;
                 uow.SaveChanges();
             }
@@ -234,15 +210,18 @@ namespace Hub.Services
 
 
 
-        public string Deactivate(RouteDO curRoute)
+        public async Task<string> Deactivate(RouteDO curRoute)
         {
             string result = "no action";
 
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
             foreach (var curActionDO in EnumerateActivities<ActionDO>(curRoute))
             {
                 try
                 {
-                    _action.Deactivate(curActionDO).Wait();
+                        var resultD = await _action.Deactivate(curActionDO);
 
                     result = "success";
                 }
@@ -252,8 +231,6 @@ namespace Hub.Services
                 }
             }
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
                 uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Inactive;
                 uow.SaveChanges();
             }
@@ -315,7 +292,7 @@ namespace Hub.Services
 
         public IList<RouteDO> GetMatchingRoutes(string userId, EventReportCM curEventReport)
         {
-            List<RouteDO> processTemplateSubscribers = new List<RouteDO>();
+            List<RouteDO> routeSubscribers = new List<RouteDO>();
             if (String.IsNullOrEmpty(userId))
                 throw new ArgumentNullException("Parameter UserId is null");
             if (curEventReport == null)
@@ -336,7 +313,7 @@ namespace Hub.Services
         public List<RouteDO> MatchEvents(List<RouteDO> curRoutes, EventReportCM curEventReport)
         {
             List<RouteDO> subscribingRoutes = new List<RouteDO>();
-
+          
             foreach (var curRoute in curRoutes)
             {
                 //get the 1st activity
@@ -369,15 +346,13 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return EnumerateActivities<RouteNodeDO>(uow.RouteRepository.GetByKey(curRouteId)).FirstOrDefault();
+                return GetInitialActivity(uow, uow.RouteRepository.GetByKey(curRouteId));
             }
         }
 
-
-
         public RouteNodeDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute)
         {
-            return EnumerateActivities<RouteNodeDO>(curRoute).OrderBy(a => a.Ordering).FirstOrDefault();
+            return EnumerateActivities<RouteNodeDO>(curRoute, false).OrderBy(a => a.Ordering).FirstOrDefault();
         }
 
         public RouteDO GetRoute(ActionDO action)

@@ -49,7 +49,7 @@ module dockyard.services {
             for (var i = group.actions.length - 1; i > -1; i--) {
                 //var childGroup = this.findChildGroup(actionGroups, group.actions[i].id);
                 if (group.actions[i].childrenActions.length) {
-                    var newGroup = new model.ActionGroup(group.actions[i].childrenActions) 
+                    var newGroup = new model.ActionGroup(group.actions[i].childrenActions);
                     this.calculateGroupPosition(newGroup, group, processedGroups);
                     this.processGroup(actionGroups, newGroup, processedGroups);
                 }

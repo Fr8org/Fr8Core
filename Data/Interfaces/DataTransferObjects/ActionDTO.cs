@@ -19,6 +19,8 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("isTempId")]
         public bool IsTempId { get; set; }
 
+        public bool IsExplicitData { get; set; }
+
         [JsonProperty("action_version")]
         public string ActionVersion { get; set; }
 

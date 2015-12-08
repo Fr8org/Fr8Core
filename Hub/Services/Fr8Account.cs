@@ -333,7 +333,8 @@ namespace Hub.Services
                 emailDO.AddEmailRecipient(EmailParticipantType.To,
                     uow.EmailAddressRepository.GetOrCreateEmailAddress(userEmail));
                 emailDO.Subject = "Password Recovery Request";
-                emailDO.HTMLText = "Please reset your password by clicking this link: <a href=\"" + callbackUrl + "\">link</a>";
+                string htmlText = string.Format("Please reset your password by clicking this <a href='{0}'>link:</a> <br> <b>Note: </b> Reset password link will be expired after 15 minutes.", callbackUrl);
+                emailDO.HTMLText = htmlText;
 
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("ForgotPassword_template"),
                     new Dictionary<string, object>() {{"-callback_url-", callbackUrl}});
@@ -383,13 +384,13 @@ namespace Hub.Services
             IEnumerable<RouteDO> activeRoutes;
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplateQuery = unitOfWork.RouteRepository.GetQuery().Include(i => i.Fr8Account);
+                var routeQuery = unitOfWork.RouteRepository.GetQuery().Include(i => i.Fr8Account);
 
-                processTemplateQuery
+                routeQuery
                     .Where(pt => pt.RouteState == RouteState.Active)//1.
                     .Where(id => id.Fr8Account.Id == userId);//2
 
-                activeRoutes = processTemplateQuery.ToList();
+                activeRoutes = routeQuery.ToList();
             }
             return activeRoutes;
         }

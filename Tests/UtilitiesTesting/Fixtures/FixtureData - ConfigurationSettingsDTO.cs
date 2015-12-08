@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
 using StructureMap;
@@ -21,7 +22,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static CrateStorage CrateStorageDTO()
         {
-            var fieldDTO = new TextBoxControlDefinitionDTO();
+            var fieldDTO = new TextBox();
             fieldDTO.Name = "connection_string";
             fieldDTO.Required = true;
             fieldDTO.Label = "SQL Connection String";
@@ -34,10 +35,19 @@ namespace UtilitiesTesting.Fixtures
 
         public static ControlDefinitionDTO TestConnectionString1()
         {
-            return new TextBlockControlDefinitionDTO()
+            return new TextBlock()
             {
                 Name = "Connection_String",
                 Value = @"Server = tcp:s79ifqsqga.database.windows.net,1433; Database = demodb_health; User ID = alexeddodb@s79ifqsqga; Password = Thales89; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30; "
+            };
+        }
+
+        public static ControlDefinitionDTO TestConnectionString2()
+        {
+            return new TextBlock()
+            {
+                Name = "Connection_String",
+                Value = @"Server = tcp:s79ifqsqga.database.windows.net,1433; Database = demodb_health_test; User ID = IntegrationTest@s79ifqsqga; Password = thmxsGv2Jqo; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30; "
             };
         }
 
@@ -57,7 +67,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static ControlDefinitionDTO TestConnectionStringFieldDefinition()
         {
-            return new TextBlockControlDefinitionDTO()
+            return new TextBlock()
             {
                 Label = "SQL Connection String",
                 Name = "connection_string",

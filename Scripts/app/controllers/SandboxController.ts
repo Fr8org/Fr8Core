@@ -8,7 +8,7 @@ module dockyard.controllers {
     'use strict';
 
     export interface ISandboxScope extends ng.IScope {
-        processTemplateId: number;
+        routeId: number;
         processNodeTemplates: Array<model.SubrouteDTO>,
         fields: Array<model.Field>;
 
@@ -16,13 +16,13 @@ module dockyard.controllers {
         //curNodeId: number;
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
-        current: model.ProcessBuilderState,
+        current: model.RouteBuilderState,
         save: Function;
         cancel: Function;
 
         //this is for demo only, should be deleted on production
-        radioDemoField: model.RadioButtonGroupControlDefinitionDTO;
-        dropdownDemoField: model.DropDownListControlDefinitionDTO;
+        radioDemoField: model.RadioButtonGroup;
+        dropdownDemoField: model.DropDownList;
         textBlockDemoField: model.TextBlockField;
         routingControlGroup: model.RoutingControlGroup;
     }
@@ -47,11 +47,10 @@ module dockyard.controllers {
             'ActionService',
             '$q',
             '$http',
-            'urlPrefix',
             'RouteService',
             '$timeout',
             'CriteriaServiceWrapper',
-            'ProcessBuilderService',
+            'RouteBuilderService',
             'ActionListService',
             'CrateHelper',
             'ActivityTemplateService'
@@ -68,25 +67,24 @@ module dockyard.controllers {
             private ActionService: services.IActionService,
             private $q: ng.IQService,
             private $http: ng.IHttpService,
-            private urlPrefix: string,
             private RouteService: services.IRouteService,
             private $timeout: ng.ITimeoutService,
             private CriteriaServiceWrapper: services.ICriteriaServiceWrapper,
-            private ProcessBuilderService: services.IProcessBuilderService,
+            private RouteBuilderService: services.IRouteBuilderService,
             
             private CrateHelper: services.CrateHelper,
             private ActivityTemplateService: services.IActivityTemplateService
             ) {
             this._scope = $scope;
-            this._scope.processTemplateId = $state.params.id;
+            this._scope.routeId = $state.params.id;
 
 
             this._scope.processNodeTemplates = [];
             this._scope.fields = [];
-            this._scope.current = new model.ProcessBuilderState();
+            this._scope.current = new model.RouteBuilderState();
 
             //THIS IS FOR DEMO ONLY
-            var radioDemoField = new model.RadioButtonGroupControlDefinitionDTO();
+            var radioDemoField = new model.RadioButtonGroup();
             radioDemoField.fieldLabel = 'Demo Label';
             radioDemoField.groupName = 'Demo Group Name';
             radioDemoField.type = 'radioButtonGroup';
@@ -106,7 +104,7 @@ module dockyard.controllers {
             radioDemoField.radios = radios;
             this._scope.radioDemoField = radioDemoField;
 
-            var dropdownDemoField = new model.DropDownListControlDefinitionDTO();
+            var dropdownDemoField = new model.DropDownList();
             var demoSelectItem1 = new model.DropDownListItem();
 
             demoSelectItem1.key = "Operation 1";
@@ -186,33 +184,6 @@ module dockyard.controllers {
             //END OF DEMO CODE
         }
     }
-
-    app.run([
-        "$httpBackend", "urlPrefix", ($httpBackend, urlPrefix) => {
-            var actions: interfaces.IActionDTO =
-                {
-                    name: "test action type",
-                    configurationControls: new model.ControlsList(),
-                    crateStorage: new model.CrateStorage(),
-                    parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
-                    id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
-                    isTempId: false,
-                    activityTemplate: null,
-                    activityTemplateId: 1,
-                    childrenActions: null
-                };
-
-            $httpBackend
-                .whenGET(urlPrefix + "/Action/1")
-                .respond(actions);
-
-            $httpBackend
-                .whenPOST(urlPrefix + "/Action/1")
-                .respond(function (method, url, data) {
-                    return data;
-                })
-        }
-    ]);
 
     app.controller('SandboxController', SandboxController);
 } 

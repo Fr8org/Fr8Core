@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using StructureMap;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
+using TerminalBase.Errors;
 using Utilities;
 
 namespace TerminalBase
@@ -20,11 +21,28 @@ namespace TerminalBase
             var curTerminalError = actionExecutedContext.Exception;
             var terminalName = GetTerminalName(actionExecutedContext.ActionContext.ControllerContext.Controller);
 
+            HttpStatusCode statusCode = HttpStatusCode.InternalServerError;
+
+            if (curTerminalError is AuthorizationTokenExpiredException)
+            {
+                statusCode = (HttpStatusCode)419;
+            }
+            else if (curTerminalError is AggregateException)
+            {
+                foreach (var innerEx in ((AggregateException)curTerminalError).InnerExceptions)
+                {
+                    if (innerEx is AuthorizationTokenExpiredException)
+                    {
+                        statusCode = (HttpStatusCode)419;
+                    }       
+                }
+            }
+
             //POST event to fr8 about this terminal error
             new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError);
 
             //prepare the response JSON based on the exception type
-            actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+            actionExecutedContext.Response = new HttpResponseMessage(statusCode);
             if (curTerminalError is TerminalCodedException)
             {
                 //if terminal error is terminal Coded Exception, place the error code description in message

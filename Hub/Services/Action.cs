@@ -12,10 +12,14 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Http;
+using Data.Control;
 using Data.Crates;
 
 using Hub.Interfaces;
 using Hub.Managers;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 
 namespace Hub.Services
@@ -257,7 +261,7 @@ namespace Hub.Services
             return action;
         }
 
-        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, int? parentNodeId = null, bool createRoute = false)
+        public async Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false)
         {
             if (parentNodeId != null && createRoute)
             {
@@ -279,7 +283,7 @@ namespace Hub.Services
             }
             else
             {
-                parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId.Value);
+                parentNode = uow.RouteNodeRepository.GetByKey(parentNodeId);
             }
 
             var action = Create(uow, actionTemplateId, name, label, parentNode);
@@ -318,6 +322,18 @@ namespace Hub.Services
                 EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message);
                 throw;
             }
+                catch (RestfulServiceException e)
+                {
+                    // terminal requested token invalidation
+                    if (e.StatusCode == 419)
+                    {
+                        _authorizationToken.InvalidateToken(userId, tempActionDTO);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             catch (Exception e)
             {
 

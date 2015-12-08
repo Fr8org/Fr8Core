@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Data.Control;
 using Data.Crates;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -39,10 +40,10 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             /*
-             * Discussed with Alexei and it is required to have empty Standard Configuration Control in the crate.
+             * Discussed with Alexei and it is required to have empty Standard UI Control in the crate.
              * So we create a text block which informs the user that this particular aciton does not require any configuration.
              */
-            var textBlock = new TextBlockControlDefinitionDTO()
+            var textBlock = new TextBlock()
             {
                 Label = "Monitor All DocuSign events",
                 Value = "This Action doesn't require any configuration.",
@@ -123,7 +124,7 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var curProcessPayload = await GetProcessPayload(containerId);
+            var curProcessPayload = await GetProcessPayload(actionDO, containerId);
 
             var curEventReport = Crate.GetStorage(curProcessPayload).CrateContentsOfType<EventReportCM>().First();
 

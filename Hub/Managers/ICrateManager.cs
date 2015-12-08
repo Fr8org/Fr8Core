@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json.Linq;
 using Data.Entities;
@@ -31,6 +32,7 @@ namespace Hub.Managers
 
         bool IsEmptyStorage(CrateStorageDTO storageDto);
         string EmptyStorageAsStr();
+        string CrateStorageAsStr(CrateStorage storage);
 
         void AddLogMessage(string label, List<LogItemDTO> logItemList, ContainerDO containerDO);
         Crate CreateAuthenticationCrate(string label, AuthenticationMode mode);
