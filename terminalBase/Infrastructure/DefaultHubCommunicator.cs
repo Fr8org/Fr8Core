@@ -42,6 +42,11 @@ namespace TerminalBase.Infrastructure
             return _routeNode.GetCratesByDirection<TManifest>(actionDO.Id, direction);
         }
 
+        public Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction)
+        {
+            return _routeNode.GetCratesByDirection(actionDO.Id, direction);
+        }
+
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") 

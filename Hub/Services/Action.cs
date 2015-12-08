@@ -465,7 +465,7 @@ namespace Hub.Services
                     using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
                     {
                         updater.CrateStorage = _crate.FromDto(payload.CrateStorage);
-                }
+                    }
                 //    curContainerDO.CrateStorage = payload.CrateStorage;
                 }
 

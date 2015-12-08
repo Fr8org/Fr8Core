@@ -11,6 +11,7 @@ namespace Data.Interfaces.Manifests
     {
         public int LoopIndex { get; set; }
         public bool Break { get; set; }
+        public int LoopLevel { get; set; }
 
         public OperationalStatusCM()
             : base(MT.OperationalStatus)

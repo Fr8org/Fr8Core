@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Crates;
+using Data.Interfaces.Manifests;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
@@ -46,25 +47,47 @@ namespace Hub.Services
             }
         }
 
+        private bool ShouldBreakLoop(string loopActionId, ContainerDO curContainerDO)
+        {
+            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
+            var operationalStatus = storage.CrateContentsOfType<OperationalStatusCM>(o => o.Label == loopActionId).Single();
+            if (operationalStatus.Break)
+            {
+                //end of this loop, let's remove this operational status crate
+                using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+                {
+                    updater.CrateStorage.RemoveUsingPredicate(c => c.IsOfType<OperationalStatusCM>() && c.Label == loopActionId);
+                }
+
+                return true;
+            }
+            return false;
+        }
+
         private async Task StartLoop(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             var loopAction = curContainerDO.CurrentRouteNode;
-            int index = 0;
-            do
+            while(true)
             {
                 //Process loop action
                 await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
+                if (ShouldBreakLoop(curContainerDO.CurrentRouteNode.Id.ToString(), curContainerDO))
+                {
+                    break;
+                }
                 //skip loop action
                 var currentAction = MoveToTheNextActivity(uow, curContainerDO) as ActionDO;
-                do
+
+                do //process all children of loop
                 {
                     await ProcessAction(currentAction, uow, curContainerDO);
                     // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-                } while ((currentAction = MoveToTheNextActivity(uow, curContainerDO) as ActionDO) != null && currentAction.ParentRouteNodeId != loopAction.ParentRouteNodeId);
+                } while ((currentAction = MoveToTheNextActivity(uow, curContainerDO) as ActionDO) != null &&
+                         currentAction.ParentRouteNodeId != loopAction.ParentRouteNodeId);
 
+                //restart loop
                 curContainerDO.CurrentRouteNode = loopAction;
-                index++;
-            } while (index < 3); //check loop ending condition here
+            } 
 
 
         }

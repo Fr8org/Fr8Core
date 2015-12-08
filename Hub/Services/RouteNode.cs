@@ -341,5 +341,36 @@ namespace Hub.Services
                 return curCrates;
             }
         }
+
+        public async Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction)
+        {
+            var httpClient = new HttpClient();
+
+            // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
+            var directionSuffix = (direction == CrateDirection.Upstream)
+                ? "upstream_actions/"
+                : "downstream_actions/";
+
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
+                + directionSuffix
+                + "?id=" + activityId;
+
+            using (var response = await httpClient.GetAsync(url))
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var curActions = JsonConvert.DeserializeObject<List<ActionDTO>>(content);
+
+                var curCrates = new List<Crate>();
+
+                foreach (var curAction in curActions)
+                {
+                    var storage = _crate.FromDto(curAction.CrateStorage);
+                    curCrates.AddRange(storage);
+                }
+
+                return curCrates;
+            }
+        }
     }
 }
