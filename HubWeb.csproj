@@ -474,6 +474,7 @@
     <Content Include="Content\icons\web_services\DocuSign-Logo.png" />
     <Content Include="Content\icons\web_services\dropbox-icon-64x64.png" />
     <Content Include="Content\icons\web_services\fr8-core-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\jira-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-azure-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-excel-icon-64x64.png" />
     <Content Include="Content\icons\web_services\papertrail-icon-64x64.png" />
@@ -722,8 +723,10 @@
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
     <Content Include="Scripts\app\_compiled.js" />
-    <Content Include="Scripts\lib\jpattern.js" />
-    <Content Include="Scripts\tests\integration\ContainerControllerTests.js" />
+    <TypeScriptCompile Include="Scripts\tests\utils\jpattern.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\ContainerControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\lib\jpattern.d.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\ContainerControllerTests.ts" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />
     <Content Include="Views\AngularTemplate\ConfigurationControl.cshtml" />
@@ -774,6 +777,7 @@
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <Content Include="_PowerShellScripts\SetupStagingDatabase.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsResultsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
@@ -4251,7 +4255,8 @@
   <Target Name="AfterBuild">
   </Target> -->
   <Target Name="EnsureNmpPackageBuildAndGulpBuild" BeforeTargets="BeforeBuild">
-    <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)" ContinueOnError="WarnAndContinue" />
+    <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)" />
+    <!-- <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)" ContinueOnError="WarnAndContinue" /> -->
   </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -4286,4 +4291,33 @@
   <PropertyGroup>
     <PostBuildEvent>if exist $(TargetDir)Web.dll del /Q $(TargetDir)Web.dll</PostBuildEvent>
   </PropertyGroup>
+  <PropertyGroup>
+    <CompileDependsOn>
+      $(CompileDependsOn);
+      GulpBuild;
+    </CompileDependsOn>
+  </PropertyGroup>
+  <Target Name="GulpBuild" DependsOnTargets="CompileTypeScript">
+    <Exec Command="npm install" />
+    <Exec Command=".\node_modules\.bin\gulp compile_js" />
+  </Target>
+  <PropertyGroup>
+    <CopyAllFilesToSingleFolderForPackageDependsOn>
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+      CollectGulpOutput;
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
+    <CopyAllFilesToSingleFolderForMsdeployDependsOn>
+      $(CopyAllFilesToSingleFolderForMsdeployDependsOn);
+      CollectGulpOutput;
+    </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+  </PropertyGroup>
+  <Target Name="CollectGulpOutput">
+    <ItemGroup>
+      <_CustomGulpFiles Include="Scripts\app\_compiled.js" />
+      <FilesForPackagingFromProject Include="%(_CustomGulpFiles.Identity)">
+        <DestinationRelativePath>Scripts\app\%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+    <Message Text="CollectGulpOutput list: %(_CustomGulpFiles.Identity)" />
+  </Target>
 </Project>

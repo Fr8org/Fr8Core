@@ -22,6 +22,8 @@ namespace terminalDocuSign.Infrastructure.StructureMap
 	{
 		public static void ConfigureDependencies(DependencyType type)
 		{
+
+
 			switch (type)
 			{
 				case DependencyType.TEST:

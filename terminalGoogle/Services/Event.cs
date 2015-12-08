@@ -48,6 +48,7 @@ namespace terminalGoogle.Services
                 ExternalAccountId = externalAccountId.Value
             };
 
+            //prepare the event report
             var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
 
             return curEventReport;

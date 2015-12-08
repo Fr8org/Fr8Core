@@ -280,6 +280,19 @@ namespace Data.Control
 
         [JsonProperty("label")]
         public string Label { get; set; }
+
+
+        public string FilterByTag { get; set; }
+
+        public FieldSourceDTO()
+        {
+        }
+
+        public FieldSourceDTO(string manifestType, string label)
+        {
+            ManifestType = manifestType;
+            Label = label;
+        }
     }
 
     public class ControlEvent
