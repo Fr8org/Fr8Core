@@ -12,7 +12,7 @@ module dockyard.filters.filterByTag {
             var result = [];
             if (filterByTag) {
                 list.forEach((item) => {
-                    if (item.tags && item.tags.indexOf(filterByTag) !== -1) result.push(item);
+                    if (item.tags && item.tags.split(',').map(tag => tag.trim()).indexOf(filterByTag) !== -1) result.push(item);
                 });
             } else {
                 result = [].concat(list);
