@@ -11,15 +11,20 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Hub.Managers;
 using Data.Interfaces.Manifests;
+using Data.Control;
 
 namespace terminalFr8Core.Actions
 {
     public class Build_Message_v1 : BaseTerminalAction
     {
+        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
+        {
+            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
+        }
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(containerId);
+            var curProcessPayload = await GetProcessPayload(curActionDO, containerId);
 
             var controlsMS = Crate.GetStorage(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -38,23 +43,21 @@ namespace terminalFr8Core.Actions
 
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
 
-            using (var updater = Crate.UpdateStorage(() => processPayload.CrateStorage))
-            {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
-            }
+            //using (var updater = Crate.UpdateStorage(() => processPayload.CrateStorage))
+            //{
+            //    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
+            //}
          
-            return processPayload;
+            return curProcessPayload;
+
         }
 
-        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
-        {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
-        }
+        
 
         protected async override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //build a controls crate to render the pane
-            var name = new TextBoxControlDefinitionDTO()
+            var name = new TextBox()
             {
                 Label = "Name:",
                 Name = "Name",
@@ -62,16 +65,15 @@ namespace terminalFr8Core.Actions
 
             };
 
-            var messageBody = new TextAreaDefinitionDTO()
+            var messageBody = new TextArea()
             {
                 Label = "Body:",
                 Name = "Body",
                 Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
             };
-
-            var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO.Id, "Available Run-Time Objects");
+            var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO, "Available Run-Time Objects");
             //added focusConfig in PaneConfigureAction.ts
-            var fieldSelectObjectTypes = new DropDownListControlDefinitionDTO()
+            var fieldSelectObjectTypes = new DropDownList()
             {
                 Label = "Available Fields",
                 Name = "Available Fields",
