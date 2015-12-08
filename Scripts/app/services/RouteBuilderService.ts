@@ -62,7 +62,7 @@ module dockyard.services {
     */
 
     app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
-        <IRouteService>$resource('/api/routes/:id', { id: '@id' },
+        <IRouteService>$resource('/api/routes?id=:id', { id: '@id' },
             {
                 'save': {
                     method: 'POST',

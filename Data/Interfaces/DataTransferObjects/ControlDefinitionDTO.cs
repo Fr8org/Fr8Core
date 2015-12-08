@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Control;
 using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-
     // TODO It will be good to change setter property 'Type' to protected to disallow change the type. We have all needed classes(RadioButtonGroupFieldDefinitionDTO, DropdownListFieldDefinitionDTO and etc).
     // But Wait_For_DocuSign_Event_v1.FollowupConfigurationResponse() directly write to this property !
     public class ControlDefinitionDTO : IResettable
@@ -19,7 +15,7 @@ namespace Data.Interfaces.DataTransferObjects
         {
             Type = type;
         }
-
+        
         [JsonProperty("name")]
         public string Name { get; set; }
 
