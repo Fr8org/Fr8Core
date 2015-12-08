@@ -241,6 +241,16 @@
         color: white;
     }
 
+.solution-action{
+        min-height:180px;
+}
+.solution-action .solution-action-header {
+        background-color: #3F48CC;
+}
+.solution-action .pane-configure-action {
+        min-height:180px;
+}
+
 .action-to-add {
 	display: inline-block;
 	background-color: white;
@@ -271,26 +281,60 @@
     width: 100%;
 }
 
+.solution-action .pane-configure-action {
+        min-height:180px;
+}
+
 .action-group {
     display: inline-block;
     position: absolute;
 }
 
 .pane-configure-action-returnToSolution {
-    height: 224px;
-    text-align: center;
+    height: 180px;
 }
 
 .pane-configure-action-returnToSolution:before {
-    content: '';
     height: 100%;
     display: inline-block;
     vertical-align: middle;
 }
 
-.pane-configure-action-returnToSolution .btn {
-    vertical-align: middle;
+.solution-parts{
+    max-height: 120px;
+    display: block;
+    overflow: auto;
+    width: 100%;
 }
+
+.return-to-solution-container{
+    display: block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+.return-to-solution-container a {
+    vertical-align: middle;		    
+    text-decoration:none;
+    margin-top:10px;
+}
+
+
+.return-to-solution {
+    color: #8ea3b6;
+    font-size: 14px;
+    bottom:1px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.pane-configure-action-returnToSolution > label:first-child {
+   margin-bottom:20px;
+}
+.pane-configure-action-returnToSolution label {
+   display:block;
+}		
 
 /* Select Action */
 .select-action-modal .modal-dialog {

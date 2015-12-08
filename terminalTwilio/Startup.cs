@@ -11,7 +11,7 @@ namespace terminalTwilio
     {
         public void Configuration(IAppBuilder app)
         {
-            StartHosting("terminal_twilio");
+            StartHosting("terminal_Twilio");
         }
     }
 }

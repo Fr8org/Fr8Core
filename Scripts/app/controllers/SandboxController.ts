@@ -47,7 +47,6 @@ module dockyard.controllers {
             'ActionService',
             '$q',
             '$http',
-            'urlPrefix',
             'RouteService',
             '$timeout',
             'CriteriaServiceWrapper',
@@ -68,7 +67,6 @@ module dockyard.controllers {
             private ActionService: services.IActionService,
             private $q: ng.IQService,
             private $http: ng.IHttpService,
-            private urlPrefix: string,
             private RouteService: services.IRouteService,
             private $timeout: ng.ITimeoutService,
             private CriteriaServiceWrapper: services.ICriteriaServiceWrapper,
@@ -186,33 +184,6 @@ module dockyard.controllers {
             //END OF DEMO CODE
         }
     }
-
-    app.run([
-        "$httpBackend", "urlPrefix", ($httpBackend, urlPrefix) => {
-            var actions: interfaces.IActionDTO =
-                {
-                    name: "test action type",
-                    configurationControls: new model.ControlsList(),
-                    crateStorage: new model.CrateStorage(),
-                    parentRouteNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686',
-                    id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
-                    isTempId: false,
-                    activityTemplate: null,
-                    activityTemplateId: 1,
-                    childrenActions: null
-                };
-
-            $httpBackend
-                .whenGET(urlPrefix + "/Action/1")
-                .respond(actions);
-
-            $httpBackend
-                .whenPOST(urlPrefix + "/Action/1")
-                .respond(function (method, url, data) {
-                    return data;
-                })
-        }
-    ]);
 
     app.controller('SandboxController', SandboxController);
 } 
