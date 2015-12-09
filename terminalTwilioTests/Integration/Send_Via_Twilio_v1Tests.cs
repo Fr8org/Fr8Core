@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using HealthMonitor.Utility;
-using NUnit.Framework;
 using terminalTwilioTests.Fixture;
 using Data.Control;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
+using NUnit.Framework;
 
 namespace terminalTwilioTests.Integration
 {
