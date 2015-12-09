@@ -117,8 +117,6 @@ namespace terminalAzure.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            System.Diagnostics.Debugger.Launch();
-
             var processPayload = await GetProcessPayload(actionDO, containerId);
 
             var curCommandArgs = PrepareSQLWrite(actionDO, processPayload);
