@@ -44,12 +44,6 @@ namespace terminalSlackTests.Actions
             Assert.NotNull(responseActionDTO.CrateStorage);
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
-
-            var followup_configuration = await HttpPostAsync<ActionDTO, ActionDTO>(
-                configureUrl,
-                responseActionDTO
-            );
-
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             AssertCrateTypes(crateStorage);
             AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
@@ -81,9 +75,7 @@ namespace terminalSlackTests.Actions
         }
 
         [Test]
-        [ExpectedException(
-          ExpectedException = typeof(RestfulServiceException)
-      )]
+        [ExpectedException(ExpectedException = typeof(RestfulServiceException))]
         public async void Monitor_Channel_Initial_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -101,10 +93,35 @@ namespace terminalSlackTests.Actions
         public async void Monitor_Channel_Run_RightChannel_Test()
         {
             var runUrl = GetTerminalRunUrl();
+
+            ActionDTO actionDTO = await GetConfiguredActionWithDDLBSelected("slack-plugin-test");
+
+            var responsePayloadDTO =
+             await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+
+            var crateStorage = Crate.GetStorage(responsePayloadDTO);
+
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Slack Payload Data").Count());
+            var slackPayload = crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Slack Payload Data").Single();
+
+            Assert.AreEqual(1, slackPayload.AllValues().Where(a => a.Key == "text" && a.Value == "test").Count());
+        }
+
+        [Test]
+        [ExpectedException(ExpectedException = typeof(RestfulServiceException),
+            ExpectedMessage = "{\"status\":\"terminal_error\",\"message\":\"Unexpected channel-id.\"}")]
+        public async void Monitor_Channel_Run_WrongChannel_Test()
+        {
+            var runUrl = GetTerminalRunUrl();
+            var actionDTO = await GetConfiguredActionWithDDLBSelected("dev");
+            var responsePayloadDTO =
+               await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+        }
+
+        private async Task<ActionDTO> GetConfiguredActionWithDDLBSelected(string selectedChannel)
+        {
             var configureUrl = GetTerminalConfigureUrl();
-
             var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_ActionDTO();
-
             var actionDTO =
                 await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
@@ -112,23 +129,6 @@ namespace terminalSlackTests.Actions
                 );
 
             actionDTO.AuthToken = HealthMonitor_FixtureData.Slack_AuthToken();
-
-            using (var updater = Crate.UpdateStorage(actionDTO))
-            {
-                var controls = updater.CrateStorage
-                    .CrateContentsOfType<StandardConfigurationControlsCM>()
-                    .Single();
-
-                terminalSlack.Services.SlackIntegration slackIntegraion = new terminalSlack.Services.SlackIntegration();
-                var channels = slackIntegraion.GetChannelList(HealthMonitor_FixtureData.Slack_AuthToken().Token);
-
-
-                var ddlb = (DropDownList)controls.Controls[0];
-                ddlb.Selected = true;
-                ddlb.selectedKey = "slack-plugin-test";
-            }
-
-
             AddPayloadCrate(
                 actionDTO,
                  new EventReportCM()
@@ -143,16 +143,20 @@ namespace terminalSlackTests.Actions
                     }
                  }
             );
+            using (var updater = Crate.UpdateStorage(actionDTO))
+            {
+                var controls = updater.CrateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
+                    .Single();
 
-            var responsePayloadDTO =
-                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+                terminalSlack.Services.SlackIntegration slackIntegraion = new terminalSlack.Services.SlackIntegration();
+                var channels = await slackIntegraion.GetChannelList(HealthMonitor_FixtureData.Slack_AuthToken().Token);
 
-            var crateStorage = Crate.GetStorage(responsePayloadDTO);
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Count());
+                var ddlb = (DropDownList)controls.Controls[0];
+                ddlb.Value = channels.Where(a => a.Key == selectedChannel).FirstOrDefault().Value;
+            }
 
-            var docuSignPayload = crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Single();
-            Assert.AreEqual(1, docuSignPayload.AllValues().Count(x => x.Key == "RecipientEmail"));
-            Assert.IsTrue(docuSignPayload.AllValues().Any(x => x.Key == "RecipientEmail" && x.Value == "foo@bar.com"));
+            return actionDTO;
         }
     }
 }
