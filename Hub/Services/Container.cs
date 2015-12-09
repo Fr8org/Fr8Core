@@ -39,6 +39,7 @@ namespace Hub.Services
             if (!(routeNode is ActionDO))
             {
                 await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
+                return;
             }
 
             switch (((ActionDO)routeNode).ActivityTemplate.Category)
