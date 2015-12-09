@@ -153,28 +153,13 @@ namespace terminalAzureTests.Integration
             using (var updater = Crate.UpdateStorage(actionDTO))
             {
                 updater.CrateStorage.Add(CreateConnectionStringCrate());
-                /*
-                var mappedFields = new List<FieldDTO>();
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(mappedFields)));
-
-                var docusignFields = new List<FieldDTO>();
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", new StandardPayloadDataCM(docusignFields)));
-                */
             }
-
-            /*
-            var crateStorage = new CrateStorage();
             
-            var payloadCrate = new StandardTableDataCM(
-                new FieldDTO("Field1", "value1"),
-                new FieldDTO("Field2", "value2"));
-                            
-            crateStorage.Add(Crate.CreatePayloadDataCrate("MappedFields", payloadCrate));
-            */
             AddPayloadCrate(
                actionDTO,
                new StandardPayloadDataCM(
-                    new FieldDTO("Field1", "[Actions].[Label]")
+                    new FieldDTO("Field1", "[Customer].[Physician]"),
+                    new FieldDTO("Field2", "[Customer].[CurrentMedicalCondition]")
                ),
                "MappedFields"
             );
@@ -182,7 +167,8 @@ namespace terminalAzureTests.Integration
             AddPayloadCrate(
                 actionDTO,
                 new StandardPayloadDataCM(
-                    new FieldDTO("Field1", "value1")
+                    new FieldDTO("Field1", "test physician"),
+                    new FieldDTO("Field2", "teststring")
                 ),
                "DocuSign Envelope Data"
             );
