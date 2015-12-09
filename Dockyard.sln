@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubWeb", "HubWeb.csproj", "{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}"
 EndProject
@@ -108,6 +108,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalAtlassian", "terminalAtlassian\terminalAtlassian.csproj", "{89D763ED-3EA6-4303-AB29-3239095A4B06}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalAtlassianTests", "terminalAtlassianTests\terminalAtlassianTests.csproj", "{F39EA7BE-25C2-45ED-91AC-29647EFFAD2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSendGridTests", "terminalSendGridTests\terminalSendGridTests.csproj", "{EE3E1E99-175F-4507-96DA-421FCD0F6D9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalAzureTests", "Tests\terminalAzureTests\terminalAzureTests.csproj", "{36ED6F21-1A8F-4F07-A08A-A55639891E9B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalTwilioTests", "..\terminalTwilioTests\terminalTwilioTests.csproj", "{6B807AB1-F549-49CB-9F52-52BC33D23443}"
 EndProject
@@ -644,5 +648,8 @@ Global
 		{CFBA4468-222F-4255-8D94-809ACBF7AC47} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 		{74D9BDC7-7B46-456F-B3C5-A4CDB5D74D7B} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 		{89D763ED-3EA6-4303-AB29-3239095A4B06} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
+		{F39EA7BE-25C2-45ED-91AC-29647EFFAD2B} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
+		{EE3E1E99-175F-4507-96DA-421FCD0F6D9E} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
+		{36ED6F21-1A8F-4F07-A08A-A55639891E9B} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 	EndGlobalSection
 EndGlobal
