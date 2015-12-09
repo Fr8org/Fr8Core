@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
+using AutoMapper.Internal;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
@@ -13,6 +16,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -59,14 +63,31 @@ namespace terminalFr8Core.Actions
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + manifestType + "\" and Label: \""+label+"\"");
             }
 
-            var data = crateToProcess.Get();
-            
-            //we don't know type of object we are trying to loop
-            //but we are sure that it is a list
-            var processList = crateToProcess.Get<List<Object>>();
+            IEnumerable dataList = null;
+            if (crateToProcess.IsKnownManifest)
+            {
+                var data = crateToProcess.Get();
+                dataList = GetFirstList(data);
+            }
+            else
+            {
+                var data = crateToProcess.GetRaw();
+                if (data.Type == JTokenType.Array)
+                {
+                    dataList = data;
+                }
+            }
+
+            if (dataList == null)
+            {
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find a list that derives from IEnumerable in specified crate with Manifest Type: \"" + manifestType + "\" and Label: \"" + label + "\"");
+            }
+
+            //lets assume objects are icollection for now
+            ICollection collectionList = (ICollection)dataList;
 
             //check if we need to end this loop
-            if (currentIndex > processList.Count() - 1)
+            if (currentIndex > collectionList.Count - 1)
             {
                 using (var updater = Crate.UpdateStorage(curPayloadDTO))
                 {
@@ -76,6 +97,28 @@ namespace terminalFr8Core.Actions
             }
 
             return curPayloadDTO;
+        }
+
+        private IEnumerable GetFirstList(Object obj)
+        {
+            //check object itself
+            if ((obj as IEnumerable) != null)
+            {
+                return (IEnumerable) obj;
+            }
+
+            //check properties of object
+            foreach (PropertyInfo pinfo in obj.GetType().GetProperties())
+            {
+                var getMethod = pinfo.GetGetMethod();
+                if (getMethod.ReturnType.IsEnumerableType())
+                {
+                    return (IEnumerable) getMethod.Invoke(obj, null);
+                }
+            }
+
+            return null;
+
         }
 
         private string GetSelectedCrateManifestTypeToProcess(ActionDO curActionDO)

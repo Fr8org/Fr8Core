@@ -47,7 +47,7 @@ namespace Hub.Services
             }
         }
 
-        private bool ShouldBreakLoop(string loopActionId, ContainerDO curContainerDO)
+        private bool ShouldBreakLoop(IUnitOfWork uow, string loopActionId, ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
             var operationalStatus = storage.CrateContentsOfType<OperationalStatusCM>(o => o.Label == loopActionId).Single();
@@ -58,7 +58,7 @@ namespace Hub.Services
                 {
                     updater.CrateStorage.RemoveUsingPredicate(c => c.IsOfType<OperationalStatusCM>() && c.Label == loopActionId);
                 }
-
+                uow.SaveChanges();
                 return true;
             }
             return false;
@@ -67,11 +67,12 @@ namespace Hub.Services
         private async Task StartLoop(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             var loopAction = curContainerDO.CurrentRouteNode;
+            ActionDO lastActionOfLoop = null;
             while(true)
             {
                 //Process loop action
                 await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
-                if (ShouldBreakLoop(curContainerDO.CurrentRouteNode.Id.ToString(), curContainerDO))
+                if (ShouldBreakLoop(uow, curContainerDO.CurrentRouteNode.Id.ToString(), curContainerDO))
                 {
                     break;
                 }
@@ -81,15 +82,24 @@ namespace Hub.Services
                 do //process all children of loop
                 {
                     await ProcessAction(currentAction, uow, curContainerDO);
+                    var currentBackupAction = currentAction;
+                    currentAction = MoveToTheNextActivity(uow, curContainerDO) as ActionDO;
+                    //check if currentBackupAction is last element of this loop
+                    if (lastActionOfLoop != null && currentAction == null || currentAction.ParentRouteNodeId == loopAction.ParentRouteNodeId)
+                    {
+                        lastActionOfLoop = currentBackupAction;
+                    }
                     // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-                } while ((currentAction = MoveToTheNextActivity(uow, curContainerDO) as ActionDO) != null &&
-                         currentAction.ParentRouteNodeId != loopAction.ParentRouteNodeId);
+                } while (currentAction != null && currentAction.ParentRouteNodeId != loopAction.ParentRouteNodeId);
 
                 //restart loop
                 curContainerDO.CurrentRouteNode = loopAction;
             } 
 
-
+            //lets assign last action of loop as current element
+            //to keep outer loop run without problems
+            //when outer system calls MoveToNextActivity it will find itself at the first sibling of our current loop
+            curContainerDO.CurrentRouteNode = lastActionOfLoop;
         }
 
         public async Task Execute(IUnitOfWork uow, ContainerDO curContainerDO)

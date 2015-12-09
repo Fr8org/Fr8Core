@@ -466,7 +466,7 @@ namespace Hub.Services
                     {
                         updater.CrateStorage = _crate.FromDto(payload.CrateStorage);
                     }
-                //    curContainerDO.CrateStorage = payload.CrateStorage;
+                    //curContainerDO.CrateStorage = payload.CrateStorage;
                 }
 
                 uow.ActionRepository.Attach(curAction);
