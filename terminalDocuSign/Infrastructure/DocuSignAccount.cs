@@ -25,7 +25,7 @@ namespace terminalDocuSign.Infrastructure
             return _docuSignConnect.Get();
         }
 
-		  public DocuSign.Integrations.Client.Configuration CreateDocuSignConnectProfile(DocuSign.Integrations.Client.Configuration configuration)
+		public DocuSign.Integrations.Client.Configuration CreateDocuSignConnectProfile(DocuSign.Integrations.Client.Configuration configuration)
         {
             DocuSignLogin();
             return _docuSignConnect.Create(configuration);

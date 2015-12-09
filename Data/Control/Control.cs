@@ -270,8 +270,8 @@ namespace Data.Control
 
     }
 
-
-
+    
+ 
 
     public class FieldSourceDTO
     {
@@ -283,6 +283,16 @@ namespace Data.Control
 
 
         public string FilterByTag { get; set; }
+
+        public FieldSourceDTO()
+        {
+        }
+
+        public FieldSourceDTO(string manifestType, string label)
+        {
+            ManifestType = manifestType;
+            Label = label;
+        }
     }
 
     public class ControlEvent
