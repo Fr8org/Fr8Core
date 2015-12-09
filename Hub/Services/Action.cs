@@ -471,7 +471,7 @@ namespace Hub.Services
 
                 uow.ActionRepository.Attach(curAction);
                 uow.SaveChanges();
-            }
+        }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
         public async Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO)

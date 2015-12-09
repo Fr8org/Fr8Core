@@ -32,9 +32,16 @@ namespace Hub.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        private async Task ProcessAction(ActionDO action, IUnitOfWork uow, ContainerDO curContainerDO)
+        private async Task ProcessAction(RouteNodeDO routeNode, IUnitOfWork uow, ContainerDO curContainerDO)
         {
-            switch (action.ActivityTemplate.Category)
+            //TODO check this
+            //shouldn't it always have to be an action??
+            if (!(routeNode is ActionDO))
+            {
+                await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
+            }
+
+            switch (((ActionDO)routeNode).ActivityTemplate.Category)
             {
                 case ActivityCategory.Loop:
                     await StartLoop(uow, curContainerDO);
@@ -67,7 +74,7 @@ namespace Hub.Services
         private async Task StartLoop(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             var loopAction = curContainerDO.CurrentRouteNode;
-            ActionDO lastActionOfLoop = null;
+            RouteNodeDO lastActionOfLoop = null;
             while(true)
             {
                 //Process loop action
@@ -77,13 +84,13 @@ namespace Hub.Services
                     break;
                 }
                 //skip loop action
-                var currentAction = MoveToTheNextActivity(uow, curContainerDO) as ActionDO;
+                var currentAction = MoveToTheNextActivity(uow, curContainerDO);
 
                 do //process all children of loop
                 {
                     await ProcessAction(currentAction, uow, curContainerDO);
                     var currentBackupAction = currentAction;
-                    currentAction = MoveToTheNextActivity(uow, curContainerDO) as ActionDO;
+                    currentAction = MoveToTheNextActivity(uow, curContainerDO);
                     //check if currentBackupAction is last element of this loop
                     if (lastActionOfLoop != null && currentAction == null || currentAction.ParentRouteNodeId == loopAction.ParentRouteNodeId)
                     {
@@ -109,14 +116,14 @@ namespace Hub.Services
 
             if (curContainerDO.CurrentRouteNode != null)
             {
-                var currentAction = curContainerDO.CurrentRouteNode as ActionDO;
+                var currentAction = curContainerDO.CurrentRouteNode;
                 //break if CurrentActivity Is NULL, it means all activities 
                 //are processed that there is no Next Activity to set as Current Activity
                 do
                 {
                     await ProcessAction(currentAction, uow, curContainerDO);
                     // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-                } while ((currentAction = MoveToTheNextActivity(uow, curContainerDO) as ActionDO) != null);
+                } while ((currentAction = MoveToTheNextActivity(uow, curContainerDO)) != null);
             }
             else
             {
