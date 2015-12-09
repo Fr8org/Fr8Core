@@ -139,7 +139,10 @@ namespace terminalTwilio.Actions
             var processPayload = await GetProcessPayload(curActionDO, containerId);
             var controlsCrate = Crate.GetStorage(curActionDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (controlsCrate == null)
+            {
+                PackCrate_WarningMessage(curActionDO, "No StandardConfigurationControlsCM crate provided", "No Controls");
                 return null;
+            }
             try
             {
                 KeyValuePair<string, string> smsInfo = ParseSMSNumberAndMsg(controlsCrate);
@@ -148,6 +151,7 @@ namespace terminalTwilio.Actions
 
                 if (String.IsNullOrEmpty(smsNumber))
                 {
+                    PackCrate_WarningMessage(curActionDO, "No SMS Number Provided", "No Number");
                     return null;
                 }
                 try
@@ -164,22 +168,12 @@ namespace terminalTwilio.Actions
                 catch (Exception ex)
                 {
                     EventManager.TwilioSMSSendFailure(smsNumber, smsBody, ex.Message);
+                    PackCrate_WarningMessage(curActionDO, ex.Message, "Twilio Service Failure");
                 }
             }
             catch (ArgumentException appEx)
             {
-                var textBlock = new TextBlock
-                {
-                    Label = "Twilio Number",
-                    Value = appEx.Message,
-                    CssClass = "alert alert-warning"
-                };
-                using (var updater = Crate.UpdateStorage(curActionDO))
-                {
-                    updater.CrateStorage.Clear();
-                    updater.CrateStorage.Add(PackControlsCrate(textBlock));
-                }
-                
+                PackCrate_WarningMessage(curActionDO, appEx.Message, "SMS Number");
             }
             return processPayload;
         }
@@ -247,6 +241,21 @@ namespace terminalTwilio.Actions
         private Crate PackCrate_TwilioMessageDetails(List<FieldDTO> curTwilioMessage)
         {
             return Data.Crates.Crate.FromContent("Message Data", new StandardPayloadDataCM(curTwilioMessage));
+        }
+
+        private void PackCrate_WarningMessage(ActionDO actionDO, string warningMessage, string warningLabel)
+        {
+            var textBlock = new TextBlock
+            {
+                Label = warningLabel,
+                Value = warningMessage,
+                CssClass = "alert alert-warning"
+            };
+            using (var updater = Crate.UpdateStorage(actionDO))
+            {
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(PackControlsCrate(textBlock));
+            }
         }
     }
 }
