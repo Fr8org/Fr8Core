@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Web.UI.WebControls;
 using Data.Constants;
 using Data.Control;
 using StructureMap;
@@ -16,7 +17,9 @@ using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalTwilio.Services;
+using Twilio;
 using Utilities;
+using TextBox = Data.Control.TextBox;
 
 namespace terminalTwilio.Actions
 {
@@ -132,12 +135,11 @@ namespace terminalTwilio.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            Message curMessage;
             var processPayload = await GetProcessPayload(curActionDO, containerId);
-
             var controlsCrate = Crate.GetStorage(curActionDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (controlsCrate == null)
                 return null;
-
             try
             {
                 KeyValuePair<string, string> smsInfo = ParseSMSNumberAndMsg(controlsCrate);
@@ -148,11 +150,16 @@ namespace terminalTwilio.Actions
                 {
                     return null;
                 }
-
                 try
                 {
-                    _twilio.SendSms(smsNumber, smsBody);
+                    curMessage = _twilio.SendSms(smsNumber, smsBody);
                     EventManager.TwilioSMSSent(smsNumber, smsBody);
+                    var curFieldDTOList = CreateKeyValuePairList(curMessage);
+                    using (var updater = Crate.UpdateStorage(processPayload))
+                    {
+                        updater.CrateStorage.Clear();
+                        updater.CrateStorage.Add(PackCrate_TwilioMessageDetails(curFieldDTOList));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -167,12 +174,12 @@ namespace terminalTwilio.Actions
                     Value = appEx.Message,
                     CssClass = "alert alert-warning"
                 };
-
                 using (var updater = Crate.UpdateStorage(curActionDO))
                 {
                     updater.CrateStorage.Clear();
                     updater.CrateStorage.Add(PackControlsCrate(textBlock));
                 }
+                
             }
             return processPayload;
         }
@@ -227,6 +234,19 @@ namespace terminalTwilio.Actions
                 default:
                     throw new ApplicationException("Could not extract number, unknown mode.");
             }
+        }
+        private List<FieldDTO> CreateKeyValuePairList(Message curMessage)
+        {
+            List<FieldDTO> returnList = new List<FieldDTO>();
+            returnList.Add(new FieldDTO("Status", curMessage.Status));
+            returnList.Add(new FieldDTO("ErrorMessage", curMessage.ErrorMessage));
+            returnList.Add(new FieldDTO("Body", curMessage.Body));
+            returnList.Add(new FieldDTO("ToNumber", curMessage.To));
+            return returnList;
+        }
+        private Crate PackCrate_TwilioMessageDetails(List<FieldDTO> curTwilioMessage)
+        {
+            return Data.Crates.Crate.FromContent("Message Data", new StandardPayloadDataCM(curTwilioMessage));
         }
     }
 }
