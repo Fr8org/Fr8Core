@@ -22,12 +22,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="incident in incidentRecords">
+                        <tr ng-repeat="incident in incidentRecords" ng-click="selectRow(incident)">
                             <td>{{ incident.createDate}}</td>
                             <td>{{ incident.primaryCategory}}</td>
                             <td>{{ incident.secondaryCategory}}</td>
                             <td>{{ incident.activity}}</td>
-                            <td>{{ incident.data}}</td>
+                            <td ng-if="isSelectedRow(incident)" style="white-space: pre-wrap; word-wrap: break-word;">{{incident.data}}</td>
+                            <td ng-if="!isSelectedRow(incident)" style="white-space: pre-wrap; word-wrap: break-word;">{{shrinkData(incident.data)}}</td>
                             <td>{{ incident.customerId}}</td>
                             <td>{{ incident.objectId}}</td>
                             <td>{{ incident.priority}}</td>

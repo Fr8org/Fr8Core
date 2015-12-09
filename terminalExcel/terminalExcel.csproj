@@ -203,7 +203,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Load_Table_Data_v1.cs" />
+    <Compile Include="Actions\Load_Excel_File_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Controllers\EventController.cs" />
