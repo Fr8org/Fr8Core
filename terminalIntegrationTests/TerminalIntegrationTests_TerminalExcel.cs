@@ -77,7 +77,7 @@ namespace terminalIntegrationTests
 
 
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
-            var result = await new Load_Table_Data_v1().Run(curActionDO, curActionDTO.ContainerId, null);
+            var result = await new Load_Excel_File_v1().Run(curActionDO, curActionDTO.ContainerId, null);
 
             var payloadCrates = _crateManager.GetStorage(result).CratesOfType<StandardPayloadDataCM>();
             var payloadDataMS = payloadCrates.First().Content;
