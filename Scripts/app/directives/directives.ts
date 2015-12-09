@@ -155,8 +155,6 @@ app.directive('stopClickPropagation', ['$rootScope', ($rootScope) => {
     return {
         link: (scope: ng.IScope, elem: ng.IAugmentedJQuery, attrs) => {
             elem.bind('click', (event) => {
-                debugger;
-
                 if (typeof attrs['appendToBody'] !== 'undefined') {
                     angular.element(document.body).trigger(event); // This makes the handlers that are bound to the body to be called, without triggering any child nodes events
                 }
