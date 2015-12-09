@@ -22,15 +22,6 @@ namespace terminalAzureTests.Integration
             get { return "terminalAzure"; }
         }
 
-        public ICrateManager _crateManager;
-
-        [SetUp]
-        public void SetUp()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-        }
-
         private void AssertConfigureControls(StandardConfigurationControlsCM control)
         {
             Assert.AreEqual(1, control.Controls.Count);
@@ -106,7 +97,7 @@ namespace terminalAzureTests.Integration
                 );
             
 
-            var storage = _crateManager.GetStorage(responseActionDTO);
+            var storage = Crate.GetStorage(responseActionDTO);
 
             var controlDefinitionDTO =
                 storage.CratesOfType<StandardConfigurationControlsCM>()
@@ -114,7 +105,7 @@ namespace terminalAzureTests.Integration
 
             controlDefinitionDTO[0].Value = FixtureData.TestConnectionString2().Value;
 
-            using (var updater = _crateManager.UpdateStorage(responseActionDTO))
+            using (var updater = Crate.UpdateStorage(responseActionDTO))
             {
                 updater.CrateStorage = storage;
             }
