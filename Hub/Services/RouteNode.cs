@@ -211,6 +211,7 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                //why do we get container from db again???
                 var curContainerDO = uow.ContainerRepository.GetByKey(containerDO.Id);
                 var curActivityDO = uow.RouteNodeRepository.GetByKey(curActivityId);
 
@@ -223,6 +224,9 @@ namespace Hub.Services
                 {
                     IAction _action = ObjectFactory.GetInstance<IAction>();
                     await _action.PrepareToExecute((ActionDO)curActivityDO, curContainerDO, uow);
+                    //TODO inspect this
+                    //why do we get container from db again???
+                    containerDO.CrateStorage = curContainerDO.CrateStorage;
                 }
             }
         }
