@@ -15,7 +15,7 @@ using terminalSlackTests.Fixtures;
 using UtilitiesTesting;
 using Newtonsoft.Json;
 
-namespace terminalSlackTests.Actions
+namespace terminalSlackTests.Integration
 {
     //https://maginot.atlassian.net/wiki/display/DDW/Monitor_Channel_v1+test+case
 
