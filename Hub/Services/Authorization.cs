@@ -149,9 +149,17 @@ namespace Hub.Services
                     var accountId = dockyardAccount.Id;
 
                     // Try to find AuthToken for specified terminal and account.
-                    var authToken = uow.AuthorizationTokenRepository
-                        .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id
-                            && x.UserDO.Id == accountId);
+                    // var authToken = uow.AuthorizationTokenRepository
+                    //     .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id
+                    //         && x.UserDO.Id == accountId);
+
+                    var actionDO = uow.ActionRepository.GetByKey(actionDTO.Id);
+                    if (actionDO == null)
+                    {
+                        throw new ApplicationException("Could not find ActionDO for Action's RouteNode.");
+                    }
+
+                    var authToken = actionDO.AuthorizationToken;
 
                     // If AuthToken is not empty, fill AuthToken property for ActionDTO.
                     if (authToken != null && !string.IsNullOrEmpty(authToken.Token))
@@ -168,17 +176,17 @@ namespace Hub.Services
 
         public async Task<string> AuthenticateInternal(
             Fr8AccountDO account,
-            ActivityTemplateDO activityTemplate,
+            ActionDO actionDO,
             string domain,
             string username,
             string password)
         {
-            if (activityTemplate.AuthenticationType == AuthenticationType.None)
+            if (actionDO.ActivityTemplate.AuthenticationType == AuthenticationType.None)
             {
                 throw new ApplicationException("Terminal does not require authentication.");
             }
 
-            var terminal = activityTemplate.Terminal;
+            var terminal = actionDO.ActivityTemplate.Terminal;
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
@@ -202,8 +210,13 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var authToken = uow.AuthorizationTokenRepository
-                    .FindOne(x => x.UserDO.Id == account.Id && x.Terminal.Id == terminal.Id);
+                var curActionDO = uow.ActionRepository.GetByKey(actionDO.Id);
+                if (curActionDO == null)
+                {
+                    throw new ApplicationException("Could not find ActionDO by Id specified.");
+                }
+
+                var authToken = curActionDO.AuthorizationToken;
 
                 if (terminalResponseAuthTokenDTO != null)
                 {
@@ -228,6 +241,8 @@ namespace Hub.Services
                         authToken.Token = terminalResponseAuthTokenDTO.Token;
                         authToken.ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId;
                     }
+
+                    curActionDO.AuthorizationToken = authToken;
 
                     uow.SaveChanges();
 
@@ -295,14 +310,14 @@ namespace Hub.Services
 
         public async Task<ExternalAuthUrlDTO> GetOAuthInitiationURL(
             Fr8AccountDO user,
-            ActivityTemplateDO activityTemplate)
+            ActionDO actionDO)
         {
-            if (activityTemplate.AuthenticationType == AuthenticationType.None)
+            if (actionDO.ActivityTemplate.AuthenticationType == AuthenticationType.None)
             {
                 throw new ApplicationException("Terminal does not require authentication.");
             }
 
-            var terminal = activityTemplate.Terminal;
+            var terminal = actionDO.ActivityTemplate.Terminal;
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
@@ -314,9 +329,13 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var authToken = uow.AuthorizationTokenRepository
-                    .FindOne(x => x.Terminal.Id == terminal.Id
-                        && x.UserDO.Id == user.Id);
+                var curActionDO = uow.ActionRepository.GetByKey(actionDO.Id);
+                if (curActionDO == null)
+                {
+                    throw new ApplicationException("Could not find ActionDO by Id specified.");
+                }
+
+                var authToken = curActionDO.AuthorizationToken;
 
                 if (authToken == null)
                 {
@@ -339,6 +358,8 @@ namespace Hub.Services
                     authToken.Token = null;
                     authToken.ExternalStateToken = externalAuthUrlDTO.ExternalStateToken;
                 }
+
+                curActionDO.AuthorizationToken = authToken;
 
                 uow.SaveChanges();
             }
@@ -451,9 +472,13 @@ namespace Hub.Services
                     RemoveAuthenticationCrate(curActionDTO);
                     RemoveAuthenticationLabel(curActionDTO);
 
-                    var authToken = uow.AuthorizationTokenRepository
-                        .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id
-                            && x.UserDO.Id == account.Id);
+                    var actionDO = uow.ActionRepository.GetByKey(curActionDTO.Id);
+                    if (actionDO == null)
+                    {
+                        throw new NullReferenceException("Current action was not found.");
+                    }
+
+                    var authToken = actionDO.AuthorizationToken;
 
                     if (authToken == null || string.IsNullOrEmpty(authToken.Token))
                     {
@@ -488,11 +513,24 @@ namespace Hub.Services
 
                 if (activityTemplate.AuthenticationType != AuthenticationType.None)
                 {
-                    var token = uow.AuthorizationTokenRepository.FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id && x.UserDO.Id == account.Id);
+                    var actionDO = uow.ActionRepository.GetByKey(curActionDto.Id);
+                    if (actionDO == null)
+                    {
+                        throw new NullReferenceException("Current action was not found.");
+                    }
+
+                    var token = actionDO.AuthorizationToken;
+
+                    // var token = uow.AuthorizationTokenRepository
+                    //     .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id && x.UserDO.Id == account.Id);
                     
                     if (token != null)
                     {
+                        actionDO.AuthorizationToken = null;
+                        uow.SaveChanges();
+
                         uow.AuthorizationTokenRepository.Remove(token);
+                        uow.SaveChanges();
                     }
 
                     RemoveAuthenticationCrate(curActionDto);

@@ -50,5 +50,7 @@ namespace Data.Entities
 
         //Additional Attributes such as version number ,  instance url etc..
         public String AdditionalAttributes { get; set; }
+
+        public bool IsMain { get; set; }
     }
 }

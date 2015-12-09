@@ -30,7 +30,7 @@
 
 
                 var data = {
-                    ActivityTemplateId: $scope.activityTemplateId,
+                    ActionId: $scope.actionId,
                     Username: $scope.formData.username,
                     Password: $scope.formData.password,
                     Domain: $scope.formData.domain

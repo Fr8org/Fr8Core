@@ -30,16 +30,17 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
         {
             Fr8AccountDO account;
-            ActivityTemplateDO activityTemplate;
+            ActionDO actionDO;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                activityTemplate = uow.ActivityTemplateRepository
+                actionDO = uow.ActionRepository
                     .GetQuery()
-                    .Include(x => x.Terminal)
-                    .SingleOrDefault(x => x.Id == credentials.ActivityTemplateId);
+                    .Include(x => x.ActivityTemplate)
+                    .Include(x => x.ActivityTemplate.Terminal)
+                    .SingleOrDefault(x => x.Id == credentials.ActionId);
 
-                if (activityTemplate == null)
+                if (actionDO == null)
                 {
                     throw new ApplicationException("ActivityTemplate was not found.");
                 }
@@ -49,7 +50,7 @@ namespace HubWeb.Controllers
 
             var error = await _authorization.AuthenticateInternal(
                 account,
-                activityTemplate,
+                actionDO,
                 credentials.Domain,
                 credentials.Username,
                 credentials.Password);
@@ -61,27 +62,28 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [ActionName("initial_url")]
         public async Task<IHttpActionResult> GetOAuthInitiationURL(
-            [FromUri(Name = "id")] int activityTemplateId)
+            [FromUri(Name = "id")] Guid actionId)
         {
             Fr8AccountDO account;
-            ActivityTemplateDO activityTemplate;
+            ActionDO actionDO;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                activityTemplate = uow.ActivityTemplateRepository
+                actionDO = uow.ActionRepository
                     .GetQuery()
-                    .Include(x => x.Terminal)
-                    .SingleOrDefault(x => x.Id == activityTemplateId);
+                    .Include(x => x.ActivityTemplate)
+                    .Include(x => x.ActivityTemplate.Terminal)
+                    .SingleOrDefault(x => x.Id == actionId);
 
-                if (activityTemplate == null)
+                if (actionDO == null)
                 {
-                    throw new ApplicationException("ActivityTemplate was not found.");
+                    throw new ApplicationException("ActionDO was not found.");
                 }
 
                 account = _security.GetCurrentAccount(uow);
             }
 
-            var externalAuthUrlDTO = await _authorization.GetOAuthInitiationURL(account, activityTemplate);
+            var externalAuthUrlDTO = await _authorization.GetOAuthInitiationURL(account, actionDO);
             return Ok(new { Url = externalAuthUrlDTO.Url });
         }
     }

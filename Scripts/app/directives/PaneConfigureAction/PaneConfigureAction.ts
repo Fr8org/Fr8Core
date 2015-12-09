@@ -294,13 +294,13 @@ module dockyard.directives.paneConfigureAction {
 
                         // Dockyard auth mode.
                         if (authMS.Mode == 1 || authMS.Mode == 3) {
-                            startInternalAuthentication($scope.currentAction.activityTemplate.id, authMS.Mode);
+                            startInternalAuthentication($scope.currentAction.id, authMS.Mode);
                         }
 
                         // External auth mode.                           
                         else {
                             // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                            startExternalAuthentication($scope.currentAction.activityTemplate.id);
+                            startExternalAuthentication($scope.currentAction.id);
                         }
                     }
 
@@ -315,11 +315,11 @@ module dockyard.directives.paneConfigureAction {
                     }, 1000);
                 }
 
-                function startInternalAuthentication(activityTemplateId: number, mode: number) {
+                function startInternalAuthentication(actionId: string, mode: number) {
                     var self = this;
 
                     var modalScope = <any>$scope.$new(true);
-                    modalScope.activityTemplateId = activityTemplateId;
+                    modalScope.actionId = actionId;
                     modalScope.mode = mode;
 
                     $modal.open({
@@ -328,10 +328,11 @@ module dockyard.directives.paneConfigureAction {
                         controller: 'InternalAuthenticationController',
                         scope: modalScope
                     })
-                        .result.then(() => loadConfiguration());
+                    .result
+                    .then(() => loadConfiguration());
                 }
 
-                function startExternalAuthentication(activityTemplateId: number) {
+                function startExternalAuthentication(actionId: string) {
                     var self = this;
                     var childWindow;
 
@@ -345,7 +346,7 @@ module dockyard.directives.paneConfigureAction {
                     };
 
                     $http
-                        .get('/api/authentication/initial_url?id=' + activityTemplateId)
+                        .get('/api/authentication/initial_url?id=' + actionId)
                         .then(res => {
                             var url = (<any>res.data).url;
                             childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
