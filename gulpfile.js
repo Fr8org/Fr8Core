@@ -106,7 +106,10 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/RouteActionsDialogController.js',
         'Scripts/app/controllers/FindObjectsController.js',
         'Scripts/app/controllers/FindObjectsResultsController.js',
-        'Scripts/app/controllers/PayloadFormController.js'
+        'Scripts/app/controllers/PayloadFormController.js',
+        'Scripts/app/controllers/TerminalListController.js',
+        'Scripts/app/controllers/TerminalFormController.js'
+
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('_compiled.js'))

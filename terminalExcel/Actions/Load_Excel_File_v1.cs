@@ -21,7 +21,7 @@ using terminalExcel.Infrastructure;
 
 namespace terminalExcel.Actions
 {
-    public class Load_Table_Data_v1 : BaseTerminalAction
+    public class Load_Excel_File_v1 : BaseTerminalAction
     {
         private class ActionUi : StandardConfigurationControlsCM
         {
@@ -291,5 +291,5 @@ namespace terminalExcel.Actions
     }
 
     // For backward compatibility
-    public class Extract_Data_v1 : Load_Table_Data_v1 { }
+    public class Extract_Data_v1 : Load_Excel_File_v1 { }
 }
