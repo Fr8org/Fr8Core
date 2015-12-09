@@ -113,7 +113,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSendGridTests", "te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalAzureTests", "Tests\terminalAzureTests\terminalAzureTests.csproj", "{36ED6F21-1A8F-4F07-A08A-A55639891E9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalTwilioTests", "..\terminalTwilioTests\terminalTwilioTests.csproj", "{6B807AB1-F549-49CB-9F52-52BC33D23443}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalTwilioTests", "terminalTwilioTests\terminalTwilioTests.csproj", "{6B807AB1-F549-49CB-9F52-52BC33D23443}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
