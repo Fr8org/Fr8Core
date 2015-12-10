@@ -1,0 +1,40 @@
+﻿<!-- BEGIN PAGE BREADCRUMB -->
+<ul class="page-breadcrumb breadcrumb hide">
+    <li>
+        <a href="#">Home</a><i class="fa fa-circle"></i>
+    </li>
+    <li class="active">
+        Manage Auth Tokens
+    </li>
+</ul>
+<!-- END PAGE BREADCRUMB -->
+
+<!-- BEGIN MAIN CONTENT -->
+<div class="margin-top-10">
+    <div class="row" ng-controller="ManageAuthTokenController">
+        <div ng-repeat="terminal in terminals">
+            <h4>{{terminal.name}}</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="col-md-10">External Account Name</th>
+                        <th class="col-md-2"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="authToken in terminal.authTokens">
+                        <td class="col-md-10">
+                            {{authToken.externalAccountName}}
+                        </td>
+                        <td class="col-md-2">
+                            <button type="button" class="btn btn-danger">Remove</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div >
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END MAIN CONTENT -->

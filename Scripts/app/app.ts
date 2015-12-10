@@ -219,6 +219,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: "/terminals",
             templateUrl: "/AngularTemplate/TerminalList",
             data: { pageTitle: 'Terminals', pageSubTitle: '' }
+        })
+
+        .state('manageAuthTokens', {
+            url: '/manageAuthTokens',
+            templateUrl: '/AngularTemplate/ManageAuthTokens',
+            data: { pageTitle: 'Manage Auth Tokens', pageSubTitle: '' }
         });
 }]);
 
