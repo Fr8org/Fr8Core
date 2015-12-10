@@ -29,14 +29,16 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
+            var storage = Crate.GetStorage(curPayloadDTO);
+
             var loopId = curActionDO.Id.ToString();
-            var operationsCrate = Crate.GetStorage(curPayloadDTO).CrateContentsOfType<OperationalStatusCM>().Single();
+            var operationsCrate = storage.CrateContentsOfType<OperationalStatusCM>().Single();
             var currentIndex = operationsCrate.GetLoopById(loopId).LoopIndex;
 
             var manifestType = GetSelectedCrateManifestTypeToProcess(curActionDO);
             var label = GetSelectedLabelToProcess(curActionDO);
 
-            var storage = Crate.GetStorage(curPayloadDTO);
+            
             var crateToProcess = storage.FirstOrDefault(c =>/* c.ManifestType.Type == manifestType &&*/ c.Label == label);
 
             if (crateToProcess == null)
@@ -44,31 +46,20 @@ namespace terminalFr8Core.Actions
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + manifestType + "\" and Label: \""+label+"\"");
             }
 
-            IEnumerable dataList = null;
-            if (crateToProcess.IsKnownManifest)
+            if (crateToProcess.ManifestType.Id != (int) MT.StandardPayloadData)
             {
-                var data = crateToProcess.Get();
-                dataList = GetFirstList(data);
-            }
-            else
-            {
-                var data = crateToProcess.GetRaw();
-                if (data.Type == JTokenType.Array)
-                {
-                    dataList = data;
-                }
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_INVALID, "Specified crate must be manifest type of Standard Payload Data");
             }
 
+            var contents = crateToProcess.Get<StandardPayloadDataCM>();
+            var dataList = contents.PayloadObjects;
             if (dataList == null)
             {
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find a list that derives from IEnumerable in specified crate with Manifest Type: \"" + manifestType + "\" and Label: \"" + label + "\"");
             }
 
-            //lets assume objects are icollection for now
-            var collectionList = (ICollection) dataList;
-
             //check if we need to end this loop
-            if (currentIndex > collectionList.Count - 1)
+            if (currentIndex > dataList.Count - 1)
             {
                 using (var updater = Crate.UpdateStorage(curPayloadDTO))
                 {
