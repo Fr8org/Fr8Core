@@ -102,5 +102,29 @@ namespace terminalFr8CoreTests.Fixtures
                 Version = "1"
             };
         }
+
+        public static ActionDTO ExecuteSql_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = ExecuteSql_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "ExecuteSql_Fr8Core",
+                Label = "ExecuteSql Fr8Core",
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
+        public static ActivityTemplateDTO ExecuteSql_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 2,
+                Name = "ExecuteSql_TEST",
+                Version = "1"
+            };
+        }
     }
 }
