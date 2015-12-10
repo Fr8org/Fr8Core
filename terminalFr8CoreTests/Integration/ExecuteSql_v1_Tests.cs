@@ -10,6 +10,7 @@ using HealthMonitor.Utility;
 using NUnit.Framework;
 using terminalFr8CoreTests.Fixtures;
 using Hub.Managers;
+using StructureMap.Util;
 
 namespace terminalTests.Integration
 {
@@ -72,17 +73,26 @@ namespace terminalTests.Integration
 
             using (var updater = Crate.UpdateStorage(actionDTO))
             {
-                var listFields = new List<FieldDTO>();
-                listFields.Add(new FieldDTO() { Key = "key", Value = "String" });
-                var crate = Crate.CreateDesignTimeFieldsCrate("HealthMonitor_UpstreamCrate_Sql Column Types", listFields.ToArray());
-                
-                updater.CrateStorage.Add(crate);
+                var lstFields = new List<FieldDTO>();
+                lstFields.Add(new FieldDTO() { Key = "Customer.Physician", Value = "String" });
+                lstFields.Add(new FieldDTO() { Key = "Customer.CurrentMedicalCondition", Value = "String" });
+
+                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("HealthMonitor_UpstreamCrate_Sql Column Types", lstFields.ToArray()));
+
+                lstFields.Clear();
+                lstFields.Add(new FieldDTO() { Key = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2().Value, Value = "value" });
+                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("HealthMonitor_UpstreamCrate_Sql Connection String", lstFields.ToArray()));
             }
 
             AddPayloadCrate(
                actionDTO,
-               new EventReportCM()
-           );
+               new StandardQueryCM()
+               {
+                   Queries = new List<QueryDTO>() { new QueryDTO() { Name = "Customer" } }
+               }
+               ,
+               "Sql Query"
+            );
 
             var responsePayloadDTO =
                 await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
