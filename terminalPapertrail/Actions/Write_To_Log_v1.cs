@@ -67,20 +67,6 @@ namespace terminalPapertrail.Actions
             return await Task.FromResult(curActionDO);
         }
 
-        public Task<object> Activate(ActionDO curActionDO)
-        {
-            //Responsibility is not yet defined.
-
-            return Task.FromResult((object) true);
-        }
-
-        public object Deactivate(ActionDO curDataPackage)
-        {
-            //Responsibility is not yet defined.
-
-            return true;
-        }
-
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             //get the Papertrail URL value fromt configuration control

@@ -155,6 +155,18 @@ namespace TerminalBase.BaseClasses
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 
+        public virtual async Task<ActionDO> Activate(ActionDO curActionDO)
+        {
+            //Returns Task<ActivityDTO> using FromResult as the return type is known
+            return await Task.FromResult<ActionDO>(curActionDO);
+        }
+
+        public virtual async Task<ActionDO> Deactivate(ActionDO curActionDO)
+        {
+            //Returns Task<ActivityDTO> using FromResult as the return type is known
+            return await Task.FromResult<ActionDO>(curActionDO);
+        }
+
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
         protected virtual async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
