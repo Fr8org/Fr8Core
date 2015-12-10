@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Controllers
 {
@@ -101,8 +102,13 @@ namespace DockyardTest.Controllers
             activityTemplateDO.AuthenticationType = AuthenticationType.Internal;
             activityTemplateDO.Terminal = tokenDO.Terminal;
 
+            var actionDO = FixtureData.TestAction1();
+            actionDO.ActivityTemplate = activityTemplateDO;
+            // actionDO.AuthorizationToken = tokenDO;
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.ActionRepository.Add(actionDO);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
             }
@@ -112,19 +118,26 @@ namespace DockyardTest.Controllers
                 Password = "Password",
                 Username = "Username",
                 Domain = "Domain",
-                ActivityTemplateId = activityTemplateDO.Id 
+                ActionId = actionDO.Id
             };
 
             var result = _authenticationController.Authenticate(credentialsDTO);
 
             //Assert
-            Mock<IRestfulServiceClient> restClientMock = Mock.Get(ObjectFactory.GetInstance<IRestfulServiceClient>());
+            Mock<IRestfulServiceClient> restClientMock = Mock.Get(
+                ObjectFactory.GetInstance<IRestfulServiceClient>()
+            );
 
             //verify that the post call is made 
             restClientMock.Verify(
                 client => client.PostAsync<CredentialsDTO>(
-                new Uri("http://" + activityTemplateDO.Terminal.Endpoint + "/authentication/internal"),
-                It.Is<CredentialsDTO>(it => it.Username == credentialsDTO.Username && it.Password == credentialsDTO.Password && it.Domain == credentialsDTO.Domain)), Times.Exactly(1));
+                    new Uri("http://" + activityTemplateDO.Terminal.Endpoint + "/authentication/internal"),
+                    It.Is<CredentialsDTO>(it => it.Username == credentialsDTO.Username
+                        && it.Password == credentialsDTO.Password
+                        && it.Domain == credentialsDTO.Domain)
+                ),
+                Times.Exactly(1)
+            );
 
 
             restClientMock.VerifyAll();
