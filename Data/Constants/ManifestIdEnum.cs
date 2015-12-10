@@ -85,7 +85,7 @@ namespace Data.Constants
         [Display(Name = "Docusign Recipient")]
         DocuSignRecipient = 26,
 
-        [Display(Name = "Operational Status")]
+        [Display(Name = "Operational State")]
         OperationalStatus = 27
     }
 }

@@ -33,7 +33,7 @@ namespace terminalFr8Core.Actions
 
             var loopId = curActionDO.Id.ToString();
             var operationsCrate = storage.CrateContentsOfType<OperationalStatusCM>().Single();
-            var currentIndex = operationsCrate.GetLoopById(loopId).LoopIndex;
+            var currentIndex = operationsCrate.Loops.Single(l => l.Id == loopId).Index;
 
             var manifestType = GetSelectedCrateManifestTypeToProcess(curActionDO);
             var label = GetSelectedLabelToProcess(curActionDO);
@@ -64,7 +64,7 @@ namespace terminalFr8Core.Actions
                 using (var updater = Crate.UpdateStorage(curPayloadDTO))
                 {
                     var operationsData = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
-                    operationsData.GetLoopById(loopId).BreakLoop();
+                    operationsData.Loops.Single(l => l.Id == loopId).BreakSignalReceived = true;
                 }
             }
 

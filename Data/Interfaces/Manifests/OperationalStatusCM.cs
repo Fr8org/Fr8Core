@@ -11,19 +11,10 @@ namespace Data.Interfaces.Manifests
     {
         public class LoopStatus
         {
-            public string LoopId { get; set; }
-            public int LoopIndex { get; set; }
-            public bool Break { get; set; }
-            public int LoopLevel { get; set; }
-            public void IncreaseLoopIndex()
-            {
-                ++LoopIndex;
-            }
-
-            public void BreakLoop()
-            {
-                Break = true;
-            }
+            public string Id { get; set; }
+            public int Index { get; set; }
+            public bool BreakSignalReceived { get; set; }
+            public int Level { get; set; }
         }
 
         public List<LoopStatus> Loops { get; set; } 
@@ -34,30 +25,6 @@ namespace Data.Interfaces.Manifests
         {
             Loops = new List<LoopStatus>();
         }
-
-        public LoopStatus GetLoopById(string loopId)
-        {
-            return Loops.FirstOrDefault(l => l.LoopId == loopId);
-        }
-
-        public void CreateLoop(string loopId)
-        {
-            var loopLevel = Loops.Count();
-            Loops.Add(new LoopStatus
-            {
-                Break = false,
-                LoopId = loopId,
-                LoopIndex = 0,
-                LoopLevel = loopLevel
-            });
-        }
-
-        public void RemoveLoop(string loopId)
-        {
-            var loop = GetLoopById(loopId);
-            Loops.Remove(loop);
-        }
-
 
     }
 }

@@ -111,7 +111,8 @@ namespace Hub.Services
             using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
             {
                 var operationsCrate = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
-                operationsCrate.RemoveLoop(curContainerDO.CurrentRouteNode.Id.ToString());
+                var loop = operationsCrate.Loops.Single(l => l.Id == curContainerDO.CurrentRouteNode.Id.ToString());
+                operationsCrate.Loops.Remove(loop);
             }
             uow.SaveChanges();
         }
@@ -120,7 +121,7 @@ namespace Hub.Services
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
             var operationalStatus = storage.CrateContentsOfType<OperationalStatusCM>().Single();
-            if (operationalStatus.GetLoopById(curContainerDO.CurrentRouteNode.Id.ToString()).Break)
+            if (operationalStatus.Loops.Single(l => l.Id == curContainerDO.CurrentRouteNode.Id.ToString()).BreakSignalReceived)
             {
                 return true;
             }
@@ -132,7 +133,13 @@ namespace Hub.Services
             using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
             {
                 var operationsCrate = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
-                operationsCrate.CreateLoop(curContainerDO.CurrentRouteNode.Id.ToString());
+                operationsCrate.Loops.Add(new OperationalStatusCM.LoopStatus
+                {
+                    BreakSignalReceived = false,
+                    Id = curContainerDO.CurrentRouteNode.Id.ToString(),
+                    Level = operationsCrate.Loops.Count,
+                    Index = 0
+                });
             }
             uow.SaveChanges();
         }
@@ -142,7 +149,7 @@ namespace Hub.Services
             using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
             {
                 var operationsCrate = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
-                operationsCrate.GetLoopById(curContainerDO.CurrentRouteNode.Id.ToString()).IncreaseLoopIndex();
+                operationsCrate.Loops.Single(l => l.Id == curContainerDO.CurrentRouteNode.Id.ToString()).Index += 1;
             }
             uow.SaveChanges();
         }
