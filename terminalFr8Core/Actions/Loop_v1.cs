@@ -26,31 +26,12 @@ namespace terminalFr8Core.Actions
 {
     public class Loop_v1 : BaseTerminalAction
     {
-
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
-            //we used current action id to prevent mixing nested loops
-            var loopIdentifierLabel = curActionDO.Id.ToString();
-            var currentIndex = 0;
-            using (var updater = Crate.UpdateStorage(curPayloadDTO))
-            {
-                var operationsData = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>(c => c.Label == loopIdentifierLabel).FirstOrDefault();
-                if (operationsData == null)
-                {
-                    //check number of existing loops
-                    var currentLoopLevel = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Count();
-                    //this must be the first time our loop runs
-                    operationsData = new OperationalStatusCM { LoopIndex = 0, Break = false, LoopLevel = currentLoopLevel };
-                    var operationsCrate = Crate.CreateOperationalStatusCrate(loopIdentifierLabel, operationsData);
-                    updater.CrateStorage.Add(operationsCrate);
-                }
-                else
-                {
-                    operationsData.IncreaseLoopIndex();
-                    currentIndex = operationsData.LoopIndex;
-                }
-            }
+            var loopId = curActionDO.Id.ToString();
+            var operationsCrate = Crate.GetStorage(curPayloadDTO).CrateContentsOfType<OperationalStatusCM>().Single();
+            var currentIndex = operationsCrate.GetLoopById(loopId).LoopIndex;
 
             var manifestType = GetSelectedCrateManifestTypeToProcess(curActionDO);
             var label = GetSelectedLabelToProcess(curActionDO);
@@ -84,15 +65,15 @@ namespace terminalFr8Core.Actions
             }
 
             //lets assume objects are icollection for now
-            ICollection collectionList = (ICollection)dataList;
+            var collectionList = (ICollection) dataList;
 
             //check if we need to end this loop
             if (currentIndex > collectionList.Count - 1)
             {
                 using (var updater = Crate.UpdateStorage(curPayloadDTO))
                 {
-                    var operationsData = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>(c => c.Label == loopIdentifierLabel).Single();
-                    operationsData.BreakLoop();
+                    var operationsData = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
+                    operationsData.GetLoopById(loopId).BreakLoop();
                 }
             }
 

@@ -148,7 +148,6 @@ module dockyard.controllers {
             }
 
             this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);
-            debugger;
         }
 
         // If action updated, notify interested parties and update $scope.current.action

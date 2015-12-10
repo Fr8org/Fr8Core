@@ -55,38 +55,60 @@ namespace Hub.Services
             }
         }
 
-        private bool ShouldBreakLoop(IUnitOfWork uow, string loopActionId, ContainerDO curContainerDO)
+        private void DeleteLoopPayload(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+            {
+                var operationsCrate = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
+                operationsCrate.RemoveLoop(curContainerDO.CurrentRouteNode.Id.ToString());
+            }
+            uow.SaveChanges();
+        }
+
+        private bool ShouldBreakLoop(ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
-            var operationalStatus = storage.CrateContentsOfType<OperationalStatusCM>(o => o.Label == loopActionId).Single();
-            if (operationalStatus.Break)
+            var operationalStatus = storage.CrateContentsOfType<OperationalStatusCM>().Single();
+            if (operationalStatus.GetLoopById(curContainerDO.CurrentRouteNode.Id.ToString()).Break)
             {
-                //end of this loop, let's remove this operational status crate
-                using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
-                {
-                    updater.CrateStorage.RemoveUsingPredicate(c => c.IsOfType<OperationalStatusCM>() && c.Label == loopActionId);
-                }
-                uow.SaveChanges();
                 return true;
             }
             return false;
         }
 
-        private async Task ExecuteChildren()
+        private void CreateLoopPayload(IUnitOfWork uow, ContainerDO curContainerDO)
         {
+            using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+            {
+                var operationsCrate = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
+                operationsCrate.CreateLoop(curContainerDO.CurrentRouteNode.Id.ToString());
+            }
+            uow.SaveChanges();
+        }
 
+        private void IncreaseLoopIndex(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+            {
+                var operationsCrate = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
+                operationsCrate.GetLoopById(curContainerDO.CurrentRouteNode.Id.ToString()).IncreaseLoopIndex();
+            }
+            uow.SaveChanges();
         }
 
         private async Task StartLoop(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             var loopAction = curContainerDO.CurrentRouteNode;
             RouteNodeDO lastActionOfLoop = null;
+            CreateLoopPayload(uow, curContainerDO);
             while(true)
             {
                 //Process loop action
                 await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
-                if (ShouldBreakLoop(uow, curContainerDO.CurrentRouteNode.Id.ToString(), curContainerDO))
+                if (ShouldBreakLoop(curContainerDO))
                 {
+                    //end of this loop, let's remove this operational status crate
+                    DeleteLoopPayload(uow, curContainerDO);
                     break;
                 }
                 //skip loop action
@@ -107,6 +129,7 @@ namespace Hub.Services
 
                 //restart loop
                 curContainerDO.CurrentRouteNode = loopAction;
+                IncreaseLoopIndex(uow, curContainerDO);
             } 
 
             //lets assign last action of loop as current element
@@ -115,10 +138,24 @@ namespace Hub.Services
             curContainerDO.CurrentRouteNode = lastActionOfLoop;
         }
 
+        private void CreateOperationalStatusPayload(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+            {
+                var operationalStatus = new OperationalStatusCM();
+                var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
+                updater.CrateStorage.Add(operationsCrate);
+            }
+
+            uow.SaveChanges();
+        }
+
         public async Task Execute(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             if (curContainerDO == null)
                 throw new ArgumentNullException("ContainerDO is null");
+
+            CreateOperationalStatusPayload(uow, curContainerDO);
 
             if (curContainerDO.CurrentRouteNode != null)
             {
