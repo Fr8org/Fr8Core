@@ -9,8 +9,7 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_RenderConfiguration,
         PaneConfigureAction_ChildActionsDetected,
         PaneConfigureAction_ChildActionsReconfiguration,
-        PaneConfigureAction_ReloadAction,
-        PaneConfigureAction_AllowsChildActions
+        PaneConfigureAction_ReloadAction
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
@@ -48,14 +47,6 @@ module dockyard.directives.paneConfigureAction {
         }
     }
 
-    export class AllowsChildrenEventArgs {
-        action: model.ActionDTO;
-
-        constructor(action: model.ActionDTO) {
-            this.action = action;
-        }
-    }
-
     export class ActionRemovedEventArgs {
         public id: number;
         public isTempId: boolean;
@@ -79,6 +70,7 @@ module dockyard.directives.paneConfigureAction {
         mode: string;
         reconfigureChildrenActions: boolean;
     }
+
 
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
@@ -259,12 +251,6 @@ module dockyard.directives.paneConfigureAction {
                                 // and redirect user to the RouteBuilder once if is received.
                                 // It means that solution configuration is complete. 
                                 $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
-                            } else if (crateHelper.hasCustomProcessingConfigurationCrate(res.crateStorage)) {
-                                var customConfig = crateHelper.getCustomProcessingConfigurationCrate(res.crateStorage);
-                                if ((<any>customConfig.contents).AllowChildren) {
-                                    
-                                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_AllowsChildActions], new AllowsChildrenEventArgs(res));
-                                }
                             }
 
                             $scope.reconfigureChildrenActions = false;

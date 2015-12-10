@@ -109,9 +109,6 @@ module dockyard.controllers {
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsReconfiguration],
                 (event: ng.IAngularEvent, childActionReconfigEventArgs: pca.ChildActionReconfigurationEventArgs) => this.PaneConfigureAction_ChildActionsReconfiguration(childActionReconfigEventArgs));
 
-            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_AllowsChildActions],
-                (event: ng.IAngularEvent, allowsChildrenEventArgs: pca.AllowsChildrenEventArgs) => this.PaneConfigureAction_ActionAllowsChildren(allowsChildrenEventArgs));
-
             //Process Select Action Pane events
             this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActivityTypeSelected],
                 (event: ng.IAngularEvent, eventArgs: psa.ActivityTypeSelectedEventArgs) => this.PaneSelectAction_ActivityTypeSelected(eventArgs));
@@ -150,44 +147,8 @@ module dockyard.controllers {
                 }
             }
 
-            this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);  
-        }
-
-        //private doesActionAllowChildren(action: model.ActionDTO): boolean {
-
-        //     if (this.CrateHelper.hasCustomProcessingConfigurationCrate(action.crateStorage)) {
-        //        var customConfig = this.CrateHelper.getCustomProcessingConfigurationCrate(action.crateStorage);
-        //         return (<any>customConfig.contents).AllowChildren;
-        //    }
-
-        //    return false;
-        //}
-
-        private doesAnyChildGroupExist(action: model.ActionDTO): boolean {
-            for (var i = 0; i < this.$scope.actionGroups.length; i++) {
-                if (this.$scope.actionGroups[i].parentId === action.id) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private createChildGroupForAction(action: model.ActionDTO) {
-            if (!this.doesAnyChildGroupExist(action)) {
-                this.$scope.actionGroups.push(new model.ActionGroup([], action.id));
-                //we should re-render
-                if (!_.any(this.$scope.currentSubroute.actions,(a:model.ActionDTO) => { return a.id === action.id; })) {
-                    this.$scope.currentSubroute.actions.push(action);
-                    this.renderRoute(<interfaces.IRouteVM>this.$scope.current.route);
-                }
-                //this.$scope.actionGroups = this.LayoutService.placeActions(actions, this.$scope.current.route.startingSubrouteId);
-                
-            }
-        }
-
-        private PaneConfigureAction_ActionAllowsChildren(allowsChildrenEventArgs: pca.AllowsChildrenEventArgs) {
-            this.createChildGroupForAction(allowsChildrenEventArgs.action);
+            this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);
+            debugger;
         }
 
         // If action updated, notify interested parties and update $scope.current.action
@@ -253,24 +214,42 @@ module dockyard.controllers {
             
         }
 
+        
+
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
 
             var activityTemplate = eventArgs.activityTemplate;
             // Generate next Id.
-            var id = this.LocalIdentityGenerator.getNextId();                
-
+            var id = this.LocalIdentityGenerator.getNextId();
+            var parentId = this.$scope.currentSubroute.id;
+            if (eventArgs.group !== null && eventArgs.group.parentAction !== null) {
+                parentId = eventArgs.group.parentAction.id;
+            }
             // Create new action object.
-            var action = new model.ActionDTO(this.$scope.currentSubroute.id, id, true);
+            var action = new model.ActionDTO(parentId, id, true);
             action.name = activityTemplate.name;
             action.label = activityTemplate.label;
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();
             this.$scope.current.action.activityTemplate = activityTemplate;
             this.$scope.current.action.activityTemplateId = activityTemplate.id;
-            if (eventArgs.group.parentId){
-                this.$scope.current.action.parentRouteNodeId = eventArgs.group.parentId;
-            }
             this.selectAction(action, eventArgs.group);
+        }
+
+        private addActionToUI(action: model.ActionDTO, group: model.ActionGroup) {
+            this.$scope.current.action = action;
+            if (group !== null && group.parentAction !== null) {
+                group.parentAction.childrenActions.push(action);
+            } else {
+                this.$scope.currentSubroute.actions.push(action);
+            }
+
+            //lets check if this add operation requires a complete re-render
+            /*if (action.childrenActions.length < 1 && action.activityTemplate.type !== 'Loop') {
+                return;
+            }*/
+
+            this.renderRoute(<interfaces.IRouteVM>this.$scope.current.route);
         }
 
         /*
@@ -317,24 +296,19 @@ module dockyard.controllers {
                 
                     // Determine if we need to load action from the db or we can just use 
                     // the one returned from the above saveCurrent operation.
-                    canBypassActionLoading = idChangedFromTempToPermanent || !actionChanged
+                    canBypassActionLoading = idChangedFromTempToPermanent || !actionChanged;
                 }
                 
                 if (actionId == '00000000-0000-0000-0000-000000000000') {
                     throw Error('Action has not been persisted. Process Builder cannot proceed ' +
                         'to action type selection for an unpersisted action.');
                 }
-
-                if (canBypassActionLoading && group !== null) {
-                    this.$scope.current.action = result.action;
-                    group.actions.push(result.action);
-                    if (result.action.childrenActions.length) {
-                        this.$scope.actionGroups.push(new model.ActionGroup(result.action.childrenActions, result.action.id));
-                    }
+                if (canBypassActionLoading) {
+                    this.addActionToUI(result.action, group);
                 }
                 else {
                     this.ActionService.get({ id: actionId }).$promise.then(action => {
-                        this.$scope.current.action = action;
+                        this.addActionToUI(action, group);
                     });
                 }
             });

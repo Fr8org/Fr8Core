@@ -37,7 +37,7 @@ module dockyard.services {
             for (var i = 1; i < actionGroups.length; i++) {
                 var curGroup = actionGroups[i];
                 curGroup.offsetTop = this.calculateOffsetTop(actionGroups[i - 1]);
-                var parentGroup = this.findParentGroup(actionGroups, curGroup.parentId);
+                var parentGroup = this.findParentGroup(actionGroups, curGroup.parentAction.id);
                 curGroup.arrowLength = this.calculateArrowLength(curGroup, parentGroup);
             }
         }
@@ -48,11 +48,11 @@ module dockyard.services {
             for (var i = group.actions.length - 1; i > -1; i--) {
                 //var childGroup = this.findChildGroup(actionGroups, group.actions[i].id);
                 if (group.actions[i].childrenActions.length) {
-                    var newGroup = new model.ActionGroup(group.actions[i].childrenActions, group.actions[i].id);
+                    var newGroup = new model.ActionGroup(<model.ActionDTO[]>group.actions[i].childrenActions, group.actions[i]);
                     this.calculateGroupPosition(newGroup, group, processedGroups);
                     this.processGroup(actionGroups, newGroup, processedGroups);
                 } else if (this.allowsChildren(group.actions[i])) { //has no children, but allows it. we should place an add action button below
-                    var potentialGroup = new model.ActionGroup([], group.actions[i].id);
+                    var potentialGroup = new model.ActionGroup([], group.actions[i]);
                     this.calculateGroupPosition(potentialGroup, group, processedGroups);
                     this.processGroup(actionGroups, potentialGroup, processedGroups);
                 }
@@ -61,14 +61,7 @@ module dockyard.services {
         }
 
         private allowsChildren(action: model.ActionDTO) {
-            //TODO change this
-            return action.activityTemplate.name === 'Loop';
-            /*
-            if (this.CrateHelper.hasCustomProcessingConfigurationCrate(action.crateStorage)) {
-                var customConfiguration = this.CrateHelper.getCustomProcessingConfigurationCrate(action.crateStorage);
-                return (<any>customConfiguration.contents).AllowChildren;
-            }
-            return false;*/
+            return action.activityTemplate.type === 'Loop';
         }
 
         private calculateGroupPosition(group: model.ActionGroup, parentGroup: model.ActionGroup, processedGroups: model.ActionGroup[]): void {
@@ -82,7 +75,7 @@ module dockyard.services {
 
             var i = 0, offsetLeft = parentGroup.offsetLeft;
             //calculate left offset by summing existing elements
-            while (parentGroup.actions[i].id != currentGroup.parentId) {
+            while (parentGroup.actions[i].id != currentGroup.parentAction.id) {
                 offsetLeft += (parentGroup.actions[i].activityTemplate.minPaneWidth || this.ACTION_WIDTH) + this.ACTION_PADDING;
                 i++;
             }
@@ -117,7 +110,7 @@ module dockyard.services {
 
         private findParentAction(group: model.ActionGroup, parentGroup: model.ActionGroup): model.ActionDTO {
             return _.find(parentGroup.actions, (action: model.ActionDTO) => {
-                return action.id === group.parentId;
+                return action.id === group.parentAction.id;
             });
         }      
 
