@@ -70,29 +70,6 @@ namespace terminalFr8Core.Actions
 
             return curPayloadDTO;
         }
-
-        private IEnumerable GetFirstList(Object obj)
-        {
-            //check object itself
-            if ((obj as IEnumerable) != null)
-            {
-                return (IEnumerable) obj;
-            }
-
-            //check properties of object
-            foreach (PropertyInfo pinfo in obj.GetType().GetProperties())
-            {
-                var getMethod = pinfo.GetGetMethod();
-                if (getMethod.ReturnType.IsEnumerableType())
-                {
-                    return (IEnumerable) getMethod.Invoke(obj, null);
-                }
-            }
-
-            return null;
-
-        }
-
         private string GetSelectedCrateManifestTypeToProcess(ActionDO curActionDO)
         {
             var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
