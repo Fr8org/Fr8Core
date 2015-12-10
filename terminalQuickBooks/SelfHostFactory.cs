@@ -15,12 +15,12 @@ namespace terminalQuickBooks
             {
                 return new Type[] {
                     typeof(Controllers.ActionController),
+                    typeof(Controllers.AuthenticationController),
                     typeof(Controllers.EventController),
                     typeof(Controllers.TerminalController)
                 };
             }
         }
-
         public class SelfHostStartup
         {
             public void Configuration(IAppBuilder app)
@@ -29,13 +29,7 @@ namespace terminalQuickBooks
 
                 // Web API routes
                 config.MapHttpAttributeRoutes();
-
-                config.Routes.MapHttpRoute(
-                    name: "TerminalDocuSign",
-                    routeTemplate: "terminal_docusign/{controller}/{id}",
-                    defaults: new { id = RouteParameter.Optional }
-                );
-
+                WebApiConfig.Register(config);
                 config.Services.Replace(
                     typeof(IHttpControllerTypeResolver),
                     new QuickBooksControllerTypeResolver()
@@ -44,10 +38,9 @@ namespace terminalQuickBooks
                 app.UseWebApi(config);
             }
         }
-
         public static IDisposable CreateServer(string url)
         {
-            return WebApp.Start<SelfHostStartup>(url);
+            return WebApp.Start<SelfHostFactory.SelfHostStartup>(url: url);
         }
     }
 }

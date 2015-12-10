@@ -29,7 +29,6 @@ namespace terminalQuickBooks.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 Version = "1"
             };
-
             var createJournalEntryActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
@@ -40,13 +39,10 @@ namespace terminalQuickBooks.Controllers
                 AuthenticationType = AuthenticationType.External,
                 MinPaneWidth = 330
             };
-
-
             var actionList = new List<ActivityTemplateDTO>()
             {
                 createJournalEntryActionTemplate
             };
-
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
