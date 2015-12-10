@@ -41,16 +41,6 @@ namespace terminalDocuSign.Actions
             return await ProcessConfigurationRequest(curActionDO, dto => ConfigurationRequestType.Initial, authTokenDO);
         }
 
-        public void Activate(ActionDO curActionDO)
-        {
-            return; // Will be changed when implementation is plumbed in.
-        }
-
-        public void Deactivate(ActionDO curActionDO)
-        {
-            return; // Will be changed when implementation is plumbed in.
-        }
-
         public async Task<PayloadDTO> Run(ActionDO actionDO,
             Guid containerId, AuthorizationTokenDO authTokenDO)
         {

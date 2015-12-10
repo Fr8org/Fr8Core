@@ -69,16 +69,6 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        public object Activate(ActionDO curDataPackage)
-        {
-            return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
-        }
-
-        public object Deactivate(ActionDO curDataPackage)
-        {
-            return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
-        }
-
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return await GetProcessPayload(actionDO, containerId);

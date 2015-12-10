@@ -24,18 +24,6 @@ namespace terminalFr8Core.Actions
             return await ProcessConfigurationRequest(curActionDO, actionDO => ConfigurationRequestType.Initial, authTokenDO);
         }
 
-        public Task<object> Activate(ActionDO curActionDO)
-        {
-            //No activation logic decided yet
-            return null;
-        }
-
-        public Task<object> Deactivate(ActionDO curDataPackage)
-        {
-            //No deactivation logic decided yet
-            return null;
-        }
-
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())

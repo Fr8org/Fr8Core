@@ -123,15 +123,6 @@ namespace terminalTwilio.Actions
             //not currently any requirements that need attention at FollowupConfigurationResponse
             return await Task.FromResult(curActionDO);
         }
-        public object Activate(ActionDO curActionDO)
-        {
-            //not currently any requirements that need attention at Activation Time
-            return curActionDO;
-        }
-        public object Deactivate(ActionDO curActionDO)
-        {
-            return curActionDO;
-        }
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {

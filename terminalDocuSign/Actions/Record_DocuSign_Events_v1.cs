@@ -76,7 +76,7 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult(curActionDO);
         }
 
-        public Task<object> Activate(ActionDO curActionDO)
+        public override Task<ActionDO> Activate(ActionDO curActionDO)
         {
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
@@ -101,10 +101,10 @@ namespace terminalDocuSign.Actions
                 curDocuSignAccount.CreateDocuSignConnectProfile(monitorConnectConfiguration);
             }
 
-            return Task.FromResult((object)true);
+            return Task.FromResult<ActionDO>(curActionDO);
         }
 
-        public object Deactivate(ActionDO curDataPackage)
+        public override Task<ActionDO> Deactivate(ActionDO curActionDO)
         {
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
@@ -114,7 +114,7 @@ namespace terminalDocuSign.Actions
                 curDocuSignAccount.DeleteDocuSignConnectProfile("MonitorAllDocuSignEvents");
             }
 
-            return true;
+            return Task.FromResult<ActionDO>(curActionDO);
         }
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
