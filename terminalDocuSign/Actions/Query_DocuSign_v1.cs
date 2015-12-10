@@ -98,11 +98,16 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
             var configuration = Crate.GetStorage(curActionDO).CrateContentsOfType<RuntimeConfiguration>().SingleOrDefault();
 
             if (configuration == null)
             {
-                throw new Exception("Action was not configured correctly");
+                throw new ApplicationException("Action was not configured correctly");
             }
 
             var payload = await GetProcessPayload(curActionDO, containerId);
@@ -154,6 +159,11 @@ namespace terminalDocuSign.Actions
 
         protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
             using (var updater = Crate.UpdateStorage(curActionDO))

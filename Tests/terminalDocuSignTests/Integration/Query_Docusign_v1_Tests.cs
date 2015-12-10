@@ -39,6 +39,8 @@ namespace terminalDocuSignTests.Integration
 
             var requestActionDTO = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_ActionDTO();
 
+            requestActionDTO.AuthToken = null;
+
             await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
                     requestActionDTO
@@ -70,7 +72,7 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Action was not configured correctly.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Action was not configured correctly""}"
         )]
         public async void Query_DocuSign_Run_NoConfig()
         {
