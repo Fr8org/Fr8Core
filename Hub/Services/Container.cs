@@ -42,9 +42,9 @@ namespace Hub.Services
                 return;
             }
 
-            switch (((ActionDO)routeNode).ActivityTemplate.Category)
+            switch (((ActionDO)routeNode).ActivityTemplate.Type)
             {
-                case ActivityCategory.Loop:
+                case ActivityType.Loop:
                     await StartLoop(uow, curContainerDO);
                 break;
 
@@ -70,6 +70,11 @@ namespace Hub.Services
                 return true;
             }
             return false;
+        }
+
+        private async Task ExecuteChildren()
+        {
+
         }
 
         private async Task StartLoop(IUnitOfWork uow, ContainerDO curContainerDO)

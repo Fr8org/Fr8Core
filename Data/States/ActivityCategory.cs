@@ -6,7 +6,6 @@
 	    Receivers = 2,
 	    Processors = 3,
 	    Forwarders = 4,
-        Solution = 5,
-        Loop = 6
+        Solution = 5
     }
 }

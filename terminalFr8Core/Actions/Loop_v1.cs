@@ -156,7 +156,6 @@ namespace terminalFr8Core.Actions
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("CustomProcessConfiguration", new CustomProcessingConfigurationCM(true)));
                 updater.CrateStorage.Add(await GetUpstreamManifestTypes(curActionDO));
             }
 

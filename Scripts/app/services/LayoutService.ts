@@ -39,7 +39,6 @@ module dockyard.services {
                 curGroup.offsetTop = this.calculateOffsetTop(actionGroups[i - 1]);
                 var parentGroup = this.findParentGroup(actionGroups, curGroup.parentId);
                 curGroup.arrowLength = this.calculateArrowLength(curGroup, parentGroup);
-
             }
         }
         
@@ -62,11 +61,14 @@ module dockyard.services {
         }
 
         private allowsChildren(action: model.ActionDTO) {
+            //TODO change this
+            return action.activityTemplate.name === 'Loop';
+            /*
             if (this.CrateHelper.hasCustomProcessingConfigurationCrate(action.crateStorage)) {
                 var customConfiguration = this.CrateHelper.getCustomProcessingConfigurationCrate(action.crateStorage);
                 return (<any>customConfiguration.contents).AllowChildren;
             }
-            return false;
+            return false;*/
         }
 
         private calculateGroupPosition(group: model.ActionGroup, parentGroup: model.ActionGroup, processedGroups: model.ActionGroup[]): void {
