@@ -1,11 +1,7 @@
 ﻿using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace terminalQuickBooksTests.Integration
 {
@@ -27,7 +23,7 @@ namespace terminalQuickBooksTests.Integration
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
-        [Test, CategoryAttribute("Integration.terminalQuickBooks")]
+        [Test, NUnit.Framework.Category("Integration.terminalQuickBooks")]
         public async void Terminal_Slack_Discover()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
