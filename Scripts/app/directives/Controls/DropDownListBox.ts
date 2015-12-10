@@ -24,8 +24,6 @@ module dockyard.directives.dropDownListBox {
             };
 
             var findAndSetSelectedItem = function () {
-                debugger;
-
                 for (var i = 0; i < $scope.field.listItems.length; i++) {
                     if ($scope.field.value == $scope.field.listItems[i].value
                         && (!$scope.field.hasOwnProperty('selectedKey')
