@@ -106,11 +106,14 @@ namespace terminalDocuSign.Actions
             }
         }
 
+
+        public ExplicitConfigurationHelper ExplicitConfigurationHelper { get; set; }
         public DocuSignManager DocuSignManager { get; set; }
 
         public Rich_Document_Notifications_v1()
         {
             DocuSignManager = new DocuSignManager();
+            ExplicitConfigurationHelper = new ExplicitConfigurationHelper();
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
@@ -177,9 +180,9 @@ namespace terminalDocuSign.Actions
         {
             actionDO.ChildNodes = new List<RouteNodeDO>();
 
-            const string monitorDocuSignTemplateName = "Monitor_DocuSign";
+            const string monitorDocuSignTemplateName = "Monitor_DocuSign_Envelope_Activity";
             var monitorDocuSignTemplate = (await HubCommunicator.GetActivityTemplates(actionDO))
-                .FirstOrDefault(x => x.Name == "Monitor_DocuSign");
+                .FirstOrDefault(x => x.Name == monitorDocuSignTemplateName);
 
             if (monitorDocuSignTemplate == null)
             {
@@ -197,9 +200,11 @@ namespace terminalDocuSign.Actions
                 Label = "Monitor DocuSign"
             };
 
-            var monitorDocuSignTerminalAction = new Monitor_DocuSign_Envelope_Activity_v1();
-            monitorDocuSignAction = await monitorDocuSignTerminalAction
-                .Configure(monitorDocuSignAction, authTokenDO);
+            monitorDocuSignAction = await ExplicitConfigurationHelper.Configure(
+                monitorDocuSignAction,
+                monitorDocuSignTemplate,
+                authTokenDO
+            );
 
             actionDO.ChildNodes.Add(monitorDocuSignAction);
         }
@@ -213,11 +218,11 @@ namespace terminalDocuSign.Actions
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .First();
 
-                var recipientOption = ((RadioButtonGroup)controls.Controls[0]).Radios[0];
+                var recipientOption = ((RadioButtonGroup)controls.Controls.Last()).Radios[0];
                 recipientOption.Selected = true;
                 ((TextBox)recipientOption.Controls[0]).Value = ((TextBox)source.Controls[0]).Value;
 
-                var templateOption = ((RadioButtonGroup)controls.Controls[0]).Radios[1];
+                var templateOption = ((RadioButtonGroup)controls.Controls.Last()).Radios[1];
                 templateOption.Selected = false;
             }
         }
@@ -231,11 +236,12 @@ namespace terminalDocuSign.Actions
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .First();
 
-                var recipientOption = ((RadioButtonGroup)controls.Controls[0]).Radios[0];
+                var recipientOption = ((RadioButtonGroup)controls.Controls.Last()).Radios[0];
                 recipientOption.Selected = false;
 
-                var templateOption = ((RadioButtonGroup)controls.Controls[0]).Radios[1];
+                var templateOption = ((RadioButtonGroup)controls.Controls.Last()).Radios[1];
                 templateOption.Selected = true;
+                ((DropDownList)templateOption.Controls[0]).selectedKey = ((DropDownList)option.Controls[0]).selectedKey;
                 ((DropDownList)templateOption.Controls[0]).Value = ((DropDownList)option.Controls[0]).Value;
             }
         }

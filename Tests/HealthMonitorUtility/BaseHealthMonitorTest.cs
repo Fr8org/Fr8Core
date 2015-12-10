@@ -5,6 +5,7 @@ using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using Data.Interfaces.Manifests;
 
 namespace HealthMonitor.Utility
 {
