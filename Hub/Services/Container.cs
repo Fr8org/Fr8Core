@@ -32,29 +32,80 @@ namespace Hub.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        private async Task ProcessAction(RouteNodeDO routeNode, IUnitOfWork uow, ContainerDO curContainerDO)
+
+        /// <summary>
+        /// Decides what to do with current action. if it is a loop it starts a loop operation
+        /// </summary>
+        /// <param name="uow"></param>
+        /// <param name="curContainerDO"></param>
+        /// <returns></returns>
+        private async Task RouteCurrentAction(IUnitOfWork uow, ContainerDO curContainerDO)
         {
-            //TODO check this
-            //shouldn't it always have to be an action??
-            if (!(routeNode is ActionDO))
+            var currentRouteNode = curContainerDO.CurrentRouteNode;
+            if (!(currentRouteNode is ActionDO))
             {
-                await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
-                return;
+                await ProcessAction(curContainerDO);
             }
-
-            switch (((ActionDO)routeNode).ActivityTemplate.Type)
+            else
             {
-                case ActivityType.Loop:
-                    await StartLoop(uow, curContainerDO);
-                break;
+                switch (((ActionDO)currentRouteNode).ActivityTemplate.Type)
+                {
+                    case ActivityType.Loop:
+                        await ProcessLoop(uow, curContainerDO);
+                        break;
 
-                default:
-                    await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
-                break;
-
+                    default:
+                        await ProcessAction(curContainerDO);
+                        break;
+                }
             }
         }
 
+        private async Task ProcessAction(ContainerDO curContainerDO)
+        {
+            await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
+        }
+
+        private async Task ProcessLoop(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            var loopAction = curContainerDO.CurrentRouteNode;
+            CreateLoopPayload(uow, curContainerDO);
+            var lastActionOfLoop = loopAction;
+
+            while(true)
+            {
+                //Process loop action
+                await ProcessAction(curContainerDO);
+                if (ShouldBreakLoop(curContainerDO))
+                {
+                    //end of this loop, let's remove this operational status crate
+                    DeleteLoopPayload(uow, curContainerDO);
+                    break;
+                }
+                //skip loop action
+                var currentAction = MoveToTheNextActivity(uow, curContainerDO);
+
+                while (currentAction != null && currentAction.ParentRouteNodeId != loopAction.ParentRouteNodeId) //process all children of loop
+                {
+                    await RouteCurrentAction(uow, curContainerDO);
+                    var currentBackup = currentAction;
+                    currentAction = MoveToTheNextActivity(uow, curContainerDO);
+                    if (currentAction == null || currentAction.ParentRouteNodeId == loopAction.ParentRouteNodeId)
+                    {
+                        lastActionOfLoop = currentBackup;
+                    }
+                }
+
+                //restart loop
+                curContainerDO.CurrentRouteNode = loopAction;
+                IncreaseLoopIndex(uow, curContainerDO);
+            }
+            //lets leave this function with currentRouteNode = lastAction of Loop
+            //so next call to MoveToTheNextActivity will get sibling? of loop action
+            curContainerDO.CurrentRouteNode = lastActionOfLoop;
+        }
+
+        #region LOOP_CRUD
         private void DeleteLoopPayload(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
@@ -96,47 +147,7 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
-        private async Task StartLoop(IUnitOfWork uow, ContainerDO curContainerDO)
-        {
-            var loopAction = curContainerDO.CurrentRouteNode;
-            RouteNodeDO lastActionOfLoop = null;
-            CreateLoopPayload(uow, curContainerDO);
-            while(true)
-            {
-                //Process loop action
-                await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
-                if (ShouldBreakLoop(curContainerDO))
-                {
-                    //end of this loop, let's remove this operational status crate
-                    DeleteLoopPayload(uow, curContainerDO);
-                    break;
-                }
-                //skip loop action
-                var currentAction = MoveToTheNextActivity(uow, curContainerDO);
-
-                do //process all children of loop
-                {
-                    await ProcessAction(currentAction, uow, curContainerDO);
-                    var currentBackupAction = currentAction;
-                    currentAction = MoveToTheNextActivity(uow, curContainerDO);
-                    //check if currentBackupAction is last element of this loop
-                    if (lastActionOfLoop != null && currentAction == null || currentAction.ParentRouteNodeId == loopAction.ParentRouteNodeId)
-                    {
-                        lastActionOfLoop = currentBackupAction;
-                    }
-                    // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-                } while (currentAction != null && currentAction.ParentRouteNodeId != loopAction.ParentRouteNodeId);
-
-                //restart loop
-                curContainerDO.CurrentRouteNode = loopAction;
-                IncreaseLoopIndex(uow, curContainerDO);
-            } 
-
-            //lets assign last action of loop as current element
-            //to keep outer loop run without problems
-            //when outer system calls MoveToNextActivity it will find itself at the first sibling of our current loop
-            curContainerDO.CurrentRouteNode = lastActionOfLoop;
-        }
+        #endregion
 
         private void CreateOperationalStatusPayload(IUnitOfWork uow, ContainerDO curContainerDO)
         {
@@ -159,14 +170,12 @@ namespace Hub.Services
 
             if (curContainerDO.CurrentRouteNode != null)
             {
-                var currentAction = curContainerDO.CurrentRouteNode;
                 //break if CurrentActivity Is NULL, it means all activities 
                 //are processed that there is no Next Activity to set as Current Activity
                 do
                 {
-                    await ProcessAction(currentAction, uow, curContainerDO);
-                    // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-                } while ((currentAction = MoveToTheNextActivity(uow, curContainerDO)) != null);
+                    await RouteCurrentAction(uow, curContainerDO);
+                } while (MoveToTheNextActivity(uow, curContainerDO) != null);
             }
             else
             {
