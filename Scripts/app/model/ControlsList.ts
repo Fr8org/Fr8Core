@@ -60,6 +60,13 @@
     export class FieldDTO {
         public key: string;
         public value: string;
+        public availability: AvailabilityType;
+    }
+
+    export enum AvailabilityType {
+        Configuration = 1,
+        RunTime = 2,
+        Always = 3
     }
 
     export class DropDownListItem extends FieldDTO {

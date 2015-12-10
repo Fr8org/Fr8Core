@@ -29,7 +29,7 @@ module dockyard.tests.utils.fixtures {
         public static textBlock: model.TextBlock = new model.TextBlock('<span>teststs</span>', 'well well-lg');
 
         public static dropDownListBox: model.DropDownList = {
-            listItems: [{ key: 'test1', value: 'value1' }, { key: 'test2', value: 'value2' }, { key: 'test3', value: 'value3' }],
+            listItems: [{ key: 'test1', value: 'value1', availability: model.AvailabilityType.Configuration }, { key: 'test2', value: 'value2', availability: model.AvailabilityType.Configuration }, { key: 'test3', value: 'value3', availability: model.AvailabilityType.Configuration  }],
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel'
@@ -109,7 +109,7 @@ module dockyard.tests.utils.fixtures {
                 label: 'testLabel'
             },
             valueSource: 'test',
-            listItems: [{ key: 'test1', value: 'value1' }, { key: 'test2', value: 'value2' }, { key: 'test3', value: 'value3' }],
+            listItems: [{ key: 'test1', value: 'value1', availability: model.AvailabilityType.Configuration }, { key: 'test2', value: 'value2', availability: model.AvailabilityType.Configuration }, { key: 'test3', value: 'value3', availability: model.AvailabilityType.Configuration }],
             name: 'test name',
             fieldLabel: 'test label',
             selectedKey: null
