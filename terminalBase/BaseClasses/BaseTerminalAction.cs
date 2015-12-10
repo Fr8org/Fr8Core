@@ -22,6 +22,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
+using Data.Infrastructure;
 
 namespace TerminalBase.BaseClasses
 {
@@ -375,10 +376,13 @@ namespace TerminalBase.BaseClasses
         /// Extract value from RadioButtonGroup or TextSource where specific value or upstream field was specified.
         /// </summary>
         protected string ExtractSpecificOrUpstreamValue(
-            CrateStorage designTimeCrateStorage,
-            CrateStorage runTimeCrateStorage,
-            string controlName)
+           ActionDO actionDO,
+           PayloadDTO processPayload,
+           string controlName)
         {
+            var designTimeCrateStorage = Crate.GetStorage(actionDO.CrateStorage);
+            var runTimeCrateStorage = Crate.FromDto(processPayload.CrateStorage);
+
             var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var control = controls.Controls.SingleOrDefault(c => c.Name == controlName);
 
@@ -386,7 +390,7 @@ namespace TerminalBase.BaseClasses
             {
                 // Get value from a combination of RadioButtonGroup, TextField and DDLB controls
                 // (old approach prior to TextSource) 
-                return ExtractSpecificOrUpstreamValueLegacy((RadioButtonGroup)control, runTimeCrateStorage);
+                return ExtractSpecificOrUpstreamValueLegacy((RadioButtonGroup)control, runTimeCrateStorage, actionDO);
             }
 
             if (control as TextSource == null)
@@ -402,14 +406,14 @@ namespace TerminalBase.BaseClasses
                     return textSourceControl.Value;
 
                 case "upstream":
-                    return ExtractFieldValue(runTimeCrateStorage, textSourceControl.selectedKey);
+                    return ExtractPayloadFieldValue(runTimeCrateStorage, textSourceControl.selectedKey, actionDO);
 
                 default:
                     throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
             }
         }
 
-        private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroup radioButtonGroupControl, CrateStorage runTimeCrateStorage)
+        private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroup radioButtonGroupControl, CrateStorage runTimeCrateStorage, ActionDO curAction)
         {
             var radioButton = radioButtonGroupControl
                 .Radios
@@ -430,7 +434,7 @@ namespace TerminalBase.BaseClasses
 
                 case "upstream":
                     var recipientField = radioButton.Controls[0];
-                    returnValue = ExtractFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value);
+                    returnValue = ExtractPayloadFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value, curAction);
                     break;
 
                 default:
@@ -443,7 +447,7 @@ namespace TerminalBase.BaseClasses
         /// Extracts crate with specified label and ManifestType = Standard Design Time,
         /// then extracts field with specified fieldKey.
         /// </summary>
-        protected string ExtractFieldValue(CrateStorage crateStorage, string fieldKey)
+        protected string ExtractPayloadFieldValue(CrateStorage crateStorage, string fieldKey, ActionDO curAction)
         {
             var fieldValues = crateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(fieldKey))
                 .Where(s => !string.IsNullOrEmpty(s))
@@ -451,6 +455,9 @@ namespace TerminalBase.BaseClasses
 
             if (fieldValues.Length > 0)
                 return fieldValues[0];
+
+            var reporter = new IncidentReporter();
+            reporter.IncidentMissingFieldInPayload(fieldKey, curAction.Name, curAction.Id.ToString());
 
             throw new ApplicationException("No field found with specified key.");
         }
