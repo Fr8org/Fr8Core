@@ -62,11 +62,23 @@ namespace TerminalBase.Infrastructure
             AddHubCrate(actionDTO, crateManifest, "ExplicitData_DownstreamCrate", crateLabel);
         }
 
-        public async Task<ActionDO> Configure(ActionDO actionDO, ActivityTemplateDTO activityTemplate)
+        public async Task<ActionDO> Configure(
+            ActionDO actionDO,
+            ActivityTemplateDTO activityTemplate,
+            AuthorizationTokenDO authTokenDO = null)
         {
             var actionDTO = Mapper.Map<ActionDTO>(actionDO);
             actionDTO.IsExplicitData = true;
             actionDTO.ActivityTemplate = activityTemplate;
+
+            if (authTokenDO != null)
+            {
+                actionDTO.AuthToken = new AuthorizationTokenDTO()
+                {
+                    Token = authTokenDO.Token,
+                    AdditionalAttributes = authTokenDO.AdditionalAttributes
+                };
+            }
 
             var responseActionDTO = await RestfulServiceClient.PostAsync<ActionDTO, ActionDTO>(
                 new Uri(GetTerminalConfigureUrl(activityTemplate.Terminal.Endpoint)),
