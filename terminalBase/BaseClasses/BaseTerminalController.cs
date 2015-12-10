@@ -78,7 +78,7 @@ namespace TerminalBase.BaseClasses
 
             baseTerminalAction.HubCommunicator = new ExplicitDataHubCommunicator();
         }
-        
+
         /// <summary>
         /// Reports event when process an action
         /// </summary>
@@ -135,7 +135,14 @@ namespace TerminalBase.BaseClasses
                 case "configure":
                     {
                         Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                        return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                        try
+                        {
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                        }
+                        catch (Exception ex)
+                        {
+                            throw;
+                        }
                     }
                 case "run":
                     {
@@ -177,7 +184,7 @@ namespace TerminalBase.BaseClasses
 
                         Task<ActionDO> resutlActionDO;
                         var param = curMethodInfo.GetParameters();
-                        if(param.Length == 2)
+                        if (param.Length == 2)
                             resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         else
                         {
