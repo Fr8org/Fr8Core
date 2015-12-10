@@ -135,14 +135,7 @@ namespace TerminalBase.BaseClasses
                 case "configure":
                     {
                         Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                        try
-                        {
-                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
-                        }
-                        catch (Exception ex)
-                        {
-                            throw;
-                        }
+                        return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                     }
                 case "run":
                     {
