@@ -140,6 +140,16 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             });
 
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "FindObjects_Solution",
+                Label = "Find Objects Solution",
+                Category = ActivityCategory.Solution,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1"
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,

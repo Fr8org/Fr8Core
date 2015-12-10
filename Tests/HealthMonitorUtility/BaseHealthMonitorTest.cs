@@ -5,6 +5,7 @@ using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using Data.Interfaces.Manifests;
 
 namespace HealthMonitor.Utility
 {
@@ -34,6 +35,16 @@ namespace HealthMonitor.Utility
         public string GetTerminalConfigureUrl()
         {
             return GetTerminalUrl() + "/actions/configure";
+        }
+
+        public string GetTerminalActivateUrl()
+        {
+            return GetTerminalUrl() + "/actions/activate";
+        }
+
+        public string GetTerminalDeactivateUrl()
+        {
+            return GetTerminalUrl() + "/actions/deactivate";
         }
 
         public string GetTerminalRunUrl()

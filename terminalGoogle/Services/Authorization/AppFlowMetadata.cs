@@ -9,45 +9,65 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Hub.Services;
 using Utilities.Configuration.Azure;
+using terminalGoogle.DataTransferObjects;
+using Google.Apis.Auth.OAuth2.Responses;
 
 namespace terminalGoogle.Services
 {
     class AppFlowMetadata : FlowMetadata
     {
-        private readonly string _userId;
+        private readonly string _googleToken;
+        GoogleAuthDTO _googleAuth;
         private readonly string _email;
         private readonly string _authCallbackUrl;
         private IAuthorizationCodeFlow _flow;
         private AuthData _authDataService;
 
-        public AppFlowMetadata(string userId, string email = null, string callbackUrl = null)
+        public AppFlowMetadata(string googleToken, string email = null, string callbackUrl = null)
         {
-            _userId = userId;
+            _googleToken = googleToken;
             _email = email;
 
             _authCallbackUrl = callbackUrl;
             _authDataService = new AuthData();
         }
 
+        public AppFlowMetadata(GoogleAuthDTO googleToken, string email = null, string callbackUrl = null)
+        {
+            _googleAuth = googleToken;
+            _email = email;
+
+            _authCallbackUrl = callbackUrl;
+            _authDataService = new AuthData();
+        }
+
+
         private void SetUserGoogleAuthData(string authData)
         {
-            _authDataService.SetUserAuthData(_userId, "Google", authData);
+
         }
 
         private string GetUserGoogleAuthData()
         {
-            return _authDataService.GetUserAuthData(_userId, "Google");
+            TokenResponse tokenResponse = new TokenResponse();
+            tokenResponse.AccessToken = _googleAuth.AccessToken;
+            tokenResponse.RefreshToken = _googleAuth.RefreshToken;
+            tokenResponse.Scope = CloudConfigurationManager.GetSetting("GoogleScope");
+
+
+            Dictionary<string, string> authDictionary = new Dictionary<string, string>();
+            authDictionary.Add(_googleAuth.AccessToken, JsonConvert.SerializeObject(tokenResponse));
+
+            return JsonConvert.SerializeObject(authDictionary);
         }
 
         public override string GetUserId(Controller controller)
         {
-            return _userId;
+            return _googleToken;
         }
 
         private IAuthorizationCodeFlow CreateFlow()
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
                 return new AuthorizationCodeFlow(
                     new GoogleAuthorizationCodeFlow.Initializer
                     {
@@ -60,7 +80,6 @@ namespace terminalGoogle.Services
                         DataStore = new JSONDataStore(
                             GetUserGoogleAuthData, SetUserGoogleAuthData),
                     }, _email);
-            }
         }
 
         public override IAuthorizationCodeFlow Flow

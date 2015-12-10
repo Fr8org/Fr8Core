@@ -4,6 +4,7 @@ using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
+using TerminalBase.BaseClasses;
 
 namespace terminalDropbox
 {
@@ -25,21 +26,7 @@ namespace terminalDropbox
             public void Configuration(IAppBuilder app)
             {
                 var config = new HttpConfiguration();
-
-                // Web API routes
-                config.MapHttpAttributeRoutes();
-
-                config.Routes.MapHttpRoute(
-                    name: "pluginDropbox",
-                    routeTemplate: "plugin_dropbox/{controller}/{id}",
-                    defaults: new { id = RouteParameter.Optional }
-                );
-
-                config.Services.Replace(
-                    typeof(IHttpControllerTypeResolver),
-                    new DropboxControllerTypeResolver()
-                );
-
+                BaseTerminalWebApiConfig.Register("DropBox", config);
                 app.UseWebApi(config);
             }
         }

@@ -15,15 +15,20 @@ using Data.Interfaces.Manifests;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
+using terminalFr8Core.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
     public class ConnectToSql_v1 : BaseTerminalAction
     {
+        public FindObjectHelper FindObjectHelper { get; set; }
+
+        public ConnectToSql_v1()
+        {
+            FindObjectHelper = new FindObjectHelper();
+        }
+
         #region Configuration.
-
-        private const string DefaultDbProvider = "System.Data.SqlClient";
-
 
         public override ConfigurationRequestType ConfigurationEvaluator(
             ActionDO curActionDO)
@@ -38,7 +43,6 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
@@ -79,14 +83,14 @@ namespace terminalFr8Core.Actions
             {
                 try
                 {
-                    var tableDefinitions = RetrieveTableDefinitions(connectionString);
+                    var tableDefinitions = FindObjectHelper.RetrieveColumnDefinitions(connectionString);
                     var tableDefinitionCrate = 
                         Crate.CreateDesignTimeFieldsCrate(
                             "Sql Table Definitions",
                             tableDefinitions.ToArray()
                         );
 
-                    var columnTypes = RetrieveColumnTypes(connectionString);
+                    var columnTypes = FindObjectHelper.RetrieveColumnTypes(connectionString);
                     var columnTypesCrate =
                         Crate.CreateDesignTimeFieldsCrate(
                             "Sql Column Types",
@@ -128,89 +132,6 @@ namespace terminalFr8Core.Actions
             var connectionStringControl = configControls.FindByName("ConnectionString");
 
             return connectionStringControl.Value;
-        }
-
-        private void ListAllDbColumns(string connectionString, Action<IEnumerable<ColumnInfo>> callback)
-        {
-            var provider = DbProvider.GetDbProvider(DefaultDbProvider);
-
-            using (var conn = provider.CreateConnection(connectionString))
-            {
-                conn.Open();
-
-                using (var tx = conn.BeginTransaction())
-                {
-                    var columns = provider.ListAllColumns(tx);
-
-                    if (callback != null)
-                    {
-                        callback.Invoke(columns);
-                    }
-                }
-            }
-        }
-
-        private List<FieldDTO> RetrieveTableDefinitions(string connectionString)
-        {
-            var fieldsList = new List<FieldDTO>();
-
-            ListAllDbColumns(connectionString, columns =>
-            {
-                foreach (var column in columns)
-                {
-                    var fullColumnName = GetColumnName(column);
-
-                    fieldsList.Add(new FieldDTO()
-                    {
-                        Key = fullColumnName,
-                        Value = fullColumnName
-                    });
-                }
-            });
-
-            return fieldsList;
-        }
-
-        private List<FieldDTO> RetrieveColumnTypes(string connectionString)
-        {
-            var fieldsList = new List<FieldDTO>();
-
-            ListAllDbColumns(connectionString, columns =>
-            {
-                foreach (var column in columns)
-                {
-                    var fullColumnName = GetColumnName(column);
-
-                    fieldsList.Add(new FieldDTO()
-                    {
-                        Key = fullColumnName,
-                        Value = column.DbType.ToString()
-                    });
-                }
-            });
-
-            return fieldsList;
-        }
-
-        private string GetColumnName(ColumnInfo columnInfo)
-        {
-            if (string.IsNullOrEmpty(columnInfo.TableInfo.SchemaName))
-            {
-                return string.Format(
-                    "{0}.{1}",
-                    columnInfo.TableInfo.TableName,
-                    columnInfo.ColumnName
-                );
-            }
-            else
-            {
-                return string.Format(
-                    "{0}.{1}.{2}",
-                    columnInfo.TableInfo.SchemaName,
-                    columnInfo.TableInfo.TableName,
-                    columnInfo.ColumnName
-                );
-            }
         }
 
         #endregion Configuration.

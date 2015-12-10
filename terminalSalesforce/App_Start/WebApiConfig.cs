@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using StructureMap;
 using Hub.StructureMap;
+using TerminalBase.BaseClasses;
 
 namespace terminalSalesforce
 {
@@ -11,13 +12,7 @@ namespace terminalSalesforce
     {
         public static void Register(HttpConfiguration config)
         {
-            // Web API routes
-            config.MapHttpAttributeRoutes();
-
-            config.Routes.MapHttpRoute(
-                name: "terminalSalesforce",
-                routeTemplate: "terminal_salesforce/{controller}/{id}"
-            );         
+            BaseTerminalWebApiConfig.Register("Salesforce", config);
         }
     }
 }

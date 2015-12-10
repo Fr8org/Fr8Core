@@ -115,7 +115,7 @@ namespace terminalAzure.Actions
             return "Deactivated";
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var processPayload = await GetProcessPayload(actionDO, containerId);
 

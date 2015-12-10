@@ -15,11 +15,12 @@ namespace terminalDocuSignTests.Integration
         private const int ActionCount = 7;
         private const string Extract_Data_From_Envelopes_Name = "Extract_Data_From_Envelopes";
         private const string Mail_Merge_Into_DocuSign_Name = "Mail_Merge_Into_DocuSign";
-        private const string Monitor_DocuSign_Name = "Monitor_DocuSign";
+        private const string Monitor_DocuSign_Name = "Monitor_DocuSign_Envelope_Activity";
         private const string Receive_DocuSign_Envelope_Name = "Receive_DocuSign_Envelope";
         private const string Record_DocuSign_Events_Name = "Record_DocuSign_Events";
         private const string Rich_Document_Notification_Name = "Rich_Document_Notifications";
         private const string Send_DocuSign_Envelope_Name = "Send_DocuSign_Envelope";
+        private const string Query_DocuSign_Name = "Query_DocuSign";
      
         public override string TerminalName
         {
@@ -45,6 +46,7 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Record_DocuSign_Events_Name), true);
             Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Rich_Document_Notification_Name), true);
             Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Send_DocuSign_Envelope_Name), true);
+            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Query_DocuSign_Name), true);
         }
     }
 }

@@ -14,6 +14,7 @@ using Data.Infrastructure.AutoMapper;
 using Hub.StructureMap;
 using TerminalBase;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 [assembly: OwinStartup("TerminalExcelConfiguration", typeof(terminalExcel.StartupTerminalExcel))]
 
@@ -43,10 +44,10 @@ namespace terminalExcel
             ConfigureFormatters();
 
             app.UseWebApi(_configuration);
-
+            TerminalBootstrapper.ConfigureLive();
             if (!selfHost)
             {
-                StartHosting("terminal_excel");
+                StartHosting("terminal_Excel");
             }
         }
 

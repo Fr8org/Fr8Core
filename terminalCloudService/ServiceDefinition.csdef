@@ -1,19 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ServiceDefinition name="terminalCloudService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2015-04.2.6">
   <WebRole name="terminalWebRole" vmsize="Small">
-    <Startup>
-      <Task commandLine="newrelic.cmd" executionContext="elevated" taskType="simple">
-        <Environment>
-          <Variable name="EMULATED">
-            <RoleInstanceValue xpath="/RoleEnvironment/Deployment/@emulated" />
-          </Variable>
-          <Variable name="IsWorkerRole" value="false" />
-          <Variable name="LICENSE_KEY">
-            <RoleInstanceValue xpath="/RoleEnvironment/CurrentInstance/ConfigurationSettings/ConfigurationSetting[@name='NewRelic.LicenseKey']/@value" />
-          </Variable>
-        </Environment>
-      </Task>
-    </Startup>
     <Sites>
       <Site name="terminalAzure" physicalDirectory="..\..\..\terminalAzure\azure.publish">
         <Bindings>
@@ -70,10 +57,14 @@
           <Binding name="Endpoint1" endpointName="terminalDropbox" />
         </Bindings>
       </Site>
+      <Site name="terminalAtlassian" physicalDirectory="..\..\..\terminalAtlassian\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="terminalAtlassian" />
+        </Bindings>
+      </Site>
     </Sites>
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
-      <Setting name="NewRelic.LicenseKey" />
     </ConfigurationSettings>
     <Endpoints>
       <InputEndpoint name="terminalAzure" protocol="http" port="46281" />
@@ -87,6 +78,7 @@
       <InputEndpoint name="terminalExcel" protocol="http" port="47011" />
       <InputEndpoint name="terminalGoogle" protocol="http" port="25923" />
       <InputEndpoint name="terminalDropbox" protocol="http" port="19760" />
+      <InputEndpoint name="terminalAtlassian" protocol="http" port="39768" />
     </Endpoints>
     <Imports>
       <Import moduleName="RemoteAccess" />

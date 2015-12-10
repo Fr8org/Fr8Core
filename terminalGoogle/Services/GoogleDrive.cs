@@ -32,13 +32,21 @@ namespace terminalGoogle.Services
 
         public async Task<DriveService> CreateDriveService(GoogleAuthDTO authDTO)
         {
-            var flowData = _googleAuth.CreateFlowMetadata(authDTO.AccessToken, "", CloudConfigurationManager.GetSetting("GoogleRedirectUri"));
+            var flowData = _googleAuth.CreateFlowMetadata(authDTO, "", CloudConfigurationManager.GetSetting("GoogleRedirectUri"));
             TokenResponse tokenResponse = new TokenResponse();
             tokenResponse.AccessToken = authDTO.AccessToken;
             tokenResponse.RefreshToken = authDTO.RefreshToken;
             tokenResponse.Scope = CloudConfigurationManager.GetSetting("GoogleScope");
 
-            UserCredential userCredential = new UserCredential(flowData.Flow, authDTO.AccessToken, tokenResponse);
+            UserCredential userCredential;
+            try
+            {
+                userCredential = new UserCredential(flowData.Flow, authDTO.AccessToken, tokenResponse);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
 
             // Create Drive API service.
             DriveService driveService = new DriveService(new BaseClientService.Initializer()
@@ -86,6 +94,7 @@ namespace terminalGoogle.Services
                     string filename = System.Web.Hosting.HostingEnvironment.MapPath("~\\Template\\googleAppScriptFormResponse.json");
                     string content = System.IO.File.ReadAllText(filename);
                     content = content.Replace("@ID", formId);
+                    content = content.Replace("@ENDPOINT", CloudConfigurationManager.GetSetting("GoogleFormEventWebServerUrl"));
                     byte[] contentAsBytes = Encoding.UTF8.GetBytes(content);
                     memoryStream.Write(contentAsBytes, 0, contentAsBytes.Length);
 
