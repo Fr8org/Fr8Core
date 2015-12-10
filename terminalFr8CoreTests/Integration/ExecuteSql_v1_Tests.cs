@@ -9,6 +9,7 @@ using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using terminalFr8CoreTests.Fixtures;
+using Hub.Managers;
 
 namespace terminalTests.Integration
 {
@@ -68,6 +69,15 @@ namespace terminalTests.Integration
             var runUrl = GetTerminalRunUrl();
 
             var actionDTO = FixtureData.ExecuteSql_InitialConfiguration_ActionDTO();
+
+            using (var updater = Crate.UpdateStorage(actionDTO))
+            {
+                var listFields = new List<FieldDTO>();
+                listFields.Add(new FieldDTO() { Key = "key", Value = "String" });
+                var crate = Crate.CreateDesignTimeFieldsCrate("HealthMonitor_UpstreamCrate_Sql Column Types", listFields.ToArray());
+                
+                updater.CrateStorage.Add(crate);
+            }
 
             AddPayloadCrate(
                actionDTO,
