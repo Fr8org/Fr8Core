@@ -237,7 +237,7 @@
     <Compile Include="Infrastructure\DataContracts\FolderSearchResults.cs" />
     <Compile Include="Infrastructure\Exceptions\DocusginRestException.cs" />
     <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
-    <Compile Include="Infrastructure\DocusignFolder.cs" />
+    <Compile Include="Services\DocusignFolder.cs" />
     <Compile Include="Infrastructure\DataContracts\DocusignFolderInfo.cs" />
     <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatus.cs" />
     <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatuses.cs" />
@@ -262,6 +262,7 @@
     <Compile Include="Infrastructure\TerminalDataAutoMapperBootStrapper.cs" />
     <Compile Include="Infrastructure\TerminalDocuSignMapBootstrapper.cs" />
     <Compile Include="Interfaces\IDocuSignEnvelope.cs" />
+    <Compile Include="Interfaces\IDocuSignFolder.cs" />
     <Compile Include="Interfaces\IDocuSignRoute.cs" />
     <Compile Include="Services\DocuSignManager.cs" />
     <Compile Include="Services\DocuSignEnvelope.cs" />
@@ -275,8 +276,11 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Tests\Actions\Extract_From_DocuSign_Envelope_v1Tests.cs" />
     <Compile Include="Tests\Actions\Monitor_DocuSignTests.cs" />
+    <Compile Include="Tests\Actions\Search_DocuSign_Tests.cs" />
+    <Compile Include="Tests\Actions\Query_DocuSign_Tests.cs" />
     <Compile Include="Tests\DocusignApiHelper.cs" />
     <Compile Include="Tests\Fixtures\AppSettingsFixture.cs" />
+    <Compile Include="Tests\Fixtures\TerminalFixtureData - Folders.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - DocusignAccount.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - Recipient.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - Signer.cs" />

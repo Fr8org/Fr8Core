@@ -5,14 +5,16 @@ using System.Text;
 using System.Web;
 using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
+using terminalDocuSign.Infrastructure;
+using terminalDocuSign.Interfaces;
 
-namespace terminalDocuSign.Infrastructure
+namespace terminalDocuSign.Services
 {
-    public class DocusignFolder
+    public class DocuSignFolder : IDocuSignFolder
     {
         private readonly DocuSignPackager _packager;
 
-        public DocusignFolder()
+        public DocuSignFolder()
         {
             _packager = new DocuSignPackager();
         }

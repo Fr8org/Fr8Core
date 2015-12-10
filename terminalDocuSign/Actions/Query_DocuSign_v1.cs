@@ -11,8 +11,10 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using Newtonsoft.Json;
+using StructureMap;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
+using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -82,7 +84,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private readonly DocuSignManager _docuSignManager;
+        private readonly IDocuSignFolder _docuSignFolder;
 
         static Query_DocuSign_v1()
         {
@@ -91,7 +93,7 @@ namespace terminalDocuSign.Actions
 
         public Query_DocuSign_v1()
         {
-            _docuSignManager = new DocuSignManager();
+            _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
         }
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -105,19 +107,18 @@ namespace terminalDocuSign.Actions
 
             var payload = await GetProcessPayload(curActionDO, containerId);
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
-            var docusignFolder = new DocusignFolder();
             var payloadCm = new StandardPayloadDataCM();
 
             if (string.IsNullOrWhiteSpace(configuration.Folder) || configuration.Folder == "<any>")
             {
-                foreach (var folder in docusignFolder.GetFolders(docuSignAuthDto.Email, docuSignAuthDto.ApiPassword))
+                foreach (var folder in _docuSignFolder.GetFolders(docuSignAuthDto.Email, docuSignAuthDto.ApiPassword))
                 {
-                    SearchFolder(configuration, docusignFolder, folder.FolderId, docuSignAuthDto, payloadCm);
+                    SearchFolder(configuration, _docuSignFolder, folder.FolderId, docuSignAuthDto, payloadCm);
                 }
             }
             else
             {
-                SearchFolder(configuration, docusignFolder, configuration.Folder, docuSignAuthDto, payloadCm);
+                SearchFolder(configuration, _docuSignFolder, configuration.Folder, docuSignAuthDto, payloadCm);
             }
 
             using (var updater = Crate.UpdateStorage(payload))
@@ -128,9 +129,9 @@ namespace terminalDocuSign.Actions
             return payload;
         }
 
-        private void SearchFolder(RuntimeConfiguration configuration, DocusignFolder docusignFolder, string folder, DocuSignAuthDTO docuSignAuthDto, StandardPayloadDataCM payload)
+        private void SearchFolder(RuntimeConfiguration configuration, IDocuSignFolder docuSignFolder, string folder, DocuSignAuthDTO docuSignAuthDto, StandardPayloadDataCM payload)
         {
-            var envelopes = docusignFolder.Search(docuSignAuthDto.Email, docuSignAuthDto.ApiPassword, configuration.SearchText, folder, configuration.Status == "<any>" ? null : configuration.Status, configuration.FromDate, configuration.ToDate);
+            var envelopes = docuSignFolder.Search(docuSignAuthDto.Email, docuSignAuthDto.ApiPassword, configuration.SearchText, folder, configuration.Status == "<any>" ? null : configuration.Status, configuration.FromDate, configuration.ToDate);
             
             foreach (var envelope in envelopes)
             {
@@ -195,8 +196,7 @@ namespace terminalDocuSign.Actions
 
         private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthDTO authDTO)
         {
-            var docusignFolder = new DocusignFolder();
-            var folders = docusignFolder.GetFolders(authDTO.Email, authDTO.ApiPassword);
+            var folders = _docuSignFolder.GetFolders(authDTO.Email, authDTO.ApiPassword);
             var fields = new List<FieldDTO>();
             
             foreach (var folder in folders)

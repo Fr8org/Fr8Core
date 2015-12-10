@@ -10,8 +10,9 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using Newtonsoft.Json;
+using StructureMap;
 using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Infrastructure;
+using terminalDocuSign.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
@@ -19,7 +20,7 @@ namespace terminalDocuSign.Actions
 {
     public class Search_DocuSign_History_v1  : BaseTerminalAction
     {
-        private class ActionUi : StandardConfigurationControlsCM
+        internal class ActionUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
             public TextBox SearchText { get; set; }
@@ -67,18 +68,25 @@ namespace terminalDocuSign.Actions
                 Controls.Add(new RunRouteButton());
             }
         }
+
+        private readonly IDocuSignFolder _docuSignFolder;
         
         static Search_DocuSign_History_v1()
         {
             ManifestDiscovery.Default.RegisterManifest(typeof(Query_DocuSign_v1.RuntimeConfiguration));
         }
-        
+
+        public Search_DocuSign_History_v1()
+        {
+            _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
+        }
+
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return await GetProcessPayload(curActionDO, containerId);
         }
         
-        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
             var controls = new ActionUi();
@@ -90,9 +98,9 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
             }
 
-            ConfigureNestedActions(curActionDO, controls);
+            await ConfigureNestedActions(curActionDO, controls);
             
-            return Task.FromResult(curActionDO);
+            return curActionDO;
         }
 
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -148,6 +156,7 @@ namespace terminalDocuSign.Actions
             {
                 action = new ActionDO
                 {
+                    ActivityTemplate = template,
                     IsTempId = true,
                     CreateDate = DateTime.UtcNow,
                     Name = "Query DocuSign",
@@ -170,8 +179,7 @@ namespace terminalDocuSign.Actions
 
         private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthDTO authDTO)
         {
-            var docusignFolder = new DocusignFolder();
-            var folders = docusignFolder.GetFolders(authDTO.Email, authDTO.ApiPassword);
+            var folders = _docuSignFolder.GetFolders(authDTO.Email, authDTO.ApiPassword);
             var fields = new List<FieldDTO>();
             
             foreach (var folder in folders)

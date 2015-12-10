@@ -176,6 +176,18 @@ namespace Data.Interfaces.Manifests
             return false;
         }
 
+        public string GetValue(string key)
+        {
+            var pair = PayloadObject.FirstOrDefault(x => x.Key == key);
+            
+            if (pair == null)
+            {
+                throw new KeyNotFoundException(string.Format("Unable to find the key {0}", key));
+            }
+
+            return pair.Value;
+        }
+
         public IEnumerable<string> GetValues(string key)
         {
             if (PayloadObject == null)
