@@ -48,6 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
+    <Compile Include="Integration\SendEmailViaSendGrid_v1Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
