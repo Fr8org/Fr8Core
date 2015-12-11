@@ -4,12 +4,12 @@ using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using TerminalBase.BaseClasses;
 
-namespace terminalPapertrail.Controllers
+namespace terminalQuickBooks.Controllers
 {    
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private const string curTerminal = "terminalPapertrail";
+        private const string curTerminal = "terminalQuickBooks";
         private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
         [HttpPost]

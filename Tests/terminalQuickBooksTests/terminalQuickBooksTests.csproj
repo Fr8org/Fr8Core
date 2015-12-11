@@ -4,14 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EE3E1E99-175F-4507-96DA-421FCD0F6D9E}</ProjectGuid>
+    <ProjectGuid>{6367B304-3E18-4DA6-A7E7-0893DA806953}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>terminalSendGridTests</RootNamespace>
-    <AssemblyName>terminalSendGridTests</AssemblyName>
+    <RootNamespace>terminalQuickBooksTests</RootNamespace>
+    <AssemblyName>terminalQuickBooksTests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\fr8company\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -33,14 +33,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,26 +51,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
+    <Compile Include="Integration\Terminal_Dixcover_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Data\Data.csproj">
-      <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
-      <Name>Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Hub\Hub.csproj">
-      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
-      <Name>Hub</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tests\HealthMonitorUtility\HealthMonitorUtility.csproj">
-      <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
-      <Name>HealthMonitorUtility</Name>
-    </ProjectReference>
+    <Folder Include="Fixtures\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Data\Data.csproj">
+      <Project>{990241EA-6CF0-4026-B57C-A9031463C7C0}</Project>
+      <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Hub\Hub.csproj">
+      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
+      <Name>Hub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
+      <Project>{459FE39A-A5CC-41D8-B06E-8FAE3A1A623B}</Project>
+      <Name>HealthMonitorUtility</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
