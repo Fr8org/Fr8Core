@@ -185,7 +185,7 @@ namespace terminalDocuSign.Actions
 
                     curActionDO.ChildNodes.Add(new ActionDO()
                     {
-                        ActivityTemplateId = dataSourceActTempl.Id,
+                        ActivityTemplateId = mapFieldActTempl.Id,
                         IsTempId = true,
                         Name = mapFieldActTempl.Name,
                         Label = mapFieldActTempl.Label,
@@ -195,10 +195,10 @@ namespace terminalDocuSign.Actions
                     });
 
                     ActivityTemplateDO sendDocuSignEnvActTempl = uow.ActivityTemplateRepository.GetAll().FirstOrDefault(at => at.Name == "Send_DocuSign_Envelope");
-                    if (mapFieldActTempl == null) return curActionDO;
-                    curActionDO.ChildNodes.Add(new ActionDO()
+                    if (sendDocuSignEnvActTempl == null) return curActionDO;
+                    curActionDO.ChildNodes.Add(new ActionDO ()
                     {
-                        ActivityTemplateId = dataSourceActTempl.Id,
+                        ActivityTemplateId = sendDocuSignEnvActTempl.Id,
                         IsTempId = true,
                         Name = sendDocuSignEnvActTempl.Name,
                         CrateStorage = Crate.EmptyStorageAsStr(),
