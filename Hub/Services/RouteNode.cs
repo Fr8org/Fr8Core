@@ -118,6 +118,30 @@ namespace Hub.Services
             return downstreamList;
         }
 
+        public RouteNodeDO GetNextSibling(RouteNodeDO currentActivity)
+        {
+            // Move to the next activity of the current activity's parent
+            if (currentActivity.ParentRouteNode == null)
+            {
+                // We are at the root of activity tree. Next activity can be only among children.
+                return null;
+            }
+
+            return currentActivity.ParentRouteNode.ChildNodes
+                .OrderBy(x => x.Ordering)
+                .FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
+        }
+
+        public RouteNodeDO GetFirstChild(RouteNodeDO currentActivity)
+        {
+            if (currentActivity.ChildNodes.Count != 0)
+            {
+                return currentActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault();
+            }
+
+            return null;
+        }
+
         public RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, RouteNodeDO root)
         {
             return GetNextActivity(currentActivity, true, root);

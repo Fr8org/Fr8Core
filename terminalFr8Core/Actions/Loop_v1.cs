@@ -39,7 +39,7 @@ namespace terminalFr8Core.Actions
             var label = GetSelectedLabelToProcess(curActionDO);
 
             
-            var crateToProcess = storage.FirstOrDefault(c =>/* c.ManifestType.Type == manifestType &&*/ c.Label == label);
+            var crateToProcess = storage.FirstOrDefault(c => /*c.ManifestType.Type == manifestType && */c.Label == label);
 
             if (crateToProcess == null)
             {
