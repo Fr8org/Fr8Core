@@ -182,7 +182,7 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(infoText, availableManifests, availableLabels);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (Crate.IsStorageEmpty(curActionDO))
             {
