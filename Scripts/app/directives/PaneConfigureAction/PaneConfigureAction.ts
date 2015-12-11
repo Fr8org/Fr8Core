@@ -210,9 +210,24 @@ module dockyard.directives.paneConfigureAction {
                     }
                     if (fieldEvent.handler === 'focusConfig') {
                         var cccc = $scope.currentAction.crateStorage;
-                        angular.forEach(cccc.crates[1].contents, function (val, key) {
-                            val[1].value = val[1].value + '[' + val[2].value + ']';
+                        angular.forEach(cccc.crates, function (value, keys) {
+                            if (value.label == "Configuration_Controls") {
+                                angular.forEach(value.contents, function (val, key) {
+                                    var textArea;
+                                    var dropDown;
+                                    angular.forEach(val, function (i, j) {
+                                        if (i.type == "TextArea") {
+                                            textArea = i.value;
+                                        }
+                                        if (i.type == "DropDownList") {
+                                            dropDown = i.value;
+                                            textArea = textArea + '[' + dropDown + ']';
+                                        }
+                                    });
+                                });
+                            }
                         });
+                        
 
                         crateHelper.mergeControlListCrate(
                             $scope.currentAction.configurationControls,

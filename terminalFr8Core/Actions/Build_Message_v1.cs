@@ -47,16 +47,21 @@ namespace terminalFr8Core.Actions
             //{
             //    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
             //}
-         
+
             return curProcessPayload;
 
         }
 
-        
+
 
         protected async override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //build a controls crate to render the pane
+            var textBlock = new TextBlock()
+            {
+                Label = "Create a Message",
+                Name = "CreateaMessage"
+            };
             var name = new TextBox()
             {
                 Label = "Name:",
@@ -86,27 +91,31 @@ namespace terminalFr8Core.Actions
                 }
             };
 
-            var curConfigurationControlsCrate = PackControlsCrate(name, messageBody,fieldSelectObjectTypes);
+            var curConfigurationControlsCrate = PackControlsCrate(textBlock, name, messageBody, fieldSelectObjectTypes);
+
 
             FieldDTO[] curSelectedFields = curMergedUpstreamRunTimeObjects.Content.Fields.Select(field => new FieldDTO { Key = field.Key, Value = field.Value }).ToArray();
 
             var curSelectedObjectType = Crate.CreateDesignTimeFieldsCrate("SelectedObjectTypes", curSelectedFields);
 
-            using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(curMergedUpstreamRunTimeObjects);
-                updater.CrateStorage.Add(curConfigurationControlsCrate);
-                updater.CrateStorage.Add(curSelectedObjectType);
+                if (curActionDO.CrateStorage == null)
+                {
+                    updater.CrateStorage.Clear();
+                    updater.CrateStorage.Add(curConfigurationControlsCrate);
+                    updater.CrateStorage.Add(curMergedUpstreamRunTimeObjects);
+                    updater.CrateStorage.Add(curSelectedObjectType);
+                }
             }
 
             return curActionDO;
-        }       
-       
+        }
+
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
-        {            
-                return ConfigurationRequestType.Initial;              
+        {
+            return ConfigurationRequestType.Initial;
         }
     }
 }
