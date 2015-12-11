@@ -32,80 +32,6 @@ namespace Hub.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        /*
-        /// <summary>
-        /// Decides what to do with current action. if it is a loop it starts a loop operation
-        /// </summary>
-        /// <param name="uow"></param>
-        /// <param name="curContainerDO"></param>
-        /// <returns></returns>
-        private async Task RouteCurrentAction(IUnitOfWork uow, ContainerDO curContainerDO)
-        {
-            var currentRouteNode = curContainerDO.CurrentRouteNode;
-            if (!(currentRouteNode is ActionDO))
-            {
-                await ProcessAction(curContainerDO);
-            }
-            else
-            {
-                switch (((ActionDO)currentRouteNode).ActivityTemplate.Type)
-                {
-                    case ActivityType.Loop:
-                        await ProcessLoop(uow, curContainerDO);
-                        break;
-
-                    default:
-                        await ProcessAction(curContainerDO);
-                        break;
-                }
-            }
-        }
-
-        private async Task ProcessAction(ContainerDO curContainerDO)
-        {
-            
-            await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
-        }
-
-        private async Task ProcessLoop(IUnitOfWork uow, ContainerDO curContainerDO)
-        {
-            var loopAction = curContainerDO.CurrentRouteNode;
-            CreateLoopPayload(uow, curContainerDO);
-            var lastActionOfLoop = loopAction;
-
-            while(true)
-            {
-                //Process loop action
-                await ProcessAction(curContainerDO);
-                if (ShouldBreakLoop(curContainerDO))
-                {
-                    //end of this loop, let's remove this operational status crate
-                    DeleteLoopPayload(uow, curContainerDO);
-                    break;
-                }
-                //skip loop action
-                var currentAction = MoveToTheNextActivity(uow, curContainerDO);
-
-                while (currentAction != null && currentAction.ParentRouteNodeId != loopAction.ParentRouteNodeId) //process all children of loop
-                {
-                    await RouteCurrentAction(uow, curContainerDO);
-                    var currentBackup = currentAction;
-                    currentAction = MoveToTheNextActivity(uow, curContainerDO);
-                    if (currentAction == null || currentAction.ParentRouteNodeId == loopAction.ParentRouteNodeId)
-                    {
-                        lastActionOfLoop = currentBackup;
-                    }
-                }
-
-                //restart loop
-                curContainerDO.CurrentRouteNode = loopAction;
-                IncrementLoopIndex(uow, curContainerDO);
-            }
-            //lets leave this function with currentRouteNode = lastAction of Loop
-            //so next call to MoveToTheNextActivity will get sibling? of loop action
-            curContainerDO.CurrentRouteNode = lastActionOfLoop;
-        }
-        */
         #region LOOP_CRUD
         private void DeleteLoopPayload(IUnitOfWork uow, ContainerDO curContainerDO)
         {
@@ -173,12 +99,24 @@ namespace Hub.Services
 
         private RouteNodeDO GetFirstChild(RouteNodeDO routeNode)
         {
-            return _activity.GetFirstChild(routeNode);
+            var next = _activity.GetFirstChild(routeNode);
+            if (next != null && next == routeNode)
+            {
+                throw new Exception(string.Format("Cycle detected. Current activty is {0}", routeNode.Id));
+            }
+
+            return next;
         }
 
         private RouteNodeDO GetNextSibling(RouteNodeDO routeNode)
         {
-            return _activity.GetNextSibling(routeNode);
+            var next = _activity.GetNextSibling(routeNode);
+            if (next != null && next == routeNode)
+            {
+                throw new Exception(string.Format("Cycle detected. Current activty is {0}", routeNode.Id));
+            }
+
+            return next;
         }
 
         private bool IsThisLoopAction(RouteNodeDO routeNode)
@@ -186,10 +124,11 @@ namespace Hub.Services
             return routeNode is ActionDO && ((ActionDO)routeNode).ActivityTemplate.Type == ActivityType.Loop;
         }
 
-        private void SetContainerRouteNode(ContainerDO curContainerDO, RouteNodeDO curRouteNode)
+        private void SetContainerRouteNode(IUnitOfWork uow, ContainerDO curContainerDO, RouteNodeDO curRouteNode)
         {
             curContainerDO.CurrentRouteNode = curRouteNode;
             curContainerDO.CurrentRouteNodeId = curRouteNode.Id;
+            uow.SaveChanges();
         }
 
         private async Task ExecuteActionTree(IUnitOfWork uow, ContainerDO curContainerDO)
@@ -212,9 +151,9 @@ namespace Hub.Services
                 }
                 var myFirstChild = GetFirstChild(me);
                 if (myFirstChild != null) {
-                    SetContainerRouteNode(curContainerDO, myFirstChild);
+                    SetContainerRouteNode(uow, curContainerDO, myFirstChild);
                     await ExecuteActionTree(uow, curContainerDO);
-                    SetContainerRouteNode(curContainerDO, me);
+                    SetContainerRouteNode(uow, curContainerDO, me);
                 }
             } while (isThisLoopAction && IncrementLoopIndex(uow, curContainerDO));
 
@@ -222,7 +161,7 @@ namespace Hub.Services
             var nextSibling = GetNextSibling(me);
             if (nextSibling != null)
             {
-                SetContainerRouteNode(curContainerDO, nextSibling);
+                SetContainerRouteNode(uow, curContainerDO, nextSibling);
                 await ExecuteActionTree(uow, curContainerDO);
             }
         }
@@ -236,37 +175,12 @@ namespace Hub.Services
 
             if (curContainerDO.CurrentRouteNode != null)
             {
-                //break if CurrentActivity Is NULL, it means all activities 
-                //are processed that there is no Next Activity to set as Current Activity
                 await ExecuteActionTree(uow, curContainerDO);
-                /*
-                do
-                {
-                    await RouteCurrentAction(uow, curContainerDO);
-                } while (MoveToTheNextActivity(uow, curContainerDO) != null);
-                */
             }
             else
             {
                 throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
             }
-        }
-
-        private RouteNodeDO MoveToTheNextActivity(IUnitOfWork uow, ContainerDO curContainerDo)
-        {
-            var next =  ObjectFactory.GetInstance<IRouteNode>().GetNextActivity(curContainerDo.CurrentRouteNode, null);
-
-            // very simple check for cycles
-            if (next != null && next == curContainerDo.CurrentRouteNode)
-            {
-                throw new Exception(string.Format("Cycle detected. Current activty is {0}", curContainerDo.CurrentRouteNode.Id));
-            }
-            
-            curContainerDo.CurrentRouteNode = next;
-
-            uow.SaveChanges();
-
-            return next;
         }
 
         // Return the Containers of current Account
