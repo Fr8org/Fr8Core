@@ -91,31 +91,31 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public object Activate(ActionDO curDataPackage)
+        public override Task<ActionDO> Activate(ActionDO curActionDO)
         {
             DocuSignAccount docuSignAccount = new DocuSignAccount();
             ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
             if (Int32.Parse(connectProfile.totalRecords) > 0)
             {
-                return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
+                return Task.FromResult<ActionDO>(curActionDO); // Will be changed when implementation is plumbed in.
             }
             else
             {
-                return "Fail";
+                throw new Exception("Error during activation of the Monitor DocuSign Action");
             }
         }
 
-        public object Deactivate(ActionDO curDataPackage)
+        public override Task<ActionDO> Deactivate(ActionDO curActionDO)
         {
             DocuSignAccount docuSignAccount = new DocuSignAccount();
             ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
             if (Int32.Parse(connectProfile.totalRecords) > 0)
             {
-                return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
+                return Task.FromResult<ActionDO>(curActionDO); // Will be changed when implementation is plumbed in.
             }
             else
             {
-                return "Fail";
+                throw new Exception("Error during activation of the Monitor DocuSign Action");
             }
         }
 

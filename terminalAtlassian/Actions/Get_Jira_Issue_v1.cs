@@ -37,18 +37,6 @@ namespace terminalAtlassian.Actions
             return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
         }
 
-        public object Activate(ActionDO curActionDO)
-        {
-            //not yet implemented
-            return null;
-        }
-
-        public object Deactivate(ActionDO curActionDO)
-        {
-            //not yet implemented
-            return null;
-        }
-
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             PayloadDTO processPayload = null;

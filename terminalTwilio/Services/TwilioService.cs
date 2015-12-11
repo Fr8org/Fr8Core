@@ -71,7 +71,7 @@ namespace terminalTwilio.Services
 
         /**********************************************************************************/
 
-        public void SendSms(String number, String messageBody)
+        public Message SendSms(String number, String messageBody)
         {
             var result = SendMessage(_twilioFromNumber, number, messageBody);
      
@@ -79,6 +79,7 @@ namespace terminalTwilio.Services
             {
                throw new Exception(result.RestException.Message);
             }
+            return result;
         }
 
         /**********************************************************************************/
