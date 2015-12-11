@@ -78,7 +78,7 @@ namespace TerminalBase.BaseClasses
 
             baseTerminalAction.HubCommunicator = new ExplicitDataHubCommunicator();
         }
-        
+
         /// <summary>
         /// Reports event when process an action
         /// </summary>
@@ -177,7 +177,7 @@ namespace TerminalBase.BaseClasses
 
                         Task<ActionDO> resutlActionDO;
                         var param = curMethodInfo.GetParameters();
-                        if(param.Length == 2)
+                        if (param.Length == 2)
                             resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         else
                         {
