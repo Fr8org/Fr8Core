@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -25,5 +26,7 @@ namespace Hub.Interfaces
         void InvalidateToken(string userId, ActionDTO curActionDto);
 
         IEnumerable<AuthorizationTokenDO> GetAllTokens(string accountId);
+
+        void RevokeToken(string accountId, Guid authTokenId);
     }
 }

@@ -1,7 +1,10 @@
 ﻿module dockyard.controllers {
 
+    import pwd = dockyard.directives.paneWorkflowDesigner;
+
     export interface IManageAuthTokenScope extends ng.IScope {
         terminals: Array<interfaces.IManageAuthToken_TerminalVM>;
+        revokeToken: (authToken: model.ManageAuthToken_AuthTokenDTO) => void;
     }
 
 
@@ -16,12 +19,31 @@
             private ManageAuthTokenService: services.IManageAuthTokenService
             ) {
 
-            var promise = ManageAuthTokenService.get().$promise;
-            promise.then(function (data) {
-                $scope.terminals = <Array<interfaces.IManageAuthToken_TerminalVM>>(<any>data);
-            });
+            var _reloadTerminals = function () {
+                $scope.terminals = ManageAuthTokenService.list();
+            };
+
+            $scope.revokeToken = function (authToken: model.ManageAuthToken_AuthTokenDTO) {
+                $scope.$emit(
+                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation],
+                    new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Started)
+                );
+
+                ManageAuthTokenService.revoke(authToken)
+                    .$promise
+                    .finally(function () {
+                        _reloadTerminals();
+
+                        $scope.$emit(
+                            pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation],
+                            new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Stopped)
+                        );
+                    });
+            };
+
+            _reloadTerminals();
         }
     }
 
-    app.controller('ManageAuthTokensController', ManageAuthTokenController);
+    app.controller('ManageAuthTokenController', ManageAuthTokenController);
 }

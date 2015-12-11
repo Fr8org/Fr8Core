@@ -547,12 +547,41 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var authTokens = uow.AuthorizationTokenRepository
-                    .GetAll()
+                    .GetQuery()
                     .Where(x => x.UserID == accountId)
                     .OrderBy(x => x.ExternalAccountId)
                     .ToList();
 
                 return authTokens;
+            }
+        }
+
+        public void RevokeToken(string accountId, Guid authTokenId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var authToken = uow.AuthorizationTokenRepository
+                    .GetQuery()
+                    .Where(x => x.UserID == accountId && x.Id == authTokenId)
+                    .SingleOrDefault();
+
+                if (authToken != null)
+                {
+                    var actions = uow.ActionRepository
+                        .GetQuery()
+                        .Where(x => x.AuthorizationToken.Id == authToken.Id)
+                        .ToList();
+
+                    foreach (var action in actions)
+                    {
+                        action.AuthorizationToken = null;
+                    }
+
+                    uow.SaveChanges();
+
+                    uow.AuthorizationTokenRepository.Remove(authToken);
+                    uow.SaveChanges();
+                }
             }
         }
     }

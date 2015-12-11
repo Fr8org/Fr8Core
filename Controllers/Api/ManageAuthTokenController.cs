@@ -15,12 +15,16 @@ namespace HubWeb.Controllers.Api
         public IAuthorization Authorization { get; set; }
         public ITerminal Terminal { get; set; }
 
+
         public ManageAuthTokenController()
         {
             Authorization = ObjectFactory.GetInstance<IAuthorization>();
             Terminal = ObjectFactory.GetInstance<ITerminal>();
         }
 
+        /// <summary>
+        /// Extract user's auth-tokens and parent terminals.
+        /// </summary>
         public IHttpActionResult Get()
         {
             var terminals = Terminal.GetAll();
@@ -48,9 +52,16 @@ namespace HubWeb.Controllers.Api
             return Ok(groupedTerminals);
         }
 
+        /// <summary>
+        /// Revoke token.
+        /// </summary>
+        [HttpPost]
         public IHttpActionResult Revoke(Guid id)
         {
-            throw new NotImplementedException();
+            var accountId = User.Identity.GetUserId();
+            Authorization.RevokeToken(accountId, id);
+
+            return Ok();
         }
     }
 }

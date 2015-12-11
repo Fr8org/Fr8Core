@@ -10,29 +10,36 @@
 <!-- END PAGE BREADCRUMB -->
 
 <!-- BEGIN MAIN CONTENT -->
-<div class="margin-top-10">
-    <div class="row" ng-controller="ManageAuthTokenController">
-        <div ng-repeat="terminal in terminals">
-            <h4>{{terminal.name}}</h4>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th class="col-md-10">External Account Name</th>
-                        <th class="col-md-2"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="authToken in terminal.authTokens">
-                        <td class="col-md-10">
-                            {{authToken.externalAccountName}}
-                        </td>
-                        <td class="col-md-2">
-                            <button type="button" class="btn btn-danger">Remove</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div >
+<div class="margin-top-10 manage-auth-tokens">
+    <div class="row" ng-controller="ManageAuthTokenController" style="padding: 0 5px 0 5px;">
+        <div class="panel panel-default" ng-repeat="terminal in terminals" ng-if="terminals.length">
+            <div class="panel-heading">Terminal: {{terminal.name}}</div>
+            <div class="panel-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="col-md-11">External Account Name</th>
+                            <th class="col-md-1"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="authToken in terminal.authTokens">
+                            <td class="col-md-11">
+                                {{authToken.externalAccountName}}
+                            </td>
+                            <td class="col-md-1">
+                                <button type="button" class="btn btn-danger btn-sm" ng-click="revokeToken(authToken)">Revoke</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel panel-default" ng-if="!terminals.length">
+            <div class="panel-heading">No Authentication Tokens</div>
+            <div class="panel-body">
+                Currently you don't have any services connected to your Fr8 account.
             </div>
         </div>
     </div>

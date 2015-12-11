@@ -111,8 +111,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/ManageAuthTokenController.js',
         'Scripts/app/controllers/PayloadFormController.js',
         'Scripts/app/controllers/TerminalListController.js',
-        'Scripts/app/controllers/TerminalFormController.js'
-
+        'Scripts/app/controllers/TerminalFormController.js',
+        'Scripts/app/controllers/ManageAuthTokenController.js'
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('_compiled.js'))
