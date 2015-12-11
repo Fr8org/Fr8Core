@@ -22,13 +22,6 @@ namespace HubWeb
                );
 
             config.Routes.MapHttpRoute(
-               name: "DefaultApiIncomingEvents",
-               routeTemplate: "api/v1/events",
-               defaults: new { action = "ProcessIncomingEvents", controller = "Event" },
-               constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Post) }
-               );
-
-			config.Routes.MapHttpRoute(
 				name : "DefaultApiWithAction",
 				routeTemplate : "api/v1/{controller}/{action}/{id}",
 				defaults : new { id = RouteParameter.Optional }
