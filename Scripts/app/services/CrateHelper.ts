@@ -1,8 +1,10 @@
 ﻿module dockyard.services {
 
     export class CrateHelper {
+        private filterByTag: (list: model.DropDownListItem[], filterByTag: string) => model.DropDownListItem[]
 
-        constructor() {
+        constructor($filter) {
+            this.filterByTag = $filter('FilterByTag');
         }
 
         public throwError(errorText: string) {
@@ -150,7 +152,7 @@
                     }
 
                     var listItems = <any> stdfCrate.contents;
-                    dropdownListField.listItems = listItems.Fields;
+                    dropdownListField.listItems = this.filterByTag(listItems.Fields, dropdownListField.source.filterByTag);
                 }
 
                 // Handle nested fields
@@ -186,4 +188,4 @@
     }
 }
 
-app.service('CrateHelper', dockyard.services.CrateHelper); 
+app.service('CrateHelper', ['$filter', dockyard.services.CrateHelper]); 
