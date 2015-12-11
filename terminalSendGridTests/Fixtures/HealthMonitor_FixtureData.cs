@@ -18,7 +18,7 @@ namespace terminalSendGridTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = 1,
-                Name = "SendEmailViaSendGrid",
+                Name = "SendEmailViaSendGrid_TEST",
                 Version = "1",
                 AuthenticationType = AuthenticationType.None
             };
