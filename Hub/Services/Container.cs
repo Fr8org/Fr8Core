@@ -127,7 +127,7 @@ namespace Hub.Services
         private void SetContainerRouteNode(IUnitOfWork uow, ContainerDO curContainerDO, RouteNodeDO curRouteNode)
         {
             curContainerDO.CurrentRouteNode = curRouteNode;
-            curContainerDO.CurrentRouteNodeId = curRouteNode.Id;
+            curContainerDO.CurrentRouteNodeId = curRouteNode != null ? curRouteNode.Id : (Guid?)null;
             uow.SaveChanges();
         }
 
@@ -176,6 +176,8 @@ namespace Hub.Services
             if (curContainerDO.CurrentRouteNode != null)
             {
                 await ExecuteActionTree(uow, curContainerDO);
+                //to mark container as finished
+                SetContainerRouteNode(uow, curContainerDO, null);
             }
             else
             {

@@ -149,15 +149,20 @@ namespace DockyardTest.Services
                 .Setup(c => c.Process(It.IsAny<Guid>(), It.IsAny<ContainerDO>()))
                 .Returns(Task.Delay(100))
                 .Verifiable();
-            ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(_activity.Object));
-            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             ContainerDO containerDO = FixtureData.TestContainerWithCurrentActivityAndNextActivity();
             RouteNodeDO originalCurrentActivity = containerDO.CurrentRouteNode;
+            _activity
+                .Setup(c => c.GetNextSibling(It.Is<RouteNodeDO>((r) => r.Id == originalCurrentActivity.Id)))
+                .Returns(containerDO.NextRouteNode);
+
+            ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(_activity.Object));
+
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 await _container.Execute(uow, containerDO);
-        }
+            }
 
             Assert.AreNotEqual(originalCurrentActivity, containerDO.CurrentRouteNode);
             Assert.IsNull(containerDO.CurrentRouteNode);
