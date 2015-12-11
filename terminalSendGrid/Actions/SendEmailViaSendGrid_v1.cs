@@ -46,7 +46,7 @@ namespace terminalSendGrid.Actions
 
             return ConfigurationRequestType.Followup;
         }
-        
+
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
@@ -58,7 +58,7 @@ namespace terminalSendGrid.Actions
 
             return curActionDO;
         }
-        
+
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
@@ -143,17 +143,6 @@ namespace terminalSendGrid.Actions
             return crateDTO;
         }
 
-        public object Activate(ActionDO curActionDO)
-        {
-            //not currently any requirements that need attention at Activation Time
-            return curActionDO;
-        }
-
-        public object Deactivate(ActionDO curActionDO)
-        {
-            return curActionDO;
-        }
-
         private string CreateEmailHTMLText(string emailBody)
         {
             var template = @"<html><body>{0}</body></html>";
@@ -169,18 +158,18 @@ namespace terminalSendGrid.Actions
             var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var emailAddress = ExtractSpecificOrUpstreamValue(
-                Crate.GetStorage(curActionDO.CrateStorage),
-                Crate.FromDto(processPayload.CrateStorage),
+                curActionDO,
+                processPayload,
                 "EmailAddress"
             );
             var emailSubject = ExtractSpecificOrUpstreamValue(
-                Crate.GetStorage(curActionDO.CrateStorage),
-                Crate.FromDto(processPayload.CrateStorage),
+                curActionDO,
+                processPayload,
                 "EmailSubject"
             );
             var emailBody = ExtractSpecificOrUpstreamValue(
-                Crate.GetStorage(curActionDO.CrateStorage),
-                Crate.FromDto(processPayload.CrateStorage),
+                curActionDO,
+                processPayload,
                 "EmailBody"
             );
 

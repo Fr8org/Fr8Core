@@ -528,6 +528,11 @@ namespace Hub.Services
         {
             try
             {
+                //if this action contains nested actions, do not pass them to avoid 
+                // circular reference error during JSON serialization (FR-1769)
+                curActionDO = Mapper.Map<ActionDO>(curActionDO);
+                curActionDO.ChildNodes = new List<RouteNodeDO>();
+
                 var result = await CallTerminalActionAsync<ActionDTO>("activate", curActionDO, Guid.Empty);
                 EventManager.ActionActivated(curActionDO);
                 return result;

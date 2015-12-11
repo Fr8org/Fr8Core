@@ -75,7 +75,7 @@ app.controller('FooterController', ['$scope', function ($scope) {
 /* Set Application Insights */
 app.config(function (applicationInsightsServiceProvider) {
     var options = { applicationName: 'HubWeb' };
-    applicationInsightsServiceProvider.configure('9fe8d4d4-a6c3-4221-9996-a03538150e24', options);
+    applicationInsightsServiceProvider.configure('9db0241b-6f3d-404d-adeb-3839bcb6e313', options);
 });
 
 /* Setup Rounting For All Pages */

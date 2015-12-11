@@ -78,7 +78,7 @@ namespace TerminalBase.BaseClasses
 
             baseTerminalAction.HubCommunicator = new ExplicitDataHubCommunicator();
         }
-        
+
         /// <summary>
         /// Reports event when process an action
         /// </summary>
@@ -156,6 +156,9 @@ namespace TerminalBase.BaseClasses
                     {
                         Task<ActionDO> resutlActionDO;
 
+                        //activate is an optional method so it may be missing
+                        if (curMethodInfo == null) return Mapper.Map<ActionDTO>(curActionDO);
+
                         var param = curMethodInfo.GetParameters();
                         if (param.Length == 2)
                             resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
@@ -169,10 +172,12 @@ namespace TerminalBase.BaseClasses
                     }
                 case "deactivate":
                     {
-                        Task<ActionDO> resutlActionDO;
+                        //deactivate is an optional method so it may be missing
+                        if (curMethodInfo == null) return Mapper.Map<ActionDTO>(curActionDO);
 
+                        Task<ActionDO> resutlActionDO;
                         var param = curMethodInfo.GetParameters();
-                        if(param.Length == 2)
+                        if (param.Length == 2)
                             resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
                         else
                         {

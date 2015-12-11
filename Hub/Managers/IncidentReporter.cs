@@ -18,7 +18,7 @@ namespace Hub.Managers
 
         public IncidentReporter()
         {
-           _eventReporter = new EventReporter();
+            _eventReporter = new EventReporter();
         }
         public void SubscribeToAlerts()
         {
@@ -37,6 +37,7 @@ namespace Hub.Managers
             EventManager.TerminalIncidentReported += LogTerminalIncident;
             EventManager.UnparseableNotificationReceived += LogUnparseableNotificationIncident;
             EventManager.IncidentDocuSignFieldMissing += IncidentDocuSignFieldMissing;
+            EventManager.IncidentMissingFieldInPayload += IncidentMissingFieldInPayload;
             EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
         }
 
@@ -56,15 +57,15 @@ namespace Hub.Managers
 
         /// <summary>
         /// Logs incident information using the standard log mechanisms.
-       
-      
+
+
         private void SaveAndLogIncident(IncidentDO curIncident)
         {
             SaveIncident(curIncident);
             _eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity);
         }
 
-        private void SaveIncident (IncidentDO curIncident)
+        private void SaveIncident(IncidentDO curIncident)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -192,7 +193,7 @@ namespace Hub.Managers
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "BookingRequest";
                 incidentDO.SecondaryCategory = "Response Received";
-                incidentDO.CustomerId = customerID;               
+                incidentDO.CustomerId = customerID;
                 incidentDO.ObjectId = bookingRequestId.ToString();
                 incidentDO.Activity = "Response Recieved";
                 _uow.IncidentRepository.Add(incidentDO);
@@ -249,11 +250,11 @@ namespace Hub.Managers
                 uow.SaveChanges();
             }
             Email _email = ObjectFactory.GetInstance<Email>();
-		//_email.SendAlertEmail("Alert! Kwasant Error Reported: EmailSendFailure",
-		//			    string.Format(
-		//				  "EmailID: {0}\r\n" +
-		//				  "Message: {1}",
-		//				  emailId, message));
+            //_email.SendAlertEmail("Alert! Kwasant Error Reported: EmailSendFailure",
+            //			    string.Format(
+            //				  "EmailID: {0}\r\n" +
+            //				  "Message: {1}",
+            //				  emailId, message));
         }
         //private void ProcessErrorSyncingCalendar(IRemoteCalendarAuthDataDO authData, IRemoteCalendarLinkDO calendarLink = null)
         //{
@@ -425,5 +426,22 @@ namespace Hub.Managers
                 _uow.SaveChanges();
             }
         }
+
+        public void IncidentMissingFieldInPayload(string fieldKey, string curActionName, string curActionId)
+        {
+            using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "Process Execution";
+                incidentDO.SecondaryCategory = "Action";
+                incidentDO.ObjectId = curActionId;
+                incidentDO.Activity = "Occured";
+                incidentDO.Data = String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}, ", curActionName, fieldKey, curActionId);
+                _uow.IncidentRepository.Add(incidentDO);
+                Logger.GetLogger().Warn(incidentDO.Data);
+                _uow.SaveChanges();
+            }
+        }
+
     }
 }
