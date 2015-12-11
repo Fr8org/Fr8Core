@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Control;
+using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
@@ -21,7 +22,7 @@ namespace terminalFr8Core.Actions
     {
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, actionDO => ConfigurationRequestType.Initial, authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -67,6 +68,32 @@ namespace terminalFr8Core.Actions
 
                 return curProcessPayload;
             }
+        }
+
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        {
+            if (Crate.IsStorageEmpty(curActionDO))
+            {
+                return ConfigurationRequestType.Initial;
+            }
+            var storage = Crate.GetStorage(curActionDO);
+
+            var hasAvailableRunTimeObjectsCrate = storage
+                .CratesOfType<StandardDesignTimeFieldsCM>(c => c.Label == "Available Run-Time Objects").FirstOrDefault() != null;
+
+            var hasSelectedObjectTypeCrate = storage
+                .CratesOfType<StandardDesignTimeFieldsCM>(c => c.Label == "SelectedObjectTypes").FirstOrDefault() != null;
+            
+            var hasConfigurationControlsCrate = storage
+                .CratesOfType<StandardConfigurationControlsCM>(c => c.Label == "Configuration_Controls").FirstOrDefault() != null;
+
+
+            if (hasAvailableRunTimeObjectsCrate && hasSelectedObjectTypeCrate && hasConfigurationControlsCrate)
+            {
+                return ConfigurationRequestType.Followup;
+            }
+
+            return ConfigurationRequestType.Initial;
         }
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
