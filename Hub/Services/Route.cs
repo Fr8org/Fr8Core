@@ -37,7 +37,7 @@ namespace Hub.Services
 
         public Route()
         {
-            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>(); 
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _subroute = ObjectFactory.GetInstance<ISubroute>();
             _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>();
             _action = ObjectFactory.GetInstance<IAction>();
@@ -185,22 +185,21 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var route = uow.RouteRepository.GetByKey(curRoute.Id);
-
-                foreach (var curActionDO in EnumerateActivities<ActionDO>(route))
-            {
-                try
+                var activities = EnumerateActivities<ActionDO>(route);
+                foreach (var curActionDO in activities)
                 {
+                    try
+                    {
                         var resultActivate = await _action.Activate(curActionDO);
 
-                    result = "success";
+                        result = "success";
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ApplicationException("Process template activation failed.", ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw new ApplicationException("Process template activation failed.", ex);
-                }
-            }
 
-            
                 uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Active;
                 uow.SaveChanges();
             }
@@ -217,19 +216,19 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-            foreach (var curActionDO in EnumerateActivities<ActionDO>(curRoute))
-            {
-                try
+                foreach (var curActionDO in EnumerateActivities<ActionDO>(curRoute))
                 {
+                    try
+                    {
                         var resultD = await _action.Deactivate(curActionDO);
 
-                    result = "success";
+                        result = "success";
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ApplicationException("Process template Deactivation failed.", ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw new ApplicationException("Process template Deactivation failed.", ex);
-                }
-            }
 
                 uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Inactive;
                 uow.SaveChanges();
@@ -313,7 +312,7 @@ namespace Hub.Services
         public List<RouteDO> MatchEvents(List<RouteDO> curRoutes, EventReportCM curEventReport)
         {
             List<RouteDO> subscribingRoutes = new List<RouteDO>();
-          
+
             foreach (var curRoute in curRoutes)
             {
                 //get the 1st activity
@@ -374,7 +373,7 @@ namespace Hub.Services
 
         public RouteDO Copy(IUnitOfWork uow, RouteDO route, string name)
         {
-            var root = (RouteDO) route.Clone();
+            var root = (RouteDO)route.Clone();
             root.Id = Guid.NewGuid();
             root.Name = name;
             uow.RouteNodeRepository.Add(root);

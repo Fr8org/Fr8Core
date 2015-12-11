@@ -29,10 +29,11 @@ module dockyard.tests.utils.fixtures {
         public static textBlock: model.TextBlock = new model.TextBlock('<span>teststs</span>', 'well well-lg');
 
         public static dropDownListBox: model.DropDownList = {
-            listItems: [{ key: 'test1', value: 'value1' }, { key: 'test2', value: 'value2' }, { key: 'test3', value: 'value3' }],
+            listItems: [{ key: 'test1', value: 'value1', tags: null, availability: model.AvailabilityType.Configuration }, { key: 'test2', value: 'value2', tags: null, availability: model.AvailabilityType.Configuration }, { key: 'test3', value: 'value3', tags: null, availability: model.AvailabilityType.Configuration  }],
             source: {
                 manifestType: 'testManifest',
-                label: 'testLabel'
+                label: 'testLabel',
+                filterByTag: null
             },
             type: 'DropDownList',
             fieldLabel: 'DropDownList Test',
@@ -106,10 +107,11 @@ module dockyard.tests.utils.fixtures {
             value: null,
             source: {
                 manifestType: 'testManifest',
-                label: 'testLabel'
+                label: 'testLabel',
+                filterByTag: null
             },
             valueSource: 'test',
-            listItems: [{ key: 'test1', value: 'value1' }, { key: 'test2', value: 'value2' }, { key: 'test3', value: 'value3' }],
+            listItems: [{ key: 'test1', value: 'value1', tags: null, availability: model.AvailabilityType.Configuration }, { key: 'test2', value: 'value2', tags: null, availability: model.AvailabilityType.Configuration }, { key: 'test3', value: 'value3', tags: null, availability: model.AvailabilityType.Configuration }],
             name: 'test name',
             fieldLabel: 'test label',
             selectedKey: null

@@ -723,12 +723,15 @@
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
     <Content Include="Scripts\app\_compiled.js" />
+    <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalListController.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ITerminal.ts" />
     <TypeScriptCompile Include="Scripts\app\model\TerminalActionSetDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\TerminalDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\services\TerminalService.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\RouteDetailsControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\jpattern.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ContainerControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\lib\jpattern.d.ts" />

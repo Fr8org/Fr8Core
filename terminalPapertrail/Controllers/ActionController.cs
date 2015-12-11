@@ -12,7 +12,6 @@ namespace terminalPapertrail.Controllers
         private const string curTerminal = "terminalPapertrail";
         private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
-
         [HttpPost]
         public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
