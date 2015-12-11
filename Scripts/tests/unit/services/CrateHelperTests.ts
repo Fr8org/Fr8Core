@@ -6,13 +6,14 @@ module dockyard.tests.controller {
 
     import CrateHelper = dockyard.services.CrateHelper;
     import fx = utils.fixtures;
+    import filterByTagFactory = dockyard.filters.filterByTag.factory;
 
 
     describe('CrateHelper', () => {
 
         var ch, crateStorage, emptyStorage, duplicateCrateStorage, controlList, fields;
         beforeEach(() => {
-            ch = new CrateHelper();
+            ch = new CrateHelper(filterByTagFactory);
             crateStorage = $.extend(true, {}, fx.CrateHelper.sampleStorage);
             emptyStorage = $.extend(true, {}, fx.CrateHelper.emptyStorage);
             duplicateCrateStorage = $.extend(true, {}, fx.CrateHelper.duplicateStorage);
@@ -125,7 +126,7 @@ module dockyard.tests.controller {
                 ch.populateListItemsFromDataSource(fields, crateStorage);
 
                 flatFieldList.forEach((field) => {
-                    if (field.type === 'DropDownList') {
+                    if (field.type === 'DropDownList' && !field.source.filterByTag) {
                         var crate = ch.findByManifestTypeAndLabel(crateStorage, field.source.manifestType, field.source.label);
                         expect(field.listItems.length > 0).toBe(true);
                         expect(field.listItems).toEqual(crate.contents.Fields);
@@ -137,7 +138,7 @@ module dockyard.tests.controller {
                 ch.populateListItemsFromDataSource(fields, crateStorage);
 
                 flatFieldList.forEach((field) => {
-                    if (field.type === 'TextSource') {
+                    if (field.type === 'TextSource' && !field.source.filterByTag) {
                         var crate = ch.findByManifestTypeAndLabel(crateStorage, field.source.manifestType, field.source.label);
                         expect(field.listItems.length > 0).toBe(true);
                         expect(field.listItems).toEqual(crate.contents.Fields);
@@ -150,6 +151,30 @@ module dockyard.tests.controller {
                 flatFieldList.forEach((field, index) => {
                     if (field.type !== 'DropDownList' && field.type !== 'TextSource' && !field.radios && !field.controls) {
                         expect(field).toEqual(copy[index]);
+                    }
+                });
+            });
+
+            it('should filter the list items for DropDownList if filterByTag property is provided', () => {
+                ch.populateListItemsFromDataSource(fields, crateStorage);
+
+                flatFieldList.forEach((field) => {
+                    if (field.type === 'DropDownList' && field.source.filterByTag) {
+                        field.listItems.forEach((item) => {
+                            expect(item.tags.indexOf(field.source.filterByTag)).not.toBe(-1);
+                        });
+                    }
+                });
+            });
+
+            it('should filter the list items for TextSource if filterByTag property is provided', () => {
+                ch.populateListItemsFromDataSource(fields, crateStorage);
+
+                flatFieldList.forEach((field) => {
+                    if (field.type === 'TextSource' && field.source.filterByTag) {
+                        field.listItems.forEach((item) => {
+                            expect(item.tags.indexOf(field.source.filterByTag)).not.toBe(-1);
+                        });
                     }
                 });
             });
