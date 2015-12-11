@@ -411,13 +411,13 @@ namespace terminalDocuSign.Actions
                 }
             };
 
+
             return templateRecipientPicker;
         }
 
         private Crate PackCrate_TemplateNames(DocuSignAuthDTO authDTO)
         {
             var template = new DocuSignTemplate();
-
             var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
             var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();
             var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
@@ -425,6 +425,8 @@ namespace terminalDocuSign.Actions
                 fields);
             return createDesignTimeFields;
         }
+
+
 
         private List<FieldDTO> CreateDocuSignEventFields()
         {
