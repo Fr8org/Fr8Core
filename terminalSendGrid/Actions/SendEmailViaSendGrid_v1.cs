@@ -143,17 +143,6 @@ namespace terminalSendGrid.Actions
             return crateDTO;
         }
 
-        public object Activate(ActionDO curActionDO)
-        {
-            //not currently any requirements that need attention at Activation Time
-            return curActionDO;
-        }
-
-        public object Deactivate(ActionDO curActionDO)
-        {
-            return curActionDO;
-        }
-
         private string CreateEmailHTMLText(string emailBody)
         {
             var template = @"<html><body>{0}</body></html>";
