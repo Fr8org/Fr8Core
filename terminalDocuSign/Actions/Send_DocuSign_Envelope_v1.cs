@@ -40,11 +40,6 @@ namespace terminalDocuSign.Actions
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public object Activate(ActionDO curActionDO)
-        {
-            return "Activate Request"; // Will be changed when implementation is plumbed in.
-        }
-
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             if (authTokenDO == null)
