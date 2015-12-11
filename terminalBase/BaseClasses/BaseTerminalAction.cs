@@ -186,7 +186,7 @@ namespace TerminalBase.BaseClasses
 
         public async virtual Task<List<String>> BuildUpstreamManifestList(ActionDO actionDO)
         {
-            var curCrates = await HubCommunicator.GetCratesByDirection<Crate>(actionDO, CrateDirection.Upstream);
+            var curCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream);
 
             return curCrates.Select(f => f.ManifestType.Type).Distinct().ToList();
         }
