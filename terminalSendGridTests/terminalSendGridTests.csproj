@@ -64,10 +64,6 @@
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>HealthMonitorUtility</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tests\HealthMonitor\HealthMonitor.csproj">
-      <Project>{83231577-13a5-419f-8269-02ae59d8951a}</Project>
-      <Name>HealthMonitor</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
