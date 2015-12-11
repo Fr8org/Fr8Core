@@ -27,13 +27,13 @@ namespace Hub.Services
     public class Action : IAction
     {
         private readonly ICrateManager _crate;
-        private readonly Authorization _authorizationToken;
+        private readonly IAuthorization _authorizationToken;
 
         private readonly IRouteNode _routeNode;
 
         public Action()
         {
-            _authorizationToken = new Authorization();
+            _authorizationToken = ObjectFactory.GetInstance<IAuthorization>();
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }

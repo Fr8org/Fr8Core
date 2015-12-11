@@ -20,7 +20,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace Hub.Services
 {
-    public class Authorization
+    public class Authorization : IAuthorization
     {
         private readonly ICrateManager _crate;
 	    private readonly ITime _time;
@@ -394,7 +394,7 @@ namespace Hub.Services
             }
         }
 
-        private void RemoveAuthenticationCrate(ActionDTO actionDTO)
+        public void RemoveAuthenticationCrate(ActionDTO actionDTO)
         {
             using (var updater = _crate.UpdateStorage(() => actionDTO.CrateStorage))
             {
@@ -539,6 +539,20 @@ namespace Hub.Services
                     AddAuthenticationCrate(curActionDto, activityTemplate.AuthenticationType);
                     AddAuthenticationLabel(curActionDto);
                 }
+            }
+        }
+
+        public IEnumerable<AuthorizationTokenDO> GetAllTokens(string accountId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var authTokens = uow.AuthorizationTokenRepository
+                    .GetAll()
+                    .Where(x => x.UserID == accountId)
+                    .OrderBy(x => x.ExternalAccountId)
+                    .ToList();
+
+                return authTokens;
             }
         }
     }

@@ -16,13 +16,12 @@ namespace HubWeb.Controllers
     public class AuthenticationCallbackController : Controller
     {
         private readonly IAction _action;
-
-        private readonly Authorization _authorization;
+        private readonly IAuthorization _authorization;
 
         public AuthenticationCallbackController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
-            _authorization = new Authorization();
+            _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
 
         [HttpGet]

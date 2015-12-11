@@ -8,6 +8,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Infrastructure.StructureMap;
+using Hub.Interfaces;
 using Hub.Services;
 
 namespace HubWeb.Controllers
@@ -15,13 +16,13 @@ namespace HubWeb.Controllers
     public class AuthenticationController : ApiController
     {
         private readonly ISecurityServices _security;
-        private readonly Authorization _authorization;
+        private readonly IAuthorization _authorization;
 
 
         public AuthenticationController()
         {
             _security = ObjectFactory.GetInstance<ISecurityServices>();
-            _authorization = new Authorization();
+            _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
 
         [HttpPost]
