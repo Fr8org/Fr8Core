@@ -209,6 +209,19 @@ module dockyard.tests.controller {
 
         });
 
+        describe('.getAvailableFieldTypes()', () => {
+
+            it('should return the list of unique tags', () => {
+                var list = ch.getAvailableFieldTypes(crateStorage);
+                expect(list).toEqual(['EmailAddress', 'Date']);
+            });
+
+            it('should return an empty list if nothing is found', () => {
+                var list = ch.getAvailableFieldTypes(emptyStorage);
+                expect(list).toEqual([]);
+            });
+        });
+
     });
 
 }

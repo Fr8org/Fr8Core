@@ -161,6 +161,8 @@ namespace terminalDocuSign.Actions
                 }
             }
 
+            await UpdateUpstreamCrate(curActionDO);
+
             return curActionDO;
         }
 
@@ -221,6 +223,7 @@ namespace terminalDocuSign.Actions
 
                 updater.CrateStorage.Add(crateUserDefinedDTO);
                 updater.CrateStorage.Add(crateStandardDTO);
+                
             }
 
             return await Task.FromResult(curActionDO);

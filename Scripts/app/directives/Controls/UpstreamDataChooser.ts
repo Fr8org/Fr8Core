@@ -39,8 +39,8 @@ module dockyard.directives.upstreamDataChooser {
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
 
-                var manifestTypeListCrate = CrateHelper.findByManifestTypeAndLabel($scope.currentAction.crateStorage, 'Standard Design-Time Fields', 'Upstream Manifest Type List');
-                var labelListCrate = CrateHelper.findByManifestTypeAndLabel($scope.currentAction.crateStorage, 'Standard Design-Time Fields', 'Upstream Crate Label List');
+                var manifestTypeListCrate = CrateHelper.findByManifestTypeAndLabel($scope.currentAction.crateStorage, 'Standard Design-Time Fields', 'Upstream Manifest Type List') || { contents: { Fields: [] } };
+                var labelListCrate = CrateHelper.findByManifestTypeAndLabel($scope.currentAction.crateStorage, 'Standard Design-Time Fields', 'Upstream Crate Label List') || { contents: { Fields: [] } };
 
                 $scope.manifestList = <model.DropDownList>{
                     listItems: (<any>manifestTypeListCrate.contents).Fields.map((field) => { return { key: field.value, value: null }; }), selectedKey: $scope.field.selectedManifest

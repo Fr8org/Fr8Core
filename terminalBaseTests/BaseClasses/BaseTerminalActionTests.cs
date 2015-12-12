@@ -150,15 +150,15 @@ namespace terminalBaseTests.BaseClasses
             }
         }
 
+        private static HashSet<CrateManifestType> ExcludedManifestTypes = new HashSet<CrateManifestType>()
+        {
+            ManifestDiscovery.Default.GetManifestType<StandardConfigurationControlsCM>(),
+            ManifestDiscovery.Default.GetManifestType<EventSubscriptionCM>()
+        };
+
         [Test]
         public async void BuildUpstreamManifestList_ReturnsListOfUpstreamManifestTypes()
         {
-            var excludedManifestTypes = new HashSet<CrateManifestType>()
-            {
-                ManifestDiscovery.Default.GetManifestType<StandardConfigurationControlsCM>(),
-                ManifestDiscovery.Default.GetManifestType<EventSubscriptionCM>()
-            };
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
@@ -173,7 +173,7 @@ namespace terminalBaseTests.BaseClasses
 
                 foreach (var manifest in manifestList)
                 {
-                    Assert.IsFalse(excludedManifestTypes.Contains(manifest));
+                    Assert.IsFalse(ExcludedManifestTypes.Contains(manifest));
                 }
 
             }
@@ -195,7 +195,15 @@ namespace terminalBaseTests.BaseClasses
 
                 foreach (var crate in UtilitiesTesting.Fixtures.FixtureData.TestCrateDTO3())
                 {
-                    Assert.IsTrue(crateLabelList.Contains(crate.Label));
+                    if (ExcludedManifestTypes.Contains(crate.ManifestType))
+                    {
+                        Assert.IsFalse(crateLabelList.Contains(crate.Label));
+
+                    }
+                    else
+                    {
+                        Assert.IsTrue(crateLabelList.Contains(crate.Label));
+                    }
                 }
             }
         }

@@ -723,6 +723,8 @@
     <Content Include="Documentation\VoidEnvelope.html" />
     <Content Include="Scripts\app\_compiled.js" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamDataChooser.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamDataChooser.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_UpstreamDataChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\jpattern.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ContainerControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\lib\jpattern.d.ts" />

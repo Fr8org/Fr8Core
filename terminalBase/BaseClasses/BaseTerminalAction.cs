@@ -199,7 +199,7 @@ namespace TerminalBase.BaseClasses
         public async virtual Task<List<String>> BuildUpstreamCrateLabelList(ActionDO actionDO)
         {
             var curCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream);
-            return curCrates.Select(f => f.Label).Distinct().ToList();
+            return curCrates.Where(x => !ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.Label).Distinct().ToList();
         }
 
         public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamManifestListCrate(ActionDO actionDO)
