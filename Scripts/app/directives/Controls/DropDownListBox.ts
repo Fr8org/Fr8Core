@@ -24,12 +24,14 @@ module dockyard.directives.dropDownListBox {
             };
 
             var findAndSetSelectedItem = function () {
+                debugger;
                 for (var i = 0; i < $scope.field.listItems.length; i++) {
-                    if ($scope.field.value == $scope.field.listItems[i].value
+                    if ($scope.field.listItems[i].selected ||
+                        ($scope.field.value == $scope.field.listItems[i].value 
                         && (!$scope.field.hasOwnProperty('selectedKey')
                             || $scope.field.hasOwnProperty('selectedKey')
                                 && $scope.field.selectedKey == $scope.field.listItems[i].key
-                            )) {
+                            ))) {
                         $scope.selectedItem = $scope.field.listItems[i];
                         break;
                     }
