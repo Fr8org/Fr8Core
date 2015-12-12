@@ -784,6 +784,8 @@
     <Content Include="Service References\Application Insights\ConnectedService.json" />
     <Content Include="Views\Welcome\Index.cshtml" />
     <Content Include="Views\AngularTemplate\RunRouteButton.cshtml" />
+    <None Include="Properties\PublishProfiles\fr8dev - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\fr8dev - Web Deploy.pubxml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
