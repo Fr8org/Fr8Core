@@ -161,42 +161,6 @@ namespace terminalDocuSign.Actions
                 }
             }
 
-            await UpdateUpstreamCrate(curActionDO);
-
-            using (var updater = Crate.UpdateStorage(curActionDO))
-            {
-                // Build a crate with the list of available upstream fields
-                var curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.StandardDesignTimeFields
-                                                                                    && c.Label == "Upstream Manifest Type List");
-
-                if (curUpstreamFieldsCrate != null)
-                {
-                    updater.CrateStorage.Remove(curUpstreamFieldsCrate);
-                }
-
-                var manifestList = (await BuildUpstreamManifestList(curActionDO));
-                var fields = manifestList.Select(f => new FieldDTO(null, f)).ToArray();
-
-                curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", fields);
-                updater.CrateStorage.Add(curUpstreamFieldsCrate);
-
-
-                
-                curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.StandardDesignTimeFields
-                                                                    && c.Label == "Upstream Crate Label List");
-
-                if (curUpstreamFieldsCrate != null)
-                {
-                    updater.CrateStorage.Remove(curUpstreamFieldsCrate);
-                }
-
-                var labelList = (await BuildUpstreamCrateLabelList(curActionDO));
-                fields = labelList.Select(f => new FieldDTO(null, f)).ToArray();
-
-                curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
-                updater.CrateStorage.Add(curUpstreamFieldsCrate);
-            }
-
             return curActionDO;
         }
 
@@ -283,8 +247,7 @@ namespace terminalDocuSign.Actions
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
-                new TextSource("Email Address", "Upstream Terminal-Provided Fields", "Recipient"),
-                new UpstreamDataChooser()
+                new TextSource("Email Address", "Upstream Terminal-Provided Fields", "Recipient")
             };
 
             var controls = new StandardConfigurationControlsCM()

@@ -187,15 +187,29 @@ namespace TerminalBase.BaseClasses
         public async virtual Task<List<String>> BuildUpstreamManifestList(ActionDO actionDO)
         {
             var curCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream);
-
             return curCrates.Select(f => f.ManifestType.Type).Distinct().ToList();
         }
 
         public async virtual Task<List<String>> BuildUpstreamCrateLabelList(ActionDO actionDO)
         {
-            var curCrates = await HubCommunicator.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream);
-
+            var curCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream);
             return curCrates.Select(f => f.Label).Distinct().ToList();
+        }
+
+        public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamManifestListCrate(ActionDO actionDO)
+        {
+            var manifestList = (await BuildUpstreamManifestList(actionDO));
+            var fields = manifestList.Select(f => new FieldDTO(null, f)).ToArray();
+
+            return Crate.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", fields);
+        }
+
+        public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamCrateLabelListCrate(ActionDO actionDO)
+        {
+            var labelList = (await BuildUpstreamCrateLabelList(actionDO));
+            var fields = labelList.Select(f => new FieldDTO(null, f)).ToArray();
+
+            return Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
         }
 
         public StandardDesignTimeFieldsCM MergeContentFields(List<Crate<StandardDesignTimeFieldsCM>> curCrates)
