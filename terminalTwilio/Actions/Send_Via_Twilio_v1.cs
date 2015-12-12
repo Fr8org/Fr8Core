@@ -67,7 +67,9 @@ namespace terminalTwilio.Actions
                     updater.CrateStorage.Remove(curUpstreamFieldsCrate);
                 }
 
-                updater.CrateStorage.Add(await GetUpstreamFields(curActionDO));
+                var upstreamFields = await GetUpstreamFields(curActionDO);
+                if(upstreamFields != null)
+                    updater.CrateStorage.Add(upstreamFields);
             }
             return await Task.FromResult(curActionDO);
         }
@@ -99,18 +101,31 @@ namespace terminalTwilio.Actions
 
         private async Task<Crate> GetUpstreamFields(ActionDO actionDO)
         {
-            var upstream = (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream))
-                .Where(x => x.Label != "Upstream Terminal-Provided Fields")
-                .SelectMany(x => x.Content.Fields)
-                .ToArray();
+            List<Data.Crates.Crate<StandardDesignTimeFieldsCM>> upstream = null;
 
-            var availableFieldsCrate =
-                Crate.CreateDesignTimeFieldsCrate(
-                    "Upstream Terminal-Provided Fields",
-                    upstream
-                );
+            try
+            {
+                //throws exception from test classes when it cannot call webservice
+                upstream = await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream);
+            }
+            catch { }
 
-            return availableFieldsCrate;
+            if (upstream != null)
+            {
+                var upstreamFields = upstream.Where(x => x.Label != "Upstream Terminal-Provided Fields").SelectMany(x => x.Content.Fields).ToArray();
+
+                var availableFieldsCrate =
+                    Crate.CreateDesignTimeFieldsCrate(
+                        "Upstream Terminal-Provided Fields",
+                        upstreamFields
+                    );
+
+
+                return availableFieldsCrate;
+            }
+         
+            
+            return await Task.FromResult<Crate>(null);
         }
 
         /*
