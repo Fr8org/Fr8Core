@@ -36,7 +36,7 @@ namespace Hub.Services
         /// <returns>List of Incident</returns>
         public List<IncidentDO> GetAllIncidents(IUnitOfWork uow)
         {            
-            var incidentDO = uow.IncidentRepository.GetAll().ToList();
+            var incidentDO = uow.IncidentRepository.GetAll().Take(200).ToList();
             return incidentDO;
         }
 

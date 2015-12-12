@@ -62,7 +62,7 @@ namespace Hub.Managers
         private void SaveAndLogIncident(IncidentDO curIncident)
         {
             SaveIncident(curIncident);
-            _eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity);
+            _eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity, EventReporter.EventType.Error);
         }
 
         private void SaveIncident(IncidentDO curIncident)
