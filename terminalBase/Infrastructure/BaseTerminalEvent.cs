@@ -29,7 +29,7 @@ namespace TerminalBase.Infrastructure
         public BaseTerminalEvent()
         {
             //Regex used to fetch http://localhost:30643 
-            eventWebServerUrl = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";
+            eventWebServerUrl = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/api/v1/fr8_events";
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
             _crateManager = ObjectFactory.GetInstance<CrateManager>();
@@ -110,8 +110,12 @@ namespace TerminalBase.Infrastructure
         /// <param name="parser">delegate method</param>
         public async Task Process(string curExternalEventPayload,EventParser parser)
         {
-            var eventReportCrateDTO = parser.Invoke(curExternalEventPayload);       
-            new HttpClient().PostAsJsonAsync(new Uri(eventWebServerUrl, UriKind.Absolute), eventReportCrateDTO);
+            var eventReportCrateDTO = _crateManager.ToDto(parser.Invoke(curExternalEventPayload));
+            
+            if (eventReportCrateDTO != null)
+            {
+                await new HttpClient().PostAsJsonAsync(new Uri(eventWebServerUrl, UriKind.Absolute), eventReportCrateDTO);
+            }
         }
     }
 }

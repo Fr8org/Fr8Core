@@ -94,8 +94,8 @@ namespace terminalDocuSign.Actions
                     recipientEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Recipient")),
                     name = "MonitorAllDocuSignEvents",
                     urlToPublishTo =
-                        Regex.Match(ConfigurationManager.AppSettings["EventWebServerUrl"], @"(\w+://\w+:\d+)").Value +
-                        "/events?dockyard_terminal=terminalDocuSign&version=1"
+                        Regex.Match(ConfigurationManager.AppSettings["TerminalEndpoint"], @"(\w+://\w+:\d+)").Value +
+                        "/terminals/terminalDocuSign/events"
                 };
 
                 curDocuSignAccount.CreateDocuSignConnectProfile(monitorConnectConfiguration);
