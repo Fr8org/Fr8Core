@@ -66,9 +66,8 @@ namespace terminalTwilio.Actions
                 {
                     updater.CrateStorage.Remove(curUpstreamFieldsCrate);
                 }
-                var curUpstreamFields = GetRegisteredSenderNumbersData().ToArray();
-                curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
-                updater.CrateStorage.Add(curUpstreamFieldsCrate);
+
+                updater.CrateStorage.Add(await GetUpstreamFields(curActionDO));
             }
             return await Task.FromResult(curActionDO);
         }
@@ -96,6 +95,22 @@ namespace terminalTwilio.Actions
         private List<FieldDTO> GetRegisteredSenderNumbersData()
         {
             return _twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO() { Key = number, Value = number }).ToList();
+        }
+
+        private async Task<Crate> GetUpstreamFields(ActionDO actionDO)
+        {
+            var upstream = (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream))
+                .Where(x => x.Label != "Upstream Terminal-Provided Fields")
+                .SelectMany(x => x.Content.Fields)
+                .ToArray();
+
+            var availableFieldsCrate =
+                Crate.CreateDesignTimeFieldsCrate(
+                    "Upstream Terminal-Provided Fields",
+                    upstream
+                );
+
+            return availableFieldsCrate;
         }
 
         /*
@@ -136,7 +151,7 @@ namespace terminalTwilio.Actions
             }
             try
             {
-                KeyValuePair<string, string> smsInfo = ParseSMSNumberAndMsg(controlsCrate);
+                KeyValuePair<string, string> smsInfo = ParseSMSNumberAndMsg(controlsCrate, processPayload);
                 string smsNumber = smsInfo.Key;
                 string smsBody = smsInfo.Value;
 
@@ -174,7 +189,7 @@ namespace terminalTwilio.Actions
         /// </summary>
         /// <param name="crateDTO"></param>
         /// <returns>Key = SMS Number; Value = SMS Body</returns>
-        public KeyValuePair<string, string> ParseSMSNumberAndMsg(Crate crateDTO)
+        public KeyValuePair<string, string> ParseSMSNumberAndMsg(Crate crateDTO, PayloadDTO processPayload)
         {
             var standardControls = crateDTO.Get<StandardConfigurationControlsCM>();
             if (standardControls == null)
@@ -182,7 +197,7 @@ namespace terminalTwilio.Actions
                 throw new ArgumentException("CrateDTO is not a standard UI control");
             }
             var smsBodyFields = standardControls.FindByName("SMS_Body");
-            var smsNumber = GetSMSNumber((TextSource)standardControls.Controls[0]);
+            var smsNumber = GetSMSNumber((TextSource)standardControls.Controls[0], processPayload);
             return new KeyValuePair<string, string>(smsNumber, smsBodyFields.Value);
         }
 
@@ -204,7 +219,7 @@ namespace terminalTwilio.Actions
         //    return smsNumber;
         //}
 
-        private string GetSMSNumber(TextSource control)
+        private string GetSMSNumber(TextSource control, PayloadDTO processPayload)
         {
             if (control == null)
             {
@@ -215,6 +230,19 @@ namespace terminalTwilio.Actions
                 case "specific":
                     return control.Value;
                 case "upstream":
+                    //get the payload data 'Key' based on the selected control.Value and get its 'Value' from payload data
+                    if (processPayload != null)
+                    {
+                        var crateStorage = Crate.FromDto(processPayload.CrateStorage);
+                        var payloadDataCM = crateStorage.CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();
+
+                        if (payloadDataCM != null)
+                        {
+                            var smsValue = payloadDataCM.PayloadObjects.SelectMany(s => s.PayloadObject).Where(w => w.Key == control.Value).Select(s => s.Value).FirstOrDefault();
+
+                            return smsValue;
+                        }
+                    }
                     return control.Value;
                 default:
                     throw new ApplicationException("Could not extract number, unknown mode.");
