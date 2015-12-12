@@ -193,7 +193,7 @@ namespace TerminalBase.BaseClasses
 
         public async virtual Task<List<String>> BuildUpstreamCrateLabelList(ActionDO actionDO)
         {
-            var curCrates = await HubCommunicator.GetCratesByDirection<Crate>(actionDO, CrateDirection.Upstream);
+            var curCrates = await HubCommunicator.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream);
 
             return curCrates.Select(f => f.Label).Distinct().ToList();
         }

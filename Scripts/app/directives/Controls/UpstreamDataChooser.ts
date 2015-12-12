@@ -44,11 +44,12 @@ module dockyard.directives.upstreamDataChooser {
                 $attrs: ng.IAttributes) => {
 
                 var manifestTypeListCrate = CrateHelper.findByManifestTypeAndLabel($scope.currentAction.crateStorage, 'Standard Design-Time Fields', 'Upstream Manifest Type List');
+                var labelListCrate = CrateHelper.findByManifestTypeAndLabel($scope.currentAction.crateStorage, 'Standard Design-Time Fields', 'Upstream Crate Label List');
 
                 $scope.manifestList = {
                     listItems: (<any>manifestTypeListCrate.contents).Fields.map((field) => { return { key: field.value }; })
                 };
-                $scope.labelList = { listItems: [] };
+                $scope.labelList = { listItems: (<any>labelListCrate.contents).Fields.map((field) => { return { key: field.value }; }) };
 
                 $scope.fieldTypeList = {
                     listItems: CrateHelper.getAvailableFieldTypes($scope.currentAction.crateStorage).map((value) => { return { key: value }; })

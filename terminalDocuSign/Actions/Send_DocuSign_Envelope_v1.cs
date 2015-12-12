@@ -179,6 +179,22 @@ namespace terminalDocuSign.Actions
 
                 curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", fields);
                 updater.CrateStorage.Add(curUpstreamFieldsCrate);
+
+
+                
+                curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.StandardDesignTimeFields
+                                                                    && c.Label == "Upstream Crate Label List");
+
+                if (curUpstreamFieldsCrate != null)
+                {
+                    updater.CrateStorage.Remove(curUpstreamFieldsCrate);
+                }
+
+                var labelList = (await BuildUpstreamCrateLabelList(curActionDO));
+                fields = labelList.Select(f => new FieldDTO(null, f)).ToArray();
+
+                curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
+                updater.CrateStorage.Add(curUpstreamFieldsCrate);
             }
 
             return curActionDO;
