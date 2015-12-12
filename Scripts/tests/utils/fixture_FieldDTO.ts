@@ -3,7 +3,7 @@ module dockyard.tests.utils.fixtures {
 
     export class FieldDTO {
 
-        public static newRoute = <interfaces.IRouteVM> {
+        public static newRoute = <interfaces.IRouteVM>{
             name: 'Test',
             description: 'Description',
             routeState: 1
@@ -29,7 +29,7 @@ module dockyard.tests.utils.fixtures {
         public static textBlock: model.TextBlock = new model.TextBlock('<span>teststs</span>', 'well well-lg');
 
         public static dropDownListBox: model.DropDownList = {
-            listItems: [{ key: 'test1', value: 'value1', tags: null, availability: model.AvailabilityType.Configuration }, { key: 'test2', value: 'value2', tags: null, availability: model.AvailabilityType.Configuration }, { key: 'test3', value: 'value3', tags: null, availability: model.AvailabilityType.Configuration  }],
+            listItems: [{ key: 'test1', selected: false, value: 'value1', tags: null, availability: model.AvailabilityType.Configuration }, { key: 'test2', selected: false, value: 'value2', tags: null, availability: model.AvailabilityType.Configuration }, { key: 'test3', selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration }],
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel',
@@ -93,7 +93,7 @@ module dockyard.tests.utils.fixtures {
             Key: 'test2',
             Value: 'value'
         };
-        
+
         public static fieldList = {
             value: JSON.stringify([FieldDTO.designTimeField]),
             field: 'test2'
@@ -111,7 +111,17 @@ module dockyard.tests.utils.fixtures {
                 filterByTag: null
             },
             valueSource: 'test',
-            listItems: [{ key: 'test1', value: 'value1', tags: null, availability: model.AvailabilityType.Configuration }, { key: 'test2', value: 'value2', tags: null, availability: model.AvailabilityType.Configuration }, { key: 'test3', value: 'value3', tags: null, availability: model.AvailabilityType.Configuration }],
+            listItems: [{
+                key: 'test1',
+                selected: false,
+                value: 'value1', tags: null, availability: model.AvailabilityType.Configuration
+            },
+                {
+                    key: 'test2',
+                    selected: false,
+                    value: 'value2', tags: null, availability: model.AvailabilityType.Configuration
+                },
+                { key: 'test3', selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration }],
             name: 'test name',
             fieldLabel: 'test label',
             selectedKey: null

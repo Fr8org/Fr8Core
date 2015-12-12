@@ -71,7 +71,7 @@
     }
 
     export class DropDownListItem extends FieldDTO {
-        
+        selected: boolean;
     }
 
     export class FieldSource {
