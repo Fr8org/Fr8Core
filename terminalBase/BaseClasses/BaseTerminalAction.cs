@@ -40,6 +40,12 @@ namespace TerminalBase.BaseClasses
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
 
+        private static HashSet<CrateManifestType> ExcludedManifestTypes = new HashSet<CrateManifestType>()
+        {
+            ManifestDiscovery.Default.GetManifestType<StandardConfigurationControlsCM>(),
+            ManifestDiscovery.Default.GetManifestType<EventSubscriptionCM>()
+        };
+
         public BaseTerminalAction()
         {
             Crate = new CrateManager();
@@ -184,10 +190,10 @@ namespace TerminalBase.BaseClasses
             return mergedFields;
         }
 
-        public async virtual Task<List<String>> BuildUpstreamManifestList(ActionDO actionDO)
+        public async virtual Task<List<CrateManifestType>> BuildUpstreamManifestList(ActionDO actionDO)
         {
-            var curCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream);
-            return curCrates.Select(f => f.ManifestType.Type).Distinct().ToList();
+            var upstreamCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream);
+            return upstreamCrates.Where(x => !ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.ManifestType).Distinct().ToList();
         }
 
         public async virtual Task<List<String>> BuildUpstreamCrateLabelList(ActionDO actionDO)
@@ -199,7 +205,7 @@ namespace TerminalBase.BaseClasses
         public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamManifestListCrate(ActionDO actionDO)
         {
             var manifestList = (await BuildUpstreamManifestList(actionDO));
-            var fields = manifestList.Select(f => new FieldDTO(null, f)).ToArray();
+            var fields = manifestList.Select(f => new FieldDTO(f.Id.ToString(), f.Type)).ToArray();
 
             return Crate.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", fields);
         }

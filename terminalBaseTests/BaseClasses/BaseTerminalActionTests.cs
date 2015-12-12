@@ -17,6 +17,7 @@ using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using System.Collections.Generic;
 
 namespace terminalBaseTests.BaseClasses
 {
@@ -128,7 +129,7 @@ namespace terminalBaseTests.BaseClasses
                 var result = await _baseTerminalAction.GetDesignTimeFields(
                     curAction, CrateDirection.Upstream);
                 Assert.NotNull(result);
-                Assert.AreEqual(16, result.Fields.Count);
+                Assert.AreEqual(48, result.Fields.Count);
             }
         }
 
@@ -145,10 +146,59 @@ namespace terminalBaseTests.BaseClasses
                 var result = await _baseTerminalAction.GetDesignTimeFields(
                     curAction, CrateDirection.Downstream);
                 Assert.NotNull(result);
-                Assert.AreEqual(18, result.Fields.Count);
+                Assert.AreEqual(54, result.Fields.Count);
             }
         }
 
+        [Test]
+        public async void BuildUpstreamManifestList_ReturnsListOfUpstreamManifestTypes()
+        {
+            var excludedManifestTypes = new HashSet<CrateManifestType>()
+            {
+                ManifestDiscovery.Default.GetManifestType<StandardConfigurationControlsCM>(),
+                ManifestDiscovery.Default.GetManifestType<EventSubscriptionCM>()
+            };
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
+                uow.SaveChanges();
+
+                ActionDO curAction = FixtureData.TestAction57();
+                var manifestList = await _baseTerminalAction.BuildUpstreamManifestList(curAction);
+
+                Assert.NotNull(manifestList);
+                Assert.AreEqual(manifestList.Count(), manifestList.Distinct().Count());
+                Assert.AreEqual(3, manifestList.Count());
+
+                foreach (var manifest in manifestList)
+                {
+                    Assert.IsFalse(excludedManifestTypes.Contains(manifest));
+                }
+
+            }
+        }
+
+        [Test]
+        public async void BuildUpstreamCrateLabelList_ReturnsListOfUpstreamCrateLabels()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.RouteNodeRepository.Add(FixtureData.TestActionTree());
+                uow.SaveChanges();
+
+                ActionDO curAction = FixtureData.TestAction57();
+                var crateLabelList = await _baseTerminalAction.BuildUpstreamCrateLabelList(curAction);
+
+                Assert.NotNull(crateLabelList);
+                Assert.AreEqual(crateLabelList.Count(), crateLabelList.Distinct().Count());
+
+                foreach (var crate in UtilitiesTesting.Fixtures.FixtureData.TestCrateDTO3())
+                {
+                    Assert.IsTrue(crateLabelList.Contains(crate.Label));
+                }
+            }
+        }
 
         private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
@@ -156,8 +206,6 @@ namespace terminalBaseTests.BaseClasses
                 return ConfigurationRequestType.Initial;
             return ConfigurationRequestType.Followup;
         }
-
-       
 
     }
 }
