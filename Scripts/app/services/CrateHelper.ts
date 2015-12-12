@@ -194,7 +194,7 @@
             var fields = <string[]>(<any>fieldsCrate.contents).Fields;
             var result = [];
             <string[]>(<any>fieldsCrate.contents).Fields.forEach((field) => {
-                if (result.indexOf(field.tags) === -1) result.push(field.tags);
+                if (field.tags && result.indexOf(field.tags) === -1) result.push(field.tags);
             });
 
             return result;

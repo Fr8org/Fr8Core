@@ -4,16 +4,11 @@ module dockyard.directives.upstreamDataChooser {
 
     export interface IUpstreamDataChooser extends ng.IScope {
         field: model.UpstreamDataChooser;
-        onChange: () => void;
-        manifestList: {
-            listItems: string[];
-        },
-        labelList: {
-            listItems: string[];
-        },
-        fieldTypeList: {
-            listItems: any;
-        },
+        change: () => (field: model.ControlDefinitionDTO) => void;
+        onChange: (field: model.ControlDefinitionDTO) => void;
+        manifestList: model.DropDownList,
+        labelList: model.DropDownList,
+        fieldTypeList: model.DropDownList,
         currentAction: model.ActionDTO;
     }
 
@@ -27,7 +22,8 @@ module dockyard.directives.upstreamDataChooser {
         public restrict = 'E';
         public scope = {
             field: '=',
-            currentAction: '='
+            currentAction: '=',
+            change: '&'
         }
 
         constructor(CrateHelper: services.CrateHelper) {
@@ -46,19 +42,24 @@ module dockyard.directives.upstreamDataChooser {
                 var manifestTypeListCrate = CrateHelper.findByManifestTypeAndLabel($scope.currentAction.crateStorage, 'Standard Design-Time Fields', 'Upstream Manifest Type List');
                 var labelListCrate = CrateHelper.findByManifestTypeAndLabel($scope.currentAction.crateStorage, 'Standard Design-Time Fields', 'Upstream Crate Label List');
 
-                $scope.manifestList = {
-                    listItems: (<any>manifestTypeListCrate.contents).Fields.map((field) => { return { key: field.value }; })
+                $scope.manifestList = <model.DropDownList>{
+                    listItems: (<any>manifestTypeListCrate.contents).Fields.map((field) => { return { key: field.value, value: null }; }), selectedKey: $scope.field.selectedManifest
                 };
-                $scope.labelList = { listItems: (<any>labelListCrate.contents).Fields.map((field) => { return { key: field.value }; }) };
-
-                $scope.fieldTypeList = {
-                    listItems: CrateHelper.getAvailableFieldTypes($scope.currentAction.crateStorage).map((value) => { return { key: value }; })
+                $scope.labelList = <model.DropDownList>{
+                    listItems: (<any>labelListCrate.contents).Fields.map((field) => { return { key: field.value }; }), selectedKey: $scope.field.selectedLabel
+                };
+                $scope.fieldTypeList = <model.DropDownList>{
+                    listItems: CrateHelper.getAvailableFieldTypes($scope.currentAction.crateStorage).map((value) => { return { key: value }; }), selectedKey: $scope.field.selectedFieldType
                 };
 
+                $scope.onChange = (field: model.ControlDefinitionDTO) => {
+                    $scope.field.selectedManifest = $scope.manifestList.selectedKey;
+                    $scope.field.selectedLabel = $scope.labelList.selectedKey;
+                    $scope.field.selectedFieldType = $scope.fieldTypeList.selectedKey;
 
-                $scope.onChange = () => {
-
+                    if ($scope.change) $scope.change()(field);
                 }
+
             }
 
         };

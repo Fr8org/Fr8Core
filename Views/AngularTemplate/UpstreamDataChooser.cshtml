@@ -1,7 +1,9 @@
 ﻿@*UpstreamDataChooser main container*@
 <div>
-    <label>Convert which upstream data:</label>
-    <label>Crate Manifest: </label><drop-down-list-box field="manifestList"></drop-down-list-box>
-    <label>Crate Label: </label><drop-down-list-box field="labelList"></drop-down-list-box>
-    <label>Field Type: </label><drop-down-list-box field="fieldTypeList"></drop-down-list-box>
+    <div>Convert which upstream data:</div>
+    <div style="margin-left: 20px;">
+        <label>Crate Manifest: </label><drop-down-list-box field="manifestList" change="onChange"></drop-down-list-box>
+        <label>Crate Label: </label><drop-down-list-box field="labelList" change="onChange"></drop-down-list-box>
+        <label>Field Type: </label><drop-down-list-box field="fieldTypeList" change="onChange"></drop-down-list-box>
+    </div>
 </div>
