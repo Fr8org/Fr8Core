@@ -29,6 +29,9 @@ namespace Data.Infrastructure
         public delegate void IncidentTerminalRunPOSTFailureHandler(string terminalUrl, string curActionDTO, string errorMessage);
         public static event IncidentTerminalRunPOSTFailureHandler IncidentTerminalRunFailed;
 
+        public delegate void IncidentTerminalInternalFailureHandler(string terminalUrl, string curActionDTO, Exception e);
+        public static event IncidentTerminalInternalFailureHandler IncidentTerminalInternalFailureOccurred;
+
         public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string curActionDTO);
         public static event IncidentTerminalActionActivationPOSTFailureHandler IncidentTerminalActionActivationFailed;
 
@@ -161,6 +164,12 @@ namespace Data.Infrastructure
         {
             IncidentTerminalRunPOSTFailureHandler handler = IncidentTerminalRunFailed;
             if (handler != null) handler(terminalUrl, actionDTO, errorMessage);
+        }
+
+        public static void TerminalInternalFailureOccurred(string terminalUrl, string actionDTO, Exception e)
+        {
+            IncidentTerminalInternalFailureHandler handler = IncidentTerminalInternalFailureOccurred;
+            if (handler != null) handler(terminalUrl, actionDTO, e);
         }
 
         public static void TerminalActionActivationFailed(string terminalUrl, string actionDTO)

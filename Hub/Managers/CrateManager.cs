@@ -86,13 +86,13 @@ namespace Hub.Managers
         {
             if (String.IsNullOrEmpty(label))
                 throw new ArgumentException("Parameter Label is empty");
-            
+
             if (logItemList == null)
                 throw new ArgumentNullException("Parameter LogItemDTO list is null.");
-            
+
             if (containerDO == null)
                 throw new ArgumentNullException("Parameter ContainerDO is null.");
-            
+
             var curManifestSchema = new StandardLoggingCM()
             {
                 Item = logItemList
@@ -116,10 +116,10 @@ namespace Hub.Managers
 
         public Crate CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions)
         {
-            return Crate.FromContent(label, new EventSubscriptionCM() {Subscriptions = subscriptions.ToList()});
+            return Crate.FromContent(label, new EventSubscriptionCM() { Subscriptions = subscriptions.ToList() });
         }
 
-        
+
         public Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport)
         {
             return Crate.FromContent(label, eventReport);
@@ -146,22 +146,29 @@ namespace Hub.Managers
 
             // Rows containing column names
             var columnHeadersRowDTO = tableDataMS.Table[0];
-
-            for (int i = 1; i < tableDataMS.Table.Count; ++i) // Since first row is headers; hence i starts from 1
+            int i = 1;
+            for (i = 1; i < tableDataMS.Table.Count; ++i) // Since first row is headers; hence i starts from 1
             {
-                var tableRowDTO = tableDataMS.Table[i];
-                var fields = new List<FieldDTO>();
-                for (int j = 0; j < tableRowDTO.Row.Count; ++j)
+                try
                 {
-                    var tableCellDTO = tableRowDTO.Row[j];
-                    var listFieldDTO = new FieldDTO()
+                    var tableRowDTO = tableDataMS.Table[i];
+                    var fields = new List<FieldDTO>();
+                    for (int j = 0; j < columnHeadersRowDTO.Row.Count; ++j)
                     {
-                        Key = columnHeadersRowDTO.Row[j].Cell.Value,
-                        Value = tableCellDTO.Cell.Value,
-                    };
-                    fields.Add(listFieldDTO);
+                        var tableCellDTO = tableRowDTO.Row[j];
+                        var listFieldDTO = new FieldDTO()
+                        {
+                            Key = columnHeadersRowDTO.Row[j].Cell.Value,
+                            Value = tableCellDTO.Cell.Value,
+                        };
+                        fields.Add(listFieldDTO);
+                    }
+                    payloadDataMS.PayloadObjects.Add(new PayloadObjectDTO() { PayloadObject = fields, });
                 }
-                payloadDataMS.PayloadObjects.Add(new PayloadObjectDTO() { PayloadObject = fields, });
+                catch (Exception)
+                {
+                    //Avoid general failure of the process if there is an error processing individual records in the table
+                }
             }
 
             return payloadDataMS;
