@@ -117,7 +117,7 @@ module dockyard.directives.filePicker {
             var deferred = this.$q.defer();
 
             this.UploadService.upload({
-                url: '/files',
+                url: '/api/files/files',
                 file: file
             }).progress((event: any) => {
                 console.log('Loaded: ' + event.loaded + ' / ' + event.total);
@@ -134,7 +134,7 @@ module dockyard.directives.filePicker {
 
         public listFiles(): ng.IPromise<Array<interfaces.IFileDescriptionDTO>> {
             var deferred = this.$q.defer();
-            this.$http.get<Array<interfaces.IFileDescriptionDTO>>('/files').then(resp => {
+            this.$http.get<Array<interfaces.IFileDescriptionDTO>>('/api/files/files').then(resp => {
                 deferred.resolve(resp.data);
             }, err => {
                 deferred.reject(err);
