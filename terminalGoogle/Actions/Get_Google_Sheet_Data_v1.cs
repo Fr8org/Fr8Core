@@ -31,6 +31,7 @@ namespace terminalGoogle.Actions
 
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
+            if (authTokenDO == null) return true;
             if (!base.NeedsAuthentication(authTokenDO)) 
                 return false;
             var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);

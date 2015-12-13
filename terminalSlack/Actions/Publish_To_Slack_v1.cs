@@ -140,7 +140,7 @@ namespace terminalSlack.Actions
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectChannel,
-                new TextSource("Select Message Field", "Upstream Terminal-Provided Fields", "Select_Message_Field")
+                new TextSource("Select Message Field", "Available Fields", "Select_Message_Field")
             };
 
             return Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());

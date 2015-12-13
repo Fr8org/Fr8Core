@@ -133,10 +133,10 @@ namespace Hub.Managers
 
         public Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)
         {
-            return Crate.FromContent(crateLabel, TransformStandardTableDataToStandardPayloadDataExcel(payloadDataObjectType, tableDataMS));
+            return Crate.FromContent(crateLabel, TransformStandardTableDataToStandardPayloadData(payloadDataObjectType, tableDataMS));
         }
 
-        private StandardPayloadDataCM TransformStandardTableDataToStandardPayloadDataExcel(string curObjectType, StandardTableDataCM tableDataMS)
+        public StandardPayloadDataCM TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataCM tableDataMS)
         {
             var payloadDataMS = new StandardPayloadDataCM()
             {
@@ -145,25 +145,23 @@ namespace Hub.Managers
             };
 
             // Rows containing column names
-            var columnHeadersRowDTO = tableDataMS.Table[0];
-            int i = 1;
-            for (i = 1; i < tableDataMS.Table.Count; ++i) // Since first row is headers; hence i starts from 1
+            for (int i = 0; i < tableDataMS.Table.Count; ++i) // Since first row is headers; hence i starts from 1
             {
                 try
                 {
                     var tableRowDTO = tableDataMS.Table[i];
                     var fields = new List<FieldDTO>();
-                    for (int j = 0; j < columnHeadersRowDTO.Row.Count; ++j)
+                    for (int j = 0; j < tableRowDTO.Row.Count; ++j)
                     {
                         var tableCellDTO = tableRowDTO.Row[j];
                         var listFieldDTO = new FieldDTO()
                         {
-                            Key = columnHeadersRowDTO.Row[j].Cell.Value,
+                            Key = tableCellDTO.Cell.Key,
                             Value = tableCellDTO.Cell.Value,
                         };
                         fields.Add(listFieldDTO);
                     }
-                    payloadDataMS.PayloadObjects.Add(new PayloadObjectDTO() { PayloadObject = fields, });
+                    payloadDataMS.PayloadObjects.Add(new PayloadObjectDTO() { PayloadObject = fields });
                 }
                 catch (Exception)
                 {

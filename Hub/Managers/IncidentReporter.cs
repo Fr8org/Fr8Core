@@ -63,7 +63,7 @@ namespace Hub.Managers
         private void SaveAndLogIncident(IncidentDO curIncident)
         {
             SaveIncident(curIncident);
-            _eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity, EventReporter.EventType.Error);
+            LogIncident(curIncident);
         }
 
         private void SaveIncident(IncidentDO curIncident)
@@ -73,6 +73,11 @@ namespace Hub.Managers
                 uow.IncidentRepository.Add(curIncident);
                 uow.SaveChanges();
             }
+        }
+
+        private void LogIncident(IncidentDO curIncident)
+        {
+            _eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity, EventReporter.EventType.Error);
         }
 
         private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string curAction, string errorMessage)
@@ -100,7 +105,10 @@ namespace Hub.Managers
                 SecondaryCategory = "Configure",
                 Activity = "Configuration Failed"
             };
-            SaveAndLogIncident(incident);
+
+            // Database is not available from a terminal web application
+            // so only log incidents 
+            LogIncident(incident);
         }
         private void ProcessIncidentTerminalRunFailed(string curTerminalUrl, string curAction, string errorMessage)
         {
