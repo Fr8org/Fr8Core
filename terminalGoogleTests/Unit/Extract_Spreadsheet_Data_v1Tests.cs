@@ -113,11 +113,11 @@ namespace terminalGoogleTests.Integration
             fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Row_And_Column");
 
             //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
-             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
-                    configureUrl,
-                    requestActionDTO
-                );
+            var responseActionDTO =
+               await HttpPostAsync<ActionDTO, ActionDTO>(
+                   configureUrl,
+                   requestActionDTO
+               );
 
             //Assert
             Assert.NotNull(responseActionDTO);
@@ -207,7 +207,7 @@ namespace terminalGoogleTests.Integration
         /////////////
         /// Run Tests Begin
         /////////////
-        
+
         //To be finished after Action is fixed
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace terminalGoogleTests.Integration
         //    var runUrl = GetTerminalRunUrl();
         //    HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
         //    var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
-            
+
         //    ////Act
         //    fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Empty_First_Row");
 
@@ -326,8 +326,7 @@ namespace terminalGoogleTests.Integration
         )]
         public async void Extract_Spreadsheet_Data_v1_Run_NoAuth()
         {
-
-            var configureUrl = GetTerminalConfigureUrl();
+            var configureUrl = GetTerminalRunUrl();
 
             var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = null;

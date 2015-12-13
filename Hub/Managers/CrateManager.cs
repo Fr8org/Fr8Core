@@ -133,10 +133,10 @@ namespace Hub.Managers
 
         public Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)
         {
-            return Crate.FromContent(crateLabel, TransformStandardTableDataToStandardPayloadDataExcel(payloadDataObjectType, tableDataMS));
+            return Crate.FromContent(crateLabel, TransformStandardTableDataToStandardPayloadData(payloadDataObjectType, tableDataMS));
         }
 
-        private StandardPayloadDataCM TransformStandardTableDataToStandardPayloadDataExcel(string curObjectType, StandardTableDataCM tableDataMS)
+        public StandardPayloadDataCM TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataCM tableDataMS)
         {
             var payloadDataMS = new StandardPayloadDataCM()
             {
@@ -144,26 +144,36 @@ namespace Hub.Managers
                 ObjectType = curObjectType,
             };
 
+            int staringRow;
+            TableRowDTO columnHeadersRowDTO = null;
+
+            if (tableDataMS.FirstRowHeaders)
+            {
+                staringRow = 1;
+                columnHeadersRowDTO = tableDataMS.Table[0];
+            }
+            else
+                staringRow = 0;
+
             // Rows containing column names
-            var columnHeadersRowDTO = tableDataMS.Table[0];
-            int i = 1;
-            for (i = 1; i < tableDataMS.Table.Count; ++i) // Since first row is headers; hence i starts from 1
+            for (int i = staringRow; i < tableDataMS.Table.Count; ++i) // Since first row is headers; hence i starts from 1
             {
                 try
                 {
                     var tableRowDTO = tableDataMS.Table[i];
                     var fields = new List<FieldDTO>();
-                    for (int j = 0; j < columnHeadersRowDTO.Row.Count; ++j)
+                    int colNumber = (tableDataMS.FirstRowHeaders) ? columnHeadersRowDTO.Row.Count : tableRowDTO.Row.Count;
+                    for (int j = 0; j < colNumber; ++j)
                     {
                         var tableCellDTO = tableRowDTO.Row[j];
                         var listFieldDTO = new FieldDTO()
                         {
-                            Key = columnHeadersRowDTO.Row[j].Cell.Value,
-                            Value = tableCellDTO.Cell.Value,
+                            Key = (tableDataMS.FirstRowHeaders) ? columnHeadersRowDTO.Row[j].Cell.Value : tableCellDTO.Cell.Key,
+                            Value = tableCellDTO.Cell.Value
                         };
                         fields.Add(listFieldDTO);
                     }
-                    payloadDataMS.PayloadObjects.Add(new PayloadObjectDTO() { PayloadObject = fields, });
+                    payloadDataMS.PayloadObjects.Add(new PayloadObjectDTO() { PayloadObject = fields });
                 }
                 catch (Exception)
                 {

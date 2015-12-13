@@ -31,6 +31,7 @@ namespace terminalGoogle.Actions
 
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
+            if (authTokenDO == null) return true;
             if (!base.NeedsAuthentication(authTokenDO)) 
                 return false;
             var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
@@ -67,11 +68,6 @@ namespace terminalGoogle.Actions
             var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var tableDataMS = await GetTargetTableData(curActionDO);
-
-            if (!tableDataMS.FirstRowHeaders)
-            {
-                throw new Exception("No headers found in the Standard Table Data Manifest.");
-            }
 
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
@@ -285,7 +281,7 @@ namespace terminalGoogle.Actions
             {
                 const string label = "Spreadsheeet Payload Rows";
                 updater.CrateStorage.RemoveByLabel(label);
-                updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(label, true, rows.ToArray()));
+                updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(label, false, rows.ToArray()));
             }
         }
     }
