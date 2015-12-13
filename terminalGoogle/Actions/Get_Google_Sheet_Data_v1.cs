@@ -260,7 +260,7 @@ namespace terminalGoogle.Actions
                     updater.CrateStorage.RemoveByLabel(label);
                     var curCrateDTO = Crate.CreateDesignTimeFieldsCrate(
                                 label,
-                                headers.Select(col => new FieldDTO() { Key = col.Value, Value = col.Key }).ToArray()
+                                headers.Select(col => new FieldDTO() { Key = col.Key, Value = col.Key }).ToArray()
                             );
                     updater.CrateStorage.Add(curCrateDTO);
                 }
