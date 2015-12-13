@@ -245,6 +245,17 @@ namespace HubTests.Managers
         }
 
         [Test]
+        public void TransformStandardTableDataToStandardPayloadData_ShouldNotProcessFirstRow()
+        {
+            var payload = _crateManager.TransformStandardTableDataToStandardPayloadData("Some type", GetTestTableWithHeaders());
+            Assert.AreEqual("SerbianWord", payload.PayloadObjects[0].PayloadObject[0].Key);
+            Assert.AreEqual("Pouzdan", payload.PayloadObjects[0].PayloadObject[0].Value);
+            Assert.AreEqual("EnglishWord", payload.PayloadObjects[0].PayloadObject[1].Key);
+            Assert.AreEqual("Reliable", payload.PayloadObjects[0].PayloadObject[1].Value);
+            Assert.AreEqual(2, payload.PayloadObjects.Count());
+        }
+
+        [Test]
         public void UpdateStorageStringRewrite_Works()
         {
             var actionDo = new ActionDO();

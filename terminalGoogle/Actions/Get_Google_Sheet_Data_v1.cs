@@ -69,11 +69,6 @@ namespace terminalGoogle.Actions
 
             var tableDataMS = await GetTargetTableData(curActionDO);
 
-            if (!tableDataMS.FirstRowHeaders)
-            {
-                throw new Exception("No headers found in the Standard Table Data Manifest.");
-            }
-
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
             var payloadDataCrate = Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
@@ -286,7 +281,7 @@ namespace terminalGoogle.Actions
             {
                 const string label = "Spreadsheeet Payload Rows";
                 updater.CrateStorage.RemoveByLabel(label);
-                updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(label, true, rows.ToArray()));
+                updater.CrateStorage.Add(Crate.CreateStandardTableDataCrate(label, false, rows.ToArray()));
             }
         }
     }
