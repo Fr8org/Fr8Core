@@ -27,6 +27,7 @@ namespace Hub.Managers
             EventManager.IncidentTerminalRunFailed += ProcessIncidentTerminalRunFailed;
             EventManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
             EventManager.IncidentTerminalActionActivationFailed += ProcessIncidentTerminalActionActivationFailed;
+            EventManager.IncidentTerminalInternalFailureOccurred += ProcessIncidentTerminalInternalFailureOccurred;
             //EventManager.IncidentPluginConfigureFailed += ProcessIncidentPluginConfigureFailed;
             //AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
             EventManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
@@ -62,7 +63,7 @@ namespace Hub.Managers
         private void SaveAndLogIncident(IncidentDO curIncident)
         {
             SaveIncident(curIncident);
-            _eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity);
+            _eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity, EventReporter.EventType.Error);
         }
 
         private void SaveIncident(IncidentDO curIncident)
@@ -73,12 +74,27 @@ namespace Hub.Managers
                 uow.SaveChanges();
             }
         }
+
         private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string curAction, string errorMessage)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
                 Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
+                ObjectId = "unknown",
+                PrimaryCategory = "Terminal",
+                SecondaryCategory = "Configure",
+                Activity = "Configuration Failed"
+            };
+            SaveAndLogIncident(incident);
+        }
+
+        private void ProcessIncidentTerminalInternalFailureOccurred(string curTerminalUrl, string curAction, Exception e)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = curTerminalUrl + "      " + curAction + " " + e.Message + " \r\nStack trace: \r\n" + e.StackTrace,
                 ObjectId = "unknown",
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Configure",
