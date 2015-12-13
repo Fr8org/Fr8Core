@@ -220,6 +220,7 @@
     <Compile Include="Crates\IManifestSerializer.cs" />
     <Compile Include="Crates\ManifestDiscovery.cs" />
     <Compile Include="Crates\ManifestTypeCache.cs" />
+    <Compile Include="Entities\AuthorizationTokenSecureDataLocalDO.cs" />
     <Compile Include="Entities\RouteNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
@@ -294,6 +295,7 @@
     <Compile Include="Interfaces\IMTFieldTypeRepository.cs" />
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
+    <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
     <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
@@ -466,8 +468,18 @@
     <Compile Include="Migrations\201511261934585_RenameCollectFormDataSolution.Designer.cs">
       <DependentUpon>201511261934585_RenameCollectFormDataSolution.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201512121442021_UpdateAuthorizationToken.cs" />
+    <Compile Include="Migrations\201512121442021_UpdateAuthorizationToken.Designer.cs">
+      <DependentUpon>201512121442021_UpdateAuthorizationToken.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
+    <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
+    <Compile Include="Repositories\Authorization\AuthorizationTokenChangeTracker.cs" />
+    <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryForTests.cs" />
+    <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryStub.cs" />
+    <Compile Include="Repositories\Authorization\IAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -531,7 +543,7 @@
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
-    <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\Authorization\SqlAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\InvitationRepository.cs" />
     <Compile Include="Repositories\ProfileNodeRepository.cs" />
     <Compile Include="Repositories\UserStatusRepository.cs" />
@@ -788,6 +800,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201511261934585_RenameCollectFormDataSolution.resx">
       <DependentUpon>201511261934585_RenameCollectFormDataSolution.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512121442021_UpdateAuthorizationToken.resx">
+      <DependentUpon>201512121442021_UpdateAuthorizationToken.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
