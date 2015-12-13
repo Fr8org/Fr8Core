@@ -61,6 +61,7 @@
         public key: string;
         public value: string;
         public availability: AvailabilityType;
+        public tags: string;
     }
 
     export enum AvailabilityType {
@@ -76,6 +77,7 @@
     export class FieldSource {
         public manifestType: string;
         public label: string;
+        public filterByTag: string;
     }
 
     export class DropDownList extends ControlDefinitionDTO {

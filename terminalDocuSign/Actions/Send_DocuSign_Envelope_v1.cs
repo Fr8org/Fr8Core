@@ -83,8 +83,8 @@ namespace terminalDocuSign.Actions
         {
             var curTemplateId = ExtractTemplateId(actionDO);
             var curRecipientAddress = ExtractSpecificOrUpstreamValue(
-                Crate.GetStorage(actionDO.CrateStorage),
-                Crate.FromDto(processPayload.CrateStorage),
+                actionDO,
+                processPayload,
                 "Recipient"
             );
 

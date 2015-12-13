@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Data.Crates;
+
 namespace terminalDocuSign.Interfaces
 {
     public interface IEvent
@@ -6,6 +8,6 @@ namespace terminalDocuSign.Interfaces
         /// <summary>
         /// Processes external event payload from the Terminal
         /// </summary>
-        Task<object> Process(string curExternalEventPayload);
+        Crate Process(string curExternalEventPayload);
     }
 }
