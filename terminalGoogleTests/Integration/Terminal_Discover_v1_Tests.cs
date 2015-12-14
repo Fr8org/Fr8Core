@@ -33,7 +33,7 @@ namespace terminalGoogleTests.Integration
             Assert.IsNotNull(googleTerminalDiscoveryResponse.Actions, "Google terminal does not have actions.");
             Assert.AreEqual(2, googleTerminalDiscoveryResponse.Actions.Count, "Google terminal expected 2 actions.");
             Assert.AreEqual("terminalGoogle", googleTerminalDiscoveryResponse.Definition.Name);
-            Assert.AreEqual(googleTerminalDiscoveryResponse.Actions.Any(a => a.Name == "Extract_Spreadsheet_Data"), true, "Action Extract_Spreadsheet_Data was not loaded");
+            Assert.AreEqual(googleTerminalDiscoveryResponse.Actions.Any(a => a.Name == "Get_Google_Sheet_Data"), true, "Action Get_Google_Sheet_Data was not loaded");
             Assert.AreEqual(googleTerminalDiscoveryResponse.Actions.Any(a => a.Name == "Receive_Google_Form"), true, "Action Receive_Google_Form was not loaded");
         }
     }
