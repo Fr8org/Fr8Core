@@ -5,8 +5,9 @@ module dockyard.tests.unit.directives.controls {
 
     import fx = utils.fixtures;
     import CrateHelper = dockyard.services.CrateHelper;
+    import filterByTagFactory = dockyard.filters.filterByTag.factory;
 
-    var CH = new CrateHelper();
+    var CH = new CrateHelper(filterByTagFactory);
 
     var compileTemplate = (localScope, rawTemplate, $compile) => {
         var template = angular.element(rawTemplate);

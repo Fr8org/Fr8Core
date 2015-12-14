@@ -179,39 +179,6 @@
                     "manufacturer": null,
                     "createTime": "0001-01-01T00:00:00"
                 },
-                <model.Crate> {
-                    "id": "124243c0-bea7-4da6-b8ec-687593ea98b0",
-                    "label": "Upstream Terminal-Provided Fields3",
-                    "contents": {
-                        "Fields": [
-                            {
-                                "key": "Expense Report V2",
-                                "value": "bf4a553a-288a-405b-a915-822a06de3efe",
-                                "tags": null
-                            },
-                            {
-                                "key": "Medical_Form_v2",
-                                "value": "ea2258b2-2d80-4eca-9f40-6c5b5d5c5dda",
-                                "tags": "NoAddress"
-                            },
-                            {
-                                "key": "RecipientEmail",
-                                "value": null,
-                                "tags": "EmailAddress"
-                            },
-                            {
-                                "key": "HolderEmail",
-                                "value": null,
-                                "tags": "EmailAddress"
-                }
-                        ]
-                    },
-                    "parentCrateId": null,
-                    "manifestType": "Standard Design-Time Fields3",
-                    "manifestId": "9",
-                    "manufacturer": null,
-                    "createTime": "0001-01-01T00:00:00"
-                }
             ],
             crateDTO: null
         }
@@ -399,7 +366,7 @@
                 "events": null,
                 "source": {
                     "manifestType": "Standard Design-Time Fields3",
-                    "label": "Upstream Terminal-Provided Fields3",
+                    "label": "Upstream Terminal-Provided Fields",
                     "filterByTag": "EmailAddress"
                 }
             },
@@ -418,7 +385,7 @@
                 "events": null,
                 "source": {
                     "manifestType": "Standard Design-Time Fields3",
-                    "label": "Upstream Terminal-Provided Fields3",
+                    "label": "Upstream Terminal-Provided Fields",
                     "filterByTag": "NoAddress"
                 }
             }
