@@ -474,7 +474,7 @@ namespace Hub.Services
 
                 try
                 {
-                    await _container.Execute(uow, curContainerDO);
+                    await _container.Run(uow, curContainerDO);
                     curContainerDO.ContainerState = ContainerState.Completed;
 
                     return curContainerDO;

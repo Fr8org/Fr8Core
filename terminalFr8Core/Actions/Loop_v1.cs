@@ -29,15 +29,15 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
-            var storage = Crate.GetStorage(curPayloadDTO);
+            var payloadStorage = Crate.GetStorage(curPayloadDTO);
 
             var loopId = curActionDO.Id.ToString();
-            var operationsCrate = storage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
+            var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
             if (operationsCrate == null)
             {
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "This Action can't run without OperationalStatusCM crate");
             }
-
+            //set default loop index for initial state
             var currentLoopIndex = 0;
             var myLoop = operationsCrate.Loops.FirstOrDefault(l => l.Id == loopId);
             if (myLoop == null)
@@ -49,10 +49,12 @@ namespace terminalFr8Core.Actions
                 currentLoopIndex = IncrementLoopIndex(curActionDO.Id.ToString(), curPayloadDTO);
             }
 
+            //get user selected design time values
             var manifestType = GetSelectedCrateManifestTypeToProcess(curActionDO);
             var label = GetSelectedLabelToProcess(curActionDO);
             
-            var crateToProcess = storage.FirstOrDefault(c => /*c.ManifestType.Type == manifestType && */c.Label == label);
+            //find crate by user selected values
+            var crateToProcess = payloadStorage.FirstOrDefault(c => /*c.ManifestType.Type == manifestType && */c.Label == label);
 
             if (crateToProcess == null)
             {
@@ -60,6 +62,7 @@ namespace terminalFr8Core.Actions
             }
 
             Object[] dataList = null;
+            //find our list data that we will iterate
             dataList = crateToProcess.IsKnownManifest ? FindFirstArray(crateToProcess.Get()) : FindFirstArray(crateToProcess.GetRaw());
 
             if (dataList == null)

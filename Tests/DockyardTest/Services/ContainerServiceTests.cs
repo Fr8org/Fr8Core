@@ -161,7 +161,7 @@ namespace DockyardTest.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                await _container.Execute(uow, containerDO);
+                await _container.Run(uow, containerDO);
             }
 
             Assert.AreNotEqual(originalCurrentActivity, containerDO.CurrentRouteNode);
@@ -220,7 +220,7 @@ namespace DockyardTest.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                await _container.Execute(uow, FixtureData.TestContainerCurrentActivityNULL());
+                await _container.Run(uow, FixtureData.TestContainerCurrentActivityNULL());
             }
         }
 
