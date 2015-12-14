@@ -40,7 +40,7 @@
             var _selectedRow: model.IncidentDTO = null;
 
             $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withDisplayLength(10)
-                .withOption('order', [[1, 'desc'], [6, 'desc']]);
+                .withOption('order', [[0, 'desc'], [6, 'desc']]);
             $scope.dtColumnDefs = this.getColumnDefs();
 
             $scope.selectRow = function (row: model.IncidentDTO) {

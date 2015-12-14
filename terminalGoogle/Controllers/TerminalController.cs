@@ -39,8 +39,8 @@ namespace terminalGoogle.Controllers
 
             var extractDataAction = new ActivityTemplateDTO
             {
-                Name = "Extract_Spreadsheet_Data",
-                Label = "Extract Spreadsheet Data",
+                Name = "Get_Google_Sheet_Data",
+                Label = "Get Google Sheet Data",
                 Version = "1",
                 Description = "Extract Spreadsheet Data: Description",
                 Category = ActivityCategory.Receivers,

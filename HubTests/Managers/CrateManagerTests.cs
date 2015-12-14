@@ -33,18 +33,18 @@ namespace HubTests.Managers
 
         //CreateErrorCrate is not used anywhere. Error crate should have MenifestType but currently it doesn't.
 
-//        [Test]
-//        public void CreateErrorCrate_ReturnsCrateDTO()
-//        {
-//            var crateManager = new CrateManager();
-//            var errorMessage = "This is test error message";
-//            var result = crateManager.CreateErrorCrate(errorMessage);
-//            Assert.IsNotNull(result);
-//            Assert.AreEqual("Retry Crate", result.Label);
-//            Assert.AreEqual(errorMessage, result.Contents);
-//
-//
-//        }
+        //        [Test]
+        //        public void CreateErrorCrate_ReturnsCrateDTO()
+        //        {
+        //            var crateManager = new CrateManager();
+        //            var errorMessage = "This is test error message";
+        //            var result = crateManager.CreateErrorCrate(errorMessage);
+        //            Assert.IsNotNull(result);
+        //            Assert.AreEqual("Retry Crate", result.Label);
+        //            Assert.AreEqual(errorMessage, result.Contents);
+        //
+        //
+        //        }
 
 
         [Test]
@@ -55,11 +55,11 @@ namespace HubTests.Managers
             var curLogItemList = FixtureData.LogItemDTOList();
             var curLabel = "Crate Manager Can Add Log Message To ContainerDO Test";
             var curCrateDTOContents = "{\"Item\":[{\"Name\":\"LogItemDTO1\",\"PrimaryCategory\":\"Container\",\"SecondaryCategory\":\"LogItemDTO Generator\",\"Activity\":\"Add Log Message\",\"Data\":\"\"}],\"ManifestType\":13,\"ManifestId\":13,\"ManifestName\":\"Standard Logging Crate\"}";
-            
+
             //Act
             _crateManager.AddLogMessage(curLabel, curLogItemList, curContainerDO);
-            var updatedCrate = _crateManager.GetStorage(curContainerDO.CrateStorage).FirstCrateOrDefault<StandardLoggingCM>(x=>x.Label == curLabel);
-            
+            var updatedCrate = _crateManager.GetStorage(curContainerDO.CrateStorage).FirstCrateOrDefault<StandardLoggingCM>(x => x.Label == curLabel);
+
             //Assert
             Assert.IsNotNull(updatedCrate);
 
@@ -76,10 +76,10 @@ namespace HubTests.Managers
                         item.PrimaryCategory == refItem.PrimaryCategory &&
                         item.SecondaryCategory == refItem.SecondaryCategory)
                     {
-                        eq ++;
+                        eq++;
                         break;
                     }
-                }    
+                }
             }
 
             Assert.AreEqual(eq, curLogItemList.Count);
@@ -90,7 +90,7 @@ namespace HubTests.Managers
         {
             Assert.AreEqual(_crateManager.FromDto((CrateStorageDTO)null).Count, 0);
         }
-        
+
         [Test]
         public void IsEmptyStorageWithNull_ReturnsTrue()
         {
@@ -156,9 +156,9 @@ namespace HubTests.Managers
             foreach (var crateDto in storageDto.Crates)
             {
                 var dto = crateDto;
-                Assert.NotNull(storage.FirstOrDefault(x => x.Label == dto.Label && 
-                    x.Id == dto.Id && 
-                    x.ManifestType.Type == dto.ManifestType && 
+                Assert.NotNull(storage.FirstOrDefault(x => x.Label == dto.Label &&
+                    x.Id == dto.Id &&
+                    x.ManifestType.Type == dto.ManifestType &&
                     x.ManifestType.Id == dto.ManifestId &&
                     IsEquals(x.Get<StandardDesignTimeFieldsCM>(), dto.Contents.ToObject<StandardDesignTimeFieldsCM>())));
             }
@@ -214,16 +214,16 @@ namespace HubTests.Managers
         public void UpdateStorageDtoRewrite_Works()
         {
             var actionDto = new ActionDTO();
-            
+
             actionDto.CrateStorage = GetKnownManifestsStorageDto();
-            
+
             var newCrateStorageDto = GetKnownManifestsStorageDto("newValue");
             var newCrateStorage = _crateManager.FromDto(newCrateStorageDto);
 
             using (var updater = _crateManager.UpdateStorage(actionDto))
             {
                 updater.CrateStorage.Clear();
-                
+
                 foreach (var crates in newCrateStorage)
                 {
                     updater.CrateStorage.Add(crates);
@@ -231,6 +231,28 @@ namespace HubTests.Managers
             }
 
             CheckStorageDTOs(newCrateStorageDto, actionDto.CrateStorage);
+        }
+
+        [Test]
+        public void TransformStandardTableDataToStandardPayloadData_ShouldProcessFirstRowAndHaveCorrectKeys()
+        {
+            var payload = _crateManager.TransformStandardTableDataToStandardPayloadData("Some type", GetTestTable());
+            Assert.AreEqual("SerbianWord", payload.PayloadObjects[0].PayloadObject[0].Key);
+            Assert.AreEqual("Pouzdan", payload.PayloadObjects[0].PayloadObject[0].Value);
+            Assert.AreEqual("EnglishWord", payload.PayloadObjects[0].PayloadObject[1].Key);
+            Assert.AreEqual("Reliable", payload.PayloadObjects[0].PayloadObject[1].Value);
+            Assert.AreEqual(2, payload.PayloadObjects.Count());
+        }
+
+        [Test]
+        public void TransformStandardTableDataToStandardPayloadData_ShouldNotProcessFirstRow()
+        {
+            var payload = _crateManager.TransformStandardTableDataToStandardPayloadData("Some type", GetTestTableWithHeaders());
+            Assert.AreEqual("SerbianWord", payload.PayloadObjects[0].PayloadObject[0].Key);
+            Assert.AreEqual("Pouzdan", payload.PayloadObjects[0].PayloadObject[0].Value);
+            Assert.AreEqual("EnglishWord", payload.PayloadObjects[0].PayloadObject[1].Key);
+            Assert.AreEqual("Reliable", payload.PayloadObjects[0].PayloadObject[1].Value);
+            Assert.AreEqual(2, payload.PayloadObjects.Count());
         }
 
         [Test]
@@ -294,7 +316,7 @@ namespace HubTests.Managers
             foreach (var fieldDto in a.Fields)
             {
                 var field = fieldDto;
-                
+
                 if (!b.Fields.Any(x => x.Key == field.Key && x.Value == field.Value))
                 {
                     return false;

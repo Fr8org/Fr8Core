@@ -8,6 +8,8 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
+using Newtonsoft.Json;
+using Data.Infrastructure;
 
 namespace TerminalBase.BaseClasses
 {
@@ -130,70 +132,81 @@ namespace TerminalBase.BaseClasses
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             var curContainerId = curActionDTO.ContainerId;
             Task<ActionDO> response;
-            switch (curActionPath.ToLower())
-            {
-                case "configure":
-                    {
-                        Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                        return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
-                    }
-                case "run":
-                    {
-                        Task<PayloadDTO> resultPayloadDTO = (Task<PayloadDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
-                        return await resultPayloadDTO;
-                    }
-                case "initialconfigurationresponse":
-                    {
-                        Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                        return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
-                    }
-                case "followupconfigurationresponse":
-                    {
-                        Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                        return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
-                    }
-                case "activate":
-                    {
-                        Task<ActionDO> resutlActionDO;
 
-                        //activate is an optional method so it may be missing
-                        if (curMethodInfo == null) return Mapper.Map<ActionDTO>(curActionDO);
-
-                        var param = curMethodInfo.GetParameters();
-                        if (param.Length == 2)
-                            resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                        else
+            try {
+                switch (curActionPath.ToLower())
+                {
+                    case "configure":
                         {
-                            response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-                            return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
+                            Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                         }
-
-                        return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
-                    }
-                case "deactivate":
-                    {
-                        //deactivate is an optional method so it may be missing
-                        if (curMethodInfo == null) return Mapper.Map<ActionDTO>(curActionDO);
-
-                        Task<ActionDO> resutlActionDO;
-                        var param = curMethodInfo.GetParameters();
-                        if (param.Length == 2)
-                            resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                        else
+                    case "run":
                         {
-                            response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-                            return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
+                            Task<PayloadDTO> resultPayloadDTO = (Task<PayloadDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
+                            return await resultPayloadDTO;
                         }
+                    case "initialconfigurationresponse":
+                        {
+                            Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                        }
+                    case "followupconfigurationresponse":
+                        {
+                            Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                        }
+                    case "activate":
+                        {
+                            Task<ActionDO> resutlActionDO;
 
-                        return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
-                    }
-                default:
-                    response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-                    return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
+                            //activate is an optional method so it may be missing
+                            if (curMethodInfo == null) return Mapper.Map<ActionDTO>(curActionDO);
 
+                            var param = curMethodInfo.GetParameters();
+                            if (param.Length == 2)
+                                resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                            else
+                            {
+                                response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+                                return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
+                            }
+
+                            return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                        }
+                    case "deactivate":
+                        {
+                            //deactivate is an optional method so it may be missing
+                            if (curMethodInfo == null) return Mapper.Map<ActionDTO>(curActionDO);
+
+                            Task<ActionDO> resutlActionDO;
+                            var param = curMethodInfo.GetParameters();
+                            if (param.Length == 2)
+                                resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                            else
+                            {
+                                response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+                                return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
+                            }
+
+                            return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                        }
+                    default:
+                        response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+                        return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
+                }
             }
+            catch(Exception e)
+            {
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects
+                };
 
-
+                var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
+                EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e);
+                throw;
+            }
         }
     }
 }

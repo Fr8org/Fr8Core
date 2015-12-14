@@ -19,8 +19,5 @@ namespace Hub.Interfaces
         /// Handles Terminal Event 
         /// </summary>
         void HandleTerminalEvent(LoggingDataCm eventDataCm);
-
-        Task<string> RequestParsingFromTerminals(HttpRequestMessage result, string pluginName, string pluginVersion);
-        Task<string> RequestParsingFromTerminalsDebug(HttpRequestMessage result, string pluginName, string pluginVersion);
     }
 }

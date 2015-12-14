@@ -331,6 +331,12 @@ namespace Hub.Services
                     }
                     else
                     {
+                        JsonSerializerSettings settings = new JsonSerializerSettings
+                        {
+                            PreserveReferencesHandling = PreserveReferencesHandling.Objects
+                        };
+                        var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
+                        EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
                         throw;
                     }
                 }
@@ -465,13 +471,13 @@ namespace Hub.Services
                     using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
                     {
                         updater.CrateStorage = _crate.FromDto(payload.CrateStorage);
-                    }
+                }
                     //curContainerDO.CrateStorage = payload.CrateStorage;
                 }
 
                 uow.ActionRepository.Attach(curAction);
                 uow.SaveChanges();
-        }
+            }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
         public async Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO)
@@ -481,7 +487,8 @@ namespace Hub.Services
                 throw new ArgumentNullException("curActionDO");
             }
 
-            try {
+            try
+            {
                 var payloadDTO = await CallTerminalActionAsync<PayloadDTO>("Run", curActionDO, curContainerDO.Id);
                 return payloadDTO;
 
