@@ -46,20 +46,16 @@ namespace terminalFr8Core.Actions
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + manifestType + "\" and Label: \""+label+"\"");
             }
 
-            if (crateToProcess.ManifestType.Id != (int) MT.StandardPayloadData)
-            {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_INVALID, "Specified crate must be manifest type of Standard Payload Data");
-            }
+            Object[] dataList = null;
+            dataList = crateToProcess.IsKnownManifest ? FindFirstArray(crateToProcess.Get()) : FindFirstArray(crateToProcess.GetRaw());
 
-            var contents = crateToProcess.Get<StandardPayloadDataCM>();
-            var dataList = contents.PayloadObjects;
             if (dataList == null)
             {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find a list that derives from IEnumerable in specified crate with Manifest Type: \"" + manifestType + "\" and Label: \"" + label + "\"");
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find a list in specified crate with Manifest Type: \"" + manifestType + "\" and Label: \"" + label + "\"");
             }
 
             //check if we need to end this loop
-            if (currentIndex > dataList.Count - 1)
+            if (currentIndex > dataList.Length - 1)
             {
                 using (var updater = Crate.UpdateStorage(curPayloadDTO))
                 {
@@ -69,6 +65,81 @@ namespace terminalFr8Core.Actions
             }
 
             return curPayloadDTO;
+        }
+
+        private static object[] FindFirstArray(Object obj, int maxSearchDepth = 0)
+        {
+            return FindFirstArrayRecursive(obj, maxSearchDepth, 0);
+        }
+
+        private static object[] FindFirstArrayRecursive(Object obj, int maxSearchDepth, int depth)
+        {
+            if (maxSearchDepth != 0 && depth > maxSearchDepth)
+            {
+                return null;
+            }
+
+            if (obj is IEnumerable)
+            {
+                return ((IEnumerable) obj).OfType<Object>().ToArray();
+            }
+            var objType = obj.GetType();
+            bool isPrimitiveType = objType.IsPrimitive || objType.IsValueType || (objType == typeof (string));
+
+            if (!isPrimitiveType)
+            {
+                var objProperties = objType.GetProperties();
+                foreach (var prop in objProperties)
+                {
+                    var result = FindFirstArrayRecursive(prop.GetValue(obj), maxSearchDepth, depth + 1);
+
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Helper function that Vladimir wrote to find first array in a JToken
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="maxSearchDepth"></param>
+        /// <returns></returns>
+        private static object[] FindFirstArray(JToken token, int maxSearchDepth = 0)
+        {
+            return FindFirstArrayRecursive(token, maxSearchDepth, 0);
+        }
+
+        private static object[] FindFirstArrayRecursive(JToken token, int maxSearchDepth, int depth)
+        {
+            if (maxSearchDepth != 0 && depth > maxSearchDepth)
+            {
+                return null;
+            }
+
+            if (token is JArray)
+            {
+                return ((JArray)token).Values().OfType<object>().ToArray();
+            }
+
+            if (token is JObject)
+            {
+                foreach (var prop in (JObject)token)
+                {
+                    var result = FindFirstArrayRecursive(prop.Value, maxSearchDepth, depth + 1);
+
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+            }
+
+            return null;
         }
         private string GetSelectedCrateManifestTypeToProcess(ActionDO curActionDO)
         {
