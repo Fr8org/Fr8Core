@@ -812,6 +812,11 @@
     <Content Include="Service References\Application Insights\ConnectedService.json" />
     <Content Include="Views\Welcome\Index.cshtml" />
     <Content Include="Views\AngularTemplate\RunRouteButton.cshtml" />
+    <None Include="Properties\PublishProfiles\fr8dev - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\fr8dev - Web Deploy.pubxml" />
+    <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
+    <Content Include="Views\AngularTemplate\TerminalForm.cshtml" />
+    <Content Include="Views\AngularTemplate\TerminalList.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
