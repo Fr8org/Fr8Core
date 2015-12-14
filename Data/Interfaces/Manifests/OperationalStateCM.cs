@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data.Interfaces.Manifests
 {
-    public class OperationalStatusCM : Manifest
+    public class OperationalStateCM : Manifest
     {
         public class LoopStatus
         {
@@ -20,7 +20,7 @@ namespace Data.Interfaces.Manifests
         public List<LoopStatus> Loops { get; set; } 
         
 
-        public OperationalStatusCM()
+        public OperationalStateCM()
             : base(MT.OperationalStatus)
         {
             Loops = new List<LoopStatus>();

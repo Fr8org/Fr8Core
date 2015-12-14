@@ -130,7 +130,7 @@ namespace Hub.Managers
             return Crate.FromContent(label, new StandardTableDataCM() { Table = table.ToList(), FirstRowHeaders = firstRowHeaders });
         }
 
-        public Crate CreateOperationalStatusCrate(string label, OperationalStatusCM operationalStatus)
+        public Crate CreateOperationalStatusCrate(string label, OperationalStateCM operationalStatus)
         {
             return Crate.FromContent(label, operationalStatus);
         }

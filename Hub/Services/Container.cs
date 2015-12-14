@@ -32,64 +32,11 @@ namespace Hub.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        #region LOOP_CRUD
-        private void DeleteLoopPayload(IUnitOfWork uow, ContainerDO curContainerDO)
+        private void CreateOperationalStatePayload(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
             {
-                var operationsCrate = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
-                var loop = operationsCrate.Loops.Single(l => l.Id == curContainerDO.CurrentRouteNode.Id.ToString());
-                operationsCrate.Loops.Remove(loop);
-            }
-            uow.SaveChanges();
-        }
-
-        private bool DidLoopReceiveBreakSignal(ContainerDO curContainerDO)
-        {
-            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
-            var operationalStatus = storage.CrateContentsOfType<OperationalStatusCM>().Single();
-            if (operationalStatus.Loops.Single(l => l.Id == curContainerDO.CurrentRouteNode.Id.ToString()).BreakSignalReceived)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        private void CreateLoopPayload(IUnitOfWork uow, ContainerDO curContainerDO)
-        {
-            using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
-            {
-                var operationsCrate = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
-                operationsCrate.Loops.Add(new OperationalStatusCM.LoopStatus
-                {
-                    BreakSignalReceived = false,
-                    Id = curContainerDO.CurrentRouteNode.Id.ToString(),
-                    Level = operationsCrate.Loops.Count,
-                    Index = 0
-                });
-            }
-            uow.SaveChanges();
-        }
-
-        private bool IncrementLoopIndex(IUnitOfWork uow, ContainerDO curContainerDO)
-        {
-            using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
-            {
-                var operationsCrate = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
-                operationsCrate.Loops.Single(l => l.Id == curContainerDO.CurrentRouteNode.Id.ToString()).Index += 1;
-            }
-            uow.SaveChanges();
-
-            return true;
-        }
-
-        #endregion
-
-        private void CreateOperationalStatusPayload(IUnitOfWork uow, ContainerDO curContainerDO)
-        {
-            using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
-            {
-                var operationalStatus = new OperationalStatusCM();
+                var operationalStatus = new OperationalStateCM();
                 var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
                 updater.CrateStorage.Add(operationsCrate);
             }
@@ -118,83 +65,31 @@ namespace Hub.Services
 
             return next;
         }
-        /*
-        private bool IsThisLoopAction(RouteNodeDO routeNode)
-        {
-            return routeNode is ActionDO && ((ActionDO)routeNode).ActivityTemplate.Type == ActivityType.Loop;
-        }
-        */
+
         private void SetCurrentNode(IUnitOfWork uow, ContainerDO curContainerDO, RouteNodeDO curRouteNode)
         {
             curContainerDO.CurrentRouteNode = curRouteNode;
             curContainerDO.CurrentRouteNodeId = curRouteNode != null ? curRouteNode.Id : (Guid?)null;
             uow.SaveChanges();
-        }
-        /*
-        private async Task ExecuteActionTree(IUnitOfWork uow, ContainerDO curContainerDO)
-        {
-            var me = curContainerDO.CurrentRouteNode;
-            var isThisLoopAction = IsThisLoopAction(me);
-            if (isThisLoopAction)
-            {
-                CreateLoopPayload(uow, curContainerDO);
-            }
-
-            do
-            {
-                //process me
-                await _activity.Process(me.Id, curContainerDO);
-                if (isThisLoopAction && DidLoopReceiveBreakSignal(curContainerDO))
-                {
-                    DeleteLoopPayload(uow, curContainerDO);
-                    break;
-                }
-                var myFirstChild = GetFirstChild(me);
-                if (myFirstChild != null) {
-                    SetCurrentNode(uow, curContainerDO, myFirstChild);
-                    await ExecuteActionTree(uow, curContainerDO);
-                    SetCurrentNode(uow, curContainerDO, me);
-                }
-            } while (isThisLoopAction && IncrementLoopIndex(uow, curContainerDO));
-
-            //switch to my sibling
-            var nextSibling = GetNextSibling(me);
-            if (nextSibling != null)
-            {
-                SetCurrentNode(uow, curContainerDO, nextSibling);
-                await ExecuteActionTree(uow, curContainerDO);
-            }
-        }
-        */
-        
+        }        
 
         private async Task ProcessChildActions(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             var me = curContainerDO.CurrentRouteNode;
-            var myFirstChild = GetFirstChild(me);
-            if (myFirstChild != null)
+            var currentChild = GetFirstChild(me);
+            while (currentChild != null)
             {
-                SetCurrentNode(uow, curContainerDO, myFirstChild);
-                await ExecuteActionTree(uow, curContainerDO);
-                SetCurrentNode(uow, curContainerDO, me);
+                SetCurrentNode(uow, curContainerDO, currentChild);
+                await ProcessActionTree(uow, curContainerDO);
+                currentChild = GetNextSibling(currentChild);
             }
-        }
-
-        private async Task ProcessNextSiblingAction(IUnitOfWork uow, ContainerDO curContainerDO)
-        {
-            var me = curContainerDO.CurrentRouteNode;
-            var nextSibling = GetNextSibling(me);
-            if (nextSibling != null)
-            {
-                SetCurrentNode(uow, curContainerDO, nextSibling);
-                await ExecuteActionTree(uow, curContainerDO);
-            }
+            SetCurrentNode(uow, curContainerDO, me);
         }
 
         private bool ShouldLoopBreak(ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
-            var operationalStatus = storage.CrateContentsOfType<OperationalStatusCM>().Single();
+            var operationalStatus = storage.CrateContentsOfType<OperationalStateCM>().Single();
             if (operationalStatus.Loops.Single(l => l.Id == curContainerDO.CurrentRouteNode.Id.ToString()).BreakSignalReceived)
             {
                 return true;
@@ -225,7 +120,7 @@ namespace Hub.Services
             return true;
         }
 
-        public async Task ExecuteActionTree(IUnitOfWork uow, ContainerDO curContainerDO)
+        public async Task ProcessActionTree(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             var me = curContainerDO.CurrentRouteNode;
             while(true)
@@ -242,8 +137,6 @@ namespace Hub.Services
                     break;
                 }
             }
-
-            await ProcessNextSiblingAction(uow, curContainerDO);
         }
 
         public async Task Execute(IUnitOfWork uow, ContainerDO curContainerDO)
@@ -251,11 +144,11 @@ namespace Hub.Services
             if (curContainerDO == null)
                 throw new ArgumentNullException("ContainerDO is null");
 
-            CreateOperationalStatusPayload(uow, curContainerDO);
+            CreateOperationalStatePayload(uow, curContainerDO);
 
             if (curContainerDO.CurrentRouteNode != null)
             {
-                await ExecuteActionTree(uow, curContainerDO);
+                await ProcessActionTree(uow, curContainerDO);
                 //to mark container as finished
                 SetCurrentNode(uow, curContainerDO, null);
             }

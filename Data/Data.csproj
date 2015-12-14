@@ -313,7 +313,7 @@
     <Compile Include="Interfaces\Manifests\StandardQueryCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardRoutingDirectiveCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileHandle.cs" />
-    <Compile Include="Interfaces\Manifests\OperationalStatusCM.cs" />
+    <Compile Include="Interfaces\Manifests\OperationalStateCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardSecurityCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardTableDataCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardPayloadDataCM.cs" />

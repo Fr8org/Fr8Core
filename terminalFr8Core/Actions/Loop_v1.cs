@@ -32,7 +32,7 @@ namespace terminalFr8Core.Actions
             var storage = Crate.GetStorage(curPayloadDTO);
 
             var loopId = curActionDO.Id.ToString();
-            var operationsCrate = storage.CrateContentsOfType<OperationalStatusCM>().FirstOrDefault();
+            var operationsCrate = storage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
             if (operationsCrate == null)
             {
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "This Action can't run without OperationalStatusCM crate");
@@ -80,7 +80,7 @@ namespace terminalFr8Core.Actions
         {
             using (var updater = Crate.UpdateStorage(payload))
             {
-                var operationsData = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
+                var operationsData = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationsData.Loops.Single(l => l.Id == loopId).BreakSignalReceived = true;
             }
         }
@@ -89,9 +89,9 @@ namespace terminalFr8Core.Actions
         {
             using (var updater = Crate.UpdateStorage(payload))
             {
-                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 var loopLevel = operationalState.Loops.Count(l => l.BreakSignalReceived == false);
-                operationalState.Loops.Add(new OperationalStatusCM.LoopStatus
+                operationalState.Loops.Add(new OperationalStateCM.LoopStatus
                 {
                     BreakSignalReceived = false,
                     Id = loopId,
@@ -105,7 +105,7 @@ namespace terminalFr8Core.Actions
         {
             using (var updater = Crate.UpdateStorage(payload))
             {
-                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.Loops.First(l => l.Id == loopId).Index += 1;
                 return operationalState.Loops.First(l => l.Id == loopId).Index;
             }
