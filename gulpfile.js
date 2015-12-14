@@ -54,6 +54,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/TerminalService.js',
         'Scripts/app/filters/RouteState.js',
         'Scripts/app/filters/ContainerState.js',
+        'Scripts/app/filters/FilterByTag.js',
         'Scripts/app/directives/EventArgsBase.js',
         'Scripts/app/directives/directives.js',
         'Scripts/app/directives/indiClick.js',
@@ -107,7 +108,10 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/RouteActionsDialogController.js',
         'Scripts/app/controllers/FindObjectsController.js',
         'Scripts/app/controllers/FindObjectsResultsController.js',
-        'Scripts/app/controllers/PayloadFormController.js'
+        'Scripts/app/controllers/PayloadFormController.js',
+        'Scripts/app/controllers/TerminalListController.js',
+        'Scripts/app/controllers/TerminalFormController.js'
+
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('_compiled.js'))

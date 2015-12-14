@@ -117,7 +117,7 @@ namespace HubWeb.Controllers
         }
 
         [ActionName("available")]
-        [ResponseType(typeof (IEnumerable<ActivityTemplateCategoryDTO>))]
+        [ResponseType(typeof (IEnumerable<ActivityTemplateDTO>))]
         [AllowAnonymous]
         [HttpGet]
         public IHttpActionResult GetAvailableActivities(string tag)
@@ -127,7 +127,7 @@ namespace HubWeb.Controllers
                 Func<ActivityTemplateDO, bool> predicate = (at) =>
                     string.IsNullOrEmpty(at.Tags) ? false :
                         at.Tags.Split(new char[] {','}).Any(c => string.Equals(c.Trim(), tag, StringComparison.InvariantCultureIgnoreCase));
-                var categoriesWithActivities = _activity.GetAvailableActivities(uow, predicate);
+                var categoriesWithActivities = _activity.GetAvailableActivities(uow, tag == "[all]" ? (at) => true : predicate);
                 return Ok(categoriesWithActivities);
             }
         }

@@ -20,6 +20,7 @@ namespace terminalDocuSignTests.Integration
         private const string Record_DocuSign_Events_Name = "Record_DocuSign_Events";
         private const string Rich_Document_Notification_Name = "Rich_Document_Notifications";
         private const string Send_DocuSign_Envelope_Name = "Send_DocuSign_Envelope";
+        private const string Query_DocuSign_Name = "Query_DocuSign";
      
         public override string TerminalName
         {
@@ -45,6 +46,7 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Record_DocuSign_Events_Name), true);
             Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Rich_Document_Notification_Name), true);
             Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Send_DocuSign_Envelope_Name), true);
+            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Query_DocuSign_Name), true);
         }
     }
 }

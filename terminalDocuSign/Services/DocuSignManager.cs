@@ -97,5 +97,28 @@ namespace terminalDocuSign.Services
                 }
             }
         }
+
+        public Crate CrateCrateFromFields(string docuSignTemplateId, DocuSignAuthDTO docuSignAuthDTO, string crateLabel)
+        {
+            if (!string.IsNullOrEmpty(docuSignTemplateId))
+            {
+                var docusignEnvelope = new DocuSignEnvelope(
+                    docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
+
+                var userDefinedFields = docusignEnvelope
+                    .GetEnvelopeDataByTemplate(docuSignTemplateId);
+
+                var fieldCollection = userDefinedFields
+                    .Select(f => new FieldDTO
+                    {
+                        Key = f.Name,
+                        Value = f.Value
+                    });
+
+                return Crate.CreateDesignTimeFieldsCrate(crateLabel, fieldCollection.ToArray());
+            }
+
+            return null;
+        }
     }
 }

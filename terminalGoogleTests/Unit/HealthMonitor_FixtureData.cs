@@ -229,7 +229,7 @@ namespace terminalGoogleTests.Unit
             return new ActivityTemplateDTO()
             {
                 Id = 1,
-                Name = "Extract_Spreadsheet_Data_TEST",
+                Name = "Get_Google_Sheet_Data_TEST",
                 Version = "1"
             };
         }
@@ -240,8 +240,8 @@ namespace terminalGoogleTests.Unit
             return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Extract_Spreadsheet_Data",
-                Label = "Extract Spreadsheet Data",
+                Name = "Get_Google_Sheet_Data",
+                Label = "Get Google Sheet Data",
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
@@ -256,8 +256,8 @@ namespace terminalGoogleTests.Unit
             var curActionDto = new ActionDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Extract_Spreadsheet_Data",
-                Label = "Extract Spreadsheet Data",
+                Name = "Get_Google_Sheet_Data",
+                Label = "Get Google Sheet Data",
                 AuthToken = Google_AuthToken1(),
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id,

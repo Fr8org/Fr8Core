@@ -1,7 +1,9 @@
-﻿namespace terminalSlack.Interfaces
+﻿using Data.Crates;
+
+namespace terminalSlack.Interfaces
 {
     public interface IEvent
     {
-        void Process(string externalEventPayload);
+        Crate Process(string externalEventPayload);
     }
 }

@@ -1,4 +1,6 @@
-﻿using terminalSalesforce.Infrastructure;
+﻿using System.Net;
+using System.Xml.Linq;
+using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 using TerminalBase.Infrastructure;
 using StructureMap;
@@ -11,6 +13,7 @@ using System.Web.Http;
 
 namespace terminalSalesforce.Controllers
 {
+    [RoutePrefix("terminals/terminalSalesforce")]
     public class EventController : ApiController
     {
         private IEvent _event;
@@ -24,12 +27,10 @@ namespace terminalSalesforce.Controllers
 
         [HttpPost]
         [Route("events")]
-        public async Task<string> ProcessIncomingNotification()
+        public async Task<IHttpActionResult> ProcessIncomingNotification()
         {
-            //_event.Process(await Request.Content.ReadAsStringAsync());
-            TerminalBase.Infrastructure.BaseTerminalEvent.EventParser parser = new BaseTerminalEvent.EventParser(_event.ProcessEvent);
             string eventPayLoadContent = Request.Content.ReadAsStringAsync().Result;
-            await _baseTerminalEvent.Process(eventPayLoadContent, parser);
+            await _baseTerminalEvent.Process(eventPayLoadContent, _event.ProcessEvent);
 
             //We need to acknowledge the request from Salesforce
             //Creating a SOAP XML response to acknowledge
@@ -42,7 +43,8 @@ namespace terminalSalesforce.Controllers
                                   </notificationsResponse>
                               </soapenv:Body>
                             </soapenv:Envelope>";
-            return response;
+            var responeXml = XElement.Parse(response);
+            return Content(HttpStatusCode.OK, responeXml, GlobalConfiguration.Configuration.Formatters.XmlFormatter);
         }
     }
 }

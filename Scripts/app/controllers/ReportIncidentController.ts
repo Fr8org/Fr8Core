@@ -6,6 +6,9 @@
         dtOptionsBuilder: any;
         dtColumnDefs: any;
         incidentRecords: Array<model.IncidentDTO>;
+        isSelectedRow: (row: model.IncidentDTO) => boolean;
+        selectRow: (row: model.IncidentDTO) => void;
+        shrinkData: (str: string) => string;
     }
 
     class ReportIncidentController {
@@ -33,11 +36,48 @@
             ReportIncidentService.query().$promise.then(incidentRecords => {
                 $scope.incidentRecords = incidentRecords;
             });
+
+            var _selectedRow: model.IncidentDTO = null;
+
             $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withDisplayLength(10)
-                .withOption('order', [[1, 'desc'], [6, 'desc']]);
+                .withOption('order', [[0, 'desc'], [6, 'desc']]);
             $scope.dtColumnDefs = this.getColumnDefs();
 
-        }
+            $scope.selectRow = function (row: model.IncidentDTO) {
+                if (_selectedRow === row) {
+                    _selectedRow = null;
+                }
+                else {
+                    _selectedRow = row;
+                }
+            };
+
+            $scope.isSelectedRow = function (row: model.IncidentDTO) {
+                return _selectedRow === row;
+            };
+
+            $scope.shrinkData = function (str: string) {
+                var result = '';
+                if (str) {
+                    var lines = str.split('\n');
+                    var i;
+
+                    for (i = 0; i < Math.min(5, lines.length); ++i) {
+                        if (result) {
+                            result += '\n';
+                        }
+
+                        result += lines[i];
+                    }
+                }
+
+                if (result.length > 400) {
+                    result = result.substr(0, 400);
+                }
+
+                return result;
+            };
+        };
 
         private getColumnDefs() {
             return [

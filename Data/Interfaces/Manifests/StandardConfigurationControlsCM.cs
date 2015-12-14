@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Data.Interfaces.DataTransferObjects;
 using Data.Constants;
@@ -143,7 +144,17 @@ namespace Data.Interfaces.Manifests
                 return false;
             }
         }
+        
+        private bool IsCompatibleCollectionType(Type type)
+        {
+            if (typeof(IList).IsAssignableFrom(type))
+            {
+                return true;
+            }
 
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (IList<>);
+        }
+        
         private object FindByNameRecurisve(object cd, string name)
         {
             if (CheckName(cd, name))
@@ -151,7 +162,7 @@ namespace Data.Interfaces.Manifests
                 return cd;
             }
 
-            var collectionGetters = cd.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.CanRead && typeof(IList).IsAssignableFrom(x.PropertyType)).ToArray();
+            var collectionGetters = cd.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.CanRead && IsCompatibleCollectionType(x.PropertyType)).ToArray();
 
             foreach (var collectionGetter in collectionGetters)
             {
@@ -168,7 +179,7 @@ namespace Data.Interfaces.Manifests
                         var result = FindByNameRecurisve(child, name);
                         if (result != null)
                         {
-                            return child;
+                            return result;
                         }
                     }
                 }
