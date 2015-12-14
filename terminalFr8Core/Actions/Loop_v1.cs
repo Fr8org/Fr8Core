@@ -32,12 +32,25 @@ namespace terminalFr8Core.Actions
             var storage = Crate.GetStorage(curPayloadDTO);
 
             var loopId = curActionDO.Id.ToString();
-            var operationsCrate = storage.CrateContentsOfType<OperationalStatusCM>().Single();
-            var currentIndex = operationsCrate.Loops.Single(l => l.Id == loopId).Index;
+            var operationsCrate = storage.CrateContentsOfType<OperationalStatusCM>().FirstOrDefault();
+            if (operationsCrate == null)
+            {
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "This Action can't run without OperationalStatusCM crate");
+            }
+
+            var currentLoopIndex = 0;
+            var myLoop = operationsCrate.Loops.FirstOrDefault(l => l.Id == loopId);
+            if (myLoop == null)
+            {
+                CreateLoop(curActionDO.Id.ToString(), curPayloadDTO);
+            }
+            else
+            {
+                currentLoopIndex = IncrementLoopIndex(curActionDO.Id.ToString(), curPayloadDTO);
+            }
 
             var manifestType = GetSelectedCrateManifestTypeToProcess(curActionDO);
             var label = GetSelectedLabelToProcess(curActionDO);
-
             
             var crateToProcess = storage.FirstOrDefault(c => /*c.ManifestType.Type == manifestType && */c.Label == label);
 
@@ -55,16 +68,47 @@ namespace terminalFr8Core.Actions
             }
 
             //check if we need to end this loop
-            if (currentIndex > dataList.Length - 1)
+            if (currentLoopIndex > dataList.Length - 1)
             {
-                using (var updater = Crate.UpdateStorage(curPayloadDTO))
-                {
-                    var operationsData = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
-                    operationsData.Loops.Single(l => l.Id == loopId).BreakSignalReceived = true;
-                }
+                BreakLoop(curActionDO.Id.ToString(), curPayloadDTO);
             }
 
             return curPayloadDTO;
+        }
+
+        private void BreakLoop(string loopId, PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationsData = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
+                operationsData.Loops.Single(l => l.Id == loopId).BreakSignalReceived = true;
+            }
+        }
+
+        private void CreateLoop(string loopId, PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
+                var loopLevel = operationalState.Loops.Count(l => l.BreakSignalReceived == false);
+                operationalState.Loops.Add(new OperationalStatusCM.LoopStatus
+                {
+                    BreakSignalReceived = false,
+                    Id = loopId,
+                    Index = 0,
+                    Level = loopLevel
+                });
+            }
+        }
+
+        private int IncrementLoopIndex(string loopId, PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStatusCM>().Single();
+                operationalState.Loops.First(l => l.Id == loopId).Index += 1;
+                return operationalState.Loops.First(l => l.Id == loopId).Index;
+            }
         }
 
         private static object[] FindFirstArray(Object obj, int maxSearchDepth = 0)

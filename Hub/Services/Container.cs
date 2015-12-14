@@ -118,19 +118,19 @@ namespace Hub.Services
 
             return next;
         }
-
+        /*
         private bool IsThisLoopAction(RouteNodeDO routeNode)
         {
             return routeNode is ActionDO && ((ActionDO)routeNode).ActivityTemplate.Type == ActivityType.Loop;
         }
-
-        private void SetContainerRouteNode(IUnitOfWork uow, ContainerDO curContainerDO, RouteNodeDO curRouteNode)
+        */
+        private void SetCurrentNode(IUnitOfWork uow, ContainerDO curContainerDO, RouteNodeDO curRouteNode)
         {
             curContainerDO.CurrentRouteNode = curRouteNode;
             curContainerDO.CurrentRouteNodeId = curRouteNode != null ? curRouteNode.Id : (Guid?)null;
             uow.SaveChanges();
         }
-
+        /*
         private async Task ExecuteActionTree(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             var me = curContainerDO.CurrentRouteNode;
@@ -151,9 +151,9 @@ namespace Hub.Services
                 }
                 var myFirstChild = GetFirstChild(me);
                 if (myFirstChild != null) {
-                    SetContainerRouteNode(uow, curContainerDO, myFirstChild);
+                    SetCurrentNode(uow, curContainerDO, myFirstChild);
                     await ExecuteActionTree(uow, curContainerDO);
-                    SetContainerRouteNode(uow, curContainerDO, me);
+                    SetCurrentNode(uow, curContainerDO, me);
                 }
             } while (isThisLoopAction && IncrementLoopIndex(uow, curContainerDO));
 
@@ -161,9 +161,89 @@ namespace Hub.Services
             var nextSibling = GetNextSibling(me);
             if (nextSibling != null)
             {
-                SetContainerRouteNode(uow, curContainerDO, nextSibling);
+                SetCurrentNode(uow, curContainerDO, nextSibling);
                 await ExecuteActionTree(uow, curContainerDO);
             }
+        }
+        */
+        
+
+        private async Task ProcessChildActions(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            var me = curContainerDO.CurrentRouteNode;
+            var myFirstChild = GetFirstChild(me);
+            if (myFirstChild != null)
+            {
+                SetCurrentNode(uow, curContainerDO, myFirstChild);
+                await ExecuteActionTree(uow, curContainerDO);
+                SetCurrentNode(uow, curContainerDO, me);
+            }
+        }
+
+        private async Task ProcessNextSiblingAction(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            var me = curContainerDO.CurrentRouteNode;
+            var nextSibling = GetNextSibling(me);
+            if (nextSibling != null)
+            {
+                SetCurrentNode(uow, curContainerDO, nextSibling);
+                await ExecuteActionTree(uow, curContainerDO);
+            }
+        }
+
+        private bool ShouldLoopBreak(ContainerDO curContainerDO)
+        {
+            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
+            var operationalStatus = storage.CrateContentsOfType<OperationalStatusCM>().Single();
+            if (operationalStatus.Loops.Single(l => l.Id == curContainerDO.CurrentRouteNode.Id.ToString()).BreakSignalReceived)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool ActionProcessingComplete(ContainerDO curContainerDO)
+        {
+            var curRouteNode = curContainerDO.CurrentRouteNode as ActionDO;
+            if (curRouteNode != null && curRouteNode.ActivityTemplate.Type == ActivityType.Loop && !ShouldLoopBreak(curContainerDO))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool ShouldProcessChildren(ContainerDO curContainerDO)
+        {
+            var curRouteNode = curContainerDO.CurrentRouteNode as ActionDO;
+
+            if (curRouteNode != null && curRouteNode.ActivityTemplate.Type == ActivityType.Loop && ShouldLoopBreak(curContainerDO))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task ExecuteActionTree(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            var me = curContainerDO.CurrentRouteNode;
+            while(true)
+            {
+                await _activity.Process(me.Id, curContainerDO);
+                if (!ShouldProcessChildren(curContainerDO))
+                {
+                    break;
+                }
+                await ProcessChildActions(uow, curContainerDO);
+
+                if (ActionProcessingComplete(curContainerDO))
+                {
+                    break;
+                }
+            }
+
+            await ProcessNextSiblingAction(uow, curContainerDO);
         }
 
         public async Task Execute(IUnitOfWork uow, ContainerDO curContainerDO)
@@ -177,7 +257,7 @@ namespace Hub.Services
             {
                 await ExecuteActionTree(uow, curContainerDO);
                 //to mark container as finished
-                SetContainerRouteNode(uow, curContainerDO, null);
+                SetCurrentNode(uow, curContainerDO, null);
             }
             else
             {

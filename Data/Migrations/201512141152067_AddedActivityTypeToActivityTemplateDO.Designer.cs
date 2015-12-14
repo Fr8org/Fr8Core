@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201512100923361_AddedActivityTypeToActivityTemplateDO"; }
+            get { return "201512141152067_AddedActivityTypeToActivityTemplateDO"; }
         }
         
         string IMigrationMetadata.Source

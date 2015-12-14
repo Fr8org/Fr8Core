@@ -1,3 +1,5 @@
+using Data.States;
+
 namespace Data.Migrations
 {
     using System;
@@ -8,6 +10,7 @@ namespace Data.Migrations
         public override void Up()
         {
             AddColumn("dbo.ActivityTemplate", "Type", c => c.Int(nullable: false));
+            Sql("UPDATE ActivityTemplate SET Type=" + (int)ActivityType.Standard);
         }
         
         public override void Down()

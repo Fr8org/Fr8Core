@@ -468,13 +468,13 @@
     <Compile Include="Migrations\201511261934585_RenameCollectFormDataSolution.Designer.cs">
       <DependentUpon>201511261934585_RenameCollectFormDataSolution.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201512100923361_AddedActivityTypeToActivityTemplateDO.cs" />
-    <Compile Include="Migrations\201512100923361_AddedActivityTypeToActivityTemplateDO.Designer.cs">
-      <DependentUpon>201512100923361_AddedActivityTypeToActivityTemplateDO.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201512121229183_RenameGoogleSheetsAction.cs" />
     <Compile Include="Migrations\201512121229183_RenameGoogleSheetsAction.Designer.cs">
       <DependentUpon>201512121229183_RenameGoogleSheetsAction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201512141152067_AddedActivityTypeToActivityTemplateDO.cs" />
+    <Compile Include="Migrations\201512141152067_AddedActivityTypeToActivityTemplateDO.Designer.cs">
+      <DependentUpon>201512141152067_AddedActivityTypeToActivityTemplateDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -801,11 +801,11 @@
     <EmbeddedResource Include="Migrations\201511261934585_RenameCollectFormDataSolution.resx">
       <DependentUpon>201511261934585_RenameCollectFormDataSolution.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201512100923361_AddedActivityTypeToActivityTemplateDO.resx">
-      <DependentUpon>201512100923361_AddedActivityTypeToActivityTemplateDO.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512121229183_RenameGoogleSheetsAction.resx">
       <DependentUpon>201512121229183_RenameGoogleSheetsAction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512141152067_AddedActivityTypeToActivityTemplateDO.resx">
+      <DependentUpon>201512141152067_AddedActivityTypeToActivityTemplateDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
