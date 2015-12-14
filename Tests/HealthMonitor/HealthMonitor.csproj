@@ -100,6 +100,10 @@
       <Project>{62219aa6-9276-4935-b934-f0f50ecef6fb}</Project>
       <Name>terminalGoogleTests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\terminalSalesforceTests\terminalSalesforceTests.csproj">
+      <Project>{fda06158-a81e-46b4-9f25-5ab76dfd400a}</Project>
+      <Name>terminalSalesforceTests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\terminalSendGridTests\terminalSendGridTests.csproj">
       <Project>{ee3e1e99-175f-4507-96da-421fcd0f6d9e}</Project>
       <Name>terminalSendGridTests</Name>
@@ -107,6 +111,10 @@
     <ProjectReference Include="..\..\terminalSlackTests\terminalSlackTests.csproj">
       <Project>{1246a6d6-fb9d-4564-8e86-a9f14a7ad177}</Project>
       <Name>terminalSlackTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalAzureTests\terminalAzureTests.csproj">
+      <Project>{36ed6f21-1a8f-4f07-a08a-a55639891e9b}</Project>
+      <Name>terminalAzureTests</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalDocuSignTests\terminalDocuSignTests.csproj">
       <Project>{a6e317fa-2eb0-4447-8ecd-6725f6b78435}</Project>

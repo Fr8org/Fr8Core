@@ -62,5 +62,26 @@ namespace TerminalBase.Infrastructure
 
             return templates.ToList();
         }
+
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(
+            ActionDO actionDO, string tag)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/available?tag=";
+
+            if (string.IsNullOrEmpty(tag))
+            {
+                hubUrl += "[all]";
+            }
+            else
+            {
+                hubUrl += tag;
+            }
+
+            var templates = await _restfulServiceClient
+                .GetAsync<List<ActivityTemplateDTO>>(new Uri(hubUrl));
+
+            return templates;
+        }
     }
 }

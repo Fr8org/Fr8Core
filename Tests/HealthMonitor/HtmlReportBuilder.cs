@@ -6,6 +6,30 @@ namespace HealthMonitor
     {
         private const string WrapperHtmlTemplate =
             @"<html>
+                <head>
+                    <style type=""text/css"">
+                        table {{
+                            border-collapse: collapse;
+                        }}
+
+                        table th, table td {{
+                            border: 1px solid #727272;
+                            padding: 3px;
+                        }}
+
+                        table thead tr {{
+                            background-color: white;
+                        }}
+
+                        table tbody tr.odd {{
+                            background-color: white;
+                        }}
+
+                        table tbody tr.even {{
+                            background-color: #cacaca;
+                        }}
+                    </style>
+                </head>
                 <body>
                     <table style=""width:100%"">
                         <thead>
@@ -25,12 +49,12 @@ namespace HealthMonitor
             </html>";
 
         private const string ItemHtmlTemplate =
-            @"<tr>
-                <td>{0}</td>
-                <td>{1}sec</td>
-                <td>{2}</td>
+            @"<tr class=""{0}"">
+                <td>{1}</td>
+                <td>{2}sec</td>
                 <td>{3}</td>
                 <td>{4}</td>
+                <td>{5}</td>
             </tr>";
 
 
@@ -39,10 +63,11 @@ namespace HealthMonitor
             return string.Format(WrapperHtmlTemplate, content);
         }
 
-        public string CreateTestReportItemPart(TestReportItem item)
+        public string CreateTestReportItemPart(TestReportItem item, int index)
         {
             return string.Format(
                 ItemHtmlTemplate,
+                index % 2 == 0 ? "even" : "odd",
                 item.Name,
                 item.Time,
                 item.Success ? "Yes" : "No",
@@ -55,9 +80,11 @@ namespace HealthMonitor
         {
             var sb = new StringBuilder();
 
+            var n = 0;
             foreach (var test in report.Tests)
             {
-                sb.Append(CreateTestReportItemPart(test));
+                sb.Append(CreateTestReportItemPart(test, n));
+                ++n;
             }
 
             var fullContent = CreateWrapper(sb.ToString());

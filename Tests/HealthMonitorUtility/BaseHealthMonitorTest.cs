@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Configuration;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-using Data.Interfaces.Manifests;
 
 namespace HealthMonitor.Utility
 {
@@ -74,6 +75,18 @@ namespace HealthMonitor.Utility
                 var crate = Crate<T>.FromContent(label, crateManifest);
                 updater.CrateStorage.Add(crate);
             }
+        }
+
+        public void AddActivityTemplate(ActionDTO actionDTO, ActivityTemplateDTO activityTemplate)
+        {
+            AddHubCrate(
+                actionDTO,
+                new StandardDesignTimeFieldsCM(
+                    new FieldDTO("ActivityTemplate", JsonConvert.SerializeObject(activityTemplate))
+                ),
+                "HealthMonitor_ActivityTemplate",
+                ""
+            );
         }
 
         public void AddUpstreamCrate<T>(ActionDTO actionDTO, T crateManifest, string crateLabel = "")

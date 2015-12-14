@@ -12,7 +12,7 @@ using terminalFr8CoreTests.Fixtures;
 using Hub.Managers;
 using StructureMap.Util;
 
-namespace terminalTests.Integration
+namespace terminalFr8CoreTests.Integration
 {
     [Explicit]
     public class ExecuteSql_v1_Tests : BaseHealthMonitorTest
