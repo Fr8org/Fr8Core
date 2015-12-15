@@ -19,5 +19,8 @@ namespace TerminalBase.Infrastructure
 
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(
             ActionDO actionDO, ActivityCategory category);
+
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(
+            ActionDO actionDO, string tag);
     }
 }
