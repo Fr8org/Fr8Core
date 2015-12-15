@@ -185,18 +185,13 @@ Please register first.");
                             if (curLoginStatus == LoginStatus.Successful)
                             {
                                 if (!String.IsNullOrEmpty(returnUrl))
+                                {
                                     return Redirect(returnUrl);
-
-                                string getRole = _account.GetUserRole(username);
-
-                                if (getRole == "Admin")
-                                    return RedirectToAction("Index", "Dashboard");
-                                   // return RedirectToAction("MyAccount", "User");
-                                else if (getRole == "Booker")
-                                    return RedirectToAction("Index", "Booker");
-
-                                //return RedirectToAction("MyAccount", "User");
-                                return RedirectToAction("Index", "Welcome");
+                                }
+                                else
+                                {
+                                    return RedirectToAction("Index", "Welcome");
+                                }
                             }
                             break;
                     }

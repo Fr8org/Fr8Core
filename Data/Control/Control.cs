@@ -281,7 +281,7 @@ namespace Data.Control
         [JsonProperty("label")]
         public string Label { get; set; }
 
-
+        [JsonProperty("filterByTag")]
         public string FilterByTag { get; set; }
 
         public FieldSourceDTO()

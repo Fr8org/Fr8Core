@@ -25,7 +25,7 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curProcessPayload = await GetProcessPayload(curActionDO, containerId);
+            
 
             var controlsMS = Crate.GetStorage(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO, "Available Run-Time Objects");
@@ -51,10 +51,6 @@ namespace terminalFr8Core.Actions
                     break;
                 }
                 string str = text.Split('[', ']')[1];
-                //if (str.Length <= 0)
-                //{
-                //    break;
-                //}
                 for (int j = 0; j < curSelectedFields.Count(); j++)
                 {
                     if (curSelectedFields[j].Key.ToString() == str)
@@ -77,20 +73,14 @@ namespace terminalFr8Core.Actions
                 }
             }
 
-            //var fieldListControl = controlsMS.Controls
-            //    .SingleOrDefault(x => x.Type == ControlTypes.FieldList);
 
-            //if (fieldListControl == null)
-            //{
-            //    throw new ApplicationException("Could not find FieldListControl.");
-            //}
+            
+            var curProcessPayload = await GetProcessPayload(curActionDO, containerId);
 
-            //var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
-
-            //using (var updater = Crate.UpdateStorage(() => processPayload.CrateStorage))
-            //{
-            //    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
-            //}
+            using (var updater = Crate.UpdateStorage(() => curProcessPayload.CrateStorage))
+            {
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(mappedFields)));
+            }
 
             return curProcessPayload;
 
@@ -169,5 +159,7 @@ namespace terminalFr8Core.Actions
         {
             return ConfigurationRequestType.Initial;
         }
+
+        
     }
 }

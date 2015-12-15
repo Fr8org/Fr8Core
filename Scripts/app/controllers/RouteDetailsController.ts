@@ -31,9 +31,18 @@ module dockyard.controllers {
             
             //Load detailed information
             $scope.id = $stateParams.id;
-            if (/^[0-9]+$/.test($scope.id) && parseInt($scope.id) > 0) {
+            if (this.isValidGUID($scope.id)) {
                 $scope.ptvm = RouteService.getFull({ id: $stateParams.id });
             }
+        }
+
+        // Regular Expression reference link
+        // https://lostechies.com/gabrielschenker/2009/03/10/how-to-add-a-custom-validation-method-to-the-jquery-validator-plug-in/
+
+        private isValidGUID(GUID) {
+            var validGuid = /^({|()?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}(}|))?$/;
+            var emptyGuid = /^({|()?0{8}-(0{4}-){3}0{12}(}|))?$/;
+            return validGuid.test(GUID) && !emptyGuid.test(GUID);
         }
     }
 
