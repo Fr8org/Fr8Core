@@ -82,12 +82,12 @@ namespace terminalFr8Core.Actions
         {
             var curUpstreamFields =
                 (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
-                .Fields
+                .Fields.Where(field => field.Availability != AvailabilityType.Configuration)
                 .ToArray();
 
             var curDownstreamFields =
                 (await GetDesignTimeFields(curActionDO, CrateDirection.Downstream))
-                .Fields
+                .Fields.Where(field => field.Availability != AvailabilityType.Configuration)
                 .ToArray();
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
