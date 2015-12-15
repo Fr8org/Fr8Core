@@ -37,9 +37,9 @@ namespace terminalQuickBooks.Actions
             sc.IppConfiguration.Message.Response.SerializationFormat = SerializationFormat.Json;
             var dc = new DataService(sc);
             sc.UseDataServices();
-            var je = CreateJournalEntry();
-            var jeList = dc.FindAll(new Intuit.Ipp.Data.JournalEntry(), 1, 100);
-            dc.Add(je);
+            //var je = CreateJournalEntry();
+            //var jeList = dc.FindAll(new Intuit.Ipp.Data.JournalEntry(), 1, 100);
+            //dc.Add(je);
             return curActionDO;
         }
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId,
@@ -58,52 +58,6 @@ namespace terminalQuickBooks.Actions
             }
 
             return ConfigurationRequestType.Followup;
-        }
-        public Intuit.Ipp.Data.JournalEntry CreateJournalEntry()
-        {
-            var journalEntry = new Intuit.Ipp.Data.JournalEntry();
-            journalEntry.Adjustment = true;
-            journalEntry.AdjustmentSpecified = true;
-            //journalEntry.JournalEntryEx = 
-
-            journalEntry.DocNumber = "DocNu1";
-            journalEntry.TxnDate = DateTime.UtcNow.Date;
-            journalEntry.TxnDateSpecified = true;
-            journalEntry.HomeTotalAmt = 100;
-            journalEntry.HomeTotalAmtSpecified = true;
-            journalEntry.TotalAmt = 100;
-            journalEntry.TotalAmtSpecified = true;
-            List<Line> lineList = new List<Line>();
-
-            Line debitLine = new Line();
-            debitLine.Description = "nov portion of rider insurance";
-            debitLine.Amount = new Decimal(100.00);
-            debitLine.AmountSpecified = true;
-            debitLine.DetailType = LineDetailTypeEnum.JournalEntryLineDetail;
-            debitLine.DetailTypeSpecified = true;
-            JournalEntryLineDetail journalEntryLineDetail = new JournalEntryLineDetail();
-            journalEntryLineDetail.PostingType = PostingTypeEnum.Debit;
-            journalEntryLineDetail.PostingTypeSpecified = true;
-            journalEntryLineDetail.AccountRef = new ReferenceType() { name = "Accumulated Depreciation", Value = "36" };
-            debitLine.AnyIntuitObject = journalEntryLineDetail;
-            lineList.Add(debitLine);
-
-            Line creditLine = new Line();
-            creditLine.Description = "nov portion of rider insurance";
-            creditLine.Amount = new Decimal(100.00);
-            creditLine.AmountSpecified = true;
-            creditLine.DetailType = LineDetailTypeEnum.JournalEntryLineDetail;
-            creditLine.DetailTypeSpecified = true;
-            JournalEntryLineDetail journalEntryLineDetailCredit = new JournalEntryLineDetail();
-            journalEntryLineDetailCredit.PostingType = PostingTypeEnum.Credit;
-            journalEntryLineDetailCredit.PostingTypeSpecified = true;
-            journalEntryLineDetailCredit.AccountRef = new ReferenceType() { name = "Accumulated Depreciation", Value = "36" };
-            creditLine.AnyIntuitObject = journalEntryLineDetailCredit;
-            lineList.Add(creditLine);
-
-            journalEntry.Line = lineList.ToArray();
-            return journalEntry;
-
         }
     }
 }

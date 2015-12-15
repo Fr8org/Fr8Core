@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.Manifests
 {
-    class StandardAccountingTransactionCM : Manifest
+    public class StandardAccountingTransactionCM : Manifest
     {
         public string Name { get; set; }
         public List<FinancialLineDTO> FinancialLines { get; set; }

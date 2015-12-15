@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    class FinancialLineDTO
+    public class FinancialLineDTO
     {
         [JsonProperty("amount")]
         public string Amount { get; set; }
