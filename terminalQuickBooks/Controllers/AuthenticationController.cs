@@ -1,7 +1,11 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
+using Intuit.Ipp.Core;
+using Intuit.Ipp.DataService;
+using terminalQuickBooks.Actions;
 using TerminalBase.BaseClasses;
 using terminalQuickBooks.Interfaces;
 using terminalQuickBooks.Services;

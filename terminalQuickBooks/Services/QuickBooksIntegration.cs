@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using DevDefined.OAuth.Consumer;
@@ -18,6 +19,12 @@ namespace terminalQuickBooks.Services
     {
         private static readonly ConcurrentDictionary<string, string> TokenSecrets = new ConcurrentDictionary<string, string>();
         private const string TokenSeperator = ";;;;;;;";
+        private static readonly string AccessToken = CloudConfigurationManager.GetSetting("QuickBooksRequestTokenUrl").ToString(CultureInfo.InvariantCulture);
+        private const string AccessTokenSecret = "";
+        private static readonly string ConsumerKey = CloudConfigurationManager.GetSetting("QuickBooksConsumerKey").ToString(CultureInfo.InvariantCulture);
+        private static readonly string ConsumerSecret = CloudConfigurationManager.GetSetting("QuickBooksConsumerSecret").ToString(CultureInfo.InvariantCulture);
+        private static readonly string AppToken = CloudConfigurationManager.GetSetting("QuickBooksAppToken").ToString(CultureInfo.InvariantCulture);
+
         /// <summary>
         /// Build external QuickBooks OAuth url.
         /// </summary>
@@ -37,12 +44,12 @@ namespace terminalQuickBooks.Services
         {
             var consumerContext = new OAuthConsumerContext
             {
-                ConsumerKey = CloudConfigurationManager.GetSetting("QuickBooksConsumerKey").ToString(CultureInfo.InvariantCulture),
-                ConsumerSecret = CloudConfigurationManager.GetSetting("QuickBooksConsumerSecret").ToString(CultureInfo.InvariantCulture),
+                ConsumerKey = ConsumerKey,
+                ConsumerSecret = ConsumerSecret,
                 SignatureMethod = SignatureMethod.HmacSha1
             };
             return new OAuthSession(consumerContext,
-                                    CloudConfigurationManager.GetSetting("QuickBooksRequestTokenUrl").ToString(CultureInfo.InvariantCulture),
+                                   AccessToken,
                                     CloudConfigurationManager.GetSetting("QuickBooksOAuthAuthorizeUrl").ToString(CultureInfo.InvariantCulture),
                                     CloudConfigurationManager.GetSetting("QuickBooksOAuthAccessUrl").ToString(CultureInfo.InvariantCulture));
         }
@@ -60,42 +67,23 @@ namespace terminalQuickBooks.Services
                 ConsumerKey = CloudConfigurationManager.GetSetting("QuickBooksConsumerKey").ToString(CultureInfo.InvariantCulture)
             };
             var accToken = oauthSession.ExchangeRequestTokenForAccessToken(reqToken, oauthVerifier);
-            
-            return accToken.Token+TokenSeperator+accToken.TokenSecret+TokenSeperator+realmId;
+
+            return accToken.Token + TokenSeperator + accToken.TokenSecret + TokenSeperator + realmId;
         }
 
-        private ServiceContext CreateServiceContext(string accessToken)
+        public ServiceContext CreateServiceContext(string accessToken)
         {
             var tokens = accessToken.Split(new[] { TokenSeperator }, StringSplitOptions.None);
             var accToken = tokens[0];
             var accTokenSecret = tokens[1];
             var companyID = tokens[2];
-            var oauthValidator = new OAuthRequestValidator(accToken, accTokenSecret, CloudConfigurationManager.GetSetting("QuickBooksConsumerKey").ToString(CultureInfo.InvariantCulture), CloudConfigurationManager.GetSetting("QuickBooksConsumerSecret").ToString(CultureInfo.InvariantCulture));
-            return new ServiceContext(CloudConfigurationManager.GetSetting("QuickBooksAppToken").ToString(CultureInfo.InvariantCulture), companyID, IntuitServicesType.QBO, oauthValidator);
+            var oauthValidator = new OAuthRequestValidator(accToken, accTokenSecret, ConsumerKey, ConsumerSecret);
+            return new ServiceContext(AppToken, companyID, IntuitServicesType.QBO, oauthValidator);
         }
 
-        public void CreateJournalEntry()
+        public OAuthRequestValidator getOAuthValidator()
         {
-            //move this to constructor of a seperate class
-            var sc = CreateServiceContext("");
-            var creditLine = new Line();
-            creditLine.Description = "nov portion of rider insurance";
-            creditLine.Amount = new Decimal(100.00);
-            creditLine.AmountSpecified = true;
-            creditLine.DetailType = LineDetailTypeEnum.JournalEntryLineDetail;
-            creditLine.DetailTypeSpecified = true;
-            var journalEntryLineDetailCredit = new JournalEntryLineDetail
-            {
-                PostingType = PostingTypeEnum.Credit,
-                PostingTypeSpecified = true,
-                AccountRef = new ReferenceType() {name = "Accumulated Depreciation", Value = "36"}
-            };
-
-            
-
-            var je = new Intuit.Ipp.Data.JournalEntry();
-            
-            
+            return new OAuthRequestValidator(AccessToken,AccessTokenSecret,ConsumerKey,ConsumerSecret);
         }
 
     }

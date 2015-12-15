@@ -6,16 +6,50 @@ using System.Web;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Intuit.Ipp.Core;
+using Intuit.Ipp.Core.Configuration;
+using Intuit.Ipp.Data;
+using Intuit.Ipp.DataService;
+using Intuit.Ipp.Diagnostics;
+using terminalQuickBooks.Interfaces;
+using terminalQuickBooks.Services;
+using JournalEntry = Intuit.Ipp.Data.JournalEntry;
 
 namespace terminalQuickBooks.Actions
 {
     public class Create_Journal_Entry_v1 : BaseTerminalAction
     {
+        private IQuickBooksIntegration _quickBooksIntegration = new QuickBooksIntegration();
+
         public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            if (NeedsAuthentication(authTokenDO))
+                throw new ApplicationException("No AuthToken provided.");
+            //var curAuthUrl = _quickBooksIntegration.CreateAuthUrl();
+            //var curAuthToken = _quickBooksIntegration.GetOAuthToken();
+            var sc = _quickBooksIntegration.CreateServiceContext(authTokenDO.Token);
+            sc.IppConfiguration.BaseUrl.Qbo = "https://sandbox-quickbooks.api.intuit.com/";
+            sc.IppConfiguration.MinorVersion.Qbo = "4";
+            sc.IppConfiguration.Logger.RequestLog.EnableRequestResponseLogging = true;
+            //sc.IppConfiguration.Logger.RequestLog.ServiceRequestLoggingLocation = @"C:\IdsLogs.txt";
+            sc.IppConfiguration.Logger.CustomLogger = new TraceLogger();
+            sc.IppConfiguration.Message.Response.SerializationFormat = SerializationFormat.Json;
+            var dc = new DataService(sc);
+            sc.UseDataServices();
+            var je = CreateJournalEntry();
+            var jeList = dc.FindAll(new Intuit.Ipp.Data.JournalEntry(), 1, 100);
+            dc.Add(je);
+            return curActionDO;
         }
-
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId,
+    AuthorizationTokenDO authTokenDO)
+        {
+            if (NeedsAuthentication(authTokenDO))
+                throw new ApplicationException("No AuthToken provided.");
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            return processPayload;  
+        }
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (true)
@@ -24,6 +58,52 @@ namespace terminalQuickBooks.Actions
             }
 
             return ConfigurationRequestType.Followup;
+        }
+        public Intuit.Ipp.Data.JournalEntry CreateJournalEntry()
+        {
+            var journalEntry = new Intuit.Ipp.Data.JournalEntry();
+            journalEntry.Adjustment = true;
+            journalEntry.AdjustmentSpecified = true;
+            //journalEntry.JournalEntryEx = 
+
+            journalEntry.DocNumber = "DocNu1";
+            journalEntry.TxnDate = DateTime.UtcNow.Date;
+            journalEntry.TxnDateSpecified = true;
+            journalEntry.HomeTotalAmt = 100;
+            journalEntry.HomeTotalAmtSpecified = true;
+            journalEntry.TotalAmt = 100;
+            journalEntry.TotalAmtSpecified = true;
+            List<Line> lineList = new List<Line>();
+
+            Line debitLine = new Line();
+            debitLine.Description = "nov portion of rider insurance";
+            debitLine.Amount = new Decimal(100.00);
+            debitLine.AmountSpecified = true;
+            debitLine.DetailType = LineDetailTypeEnum.JournalEntryLineDetail;
+            debitLine.DetailTypeSpecified = true;
+            JournalEntryLineDetail journalEntryLineDetail = new JournalEntryLineDetail();
+            journalEntryLineDetail.PostingType = PostingTypeEnum.Debit;
+            journalEntryLineDetail.PostingTypeSpecified = true;
+            journalEntryLineDetail.AccountRef = new ReferenceType() { name = "Accumulated Depreciation", Value = "36" };
+            debitLine.AnyIntuitObject = journalEntryLineDetail;
+            lineList.Add(debitLine);
+
+            Line creditLine = new Line();
+            creditLine.Description = "nov portion of rider insurance";
+            creditLine.Amount = new Decimal(100.00);
+            creditLine.AmountSpecified = true;
+            creditLine.DetailType = LineDetailTypeEnum.JournalEntryLineDetail;
+            creditLine.DetailTypeSpecified = true;
+            JournalEntryLineDetail journalEntryLineDetailCredit = new JournalEntryLineDetail();
+            journalEntryLineDetailCredit.PostingType = PostingTypeEnum.Credit;
+            journalEntryLineDetailCredit.PostingTypeSpecified = true;
+            journalEntryLineDetailCredit.AccountRef = new ReferenceType() { name = "Accumulated Depreciation", Value = "36" };
+            creditLine.AnyIntuitObject = journalEntryLineDetailCredit;
+            lineList.Add(creditLine);
+
+            journalEntry.Line = lineList.ToArray();
+            return journalEntry;
+
         }
     }
 }
