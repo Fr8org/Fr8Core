@@ -13,7 +13,7 @@
     <AzureHostedServiceName>fr8companysa</AzureHostedServiceName>
     <AzureEnableIntelliTrace>False</AzureEnableIntelliTrace>
     <AzureEnableProfiling>False</AzureEnableProfiling>
-    <AzureServiceConfiguration>Dev</AzureServiceConfiguration>
+    <AzureServiceConfiguration>Cloud</AzureServiceConfiguration>
     <AzureSolutionConfiguration>Release</AzureSolutionConfiguration>
     <AzureStorageAccountLabel>fr8companySA</AzureStorageAccountLabel>
     <AzureStorageAccountName>fr8companysa</AzureStorageAccountName>
