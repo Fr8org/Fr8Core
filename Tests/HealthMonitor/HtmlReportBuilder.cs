@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 
 namespace HealthMonitor
 {
@@ -31,6 +32,9 @@ namespace HealthMonitor
                     </style>
                 </head>
                 <body>
+                    <div style=""margin: 10px 0 10px 0"">
+                        Tests passed: {0} / {1}
+                    </div>
                     <table style=""width:100%"">
                         <thead>
                             <tr>
@@ -42,7 +46,7 @@ namespace HealthMonitor
                             </tr>
                         </thead>
                         <tbody>
-                            {0}
+                            {2}
                         </tbody>
                     </table>
                 </body>
@@ -58,9 +62,9 @@ namespace HealthMonitor
             </tr>";
 
 
-        public string CreateWrapper(string content)
+        public string CreateWrapper(int success, int total, string content)
         {
-            return string.Format(WrapperHtmlTemplate, content);
+            return string.Format(WrapperHtmlTemplate, success, total, content);
         }
 
         public string CreateTestReportItemPart(TestReportItem item, int index)
@@ -87,7 +91,11 @@ namespace HealthMonitor
                 ++n;
             }
 
-            var fullContent = CreateWrapper(sb.ToString());
+            var fullContent = CreateWrapper(
+                report.Tests.Count(x => x.Success),
+                report.Tests.Count(),
+                sb.ToString()
+            );
 
             return fullContent;
         }
