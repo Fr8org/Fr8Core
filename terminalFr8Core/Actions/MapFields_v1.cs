@@ -80,14 +80,16 @@ namespace terminalFr8Core.Actions
         /// </summary>
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
+            //Filter the upstream fields by Availability flag as this action takes the run time data (left DDLBs) to the fidles (right DDLBs)
             var curUpstreamFields =
                 (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
                 .Fields.Where(field => field.Availability != AvailabilityType.Configuration)
                 .ToArray();
 
+            //Get all the downstream fields to be mapped (right DDLBs)
             var curDownstreamFields =
                 (await GetDesignTimeFields(curActionDO, CrateDirection.Downstream))
-                .Fields.Where(field => field.Availability != AvailabilityType.Configuration)
+                .Fields
                 .ToArray();
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
@@ -119,8 +121,7 @@ namespace terminalFr8Core.Actions
             {
                 Name = "MapFieldsErrorMessage",
                 Label = "Error",
-                Value = "This action couldn't find either source fields or target fields (or both). " +
-                        "Try configuring some Actions first, then try this page again.",
+                Value = "This Action works by mapping upstream data (from the left) to downstream fields (on the right)",
                 CssClass = "well well-lg"
             };
 
