@@ -23,9 +23,7 @@ namespace HubWeb.Controllers.Helpers
                 {
                     var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
 
-                    pntDTO.Actions = Enumerable.ToList(
-                        x.ChildNodes.OrderBy(y => y.Ordering).Select(Mapper.Map<ActionDTO>)
-                    );
+                    pntDTO.Actions = x.ChildNodes.OrderBy(y => y.Ordering).Select(Mapper.Map<ActionDTO>).ToList();
 
                     return pntDTO;
                 }).ToList();

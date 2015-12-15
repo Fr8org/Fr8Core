@@ -46,6 +46,7 @@ module dockyard.services {
         // Depth first search on the ActionGroup tree going from last sibling to first.
         private processGroup(actionGroups: model.ActionDTO[][], group: model.ActionGroup, processedGroups: model.ActionGroup[]) {
             processedGroups.push(group);
+            group.actions = _.sortBy(group.actions, (action: model.ActionDTO) => action.ordering);
             for (var i = group.actions.length - 1; i > -1; i--) {
                 //var childGroup = this.findChildGroup(actionGroups, group.actions[i].id);
                 if (group.actions[i].childrenActions.length) {

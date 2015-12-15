@@ -22,6 +22,7 @@ module dockyard.interfaces {
         activityTemplate: model.ActivityTemplate;
         activityTemplateId: number;
         childrenActions: Array<IActionDTO>;
+        ordering: number;
     }
 
     export interface IActivityCategoryDTO {
