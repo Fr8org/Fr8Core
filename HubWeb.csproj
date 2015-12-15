@@ -4370,5 +4370,24 @@
     </ItemGroup>
     <Message Text="CollectGulpOutput list: %(_CustomGulpFiles.Identity)" />
   </Target>
+  <PropertyGroup>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      CleanBowerComponents;
+    </CleanDependsOn>
+	<CleanDependsOn>
+	  $(CleanDependsOn);
+	  RemoveCompiledJsFiles;
+    </CleanDependsOn>
+  </PropertyGroup>
+  <Target Name="CleanBowerComponents">
+	<RemoveDir Directories="bower_components" />
+  </Target>
+  <Target Name="RemoveCompiledJsFiles">
+    <ItemGroup>
+      <_CompiledJsFiles Include="Scripts\app\**\*.js" />
+    </ItemGroup>
+	<Delete Files="@(_CompiledJsFiles)" />
+  </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
 </Project>
