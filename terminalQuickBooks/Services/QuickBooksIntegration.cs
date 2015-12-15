@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using DevDefined.OAuth.Consumer;
 using DevDefined.OAuth.Framework;
@@ -97,9 +98,9 @@ namespace terminalQuickBooks.Services
             var oauthValidator = new OAuthRequestValidator(accToken, accTokenSecret, ConsumerKey, ConsumerSecret);
             return new ServiceContext(AppToken, companyID, IntuitServicesType.QBO, oauthValidator);
         }
-        public DataService GetDataService(AuthorizationTokenDTO authTokenDTO)
+        public DataService GetDataService(AuthorizationTokenDO authTokenDO)
         {
-            var curServiceContext = CreateServiceContext(authTokenDTO.Token);
+            var curServiceContext = CreateServiceContext(authTokenDO.Token);
             //Modify required settings for the Service Context
             curServiceContext.IppConfiguration.BaseUrl.Qbo = "https://sandbox-quickbooks.api.intuit.com/";
             curServiceContext.IppConfiguration.MinorVersion.Qbo = "4";

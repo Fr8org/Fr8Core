@@ -26,20 +26,7 @@ namespace terminalQuickBooks.Actions
         {
             if (NeedsAuthentication(authTokenDO))
                 throw new ApplicationException("No AuthToken provided.");
-            //var curAuthUrl = _quickBooksIntegration.CreateAuthUrl();
-            //var curAuthToken = _quickBooksIntegration.GetOAuthToken();
-            var sc = _quickBooksIntegration.CreateServiceContext(authTokenDO.Token);
-            sc.IppConfiguration.BaseUrl.Qbo = "https://sandbox-quickbooks.api.intuit.com/";
-            sc.IppConfiguration.MinorVersion.Qbo = "4";
-            sc.IppConfiguration.Logger.RequestLog.EnableRequestResponseLogging = true;
-            //sc.IppConfiguration.Logger.RequestLog.ServiceRequestLoggingLocation = @"C:\IdsLogs.txt";
-            sc.IppConfiguration.Logger.CustomLogger = new TraceLogger();
-            sc.IppConfiguration.Message.Response.SerializationFormat = SerializationFormat.Json;
-            var dc = new DataService(sc);
-            sc.UseDataServices();
-            //var je = CreateJournalEntry();
-            //var jeList = dc.FindAll(new Intuit.Ipp.Data.JournalEntry(), 1, 100);
-            //dc.Add(je);
+
             return curActionDO;
         }
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId,

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Xml.Serialization;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Intuit.Ipp.Core.Configuration;
@@ -93,11 +94,19 @@ namespace terminalQuickBooks.Services
             curJournalEntry.Line = curLineArray;
             return curJournalEntry;
         }
-        public void Create(JournalEntry journalEntry)
+        public void Create(StandardAccountingTransactionCM crate, AuthorizationTokenDO authTokenDO)
         {
-            
+            var curJournalEntry = GetJournalEntryFromCM(crate);
+            var curDataService = _quickBooksIntegration.GetDataService(authTokenDO);
+            try
+            {
+                curDataService.Add(curJournalEntry);
+            }
+            catch(Exception curException)
+            {
+                throw curException;
+            }
         }
-
         private static T ParseEnum<T>(string value)
         {
             return (T)Enum.Parse(typeof(T), value, true);
