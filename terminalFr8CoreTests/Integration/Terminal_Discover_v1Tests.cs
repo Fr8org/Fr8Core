@@ -12,7 +12,7 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
     {
-        private const int Fr8CoreActionCount = 9;
+        private const int Fr8CoreActionCount = 10;
 
         private const string FilterUsingRunTimeDataName = "FilterUsingRunTimeData";
         private const string MapFieldsName = "MapFields";
@@ -23,6 +23,8 @@ namespace terminalFr8CoreTests.Integration
         private const string BuildQueryName = "BuildQuery";
         private const string ExecuteSqlName = "ExecuteSql";
         private const string ManageRouteName = "ManageRoute";
+        private const string FindObjectsSolutionName = "FindObjects_Solution";
+
         public override string TerminalName
         {
             get { return "terminalFr8Core"; }
@@ -46,6 +48,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == BuildQueryName), true);
             Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == ExecuteSqlName), true);
             Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == ManageRouteName), true);
+            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == FindObjectsSolutionName), true);
         }
     }
 }

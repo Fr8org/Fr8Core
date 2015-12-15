@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 
 namespace HealthMonitor
 {
@@ -6,7 +7,34 @@ namespace HealthMonitor
     {
         private const string WrapperHtmlTemplate =
             @"<html>
+                <head>
+                    <style type=""text/css"">
+                        table {{
+                            border-collapse: collapse;
+                        }}
+
+                        table th, table td {{
+                            border: 1px solid #727272;
+                            padding: 3px;
+                        }}
+
+                        table thead tr {{
+                            background-color: white;
+                        }}
+
+                        table tbody tr.odd {{
+                            background-color: white;
+                        }}
+
+                        table tbody tr.even {{
+                            background-color: #cacaca;
+                        }}
+                    </style>
+                </head>
                 <body>
+                    <div style=""margin: 10px 0 10px 0"">
+                        Tests passed: {0} / {1}
+                    </div>
                     <table style=""width:100%"">
                         <thead>
                             <tr>
@@ -18,31 +46,32 @@ namespace HealthMonitor
                             </tr>
                         </thead>
                         <tbody>
-                            {0}
+                            {2}
                         </tbody>
                     </table>
                 </body>
             </html>";
 
         private const string ItemHtmlTemplate =
-            @"<tr>
-                <td>{0}</td>
-                <td>{1}sec</td>
-                <td>{2}</td>
+            @"<tr class=""{0}"">
+                <td>{1}</td>
+                <td>{2}sec</td>
                 <td>{3}</td>
                 <td>{4}</td>
+                <td>{5}</td>
             </tr>";
 
 
-        public string CreateWrapper(string content)
+        public string CreateWrapper(int success, int total, string content)
         {
-            return string.Format(WrapperHtmlTemplate, content);
+            return string.Format(WrapperHtmlTemplate, success, total, content);
         }
 
-        public string CreateTestReportItemPart(TestReportItem item)
+        public string CreateTestReportItemPart(TestReportItem item, int index)
         {
             return string.Format(
                 ItemHtmlTemplate,
+                index % 2 == 0 ? "even" : "odd",
                 item.Name,
                 item.Time,
                 item.Success ? "Yes" : "No",
@@ -55,12 +84,18 @@ namespace HealthMonitor
         {
             var sb = new StringBuilder();
 
+            var n = 0;
             foreach (var test in report.Tests)
             {
-                sb.Append(CreateTestReportItemPart(test));
+                sb.Append(CreateTestReportItemPart(test, n));
+                ++n;
             }
 
-            var fullContent = CreateWrapper(sb.ToString());
+            var fullContent = CreateWrapper(
+                report.Tests.Count(x => x.Success),
+                report.Tests.Count(),
+                sb.ToString()
+            );
 
             return fullContent;
         }

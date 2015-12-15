@@ -101,7 +101,7 @@ namespace terminalGoogleTests.Integration
         /// Spreadsheet with the following structure is passed: {{(1,1),(1,2)},{(2,1),(2,2)}}
         /// Required fields are tested
         /// </summary> 
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle"), Ignore]
         public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Row_And_Column_Table()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -136,7 +136,7 @@ namespace terminalGoogleTests.Integration
         /// Spreadsheet with the following structure is passed: {{(1,1)},{(2,2)}}
         /// Required fields are tested
         /// </summary> 
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle"), Ignore]
         public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Column_Only_Table()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -170,7 +170,7 @@ namespace terminalGoogleTests.Integration
         /// Spreadsheet with the following structure is passed: {{(1,1),(1,2)}}
         /// Required fields are tested
         /// </summary> 
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle"), Ignore]
         public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Row_Only_Table()
         {
             var configureUrl = GetTerminalConfigureUrl();
