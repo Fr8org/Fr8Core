@@ -313,6 +313,7 @@
     <Compile Include="Interfaces\Manifests\StandardQueryCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardRoutingDirectiveCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileHandle.cs" />
+    <Compile Include="Interfaces\Manifests\OperationalStateCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardSecurityCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardTableDataCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardPayloadDataCM.cs" />
@@ -471,6 +472,10 @@
     <Compile Include="Migrations\201512121229183_RenameGoogleSheetsAction.Designer.cs">
       <DependentUpon>201512121229183_RenameGoogleSheetsAction.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201512141152067_AddedActivityTypeToActivityTemplateDO.cs" />
+    <Compile Include="Migrations\201512141152067_AddedActivityTypeToActivityTemplateDO.Designer.cs">
+      <DependentUpon>201512141152067_AddedActivityTypeToActivityTemplateDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
@@ -484,6 +489,7 @@
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
     <Compile Include="Repositories\WebServiceRepository.cs" />
+    <Compile Include="States\ActivityType.cs" />
     <Compile Include="States\ActivityCategory.cs" />
     <Compile Include="States\AuthenticationType.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
@@ -797,6 +803,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512121229183_RenameGoogleSheetsAction.resx">
       <DependentUpon>201512121229183_RenameGoogleSheetsAction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512141152067_AddedActivityTypeToActivityTemplateDO.resx">
+      <DependentUpon>201512141152067_AddedActivityTypeToActivityTemplateDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

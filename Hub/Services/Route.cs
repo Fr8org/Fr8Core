@@ -354,6 +354,12 @@ namespace Hub.Services
             return EnumerateActivities<RouteNodeDO>(curRoute, false).OrderBy(a => a.Ordering).FirstOrDefault();
         }
 
+        public RouteNodeDO GetRootActivity(IUnitOfWork uow, RouteDO curRoute)
+        {
+            return curRoute.StartingSubroute as RouteNodeDO;
+            //return EnumerateActivities<RouteNodeDO>(curRoute, false).OrderBy(a => a.Ordering).FirstOrDefault();
+        }
+
         public RouteDO GetRoute(ActionDO action)
         {
             var root = action.ParentRouteNode;
@@ -435,7 +441,7 @@ namespace Hub.Services
                 }
             }
 
-            containerDO.CurrentRouteNode = GetInitialActivity(uow, curRoute);
+            containerDO.CurrentRouteNode = GetRootActivity(uow, curRoute);
 
             uow.ContainerRepository.Add(containerDO);
             uow.SaveChanges();
@@ -468,7 +474,7 @@ namespace Hub.Services
 
                 try
                 {
-                    await _container.Execute(uow, curContainerDO);
+                    await _container.Run(uow, curContainerDO);
                     curContainerDO.ContainerState = ContainerState.Completed;
 
                     return curContainerDO;
