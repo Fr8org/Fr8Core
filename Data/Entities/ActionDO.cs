@@ -25,6 +25,9 @@ namespace Data.Entities
         [NotMapped]
         public bool IsTempId { get; set; }
 
+        [NotMapped]
+        public string ExplicitData { get; set; }
+
         public string currentView { get; set; }
 
         public override RouteNodeDO Clone()
