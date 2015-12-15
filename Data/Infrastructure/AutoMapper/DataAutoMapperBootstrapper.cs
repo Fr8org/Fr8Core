@@ -41,7 +41,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
                 .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
                 .ForMember(a => a.ChildrenActions, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActionDO>().OrderBy(da => da.Ordering)))
-                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate));
+                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
+                .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData));
 
 
             Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
@@ -52,7 +53,8 @@ namespace Data.Infrastructure.AutoMapper
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
                 .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
                 .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActions(ad.ChildrenActions)))
-                .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId));
+                .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId))
+                .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData));
 
 
             Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()

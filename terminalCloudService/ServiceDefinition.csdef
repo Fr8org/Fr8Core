@@ -62,6 +62,11 @@
           <Binding name="Endpoint1" endpointName="terminalAtlassian" />
         </Bindings>
       </Site>
+      <Site name="terminalQuickBooks" physicalDirectory="..\..\..\terminalQuickBooks\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="terminalQuickBooks" />
+        </Bindings>
+      </Site>
     </Sites>
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
@@ -79,6 +84,7 @@
       <InputEndpoint name="terminalGoogle" protocol="http" port="25923" />
       <InputEndpoint name="terminalDropbox" protocol="http" port="19760" />
       <InputEndpoint name="terminalAtlassian" protocol="http" port="39768" />
+      <InputEndpoint name="terminalQuickBooks" protocol="http" port="48317" />
     </Endpoints>
     <Imports>
       <Import moduleName="RemoteAccess" />
