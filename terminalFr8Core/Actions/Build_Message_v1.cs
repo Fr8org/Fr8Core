@@ -65,27 +65,28 @@ namespace terminalFr8Core.Actions
                 Console.WriteLine(str);
 
             }
-            foreach (var control in controlsMS.Controls)
-            {
-                if (control.Type == "TextArea")
-                {
-                    control.Value = result;
-                }
-            }
-
-
             
             var curProcessPayload = await GetProcessPayload(curActionDO, containerId);
 
+            result = result.Replace("<p>", String.Empty).Replace("</p>", " ");
+
+            
+            List<FieldDTO> newFields = new List<FieldDTO>();
+            FieldDTO _field = new FieldDTO();
+            _field.Key = "message";
+            _field.Value = result;
+            newFields.Add(_field);
+
+            //var messageBody = JsonConvert.DeserializeObject<List<FieldDTO>>(result);
+
             using (var updater = Crate.UpdateStorage(() => curProcessPayload.CrateStorage))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(mappedFields)));
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MessageBody", new StandardPayloadDataCM(newFields)));
             }
 
             return curProcessPayload;
 
         }
-
 
 
         protected async override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
