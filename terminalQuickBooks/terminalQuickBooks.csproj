@@ -184,6 +184,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\IAccount.cs" />
+    <Compile Include="Services\Account.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
     <Compile Include="Tests\Fixtures\Fixtures.cs" />
     <Compile Include="Tests\Services\JournalEntryTests.cs" />
