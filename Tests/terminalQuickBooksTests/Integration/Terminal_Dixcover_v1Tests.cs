@@ -23,17 +23,17 @@ namespace terminalQuickBooksTests.Integration
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
-        [Test, NUnit.Framework.Category("Integration.terminalQuickBooks")]
-        public async void Terminal_Slack_Discover()
-        {
-            var discoverUrl = GetTerminalDiscoverUrl();
+        //[Test, NUnit.Framework.Category("Integration.terminalQuickBooks")]
+        //public async void Terminal_Slack_Discover()
+        //{
+        //    var discoverUrl = GetTerminalDiscoverUrl();
 
-            var terminalDiscoverResponse = await HttpGetAsync<StandardFr8TerminalCM>(discoverUrl);
+        //    var terminalDiscoverResponse = await HttpGetAsync<StandardFr8TerminalCM>(discoverUrl);
 
-            Assert.IsNotNull(terminalDiscoverResponse, "Terminal QuickBooks discovery did not happen.");
-            Assert.IsNotNull(terminalDiscoverResponse.Actions, "QuickBooks terminal actions were not loaded");
-            Assert.AreEqual(ActionCount, terminalDiscoverResponse.Actions.Count, "Not all terminal slack actions were loaded");
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Create_Journal_Entry_Action_Name), true, "Action " + Create_Journal_Entry_Action_Name + " was not loaded");
-        }
+        //    Assert.IsNotNull(terminalDiscoverResponse, "Terminal QuickBooks discovery did not happen.");
+        //    Assert.IsNotNull(terminalDiscoverResponse.Actions, "QuickBooks terminal actions were not loaded");
+        //    Assert.AreEqual(ActionCount, terminalDiscoverResponse.Actions.Count, "Not all terminal slack actions were loaded");
+        //    Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Create_Journal_Entry_Action_Name), true, "Action " + Create_Journal_Entry_Action_Name + " was not loaded");
+        //}
     }
 }

@@ -17,6 +17,7 @@ namespace terminalQuickBooks.Services
 {
     public class QuickBooksIntegration : IQuickBooksIntegration
     {
+<<<<<<< HEAD
         private static readonly ConcurrentDictionary<string, string> TokenSecrets = new ConcurrentDictionary<string, string>();
         private const string TokenSeperator = ";;;;;;;";
         private static readonly string AccessToken = CloudConfigurationManager.GetSetting("QuickBooksRequestTokenUrl").ToString(CultureInfo.InvariantCulture);
@@ -28,20 +29,16 @@ namespace terminalQuickBooks.Services
         /// <summary>
         /// Build external QuickBooks OAuth url.
         /// </summary>
+=======
+>>>>>>> dev
         public string CreateAuthUrl()
         {
-            var oauthSession = CreateSession();
-            var requestToken = oauthSession.GetRequestToken();
-            TokenSecrets.TryAdd(requestToken.Token, requestToken.TokenSecret);
-            return oauthSession.GetUserAuthorizationUrlForToken(requestToken);
+            throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Create a session.
-        /// </summary>
-        /// <returns></returns>
-        private IOAuthSession CreateSession()
+        public Task<string> GetOAuthToken(string oauthToken, string oauthVerifier, string realmId)
         {
+<<<<<<< HEAD
             var consumerContext = new OAuthConsumerContext
             {
                 ConsumerKey = ConsumerKey,
@@ -86,5 +83,9 @@ namespace terminalQuickBooks.Services
             return new OAuthRequestValidator(AccessToken,AccessTokenSecret,ConsumerKey,ConsumerSecret);
         }
 
+=======
+            throw new NotImplementedException();
+        }
+>>>>>>> dev
     }
 }

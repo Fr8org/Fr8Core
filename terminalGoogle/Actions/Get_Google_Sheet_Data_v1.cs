@@ -20,11 +20,11 @@ using TerminalBase.Infrastructure;
 
 namespace terminalGoogle.Actions
 {
-    public class Extract_Spreadsheet_Data_v1 : BaseTerminalAction
+    public class Get_Google_Sheet_Data_v1 : BaseTerminalAction
     {
         private readonly IGoogleSheet _google;
 
-        public Extract_Spreadsheet_Data_v1()
+        public Get_Google_Sheet_Data_v1()
         {
             _google = new GoogleSheet();
         }
@@ -260,7 +260,7 @@ namespace terminalGoogle.Actions
                     updater.CrateStorage.RemoveByLabel(label);
                     var curCrateDTO = Crate.CreateDesignTimeFieldsCrate(
                                 label,
-                                headers.Select(col => new FieldDTO() { Key = col.Value, Value = col.Key }).ToArray()
+                                headers.Select(col => new FieldDTO() { Key = col.Key, Value = col.Key }).ToArray()
                             );
                     updater.CrateStorage.Add(curCrateDTO);
                 }

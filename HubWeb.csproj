@@ -272,7 +272,7 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.Helpers.dll</HintPath>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -283,8 +283,8 @@
       <HintPath>packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.Mvc, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.Mvc.5.1.2\lib\net45\System.Web.Mvc.dll</HintPath>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -292,19 +292,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.Razor.3.1.2\lib\net45\System.Web.Razor.dll</HintPath>
+      <HintPath>packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.dll</HintPath>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
@@ -474,6 +474,7 @@
     <Content Include="Content\icons\web_services\DocuSign-Logo.png" />
     <Content Include="Content\icons\web_services\dropbox-icon-64x64.png" />
     <Content Include="Content\icons\web_services\fr8-core-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\google-icon-64x64.png" />
     <Content Include="Content\icons\web_services\jira-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-azure-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-excel-icon-64x64.png" />
@@ -723,12 +724,15 @@
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
     <Content Include="Scripts\app\_compiled.js" />
+    <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalListController.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ITerminal.ts" />
     <TypeScriptCompile Include="Scripts\app\model\TerminalActionSetDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\TerminalDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\services\TerminalService.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\RouteDetailsControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\jpattern.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ContainerControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\lib\jpattern.d.ts" />
@@ -780,6 +784,8 @@
     <Content Include="Service References\Application Insights\ConnectedService.json" />
     <Content Include="Views\Welcome\Index.cshtml" />
     <Content Include="Views\AngularTemplate\RunRouteButton.cshtml" />
+    <None Include="Properties\PublishProfiles\fr8dev - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\fr8dev - Web Deploy.pubxml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
