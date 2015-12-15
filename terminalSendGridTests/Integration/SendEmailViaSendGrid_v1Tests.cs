@@ -98,7 +98,7 @@ namespace terminalSendGridTests.Integration
             Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Count());
         }
 
-        [Test, Category("Integration.terminalSendGrid")]
+        [Test, Category("Integration.terminalSendGrid"), Ignore]
         public async void SendEmailViaSendGrid_Run_Returns_Payload()
         {
             //Arrange

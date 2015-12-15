@@ -96,29 +96,6 @@ namespace TerminalBase.BaseClasses
             return null;
         }
 
-        protected async Task<IEnumerable<ActivityTemplateDO>> GetActivityTemplates(string tag = null)
-        {
-            var httpClient = new HttpClient();
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-            + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/available?tag=";
-
-            if (string.IsNullOrEmpty(tag))
-            {
-                url += "[all]";
-            }
-            else
-            {
-                url += tag;
-            }
-
-            using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                var curActivityTemplate = JsonConvert.DeserializeObject<List<ActivityTemplateDTO>>(content);
-                return curActivityTemplate.Select(at => Mapper.Map<ActivityTemplateDO>(at));
-            }
-        }
-
         protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(ActionDO curActionDO, StandardDesignTimeFieldsCM designTimeFields)
         {
             var fields = designTimeFields.Fields;
