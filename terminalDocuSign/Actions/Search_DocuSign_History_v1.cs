@@ -70,12 +70,7 @@ namespace terminalDocuSign.Actions
         }
 
         private readonly IDocuSignFolder _docuSignFolder;
-        
-        static Search_DocuSign_History_v1()
-        {
-            ManifestDiscovery.Default.RegisterManifest(typeof(Query_DocuSign_v1.RuntimeConfiguration));
-        }
-
+      
         public Search_DocuSign_History_v1()
         {
             _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
@@ -137,11 +132,11 @@ namespace terminalDocuSign.Actions
 
         private async Task ConfigureNestedActions(ActionDO curActionDO, ActionUi ui)
         {
-            var config = new Query_DocuSign_v1.RuntimeConfiguration
+            var config = new Query_DocuSign_v1.ActionUi
             {
-                Folder = ui.Folder.Value, 
-                Status = ui.Status.Value, 
-                SearchText = ui.SearchText.Value
+                Folder = {Value = ui.Folder.Value}, 
+                Status = {Value = ui.Status.Value}, 
+                SearchText = {Value = ui.SearchText.Value}
             };
             
             var template = (await FindTemplates(curActionDO, x => x.Name == "Query_DocuSign")).FirstOrDefault();

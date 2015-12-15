@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Tests.Fixtures
 {
     public partial class TerminalFixtureData
     {
-        public static DocusignFolderInfo[] GetFolders()
+        public static List<DocusignFolderInfo> GetFolders()
         {
-            return new[] 
+            return new List<DocusignFolderInfo> 
             {
                 new DocusignFolderInfo
                 {
@@ -24,11 +25,11 @@ namespace terminalDocuSign.Tests.Fixtures
         }
 
 
-        public static FolderItem[] GetFolderInfo(string  folderName)
+        public static List<FolderItem> GetFolderInfo(string folderName)
         {
             var prefix = "[" + folderName + "]";
 
-            return new []
+            return new List<FolderItem>
             {
                 new FolderItem
                 {

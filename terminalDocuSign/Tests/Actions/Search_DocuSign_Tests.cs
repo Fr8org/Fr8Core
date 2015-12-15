@@ -66,7 +66,7 @@ namespace terminalDocuSign.Tests.Actions
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
         
-        private static FolderItem[] Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null)
+        private static List<FolderItem> Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null)
         {
             return TerminalFixtureData.GetFolderInfo(folderId);
         }
@@ -113,11 +113,14 @@ namespace terminalDocuSign.Tests.Actions
 
 
             var storage = _crateManager.GetStorage(((ActionDO) result.ChildNodes[0]).CrateStorage);
-            var config = storage.CrateContentsOfType<Query_DocuSign_v1.RuntimeConfiguration>().First();
+            var config = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
+            var ui = new Query_DocuSign_v1.ActionUi();
+            
+            ui.ClonePropertiesFrom(config);
 
-            Assert.AreEqual("A", config.Folder);
-            Assert.AreEqual("B", config.SearchText);
-            Assert.AreEqual("C", config.Status);
+            Assert.AreEqual("A", ui.Folder.Value);
+            Assert.AreEqual("B", ui.SearchText.Value);
+            Assert.AreEqual("C", ui.Status.Value);
         }
     }
 }

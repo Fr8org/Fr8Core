@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -63,7 +64,7 @@ namespace terminalDocuSign.Tests.Actions
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
         
-        private static FolderItem[] Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null)
+        private static List<FolderItem> Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null)
         {
             return TerminalFixtureData.GetFolderInfo(folderId);
         }
@@ -110,9 +111,9 @@ namespace terminalDocuSign.Tests.Actions
             
             using (var updater = _crateManager.UpdateStorage(action))
             {
-                updater.CrateStorage.Add(Crate.FromContent("Config", new Query_DocuSign_v1.RuntimeConfiguration
+                updater.CrateStorage.Add(Crate.FromContent("Config", new Query_DocuSign_v1.ActionUi
                 {
-                    Folder = "folder_1"
+                    Folder = {Value = "folder_1"}
                 }));
             }
 
@@ -124,7 +125,7 @@ namespace terminalDocuSign.Tests.Actions
             
             var referenceData = TerminalFixtureData.GetFolderInfo("folder_1");
 
-            Assert.AreEqual(referenceData.Length, payload.PayloadObjects.Count);
+            Assert.AreEqual(referenceData.Count, payload.PayloadObjects.Count);
             
             for (int i = 0; i < payload.PayloadObjects.Count; i ++)
             {
@@ -141,9 +142,9 @@ namespace terminalDocuSign.Tests.Actions
 
             using (var updater = _crateManager.UpdateStorage(action))
             {
-                updater.CrateStorage.Add(Crate.FromContent("Config", new Query_DocuSign_v1.RuntimeConfiguration
+                updater.CrateStorage.Add(Crate.FromContent("Config", new Query_DocuSign_v1.ActionUi
                 {
-                    Folder = "<any>"
+                    Folder = {Value = "<any>"}
                 }));
             }
 

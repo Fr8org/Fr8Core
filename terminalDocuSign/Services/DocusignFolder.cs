@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
@@ -19,14 +20,14 @@ namespace terminalDocuSign.Services
             _packager = new DocuSignPackager();
         }
 
-        public DocusignFolderInfo[] GetFolders(string login, string password)
+        public List<DocusignFolderInfo> GetFolders(string login, string password)
         {
             var accout = _packager.Login(login, password);
 
             return MakeRequest<FolderListResponse>("/folders", accout).Folders;
         }
 
-        public FolderItem[] Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null)
+        public List<FolderItem> Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null)
         {
             if (string.IsNullOrWhiteSpace(folderId)) throw new ArgumentNullException("folderId");
             
@@ -86,7 +87,7 @@ namespace terminalDocuSign.Services
                 }
             }
 
-            return items.ToArray();
+            return items.ToList();
         }
 
         private static T MakeRequest<T>(string queryString, DocuSignAccount account, string payload = null)
