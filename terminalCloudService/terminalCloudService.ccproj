@@ -3,7 +3,6 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <TargetProfile Condition="'$(TargetProfile)'==''">$(Configuration)</TargetProfile>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>2.7</ProductVersion>
     <ProjectGuid>4e494560-ec62-4f1f-9ca6-18727759222b</ProjectGuid>
@@ -41,6 +40,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetProfile Condition="'$(TargetProfile)'==''">$(Configuration)</TargetProfile>
   </PropertyGroup>
   <!-- Items for the project -->
   <ItemGroup>
