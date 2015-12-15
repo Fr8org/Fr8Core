@@ -99,35 +99,6 @@ namespace terminalTwilio.Actions
             return _twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO() { Key = number, Value = number }).ToList();
         }
 
-        private async Task<Crate> GetUpstreamFields(ActionDO actionDO)
-        {
-            List<Data.Crates.Crate<StandardDesignTimeFieldsCM>> crates = null;
-
-            try
-            {
-                //throws exception from test classes when it cannot call webservice
-                crates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream);
-            }
-            catch { }
-
-            if (crates != null)
-            {
-                var upstreamFields = crates.SelectMany(x => x.Content.Fields).ToArray();
-
-                var availableFieldsCrate =
-                    Crate.CreateDesignTimeFieldsCrate(
-                        "Upstream Terminal-Provided Fields",
-                        upstreamFields
-                    );
-
-
-                return availableFieldsCrate;
-            }
-         
-            
-            return await Task.FromResult<Crate>(null);
-        }
-
         /*
         private Crate GetAvailableDataFields(ActionDO curActionDO)
         {
