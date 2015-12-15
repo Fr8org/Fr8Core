@@ -91,31 +91,31 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public object Activate(ActionDO curDataPackage)
+        public override Task<ActionDO> Activate(ActionDO curActionDO)
         {
             DocuSignAccount docuSignAccount = new DocuSignAccount();
             ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
             if (Int32.Parse(connectProfile.totalRecords) > 0)
             {
-                return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
+                return Task.FromResult<ActionDO>(curActionDO); // Will be changed when implementation is plumbed in.
             }
             else
             {
-                return "Fail";
+                throw new Exception("Error during activation of the Monitor DocuSign Action");
             }
         }
 
-        public object Deactivate(ActionDO curDataPackage)
+        public override Task<ActionDO> Deactivate(ActionDO curActionDO)
         {
             DocuSignAccount docuSignAccount = new DocuSignAccount();
             ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
             if (Int32.Parse(connectProfile.totalRecords) > 0)
             {
-                return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
+                return Task.FromResult<ActionDO>(curActionDO); // Will be changed when implementation is plumbed in.
             }
             else
             {
-                return "Fail";
+                throw new Exception("Error during activation of the Monitor DocuSign Action");
             }
         }
 
@@ -309,13 +309,12 @@ namespace terminalDocuSign.Actions
             {
                 IsReadOnly = true,
                 Label = "",
-                Value = "<p>Process incoming DocuSign Envelope notifications if the following are true:</p>" +
-                        "<div>The following event(s) just occurred:</div>"
+                Value = "<p>Process incoming DocuSign Envelope notifications if the following are true:</p>"
             };
 
             var fieldEnvelopeSent = new CheckBox()
             {
-                Label = "Envelope Sent",
+                Label = "You sent a DocuSign Envelope",
                 Name = "Event_Envelope_Sent",
                 Events = new List<ControlEvent>()
                 {
@@ -325,7 +324,7 @@ namespace terminalDocuSign.Actions
 
             var fieldEnvelopeReceived = new CheckBox()
             {
-                Label = "Envelope Received",
+                Label = "Someone received an Envelope you sent",
                 Name = "Event_Envelope_Received",
                 Events = new List<ControlEvent>()
                 {
@@ -335,7 +334,7 @@ namespace terminalDocuSign.Actions
 
             var fieldRecipientSigned = new CheckBox()
             {
-                Label = "Recipient Signed",
+                Label = "One of your Recipients signed an Envelope",
                 Name = "Event_Recipient_Signed",
                 Events = new List<ControlEvent>()
                 {
@@ -343,22 +342,23 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            var fieldEventRecipientSent = new CheckBox()
-            {
-                Label = "Recipient Sent",
-                Name = "Event_Recipient_Sent",
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                }
-            };
+
+            // remove by FR-1766
+            //var fieldEventRecipientSent = new CheckBox()
+            //{
+            //    Label = "Recipient Sent",
+            //    Name = "Event_Recipient_Sent",
+            //    Events = new List<ControlEvent>()
+            //    {
+            //        new ControlEvent("onChange", "requestConfig")
+            //    }
+            //};
 
             return PackControlsCrate(
                 textArea,
                 fieldEnvelopeSent,
                 fieldEnvelopeReceived,
                 fieldRecipientSigned,
-                fieldEventRecipientSent,
                 PackCrate_TemplateRecipientPicker());
         }
 
@@ -411,13 +411,13 @@ namespace terminalDocuSign.Actions
                 }
             };
 
+
             return templateRecipientPicker;
         }
 
         private Crate PackCrate_TemplateNames(DocuSignAuthDTO authDTO)
         {
             var template = new DocuSignTemplate();
-
             var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
             var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();
             var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
@@ -425,6 +425,8 @@ namespace terminalDocuSign.Actions
                 fields);
             return createDesignTimeFields;
         }
+
+
 
         private List<FieldDTO> CreateDocuSignEventFields()
         {

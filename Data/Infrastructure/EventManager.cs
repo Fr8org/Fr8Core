@@ -29,6 +29,9 @@ namespace Data.Infrastructure
         public delegate void IncidentTerminalRunPOSTFailureHandler(string terminalUrl, string curActionDTO, string errorMessage);
         public static event IncidentTerminalRunPOSTFailureHandler IncidentTerminalRunFailed;
 
+        public delegate void IncidentTerminalInternalFailureHandler(string terminalUrl, string curActionDTO, Exception e);
+        public static event IncidentTerminalInternalFailureHandler IncidentTerminalInternalFailureOccurred;
+
         public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string curActionDTO);
         public static event IncidentTerminalActionActivationPOSTFailureHandler IncidentTerminalActionActivationFailed;
 
@@ -132,6 +135,9 @@ namespace Data.Infrastructure
         public delegate void IncidentDocuSignFieldMissingHandler(string envelopeId, string fieldName);
         public static event IncidentDocuSignFieldMissingHandler IncidentDocuSignFieldMissing;
 
+        public delegate void IncidentMissingFieldInPayloadHandler(string fieldKey, string actionName, string actionId);
+        public static event IncidentMissingFieldInPayloadHandler IncidentMissingFieldInPayload;
+
         public delegate void UnparseableNotificationReceivedHandler(string curNotificationUrl, string curNotificationPayload);
         public static event UnparseableNotificationReceivedHandler UnparseableNotificationReceived;
 
@@ -158,6 +164,12 @@ namespace Data.Infrastructure
         {
             IncidentTerminalRunPOSTFailureHandler handler = IncidentTerminalRunFailed;
             if (handler != null) handler(terminalUrl, actionDTO, errorMessage);
+        }
+
+        public static void TerminalInternalFailureOccurred(string terminalUrl, string actionDTO, Exception e)
+        {
+            IncidentTerminalInternalFailureHandler handler = IncidentTerminalInternalFailureOccurred;
+            if (handler != null) handler(terminalUrl, actionDTO, e);
         }
 
         public static void TerminalActionActivationFailed(string terminalUrl, string actionDTO)
@@ -434,6 +446,12 @@ namespace Data.Infrastructure
             var handler = IncidentDocuSignFieldMissing;
             if (handler != null) handler(envelopeId, fieldName);
         }
+        public static void MissingFieldInPayload(string fieldKey, string actionName, string actiondId)
+        {
+            var handler = IncidentMissingFieldInPayload;
+            if (handler != null) handler(fieldKey, actionName, actiondId);
+        }
+
         public static void ActionActivated(ActionDO action)
         {
             var handler = TerminalActionActivated;
@@ -486,6 +504,7 @@ namespace Data.Infrastructure
             var handler = EventAuthenticationCompleted;
             if (handler != null) handler(userId, authenticatedTerminal);
         }
+
 
         #endregion
     }

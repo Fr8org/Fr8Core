@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utilities;
+﻿using Data.States;
 using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
@@ -18,6 +13,9 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("tags")]
         public string Tags { get; set; }
+
+        [JsonProperty("availability")]
+        public AvailabilityType Availability { get; set; }
 
         public FieldDTO()
         {

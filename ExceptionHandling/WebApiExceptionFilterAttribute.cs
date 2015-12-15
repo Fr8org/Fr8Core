@@ -30,7 +30,7 @@ namespace HubWeb.ExceptionHandling
             alertManager.UnhandledErrorCaught(
                 String.Format("Unhandled exception has occurred.\r\nError message: {0}\r\nCall stack:\r\n{1}",
                 ex.Message,
-                ex.Source));
+                ex.StackTrace));
 
             context.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
 

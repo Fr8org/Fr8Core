@@ -40,18 +40,6 @@ namespace terminalDropbox.Actions
             return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
         }
 
-        public object Activate(ActionDO curActionDO)
-        {
-            //not implemented currently
-            return null;
-        }
-
-        public object Deactivate(ActionDO curActionDO)
-        {
-            //not implemented currentlys
-            return "Deactivated";
-        }
-
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             PayloadDTO processPayload = null;

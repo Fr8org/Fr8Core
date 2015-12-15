@@ -1,4 +1,5 @@
-﻿using Data.Interfaces.DataTransferObjects;
+﻿using System.Linq;
+using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 using terminalSalesforce.Infrastructure;
 using System.Threading.Tasks;
@@ -27,18 +28,6 @@ namespace terminalSalesforce.Actions
             }
 
             return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
-        }
-
-        public object Activate(ActionDO curActionDO)
-        {
-            //not implemented currently
-            return null;
-        }
-
-        public object Deactivate(ActionDO curActionDO)
-        {
-            //not implemented currentlys
-            return "Deactivated";
         }
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -73,6 +62,21 @@ namespace terminalSalesforce.Actions
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
+            if (Crate.IsStorageEmpty(curActionDO))
+            {
+                return ConfigurationRequestType.Initial;
+            }
+            var storage = Crate.GetStorage(curActionDO);
+
+            var hasConfigurationControlsCrate = storage
+                .CratesOfType<StandardConfigurationControlsCM>(c => c.Label == "Configuration_Controls").FirstOrDefault() != null;
+
+
+            if (hasConfigurationControlsCrate)
+            {
+                return ConfigurationRequestType.Followup;
+            }
+
             return ConfigurationRequestType.Initial;
         }
 
