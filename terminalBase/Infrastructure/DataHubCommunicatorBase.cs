@@ -42,7 +42,7 @@ namespace TerminalBase.Infrastructure
                 CrateStorage = new CrateStorageDTO()
             };
 
-            var crateStorage = Crate.GetStorage(actionDO);
+            var crateStorage = Crate.GetStorage(actionDO.ExplicitData);
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var crates = crateStorage
@@ -64,7 +64,7 @@ namespace TerminalBase.Infrastructure
                 ? LabelPrefix + "_UpstreamCrate"
                 : LabelPrefix + "_DownstreamCrate";
 
-            var crateStorage = Crate.GetStorage(actionDO);
+            var crateStorage = Crate.GetStorage(actionDO.ExplicitData);
             var crates = crateStorage
                 .CratesOfType<TManifest>(x => x.Label.StartsWith(searchLabel))
                 .ToList();
@@ -78,7 +78,7 @@ namespace TerminalBase.Infrastructure
         {
             var searchLabel = LabelPrefix + "_ActivityTemplate";
 
-            var crateStorage = Crate.GetStorage(actionDO);
+            var crateStorage = Crate.GetStorage(actionDO.ExplicitData);
             var activityTemplates = crateStorage
                 .Where(x => x.Label == searchLabel)
                 .Select(x => JsonConvert.DeserializeObject<ActivityTemplateDTO>(

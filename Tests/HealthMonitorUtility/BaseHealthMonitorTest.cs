@@ -55,26 +55,28 @@ namespace HealthMonitor.Utility
 
         private void AddHubCrate<T>(ActionDTO actionDTO, T crateManifest, string label, string innerLabel)
         {
-            using (var updater = Crate.UpdateStorage(actionDTO))
-            {
-                var fullLabel = label;
-                if (!string.IsNullOrEmpty(innerLabel))
-                {
-                    fullLabel += "_" + innerLabel;
-                }
+            var crateStorage = Crate.GetStorage(actionDTO.ExplicitData);            
 
-                var crate = Crate<T>.FromContent(fullLabel, crateManifest);
-                updater.CrateStorage.Add(crate);
+            var fullLabel = label;
+            if (!string.IsNullOrEmpty(innerLabel))
+            {
+                fullLabel += "_" + innerLabel;
             }
+
+            var crate = Crate<T>.FromContent(fullLabel, crateManifest);
+            crateStorage.Add(crate);
+
+            actionDTO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
         }
 
         public void AddCrate<T>(ActionDTO actionDTO, T crateManifest, string label)
         {
-            using (var updater = Crate.UpdateStorage(actionDTO))
-            {
-                var crate = Crate<T>.FromContent(label, crateManifest);
-                updater.CrateStorage.Add(crate);
-            }
+            var crateStorage = Crate.GetStorage(actionDTO.ExplicitData);            
+
+            var crate = Crate<T>.FromContent(label, crateManifest);
+            crateStorage.Add(crate);
+
+            actionDTO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
         }
 
         public void AddActivityTemplate(ActionDTO actionDTO, ActivityTemplateDTO activityTemplate)
