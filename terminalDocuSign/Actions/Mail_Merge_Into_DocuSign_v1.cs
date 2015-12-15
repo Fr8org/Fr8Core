@@ -162,8 +162,8 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActionDO> FollowupConfigurationResponse(
             ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
-            _docuSignManager.ExtractFieldsAndAddToCrate(_docuSignTemplateValue, docuSignAuthDTO, curActionDO);
+            //var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            //_docuSignManager.ExtractFieldsAndAddToCrate(_docuSignTemplateValue, docuSignAuthDTO, curActionDO);
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(curActionDO, null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
