@@ -210,7 +210,10 @@ namespace Data.Control
         [JsonProperty("valueSource")]
         public string ValueSource;
 
-        public TextSource() { }
+        public TextSource() 
+        {
+            Type = ControlTypes.TextSource;
+        }
 
         public TextSource(string initialLabel, string upstreamSourceLabel, string name)
         {
