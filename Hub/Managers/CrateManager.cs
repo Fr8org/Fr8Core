@@ -8,6 +8,8 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
+using Data.States;
+using System.Threading.Tasks;
 
 namespace Hub.Managers
 {
@@ -182,6 +184,28 @@ namespace Hub.Managers
             }
 
             return payloadDataMS;
+        }
+
+
+        public string GetFieldByKey<T>(CrateStorageDTO curCrateStorage, string findKey) where T : Manifest
+        {
+            string key = string.Empty;
+            
+            if (curCrateStorage != null)
+            {
+                var crateStorage = this.FromDto(curCrateStorage);
+                var crateContentType = crateStorage.CrateContentsOfType<T>().FirstOrDefault();
+
+                if (crateContentType != null)
+                {
+                    if (crateContentType is StandardPayloadDataCM)
+                        (crateContentType as StandardPayloadDataCM).TryGetValue(findKey, true, out key);
+                    else
+                        throw new Exception("Manifest type GetFieldByKey implementation is missing");
+                }
+            }
+
+            return key;
         }
     }
 }

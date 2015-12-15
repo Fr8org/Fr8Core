@@ -43,5 +43,6 @@ namespace Hub.Managers
         Crate CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table);
         Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
         StandardPayloadDataCM TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataCM tableDataMS);
+        string GetFieldByKey<T>(CrateStorageDTO curCrateStorage, string findKey) where T : Manifest;
     }
 }

@@ -67,7 +67,7 @@ namespace terminalTwilio.Actions
                     updater.CrateStorage.Remove(curUpstreamFieldsCrate);
                 }
 
-                var upstreamFields = await GetUpstreamFields(curActionDO);
+                var upstreamFields = await MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields");
                 if(upstreamFields != null)
                     updater.CrateStorage.Add(upstreamFields);
             }
@@ -101,18 +101,18 @@ namespace terminalTwilio.Actions
 
         private async Task<Crate> GetUpstreamFields(ActionDO actionDO)
         {
-            List<Data.Crates.Crate<StandardDesignTimeFieldsCM>> upstream = null;
+            List<Data.Crates.Crate<StandardDesignTimeFieldsCM>> crates = null;
 
             try
             {
                 //throws exception from test classes when it cannot call webservice
-                upstream = await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream);
+                crates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream);
             }
             catch { }
 
-            if (upstream != null)
+            if (crates != null)
             {
-                var upstreamFields = upstream.Where(x => x.Label != "Upstream Terminal-Provided Fields").SelectMany(x => x.Content.Fields).ToArray();
+                var upstreamFields = crates.SelectMany(x => x.Content.Fields).ToArray();
 
                 var availableFieldsCrate =
                     Crate.CreateDesignTimeFieldsCrate(
@@ -166,9 +166,9 @@ namespace terminalTwilio.Actions
             }
             try
             {
-                KeyValuePair<string, string> smsInfo = ParseSMSNumberAndMsg(controlsCrate, processPayload);
-                string smsNumber = smsInfo.Key;
-                string smsBody = smsInfo.Value;
+                FieldDTO smsFieldDTO = ParseSMSNumberAndMsg(controlsCrate, processPayload);
+                string smsNumber = smsFieldDTO.Key;
+                string smsBody = smsFieldDTO.Value;
 
                 if (String.IsNullOrEmpty(smsNumber))
                 {
@@ -204,7 +204,7 @@ namespace terminalTwilio.Actions
         /// </summary>
         /// <param name="crateDTO"></param>
         /// <returns>Key = SMS Number; Value = SMS Body</returns>
-        public KeyValuePair<string, string> ParseSMSNumberAndMsg(Crate crateDTO, PayloadDTO processPayload)
+        public FieldDTO ParseSMSNumberAndMsg(Crate crateDTO, PayloadDTO processPayload)
         {
             var standardControls = crateDTO.Get<StandardConfigurationControlsCM>();
             if (standardControls == null)
@@ -213,7 +213,7 @@ namespace terminalTwilio.Actions
             }
             var smsBodyFields = standardControls.FindByName("SMS_Body");
             var smsNumber = GetSMSNumber((TextSource)standardControls.Controls[0], processPayload);
-            return new KeyValuePair<string, string>(smsNumber, smsBodyFields.Value);
+            return new FieldDTO(smsNumber, smsBodyFields.Value);
         }
 
         //private string GetSMSNumber(RadioButtonGroup radioButtonGroupControl)
@@ -246,19 +246,7 @@ namespace terminalTwilio.Actions
                     return control.Value;
                 case "upstream":
                     //get the payload data 'Key' based on the selected control.Value and get its 'Value' from payload data
-                    if (processPayload != null)
-                    {
-                        var crateStorage = Crate.FromDto(processPayload.CrateStorage);
-                        var payloadDataCM = crateStorage.CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();
-
-                        if (payloadDataCM != null)
-                        {
-                            var smsValue = payloadDataCM.PayloadObjects.SelectMany(s => s.PayloadObject).Where(w => w.Key == control.Value).Select(s => s.Value).FirstOrDefault();
-
-                            return smsValue;
-                        }
-                    }
-                    return control.Value;
+                    return Crate.GetFieldByKey<StandardPayloadDataCM>(processPayload.CrateStorage, control.Value);
                 default:
                     throw new ApplicationException("Could not extract number, unknown mode.");
             }
