@@ -212,16 +212,18 @@ module dockyard.directives.paneConfigureAction {
                         var cccc = $scope.currentAction.crateStorage;
                         angular.forEach(cccc.crates, function (value, keys) {
                             if (value.label == "Configuration_Controls") {
+                                var textArea;
+                                var dropDown;
+                                var textAreaIndex;
                                 angular.forEach(value.contents, function (val, key) {
-                                    var textArea;
-                                    var dropDown;
                                     angular.forEach(val, function (i, j) {
                                         if (i.type == "TextArea") {
                                             textArea = i.value;
+                                            textAreaIndex = j;
                                         }
                                         if (i.type == "DropDownList") {
-                                            dropDown = i.value;
-                                            textArea = textArea + '[' + dropDown + ']';
+                                            dropDown = i.selectedKey;
+                                            val[textAreaIndex].value = val[textAreaIndex].value + '[' + dropDown + ']';
                                         }
                                     });
                                 });

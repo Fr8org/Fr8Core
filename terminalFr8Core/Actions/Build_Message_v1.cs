@@ -12,6 +12,7 @@ using TerminalBase.Infrastructure;
 using Hub.Managers;
 using Data.Interfaces.Manifests;
 using Data.Control;
+using Data.States;
 
 namespace terminalFr8Core.Actions
 {
@@ -27,21 +28,64 @@ namespace terminalFr8Core.Actions
             var curProcessPayload = await GetProcessPayload(curActionDO, containerId);
 
             var controlsMS = Crate.GetStorage(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO, "Available Run-Time Objects");
+            FieldDTO[] curSelectedFields = curMergedUpstreamRunTimeObjects.Content.Fields.Select(field => new FieldDTO { Key = field.Key, Value = field.Value }).ToArray();
 
             if (controlsMS == null)
             {
                 throw new ApplicationException("Could not find ControlsConfiguration crate.");
             }
-
-            var fieldListControl = controlsMS.Controls
-                .SingleOrDefault(x => x.Type == ControlTypes.FieldList);
-
-            if (fieldListControl == null)
+            string text = "";
+            foreach (var control in controlsMS.Controls)
             {
-                throw new ApplicationException("Could not find FieldListControl.");
+                if (control.Type == "TextArea")
+                {
+                    text = control.Value;
+                }
+            }
+            string result = text;
+            for (int i = 0; i <= text.Length; i++)
+            {
+                if (!text.Contains("[") || !text.Contains("]"))
+                {
+                    break;
+                }
+                string str = text.Split('[', ']')[1];
+                //if (str.Length <= 0)
+                //{
+                //    break;
+                //}
+                for (int j = 0; j < curSelectedFields.Count(); j++)
+                {
+                    if (curSelectedFields[j].Key.ToString() == str)
+                    {
+                        str = "[" + str + "]";
+                        result = result.Replace(str, curSelectedFields[j].Value.ToString() + " ");
+                        text = text.Replace(str, "");
+                        break;
+                    }
+
+                }
+                Console.WriteLine(str);
+
+            }
+            foreach (var control in controlsMS.Controls)
+            {
+                if (control.Type == "TextArea")
+                {
+                    control.Value = result;
+                }
             }
 
-            var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
+            //var fieldListControl = controlsMS.Controls
+            //    .SingleOrDefault(x => x.Type == ControlTypes.FieldList);
+
+            //if (fieldListControl == null)
+            //{
+            //    throw new ApplicationException("Could not find FieldListControl.");
+            //}
+
+            //var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
 
             //using (var updater = Crate.UpdateStorage(() => processPayload.CrateStorage))
             //{
@@ -76,6 +120,14 @@ namespace terminalFr8Core.Actions
                 Name = "Body",
                 Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
             };
+
+            //var curUpstreamFields =
+            //    (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
+            //    .Fields
+            //    .ToArray();
+
+            //var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
+
             var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO, "Available Run-Time Objects");
             //added focusConfig in PaneConfigureAction.ts
             var fieldSelectObjectTypes = new DropDownList()
