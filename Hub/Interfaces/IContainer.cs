@@ -10,7 +10,7 @@ namespace Hub.Interfaces
 {
     public interface IContainer
     {
-        Task Execute(IUnitOfWork uow, ContainerDO curContainerDO);
+        Task Run(IUnitOfWork uow, ContainerDO curContainerDO);
         //void SetProcessNextActivity(ProcessDO curProcessDO);
 
         IList<ContainerDO> GetByFr8Account(IUnitOfWork unitOfWork,

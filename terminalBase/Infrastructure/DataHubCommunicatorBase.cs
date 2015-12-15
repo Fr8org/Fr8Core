@@ -74,6 +74,22 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(crates);
         }
 
+        public Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction)
+        {
+            var searchLabel = direction == CrateDirection.Upstream
+                ? LabelPrefix + "_UpstreamCrate"
+                : LabelPrefix + "_DownstreamCrate";
+
+            var crateStorage = Crate.GetStorage(actionDO);
+            var crates = crateStorage
+                .Where(x => x.Label.StartsWith(searchLabel))
+                .ToList();
+
+            StripLabelPrefix(crates, searchLabel);
+
+            return Task.FromResult(crates);
+        }
+
         public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO)
         {
             var searchLabel = LabelPrefix + "_ActivityTemplate";

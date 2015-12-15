@@ -71,6 +71,7 @@ module dockyard.directives.paneConfigureAction {
         reconfigureChildrenActions: boolean;
     }
 
+
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
     export class ReloadActionEventArgs {
