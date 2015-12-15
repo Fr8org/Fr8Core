@@ -162,5 +162,30 @@ namespace terminalDocuSignTests.Fixtures
                 ActivityTemplateId = activityTemplate.Id
             };
         }
+
+        public static ActivityTemplateDTO Rich_Document_Notifications_v1_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 7,
+                Name = "Rich_Document_Notifications_TEST",
+                Version = "1"
+            };
+        }
+
+        public static ActionDTO Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = Rich_Document_Notifications_v1_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Rich_Document_Notifications",
+                Label = "Rich Document Notifications",
+                AuthToken = DocuSign_AuthToken(),
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
     }
 }

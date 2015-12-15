@@ -130,4 +130,10 @@
         hours: number;
         minutes: number;
     }
+
+    export class UpstreamDataChooser extends ControlDefinitionDTO {
+        selectedManifest: string;
+        selectedLabel: string;
+        selectedFieldType: string;
+    }
 }
