@@ -17,5 +17,7 @@ namespace Data.Interfaces.DataTransferObjects
         public string AccountId { get; set; }
         [JsonProperty("debitOrCredit")]
         public string DebitOrCredit { get; set; }
+        [JsonProperty("Description")]
+        public string Description { get; set; }
     }
 }

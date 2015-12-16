@@ -10,10 +10,7 @@ namespace Data.Interfaces.Manifests
 {
     public class StandardAccountingTransactionCM : Manifest
     {
-        public string Name { get; set; }
-        public List<FinancialLineDTO> FinancialLines { get; set; }
-        public DateTime TransactionDate { get; set; }
-        public string Description { get; set; }
+        public StandardAccountingTransactionDTO AccountingTransactionDTO { get; set; }
         public StandardAccountingTransactionCM()
             : base(Constants.MT.StandardAccountTransaction)
         {

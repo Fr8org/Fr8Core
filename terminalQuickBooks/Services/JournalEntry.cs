@@ -50,12 +50,17 @@ namespace terminalQuickBooks.Services
                 //Add the prepared line to the list
                 curFinLineDTOList.Add(curFinLineToAdd);
             }
-            return new StandardAccountingTransactionCM()
+            var curTransactionCrate = new StandardAccountingTransactionCM();
+            
+            var curAccountTransactionDTO = new StandardAccountingTransactionDTO()
             {
                 Name = journalEntry.DocNumber,
                 TransactionDate = journalEntry.TxnDate,
                 FinancialLines = curFinLineDTOList,
+                Memo = journalEntry.PrivateNote
             };
+            curTransactionCrate.AccountingTransactionDTO = curAccountTransactionDTO;
+            return curTransactionCrate;
         }
         /// <summary>
         /// Converts StandardAccountingTransactionCM to JournalEntry object
@@ -65,17 +70,22 @@ namespace terminalQuickBooks.Services
         public Intuit.Ipp.Data.JournalEntry GetJournalEntryFromCM(StandardAccountingTransactionCM crate)
         {
             var curJournalEntry = new Intuit.Ipp.Data.JournalEntry();
-            curJournalEntry.DocNumber = crate.Name;
-            curJournalEntry.TxnDate = crate.TransactionDate;
-
-            var curNumOfFinLineDTOs = crate.FinancialLines.Count();
+            var curAccountTransactionDTO = crate.AccountingTransactionDTO;
+            //Pack Standard Accounting Transaction DTO with data
+            //Add DocNumber
+            curJournalEntry.DocNumber = curAccountTransactionDTO.Name;
+            //Add Date
+            curJournalEntry.TxnDate = curAccountTransactionDTO.TransactionDate;
+            //Add Memo
+            curJournalEntry.PrivateNote = curAccountTransactionDTO.Memo;
+            var curNumOfFinLineDTOs = curAccountTransactionDTO.FinancialLines.Count();
             var curLineArray = new Line[curNumOfFinLineDTOs];
-            for (int i = 0; i <curNumOfFinLineDTOs; i++)
+            for (int i = 0; i < curNumOfFinLineDTOs; i++)
             {
-                var curFinLineDTO = crate.FinancialLines[i];
+                var curFinLineDTO = curAccountTransactionDTO.FinancialLines[i];
                 var curLineToAdd = new Line();
                 //Add Description
-                curLineToAdd.Description = crate.Description;
+                curLineToAdd.Description = curFinLineDTO.Description;
                 //Add Account Id
                 curLineToAdd.Id = curFinLineDTO.AccountId;
                 //Add Debit or Credit type
@@ -85,14 +95,13 @@ namespace terminalQuickBooks.Services
                 var curAccountRef = new ReferenceType();
                 curAccountRef.name = curFinLineDTO.AccountName;
                 curJournalEntryLineDetail.AccountRef = curAccountRef;
-                
                 curLineToAdd.AnyIntuitObject = curJournalEntryLineDetail;
-                
                 //Add Amount
                 curLineToAdd.Amount = decimal.Parse(curFinLineDTO.Amount);
                 //Pack the line to the array
                 curLineArray[i] = curLineToAdd;
             }
+
             curJournalEntry.Line = curLineArray;
             return curJournalEntry;
         }
@@ -113,6 +122,5 @@ namespace terminalQuickBooks.Services
         {
             return (T)Enum.Parse(typeof(T), value, true);
         }
-
     }
 }

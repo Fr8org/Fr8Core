@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    class StandardAccountingTransactionDTO
+    public class StandardAccountingTransactionDTO
     {
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -15,7 +15,7 @@ namespace Data.Interfaces.DataTransferObjects
         public List<FinancialLineDTO> FinancialLines { get; set; }
         [JsonProperty("transactionDate")]
         public DateTime TransactionDate { get; set; }
-        [JsonProperty("Description")]
-        public string Description { get; set; }
+        [JsonProperty("Memo")]
+        public string Memo { get; set; }
     }
 }
