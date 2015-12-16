@@ -74,6 +74,8 @@ namespace terminalQuickBooks.Services
             {
                 var curFinLineDTO = crate.FinancialLines[i];
                 var curLineToAdd = new Line();
+                //Add Description
+                curLineToAdd.Description = crate.Description;
                 //Add Account Id
                 curLineToAdd.Id = curFinLineDTO.AccountId;
                 //Add Debit or Credit type
