@@ -11,6 +11,7 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
+using Hub.Managers;
 using Intuit.Ipp.Core;
 using Intuit.Ipp.Core.Configuration;
 using Intuit.Ipp.Data;
@@ -18,55 +19,69 @@ using Intuit.Ipp.DataService;
 using Intuit.Ipp.Diagnostics;
 using terminalQuickBooks.Interfaces;
 using terminalQuickBooks.Services;
-using JournalEntry = Intuit.Ipp.Data.JournalEntry;
+using JournalEntry = terminalQuickBooks.Services.JournalEntry;
 
 namespace terminalQuickBooks.Actions
 {
     public class Create_Journal_Entry_v1 : BaseTerminalAction
     {
-        private IQuickBooksIntegration _quickBooksIntegration = new QuickBooksIntegration();
+        private  JournalEntry _journalEntry;
+        public Create_Journal_Entry_v1()
+        {
+            _journalEntry  = new JournalEntry();
+        }
         public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+            return await ProcessConfigurationRequest(curActionDO, dto => ConfigurationRequestType.Initial, authTokenDO);
         }
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId,
-    AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
                 throw new ApplicationException("No AuthToken provided.");
             var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var curStandardAccountingTransactionCM = Crate.GetStorage(curActionDO).CratesOfType<StandardAccountingTransactionCM>().Single().Content;
+            _journalEntry.Create(curStandardAccountingTransactionCM, authTokenDO);
             return processPayload;  
         }
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
-        {
-            if (true)
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
-        }
-        /// <summary>
-        /// Looks for first Create with Id == "Standard Design-Time" among all upcoming Actions.
-        /// </summary>
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (curActionDO.Id != Guid.Empty)
             {
-                var curUpstreamFields =
-                    (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
-                    .Fields
-                    .ToArray();
+                //get StandardAccountingTransactionCM
+                var upstream = await GetCratesByDirection<StandardAccountingTransactionCM>(curActionDO, CrateDirection.Upstream);
 
-                // Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-                var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Involved Account", curUpstreamFields);
-
-                //build a controls crate to render the pane
-                var configurationControlsCrate = CreateControlsCrate();
-
-                using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
+                //In order to Create Journal Entry an upstream action needs to provide a StandardAccountingTransactionCM.
+                TextBlock textBlock;
+                if (upstream.Count!=0)
                 {
-                    updater.CrateStorage = AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
+                    textBlock = new TextBlock
+                    {
+                        Label = "Create a Journal Entry",
+                        Value = "This Action doesn't require any configuration.",
+                        CssClass = "well well-lg"
+                    };
+                    using (var updater = Crate.UpdateStorage(curActionDO))
+                    {
+                        updater.CrateStorage.Add(upstream[0]);
+                    }
+                }
+                else
+                {
+                    textBlock = new TextBlock
+                    {
+                        Label = "Create Journal Entry",
+                        Value = "In order to Create a Journal Entry, an upstream action needs to provide a StandardAccountingTransactionCM.",
+                        CssClass = "alert alert-warning"
+                    };
+                }
+                using (var updater = Crate.UpdateStorage(curActionDO))
+                {
+                    updater.CrateStorage.Clear();
+                    updater.CrateStorage.Add(PackControlsCrate(textBlock));
                 }
             }
             else
@@ -74,24 +89,7 @@ namespace terminalQuickBooks.Actions
                 throw new ArgumentException(
                     "Configuration requires the submission of an Action that has a real ActionId");
             }
-
             return curActionDO;
-        }
-        private Crate CreateControlsCrate()
-        {
-            var fieldFilterPane = new FilterPane()
-            {
-                Label = "Execute Actions If:",
-                Name = "Selected_Filter",
-                Required = true,
-                Source = new FieldSourceDTO
-                {
-                    Label = "Involved Account",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                }
-            };
-
-            return PackControlsCrate(fieldFilterPane);
         }
     }
 }
