@@ -42,6 +42,11 @@ namespace TerminalBase.Infrastructure
             return _routeNode.GetCratesByDirection<TManifest>(actionDO.Id, direction);
         }
 
+        public Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction)
+        {
+            return _routeNode.GetCratesByDirection(actionDO.Id, direction);
+        }
+
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") 
@@ -61,6 +66,27 @@ namespace TerminalBase.Infrastructure
             var templates = allTemplates.Where(x => x.Category == category);
 
             return templates.ToList();
+        }
+
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(
+            ActionDO actionDO, string tag)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/available?tag=";
+
+            if (string.IsNullOrEmpty(tag))
+            {
+                hubUrl += "[all]";
+            }
+            else
+            {
+                hubUrl += tag;
+            }
+
+            var templates = await _restfulServiceClient
+                .GetAsync<List<ActivityTemplateDTO>>(new Uri(hubUrl));
+
+            return templates;
         }
     }
 }

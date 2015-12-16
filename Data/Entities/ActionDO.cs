@@ -1,4 +1,5 @@
-﻿using Data.States.Templates;
+﻿using Data.States;
+using Data.States.Templates;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AutoMapper;
@@ -24,6 +25,9 @@ namespace Data.Entities
 
         [NotMapped]
         public bool IsTempId { get; set; }
+
+        [NotMapped]
+        public string ExplicitData { get; set; }
 
         public string currentView { get; set; }
 

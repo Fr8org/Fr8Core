@@ -521,6 +521,7 @@ input[type=radio]:checked ~ label .control-label-hidden {
 .drop-down-list-box-container { 
     height: 26px;
     width: 100%;
+    margin-bottom: 5px;
 }
 
 

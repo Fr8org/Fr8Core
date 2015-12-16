@@ -71,6 +71,7 @@ module dockyard.directives.paneConfigureAction {
         reconfigureChildrenActions: boolean;
     }
 
+
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
     export class ReloadActionEventArgs {
@@ -216,7 +217,7 @@ module dockyard.directives.paneConfigureAction {
 
                     // Find the onChange event object
                     var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onClick' }, true);
-                    if (eventHandlerList.length == 0) {
+                    if (!eventHandlerList || eventHandlerList.length == 0) {
                         return;
                     }
                     else {
