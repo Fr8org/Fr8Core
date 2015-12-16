@@ -12,6 +12,7 @@ using Data.Interfaces.Manifests;
 using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
 using Data.Entities;
+using Newtonsoft.Json;
 
 namespace terminalDocuSign.Services
 {
@@ -25,8 +26,8 @@ namespace terminalDocuSign.Services
         }
 
         public static DropDownList CreateDocuSignTemplatePicker(
-            bool addOnChangeEvent, 
-            string name = "Selected_DocuSign_Template", 
+            bool addOnChangeEvent,
+            string name = "Selected_DocuSign_Template",
             string label = "Select DocuSign Template")
         {
             var control = new DropDownList()
@@ -64,6 +65,73 @@ namespace terminalDocuSign.Services
             return createDesignTimeFields;
         }
 
+
+        public StandardPayloadDataCM CreateActionPayload(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId)
+        {
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+
+            var docusignEnvelope = new DocuSignEnvelope(
+                docuSignAuthDTO.Email,
+                docuSignAuthDTO.ApiPassword);
+
+            var curEnvelopeData = docusignEnvelope.GetEnvelopeData(curEnvelopeId);
+            var fields = GetDocuSignTemplateUserDefinedFields(curActionDO);
+
+            if (fields == null || fields.Count == 0)
+            {
+                throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDO.Id);
+            }
+
+            var payload = docusignEnvelope.ExtractPayload(fields, curEnvelopeId, curEnvelopeData);
+
+            return new StandardPayloadDataCM(payload.ToArray());
+        }
+
+        public List<FieldDTO> GetDocuSignTemplateUserDefinedFields(ActionDO curActionDO)
+        {
+            var fieldsCrate = Crate.GetStorage(curActionDO).CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == "DocuSignTemplateUserDefinedFields");
+
+            if (fieldsCrate == null) return null;
+
+            var manifestSchema = fieldsCrate.Content;
+
+            if (manifestSchema == null
+                || manifestSchema.Fields == null
+                || manifestSchema.Fields.Count == 0)
+            {
+                return null;
+            }
+
+            return manifestSchema.Fields;
+        }
+
+        public string GetEnvelopeIdFromPayload(PayloadDTO curPayloadDTO)
+        {
+            var standardPayload = Crate.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();
+
+            if (standardPayload == null)
+            {
+                return null;
+            }
+
+            var envelopeId = standardPayload.GetValues("EnvelopeId").FirstOrDefault();
+
+            return envelopeId;
+        }
+
+        public int UpdateUserDefinedFields(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, ICrateStorageUpdater updater, string envelopeId)
+        {
+            updater.CrateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
+            if (!String.IsNullOrEmpty(envelopeId))
+            {
+                var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+                var userDefinedFields = this.ExtractFieldsAndAddToCrate(envelopeId, docuSignAuthDTO, curActionDO);
+                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", userDefinedFields.ToArray()));
+                return userDefinedFields.Count();
+            }
+            return 0;
+        }
+
         /// <summary>
         /// Extracts fields from a DocuSign envelope.
         /// </summary>
@@ -71,7 +139,7 @@ namespace terminalDocuSign.Services
         /// <param name="docuSignAuthDTO">DocuSign authentication token.</param>
         /// <param name="curActionDO">ActionDO object representing the current action. The crate with extracted 
         /// fields will be added to this Action replacing any older instances of that crate.</param>
-        public void ExtractFieldsAndAddToCrate(string docuSignTemplateId, DocuSignAuthDTO docuSignAuthDTO, ActionDO curActionDO)
+        public IEnumerable<FieldDTO> ExtractFieldsAndAddToCrate(string docuSignTemplateId, DocuSignAuthDTO docuSignAuthDTO, ActionDO curActionDO)
 
         {
             if (!string.IsNullOrEmpty(docuSignTemplateId))
@@ -88,14 +156,10 @@ namespace terminalDocuSign.Services
                         Key = f.Name,
                         Value = f.Value
                     });
-
-                using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
-
-                {
-                    updater.CrateStorage.RemoveByManifestId((int) MT.StandardDesignTimeFields);
-                    updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", fieldCollection.ToArray()));
-                }
+                return fieldCollection;
             }
+
+            throw new ApplicationException("Docusign TemplateId is null or emty");
         }
 
         public Crate CrateCrateFromFields(string docuSignTemplateId, DocuSignAuthDTO docuSignAuthDTO, string crateLabel)

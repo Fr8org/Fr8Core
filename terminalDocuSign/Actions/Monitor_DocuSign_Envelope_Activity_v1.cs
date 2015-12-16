@@ -191,6 +191,11 @@ namespace terminalDocuSign.Actions
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
+                if (curSelectedOption == "template")
+                {
+                    var userDefinedFieldsPayload = _docuSignManager.CreateActionPayload(curActionDO, authTokenDO, curSelectedValue);
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
+                }
             }
 
             return processPayload;
@@ -252,10 +257,19 @@ namespace terminalDocuSign.Actions
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 UpdateSelectedEvents(updater.CrateStorage);
+                string selectedOption, selectedValue;
+                GetTemplateRecipientPickerValue(curActionDO, out selectedOption, out selectedValue);
+                _docuSignManager.UpdateUserDefinedFields(curActionDO, authTokenDO, updater, selectedValue);
             }
+
+
 
             return Task.FromResult(curActionDO);
         }
+
+
+
+
 
 
         /// <summary>
@@ -272,7 +286,7 @@ namespace terminalDocuSign.Actions
             var curSelectedDocuSignEvents =
                 curConfigControlsCrate.Controls
                     .Where(configControl => configControl.Type.Equals(ControlTypes.CheckBox) && configControl.Selected)
-                    .Select(checkBox => checkBox.Label.Replace(" ", ""));
+                    .Select(checkBox => checkBox.Name.Replace(" ", ""));
 
             //create standard event subscription crate with user selected DocuSign events
             var curEventSubscriptionCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions",
@@ -293,7 +307,7 @@ namespace terminalDocuSign.Actions
             {
                 if (eventCheckBox.Selected)
                 {
-                    subscriptions.Add(eventCheckBox.Label);
+                    subscriptions.Add(eventCheckBox.Name);
                 }
             }
 
@@ -315,7 +329,7 @@ namespace terminalDocuSign.Actions
             var fieldEnvelopeSent = new CheckBox()
             {
                 Label = "You sent a DocuSign Envelope",
-                Name = "Event_Envelope_Sent",
+                Name = "Envelope Sent",
                 Events = new List<ControlEvent>()
                 {
                     new ControlEvent("onChange", "requestConfig")
@@ -325,7 +339,7 @@ namespace terminalDocuSign.Actions
             var fieldEnvelopeReceived = new CheckBox()
             {
                 Label = "Someone received an Envelope you sent",
-                Name = "Event_Envelope_Received",
+                Name = "Envelope Received",
                 Events = new List<ControlEvent>()
                 {
                     new ControlEvent("onChange", "requestConfig")
@@ -335,7 +349,7 @@ namespace terminalDocuSign.Actions
             var fieldRecipientSigned = new CheckBox()
             {
                 Label = "One of your Recipients signed an Envelope",
-                Name = "Event_Recipient_Signed",
+                Name = "Recipient Signed",
                 Events = new List<ControlEvent>()
                 {
                     new ControlEvent("onChange", "requestConfig")
@@ -425,8 +439,6 @@ namespace terminalDocuSign.Actions
                 fields);
             return createDesignTimeFields;
         }
-
-
 
         private List<FieldDTO> CreateDocuSignEventFields()
         {
