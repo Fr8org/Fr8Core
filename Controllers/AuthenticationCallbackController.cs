@@ -28,7 +28,7 @@ namespace HubWeb.Controllers
         [HttpGet]
         public async Task<ActionResult> ProcessSuccessfulOAuthResponse(
             string terminalName,
-            string terminalVersion)
+            string terminalVersion, string ss)
         {
 
             if (string.IsNullOrEmpty(terminalName) || string.IsNullOrEmpty(terminalVersion))
