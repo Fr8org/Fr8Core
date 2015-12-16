@@ -565,3 +565,38 @@ a.documentation-link {
 .long-ajax-cursor {
     cursor: progress;
 }
+
+/* DRAG DROP RELATED CSS */
+
+/**
+ * For the correct positioning of the placeholder element, the dnd-list and
+ * it's children must have position: relative
+ */
+div[dnd-list] > div {
+	
+    display: inline-block;
+}
+
+/**
+ * The dndDraggingSource class will be applied to
+ * the source element of a drag operation. It makes
+ * sense to hide it to give the user the feeling
+ * that he's actually moving it.
+ */
+div[dnd-list] .dndDraggingSource {
+    display: none;
+}
+
+div[dnd-list].dndDragover {
+    border: 1px solid;
+}
+
+/**
+ * Handle positioning
+ */
+.handle {
+    cursor: move;
+}
+
+
+/*END OF DRAG DROP RELATED CSS */
