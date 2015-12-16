@@ -5,6 +5,7 @@ using System.Web;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
+using Data.States;
 using StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -154,7 +155,8 @@ namespace terminalDocuSign.Services
                     .Select(f => new FieldDTO
                     {
                         Key = f.Name,
-                        Value = f.Value
+                        Value = f.Value,
+                        Availability = AvailabilityType.Configuration
                     });
                 return fieldCollection;
             }
