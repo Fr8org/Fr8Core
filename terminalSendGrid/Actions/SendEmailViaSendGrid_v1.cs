@@ -77,7 +77,7 @@ namespace terminalSendGrid.Actions
         private ControlDefinitionDTO CreateEmailAddressTextSourceControl()
         {
             var control = CreateSpecificOrUpstreamValueChooser(
-                "For the Email Address",
+                "Email Address",
                 "EmailAddress",
                 "Upstream Terminal-Provided Fields",
                 "EmailAddress"
@@ -93,7 +93,7 @@ namespace terminalSendGrid.Actions
         private ControlDefinitionDTO CreateEmailSubjectTextSourceControl()
         {
             var control = CreateSpecificOrUpstreamValueChooser(
-                "For the Email Subject",
+                "Email Subject",
                 "EmailSubject",
                 "Upstream Terminal-Provided Fields"
             );
@@ -108,7 +108,7 @@ namespace terminalSendGrid.Actions
         private ControlDefinitionDTO CreateEmailBodyTextSourceControl()
         {
             var control = CreateSpecificOrUpstreamValueChooser(
-                "For the Email Body",
+                "Email Body",
                 "EmailBody",
                 "Upstream Terminal-Provided Fields"
             );

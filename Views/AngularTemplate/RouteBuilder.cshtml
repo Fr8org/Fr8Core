@@ -18,24 +18,24 @@
                 <div dnd-draggable="action.id" dnd-effect-allowed="move" ng-repeat="action in group.actions">
                     <div class="action" ng-class="{'solution-action': action.activityTemplate.category==='Solution'  && mode !== 'Solution'}" layout-action ng-style="{'width' : action.activityTemplate.minPaneWidth || 330 + 'px'}">
                         <div class="action-header solution-action-header handle" dropdown transfer-click-configure-pane>
-                            <p class="action-name">
-                                {{action.label}}
-                            </p>
-                            <a class="action-menu" dropdown-toggle stop-click-propagation>
-                                <i class="fa fa-gear fa-5x"></i>
-                            </a>
-                            <ul class="dropdown-menu pull-right" role="menu" stop-click-propagation>
-                                <li role="menuitem">
-                                    <a ng-click="deleteAction(action);">
-                                        <i class="fa fa-trash-o"></i>
-                                        Delete
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+                        <p class="action-name">
+                            {{action.label}}
+                        </p>
+                        <a class="action-menu" dropdown-toggle stop-click-propagation>
+                            <i class="fa fa-gear fa-5x"></i>
+                        </a>
+                        <ul class="dropdown-menu pull-right" role="menu" stop-click-propagation>
+                            <li role="menuitem">
+                                <a ng-click="deleteAction(action);">
+                                    <i class="fa fa-trash-o"></i>
+                                    Delete
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                         <div dnd-nodrag>
-                            <pane-configure-action id="paneConfigureAction" current-action="action"></pane-configure-action>
-                        </div>
+                    <pane-configure-action id="paneConfigureAction" current-action="action"></pane-configure-action>
+                </div>
                     </div>
                     <div class="action-arrow-right"></div>
                 </div>
@@ -49,13 +49,13 @@
                 </div>
             </div>
             <div class="action-to-add" ng-click="addAction()">
-                <p class="action-name">Click to add action</p>
+                    <p class="action-name">Click to add action</p>
+                </div>
             </div>
         </div>
-    </div>
     <!-- END MAIN CONTENT -->
     <pane-select-action></pane-select-action>
-    
+
     
 
 

@@ -194,7 +194,7 @@ namespace UtilitiesTesting.Fixtures
             container.ContainerState = 1;
             container.ProcessNodes.Add(TestProcessNode1());
             container.CurrentRouteNode = FixtureData.TestAction7();
-				container.NextRouteNode = FixtureData.TestAction10();
+			container.NextRouteNode = FixtureData.TestAction10();
             return container;
         }
 
