@@ -205,8 +205,8 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
 
         .state('configureSolution', {
             url: "/solution/{solutionName}",
-            templateUrl: "/AngularTemplate/Solution",
-            data: { pageTitle: 'Create a Solution', pageSubTitle: '' }
+            templateUrl: "/AngularTemplate/RouteBuilder",
+            data: { pageTitle: 'Create a Solution', pageSubTitle: '', mode: 'solution' }
         })
 
         .state('containers', {

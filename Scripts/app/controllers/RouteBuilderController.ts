@@ -7,6 +7,11 @@
 module dockyard.controllers {
     'use strict';
 
+    // This is a fix for incomplit ts defenition for angular-ui module
+    interface ngState extends ng.ui.IState {
+        current: ng.ui.IState;
+    }
+
     export interface IRouteBuilderScope extends ng.IScope {
         routeId: number;
         subroutes: Array<model.SubrouteDTO>;
@@ -24,6 +29,7 @@ module dockyard.controllers {
         deleteAction: (action: model.ActionDTO) => void;
         selectAction(action): void;
         isBusy: () => boolean;
+        mode: string;
     }
 
     //Setup aliases
@@ -59,7 +65,7 @@ module dockyard.controllers {
         constructor(
             private $scope: IRouteBuilderScope,
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
-            private $state: ng.ui.IState,
+            private $state: ngState,
             private ActionService: services.IActionService,
             private $http: ng.IHttpService,
             private RouteService: services.IRouteService,
@@ -74,6 +80,7 @@ module dockyard.controllers {
             this.$scope.routeId = $state.params.id;
             this.$scope.current = new model.RouteBuilderState();
             this.$scope.actionGroups = [];
+            this.$scope.mode = $state.current.data.mode;
 
             this.setupMessageProcessing();
             $timeout(() => this.loadRoute(), 500, true);
