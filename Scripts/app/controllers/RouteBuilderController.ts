@@ -113,8 +113,16 @@ module dockyard.controllers {
                 if (realAction.parentRouteNodeId !== group.actions[0].parentRouteNodeId) {
                     //set new parent
                     realAction.parentRouteNodeId = group.actions[0].parentRouteNodeId;
-                }
+                } else {
+                    //this action is moved to same parent
+                    //our index calculation might have been wrong
+                    //while dragging an action we don't delete that action
+                    //we just make it hidden - so it calculates dragged action too while calculating index
+                    if (realAction.ordering <= index) {
+                        index -= 1;
+                    }
 
+                }
                 //now we should inject it to proper position
                 this.insertActionToParent(realAction, index);
 
@@ -291,7 +299,7 @@ module dockyard.controllers {
                 }
             }
 
-        private addAction() {
+        private addAction(group: model.ActionGroup) {
             var self = this;
             var promise = this.RouteBuilderService.saveCurrent(this.$scope.current);
             promise.then((result: model.RouteBuilderState) => {
