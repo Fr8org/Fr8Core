@@ -133,7 +133,6 @@ module dockyard.controllers {
 
                 //let's re-render route builder
                 this.renderRoute(<interfaces.IRouteVM>this.$scope.current.route);
-                
             };
 
         }
