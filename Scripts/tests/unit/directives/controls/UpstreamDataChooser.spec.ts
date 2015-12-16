@@ -143,5 +143,42 @@ module dockyard.tests.unit.directives.controls {
             expect($element.find('drop-down-list-box').length).toBe(0);
         });
 
+        describe('multiple usage', () => {
+            var mElement
+
+            beforeEach(() => {
+                var mDirective = '<div><upstream-data-chooser field="field" current-action="action" change="changeCallback"></upstream-data-chooser><upstream-data-chooser field="field1" current-action="action1" change="changeCallback"></upstream-data-chooser></div>';
+                mElement = compileTemplate(scope, mDirective, $compile);
+            });
+
+            it('should compile into two controls', () => {
+                expect(mElement.find('upstream-data-chooser').length).toBe(2);
+                expect(mElement.find('drop-down-list-box').length).toBe(6);
+            });
+
+            it('should apply values of correct scope to correct control', () => {
+                var udcScope1 = mElement.find('upstream-data-chooser').eq(0).children().scope();
+                var udcScope2 = mElement.find('upstream-data-chooser').eq(1).children().scope();
+                expect(udcScope1.field.selectedManifest).toBe(fx.UpstreamDataChooser.sampleField.selectedManifest);
+                expect(udcScope1.field.selectedLabel).toBe(fx.UpstreamDataChooser.sampleField.selectedLabel);
+                expect(udcScope1.field.selectedFieldType).toBe(fx.UpstreamDataChooser.sampleField.selectedFieldType);
+
+                expect(udcScope2.field.selectedManifest).toBe(fx.UpstreamDataChooser.fieldWithValues.selectedManifest);
+                expect(udcScope2.field.selectedLabel).toBe(fx.UpstreamDataChooser.fieldWithValues.selectedLabel);
+                expect(udcScope2.field.selectedFieldType).toBe(fx.UpstreamDataChooser.fieldWithValues.selectedFieldType);
+            });
+
+            it('should not change the other scopes when changing this one', () => {
+                var udcScope1 = mElement.find('upstream-data-chooser').eq(0).children().scope();
+                var udcScope2 = mElement.find('upstream-data-chooser').eq(1).children().scope();
+                var curValue = udcScope2.field.selectedFieldType;
+
+                udcScope1.field.selectedFieldType = 'EmailAddress';
+                udcScope1.$digest();
+                expect(udcScope2.field.selectedFieldType).toBe(curValue);
+            });
+
+        });
+
     });
 } 
