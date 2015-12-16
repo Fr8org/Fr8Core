@@ -40,6 +40,7 @@ namespace Data.Control
         public const string ManageRoute = "ManageRoute";
         public const string Duration = "Duration";
         public const string RunRouteButton = "RunRouteButton";
+        public const string UpstreamDataChooser = "UpstreamDataChooser";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -360,5 +361,22 @@ namespace Data.Control
 
         [JsonProperty("value")]
         public string Value { get; set; }
+    }
+
+    public class UpstreamDataChooser: ControlDefinitionDTO
+    {
+        public UpstreamDataChooser()
+        {
+            Type = ControlTypes.UpstreamDataChooser;
+        }
+
+        [JsonProperty("selectedManifest")]
+        public string SelectedManifest { get; set; }
+
+        [JsonProperty("selectedLabel")]
+        public string SelectedLabel { get; set; }
+
+        [JsonProperty("selectedFieldType")]
+        public string SelectedFieldType { get; set; }
     }
 }
