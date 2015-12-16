@@ -15,7 +15,8 @@ var app = angular.module("app", [
     "pusher-angular",
     "ngToast",
     "frapontillo.bootstrap-switch",
-    "ApplicationInsightsModule"
+    "ApplicationInsightsModule",
+    "dndLists"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -38,7 +39,7 @@ app.factory('settings', ['$rootScope', function ($rootScope) {
         layoutImgPath: Metronic.getAssetsPath() + 'admin/layout/img/',
         layoutCssPath: Metronic.getAssetsPath() + 'admin/layout/css/'
     };
-        
+
     $rootScope.settings = settings;
 
     return settings;
@@ -73,10 +74,28 @@ app.controller('FooterController', ['$scope', function ($scope) {
 }]);
 
 /* Set Application Insights */
-app.config(function (applicationInsightsServiceProvider) {
-    var options = { applicationName: 'HubWeb' };
-    applicationInsightsServiceProvider.configure('9db0241b-6f3d-404d-adeb-3839bcb6e313', options);
-});
+app.config(['applicationInsightsServiceProvider', function (applicationInsightsServiceProvider) {
+    var options;
+
+    $.get('/api/v1/configuration/appinsights').then((appInsightsInstrKey: string) => {
+        console.log(appInsightsInstrKey);
+        if (appInsightsInstrKey.indexOf('0000') == -1) { // if not local instance ('Debug' configuration)
+            options = { applicationName: 'HubWeb' };
+            applicationInsightsServiceProvider.configure(appInsightsInstrKey, options, true);
+        }
+        else {
+            // don't send telemetry 
+            options = {
+                applicationName: '',
+                autoPageViewTracking: false,
+                autoLogTracking: false,
+                autoExceptionTracking: false,
+                sessionInactivityTimeout: 1
+            };
+            applicationInsightsServiceProvider.configure(appInsightsInstrKey, options, false);
+        }
+    })
+}]);
 
 /* Setup Rounting For All Pages */
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
@@ -93,7 +112,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
                     delete (config.params.suppressSpinner);
                 }
                 else {
-                 //   Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
+                    //   Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
                 }
                 return config;
             },
@@ -104,7 +123,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             responseError: function (config) {
                 if (config.status === 403) {
                     $window.location.href = $window.location.origin + '/DockyardAccount'
-                        + '?returnUrl=/Dashboard' + encodeURIComponent($window.location.hash);
+                    + '?returnUrl=/Dashboard' + encodeURIComponent($window.location.hash);
                 }
                 Metronic.stopPageLoading();
                 return $q.reject(config);

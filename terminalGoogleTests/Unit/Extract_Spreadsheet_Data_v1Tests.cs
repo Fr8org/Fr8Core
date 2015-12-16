@@ -101,7 +101,7 @@ namespace terminalGoogleTests.Integration
         /// Spreadsheet with the following structure is passed: {{(1,1),(1,2)},{(2,1),(2,2)}}
         /// Required fields are tested
         /// </summary> 
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle"), Ignore]
         public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Row_And_Column_Table()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -113,11 +113,11 @@ namespace terminalGoogleTests.Integration
             fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Row_And_Column");
 
             //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
-             var responseActionDTO =
-                await HttpPostAsync<ActionDTO, ActionDTO>(
-                    configureUrl,
-                    requestActionDTO
-                );
+            var responseActionDTO =
+               await HttpPostAsync<ActionDTO, ActionDTO>(
+                   configureUrl,
+                   requestActionDTO
+               );
 
             //Assert
             Assert.NotNull(responseActionDTO);
@@ -136,7 +136,7 @@ namespace terminalGoogleTests.Integration
         /// Spreadsheet with the following structure is passed: {{(1,1)},{(2,2)}}
         /// Required fields are tested
         /// </summary> 
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle"), Ignore]
         public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Column_Only_Table()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -170,7 +170,7 @@ namespace terminalGoogleTests.Integration
         /// Spreadsheet with the following structure is passed: {{(1,1),(1,2)}}
         /// Required fields are tested
         /// </summary> 
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle"), Ignore]
         public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Row_Only_Table()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -207,7 +207,7 @@ namespace terminalGoogleTests.Integration
         /////////////
         /// Run Tests Begin
         /////////////
-        
+
         //To be finished after Action is fixed
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace terminalGoogleTests.Integration
         //    var runUrl = GetTerminalRunUrl();
         //    HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
         //    var requestActionDTO = fixture.Extract_Spreadsheet_Data_v1_Followup_Configuration_Request_ActionDTO_With_Crates();
-            
+
         //    ////Act
         //    fixture.Extract_Spreadsheet_Data_v1_AddPayload(requestActionDTO, "Empty_First_Row");
 
@@ -326,8 +326,7 @@ namespace terminalGoogleTests.Integration
         )]
         public async void Extract_Spreadsheet_Data_v1_Run_NoAuth()
         {
-
-            var configureUrl = GetTerminalConfigureUrl();
+            var configureUrl = GetTerminalRunUrl();
 
             var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = null;

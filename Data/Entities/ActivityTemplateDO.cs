@@ -18,9 +18,10 @@ namespace Data.Entities
         {
             this.AuthenticationType = States.AuthenticationType.None;
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
+            this.Type = ActivityType.Standard;
         }
 
-        public ActivityTemplateDO(string name, string label, string version, string description, int terminalId) : this()
+        public ActivityTemplateDO(string name, string label, string version, string description, int terminalId, ActivityType type = ActivityType.Standard) : this()
         {
             this.Name = name;
             this.Label = label;
@@ -30,7 +31,7 @@ namespace Data.Entities
              * EF will throw 'System.Data.Entity.Infrastructure.DbUpdateException'  */
             this.TerminalId = terminalId;
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
-
+            this.Type = type;
         }
 
         /// <summary>
@@ -94,6 +95,9 @@ namespace Data.Entities
 
         [Required]
         public ActivityCategory Category { get; set; }
+
+        [Required]
+        public ActivityType Type { get; set; }
 
         public int MinPaneWidth { get; set; }
 

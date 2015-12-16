@@ -21,6 +21,8 @@ namespace Data.Interfaces.DataTransferObjects
 
         public bool IsExplicitData { get; set; }
 
+        public string ExplicitData { get; set; }
+
         [JsonProperty("action_version")]
         public string ActionVersion { get; set; }
 
@@ -31,5 +33,6 @@ namespace Data.Interfaces.DataTransferObjects
         public AuthorizationTokenDTO AuthToken { get; set; }
 
         public ActionDTO[] ChildrenActions { get; set; }
+        public int Ordering { get; set; }
     }
 }

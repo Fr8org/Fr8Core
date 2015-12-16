@@ -29,7 +29,6 @@
             return this.hasCrateOfManifestType(crateStorage, 'Standard UI Controls');
         }
 
-
         public findByLabel(crateStorage: model.CrateStorage, label: string): model.Crate {
             // Check that CrateStorage is not empty.
             if (!crateStorage || !crateStorage.crates) {
@@ -184,6 +183,22 @@
             this.resetClickedFlag(controlsList.fields); // Unset 'clicked' flag on buttons and other coontrols on which it exists
             this.populateListItemsFromDataSource(controlsList.fields, crateStorage);
             return controlsList;
+        }
+
+        public getAvailableFieldTypes(crateStorage: model.CrateStorage): string[]{
+            try {
+                var fieldsCrate = this.findByLabel(crateStorage, 'Upstream Terminal-Provided Fields');
+            } catch (e) {
+                return [];
+            }
+
+            var fields = <string[]>(<any>fieldsCrate.contents).Fields;
+            var result = [];
+            <string[]>(<any>fieldsCrate.contents).Fields.forEach((field) => {
+                if (field.tags && result.indexOf(field.tags) === -1) result.push(field.tags);
+            });
+
+            return result;
         }
     }
 }

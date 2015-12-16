@@ -92,7 +92,7 @@ namespace HealthMonitor
                 var reportItem = new TestReportItem()
                 {
                     Name = testResult.FullName,
-                    Success = testResult.IsSuccess
+                    Success = testResult.IsSuccess || (!testResult.IsError && !testResult.IsFailure)
                 };
 
                 if (!testResult.IsSuccess)

@@ -85,7 +85,10 @@ namespace Data.Constants
         StandardAccountTransaction = 25,
 
         [Display(Name = "Docusign Recipient")]
-        DocuSignRecipient = 26
+        DocuSignRecipient = 26,
+
+        [Display(Name = "Operational State")]
+        OperationalStatus = 27
     }
 }
 
