@@ -32,7 +32,7 @@ module dockyard.controllers {
 				{ id: 1, name: "Monitors", description: "Learn when something happen", checked: true },
 				{ id: 2, name: "Receivers", description: "In-process Crates from a web service", checked: true },
 				{ id: 3, name: "Processors", description: "Carry out work on a Container", checked: true },
-				{ id: 4, name: "Forwarders", description: "Send Crates to a web service", checked: true }
+                { id: 4, name: "Forwarders", description: "Send Crates to a web service", checked: true }
 			];
 
 			this.toggleFilter();

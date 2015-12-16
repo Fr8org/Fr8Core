@@ -22,12 +22,16 @@ namespace Hub.Interfaces
         IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, Func<ActivityTemplateDO, bool> predicate);
 
         RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, RouteNodeDO root);
+        RouteNodeDO GetNextSibling(RouteNodeDO currentActivity);
+        RouteNodeDO GetFirstChild(RouteNodeDO currentActivity);
 
-	    void Delete(IUnitOfWork uow, RouteNodeDO activity);
+        void Delete(IUnitOfWork uow, RouteNodeDO activity);
 
         IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups();
 
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction);
+
+        Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction);
 	    
         IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount);
     }
