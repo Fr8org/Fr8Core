@@ -41,6 +41,12 @@ namespace TerminalBase.BaseClasses
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
 
+        private static HashSet<CrateManifestType> ExcludedManifestTypes = new HashSet<CrateManifestType>()
+        {
+            ManifestDiscovery.Default.GetManifestType<StandardConfigurationControlsCM>(),
+            ManifestDiscovery.Default.GetManifestType<EventSubscriptionCM>()
+        };
+
         public BaseTerminalAction()
         {
             Crate = new CrateManager();
@@ -94,29 +100,6 @@ namespace TerminalBase.BaseClasses
             }
 
             return null;
-        }
-
-        protected async Task<IEnumerable<ActivityTemplateDO>> GetActivityTemplates(string tag = null)
-        {
-            var httpClient = new HttpClient();
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-            + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/available?tag=";
-
-            if (string.IsNullOrEmpty(tag))
-            {
-                url += "[all]";
-            }
-            else
-            {
-                url += tag;
-            }
-
-            using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                var curActivityTemplate = JsonConvert.DeserializeObject<List<ActivityTemplateDTO>>(content);
-                return curActivityTemplate.Select(at => Mapper.Map<ActivityTemplateDO>(at));
-            }
         }
 
         protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(ActionDO curActionDO, StandardDesignTimeFieldsCM designTimeFields)
@@ -206,6 +189,12 @@ namespace TerminalBase.BaseClasses
             // return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
         }
 
+        //wrapper for support test method
+        public async virtual Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction)
+        {
+            return await HubCommunicator.GetCratesByDirection(actionDO, direction);
+        }
+
         public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActionDO actionDO, CrateDirection direction)
         {
             //1) Build a merged list of the upstream design fields to go into our drop down list boxes
@@ -218,6 +207,34 @@ namespace TerminalBase.BaseClasses
             mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);
 
             return mergedFields;
+        }
+
+        public async virtual Task<List<CrateManifestType>> BuildUpstreamManifestList(ActionDO actionDO)
+        {
+            var upstreamCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream);
+            return upstreamCrates.Where(x => !ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.ManifestType).Distinct().ToList();
+        }
+
+        public async virtual Task<List<String>> BuildUpstreamCrateLabelList(ActionDO actionDO)
+        {
+            var curCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream);
+            return curCrates.Where(x => !ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.Label).Distinct().ToList();
+        }
+
+        public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamManifestListCrate(ActionDO actionDO)
+        {
+            var manifestList = (await BuildUpstreamManifestList(actionDO));
+            var fields = manifestList.Select(f => new FieldDTO(f.Id.ToString(), f.Type)).ToArray();
+
+            return Crate.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", fields);
+        }
+
+        public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamCrateLabelListCrate(ActionDO actionDO)
+        {
+            var labelList = (await BuildUpstreamCrateLabelList(actionDO));
+            var fields = labelList.Select(f => new FieldDTO(null, f)).ToArray();
+
+            return Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
         }
 
         public StandardDesignTimeFieldsCM MergeContentFields(List<Crate<StandardDesignTimeFieldsCM>> curCrates)

@@ -13,7 +13,7 @@ using terminalFr8CoreTests.Fixtures;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 
-namespace terminalTests.Integration
+namespace terminalFr8CoreTests.Integration
 {
     [Explicit]
     public class ConnectToSql_v1_Tests : BaseHealthMonitorTest
