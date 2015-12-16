@@ -21,10 +21,11 @@ namespace terminalQuickBooks.Tests.Fixtures
             journalEntry.HomeTotalAmtSpecified = true;
             journalEntry.TotalAmt = 100;
             journalEntry.TotalAmtSpecified = true;
+            journalEntry.PrivateNote = "This is the test Journal Entry";
             List<Line> lineList = new List<Line>();
 
             Line debitLine = new Line();
-            debitLine.Description = "nov portion of rider insurance";
+            debitLine.Description = "That is the first line description";
             debitLine.Amount = new Decimal(100.00);
             debitLine.AmountSpecified = true;
             debitLine.DetailType = LineDetailTypeEnum.JournalEntryLineDetail;
@@ -37,7 +38,7 @@ namespace terminalQuickBooks.Tests.Fixtures
             lineList.Add(debitLine);
 
             Line creditLine = new Line();
-            creditLine.Description = "nov portion of rider insurance";
+            creditLine.Description = "That is the second line description";
             creditLine.Amount = new Decimal(100.00);
             creditLine.AmountSpecified = true;
             creditLine.DetailType = LineDetailTypeEnum.JournalEntryLineDetail;

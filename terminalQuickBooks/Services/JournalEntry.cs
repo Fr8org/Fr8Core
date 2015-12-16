@@ -47,6 +47,8 @@ namespace terminalQuickBooks.Services
                 curFinLineToAdd.AccountName = curJournalEntryLineDetail.AccountRef.name;
                 //Add Account Id
                 curFinLineToAdd.AccountId = curJournalEntryLineDetail.AccountRef.Value;
+                //Add Description
+                curFinLineToAdd.Description = curLine.Description;
                 //Add the prepared line to the list
                 curFinLineDTOList.Add(curFinLineToAdd);
             }

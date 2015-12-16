@@ -58,16 +58,21 @@ namespace terminalQuickBooks.Tests.Services
             //Assert General Data
             Assert.AreEqual("DocNu1", curTransactionDTO.Name);
             Assert.AreEqual(DateTime.UtcNow.Date, curTransactionDTO.TransactionDate);
+            Assert.AreEqual("This is the test Journal Entry", curTransactionDTO.Memo);
             //Assert First Line
-            Assert.AreEqual("36", curTransactionDTO.FinancialLines[0].AccountId);
-            Assert.AreEqual("Accumulated Depreciation", curTransactionDTO.FinancialLines[0].AccountName);
-            Assert.AreEqual("100", curTransactionDTO.FinancialLines[0].Amount.ToString());
-            Assert.AreEqual(PostingTypeEnum.Debit.ToString(), curTransactionDTO.FinancialLines[0].DebitOrCredit);
+            var curFirstLine = curTransactionDTO.FinancialLines[0];
+            Assert.AreEqual("36", curFirstLine.AccountId);
+            Assert.AreEqual("Accumulated Depreciation", curFirstLine.AccountName);
+            Assert.AreEqual("100", curFirstLine.Amount.ToString());
+            Assert.AreEqual(PostingTypeEnum.Debit.ToString(), curFirstLine.DebitOrCredit);
+            Assert.AreEqual("That is the first line description", curFirstLine.Description);
             //Assert Second Line
-            Assert.AreEqual("36", curTransactionDTO.FinancialLines[1].AccountId);
-            Assert.AreEqual("Accumulated Depreciation", curTransactionDTO.FinancialLines[1].AccountName);
-            Assert.AreEqual("100", curTransactionDTO.FinancialLines[1].Amount.ToString());
-            Assert.AreEqual(PostingTypeEnum.Credit.ToString(), curTransactionDTO.FinancialLines[1].DebitOrCredit);
+            var curSecondLine = curTransactionDTO.FinancialLines[1];
+            Assert.AreEqual("36", curSecondLine.AccountId);
+            Assert.AreEqual("Accumulated Depreciation", curSecondLine.AccountName);
+            Assert.AreEqual("100", curSecondLine.Amount.ToString());
+            Assert.AreEqual(PostingTypeEnum.Credit.ToString(), curSecondLine.DebitOrCredit);
+            Assert.AreEqual("That is the second line description", curSecondLine.Description);
         }
     }
 }
