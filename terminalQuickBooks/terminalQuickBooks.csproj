@@ -208,8 +208,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\Tests\Fixtures\Fixtures.cs" />
-    <Compile Include="App_Start\Tests\Services\JournalEntryTests.cs" />
+    <Compile Include="Tests\Fixtures\Fixtures.cs" />
+    <Compile Include="Tests\Services\JournalEntryTests.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
