@@ -1,8 +1,10 @@
 ﻿module dockyard.services {
 
     export class CrateHelper {
+        private filterByTag: (list: model.DropDownListItem[], filterByTag: string) => model.DropDownListItem[]
 
-        constructor() {
+        constructor($filter) {
+            this.filterByTag = $filter('FilterByTag');
         }
 
         public throwError(errorText: string) {
@@ -26,7 +28,6 @@
         public hasControlListCrate(crateStorage: model.CrateStorage): boolean {
             return this.hasCrateOfManifestType(crateStorage, 'Standard UI Controls');
         }
-
 
         public findByLabel(crateStorage: model.CrateStorage, label: string): model.Crate {
             // Check that CrateStorage is not empty.
@@ -150,7 +151,7 @@
                     }
 
                     var listItems = <any> stdfCrate.contents;
-                    dropdownListField.listItems = listItems.Fields;
+                    dropdownListField.listItems = this.filterByTag(listItems.Fields, dropdownListField.source.filterByTag);
                 }
 
                 // Handle nested fields
@@ -183,7 +184,23 @@
             this.populateListItemsFromDataSource(controlsList.fields, crateStorage);
             return controlsList;
         }
+
+        public getAvailableFieldTypes(crateStorage: model.CrateStorage): string[]{
+            try {
+                var fieldsCrate = this.findByLabel(crateStorage, 'Upstream Terminal-Provided Fields');
+            } catch (e) {
+                return [];
+            }
+
+            var fields = <string[]>(<any>fieldsCrate.contents).Fields;
+            var result = [];
+            <string[]>(<any>fieldsCrate.contents).Fields.forEach((field) => {
+                if (field.tags && result.indexOf(field.tags) === -1) result.push(field.tags);
+            });
+
+            return result;
+        }
     }
 }
 
-app.service('CrateHelper', dockyard.services.CrateHelper); 
+app.service('CrateHelper', ['$filter', dockyard.services.CrateHelper]); 

@@ -54,6 +54,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/TerminalService.js',
         'Scripts/app/filters/RouteState.js',
         'Scripts/app/filters/ContainerState.js',
+        'Scripts/app/filters/FilterByTag.js',
         'Scripts/app/directives/EventArgsBase.js',
         'Scripts/app/directives/directives.js',
         'Scripts/app/directives/indiClick.js',
@@ -80,6 +81,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/InputFocus.js',
         'Scripts/app/directives/Controls/Counter.js',
         'Scripts/app/directives/Controls/Duration.js',
+        'Scripts/app/directives/Controls/UpstreamDataChooser.js',
         'Scripts/app/directives/LongAjaxCursor.js',
         'Scripts/app/filters/ActionNameFormatter.js',
         'Scripts/app/controllers/RouteBuilderController.js',
@@ -118,7 +120,7 @@ gulp.task('compile_js', function () {
 });
 
 gulp.task('watch_js', ['compile_js'], function () {
-    gulp.watch('Source/app/**/*.js', ['compile_js']);
+    gulp.watch('Scripts/app/**/*.js', ['compile_js']);
 });
 
 gulp.task('default', ['bower', 'concattemplates']);

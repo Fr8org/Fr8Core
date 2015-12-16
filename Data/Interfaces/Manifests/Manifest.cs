@@ -2,9 +2,11 @@
 using Data.Crates;
 using Newtonsoft.Json;
 using Utilities;
+using System;
 
 namespace Data.Interfaces.Manifests
 {
+    [CrateManifestType(Int32.MinValue, null)]
     public abstract class Manifest
     {
         private readonly CrateManifestType _manifestType;

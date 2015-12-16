@@ -519,9 +519,13 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO TestActionTree()
         {
-            var curCratesDTO = FixtureData.TestCrateDTO1();
+            var curCratesDTO1 = FixtureData.TestCrateDTO1();
+            var curCratesDTO2 = FixtureData.TestCrateDTO2();
+            var curCratesDTO3 = FixtureData.TestCrateDTO3();
             var crateStorageDTO = new CrateStorage();
-            crateStorageDTO.AddRange(curCratesDTO);
+            crateStorageDTO.AddRange(curCratesDTO1);
+            crateStorageDTO.AddRange(curCratesDTO2);
+            crateStorageDTO.AddRange(curCratesDTO3);
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
             string crateStorage = JsonConvert.SerializeObject(crateManager.ToDto(crateStorageDTO));
             

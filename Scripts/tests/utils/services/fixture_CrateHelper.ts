@@ -140,7 +140,45 @@
                     manifestId: "7",
                     manufacturer: null,
                     createTime: "0001-01-01T00:00:00"
-                }
+                },
+                <model.Crate> {
+                    "id": "e47c7d1b-3c1f-468f-b84a-0ff3067e1397",
+                    "label": "Upstream Terminal-Provided Fields",
+                    "contents": {
+                        "Fields": [
+                            {
+                                "key": "RecipientEmail",
+                                "value": null,
+                                "tags": "EmailAddress"
+                            },
+                            {
+                                "key": "DocumentName",
+                                "value": null,
+                                "tags": null
+                            },
+                            {
+                                "key": "CompletedDate",
+                                "value": null,
+                                "tags": "Date"
+                            },
+                            {
+                                "key": "HolderEmail",
+                                "value": null,
+                                "tags": "EmailAddress"
+                            },
+                            {
+                                "key": "Subject",
+                                "value": null,
+                                "tags": null
+                            }
+                        ]
+                    },
+                    "parentCrateId": null,
+                    "manifestType": "Standard Design-Time Fields3",
+                    "manifestId": "3",
+                    "manufacturer": null,
+                    "createTime": "0001-01-01T00:00:00"
+                },
             ],
             crateDTO: null
         }
@@ -312,6 +350,44 @@
                     "label": "Available Fields1"
                 },
                 fieldLabel: null
+            },
+            {
+                "initialLabel": "Email Address",
+                "upstreamSourceLabel": null,
+                "valueSource": "upstream",
+                "listItems": [],
+                "selectedKey": null,
+                "name": "Recipient",
+                "required": false,
+                "value": "",
+                "label": null,
+                "type": "DropDownList",
+                "selected": false,
+                "events": null,
+                "source": {
+                    "manifestType": "Standard Design-Time Fields3",
+                    "label": "Upstream Terminal-Provided Fields",
+                    "filterByTag": "EmailAddress"
+                }
+            },
+            {
+                "initialLabel": "Email Address",
+                "upstreamSourceLabel": null,
+                "valueSource": "upstream",
+                "listItems": [],
+                "selectedKey": null,
+                "name": "Recipient1",
+                "required": false,
+                "value": "",
+                "label": null,
+                "type": "TextSource",
+                "selected": false,
+                "events": null,
+                "source": {
+                    "manifestType": "Standard Design-Time Fields3",
+                    "label": "Upstream Terminal-Provided Fields",
+                    "filterByTag": "NoAddress"
+                }
             }
         ]
 

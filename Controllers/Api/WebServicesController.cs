@@ -79,7 +79,8 @@ namespace HubWeb.Controllers
 			                Label = p.Label,
 			                MinPaneWidth = p.MinPaneWidth,
 			                TerminalId = p.Terminal.Id,
-			                Version = p.Version
+			                Version = p.Version,
+                            Type = p.Type
 			            }).ToList()
 			        }).ToList();
 			}

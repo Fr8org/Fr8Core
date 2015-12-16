@@ -23,8 +23,10 @@ namespace HubWeb.Controllers
             Expression<Action> action = () => ExecuteTerminalWithLogging(alarmDTO);
             BackgroundJob.Schedule(action, alarmDTO.StartTime);
 
-            var eventController = new EventController();
-            return await eventController.ProcessIncomingEvents(alarmDTO.TerminalName, alarmDTO.TerminalVersion);
+            //TODO: Commented as part of DO - 1520. Need to rethink about this.
+            //var eventController = new EventController();
+            //return await eventController.ProcessIncomingEvents(alarmDTO.TerminalName, alarmDTO.TerminalVersion);
+            return null;
         }
 
         [HttpPost]

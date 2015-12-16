@@ -85,7 +85,7 @@ var dockyard;
                 FileService.prototype.uploadFile = function (file) {
                     var deferred = this.$q.defer();
                     this.UploadService.upload({
-                        url: '/files',
+                        url: '/api/files/files',
                         file: file
                     }).progress(function (event) {
                         console.log('Loaded: ' + event.loaded + ' / ' + event.total);
@@ -100,7 +100,7 @@ var dockyard;
                 };
                 FileService.prototype.listFiles = function () {
                     var deferred = this.$q.defer();
-                    this.$http.get('/files').then(function (resp) {
+                    this.$http.get('/api/files/files').then(function (resp) {
                         deferred.resolve(resp.data);
                     }, function (err) {
                         deferred.reject(err);

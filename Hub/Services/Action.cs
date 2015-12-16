@@ -331,6 +331,12 @@ namespace Hub.Services
                     }
                     else
                     {
+                        JsonSerializerSettings settings = new JsonSerializerSettings
+                        {
+                            PreserveReferencesHandling = PreserveReferencesHandling.Objects
+                        };
+                        var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
+                        EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
                         throw;
                     }
                 }
@@ -466,7 +472,7 @@ namespace Hub.Services
                     {
                         updater.CrateStorage = _crate.FromDto(payload.CrateStorage);
                 }
-                //    curContainerDO.CrateStorage = payload.CrateStorage;
+                    //curContainerDO.CrateStorage = payload.CrateStorage;
                 }
 
                 uow.ActionRepository.Attach(curAction);
@@ -481,7 +487,8 @@ namespace Hub.Services
                 throw new ArgumentNullException("curActionDO");
             }
 
-            try {
+            try
+            {
                 var payloadDTO = await CallTerminalActionAsync<PayloadDTO>("Run", curActionDO, curContainerDO.Id);
                 return payloadDTO;
 
@@ -528,6 +535,11 @@ namespace Hub.Services
         {
             try
             {
+                //if this action contains nested actions, do not pass them to avoid 
+                // circular reference error during JSON serialization (FR-1769)
+                curActionDO = Mapper.Map<ActionDO>(curActionDO);
+                curActionDO.ChildNodes = new List<RouteNodeDO>();
+
                 var result = await CallTerminalActionAsync<ActionDTO>("activate", curActionDO, Guid.Empty);
                 EventManager.ActionActivated(curActionDO);
                 return result;
