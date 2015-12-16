@@ -106,14 +106,20 @@ module dockyard.controllers {
                     return;
                 }
 
-                //let's remove this action from it's old parent
-                this.findAndRemoveAction(realAction);
                 
+                
+                //TODO check parent action change with a more solid method
                 //this action is moved to a different parent
                 if (realAction.parentRouteNodeId !== group.actions[0].parentRouteNodeId) {
+                    //let's remove this action from it's old parent
+                    this.findAndRemoveAction(realAction, true);
                     //set new parent
                     realAction.parentRouteNodeId = group.actions[0].parentRouteNodeId;
                 } else {
+                    //let's remove this action from it's old parent
+                    //don't reorder actions
+                    //since action is in the same parent, children will be re-ordered after insert
+                    this.findAndRemoveAction(realAction, false);
                     //this action is moved to same parent
                     //our index calculation might have been wrong
                     //while dragging an action we don't delete that action
@@ -121,13 +127,13 @@ module dockyard.controllers {
                     if (realAction.ordering <= index) {
                         index -= 1;
                     }
-
                 }
                 //now we should inject it to proper position
                 this.insertActionToParent(realAction, index);
 
                 //let's re-render route builder
                 this.renderRoute(<interfaces.IRouteVM>this.$scope.current.route);
+                
             };
 
         }
@@ -136,7 +142,9 @@ module dockyard.controllers {
         private reOrderActions(actions: model.ActionDTO[]) {
             for (var i = 0; i < actions.length; i++) {
                 actions[i].ordering = i + 1;
-        }
+            }
+
+            this.saveActions(actions);
         }
 
         private insertActionToParent(action: model.ActionDTO, index: number) {
@@ -159,7 +167,14 @@ module dockyard.controllers {
             this.reOrderActions(<model.ActionDTO[]>newList);
         }
 
-        private findAndRemoveAction(action: model.ActionDTO) {
+        private saveActions(actions: model.ActionDTO[]) {
+            for (var i = 0; i < actions.length; i++) {
+                var curAction = actions[i];
+                this.ActionService.save(curAction);
+            }
+        }
+
+        private findAndRemoveAction(action: model.ActionDTO, reOrderActions: boolean) {
             var currentParent = this.findActionById(action.parentRouteNodeId);
             var listToRemoveActionFrom: interfaces.IActionDTO[];
             //might be root level
@@ -178,7 +193,10 @@ module dockyard.controllers {
                 }
             }
 
-            this.reOrderActions(<model.ActionDTO[]>listToRemoveActionFrom);
+            if (reOrderActions) {
+                this.reOrderActions(<model.ActionDTO[]>listToRemoveActionFrom);
+            }
+            
         }
 
         private findSubRouteById(id: string): model.SubrouteDTO {
@@ -315,8 +333,6 @@ module dockyard.controllers {
         }
 
         private deleteAction(action: model.ActionDTO) {
-            //TODO -> should we generate an event for delete event?
-
             var self = this;
             self.ActionService.deleteById({ id: action.id, confirmed: false }).$promise.then((response) => {
                 self.reloadRoute();
@@ -329,12 +345,9 @@ module dockyard.controllers {
                         self.reloadRoute();
                     });
                 });
-            });
-            
-            
+            }); 
         }
 
-        
 
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
 
