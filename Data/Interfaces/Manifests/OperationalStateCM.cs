@@ -26,6 +26,8 @@ namespace Data.Interfaces.Manifests
         public List<LoopStatus> Loops { get; set; }
 
         public List<ActionStateMatch> States { get; set; }
+
+        public Guid PausedRouteNodeId { get; set; }
         
 
         public OperationalStateCM()

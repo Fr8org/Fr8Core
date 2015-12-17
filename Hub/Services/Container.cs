@@ -146,9 +146,13 @@ namespace Hub.Services
         private bool ShouldProcessCurrentAction(ContainerDO curContainerDO)
         {
             //TODO should we mind other states of container?????
-            if (curContainerDO.ContainerState != ContainerState.Pending || 
-                GetPausedRouteNodeId(curContainerDO) == curContainerDO.CurrentRouteNode.Id)
+            if (curContainerDO.ContainerState != ContainerState.Pending)
             {
+                return true;
+            }
+            else if (GetPausedRouteNodeId(curContainerDO) == curContainerDO.CurrentRouteNode.Id)
+            {
+                curContainerDO.ContainerState = ContainerState.Executing;
                 return true;
             }
             return false;
@@ -228,12 +232,31 @@ namespace Hub.Services
             }
         }
 
+        private bool HasOperationalStateCrate(ContainerDO curContainerDO)
+        {
+            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
+            var operationalState = storage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
+            return operationalState != null;
+        }
+
         public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             if (curContainerDO == null)
                 throw new ArgumentNullException("ContainerDO is null");
 
-            AddOperationalStateCrate(uow, curContainerDO);
+            //if payload already has operational state create we shouldn't create another
+            if (!HasOperationalStateCrate(curContainerDO))
+            {
+                AddOperationalStateCrate(uow, curContainerDO);
+                uow.SaveChanges();
+            }
+
+            if (curContainerDO.ContainerState == ContainerState.Unstarted)
+            {
+                curContainerDO.ContainerState = ContainerState.Executing;
+                uow.SaveChanges();
+            }
+
 
             if (curContainerDO.CurrentRouteNode != null)
             {
