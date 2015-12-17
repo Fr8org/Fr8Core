@@ -85,6 +85,13 @@ namespace Data.Repositories
 
         /*********************************************************************************/
 
+        public IQueryable<AuthorizationTokenDO> GetPublicDataQuery()
+        {
+            return GetQuery();
+        }
+
+        /*********************************************************************************/
+
         public AuthorizationTokenDO FindToken(string userId, int terminalId, int? state)
         {
             AuthorizationTokenDO token;
@@ -158,12 +165,27 @@ namespace Data.Repositories
 
         /*********************************************************************************/
 
+        private AuthorizationTokenChangeTracker Track(AuthorizationTokenDO token)
+        {
+            AuthorizationTokenChangeTracker changeTracker;
+
+            if (!_changesTackers.TryGetValue(token.Id, out changeTracker))
+            {
+                changeTracker = new AuthorizationTokenChangeTracker(token.Token, token);
+                _changesTackers[token.Id] = changeTracker;
+            }
+
+            return changeTracker;
+        }
+
+        /*********************************************************************************/
+
         public void TrackAdds(IEnumerable<object> entities)
         {
             foreach (var entity in entities.OfType<AuthorizationTokenDO>())
             {
                 _adds.Add(entity);
-                _changesTackers.Remove(entity.Id);
+                Track(entity).ResetChanges();
             }
         }
 

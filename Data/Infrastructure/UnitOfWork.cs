@@ -647,10 +647,9 @@ namespace Data.Infrastructure
                 var entityType = trackingChanges.EntityType;
 
                 trackingChanges.TrackAdds(addedEntities.Where(x => entityType.IsInstanceOfType(x)));
-                trackingChanges.TrackDeletes(modifiedEntities.Where(x => entityType.IsInstanceOfType(x)));
-                trackingChanges.TrackUpdates(deletedEntities.Where(x => entityType.IsInstanceOfType(x)));
-
-
+                trackingChanges.TrackDeletes(deletedEntities.Where(x => entityType.IsInstanceOfType(x)));
+                trackingChanges.TrackUpdates(modifiedEntities.Where(x => entityType.IsInstanceOfType(x)));
+                
                 trackingChanges.SaveChanges();
             }
         }
