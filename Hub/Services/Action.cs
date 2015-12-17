@@ -213,15 +213,16 @@ namespace Hub.Services
                 }
 
                 
-                    /*
+                    
                 // Now we must find what child must be removed from existingAction
                 // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
                 foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
                 {
                     existingAction.ChildNodes.Remove(actionToRemove.Value);
-                        _routeNode.Delete(uow, actionToRemove.Value);
+                    //i (bahadir) commented out this line. currently our deletion mechanism already removes this action from it's parent
+                    //TODO talk to Vladimir about this
+                    //    _routeNode.Delete(uow, actionToRemove.Value);
                 }
-                    */
                 // We just update those children that haven't changed (exists both in newChildren and currentChildren)
                     foreach (var actionToUpdate in newChildren.Where(x => !x.Value.IsTempId && currentChildren.ContainsKey(x.Key)))
                 {
