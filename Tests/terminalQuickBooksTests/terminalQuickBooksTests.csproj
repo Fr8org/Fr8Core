@@ -68,7 +68,6 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Fixtures\Payload.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
