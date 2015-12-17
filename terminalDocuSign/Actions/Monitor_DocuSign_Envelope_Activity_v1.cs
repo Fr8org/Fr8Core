@@ -1,4 +1,3 @@
-
 using Data.Entities;
 using TerminalBase.Infrastructure;
 using System;
@@ -26,22 +25,14 @@ namespace terminalDocuSign.Actions
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            base.CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
+            return Crate.IsStorageEmpty(curActionDO) ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
         }
 
         protected Crate PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
@@ -121,10 +112,7 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            base.CheckAuthentication(authTokenDO);
 
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue;
@@ -163,7 +151,7 @@ namespace terminalDocuSign.Actions
             }
 
             // Make sure that it exists
-            if (String.IsNullOrEmpty(envelopeId))
+            if (string.IsNullOrEmpty(envelopeId))
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
 
             //Create a run-time fields
@@ -172,8 +160,7 @@ namespace terminalDocuSign.Actions
             {
                 field.Value = GetValueForKey(processPayload, field.Key);
             }
-
-
+            
             //Create log message
             var logMessages = new StandardLoggingCM()
             {
@@ -223,15 +210,12 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert
-                .DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
-
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
 
             var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             var eventFields = Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", CreateDocuSignEventFields().ToArray());
-
-
+            
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Add(crateControls);
@@ -256,8 +240,7 @@ namespace terminalDocuSign.Actions
 
             return Task.FromResult(curActionDO);
         }
-
-
+        
         /// <summary>
         /// Updates event subscriptions list by user checked check boxes.
         /// </summary>
@@ -411,7 +394,6 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-
             return templateRecipientPicker;
         }
 
@@ -425,8 +407,6 @@ namespace terminalDocuSign.Actions
                 fields);
             return createDesignTimeFields;
         }
-
-
 
         private List<FieldDTO> CreateDocuSignEventFields()
         {
