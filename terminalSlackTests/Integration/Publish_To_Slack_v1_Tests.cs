@@ -22,18 +22,9 @@ namespace terminalSlackTests.Integration
     [Category("terminalSlack.Integration")]
     public class Publish_To_Slack_v1_Tests : BaseHealthMonitorTest
     {
-        public ICrateManager _crateManager;
-
         public override string TerminalName
         {
             get { return "terminalSlack"; }
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         [Test]
@@ -54,9 +45,9 @@ namespace terminalSlackTests.Integration
 
             var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
 
-            var storage = _crateManager.GetStorage(responseActionDTO);
+            var storage = Crate.GetStorage(responseActionDTO);
 
-            using (var updater = _crateManager.UpdateStorage(requestActionDTO))
+            using (var updater = Crate.UpdateStorage(requestActionDTO))
             {
                 updater.CrateStorage = storage;
             }
