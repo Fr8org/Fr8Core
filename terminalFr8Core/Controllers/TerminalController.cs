@@ -162,6 +162,17 @@ namespace terminalFr8Core.Controllers
                 Type = ActivityType.Loop
             });
 
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "Delay",
+                Label = "Delay Action Processing",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                Type = ActivityType.Standard
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
