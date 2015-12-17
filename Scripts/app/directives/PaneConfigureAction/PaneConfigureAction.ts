@@ -319,14 +319,26 @@ module dockyard.directives.paneConfigureAction {
                 function startInternalAuthentication(actionId: string, mode: number) {
                     var self = this;
 
+                    // var modalScope = <any>$scope.$new(true);
+                    // modalScope.actionId = actionId;
+                    // modalScope.mode = mode;
+                    // 
+                    // $modal.open({
+                    //     animation: true,
+                    //     templateUrl: '/AngularTemplate/InternalAuthentication',
+                    //     controller: 'InternalAuthenticationController',
+                    //     scope: modalScope
+                    // })
+                    // .result
+                    // .then(() => loadConfiguration());
+
                     var modalScope = <any>$scope.$new(true);
-                    modalScope.actionId = actionId;
-                    modalScope.mode = mode;
+                    modalScope.actionIds = [actionId];
 
                     $modal.open({
                         animation: true,
-                        templateUrl: '/AngularTemplate/InternalAuthentication',
-                        controller: 'InternalAuthenticationController',
+                        templateUrl: '/AngularTemplate/AuthenticationDialog',
+                        controller: 'AuthenticationDialogController',
                         scope: modalScope
                     })
                     .result

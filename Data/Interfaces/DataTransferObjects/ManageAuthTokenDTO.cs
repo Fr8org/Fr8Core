@@ -12,6 +12,9 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("name")]
         public string Name { get; set; }
 
+        [JsonProperty("authenticationType")]
+        public int AuthenticationType { get; set; }
+
         [JsonProperty("authTokens")]
         public List<ManageAuthToken_AuthToken> AuthTokens { get; set; }
     }
@@ -23,5 +26,17 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("externalAccountName")]
         public string ExternalAccountName { get; set; }
+
+        [JsonProperty("isMain")]
+        public bool IsMain { get; set; }
+    }
+
+    public class ManageAuthToken_Terminal_Action
+    {
+        [JsonProperty("actionId")]
+        public Guid ActionId { get; set; }
+
+        [JsonProperty("terminal")]
+        public ManageAuthToken_Terminal Terminal { get; set; }
     }
 }
