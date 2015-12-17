@@ -169,7 +169,8 @@ module dockyard.directives.paneSelectAction {
 			.result.then((selectedActivity: interfaces.IActivityTemplateVM) => {
 				//now we should emit an activity type selected event
                 var eventArgs = new ActivityTypeSelectedEventArgs(selectedActivity, addActionArgs.group);
-				this._$scope.$emit(MessageType[MessageType.PaneSelectAction_ActivityTypeSelected], eventArgs);
+                this._$scope.$emit(MessageType[MessageType.PaneSelectAction_ActivityTypeSelected], eventArgs);
+
 			});
         }
 

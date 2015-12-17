@@ -39,6 +39,17 @@ namespace UtilitiesTesting.Fixtures
 
         }
 
+        public static List<Crate> TestCrateDTO3()
+        {
+            return new List<Crate>() {
+                Crate.FromContent("CrateId1", new StandardDesignTimeFieldsCM()),
+                Crate.FromContent("CrateId2", new StandardConfigurationControlsCM()),
+                Crate.FromContent("CrateId3", new DocuSignRecipientCM()),
+                Crate.FromContent("CrateId4", new EventSubscriptionCM()),
+                Crate.FromContent("CrateId5", new StandardFileListCM())
+            };
+        }
+
 
         public static Crate CreateStandardConfigurationControls()
         {
@@ -115,7 +126,6 @@ namespace UtilitiesTesting.Fixtures
             return PackControlsCrate(fieldSelectFr8Object);
         }
 
-      
         #region Private Methods
 
         private static Crate PackControlsCrate(params ControlDefinitionDTO[] controlsList)

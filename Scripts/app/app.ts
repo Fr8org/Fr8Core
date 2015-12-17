@@ -15,7 +15,8 @@ var app = angular.module("app", [
     "pusher-angular",
     "ngToast",
     "frapontillo.bootstrap-switch",
-    "ApplicationInsightsModule"
+    "ApplicationInsightsModule",
+    "dndLists"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
