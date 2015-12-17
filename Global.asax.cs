@@ -198,12 +198,6 @@ namespace HubWeb
             }
         }
 
-        public void Application_BeginRequest()
-        {
-
-
-        }
-
         public void Application_End()
         {
             Logger.GetLogger().Info("Kwasant web shutting down...");
