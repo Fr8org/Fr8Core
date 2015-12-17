@@ -212,8 +212,7 @@ namespace Hub.Services
                     existingAction.ChildNodes.Add(newChild);
                 }
 
-                //TODO change this mechanism
-                    //I (bahadir) commented it out for now
+                
                     /*
                 // Now we must find what child must be removed from existingAction
                 // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
