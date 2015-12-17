@@ -1,4 +1,5 @@
-﻿using Data.States.Templates;
+﻿using Data.States;
+using Data.States.Templates;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AutoMapper;

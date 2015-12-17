@@ -80,7 +80,8 @@ module dockyard.tests.controller {
                     activityTemplateId: 1,
                     isTempId: false,
                     id: '00000000-0000-0000-0000-000000000000',
-                    childrenActions: null
+                    childrenActions: null,
+                    ordering: 0
                 };
 
             postInvoker(done, actions);
