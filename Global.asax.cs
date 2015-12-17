@@ -130,7 +130,7 @@ namespace HubWeb
             SetServerUrl(HttpContext.Current);
 #endif
             // Force user to http if user is accessing the PROD site and it is not an API request
-            if (Request.Url.Host.StartsWith("fr8.co") && !Request.Url.PathAndQuery.StartsWith("/api"))
+            if (Request.Url.Host.Contains("fr8.co") && !Request.Url.PathAndQuery.StartsWith("/api"))
             {
                 switch (Request.Url.Scheme)
                 {
