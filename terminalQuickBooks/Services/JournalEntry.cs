@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Web;
-using System.Xml.Serialization;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Intuit.Ipp.Core.Configuration;
 using Intuit.Ipp.Data;
 using Intuit.Ipp.DataService;
-using Intuit.Ipp.Diagnostics;
-using StructureMap;
 using terminalQuickBooks.Interfaces;
 
 namespace terminalQuickBooks.Services

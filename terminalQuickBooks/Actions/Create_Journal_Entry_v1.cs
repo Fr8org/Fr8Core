@@ -10,7 +10,6 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
-using StructureMap;
 using terminalQuickBooks.Interfaces;
 using terminalQuickBooks.Services;
 using Utilities;
