@@ -489,6 +489,7 @@
     <Content Include="Content\icons\web_services\ms-azure-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-excel-icon-64x64.png" />
     <Content Include="Content\icons\web_services\papertrail-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\quick-books-icon-64x64.png" />
     <Content Include="Content\icons\web_services\salesforce-icon-64x64.png" />
     <Content Include="Content\icons\web_services\sendgrid-icon-64x64.png" />
     <Content Include="Content\icons\web_services\slack-icon-64x64.png" />
@@ -4376,19 +4377,19 @@
       $(CleanDependsOn);
       CleanBowerComponents;
     </CleanDependsOn>
-	<CleanDependsOn>
+    <CleanDependsOn>
 	  $(CleanDependsOn);
 	  RemoveCompiledJsFiles;
     </CleanDependsOn>
   </PropertyGroup>
   <Target Name="CleanBowerComponents">
-	<RemoveDir Directories="bower_components" />
+    <RemoveDir Directories="bower_components" />
   </Target>
   <Target Name="RemoveCompiledJsFiles">
     <ItemGroup>
       <_CompiledJsFiles Include="Scripts\app\**\*.js" />
     </ItemGroup>
-	<Delete Files="@(_CompiledJsFiles)" />
+    <Delete Files="@(_CompiledJsFiles)" />
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
 </Project>
