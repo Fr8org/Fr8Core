@@ -29,7 +29,6 @@
             return this.hasCrateOfManifestType(crateStorage, 'Standard UI Controls');
         }
 
-
         public findByLabel(crateStorage: model.CrateStorage, label: string): model.Crate {
             // Check that CrateStorage is not empty.
             if (!crateStorage || !crateStorage.crates) {
