@@ -46,14 +46,14 @@ namespace HubWeb
             settings.Formatting = Formatting.Indented;
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
-           
+
 
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
 
             // StructureMap Dependencies configuration 
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
-                //set to either "test" or "live"
+            //set to either "test" or "live"
 
             var db = ObjectFactory.GetInstance<DbContext>();
             db.Database.Initialize(true);
@@ -66,8 +66,8 @@ namespace HubWeb
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
             Utilities.Server.IsDevMode = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsDev", true);
 
-           // CommunicationManager curCommManager = ObjectFactory.GetInstance<CommunicationManager>();
-          //  curCommManager.SubscribeToAlerts();
+            // CommunicationManager curCommManager = ObjectFactory.GetInstance<CommunicationManager>();
+            //  curCommManager.SubscribeToAlerts();
 
             var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
             Analytics.Initialize(segmentWriteKey);
@@ -78,7 +78,7 @@ namespace HubWeb
             IncidentReporter incidentReporter = new IncidentReporter();
             incidentReporter.SubscribeToAlerts();
 
-            ModelBinders.Binders.Add(typeof (DateTimeOffset), new KwasantDateBinder());
+            ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
 
             var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -91,7 +91,7 @@ namespace HubWeb
             SetServerUrl();
 
             Logger.GetLogger().Warn("Dockyard  starting...");
-            
+
             ConfigureValidationEngine();
 
         }
@@ -124,12 +124,27 @@ namespace HubWeb
 
         //Optimization. Even if running in DEBUG mode, this will only execute once.
         //But on production, there is no need for this call
-#if DEBUG
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
+#if DEBUG
             SetServerUrl(HttpContext.Current);
-        }
 #endif
+            // Force user to http if user is accessing the PROD site and it is not an API request
+            if (Request.Url.Host.StartsWith("fr8.co") && !Request.Url.PathAndQuery.StartsWith("/api"))
+            {
+                switch (Request.Url.Scheme)
+                {
+                    case "https":
+                        Response.AddHeader("Strict-Transport-Security", "max-age=300");
+                        break;
+                    case "http":
+                        var path = "https://" + Request.Url.Host + Request.Url.PathAndQuery;
+                        Response.Status = "301 Moved Permanently";
+                        Response.AddHeader("Location", path);
+                        break;
+                }
+            }
+        }
 
         private void SetServerUrl(HttpContext context = null)
         {
@@ -181,6 +196,12 @@ namespace HubWeb
                     }
                 }
             }
+        }
+
+        public void Application_BeginRequest()
+        {
+
+
         }
 
         public void Application_End()
