@@ -15,16 +15,17 @@ namespace terminalQuickBooksTests.Fixtures
         {
             return new AuthorizationTokenDTO()
             {
-                Token = "qyprdWBJcPkkUMdjL6QTCbFeBgCWCoZFL6GJNdospSgkl4lp;;;;;;;rt7ydvD4lyI28P2igft0rMutkMUP6gr2xfVPbciv;;;;;;;1429888620"
+                Token = "lvprdLxfSv3vtByicAac86nlzDiuYnoTA5KxB5roJzCcSpbw;;;;;;;f2TY1CkAtXm1kwXGwcUTCQyiwOAKwJeAvbhLDeFw;;;;;;;1429888620"
             };
         }
         public static AuthorizationTokenDO QuickBooks_AuthTokenDO()
         {
             return new AuthorizationTokenDO()
             {
-                Token = "qyprdWBJcPkkUMdjL6QTCbFeBgCWCoZFL6GJNdospSgkl4lp;;;;;;;rt7ydvD4lyI28P2igft0rMutkMUP6gr2xfVPbciv;;;;;;;1429888620"
+                Token = "lvprdLxfSv3vtByicAac86nlzDiuYnoTA5KxB5roJzCcSpbw;;;;;;;f2TY1CkAtXm1kwXGwcUTCQyiwOAKwJeAvbhLDeFw;;;;;;;1429888620"
             };
         }
+
         public static ActivityTemplateDTO Create_Journal_Entry_ActivityTemplate()
         {
             return new ActivityTemplateDTO()

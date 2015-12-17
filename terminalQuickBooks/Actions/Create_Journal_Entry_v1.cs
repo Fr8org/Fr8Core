@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Data.Control;
-using Data.Crates;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Data.Entities;
@@ -12,13 +10,10 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
-using Intuit.Ipp.Core;
-using Intuit.Ipp.Core.Configuration;
-using Intuit.Ipp.Data;
-using Intuit.Ipp.DataService;
-using Intuit.Ipp.Diagnostics;
+using StructureMap;
 using terminalQuickBooks.Interfaces;
 using terminalQuickBooks.Services;
+using Utilities;
 using JournalEntry = terminalQuickBooks.Services.JournalEntry;
 
 namespace terminalQuickBooks.Actions
@@ -28,7 +23,7 @@ namespace terminalQuickBooks.Actions
         private  JournalEntry _journalEntry;
         public Create_Journal_Entry_v1()
         {
-            _journalEntry  = new JournalEntry();
+            _journalEntry = new JournalEntry();
         }
         public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
@@ -42,10 +37,14 @@ namespace terminalQuickBooks.Actions
         {
             if (NeedsAuthentication(authTokenDO))
                 throw new ApplicationException("No AuthToken provided.");
-            //var processPayload = await GetProcessPayload(curActionDO, containerId);
-            var processPayload = new PayloadDTO( containerId);
-            var curStandardAccountingTransactionCM = Crate.GetStorage(curActionDO).CratesOfType<StandardAccountingTransactionCM>().Single().Content;
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            //Obtain the crate of type StandardPayloadDataCM
+            var curStandardPayloadDataCrate = Crate.FromDto(processPayload.CrateStorage).CratesOfType<StandardPayloadDataCM>();
+            //Map StandardPayloadDataCM to curStandardAccountingTransactionCM crate
+            var curStandardAccountingTransactionCM = ObjectMapper.MapPayloadDataToAccountingTransactionCM(curStandardPayloadDataCrate.Single().Content);
+            //Check that all required fields exists in the crate
             CheckAccountingTransationCM(curStandardAccountingTransactionCM);
+            //Use service to create Journal Entry Object
             _journalEntry.Create(curStandardAccountingTransactionCM, authTokenDO);
             return processPayload;  
         }
@@ -130,5 +129,6 @@ namespace terminalQuickBooks.Actions
                 throw new Exception("Debit/Credit information is missing");
             }
         }
+        
     }
 }

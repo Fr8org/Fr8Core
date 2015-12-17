@@ -8,6 +8,11 @@ namespace terminalQuickBooks.Services
 {
     public class Account: IAccount
     {
+        /// <summary>
+        /// Obtains list of accounts from Quick
+        /// </summary>
+        /// <param name="authTokenDO"></param>
+        /// <returns></returns>
         public List<Intuit.Ipp.Data.Account> GetAccountList(Data.Entities.AuthorizationTokenDO authTokenDO)
         {
             var _quickBooksIntegration = new QuickBooksIntegration();

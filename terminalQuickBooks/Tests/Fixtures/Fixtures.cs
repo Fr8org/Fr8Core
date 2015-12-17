@@ -90,5 +90,49 @@ namespace terminalQuickBooks.Tests.Fixtures
             };
             return curCrate;
         }
+
+        public static StandardPayloadDataCM GetPayloadDataCM()
+        {
+            var curAccountTrans = new PayloadObjectDTO()
+            {
+                PayloadObject = new List<FieldDTO>()
+                {
+                    new FieldDTO("Name","DocuNum1"),
+                    new FieldDTO("TransactionDate","11-11-2015"),
+                    new FieldDTO("Memo","Testing Journal Entry")
+                }
+            };
+            var curFirstFinLine = new PayloadObjectDTO()
+            {
+                PayloadObject = new List<FieldDTO>()
+                {
+                    new FieldDTO("AccountName","Savings"),
+                    new FieldDTO("AccountId","1"),
+                    new FieldDTO("Amount","100"),
+                    new FieldDTO("DebitOrCredit","Debit"),
+                    new FieldDTO("Description","Move money from Savings")
+                }
+            };
+            var curSecondFinLine = new PayloadObjectDTO()
+            {
+                PayloadObject = new List<FieldDTO>()
+                {
+                    new FieldDTO("AccountName","Savings"),
+                    new FieldDTO("AccountId","1"),
+                    new FieldDTO("Amount","100"),
+                    new FieldDTO("DebitOrCredit","Credit"),
+                    new FieldDTO("Description","Move money to Savings")
+                }
+            };
+            var curPayloadObjectList = new List<PayloadObjectDTO>();
+            curPayloadObjectList.Add(curAccountTrans);
+            curPayloadObjectList.Add(curFirstFinLine);
+            curPayloadObjectList.Add(curSecondFinLine);
+            return new StandardPayloadDataCM()
+            {
+                ObjectType = "StandardPayloadDataCM",
+                PayloadObjects = curPayloadObjectList
+            };
+        }
     }
 }

@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Control;
+using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
+using terminalQuickBooks.Controllers;
 using terminalQuickBooks.Services;
 using terminalQuickBooksTests.Fixtures;
 
@@ -25,7 +27,6 @@ namespace terminalQuickBooksTests.Integration
         {
             get { return "terminalQuickBooks"; }
         }
-
         [Test, Category("Integration.terminalQuickBooks")]
         public async void Create_Journal_Entry_Configuration_Check_With_No_Upstream_Crate()
         {
@@ -69,55 +70,6 @@ namespace terminalQuickBooksTests.Integration
             Assert.AreEqual("Create a Journal Entry", curTextBlock.Label);
             Assert.AreEqual("This Action doesn't require any configuration.", curTextBlock.Value);
             Assert.AreEqual("well well-lg", curTextBlock.CssClass);
-            //var curStandardAccountTransation =
-            //    (StandardAccountingTransactionCM)
-            //        crateStorage.CrateContentsOfType<StandardAccountingTransactionCM>().Single();
-            //Assert.NotNull(curStandardAccountTransation);
-            //Assert.AreEqual("That is the test crate", curStandardAccountTransation.AccountingTransactionDTO.Memo);
-        }
-        [Test, Category("Integration.terminalQuickBooks"), Ignore]
-        public async void Create_Journal_Entry_Run_With_Upstream_Crate_Creates_Journal_Entry()
-        {
-            //Arrange
-            var configureUrl = GetTerminalConfigureUrl();
-            var runUrl = GetTerminalRunUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Create_Journal_Entry_v1_InitialConfiguration_ActionDTO();
-            var curStandAccTransCrate = HealthMonitor_FixtureData.GetAccountingTransactionCM();
-            //Generate random (almost unique) number to distiguish this Journal Entry in Sandbox
-            var randomManager= new Random();
-            var randomDocNum = randomManager.NextDouble();
-            curStandAccTransCrate.AccountingTransactionDTO.Name = randomDocNum.ToString();
-
-            AddUpstreamCrate(requestActionDTO, curStandAccTransCrate);
-            //Act
-            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(
-                    configureUrl,
-                    requestActionDTO
-                );
-            await HttpPostAsync<ActionDTO, ActionDTO>(
-                    runUrl,
-                    requestActionDTO
-                );
-            //After configuration
-            //Assert
-            Assert.NotNull(responseActionDTO);
-            Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
-            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            var curTextBlock = (TextBlock)crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
-            Assert.AreEqual("Create a Journal Entry", curTextBlock.Label);
-            Assert.AreEqual("This Action doesn't require any configuration.", curTextBlock.Value);
-            Assert.AreEqual("well well-lg", curTextBlock.CssClass);
-            //var curStandardAccountTransation =
-            //    (StandardAccountingTransactionCM)
-            //        crateStorage.CrateContentsOfType<StandardAccountingTransactionCM>().Single();
-            //Assert.NotNull(curStandardAccountTransation);
-            //Assert.AreEqual("That is the test crate", curStandardAccountTransation.AccountingTransactionDTO.Memo);
-            //After run
-            var _journalEntry = new JournalEntry();
-            var foundCrate = _journalEntry.Find(curStandAccTransCrate, HealthMonitor_FixtureData.QuickBooks_AuthTokenDO());
-            Assert.NotNull(foundCrate);
-            Assert.AreEqual(randomDocNum, foundCrate.AccountingTransactionDTO.Name);
         }
     }
 }

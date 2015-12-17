@@ -8,15 +8,6 @@ namespace terminalQuickBooks.Tests.Services
 {
     public class JournalEntryTests : BaseTest
     {
-        //private IJournalEntry _journalEntry;
-
-        //public override void SetUp()
-        //{
-        //    base.SetUp();
-
-        //    _journalEntry = ObjectFactory.GetInstance<IJournalEntry>();
-        //}
-
         [Test]
         public void JournalEntryService_ConvertsCrate_To_JouralEntry()
         {
@@ -44,14 +35,12 @@ namespace terminalQuickBooks.Tests.Services
             Assert.AreEqual(DateTime.Parse("2015-12-15"), journalEntry.TxnDate);
             Assert.AreEqual("That is the test crate", journalEntry.PrivateNote);
         }
-
         [Test]
         public void JournalEntryService_ConvertJournalEntry_To_Crate()
         {
             //Assign
             var _journalEntry=new JournalEntry();
             var curJournalEntry = Fixtures.Fixtures.CreateJournalEntry();
-            
             //Act
             var curCrate = _journalEntry.GetAccountingTransactionData(curJournalEntry);
             var curTransactionDTO = curCrate.AccountingTransactionDTO;
