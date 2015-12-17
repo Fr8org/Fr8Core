@@ -26,98 +26,68 @@ namespace terminalFr8Core.Actions
             var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
             var payloadStorage = Crate.GetStorage(curPayloadDTO);
 
-            var loopId = curActionDO.Id.ToString();
+            var actionId = curActionDO.Id.ToString();
             var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
+            //check for operations crate
             if (operationsCrate == null)
             {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "This Action can't run without OperationalStatusCM crate");
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "This Action can't run without OperationalStateCM crate");
             }
-            //set default loop index for initial state
-            var currentLoopIndex = 0;
-            var myLoop = operationsCrate.Loops.FirstOrDefault(l => l.Id == loopId);
-            if (myLoop == null)
+            
+            //find our action state in operations crate
+            var myState = operationsCrate.States.FirstOrDefault(l => l.Id == actionId);
+            if (myState == null)
             {
-                CreateLoop(curActionDO.Id.ToString(), curPayloadDTO);
+                //this is first time we are being called
+                CreatePendingState(actionId, curPayloadDTO);
+
+                //get user selected design time duration
+                var delayDuration = GetUserDefinedDelayDuration(curActionDO);
+
+                //post to hub to create an alarm
             }
             else
             {
-                currentLoopIndex = 0;
-            }
-
-            //get user selected design time values
-            var manifestType = GetSelectedCrateManifestTypeToProcess(curActionDO);
-            var label = GetSelectedLabelToProcess(curActionDO);
-
-            //find crate by user selected values
-            var crateToProcess = payloadStorage.FirstOrDefault(c => /*c.ManifestType.Type == manifestType && */c.Label == label);
-
-            if (crateToProcess == null)
-            {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + manifestType + "\" and Label: \"" + label + "\"");
-            }
-
-            Object[] dataList = null;
-
-            if (dataList == null)
-            {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find a list in specified crate with Manifest Type: \"" + manifestType + "\" and Label: \"" + label + "\"");
-            }
-
-            //check if we need to end this loop
-            if (currentLoopIndex > dataList.Length - 1)
-            {
-                BreakLoop(curActionDO.Id.ToString(), curPayloadDTO);
+                //this is second time we are being called. this means alarm has triggered
+                MarkActionAsCompleted(actionId, curPayloadDTO);
             }
 
             return curPayloadDTO;
         }
 
-        private void BreakLoop(string loopId, PayloadDTO payload)
-        {
-            using (var updater = Crate.UpdateStorage(payload))
-            {
-                var operationsData = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationsData.Loops.Single(l => l.Id == loopId).BreakSignalReceived = true;
-            }
-        }
-
-        private void CreateLoop(string loopId, PayloadDTO payload)
+        private void CreatePendingState(string actionId, PayloadDTO payload)
         {
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                var loopLevel = operationalState.Loops.Count(l => l.BreakSignalReceived == false);
-                operationalState.Loops.Add(new OperationalStateCM.LoopStatus
+                operationalState.States.Add(new OperationalStateCM.ActionStateMatch
                 {
-                    BreakSignalReceived = false,
-                    Id = loopId,
-                    Index = 0,
-                    Level = loopLevel
+                    Id = actionId,
+                    State = ActionState.Pending
                 });
             }
         }
 
-
-        private string GetSelectedCrateManifestTypeToProcess(ActionDO curActionDO)
+        private void MarkActionAsCompleted(string actionId, PayloadDTO payload)
         {
-            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
-            var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Manifests");
-            if (manifestTypeDropdown.Value == null)
+            using (var updater = Crate.UpdateStorage(payload))
             {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Loop action can't process data without a selected Manifest Type to process");
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var actionState = operationalState.States.First(s => s.Id == actionId);
+                actionState.State = ActionState.Completed;
             }
-            return manifestTypeDropdown.Value;
         }
 
-        private string GetSelectedLabelToProcess(ActionDO curActionDO)
+
+        private TimeSpan GetUserDefinedDelayDuration(ActionDO curActionDO)
         {
             var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
-            var labelDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Labels");
-            if (labelDropdown.Value == null)
+            var manifestTypeDropdown = (Duration) controlsMS.Controls.Single(x => x.Type == ControlTypes.Duration && x.Name == "Delay_Duration");
+            if (manifestTypeDropdown.Value == null)
             {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Loop action can't process data without a selected Label to process");
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Delay action can't create a delay without a selected duration on design time");
             }
-            return labelDropdown.Value;
+            return manifestTypeDropdown.Value;
         }
 
         public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)

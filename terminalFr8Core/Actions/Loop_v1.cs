@@ -35,7 +35,7 @@ namespace terminalFr8Core.Actions
             var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
             if (operationsCrate == null)
             {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "This Action can't run without OperationalStatusCM crate");
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "This Action can't run without OperationalStateCM crate");
             }
             //set default loop index for initial state
             var currentLoopIndex = 0;
