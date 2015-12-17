@@ -42,8 +42,10 @@ namespace terminalQuickBooks.Actions
         {
             if (NeedsAuthentication(authTokenDO))
                 throw new ApplicationException("No AuthToken provided.");
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            //var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var processPayload = new PayloadDTO( containerId);
             var curStandardAccountingTransactionCM = Crate.GetStorage(curActionDO).CratesOfType<StandardAccountingTransactionCM>().Single().Content;
+            CheckAccountingTransationCM(curStandardAccountingTransactionCM);
             _journalEntry.Create(curStandardAccountingTransactionCM, authTokenDO);
             return processPayload;  
         }
@@ -53,7 +55,6 @@ namespace terminalQuickBooks.Actions
             {
                 //get StandardAccountingTransactionCM
                 var upstream = await GetCratesByDirection<StandardAccountingTransactionCM>(curActionDO, CrateDirection.Upstream);
-
                 //In order to Create Journal Entry an upstream action needs to provide a StandardAccountingTransactionCM.
                 TextBlock textBlock;
                 if (upstream.Count!=0)
@@ -90,6 +91,44 @@ namespace terminalQuickBooks.Actions
                     "Configuration requires the submission of an Action that has a real ActionId");
             }
             return curActionDO;
+        }
+
+        private void CheckAccountingTransationCM(StandardAccountingTransactionCM accountingTransactionCrate)
+        {
+            if (accountingTransactionCrate == null)
+            {
+                throw new ArgumentNullException("No StandardAccountingTransationCM provided");
+            }
+            if (accountingTransactionCrate.AccountingTransactionDTO == null)
+            {
+                throw new NullReferenceException("No StandardAccountingTransationDTO inside StandardAccountingTransationCM");
+            }
+            var curAccTransactionDTO = accountingTransactionCrate.AccountingTransactionDTO;
+            
+            if (curAccTransactionDTO.FinancialLines==null || curAccTransactionDTO.TransactionDate==null)
+            {
+                throw new Exception("No Financial Lines or Transaction Date Provided");
+            }
+            foreach (var curFinLineDTO in accountingTransactionCrate.AccountingTransactionDTO.FinancialLines)
+            {
+                CheckFinancialLineDTO(curFinLineDTO);
+            }
+        }
+
+        private void CheckFinancialLineDTO(FinancialLineDTO finLineDTO)
+        {
+            if (finLineDTO.AccountId == null || finLineDTO.AccountName==null)
+            {
+                throw new Exception("Some Account Data is Missing");
+            }
+            if (finLineDTO.Amount==null)
+            {
+                throw new Exception("Amount is missing");
+            }
+            if (finLineDTO.DebitOrCredit == null)
+            {
+                throw new Exception("Debit/Credit information is missing");
+            }
         }
     }
 }

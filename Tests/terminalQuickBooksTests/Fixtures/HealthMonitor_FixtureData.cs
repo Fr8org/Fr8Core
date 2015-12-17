@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 
@@ -10,9 +11,16 @@ namespace terminalQuickBooksTests.Fixtures
 {
     class HealthMonitor_FixtureData
     {
-        public static AuthorizationTokenDTO QuickBooks_AuthToken()
+        public static AuthorizationTokenDTO QuickBooks_AuthTokenDTO()
         {
             return new AuthorizationTokenDTO()
+            {
+                Token = "qyprdWBJcPkkUMdjL6QTCbFeBgCWCoZFL6GJNdospSgkl4lp;;;;;;;rt7ydvD4lyI28P2igft0rMutkMUP6gr2xfVPbciv;;;;;;;1429888620"
+            };
+        }
+        public static AuthorizationTokenDO QuickBooks_AuthTokenDO()
+        {
+            return new AuthorizationTokenDO()
             {
                 Token = "qyprdWBJcPkkUMdjL6QTCbFeBgCWCoZFL6GJNdospSgkl4lp;;;;;;;rt7ydvD4lyI28P2igft0rMutkMUP6gr2xfVPbciv;;;;;;;1429888620"
             };
@@ -35,7 +43,7 @@ namespace terminalQuickBooksTests.Fixtures
                 Id = Guid.NewGuid(),
                 Name = "Create_Journal_Entry",
                 Label = "Create Journal Entry",
-                AuthToken = QuickBooks_AuthToken(),
+                AuthToken = QuickBooks_AuthTokenDTO(),
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
             };

@@ -16,6 +16,10 @@ using terminalQuickBooks.Interfaces;
 
 namespace terminalQuickBooks.Services
 {
+    /// <summary>
+    /// This class it the only one to communication with action
+    /// It performs authorization using DataService instanticating QuickBooksIntegration
+    /// </summary>
     public class JournalEntry : IJournalEntry
     {
         private QuickBooksIntegration _quickBooksIntegration;
@@ -103,10 +107,14 @@ namespace terminalQuickBooks.Services
                 //Pack the line to the array
                 curLineArray[i] = curLineToAdd;
             }
-
             curJournalEntry.Line = curLineArray;
             return curJournalEntry;
         }
+        /// <summary>
+        /// Creates Journal Entry in the developers account in Sandbox in Intuit https://sandbox.qbo.intuit.com/app/journal
+        /// </summary>
+        /// <param name="StandardAccountingTransactionCM"></param>
+        /// <param name="authTokenDO"></param>
         public void Create(StandardAccountingTransactionCM crate, AuthorizationTokenDO authTokenDO)
         {
             var curJournalEntry = GetJournalEntryFromCM(crate);
@@ -120,6 +128,36 @@ namespace terminalQuickBooks.Services
                 throw curException;
             }
         }
+        /// <summary>
+        /// Method is created for testing purposes
+        /// It takes cratee as an input, converts it into journal entry, looks for similar journal entries in the Sandbox,
+        /// takes first occurance from the list, and returns converted back crate object
+        /// </summary>
+        /// <param name="StandardAccountingTransactionCM"></param>
+        /// <param name="authTokenDO"></param>
+        /// <returns></returns>
+        public StandardAccountingTransactionCM Find(StandardAccountingTransactionCM crate, AuthorizationTokenDO authTokenDO)
+        {
+            var curJournalEntry = GetJournalEntryFromCM(crate);
+            var curDataService = _quickBooksIntegration.GetDataService(authTokenDO);
+            Intuit.Ipp.Data.JournalEntry resultJournalEntry;
+            try
+            {
+                 resultJournalEntry = curDataService.FindAll(curJournalEntry).ToList().First();
+                 return GetAccountingTransactionData(resultJournalEntry);
+            }
+            catch (Exception curException)
+            {
+                throw curException;
+            }
+        }
+         /// <summary>
+         /// This method is used to convert DebitOrCredit string value to PostingTypeEnum Enumerator
+         /// </summary>
+         /// <typeparam name="T"></typeparam>
+         /// <param name="value"></param>
+         /// <returns></returns>
+  
         private static T ParseEnum<T>(string value)
         {
             return (T)Enum.Parse(typeof(T), value, true);
