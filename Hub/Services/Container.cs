@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Crates;
 using Data.Interfaces.Manifests;
+using Hub.Exceptions;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
@@ -120,18 +122,105 @@ namespace Hub.Services
             return true;
         }
 
+        private ActionState? GetCurrentActionState(ContainerDO curContainerDO)
+        {
+            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
+            var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
+            var currentActionState =
+                operationalState.States.FirstOrDefault(s => s.Id == curContainerDO.CurrentRouteNode.Id.ToString());
+            if (currentActionState == null)
+            {
+                return null;
+            }
+
+            return currentActionState.State;
+        }
+
+        private Guid GetPausedRouteNodeId(ContainerDO curContainerDO)
+        {
+            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
+            var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
+            return operationalState.PausedRouteNodeId;
+        }
+
+        private bool ShouldProcessCurrentAction(ContainerDO curContainerDO)
+        {
+            //TODO should we mind other states of container?????
+            if (curContainerDO.ContainerState != ContainerState.Pending || 
+                GetPausedRouteNodeId(curContainerDO) == curContainerDO.CurrentRouteNode.Id)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private void MarkCurrentActionAsPausedAction(IUnitOfWork uow, ContainerDO curContainerDo)
+        {
+            using (var updater = _crate.UpdateStorage(() => curContainerDo.CrateStorage))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.PausedRouteNodeId = curContainerDo.CurrentRouteNode.Id;
+            }
+
+            uow.SaveChanges();
+        }
+
+        /// <summary>
+        /// For actions who don't bother with returning a state. 
+        /// We will assume those actions are completed without a problem
+        /// </summary>
+        /// <param name="uow"></param>
+        /// <param name="curContainerDo"></param>
+        private void MarkCurrentActionAsCompleted(IUnitOfWork uow, ContainerDO curContainerDo)
+        {
+            using (var updater = _crate.UpdateStorage(() => curContainerDo.CrateStorage))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.States.Add(new OperationalStateCM.ActionStateMatch
+                {
+                    Id = curContainerDo.CurrentRouteNode.Id.ToString(),
+                    State = ActionState.Completed
+                });
+            }
+
+            uow.SaveChanges();
+        }
+
+        private void ProcessCurrentActionState(IUnitOfWork uow, ContainerDO curContainerDo)
+        {
+            switch (GetCurrentActionState(curContainerDo))
+            {
+                case ActionState.Completed:
+                    //do nothing
+                    break;
+                case ActionState.Pending:
+                    MarkCurrentActionAsPausedAction(uow, curContainerDo);
+                    throw new ExecutionPausedException();
+                case null:
+                    MarkCurrentActionAsCompleted(uow, curContainerDo);
+                    break;
+                default:
+                    throw new Exception("Unknown action state on action with id " + curContainerDo.CurrentRouteNode.Id);
+            }
+        }
+
         public async Task ProcessActionTree(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             var me = curContainerDO.CurrentRouteNode;
             while(true)
             {
-                await _activity.Process(me.Id, curContainerDO);
+                //this function is called to find last action we were paused - if we were paused at all
+                if (ShouldProcessCurrentAction(curContainerDO))
+                {
+                    await _activity.Process(me.Id, curContainerDO);
+                    ProcessCurrentActionState(uow, curContainerDO);
+                }
+                
                 if (!ShouldProcessChildren(curContainerDO))
                 {
                     break;
                 }
                 await ProcessChildActions(uow, curContainerDO);
-
                 if (ActionProcessingComplete(curContainerDO))
                 {
                     break;

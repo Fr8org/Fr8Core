@@ -90,6 +90,12 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(crates);
         }
 
+        //TODO create this function
+        public Task CreateAlarm(AlarmDTO alarmDTO)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO)
         {
             var searchLabel = LabelPrefix + "_ActivityTemplate";
