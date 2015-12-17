@@ -138,7 +138,7 @@ namespace HubWeb
         private void NormalizeUrl()
         {
             // Force user to fr8.co from fr8.company (old address)
-            if (Request.Url.Host.Contains("fr8.company"))
+            if (Request.Url.Host.Contains("fr8.company") || Request.Url.Host.StartsWith("www."))
             {
                 RedirectToCanonicalUrl();
             }
