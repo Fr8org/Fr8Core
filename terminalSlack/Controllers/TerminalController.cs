@@ -27,7 +27,8 @@ namespace terminalSlack.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalSlack",
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.External
             };
 
             var monitorChannelAction = new ActivityTemplateDTO
@@ -36,7 +37,7 @@ namespace terminalSlack.Controllers
                 Label = "Monitor Channel",
                 Category = ActivityCategory.Monitors,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.External,
+                NeedsAuthentication = true,
                 Version = "1",
                 MinPaneWidth = 330
             };
@@ -48,7 +49,7 @@ namespace terminalSlack.Controllers
                 Tags = "Notifier",
                 Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.External,
+                NeedsAuthentication = true,
                 Version = "1",
                 Description = "Publish To Slack: Description",
                 MinPaneWidth = 330
@@ -65,6 +66,7 @@ namespace terminalSlack.Controllers
                 Definition = terminal,
                 Actions = result
             };
+
             return Json(curStandardFr8TerminalCM);
         }
     }

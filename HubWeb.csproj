@@ -735,6 +735,7 @@
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
     <Content Include="Scripts\app\_compiled.js" />
+    <TypeScriptCompile Include="Scripts\app\controllers\AuthenticationDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
     <Content Include="_PowerShellScripts\RunIntegrationTests.ps1" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
@@ -824,6 +825,7 @@
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <Content Include="Views\AngularTemplate\TerminalForm.cshtml" />
     <Content Include="Views\AngularTemplate\TerminalList.cshtml" />
+    <Content Include="Views\AngularTemplate\AuthenticationDialog.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -4382,19 +4384,19 @@
       $(CleanDependsOn);
       CleanBowerComponents;
     </CleanDependsOn>
-	<CleanDependsOn>
+    <CleanDependsOn>
 	  $(CleanDependsOn);
 	  RemoveCompiledJsFiles;
     </CleanDependsOn>
   </PropertyGroup>
   <Target Name="CleanBowerComponents">
-	<RemoveDir Directories="bower_components" />
+    <RemoveDir Directories="bower_components" />
   </Target>
   <Target Name="RemoveCompiledJsFiles">
     <ItemGroup>
       <_CompiledJsFiles Include="Scripts\app\**\*.js" />
     </ItemGroup>
-	<Delete Files="@(_CompiledJsFiles)" />
+    <Delete Files="@(_CompiledJsFiles)" />
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
 </Project>

@@ -46,8 +46,6 @@ namespace terminalFr8Core.Controllers
                 Label = "Filter Using Runtime Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
-                AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 330,
 				WebService = webService
@@ -59,8 +57,6 @@ namespace terminalFr8Core.Controllers
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
-                AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 380,
                 WebService = webService
@@ -72,8 +68,6 @@ namespace terminalFr8Core.Controllers
                 Label = "Add Payload Manually",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
-                AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 330,
                 WebService = webService

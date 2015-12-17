@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201512090702310_Authorization_V2_Migration"; }
+            get { return "201512170851270_Authorization_V2_Migration"; }
         }
         
         string IMigrationMetadata.Source

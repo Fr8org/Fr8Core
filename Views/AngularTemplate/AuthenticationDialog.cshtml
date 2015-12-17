@@ -1,0 +1,24 @@
+﻿<div class="modal-header">
+    Choose accounts
+</div>
+<div class="modal-body">
+    <div class="panel panel-default" ng-repeat="terminal in terminals">
+        <div class="panel-heading">
+            This route requires authentication for {{terminal.name}}
+        </div>
+        <div class="panel-body">
+            <div>
+                <button class="btn btn-default" ng-click="link">Link an account for {{terminal.name}}</button>
+            </div>
+            <div>
+                <label>
+                    <input type="checkbox" ng-model="terminal.isMain" />
+                    <span>Always use this account without asking.</span>
+                </label>
+            </div>
+            <div>
+                <button class="pull-right btn btn-primary">Use selected account</button>
+            </div>
+        </div>
+    </div>
+</div>

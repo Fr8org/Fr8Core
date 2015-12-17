@@ -132,7 +132,8 @@ namespace Hub.Services
                 }
 
                 // Try to find AuthToken if terminal requires authentication.
-                if (activityTemplate.AuthenticationType != AuthenticationType.None)
+                if (activityTemplate.NeedsAuthentication &&
+                    activityTemplate.Terminal.AuthenticationType != AuthenticationType.None)
                 {
                     // Try to get owner's account for Action -> Route.
                     // Can't follow guideline to init services inside constructor. 
@@ -181,7 +182,8 @@ namespace Hub.Services
             string username,
             string password)
         {
-            if (actionDO.ActivityTemplate.AuthenticationType == AuthenticationType.None)
+            if (actionDO.ActivityTemplate.Terminal.AuthenticationType == AuthenticationType.None
+                || !actionDO.ActivityTemplate.NeedsAuthentication)
             {
                 throw new ApplicationException("Terminal does not require authentication.");
             }
@@ -312,7 +314,8 @@ namespace Hub.Services
             Fr8AccountDO user,
             ActionDO actionDO)
         {
-            if (actionDO.ActivityTemplate.AuthenticationType == AuthenticationType.None)
+            if (actionDO.ActivityTemplate.Terminal.AuthenticationType == AuthenticationType.None
+                || !actionDO.ActivityTemplate.NeedsAuthentication)
             {
                 throw new ApplicationException("Terminal does not require authentication.");
             }
@@ -467,7 +470,8 @@ namespace Hub.Services
                     throw new NullReferenceException("Current account was not found.");
                 }
 
-                if (activityTemplate.AuthenticationType != AuthenticationType.None)
+                if (activityTemplate.Terminal.AuthenticationType != AuthenticationType.None
+                    && activityTemplate.NeedsAuthentication)
                 {
                     RemoveAuthenticationCrate(curActionDTO);
                     RemoveAuthenticationLabel(curActionDTO);
@@ -482,7 +486,7 @@ namespace Hub.Services
 
                     if (authToken == null || string.IsNullOrEmpty(authToken.Token))
                     {
-                        AddAuthenticationCrate(curActionDTO, activityTemplate.AuthenticationType);
+                        AddAuthenticationCrate(curActionDTO, activityTemplate.Terminal.AuthenticationType);
                         AddAuthenticationLabel(curActionDTO);
 
                         return true;
@@ -511,7 +515,8 @@ namespace Hub.Services
                     throw new NullReferenceException("Current account was not found.");
                 }
 
-                if (activityTemplate.AuthenticationType != AuthenticationType.None)
+                if (activityTemplate.Terminal.AuthenticationType != AuthenticationType.None
+                    && activityTemplate.NeedsAuthentication)
                 {
                     var actionDO = uow.ActionRepository.GetByKey(curActionDto.Id);
                     if (actionDO == null)
@@ -536,7 +541,7 @@ namespace Hub.Services
                     RemoveAuthenticationCrate(curActionDto);
                     RemoveAuthenticationLabel(curActionDto);
 
-                    AddAuthenticationCrate(curActionDto, activityTemplate.AuthenticationType);
+                    AddAuthenticationCrate(curActionDto, activityTemplate.Terminal.AuthenticationType);
                     AddAuthenticationLabel(curActionDto);
                 }
             }
