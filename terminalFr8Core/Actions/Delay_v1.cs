@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using AutoMapper;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
@@ -43,8 +44,9 @@ namespace terminalFr8Core.Actions
 
                 //get user selected design time duration
                 var delayDuration = GetUserDefinedDelayDuration(curActionDO);
-
+                var alarmDTO = CreateAlarm(curActionDO, containerId, delayDuration);
                 //post to hub to create an alarm
+                await HubCommunicator.CreateAlarm(alarmDTO);
             }
             else
             {
@@ -53,6 +55,18 @@ namespace terminalFr8Core.Actions
             }
 
             return curPayloadDTO;
+        }
+
+        private AlarmDTO CreateAlarm(ActionDO actionDO, Guid containerId, TimeSpan duration)
+        {
+            return new AlarmDTO
+            {
+                ActionDTO = Mapper.Map<ActionDTO>(actionDO),
+                ContainerId = containerId,
+                TerminalName = "fr8Core",
+                TerminalVersion = "v1",
+                StartTime = DateTime.UtcNow.Add(duration)
+            };
         }
 
         private void CreatePendingState(string actionId, PayloadDTO payload)
