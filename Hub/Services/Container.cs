@@ -149,9 +149,10 @@ namespace Hub.Services
             if (curContainerDO.ContainerState != ContainerState.Pending)
             {
                 return true;
-            }
+            }//container won't process already processed actions. it continues until paused action is found. this is used to create same stack before pause
             else if (GetPausedRouteNodeId(curContainerDO) == curContainerDO.CurrentRouteNode.Id)
             {
+                
                 curContainerDO.ContainerState = ContainerState.Executing;
                 return true;
             }

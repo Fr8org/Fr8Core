@@ -34,6 +34,7 @@ namespace Data.Interfaces.Manifests
             : base(MT.OperationalStatus)
         {
             Loops = new List<LoopStatus>();
+            States = new List<ActionStateMatch>();
         }
 
     }

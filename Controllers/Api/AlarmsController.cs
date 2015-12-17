@@ -28,7 +28,7 @@ namespace HubWeb.Controllers
             //TODO: Commented as part of DO - 1520. Need to rethink about this.
             //var eventController = new EventController();
             //return await eventController.ProcessIncomingEvents(alarmDTO.TerminalName, alarmDTO.TerminalVersion);
-            return null;
+            return Ok();
         }
 
         [HttpPost]
