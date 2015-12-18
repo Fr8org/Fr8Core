@@ -25,7 +25,7 @@ namespace terminalDocuSign.Actions
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            base.CheckAuthentication(authTokenDO);
+            CheckAuthentication(authTokenDO);
 
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
@@ -112,7 +112,7 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            base.CheckAuthentication(authTokenDO);
+            CheckAuthentication(authTokenDO);
 
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue;

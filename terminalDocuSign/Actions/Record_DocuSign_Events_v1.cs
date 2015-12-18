@@ -26,7 +26,7 @@ namespace terminalDocuSign.Actions
         /// <returns></returns>
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            base.CheckAuthentication(authTokenDO);
+            CheckAuthentication(authTokenDO);
 
             return await ProcessConfigurationRequest(curActionDO, x => ConfigurationRequestType.Initial,authTokenDO);
         }
@@ -113,7 +113,7 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            base.CheckAuthentication(authTokenDO);
+            CheckAuthentication(authTokenDO);
 
             var curProcessPayload = await GetProcessPayload(actionDO, containerId);
 

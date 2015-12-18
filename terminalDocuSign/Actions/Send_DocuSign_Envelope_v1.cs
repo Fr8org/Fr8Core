@@ -32,7 +32,7 @@ namespace terminalDocuSign.Actions
 
         public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            base.CheckAuthentication(authTokenDO);
+            CheckAuthentication(authTokenDO);
 
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }

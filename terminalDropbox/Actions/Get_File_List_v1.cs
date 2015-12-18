@@ -26,14 +26,14 @@ namespace terminalDropbox.Actions
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            base.CheckAuthentication(authTokenDO);
+            CheckAuthentication(authTokenDO);
 
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            base.CheckAuthentication(authTokenDO);
+            CheckAuthentication(authTokenDO);
 
             var processPayload = await GetProcessPayload(curActionDO, containerId);
 
