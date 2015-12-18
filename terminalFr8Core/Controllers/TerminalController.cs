@@ -147,7 +147,19 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Solution,
                 Terminal = terminal,
                 WebService = webService,
-                Version = "1"
+                Version = "1",
+                Type = ActivityType.Solution
+            });
+
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "Loop",
+                Label = "Fr8 Core Loop",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                Type = ActivityType.Loop
             });
 
             result.Add(new ActivityTemplateDTO()
