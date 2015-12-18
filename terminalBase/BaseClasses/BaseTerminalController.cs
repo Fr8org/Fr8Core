@@ -144,9 +144,9 @@ namespace TerminalBase.BaseClasses
                         }
                     case "run":
                         {
-                            StartAction(curTerminal, curActionPath);
+                            OnStartAction(curTerminal, activityTemplateName);
                             Task<PayloadDTO> resultPayloadDTO = (Task<PayloadDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
-                            return await resultPayloadDTO.ContinueWith((t) => CompletedAction(curTerminal));
+                            return await resultPayloadDTO.ContinueWith((t) => OnCompletedAction(curTerminal));
                         }
                     case "initialconfigurationresponse":
                         {
@@ -210,19 +210,19 @@ namespace TerminalBase.BaseClasses
                 throw;
             }
         }
-        private void StartAction(string terminalName, string actionName)
+        private void OnStartAction(string terminalName, string actionName)
         {
             _baseTerminalEvent.SendEventReport(
                 terminalName,
-                string.Format("Terminal Foo began processing this Container at {0}. Sending to Action {1}", DateTime.Now.ToString("G"), actionName));
+                string.Format("{0} began processing this Container at {1}. Sending to Action {2}", terminalName, DateTime.Now.ToString("G"), actionName));
         }
 
-        private Task CompletedAction(string terminalName)
+        private Task OnCompletedAction(string terminalName)
         {
-            return new Task(() =>
-            _baseTerminalEvent.SendEventReport(
-                terminalName,
-                string.Format("Terminal Foo completed processing this Container at {0}.", DateTime.Now.ToString("G"))));
+            return Task.Run(() =>
+             _baseTerminalEvent.SendEventReport(
+                 terminalName,
+                 string.Format("{0} completed processing this Container at {1}.", terminalName, DateTime.Now.ToString("G"))));
         }
     }
 }
