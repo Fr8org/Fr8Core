@@ -1,30 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
 using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
+using terminalDocuSign.Infrastructure;
+using terminalDocuSign.Interfaces;
 
-namespace terminalDocuSign.Infrastructure
+namespace terminalDocuSign.Services
 {
-    public class DocusignFolder
+    public class DocuSignFolder : IDocuSignFolder
     {
         private readonly DocuSignPackager _packager;
 
-        public DocusignFolder()
+        public DocuSignFolder()
         {
             _packager = new DocuSignPackager();
         }
 
-        public DocusignFolderInfo[] GetFolders(string login, string password)
+        public List<DocusignFolderInfo> GetFolders(string login, string password)
         {
             var accout = _packager.Login(login, password);
 
             return MakeRequest<FolderListResponse>("/folders", accout).Folders;
         }
 
-        public FolderItem[] Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null)
+        public List<FolderItem> Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null)
         {
             if (string.IsNullOrWhiteSpace(folderId)) throw new ArgumentNullException("folderId");
             
@@ -84,7 +87,7 @@ namespace terminalDocuSign.Infrastructure
                 }
             }
 
-            return items.ToArray();
+            return items.ToList();
         }
 
         private static T MakeRequest<T>(string queryString, DocuSignAccount account, string payload = null)
