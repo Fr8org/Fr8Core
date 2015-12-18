@@ -137,6 +137,10 @@ namespace HubWeb
         /// </summary>
         private void NormalizeUrl()
         {
+            // Ignore requests to dev
+            if (Request.Url.PathAndQuery.StartsWith("/api") || Request.Url.Host.StartsWith("dev."))
+                return;
+
             // Force user to fr8.co from fr8.company (old address)
             if (Request.Url.Host.Contains("fr8.company") || Request.Url.Host.StartsWith("www."))
             {
