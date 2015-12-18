@@ -177,18 +177,15 @@ namespace Hub.Services
 
         public async Task<string> AuthenticateInternal(
             Fr8AccountDO account,
-            ActionDO actionDO,
+            TerminalDO terminal,
             string domain,
             string username,
             string password)
         {
-            if (actionDO.ActivityTemplate.Terminal.AuthenticationType == AuthenticationType.None
-                || !actionDO.ActivityTemplate.NeedsAuthentication)
+            if (terminal.AuthenticationType == AuthenticationType.None)
             {
                 throw new ApplicationException("Terminal does not require authentication.");
             }
-
-            var terminal = actionDO.ActivityTemplate.Terminal;
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
@@ -212,18 +209,21 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionDO = uow.ActionRepository.GetByKey(actionDO.Id);
-                if (curActionDO == null)
-                {
-                    throw new ApplicationException("Could not find ActionDO by Id specified.");
-                }
-
-                var authToken = curActionDO.AuthorizationToken;
-
                 if (terminalResponseAuthTokenDTO != null)
                 {
                     var curTerminal = uow.TerminalRepository.GetByKey(terminal.Id);
                     var curAccount = uow.UserRepository.GetByKey(account.Id);
+
+                    AuthorizationTokenDO authToken = null;
+                    if (!string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalAccountId))
+                    {
+                        authToken = uow.AuthorizationTokenRepository
+                            .GetAll()
+                            .FirstOrDefault(x => x.TerminalID == curTerminal.Id
+                                && x.UserID == curAccount.Id
+                                && x.ExternalAccountId == terminalResponseAuthTokenDTO.ExternalAccountId
+                            );
+                    }
 
                     if (authToken == null)
                     {
@@ -243,8 +243,6 @@ namespace Hub.Services
                         authToken.Token = terminalResponseAuthTokenDTO.Token;
                         authToken.ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId;
                     }
-
-                    curActionDO.AuthorizationToken = authToken;
 
                     uow.SaveChanges();
 
@@ -558,6 +556,28 @@ namespace Hub.Services
                     .ToList();
 
                 return authTokens;
+            }
+        }
+
+        public void GrantToken(Guid actionId, Guid authTokenId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var action = uow.ActionRepository.GetByKey(actionId);
+                if (action == null)
+                {
+                    throw new ApplicationException("Could not find specified Action.");
+                }
+
+                var authToken = uow.AuthorizationTokenRepository.GetByKey(authTokenId);
+                if (authToken == null)
+                {
+                    throw new ApplicationException("Could not find specified AuthToken.");
+                }
+
+                action.AuthorizationToken = authToken;
+
+                uow.SaveChanges();
             }
         }
 

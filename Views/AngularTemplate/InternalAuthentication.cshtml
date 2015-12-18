@@ -1,27 +1,31 @@
-﻿<form name="form" novalidate ng-submit="submitForm()" class="internal-authenticate-form">
-    <h4>Please provide credentials for plugin authentication:</h4>
+﻿<div class="modal-header">
+    <h4 class="pull-left">Please provide credentials for plugin authentication:</h4>
+    <button class="btn btn-default pull-right" ng-click="$close()">Close</button>
+</div>
+<div class="modal-body" block-if="isLoading()">
+    <form name="form" novalidate ng-submit="submitForm()">
+        <p ng-show="authError" class="bg-warning">
+            Remote service could not authenticate you.
+        </p>
 
-    <p ng-show="authError" class="bg-warning">
-        Remote service could not authenticate you.
-    </p>
+        <p ng-show="authErrorText" class="bg-warning">
+            {{authErrorText}}
+        </p>
 
-    <p ng-show="authErrorText" class="bg-warning">
-        {{authErrorText}}
-    </p>
+        <div ng-if="showDomain == 1" class="form-group" ng-class="{ 'has-error': !form.domain.$valid }">
+            <label>Domain: </label>
+            <input type="text" class="form-control" ng-model="formData.domain" name="domain" required />
+        </div>
 
-    <div ng-if="showDomain == 1" class="form-group" ng-class="{ 'has-error': !form.domain.$valid }">
-        <label>Domain: </label>
-        <input type="text" class="form-control" ng-model="formData.domain" name="domain" required />
-    </div>
+        <div class="form-group" ng-class="{ 'has-error': !form.username.$valid }">
+            <label>User-name: </label>
+            <input type="text" class="form-control" ng-model="formData.username" name="username" required />
+        </div>
+        <div class="form-group" ng-class="{ 'has-error': !form.password.$valid }">
+            <label>Password: </label>
+            <input type="password" class="form-control" ng-model="formData.password" name="password" required />
+        </div>
 
-    <div class="form-group" ng-class="{ 'has-error': !form.username.$valid }">
-        <label>User-name: </label>
-        <input type="text" class="form-control" ng-model="formData.username" name="username" required />
-    </div>
-    <div class="form-group" ng-class="{ 'has-error': !form.password.$valid }">
-        <label>Password: </label>
-        <input type="password" class="form-control" ng-model="formData.password" name="password" required />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Authenticate</button>
-</form>
+        <button type="submit" class="btn btn-primary">Authenticate</button>
+    </form>
+</div>

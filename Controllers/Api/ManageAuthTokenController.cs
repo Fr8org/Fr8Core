@@ -111,5 +111,16 @@ namespace HubWeb.Controllers.Api
 
             return Ok(result);
         }
+
+        [HttpPost]
+        public IHttpActionResult Apply(IEnumerable<ManageAuthToken_Apply> apply)
+        {
+            foreach (var applyItem in apply)
+            {
+                Authorization.GrantToken(applyItem.ActionId, applyItem.AuthTokenId);
+            }
+
+            return Ok();
+        }
     }
 }

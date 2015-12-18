@@ -39,4 +39,13 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("terminal")]
         public ManageAuthToken_Terminal Terminal { get; set; }
     }
+
+    public class ManageAuthToken_Apply
+    {
+        [JsonProperty("actionId")]
+        public Guid ActionId { get; set; }
+
+        [JsonProperty("authTokenId")]
+        public Guid AuthTokenId { get; set; }
+    }
 }

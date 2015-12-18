@@ -31,19 +31,17 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
         {
             Fr8AccountDO account;
-            ActionDO actionDO;
+            TerminalDO terminalDO;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                actionDO = uow.ActionRepository
+                terminalDO = uow.TerminalRepository
                     .GetQuery()
-                    .Include(x => x.ActivityTemplate)
-                    .Include(x => x.ActivityTemplate.Terminal)
-                    .SingleOrDefault(x => x.Id == credentials.ActionId);
+                    .SingleOrDefault(x => x.Id == credentials.TerminalId);
 
-                if (actionDO == null)
+                if (terminalDO == null)
                 {
-                    throw new ApplicationException("ActivityTemplate was not found.");
+                    throw new ApplicationException("Terminal was not found.");
                 }
 
                 account = _security.GetCurrentAccount(uow);
@@ -51,10 +49,11 @@ namespace HubWeb.Controllers
 
             var error = await _authorization.AuthenticateInternal(
                 account,
-                actionDO,
+                terminalDO,
                 credentials.Domain,
                 credentials.Username,
-                credentials.Password);
+                credentials.Password
+            );
 
             return Ok(new { Error = error });
         }

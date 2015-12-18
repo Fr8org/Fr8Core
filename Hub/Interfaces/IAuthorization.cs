@@ -10,7 +10,7 @@ namespace Hub.Interfaces
     {
         void PrepareAuthToken(ActionDTO actionDTO);
 
-        Task<string> AuthenticateInternal(Fr8AccountDO account, ActionDO actionDO,
+        Task<string> AuthenticateInternal(Fr8AccountDO account, TerminalDO terminal,
             string domain, string username, string password);
 
         Task<string> GetOAuthToken(TerminalDO terminal, ExternalAuthenticationDTO externalAuthDTO);
@@ -26,6 +26,8 @@ namespace Hub.Interfaces
         void InvalidateToken(string userId, ActionDTO curActionDto);
 
         IEnumerable<AuthorizationTokenDO> GetAllTokens(string accountId);
+
+        void GrantToken(Guid actionId, Guid uthTokenId);
 
         void RevokeToken(string accountId, Guid authTokenId);
     }

@@ -1,8 +1,9 @@
 ﻿<div class="modal-header">
     <h4 class="pull-left">Choose accounts</h4>
-    <button class="btn btn-primary pull-right" ng-click="apply()">Apply</button>
+    <button class="btn btn-default pull-right" ng-click="$dismiss()">Close</button>
+    <button class="btn btn-primary pull-right" ng-click="apply()" ng-disabled="!isAllSelected()">Apply</button>
 </div>
-<div class="modal-body">
+<div class="modal-body" block-if="isLoading()">
     <div class="panel panel-default" ng-repeat="terminal in terminals">
         <div class="panel-heading">
             This route requires authentication for {{terminal.name}}
@@ -10,7 +11,9 @@
         <div class="panel-body">
             <div ng-repeat="authToken in terminal.authTokens">
                 <label>
-                    <input type="radio" name="terminal_{{terminal.id}}" />
+                    <input type="radio" name="terminal_{{terminal.id}}"
+                           value="{{authToken.id}}"
+                           ng-model="terminal.selectedAuthTokenId" />
                     <span ng-if="authToken.isMain">(Main) </span>
                     <span>{{authToken.externalAccountName}}</span>
                 </label>
@@ -20,7 +23,7 @@
             </div>
             <div style="margin-top: 10px;">
                 <label>
-                    <input type="checkbox" ng-model="terminal.isMain" />
+                    <input type="checkbox" ng-model="terminal.isMain" disabled />
                     <span>Always use this account without asking.</span>
                 </label>
             </div>
