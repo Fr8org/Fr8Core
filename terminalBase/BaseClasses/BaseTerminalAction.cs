@@ -558,5 +558,37 @@ namespace TerminalBase.BaseClasses
                 crate.Content.Fields.AddRange(fields);
             }
         }
+
+        protected virtual async Task<Crate> MergeUpstreamFields<TManifest>(ActionDO curActionDO, string label)
+        {
+            List<Data.Crates.Crate<TManifest>> crates = null;
+
+            try
+            {
+                //throws exception from test classes when it cannot call webservice
+                crates = await GetCratesByDirection<TManifest>(curActionDO, CrateDirection.Upstream);
+            }
+            catch { }
+
+            if (crates != null)
+            {
+                FieldDTO[] upstreamFields;
+                Crate availableFieldsCrate = null;
+                if (crates is List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>)
+                {
+                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).SelectMany(x => x.Content.Fields).ToArray();
+
+                    availableFieldsCrate =
+                        Crate.CreateDesignTimeFieldsCrate(
+                            label,
+                            upstreamFields
+                        );
+                }
+
+                return availableFieldsCrate;
+            }
+
+            return await Task.FromResult<Crate>(null);
+        }
     }
 }
