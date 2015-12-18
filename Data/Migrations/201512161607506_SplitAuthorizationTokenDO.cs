@@ -8,13 +8,11 @@ namespace Data.Migrations
         public override void Up()
         {
             CreateTable(
-                "dbo.AuthorizationTokenSecureDataLocal",
+                "dbo.EncryptedAuthorizationData",
                 c => new
                     {
                         Id = c.Guid(nullable: false),
                         Data = c.String(),
-                        LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
-                        CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -24,7 +22,7 @@ namespace Data.Migrations
         public override void Down()
         {
             AddColumn("dbo.AuthorizationTokens", "Token", c => c.String());
-            DropTable("dbo.AuthorizationTokenSecureDataLocal");
+            DropTable("dbo.EncryptedAuthorizationData");
         }
     }
 }

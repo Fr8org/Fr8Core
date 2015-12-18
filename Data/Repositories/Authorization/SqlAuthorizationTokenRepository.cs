@@ -13,7 +13,7 @@ namespace Data.Repositories
         // Declarations
         /*********************************************************************************/
 
-        private readonly IDbSet<AuthorizationTokenSecureDataLocalDO> _secureDBSet;
+        private readonly IDbSet<EncryptedAuthorizationData> _secureDBSet;
 
         /*********************************************************************************/
         // Functions
@@ -22,7 +22,7 @@ namespace Data.Repositories
         public SqlAuthorizationTokenRepository(IUnitOfWork uow) 
             : base(uow)
         {
-            _secureDBSet = _uow.Db.Set<AuthorizationTokenSecureDataLocalDO>();
+            _secureDBSet = _uow.Db.Set<EncryptedAuthorizationData>();
         }
 
         /*********************************************************************************/
@@ -37,14 +37,11 @@ namespace Data.Repositories
                 if (item != null)
                 {
                     item.Data = authorizationTokenDo.Token;
-                    item.LastUpdated = DateTime.UtcNow;
                 }
                 else
                 {
-                    _secureDBSet.Add(new AuthorizationTokenSecureDataLocalDO
+                    _secureDBSet.Add(new EncryptedAuthorizationData
                     {
-                        CreateDate = DateTime.UtcNow,
-                        LastUpdated = DateTime.UtcNow,
                         Data = authorizationTokenDo.Token,
                         Id = authorizationTokenDo.Id
                     });

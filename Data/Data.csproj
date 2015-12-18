@@ -246,7 +246,7 @@
     <Compile Include="Crates\IManifestSerializer.cs" />
     <Compile Include="Crates\ManifestDiscovery.cs" />
     <Compile Include="Crates\ManifestTypeCache.cs" />
-    <Compile Include="Entities\AuthorizationTokenSecureDataLocalDO.cs" />
+    <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\RouteNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />

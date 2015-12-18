@@ -2,7 +2,7 @@
 
 namespace Data.Entities
 {
-    public class AuthorizationTokenSecureDataLocalDO : BaseDO
+    public class EncryptedAuthorizationData 
     {
         public Guid Id
         {
