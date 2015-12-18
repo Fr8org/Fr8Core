@@ -37,7 +37,7 @@ namespace terminalGoogle.Actions
 
         public override Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            base.CheckAuthentication(authTokenDO);
+            CheckAuthentication(authTokenDO);
 
             return base.Configure(curActionDO, authTokenDO);
         }
@@ -152,7 +152,7 @@ namespace terminalGoogle.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            base.CheckAuthentication(authTokenDO);
+            CheckAuthentication(authTokenDO);
 
             var processPayload = await GetProcessPayload(curActionDO, containerId);
             var payloadFields = ExtractPayloadFields(processPayload);
