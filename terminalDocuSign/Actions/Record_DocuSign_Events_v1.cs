@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,9 +8,7 @@ using Data.Crates;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Newtonsoft.Json;
 using Hub.Managers;
-using Hub.Services;
 using StructureMap;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
@@ -29,10 +26,7 @@ namespace terminalDocuSign.Actions
         /// <returns></returns>
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            CheckAuthentication(authTokenDO);
 
             return await ProcessConfigurationRequest(curActionDO, x => ConfigurationRequestType.Initial,authTokenDO);
         }
@@ -119,10 +113,7 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            CheckAuthentication(authTokenDO);
 
             var curProcessPayload = await GetProcessPayload(actionDO, containerId);
 

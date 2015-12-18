@@ -129,8 +129,26 @@ namespace HubWeb
 #if DEBUG
             SetServerUrl(HttpContext.Current);
 #endif
-            // Force user to http if user is accessing the PROD site and it is not an API request
-            if (Request.Url.Host.Contains("fr8.co") && !Request.Url.PathAndQuery.StartsWith("/api"))
+            NormalizeUrl();
+        }
+
+        /// <summary>
+        /// Make sure that User is accessing the website using correct and secure URL
+        /// </summary>
+        private void NormalizeUrl()
+        {
+            // Ignore requests to dev and API since API clients cannot usually cannot process 301 redirects
+            if (Request.Url.PathAndQuery.StartsWith("/api") || Request.Url.Host.StartsWith("dev."))
+                return;
+
+            // Force user to fr8.co from fr8.company (old address)
+            if (Request.Url.Host.Contains("fr8.company") || Request.Url.Host.StartsWith("www."))
+            {
+                RedirectToCanonicalUrl();
+            }
+
+            // Force user to http if user is accessing the PROD site
+            if (Request.Url.Host.StartsWith("fr8.co"))
             {
                 switch (Request.Url.Scheme)
                 {
@@ -138,12 +156,17 @@ namespace HubWeb
                         Response.AddHeader("Strict-Transport-Security", "max-age=300");
                         break;
                     case "http":
-                        var path = "https://" + Request.Url.Host + Request.Url.PathAndQuery;
-                        Response.Status = "301 Moved Permanently";
-                        Response.AddHeader("Location", path);
+                        RedirectToCanonicalUrl();
                         break;
                 }
             }
+        }
+
+        private void RedirectToCanonicalUrl()
+        {
+            var path = "https://fr8.co" + Request.Url.PathAndQuery;
+            Response.Status = "301 Moved Permanently";
+            Response.AddHeader("Location", path);
         }
 
         private void SetServerUrl(HttpContext context = null)
@@ -200,7 +223,7 @@ namespace HubWeb
 
         public void Application_End()
         {
-            Logger.GetLogger().Info("Kwasant web shutting down...");
+            Logger.GetLogger().Info("fr8 web shutting down...");
 
             // This will give LE background thread some time to finish sending messages to Logentries.
             var numWaits = 3;

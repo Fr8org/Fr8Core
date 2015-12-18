@@ -2,9 +2,7 @@
 using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Data.Control;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
@@ -20,25 +18,16 @@ namespace terminalSalesforce.Actions
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            PayloadDTO processPayload = null;
+            CheckAuthentication(authTokenDO);
 
-            processPayload = await GetProcessPayload(curActionDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
-
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
 
             var accountName = ExtractControlFieldValue(curActionDO, "accountName");
             if (string.IsNullOrEmpty(accountName))
@@ -46,9 +35,7 @@ namespace terminalSalesforce.Actions
                 throw new ApplicationException("No account name found in action.");
             }
 
-
             bool result = _salesforce.CreateAccount(curActionDO, authTokenDO);
-
 
             return processPayload;
         }
