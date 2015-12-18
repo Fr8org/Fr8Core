@@ -57,6 +57,16 @@
           <Binding name="Endpoint1" endpointName="terminalDropbox" />
         </Bindings>
       </Site>
+      <Site name="terminalAtlassian" physicalDirectory="..\..\..\terminalAtlassian\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="terminalAtlassian" />
+        </Bindings>
+      </Site>
+      <Site name="terminalQuickBooks" physicalDirectory="..\..\..\terminalQuickBooks\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="terminalQuickBooks" />
+        </Bindings>
+      </Site>
     </Sites>
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
@@ -73,6 +83,8 @@
       <InputEndpoint name="terminalExcel" protocol="http" port="47011" />
       <InputEndpoint name="terminalGoogle" protocol="http" port="25923" />
       <InputEndpoint name="terminalDropbox" protocol="http" port="19760" />
+      <InputEndpoint name="terminalAtlassian" protocol="http" port="39768" />
+      <InputEndpoint name="terminalQuickBooks" protocol="http" port="48317" />
     </Endpoints>
     <Imports>
       <Import moduleName="RemoteAccess" />

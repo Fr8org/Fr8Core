@@ -513,6 +513,7 @@ namespace Data.Migrations
             AddWebService(uow, "Salesforce", "/Content/icons/web_services/salesforce-icon-64x64.png");
             AddWebService(uow, "SendGrid", "/Content/icons/web_services/sendgrid-icon-64x64.png");
             AddWebService(uow, "Dropbox", "/Content/icons/web_services/dropbox-icon-64x64.png");
+            AddWebService(uow, "Atlassian", "/Content/icons/web_services/jira-icon-64x64.png");
             AddWebService(uow, "UnknownService", "/Content/icons/web_services/unknown-service.png");
 
             foreach (var webServiceDo in uow.WebServiceRepository.GetAll())

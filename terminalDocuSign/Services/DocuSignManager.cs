@@ -5,6 +5,7 @@ using System.Web;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
+using Data.States;
 using StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -86,7 +87,8 @@ namespace terminalDocuSign.Services
                     .Select(f => new FieldDTO
                     {
                         Key = f.Name,
-                        Value = f.Value
+                        Value = f.Value,
+                        Availability = AvailabilityType.Configuration
                     });
 
                 using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
@@ -96,6 +98,29 @@ namespace terminalDocuSign.Services
                     updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", fieldCollection.ToArray()));
                 }
             }
+        }
+
+        public Crate CrateCrateFromFields(string docuSignTemplateId, DocuSignAuthDTO docuSignAuthDTO, string crateLabel)
+        {
+            if (!string.IsNullOrEmpty(docuSignTemplateId))
+            {
+                var docusignEnvelope = new DocuSignEnvelope(
+                    docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
+
+                var userDefinedFields = docusignEnvelope
+                    .GetEnvelopeDataByTemplate(docuSignTemplateId);
+
+                var fieldCollection = userDefinedFields
+                    .Select(f => new FieldDTO
+                    {
+                        Key = f.Name,
+                        Value = f.Value
+                    });
+
+                return Crate.CreateDesignTimeFieldsCrate(crateLabel, fieldCollection.ToArray());
+            }
+
+            return null;
         }
     }
 }

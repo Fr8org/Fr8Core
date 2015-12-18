@@ -12,6 +12,7 @@
         currentView: string;
         childrenActions: Array<interfaces.IActionDTO>;
         height: number = 300;
+        ordering: number;
 
         constructor(
             parentActivityId: string,
@@ -33,7 +34,8 @@
                 name: this.name,
                 label: this.label,
                 crateStorage: this.crateStorage,
-                configurationControls: this.configurationControls
+                configurationControls: this.configurationControls,
+                ordering: this.ordering
             };
         }
 
@@ -59,6 +61,7 @@
             result.name = dataObject.name;
             result.label = dataObject.label;
             result.parentRouteNodeId = dataObject.parentRouteNodeId;
+            result.ordering = dataObject.ordering;
             return result;
         }
     }

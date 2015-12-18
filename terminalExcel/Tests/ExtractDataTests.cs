@@ -63,7 +63,7 @@ namespace terminalExcel.PluginExcelTests
             
             var curActionDTO = new ActionDTO();
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
-            var result = new Load_Table_Data_v1().ConfigurationEvaluator(curActionDO);
+            var result = new Load_Excel_File_v1().ConfigurationEvaluator(curActionDO);
 
             Assert.AreEqual(result, TerminalBase.Infrastructure.ConfigurationRequestType.Initial);
         }

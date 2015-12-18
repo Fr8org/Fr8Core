@@ -60,15 +60,24 @@
     export class FieldDTO {
         public key: string;
         public value: string;
+        public availability: AvailabilityType;
+        public tags: string;
+    }
+
+    export enum AvailabilityType {
+        Configuration = 1,
+        RunTime = 2,
+        Always = 3
     }
 
     export class DropDownListItem extends FieldDTO {
-        
+        selected: boolean;
     }
 
     export class FieldSource {
         public manifestType: string;
         public label: string;
+        public filterByTag: string;
     }
 
     export class DropDownList extends ControlDefinitionDTO {
@@ -120,5 +129,11 @@
         days: number;
         hours: number;
         minutes: number;
+    }
+
+    export class UpstreamDataChooser extends ControlDefinitionDTO {
+        selectedManifest: string;
+        selectedLabel: string;
+        selectedFieldType: string;
     }
 }

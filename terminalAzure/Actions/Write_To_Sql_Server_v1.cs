@@ -104,18 +104,7 @@ namespace terminalAzure.Actions
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 
-        public object Activate(ActionDO curActionDO)
-        {
-            //not currently any requirements that need attention at Activation Time
-            return null;
-        }
-
-        public object Deactivate(ActionDO curActionDO)
-        {
-            return "Deactivated";
-        }
-
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var processPayload = await GetProcessPayload(actionDO, containerId);
 

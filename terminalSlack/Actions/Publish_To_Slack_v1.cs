@@ -4,11 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
-using Newtonsoft.Json;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
@@ -23,7 +20,6 @@ namespace terminalSlack.Actions
     public class Publish_To_Slack_v1 : BaseTerminalAction
     {
         private readonly ISlackIntegration _slackIntegration;
-
 
         public Publish_To_Slack_v1()
         {
@@ -90,7 +86,7 @@ namespace terminalSlack.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
@@ -141,23 +137,13 @@ namespace terminalSlack.Actions
                 }
             };
 
-            var fieldSelectMessageField = new DropDownList()
+            var fieldsDTO = new List<ControlDefinitionDTO>()
             {
-                Label = "Select Message Field",
-                Name = "Select_Message_Field",
-                Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available Fields",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                }
+                fieldSelectChannel,
+                new TextSource("Select Message Field", "Available Fields", "Select_Message_Field")
             };
 
-            return PackControlsCrate(fieldSelectChannel, fieldSelectMessageField);
+            return Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
 
         private Crate CreateAvailableChannelsCrate(IEnumerable<FieldDTO> channels)
@@ -180,8 +166,7 @@ namespace terminalSlack.Actions
                 .SelectMany(x => x.Content.Fields)
                 .ToArray();
 
-            var availableFieldsCrate =
-                Crate.CreateDesignTimeFieldsCrate(
+            var availableFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
                     "Available Fields",
                     curUpstreamFields
                 );

@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Crates;
+using Data.Interfaces.Manifests;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
@@ -31,44 +32,130 @@ namespace Hub.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
+        private void AddOperationalStateCrate(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+            {
+                var operationalStatus = new OperationalStateCM();
+                var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
+                updater.CrateStorage.Add(operationsCrate);
+            }
 
-        public async Task Execute(IUnitOfWork uow, ContainerDO curContainerDO)
+            uow.SaveChanges();
+        }
+
+        private RouteNodeDO GetFirstChild(RouteNodeDO routeNode)
+        {
+            var next = _activity.GetFirstChild(routeNode);
+            if (next != null && next == routeNode)
+            {
+                throw new Exception(string.Format("Cycle detected. Current activty is {0}", routeNode.Id));
+            }
+
+            return next;
+        }
+
+        private RouteNodeDO GetNextSibling(RouteNodeDO routeNode)
+        {
+            var next = _activity.GetNextSibling(routeNode);
+            if (next != null && next == routeNode)
+            {
+                throw new Exception(string.Format("Cycle detected. Current activty is {0}", routeNode.Id));
+            }
+
+            return next;
+        }
+
+        private void SetCurrentNode(IUnitOfWork uow, ContainerDO curContainerDO, RouteNodeDO curRouteNode)
+        {
+            curContainerDO.CurrentRouteNode = curRouteNode;
+            curContainerDO.CurrentRouteNodeId = curRouteNode != null ? curRouteNode.Id : (Guid?)null;
+            uow.SaveChanges();
+        }        
+
+        private async Task ProcessChildActions(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            var me = curContainerDO.CurrentRouteNode;
+            var currentChild = GetFirstChild(me);
+            while (currentChild != null)
+            {
+                SetCurrentNode(uow, curContainerDO, currentChild);
+                await ProcessActionTree(uow, curContainerDO);
+                currentChild = GetNextSibling(currentChild);
+            }
+            SetCurrentNode(uow, curContainerDO, me);
+        }
+
+        private bool ShouldLoopBreak(ContainerDO curContainerDO)
+        {
+            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
+            var operationalStatus = storage.CrateContentsOfType<OperationalStateCM>().Single();
+            if (operationalStatus.Loops.Single(l => l.Id == curContainerDO.CurrentRouteNode.Id.ToString()).BreakSignalReceived)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool ActionProcessingComplete(ContainerDO curContainerDO)
+        {
+            var curRouteNode = curContainerDO.CurrentRouteNode as ActionDO;
+            if (curRouteNode != null && curRouteNode.ActivityTemplate.Type == ActivityType.Loop && !ShouldLoopBreak(curContainerDO))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool ShouldProcessChildren(ContainerDO curContainerDO)
+        {
+            var curRouteNode = curContainerDO.CurrentRouteNode as ActionDO;
+
+            if (curRouteNode != null && curRouteNode.ActivityTemplate.Type == ActivityType.Loop && ShouldLoopBreak(curContainerDO))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task ProcessActionTree(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            var me = curContainerDO.CurrentRouteNode;
+            while(true)
+            {
+                await _activity.Process(me.Id, curContainerDO);
+                if (!ShouldProcessChildren(curContainerDO))
+                {
+                    break;
+                }
+                await ProcessChildActions(uow, curContainerDO);
+
+                if (ActionProcessingComplete(curContainerDO))
+                {
+                    break;
+                }
+            }
+        }
+
+        public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             if (curContainerDO == null)
                 throw new ArgumentNullException("ContainerDO is null");
 
+            AddOperationalStateCrate(uow, curContainerDO);
+
             if (curContainerDO.CurrentRouteNode != null)
             {
-
-                //break if CurrentActivity Is NULL, it means all activities 
-                //are processed that there is no Next Activity to set as Current Activity
-                do
-                {
-                    await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
-                    // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-                } while (MoveToTheNextActivity(uow, curContainerDO) != null);
+                await ProcessActionTree(uow, curContainerDO);
+                //to mark container as finished
+                SetCurrentNode(uow, curContainerDO, null);
             }
             else
             {
                 throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
             }
-        }
-
-        private RouteNodeDO MoveToTheNextActivity(IUnitOfWork uow, ContainerDO curContainerDo)
-        {
-            var next =  ObjectFactory.GetInstance<IRouteNode>().GetNextActivity(curContainerDo.CurrentRouteNode, null);
-
-            // very simple check for cycles
-            if (next != null && next == curContainerDo.CurrentRouteNode)
-                {
-                throw new Exception(string.Format("Cycle detected. Current activty is {0}", curContainerDo.CurrentRouteNode.Id));
-            }
-
-            curContainerDo.CurrentRouteNode = next;
-
-            uow.SaveChanges();
-
-            return next;
         }
 
         // Return the Containers of current Account

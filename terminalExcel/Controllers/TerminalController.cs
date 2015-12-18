@@ -42,7 +42,7 @@ namespace terminalExcel.Controllers
                 Name = "Load_Excel_File",
                 Label = "Load Excel File",
                 Version = "1",
-                Description = "Load Excel File: Description",
+                Description = "",
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
                 Tags = "Table Data Generator",

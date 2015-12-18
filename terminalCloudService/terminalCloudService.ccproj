@@ -28,7 +28,8 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Dev\</OutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -43,6 +44,7 @@
   <!-- Items for the project -->
   <ItemGroup>
     <ServiceDefinition Include="ServiceDefinition.csdef" />
+    <ServiceConfiguration Include="ServiceConfiguration.Release.cscfg" />
     <ServiceConfiguration Include="ServiceConfiguration.Local.cscfg" />
     <ServiceConfiguration Include="ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
@@ -104,6 +106,8 @@
     <SecondarySite Include="..\terminalPapertrail\terminalPapertrail.csproj" />
     <SecondarySite Include="..\terminalGoogle\terminalGoogle.csproj" />
     <SecondarySite Include="..\terminalDropbox\terminalDropbox.csproj" />
+    <SecondarySite Include="..\terminalAtlassian\terminalAtlassian.csproj" />
+    <SecondarySite Include="..\terminalQuickBooks\terminalQuickBooks.csproj" />
   </ItemGroup>
   <Target Name="CleanSecondarySites">
     <RemoveDir Directories="%(SecondarySite.RootDir)%(Directory)$(SecondarySitePublishDir)" />

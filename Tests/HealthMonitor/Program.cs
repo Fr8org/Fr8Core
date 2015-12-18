@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using NUnit.Core;
 
 namespace HealthMonitor
@@ -24,8 +25,31 @@ namespace HealthMonitor
             var reportBuilder = new HtmlReportBuilder();
             var htmlReport = reportBuilder.BuildReport(report);
 
+            // System.IO.File.WriteAllText("c:\\temp\\fr8-report.html", htmlReport);
+
             var reportNotifier = new TestReportNotifier();
             reportNotifier.Notify(htmlReport);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Integration tests result: {0} / {1} passed", report.Tests.Count(x => x.Success), report.Tests.Count());
+            Console.ForegroundColor = ConsoleColor.Gray;
+
+            foreach (var test in report.Tests.Where(x => !x.Success))
+            {
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("----------------------------------------");
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Integration Test Failure: {0}", test.Name);
+
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine("Message: {0}", test.Message);
+                Console.WriteLine("StackTrace: {0}", test.StackTrace);
+            }
+
+            var errorCount = report.Tests.Count(x => !x.Success);
+            Environment.Exit(errorCount);
         }
     }
 }

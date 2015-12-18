@@ -22,6 +22,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
+using Data.Infrastructure;
 
 namespace TerminalBase.BaseClasses
 {
@@ -39,6 +40,12 @@ namespace TerminalBase.BaseClasses
 
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
+
+        private static HashSet<CrateManifestType> ExcludedManifestTypes = new HashSet<CrateManifestType>()
+        {
+            ManifestDiscovery.Default.GetManifestType<StandardConfigurationControlsCM>(),
+            ManifestDiscovery.Default.GetManifestType<EventSubscriptionCM>()
+        };
 
         public BaseTerminalAction()
         {
@@ -155,6 +162,18 @@ namespace TerminalBase.BaseClasses
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 
+        public virtual async Task<ActionDO> Activate(ActionDO curActionDO)
+        {
+            //Returns Task<ActivityDTO> using FromResult as the return type is known
+            return await Task.FromResult<ActionDO>(curActionDO);
+        }
+
+        public virtual async Task<ActionDO> Deactivate(ActionDO curActionDO)
+        {
+            //Returns Task<ActivityDTO> using FromResult as the return type is known
+            return await Task.FromResult<ActionDO>(curActionDO);
+        }
+
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
         protected virtual async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
@@ -170,6 +189,12 @@ namespace TerminalBase.BaseClasses
             // return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
         }
 
+        //wrapper for support test method
+        public async virtual Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction)
+        {
+            return await HubCommunicator.GetCratesByDirection(actionDO, direction);
+        }
+
         public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActionDO actionDO, CrateDirection direction)
         {
             //1) Build a merged list of the upstream design fields to go into our drop down list boxes
@@ -182,6 +207,34 @@ namespace TerminalBase.BaseClasses
             mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);
 
             return mergedFields;
+        }
+
+        public async virtual Task<List<CrateManifestType>> BuildUpstreamManifestList(ActionDO actionDO)
+        {
+            var upstreamCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream);
+            return upstreamCrates.Where(x => !ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.ManifestType).Distinct().ToList();
+        }
+
+        public async virtual Task<List<String>> BuildUpstreamCrateLabelList(ActionDO actionDO)
+        {
+            var curCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream);
+            return curCrates.Where(x => !ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.Label).Distinct().ToList();
+        }
+
+        public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamManifestListCrate(ActionDO actionDO)
+        {
+            var manifestList = (await BuildUpstreamManifestList(actionDO));
+            var fields = manifestList.Select(f => new FieldDTO(f.Id.ToString(), f.Type)).ToArray();
+
+            return Crate.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", fields);
+        }
+
+        public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamCrateLabelListCrate(ActionDO actionDO)
+        {
+            var labelList = (await BuildUpstreamCrateLabelList(actionDO));
+            var fields = labelList.Select(f => new FieldDTO(null, f)).ToArray();
+
+            return Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
         }
 
         public StandardDesignTimeFieldsCM MergeContentFields(List<Crate<StandardDesignTimeFieldsCM>> curCrates)
@@ -340,10 +393,13 @@ namespace TerminalBase.BaseClasses
         /// Extract value from RadioButtonGroup or TextSource where specific value or upstream field was specified.
         /// </summary>
         protected string ExtractSpecificOrUpstreamValue(
-            CrateStorage designTimeCrateStorage,
-            CrateStorage runTimeCrateStorage,
-            string controlName)
+           ActionDO actionDO,
+           PayloadDTO processPayload,
+           string controlName)
         {
+            var designTimeCrateStorage = Crate.GetStorage(actionDO.CrateStorage);
+            var runTimeCrateStorage = Crate.FromDto(processPayload.CrateStorage);
+
             var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var control = controls.Controls.SingleOrDefault(c => c.Name == controlName);
 
@@ -351,7 +407,7 @@ namespace TerminalBase.BaseClasses
             {
                 // Get value from a combination of RadioButtonGroup, TextField and DDLB controls
                 // (old approach prior to TextSource) 
-                return ExtractSpecificOrUpstreamValueLegacy((RadioButtonGroup)control, runTimeCrateStorage);
+                return ExtractSpecificOrUpstreamValueLegacy((RadioButtonGroup)control, runTimeCrateStorage, actionDO);
             }
 
             if (control as TextSource == null)
@@ -367,14 +423,14 @@ namespace TerminalBase.BaseClasses
                     return textSourceControl.Value;
 
                 case "upstream":
-                    return ExtractFieldValue(runTimeCrateStorage, textSourceControl.selectedKey);
+                    return ExtractPayloadFieldValue(runTimeCrateStorage, textSourceControl.selectedKey, actionDO);
 
                 default:
                     throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
             }
         }
 
-        private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroup radioButtonGroupControl, CrateStorage runTimeCrateStorage)
+        private string ExtractSpecificOrUpstreamValueLegacy(RadioButtonGroup radioButtonGroupControl, CrateStorage runTimeCrateStorage, ActionDO curAction)
         {
             var radioButton = radioButtonGroupControl
                 .Radios
@@ -395,7 +451,7 @@ namespace TerminalBase.BaseClasses
 
                 case "upstream":
                     var recipientField = radioButton.Controls[0];
-                    returnValue = ExtractFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value);
+                    returnValue = ExtractPayloadFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value, curAction);
                     break;
 
                 default:
@@ -408,7 +464,7 @@ namespace TerminalBase.BaseClasses
         /// Extracts crate with specified label and ManifestType = Standard Design Time,
         /// then extracts field with specified fieldKey.
         /// </summary>
-        protected string ExtractFieldValue(CrateStorage crateStorage, string fieldKey)
+        protected string ExtractPayloadFieldValue(CrateStorage crateStorage, string fieldKey, ActionDO curAction)
         {
             var fieldValues = crateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(fieldKey))
                 .Where(s => !string.IsNullOrEmpty(s))
@@ -416,6 +472,9 @@ namespace TerminalBase.BaseClasses
 
             if (fieldValues.Length > 0)
                 return fieldValues[0];
+
+            var reporter = new IncidentReporter();
+            reporter.IncidentMissingFieldInPayload(fieldKey, curAction.Name, curAction.Id.ToString());
 
             throw new ApplicationException("No field found with specified key.");
         }
@@ -498,6 +557,38 @@ namespace TerminalBase.BaseClasses
                 crate.Content.Fields.Clear();
                 crate.Content.Fields.AddRange(fields);
             }
+        }
+
+        protected virtual async Task<Crate> MergeUpstreamFields<TManifest>(ActionDO curActionDO, string label)
+        {
+            List<Data.Crates.Crate<TManifest>> crates = null;
+
+            try
+            {
+                //throws exception from test classes when it cannot call webservice
+                crates = await GetCratesByDirection<TManifest>(curActionDO, CrateDirection.Upstream);
+            }
+            catch { }
+
+            if (crates != null)
+            {
+                FieldDTO[] upstreamFields;
+                Crate availableFieldsCrate = null;
+                if (crates is List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>)
+                {
+                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).SelectMany(x => x.Content.Fields).ToArray();
+
+                    availableFieldsCrate =
+                        Crate.CreateDesignTimeFieldsCrate(
+                            label,
+                            upstreamFields
+                        );
+                }
+
+                return availableFieldsCrate;
+            }
+
+            return await Task.FromResult<Crate>(null);
         }
     }
 }
