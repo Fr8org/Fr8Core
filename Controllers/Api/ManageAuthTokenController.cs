@@ -94,6 +94,7 @@ namespace HubWeb.Controllers.Api
                                 AuthenticationType = action.ActivityTemplate.Terminal.AuthenticationType,
                                 AuthTokens = authTokens
                                     .Where(x => x.TerminalID == action.ActivityTemplate.Terminal.Id)
+                                    .Where(x => !string.IsNullOrEmpty(x.ExternalAccountId))
                                     .Select(x => new ManageAuthToken_AuthToken()
                                     {
                                          Id = x.Id,

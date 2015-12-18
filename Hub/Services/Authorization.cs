@@ -310,15 +310,12 @@ namespace Hub.Services
 
         public async Task<ExternalAuthUrlDTO> GetOAuthInitiationURL(
             Fr8AccountDO user,
-            ActionDO actionDO)
+            TerminalDO terminal)
         {
-            if (actionDO.ActivityTemplate.Terminal.AuthenticationType == AuthenticationType.None
-                || !actionDO.ActivityTemplate.NeedsAuthentication)
+            if (terminal.AuthenticationType == AuthenticationType.None)
             {
                 throw new ApplicationException("Terminal does not require authentication.");
             }
-
-            var terminal = actionDO.ActivityTemplate.Terminal;
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
@@ -330,13 +327,13 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionDO = uow.ActionRepository.GetByKey(actionDO.Id);
-                if (curActionDO == null)
-                {
-                    throw new ApplicationException("Could not find ActionDO by Id specified.");
-                }
-
-                var authToken = curActionDO.AuthorizationToken;
+                var authToken = uow.AuthorizationTokenRepository
+                    .GetAll()
+                    .FirstOrDefault(x => x.TerminalID == terminal.Id
+                        && x.UserID == user.Id
+                        && x.ExternalAccountId == null
+                        && x.ExternalStateToken != null
+                    );
 
                 if (authToken == null)
                 {
@@ -359,8 +356,6 @@ namespace Hub.Services
                     authToken.Token = null;
                     authToken.ExternalStateToken = externalAuthUrlDTO.ExternalStateToken;
                 }
-
-                curActionDO.AuthorizationToken = authToken;
 
                 uow.SaveChanges();
             }

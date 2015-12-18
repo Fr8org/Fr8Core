@@ -15,7 +15,7 @@ namespace Hub.Interfaces
 
         Task<string> GetOAuthToken(TerminalDO terminal, ExternalAuthenticationDTO externalAuthDTO);
 
-        Task<ExternalAuthUrlDTO> GetOAuthInitiationURL(Fr8AccountDO user, ActionDO actionDO);
+        Task<ExternalAuthUrlDTO> GetOAuthInitiationURL(Fr8AccountDO user, TerminalDO terminal);
 
         void AddAuthenticationCrate(ActionDTO actionDTO, int authType);
 

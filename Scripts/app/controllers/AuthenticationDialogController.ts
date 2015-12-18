@@ -16,6 +16,7 @@
         public static $inject = [
             '$scope',
             '$http',
+            '$window',
             '$modal',
             'urlPrefix'
         ];
@@ -23,6 +24,7 @@
         constructor(
             private $scope: IAuthenticationDialogScope,
             private $http: ng.IHttpService,
+            private $window: ng.IWindowService,
             private $modal: any,
             private urlPrefix: string
             ) {
@@ -31,8 +33,11 @@
             var _loading = false;
 
             $scope.linkAccount = function (terminal) {
-                if (terminal.authenticationType === 2) {
+                if (terminal.authenticationType === 2 || terminal.authenticationType === 4) {
                     _authenticateInternal(terminal);
+                }
+                else if (terminal.authenticationType === 3) {
+                    _authenticateExternal(terminal);
                 }
             };
 
@@ -97,6 +102,38 @@
                 })
                 .result
                 .then(() => _reloadTerminals());
+            };
+
+            var _authenticateExternal = function (terminal: model.ManageAuthToken_TerminalDTO) {
+                var self = this;
+                var childWindow;
+                
+                var messageListener = function (event) {
+                    if (!event.data || event.data != 'external-auth-success') {
+                        return;
+                    }
+                
+                    childWindow.close();
+                    _reloadTerminals();
+                };
+                
+                $http
+                    .get('/api/authentication/initial_url?id=' + terminal.id)
+                    .then(res => {
+                        var url = (<any>res.data).url;
+                        childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
+                        window.addEventListener('message', messageListener);
+                
+                        var isClosedHandler = function () {
+                            if (childWindow.closed) {
+                                window.removeEventListener('message', messageListener);
+                            }
+                            else {
+                                setTimeout(isClosedHandler, 500);
+                            }
+                        };
+                        setTimeout(isClosedHandler, 500);
+                    });
             };
 
             var _reloadTerminals = function () {

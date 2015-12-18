@@ -62,28 +62,26 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [ActionName("initial_url")]
         public async Task<IHttpActionResult> GetOAuthInitiationURL(
-            [FromUri(Name = "id")] Guid actionId)
+            [FromUri(Name = "id")] int terminalId)
         {
             Fr8AccountDO account;
-            ActionDO actionDO;
+            TerminalDO terminal;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                actionDO = uow.ActionRepository
+                terminal = uow.TerminalRepository
                     .GetQuery()
-                    .Include(x => x.ActivityTemplate)
-                    .Include(x => x.ActivityTemplate.Terminal)
-                    .SingleOrDefault(x => x.Id == actionId);
+                    .SingleOrDefault(x => x.Id == terminalId);
 
-                if (actionDO == null)
+                if (terminal == null)
                 {
-                    throw new ApplicationException("ActionDO was not found.");
+                    throw new ApplicationException("Terminal was not found.");
                 }
 
                 account = _security.GetCurrentAccount(uow);
             }
 
-            var externalAuthUrlDTO = await _authorization.GetOAuthInitiationURL(account, actionDO);
+            var externalAuthUrlDTO = await _authorization.GetOAuthInitiationURL(account, terminal);
             return Ok(new { Url = externalAuthUrlDTO.Url });
         }
     }
