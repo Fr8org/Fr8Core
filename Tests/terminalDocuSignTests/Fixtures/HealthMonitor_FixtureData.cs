@@ -163,6 +163,31 @@ namespace terminalDocuSignTests.Fixtures
             };
         }
 
+        public static ActivityTemplateDTO Rich_Document_Notifications_v1_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 7,
+                Name = "Rich_Document_Notifications_TEST",
+                Version = "1"
+            };
+        }
+
+        public static ActionDTO Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = Rich_Document_Notifications_v1_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Rich_Document_Notifications",
+                Label = "Rich Document Notifications",
+                AuthToken = DocuSign_AuthToken(),
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
         public static ActivityTemplateDTO Extract_Data_From_Envelopes_v1_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
@@ -206,7 +231,7 @@ namespace terminalDocuSignTests.Fixtures
             {
                 Id = 5,
                 Name = "Send_DocuSign_Envelope",
-                Label= "Send DocuSign Envelope",
+                Label = "Send DocuSign Envelope",
                 Version = "1",
                 Category = Data.States.ActivityCategory.Forwarders
             };

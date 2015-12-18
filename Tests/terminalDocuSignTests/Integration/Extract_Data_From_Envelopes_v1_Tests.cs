@@ -18,7 +18,7 @@ namespace terminalDocuSignTests.Integration
 {
     [Explicit]
     [Category("terminalDocuSignTests.Integration")]
-    class Extract_Data_From_Envelopes_v1_Tests : BaseHealthMonitorTest
+    public class Extract_Data_From_Envelopes_v1_Tests : BaseHealthMonitorTest
     {
         public override string TerminalName
         {
