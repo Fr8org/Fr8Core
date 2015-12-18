@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -24,10 +25,6 @@ namespace terminalFr8Core.Actions
     {
         private const string FirstIntegerRegexPattern = "\\d+";
 
-        public ConvertRelatedFieldsIntoTable_v1()
-        {
-        }
-
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
@@ -35,13 +32,33 @@ namespace terminalFr8Core.Actions
         {
             var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
             var storage = Crate.GetStorage(curPayloadDTO);
-            //TODO: filter out crates by using UpstreamDataChooser
+
+            var designTimeStorage = Crate.GetStorage(curActionDO);
+            var designTimeControls = designTimeStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+            var upstreamDataChooser = (UpstreamDataChooser)designTimeControls.Controls.Single(x => x.Type == ControlTypes.UpstreamDataChooser && x.Name == "Upstream_data_chooser");
+            
+            var filteredCrates = storage.Where(s => true);
+            //add filtering according to upstream data chooser
+            if (upstreamDataChooser.SelectedManifest != null)
+            {
+                filteredCrates = filteredCrates.Where(s => s.ManifestType.Type == upstreamDataChooser.SelectedManifest);
+            }
+            if (upstreamDataChooser.SelectedLabel != null)
+            {
+                filteredCrates = filteredCrates.Where(s => s.Label == upstreamDataChooser.SelectedLabel);
+            }
+            //not sure what to do with this
+            if (upstreamDataChooser.SelectedFieldType != null)
+            {
+                //filteredCrates = filteredCrates.Where(s => s.?? == upstreamDataChooser.SelectedFieldType);
+            }
 
             var prefixValue = GetRowPrefix(curActionDO);
             
             
             var matchRegex = new Regex("^(" + prefixValue + ")[0-9]+");
-
+            
+            //TODO get data based on what????
             var rows = storage.CratesOfType<StandardPayloadDataCM>() //get payload data
                 .Select(p => p.Content)
                 .SelectMany(p => p.PayloadObjects)
@@ -90,8 +107,39 @@ namespace terminalFr8Core.Actions
             return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authToken);
         }
 
+        private async Task<Crate> GetUpstreamManifestTypes(ActionDO curActionDO)
+        {
+            var upstreamCrates = await GetCratesByDirection(curActionDO, CrateDirection.Upstream);
+            var manifestTypeOptions = upstreamCrates.GroupBy(c => c.ManifestType).Select(c => new FieldDTO(c.Key.Type, c.Key.Type));
+            var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", manifestTypeOptions.ToArray());
+            return queryFieldsCrate;
+        }
+
+        private async Task<List<FieldDTO>> GetLabelsByManifestType(ActionDO curActionDO, string manifestType)
+        {
+            var upstreamCrates = await GetCratesByDirection(curActionDO, CrateDirection.Upstream);
+            return upstreamCrates
+                    .Where(c => c.ManifestType.Type == manifestType)
+                    .GroupBy(c => c.Label)
+                    .Select(c => new FieldDTO(c.Key, c.Key)).ToList();
+        }
+
         private Crate PackCrate_ConfigurationControls()
         {
+            var actionExplanation = new TextBlock()
+            {
+                Label = "This Action converts Unstructured Field data from Upstream to Standard Table data that can be more effectively manipulated.",
+                Name = "Field_Explanation",
+            };
+            var upstreamDataChooser = new UpstreamDataChooser
+            {
+                Name = "Upstream_data_chooser",
+                Label = "Please select data type",
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onChange", "requestConfig")
+                }
+            };
             var fieldSelectPrefix = new TextBox()
             {
                 Label = "All field data that starts with the prefix",
@@ -102,7 +150,6 @@ namespace terminalFr8Core.Actions
                     new ControlEvent("onChange", "requestConfig")
                 }
             };
-
             var fieldExplanation = new TextBlock()
             {
                 Label = "followed by an integer will be grouped into a Table Row. Example field name: 'Line3_TravelExpense",
@@ -110,7 +157,7 @@ namespace terminalFr8Core.Actions
             };
 
 
-            return PackControlsCrate(fieldSelectPrefix, fieldExplanation);
+            return PackControlsCrate(actionExplanation, upstreamDataChooser, fieldSelectPrefix, fieldExplanation);
         }
 
         /// <summary>
@@ -136,6 +183,7 @@ namespace terminalFr8Core.Actions
                 using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
                 {
                     updater.CrateStorage = AssembleCrateStorage(/*queryFieldsCrate, */configurationControlsCrate);
+                    updater.CrateStorage.Add(await GetUpstreamManifestTypes(curActionDO));
                 }
             }
             else
@@ -147,6 +195,25 @@ namespace terminalFr8Core.Actions
         }
 
 
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+            var upstreamDataChooser = (UpstreamDataChooser)controlsMS.Controls.Single(x => x.Type == ControlTypes.UpstreamDataChooser && x.Name == "Upstream_data_chooser");
+
+            if (upstreamDataChooser.SelectedManifest != null)
+            {
+                var labelList = await GetLabelsByManifestType(curActionDO, upstreamDataChooser.SelectedManifest);
+
+                using (var updater = Crate.UpdateStorage(curActionDO))
+                {
+                    updater.CrateStorage.RemoveByLabel("Upstream Crate Label List");
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Upstream Crate Label List", new StandardDesignTimeFieldsCM() { Fields = labelList }));
+                }
+            }
+
+            return curActionDO;
+        }
+
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDataPackageDO)
         {
             if (Crate.IsStorageEmpty(curActionDataPackageDO))
@@ -156,7 +223,9 @@ namespace terminalFr8Core.Actions
             var storage = Crate.GetStorage(curActionDataPackageDO);
             var hasControlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls").Any();
 
-            if (hasControlsCrate)
+            var hasManifestTypeList = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Manifest Type List").Any();
+
+            if (hasControlsCrate && hasManifestTypeList)
             {
                 return ConfigurationRequestType.Followup;
             }
