@@ -91,7 +91,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public override Task<ActionDO> Activate(ActionDO curActionDO)
+        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             DocuSignAccount docuSignAccount = new DocuSignAccount();
             ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
