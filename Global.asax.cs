@@ -137,7 +137,7 @@ namespace HubWeb
         /// </summary>
         private void NormalizeUrl()
         {
-            // Ignore requests to dev and API since API clients cannot usually cannot process 301 redirects
+            // Ignore requests to dev and API since API clients usually cannot process 301 redirects
             if (Request.Url.PathAndQuery.StartsWith("/api") || Request.Url.Host.StartsWith("dev."))
                 return;
 
