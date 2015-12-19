@@ -12,48 +12,36 @@
 <div ng-controller="RouteBuilderController" class="margin-top-10" block-if="isBusy()" stop-click-propagation>
     <designer-header route="current.route"></designer-header>
     <div class="route-builder-container" layout-container>
-        <div ng-if="mode !== 'solution'" ng-repeat="group in actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
-            <div class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
-            <div>
-                <div class="action" ng-class="{'solution-action': action.activityTemplate.category==='Solution'  && mode !== 'Solution'}" layout-action ng-repeat-start="action in group.actions" ng-style="{'width' : action.activityTemplate.minPaneWidth || 330 + 'px'}">
-                    <div class="action-header solution-action-header" dropdown transfer-click-configure-pane>
-                        <p class="action-name">
-                            {{action.label}}
-                        </p>
-                        <a class="action-menu" dropdown-toggle stop-click-propagation>
-                            <i class="fa fa-gear fa-5x"></i>
-                        </a>
-                        <ul class="dropdown-menu pull-right" role="menu" stop-click-propagation>
-                            <li role="menuitem">
-                                <a ng-click="deleteAction(action);">
-                                    <i class="fa fa-trash-o"></i>
-                                    Delete
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <pane-configure-action id="paneConfigureAction" current-action="action"></pane-configure-action>
-                </div>
-                <div class="action-arrow-right" ng-repeat-end></div>
-
-                <div class="action-to-add" ng-click="addAction()">
-                    <p class="action-name">Click to add action</p>
-                </div>
-            </div>
-        </div>
-        <div ng-if="mode==='solution'" ng-controller="SolutionController" class="margin-top-10">
-            <div class="row">
-                <div class="col-md-12 col-sm-12">
-                    <div class="action" ng-style="{'width' : action.activityTemplate.minPaneWidth || 330 + 'px'}" block-if="processing === true">
-                        <div class="action-header">
+        <div ng-repeat="group in actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
+            <div ng-if="mode !== 'solution' || $index === 0">
+                <div class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
+                <div>
+                    <div class="action" ng-class="{'solution-action': action.activityTemplate.category==='Solution' && mode !== 'solution'}" layout-action ng-repeat-start="action in group.actions" ng-style="{'width' : action.activityTemplate.minPaneWidth || 330 + 'px'}">
+                        <div class="action-header solution-action-header" dropdown transfer-click-configure-pane ng-if="mode !== 'solution' || $index === 0">
                             <p class="action-name">
-                                {{action.activityTemplate.label || 'Loading Solution...'}}
+                                {{action.label}}
                             </p>
+                            <a class="action-menu" dropdown-toggle stop-click-propagation>
+                                <i class="fa fa-gear fa-5x"></i>
+                            </a>
+                            <ul class="dropdown-menu pull-right" role="menu" stop-click-propagation>
+                                <li role="menuitem">
+                                    <a ng-click="deleteAction(action);">
+                                        <i class="fa fa-trash-o"></i>
+                                        Delete
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
-                        <pane-configure-action id="paneConfigureAction" current-action="action" mode="Solution"></pane-configure-action>
+                        <pane-configure-action id="paneConfigureAction" current-action="action" mode="mode"></pane-configure-action>
+                    </div>
+                    <div class="action-arrow-right" ng-repeat-end></div>
+
+                    <div class="action-to-add" ng-click="addAction()">
+                        <p class="action-name">Click to add action</p>
                     </div>
                 </div>
-            </div>
+             </div>
         </div>
     </div>
     <!-- END MAIN CONTENT -->

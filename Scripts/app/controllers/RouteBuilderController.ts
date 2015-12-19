@@ -13,7 +13,7 @@ module dockyard.controllers {
     }
 
     export interface IRouteBuilderScope extends ng.IScope {
-        routeId: number;
+        routeId: string;
         subroutes: Array<model.SubrouteDTO>;
         fields: Array<model.Field>;
         currentSubroute: model.SubrouteDTO;
@@ -30,6 +30,7 @@ module dockyard.controllers {
         selectAction(action): void;
         isBusy: () => boolean;
         mode: string;
+        solutionName: string;
     }
 
     //Setup aliases
@@ -77,13 +78,10 @@ module dockyard.controllers {
             private LayoutService: services.ILayoutService
             ) {
 
-            this.$scope.routeId = $state.params.id;
             this.$scope.current = new model.RouteBuilderState();
             this.$scope.actionGroups = [];
-            this.$scope.mode = $state.current.data.mode;
 
             this.setupMessageProcessing();
-            $timeout(() => this.loadRoute(), 500, true);
 
             this.$scope.addAction = () => {
                 this.addAction();
@@ -102,6 +100,44 @@ module dockyard.controllers {
                     this.selectAction(action);
             }
 
+            this.processState($state);
+        }
+
+        private processState($state: ngState) {
+            if ($state.params.solutionName) {
+                var isGuid = /\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/.test($state.params.solutionName);
+                if (isGuid) {
+                    this.$scope.routeId = $state.params.solutionName;
+                } else {
+                    return this.createNewSolution($state.params.solutionName);
+                }
+            } else {
+                this.$scope.routeId = $state.params.id;
+            }
+
+            this.loadRoute();
+        }
+
+        private createNewSolution(solutionName: string) {
+            var route = this.ActionService.createSolution({
+                solutionName: solutionName
+            });
+            route.$promise.then((curRoute: interfaces.IRouteVM) => {
+                this.$scope.routeId = curRoute.id;
+                this.onRouteLoad('solution', curRoute);
+            });
+        }
+
+        private loadRoute(mode = 'route') {
+            var routePromise = this.RouteService.getFull({ id: this.$scope.routeId });
+            routePromise.$promise.then(this.onRouteLoad.bind(this, mode));
+        }
+
+        private onRouteLoad(mode: string, curRoute: interfaces.IRouteVM) {
+            this.$scope.mode = mode;
+            this.$scope.current.route = curRoute;
+            this.$scope.currentSubroute = curRoute.subroutes[0];
+            this.renderRoute(curRoute);
         }
 
         /*
@@ -132,16 +168,9 @@ module dockyard.controllers {
 
             this.$scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation],
                 (event: ng.IAngularEvent, eventArgs: pwd.LongRunningOperationEventArgs) => this.PaneWorkflowDesigner_LongRunningOperation(eventArgs));
-        }
 
-        private loadRoute() {
-            var routePromise = this.RouteService.getFull({ id: this.$scope.routeId });
-            var self = this;
-            routePromise.$promise.then((curRoute: interfaces.IRouteVM) => {
-                this.$scope.current.route = curRoute;
-                this.$scope.currentSubroute = curRoute.subroutes[0];
-                this.renderRoute(curRoute);
-            });
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_SetSolutionMode], () => this.PaneConfigureAction_SetSolutionMode());
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsDetected], () => this.PaneConfigureAction_ChildActionsDetected());
         }
 
         private renderRoute(curRoute: interfaces.IRouteVM) {
@@ -195,7 +224,7 @@ module dockyard.controllers {
         }
 
         private reloadRoute() {
-            this.$scope.actionGroups = [];
+            //this.$scope.actionGroups = [];
             this.$scope.current = new model.RouteBuilderState();
             this.loadRoute();
         }
@@ -372,6 +401,14 @@ module dockyard.controllers {
             if (this._longRunningActionsCounter < 0) {
                 this._longRunningActionsCounter = 0;
             }
+        }
+
+        private PaneConfigureAction_SetSolutionMode() {
+            this.loadRoute('solution');
+        }
+
+        private PaneConfigureAction_ChildActionsDetected() {
+            this.loadRoute();
         }
     }
     app.controller('RouteBuilderController', RouteBuilderController);
