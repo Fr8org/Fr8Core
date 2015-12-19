@@ -13,6 +13,15 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_SetSolutionMode
     }
 
+    export class ActionReconfigureEventArgs {
+        public action: interfaces.IActionDTO
+
+        constructor(action: interfaces.IActionDTO) {
+            // Clone Action to prevent any issues due to possible mutation of source object
+            this.action = angular.extend({}, action);
+        }
+    }
+
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
 
     export class InternalAuthenticationArgs {
@@ -134,8 +143,18 @@ module dockyard.directives.paneConfigureAction {
                 $scope.processConfiguration = processConfiguration;
                 $scope.setSolutionMode = setSolutionMode;
 
-                $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], () => {
-                    loadConfiguration();
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
+                    //this might be a general reconfigure command
+                    //TODO there shouldn't be a general reconfigure command - we should check it's usage and remove it - note by bahadir
+                    if (reConfigureActionEventArgs === null || typeof reConfigureActionEventArgs === 'undefined') {
+                        loadConfiguration();
+                        return;
+                    }
+
+                    if (reConfigureActionEventArgs.action.id === $scope.currentAction.id) {
+                        loadConfiguration();
+                    }
+
                 });
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_ReloadAction], (event: ng.IAngularEvent, reloadActionEventArgs: ReloadActionEventArgs) => {
