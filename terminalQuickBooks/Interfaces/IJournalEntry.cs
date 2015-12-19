@@ -11,8 +11,8 @@ namespace terminalQuickBooks.Interfaces
 {
     public interface IJournalEntry
     {
-        StandardAccountingTransactionCM GetAccountingTransactionData(Intuit.Ipp.Data.JournalEntry journalEntry);
-        Intuit.Ipp.Data.JournalEntry GetJournalEntryFromCM(StandardAccountingTransactionCM crate);
-        void Create(StandardAccountingTransactionCM curStandardAccountingTransactionCm, AuthorizationTokenDO authTokenDo);
+        StandardAccountingTransactionDTO GetAccountingTransactionData(Intuit.Ipp.Data.JournalEntry journalEntry);
+        Intuit.Ipp.Data.JournalEntry GetJournalEntryFromCM(StandardAccountingTransactionDTO crate);
+        void Create(StandardAccountingTransactionDTO curStandardAccountingTransactionCm, AuthorizationTokenDO authTokenDo);
     }
 }

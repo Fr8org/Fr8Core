@@ -238,12 +238,7 @@ namespace terminalTwilio.Actions
 
         private void PackCrate_WarningMessage(ActionDO actionDO, string warningMessage, string warningLabel)
         {
-            var textBlock = new TextBlock
-            {
-                Label = warningLabel,
-                Value = warningMessage,
-                CssClass = "alert alert-warning"
-            };
+            var textBlock = GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
             using (var updater = Crate.UpdateStorage(actionDO))
             {
                 updater.CrateStorage.Clear();

@@ -86,7 +86,7 @@ namespace terminalQuickBooks.Tests.Fixtures
             };
             var curCrate = new StandardAccountingTransactionCM()
             {
-                AccountingTransactionDTO = curAccoutingTransactionDTO
+                AccountingTransactionDTOList = new List<StandardAccountingTransactionDTO>(){curAccoutingTransactionDTO}
             };
             return curCrate;
         }

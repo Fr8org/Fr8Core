@@ -118,23 +118,14 @@ namespace terminalDocuSign.Actions
             TextBlock textBlock;
             if (templateId != null)
             {
-                textBlock = new TextBlock
-                {
-                    Label = "Docu Sign Envelope",
-                    Value = "This Action doesn't require any configuration.",
-                    CssClass = "well well-lg"
-                };
+                textBlock = GenerateTextBlock("Docu Sign Envelope", "This Action doesn't require any configuration.",
+                    "well well-lg");
             }
             else
             {
-                textBlock = new TextBlock
-                {
-                    Label = "Docu Sign Envelope",
-                    Value = "In order to Receive a DocuSign Envelope as fr8, an upstream action needs to provide a DocuSign TemplateId.",
-                    CssClass = "alert alert-warning"
-                };
+                textBlock = GenerateTextBlock("Docu Sign Envelope",
+                    "In order to Receive a DocuSign Envelope as fr8, an upstream action needs to provide a DocuSign TemplateId.", "alert alert-warning");
             }
-            
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();

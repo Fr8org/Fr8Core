@@ -11,7 +11,7 @@ using terminalQuickBooks.Interfaces;
 namespace terminalQuickBooks.Services
 {
     /// <summary>
-    /// This class it the only one to communication with action
+    /// This class it the only one to communicate with action
     /// It performs authorization using DataService instanticating QuickBooksIntegration
     /// </summary>
     public class JournalEntry : IJournalEntry
@@ -20,21 +20,19 @@ namespace terminalQuickBooks.Services
         private DataService _dataService;
         public JournalEntry()
         {
-            //_quickBooksIntegration = ObjectFactory.GetInstance<IQuickBooksIntegration>();
             _quickBooksIntegration = new QuickBooksIntegration();
         }
         /// <summary>
-        /// Converts JournalEntry to StandardAccountingTransactionCM object
+        /// Converts JournalEntry to StandardAccountingTransactionDTO object
         /// </summary>
         /// <param name="JournalEntry"></param>
         /// <returns>JournalEntry</returns>
-        public StandardAccountingTransactionCM GetAccountingTransactionData(Intuit.Ipp.Data.JournalEntry journalEntry)
+        public StandardAccountingTransactionDTO GetAccountingTransactionData(Intuit.Ipp.Data.JournalEntry journalEntry)
         {
             var curFinLineDTOList = new List<FinancialLineDTO>();
             foreach (var curLine in journalEntry.Line)
             {
                 var curFinLineToAdd = new FinancialLineDTO();
-                
                 //The way to extract Journal Entry Line Detail type object from the Line
                 JournalEntryLineDetail curJournalEntryLineDetail = (JournalEntryLineDetail) curLine.AnyIntuitObject;
                 //Add Debit or Credit type
@@ -50,7 +48,6 @@ namespace terminalQuickBooks.Services
                 //Add the prepared line to the list
                 curFinLineDTOList.Add(curFinLineToAdd);
             }
-            var curTransactionCrate = new StandardAccountingTransactionCM();
             
             var curAccountTransactionDTO = new StandardAccountingTransactionDTO()
             {
@@ -59,18 +56,16 @@ namespace terminalQuickBooks.Services
                 FinancialLines = curFinLineDTOList,
                 Memo = journalEntry.PrivateNote
             };
-            curTransactionCrate.AccountingTransactionDTO = curAccountTransactionDTO;
-            return curTransactionCrate;
+            return curAccountTransactionDTO;
         }
         /// <summary>
-        /// Converts StandardAccountingTransactionCM to JournalEntry object
+        /// Converts StandardAccountingTransactionDTO to JournalEntry object
         /// </summary>
         /// <param name="StandardAccountingTransactionCM"></param>
         /// <returns>JournalEntry</returns>
-        public Intuit.Ipp.Data.JournalEntry GetJournalEntryFromCM(StandardAccountingTransactionCM crate)
+        public Intuit.Ipp.Data.JournalEntry GetJournalEntryFromCM(StandardAccountingTransactionDTO curAccountTransactionDTO)
         {
             var curJournalEntry = new Intuit.Ipp.Data.JournalEntry();
-            var curAccountTransactionDTO = crate.AccountingTransactionDTO;
             //Pack Standard Accounting Transaction DTO with data
             //Add DocNumber
             curJournalEntry.DocNumber = curAccountTransactionDTO.Name;
@@ -109,9 +104,9 @@ namespace terminalQuickBooks.Services
         /// </summary>
         /// <param name="StandardAccountingTransactionCM"></param>
         /// <param name="authTokenDO"></param>
-        public void Create(StandardAccountingTransactionCM crate, AuthorizationTokenDO authTokenDO)
+        public void Create(StandardAccountingTransactionDTO curAccountingTransactionDto, AuthorizationTokenDO authTokenDO)
         {
-            var curJournalEntry = GetJournalEntryFromCM(crate);
+            var curJournalEntry = GetJournalEntryFromCM(curAccountingTransactionDto);
             var curDataService = _quickBooksIntegration.GetDataService(authTokenDO);
             try
             {
@@ -124,15 +119,15 @@ namespace terminalQuickBooks.Services
         }
         /// <summary>
         /// Method is created for testing purposes
-        /// It takes cratee as an input, converts it into journal entry, looks for similar journal entries in the Sandbox,
+        /// It takes StandardAccountingTransactionDTO as an input, converts it into journal entry, looks for similar journal entries in the Sandbox,
         /// takes first occurance from the list, and returns converted back crate object
         /// </summary>
-        /// <param name="StandardAccountingTransactionCM"></param>
+        /// <param name="StandardAccountingTransactionDTO"></param>
         /// <param name="authTokenDO"></param>
         /// <returns></returns>
-        public StandardAccountingTransactionCM Find(StandardAccountingTransactionCM crate, AuthorizationTokenDO authTokenDO)
+        public StandardAccountingTransactionDTO Find(StandardAccountingTransactionDTO curAccountingTransactionDto, AuthorizationTokenDO authTokenDO)
         {
-            var curJournalEntry = GetJournalEntryFromCM(crate);
+            var curJournalEntry = GetJournalEntryFromCM(curAccountingTransactionDto);
             var curDataService = _quickBooksIntegration.GetDataService(authTokenDO);
             Intuit.Ipp.Data.JournalEntry resultJournalEntry;
             try
@@ -151,7 +146,6 @@ namespace terminalQuickBooks.Services
          /// <typeparam name="T"></typeparam>
          /// <param name="value"></param>
          /// <returns></returns>
-  
         private static T ParseEnum<T>(string value)
         {
             return (T)Enum.Parse(typeof(T), value, true);

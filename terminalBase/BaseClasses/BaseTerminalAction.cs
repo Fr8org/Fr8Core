@@ -586,5 +586,21 @@ namespace TerminalBase.BaseClasses
 
             return await Task.FromResult<Crate>(null);
         }
+        /// <summary>
+        /// Creates TextBlock control and fills it with label, value and CssClass
+        /// </summary>
+        /// <param name="curLabel">Label</param>
+        /// <param name="curValue">Value</param>
+        /// <param name="curCssClass">Css Class</param>
+        /// <returns></returns>
+        protected TextBlock GenerateTextBlock(string curLabel, string curValue, string curCssClass)
+        {
+            return new TextBlock
+            {
+                Label = curLabel,
+                Value = curValue,
+                CssClass = curCssClass
+            };
+        }
     }
 }

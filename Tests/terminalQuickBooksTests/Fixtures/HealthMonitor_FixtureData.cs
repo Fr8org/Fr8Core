@@ -26,7 +26,7 @@ namespace terminalQuickBooksTests.Fixtures
             };
         }
 
-        public static ActivityTemplateDTO Create_Journal_Entry_ActivityTemplate()
+        public static ActivityTemplateDTO Action_Create_Journal_Entry_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
             {
@@ -35,9 +35,9 @@ namespace terminalQuickBooksTests.Fixtures
                 Version = "1"
             };
         }
-        public static ActionDTO Create_Journal_Entry_v1_InitialConfiguration_ActionDTO()
+        public static ActionDTO Action_Create_Journal_Entry_v1_InitialConfiguration_ActionDTO()
         {
-            var activityTemplate = Create_Journal_Entry_ActivityTemplate();
+            var activityTemplate = Action_Create_Journal_Entry_ActivityTemplate();
 
             return new ActionDTO()
             {

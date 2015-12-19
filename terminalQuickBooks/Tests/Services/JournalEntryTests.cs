@@ -43,7 +43,7 @@ namespace terminalQuickBooks.Tests.Services
             var curJournalEntry = Fixtures.Fixtures.CreateJournalEntry();
             //Act
             var curCrate = _journalEntry.GetAccountingTransactionData(curJournalEntry);
-            var curTransactionDTO = curCrate.AccountingTransactionDTO;
+            var curTransactionDTO = curCrate.AccountingTransactionDTOList[0];
             //Assert General Data
             Assert.AreEqual("DocNu1", curTransactionDTO.Name);
             Assert.AreEqual(DateTime.UtcNow.Date, curTransactionDTO.TransactionDate);

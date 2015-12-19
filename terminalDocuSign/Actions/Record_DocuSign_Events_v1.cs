@@ -37,12 +37,8 @@ namespace terminalDocuSign.Actions
              * Discussed with Alexei and it is required to have empty Standard UI Control in the crate.
              * So we create a text block which informs the user that this particular aciton does not require any configuration.
              */
-            var textBlock = new TextBlock()
-            {
-                Label = "Monitor All DocuSign events",
-                Value = "This Action doesn't require any configuration.",
-                CssClass = "well well-lg"
-            };
+            var textBlock = GenerateTextBlock("Monitor All DocuSign events",
+                "This Action doesn't require any configuration.", "well well-lg");
             var curControlsCrate = PackControlsCrate(textBlock);
 
             //create a Standard Event Subscription crate

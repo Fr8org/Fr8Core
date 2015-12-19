@@ -32,7 +32,7 @@ namespace terminalQuickBooksTests.Integration
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Create_Journal_Entry_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Action_Create_Journal_Entry_v1_InitialConfiguration_ActionDTO();
             //Act
             var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
@@ -53,7 +53,7 @@ namespace terminalQuickBooksTests.Integration
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Create_Journal_Entry_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Action_Create_Journal_Entry_v1_InitialConfiguration_ActionDTO();
             var curStandAccTransCrate = HealthMonitor_FixtureData.GetAccountingTransactionCM();
             AddUpstreamCrate(requestActionDTO, curStandAccTransCrate);
             //Act

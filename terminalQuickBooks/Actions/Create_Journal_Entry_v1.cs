@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
@@ -10,16 +9,13 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
-using terminalQuickBooks.Interfaces;
-using terminalQuickBooks.Services;
-using Utilities;
 using JournalEntry = terminalQuickBooks.Services.JournalEntry;
 
 namespace terminalQuickBooks.Actions
 {
     public class Create_Journal_Entry_v1 : BaseTerminalAction
     {
-        private  JournalEntry _journalEntry;
+        private JournalEntry _journalEntry;
         public Create_Journal_Entry_v1()
         {
             _journalEntry = new JournalEntry();
@@ -37,15 +33,23 @@ namespace terminalQuickBooks.Actions
             if (NeedsAuthentication(authTokenDO))
                 throw new ApplicationException("No AuthToken provided.");
             var processPayload = await GetProcessPayload(curActionDO, containerId);
-            //Obtain the crate of type StandardPayloadDataCM
-            var curStandardPayloadDataCrate = Crate.FromDto(processPayload.CrateStorage).CratesOfType<StandardPayloadDataCM>();
-            //Map StandardPayloadDataCM to curStandardAccountingTransactionCM crate
-            var curStandardAccountingTransactionCM = ObjectMapper.MapPayloadDataToAccountingTransactionCM(curStandardPayloadDataCrate.Single().Content);
-            //Check that all required fields exists in the crate
-            CheckAccountingTransationCM(curStandardAccountingTransactionCM);
-            //Use service to create Journal Entry Object
-            _journalEntry.Create(curStandardAccountingTransactionCM, authTokenDO);
-            return processPayload;  
+            //Obtain the crate of type StandardAccountingTransactionCM
+            var curStandardAccountingTransactionCM = Crate.FromDto(processPayload.CrateStorage).CratesOfType<StandardAccountingTransactionCM>().Single().Content;
+            //Validate fields of the StandardAccountingTransactionCM crate
+            ValidateStandardAccountingTransactionCM(curStandardAccountingTransactionCM);
+            //Get the number of Accounting Transactions for iteration
+            var curNumberOfTransactions = curStandardAccountingTransactionCM.AccountingTransactionDTOList.Count;
+            //Iterate through all transactions that are inside of the StandardAccountingTransactionCM crate
+            for (int i = 0; i < curNumberOfTransactions; i++)
+            {
+                //Take StandardAccountingTransactionDTO from curStandardAccountingTransactionCM crate
+                var curStandardAccountingTransactionDTO = curStandardAccountingTransactionCM.AccountingTransactionDTOList[i];
+                //Check that all required fields exists in the StandardAccountingTransactionDTO object
+                ValidateAccountingTransation(curStandardAccountingTransactionDTO);
+                //Use service to create Journal Entry Object
+                _journalEntry.Create(curStandardAccountingTransactionDTO, authTokenDO);
+            }
+            return processPayload;
         }
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
@@ -55,14 +59,11 @@ namespace terminalQuickBooks.Actions
                 var upstream = await GetCratesByDirection<StandardAccountingTransactionCM>(curActionDO, CrateDirection.Upstream);
                 //In order to Create Journal Entry an upstream action needs to provide a StandardAccountingTransactionCM.
                 TextBlock textBlock;
-                if (upstream.Count!=0)
+                if (upstream.Count != 0)
                 {
-                    textBlock = new TextBlock
-                    {
-                        Label = "Create a Journal Entry",
-                        Value = "This Action doesn't require any configuration.",
-                        CssClass = "well well-lg"
-                    };
+                    textBlock = GenerateTextBlock("Create a Journal Entry",
+                        "This Action doesn't require any configuration.",
+                        "well well-lg");
                     using (var updater = Crate.UpdateStorage(curActionDO))
                     {
                         updater.CrateStorage.Add(upstream[0]);
@@ -70,12 +71,9 @@ namespace terminalQuickBooks.Actions
                 }
                 else
                 {
-                    textBlock = new TextBlock
-                    {
-                        Label = "Create Journal Entry",
-                        Value = "In order to Create a Journal Entry, an upstream action needs to provide a StandardAccountingTransactionCM.",
-                        CssClass = "alert alert-warning"
-                    };
+                    textBlock = GenerateTextBlock("Create a Journal Entry",
+                        "When this Action runs, it will be expecting to find a Crate of Standard Accounting Transactions. Right now, it doesn't detect any Upstream Actions that produce that kind of Crate. Please add an action upstream (to the left) of this action that does so.",
+                        "alert alert-warning");
                 }
                 using (var updater = Crate.UpdateStorage(curActionDO))
                 {
@@ -91,35 +89,31 @@ namespace terminalQuickBooks.Actions
             return curActionDO;
         }
 
-        private void CheckAccountingTransationCM(StandardAccountingTransactionCM accountingTransactionCrate)
+        private void ValidateAccountingTransation(StandardAccountingTransactionDTO curAccountingTransactionDtoTransactionDTO)
         {
-            if (accountingTransactionCrate == null)
+            if (curAccountingTransactionDtoTransactionDTO == null)
             {
-                throw new ArgumentNullException("No StandardAccountingTransationCM provided");
+                throw new ArgumentNullException("No StandardAccountingTransationDTO provided");
             }
-            if (accountingTransactionCrate.AccountingTransactionDTO == null)
-            {
-                throw new NullReferenceException("No StandardAccountingTransationDTO inside StandardAccountingTransationCM");
-            }
-            var curAccTransactionDTO = accountingTransactionCrate.AccountingTransactionDTO;
-            
-            if (curAccTransactionDTO.FinancialLines==null || curAccTransactionDTO.TransactionDate==null)
+            if (curAccountingTransactionDtoTransactionDTO.FinancialLines == null 
+                || curAccountingTransactionDtoTransactionDTO.FinancialLines.Count == 0
+                || curAccountingTransactionDtoTransactionDTO.TransactionDate == null)
             {
                 throw new Exception("No Financial Lines or Transaction Date Provided");
             }
-            foreach (var curFinLineDTO in accountingTransactionCrate.AccountingTransactionDTO.FinancialLines)
+            foreach (var curFinLineDTO in curAccountingTransactionDtoTransactionDTO.FinancialLines)
             {
-                CheckFinancialLineDTO(curFinLineDTO);
+                ValidateFinancialLineDTO(curFinLineDTO);
             }
         }
 
-        private void CheckFinancialLineDTO(FinancialLineDTO finLineDTO)
+        private void ValidateFinancialLineDTO(FinancialLineDTO finLineDTO)
         {
-            if (finLineDTO.AccountId == null || finLineDTO.AccountName==null)
+            if (finLineDTO.AccountId == null || finLineDTO.AccountName == null)
             {
                 throw new Exception("Some Account Data is Missing");
             }
-            if (finLineDTO.Amount==null)
+            if (finLineDTO.Amount == null)
             {
                 throw new Exception("Amount is missing");
             }
@@ -128,6 +122,17 @@ namespace terminalQuickBooks.Actions
                 throw new Exception("Debit/Credit information is missing");
             }
         }
-        
+
+        private void ValidateStandardAccountingTransactionCM(StandardAccountingTransactionCM crate)
+        {
+            if (crate.AccountingTransactionDTOList == null)
+            {
+                throw new NullReferenceException("AccountingTransactionDTOList is null");
+            }
+            if (crate.AccountingTransactionDTOList.Count == 0)
+            {
+                throw new Exception("No Transactions in the AccountingTransactionDTOList");
+            }
+        }
     }
 }

@@ -117,14 +117,10 @@ namespace terminalFr8Core.Actions
 
         private void AddErrorTextBlock(CrateStorage storage)
         {
-            var textBlock = new TextBlock()
-            {
-                Name = "MapFieldsErrorMessage",
-                Label = "Error",
-                Value = "This Action works by mapping upstream data (from the left) to downstream fields (on the right)",
-                CssClass = "well well-lg"
-            };
-
+            var textBlock = GenerateTextBlock("Error",
+                "This Action works by mapping upstream data (from the left) to downstream fields (on the right)",
+                "well well-lg");
+            textBlock.Name = "MapFieldsErrorMessage";
             AddControl(storage, textBlock);
         }
 
