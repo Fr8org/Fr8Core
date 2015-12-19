@@ -1,83 +1,83 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿﻿<?xml version="1.0" encoding="utf-8"?>
 <ServiceDefinition name="terminalCloudService" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2015-04.2.6">
   <WebRole name="terminalWebRole" vmsize="Small">
     <Sites>
       <Site name="terminalAzure" physicalDirectory="..\..\..\terminalAzure\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalAzure" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalAzure.dev-terminals.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalAzure.terminals.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalSlack" physicalDirectory="..\..\..\terminalSlack\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalSlack" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalSlack.dev-terminals.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalSlack.terminals.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalDocuSign" physicalDirectory="..\..\..\terminalDocuSign\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalDocuSign" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalDocuSign.dev-terminals.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalDocuSign.terminals.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalPapertrail" physicalDirectory="..\..\..\terminalPapertrail\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalPapertrail" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalPapertrail.dev-terminals.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalPapertrail.terminals.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalSalesforce" physicalDirectory="..\..\..\terminalSalesforce\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalSalesforce" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalSalesforce.dev-terminals.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalSalesforce.terminals.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalFr8Core" physicalDirectory="..\..\..\terminalFr8Core\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalFr8Core" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalFr8Core.dev-terminals.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalFr8Core.terminals.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalSendGrid" physicalDirectory="..\..\..\terminalSendGrid\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalSendGrid" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalSendGrid.dev-terminals.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalSendGrid.terminals.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalTwilio" physicalDirectory="..\..\..\terminalTwilio\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalTwilio" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalTwilio.dev-terminals.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalTwilio.terminals.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalExcel" physicalDirectory="..\..\..\terminalExcel\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalExcel" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalExcel.dev-terminals.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalExcel.terminals.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalGoogle" physicalDirectory="..\..\..\terminalGoogle\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalGoogle" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalGoogle.dev-terminals.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalGoogle.terminals.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalDropbox" physicalDirectory="..\..\..\terminalDropbox\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalDropbox" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalDropbox.dev-terminals.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalDropbox.terminals.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalAtlassian" physicalDirectory="..\..\..\terminalAtlassian\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalAtlassian" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalAtlassian.dev-terminals.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalAtlassian.terminals.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalQuickBooks" physicalDirectory="..\..\..\terminalQuickBooks\azure.publish">
         <Bindings>
           <Binding name="Endpoint1" endpointName="terminalQuickBooks" />
-          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalQuickBooks.dev-terminals.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalQuickBooks.terminals.fr8.co" />
         </Bindings>
       </Site>
     </Sites>
