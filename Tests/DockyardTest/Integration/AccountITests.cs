@@ -51,7 +51,7 @@ namespace DockyardTest.Integration
 		    				 RegexOptions.IgnoreCase)
 		        .Groups["userId"].Value;
 		    var code = Regex.Match(callbackUrl,
-		    				 "code=(?<code>[\\d]+)",
+                             "code=(?<code>[^&#]+)",
 		    				 RegexOptions.IgnoreCase)
 		        .Groups["code"].Value;
 		    var result = await account.ResetPasswordAsync(userId, code, "123456");

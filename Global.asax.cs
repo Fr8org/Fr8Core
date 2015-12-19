@@ -137,6 +137,10 @@ namespace HubWeb
         /// </summary>
         private void NormalizeUrl()
         {
+            // Ignore requests to dev and API since API clients usually cannot process 301 redirects
+            if (Request.Url.PathAndQuery.StartsWith("/api") || Request.Url.Host.Contains("dev"))
+                return;
+
             // Force user to fr8.co from fr8.company (old address)
             if (Request.Url.Host.Contains("fr8.company") || Request.Url.Host.StartsWith("www."))
             {
@@ -144,7 +148,7 @@ namespace HubWeb
             }
 
             // Force user to http if user is accessing the PROD site
-            if (Request.Url.Host.Contains("fr8.co"))
+            if (Request.Url.Host.StartsWith("fr8.co"))
             {
                 switch (Request.Url.Scheme)
                 {
@@ -160,10 +164,6 @@ namespace HubWeb
 
         private void RedirectToCanonicalUrl()
         {
-            // Ignore API requests since API clients cannot usually cannot process 301 redirects
-            if (Request.Url.PathAndQuery.StartsWith("/api"))
-                return;
-
             var path = "https://fr8.co" + Request.Url.PathAndQuery;
             Response.Status = "301 Moved Permanently";
             Response.AddHeader("Location", path);

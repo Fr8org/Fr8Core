@@ -69,6 +69,9 @@ namespace Data.Infrastructure.StructureMap
         private readonly Dictionary<Type, MockedDbSet> _cachedSets = new Dictionary<Type, MockedDbSet>();
 
         private object[] _addedEntities;
+        private object[] _deletedEntities;
+        private object[] _modifiedEntities;
+
         public int SaveChanges()
         {
             AddForeignRows();
@@ -114,7 +117,10 @@ namespace Data.Infrastructure.StructureMap
         public void DetectChanges()
         {
             _addedEntities = GetAdds().ToArray();
+            _deletedEntities = GetDeletes().ToArray();
+            _modifiedEntities = GetUpdates().ToArray();
         }
+
 
         public object[] AddedEntities
         {
@@ -125,7 +131,7 @@ namespace Data.Infrastructure.StructureMap
         {
             get
             {
-                return new object[0];
+                return _modifiedEntities;
             }
         }
 
@@ -133,7 +139,7 @@ namespace Data.Infrastructure.StructureMap
         {
             get
             {
-                return new object[0];
+                return _deletedEntities;
             }
         }
 
@@ -208,6 +214,36 @@ namespace Data.Infrastructure.StructureMap
                 return returnSet;
             }
         }
+
+
+        private IEnumerable<object> GetDeletes()
+        {
+            lock (_cachedSets)
+            {
+                var returnSet = new List<object>();
+                foreach (var set in _cachedSets)
+                {
+                    returnSet.AddRange(set.Value.DeletedEntries.OfType<object>());
+                }
+
+                return returnSet;
+            }
+        }
+        
+        private IEnumerable<object> GetUpdates()
+        {
+            lock (_cachedSets)
+            {
+                var returnSet = new List<object>();
+                foreach (var set in _cachedSets)
+                {
+                    returnSet.AddRange(set.Value.ModifiedEntries.OfType<object>());
+                }
+
+                return returnSet;
+            }
+        }
+
 
         private void AssignIDs(IEnumerable<object> adds)
         {

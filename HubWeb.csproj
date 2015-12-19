@@ -4343,7 +4343,6 @@
     </CompileDependsOn>
   </PropertyGroup>
   <Target Name="GulpBuild" DependsOnTargets="CompileTypeScript">
-    <Exec Command="npm install" />
     <Exec Command=".\node_modules\.bin\gulp compile_js" />
   </Target>
   <PropertyGroup>
