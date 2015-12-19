@@ -836,7 +836,6 @@
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\WebServiceListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\WebServiceFormController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\SolutionController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Counter.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Duration.ts" />
@@ -4152,7 +4151,6 @@
     <Content Include="Views\AngularTemplate\_RouteList.cshtml" />
     <Content Include="Views\AngularTemplate\SolutionList.cshtml" />
     <Content Include="Views\AngularTemplate\_DeleteRouteModal.cshtml" />
-    <Content Include="Views\AngularTemplate\Solution.cshtml" />
     <Content Include="Views\AuthenticationCallback\Error.cshtml" />
     <Content Include="Views\AngularTemplate\WebServiceList.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilder.cshtml" />
