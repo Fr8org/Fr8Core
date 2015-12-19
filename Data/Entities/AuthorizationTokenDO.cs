@@ -21,7 +21,10 @@ namespace Data.Entities
         }
 
         public Guid Id { get; set; }
+
+        [NotMapped]
         public String Token { get; set; }
+
         public String RedirectURL { get; set; }
         public String SegmentTrackingEventName { get; set; }
         public String SegmentTrackingProperties { get; set; }

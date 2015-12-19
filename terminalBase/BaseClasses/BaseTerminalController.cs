@@ -133,7 +133,8 @@ namespace TerminalBase.BaseClasses
             var curContainerId = curActionDTO.ContainerId;
             Task<ActionDO> response;
 
-            try {
+            try
+            {
                 switch (curActionPath.ToLower())
                 {
                     case "configure":
@@ -143,8 +144,9 @@ namespace TerminalBase.BaseClasses
                         }
                     case "run":
                         {
+                            OnStartAction(curTerminal, activityTemplateName);
                             Task<PayloadDTO> resultPayloadDTO = (Task<PayloadDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
-                            return await resultPayloadDTO;
+                            return await resultPayloadDTO.ContinueWith((t) => OnCompletedAction(curTerminal));
                         }
                     case "initialconfigurationresponse":
                         {
@@ -196,7 +198,7 @@ namespace TerminalBase.BaseClasses
                         return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 JsonSerializerSettings settings = new JsonSerializerSettings
                 {
@@ -207,6 +209,20 @@ namespace TerminalBase.BaseClasses
                 EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e);
                 throw;
             }
+        }
+        private void OnStartAction(string terminalName, string actionName)
+        {
+            _baseTerminalEvent.SendEventReport(
+                terminalName,
+                string.Format("{0} began processing this Container at {1}. Sending to Action {2}", terminalName, DateTime.Now.ToString("G"), actionName));
+        }
+
+        private Task OnCompletedAction(string terminalName)
+        {
+            return Task.Run(() =>
+             _baseTerminalEvent.SendEventReport(
+                 terminalName,
+                 string.Format("{0} completed processing this Container at {1}.", terminalName, DateTime.Now.ToString("G"))));
         }
     }
 }

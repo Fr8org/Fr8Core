@@ -73,6 +73,7 @@ module dockyard.directives.paneConfigureAction {
         setSolutionMode: () => void;
     }
 
+
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
     export class ReloadActionEventArgs {

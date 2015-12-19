@@ -40,7 +40,7 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                await _container.Execute(uow, null);
+                await _container.Run(uow, null);
             }
         }
         
@@ -52,7 +52,7 @@ namespace DockyardTest.Services
             //The CurrentActivity value is already set to null and pass it immediately to service
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                await _container.Execute(uow, FixtureData.TestContainerCurrentActivityNULL());
+                await _container.Run(uow, FixtureData.TestContainerCurrentActivityNULL());
             }
         }
 
@@ -165,7 +165,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var containerDO = uow.ContainerRepository.GetByKey(FixtureData.TestContainer_Id_49());
-                await _container.Execute(uow, containerDO);
+                await _container.Run(uow, containerDO);
 
                 Assert.IsNull(containerDO.CurrentRouteNode);
                // Assert.IsNull(containerDO.NextActivity);
@@ -191,7 +191,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var containerDO = uow.ContainerRepository.GetByKey(FixtureData.TestContainer_Id_49());
-                await _container.Execute(uow, containerDO);
+                await _container.Run(uow, containerDO);
 
                 Assert.IsNull(containerDO.CurrentRouteNode);
                // Assert.IsNull(processDO.NextActivity);

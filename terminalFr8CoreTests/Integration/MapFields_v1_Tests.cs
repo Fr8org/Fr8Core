@@ -11,7 +11,7 @@ using HealthMonitor.Utility;
 using Hub.Managers;
 using terminalTests.Fixtures;
 
-namespace terminalTests.Integration
+namespace terminalFr8CoreTests.Integration
 {
     [Explicit]
     public class MapFields_v1_Tests : BaseHealthMonitorTest

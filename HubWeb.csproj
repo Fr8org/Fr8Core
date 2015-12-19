@@ -734,6 +734,7 @@
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
     <Content Include="Scripts\app\_compiled.js" />
+    <Content Include="_PowerShellScripts\RunIntegrationTests.ps1" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
@@ -743,6 +744,9 @@
     <TypeScriptCompile Include="Scripts\app\model\TerminalDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\services\TerminalService.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\RouteDetailsControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamDataChooser.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamDataChooser.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_UpstreamDataChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\jpattern.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ContainerControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\lib\jpattern.d.ts" />
@@ -4337,7 +4341,6 @@
     </CompileDependsOn>
   </PropertyGroup>
   <Target Name="GulpBuild" DependsOnTargets="CompileTypeScript">
-    <Exec Command="npm install" />
     <Exec Command=".\node_modules\.bin\gulp compile_js" />
   </Target>
   <PropertyGroup>
@@ -4364,6 +4367,25 @@
       </FilesForPackagingFromProject>
     </ItemGroup>
     <Message Text="CollectGulpOutput list: %(_CustomGulpFiles.Identity)" />
+  </Target>
+  <PropertyGroup>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      CleanBowerComponents;
+    </CleanDependsOn>
+	<CleanDependsOn>
+	  $(CleanDependsOn);
+	  RemoveCompiledJsFiles;
+    </CleanDependsOn>
+  </PropertyGroup>
+  <Target Name="CleanBowerComponents">
+	<RemoveDir Directories="bower_components" />
+  </Target>
+  <Target Name="RemoveCompiledJsFiles">
+    <ItemGroup>
+      <_CompiledJsFiles Include="Scripts\app\**\*.js" />
+    </ItemGroup>
+	<Delete Files="@(_CompiledJsFiles)" />
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
 </Project>

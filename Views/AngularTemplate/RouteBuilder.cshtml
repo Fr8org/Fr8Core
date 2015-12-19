@@ -15,36 +15,46 @@
         <div ng-repeat="group in actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
             <div ng-if="mode !== 'solution' || $index === 0">
                 <div class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
-                <div>
-                    <div class="action" ng-class="{'solution-action': action.activityTemplate.category==='Solution' && mode !== 'solution'}" layout-action ng-repeat-start="action in group.actions" ng-style="{'width' : action.activityTemplate.minPaneWidth || 330 + 'px'}">
-                        <div class="action-header solution-action-header" dropdown transfer-click-configure-pane ng-if="mode !== 'solution' || $index === 0">
-                            <p class="action-name">
-                                {{action.label}}
-                            </p>
-                            <a class="action-menu" dropdown-toggle stop-click-propagation>
-                                <i class="fa fa-gear fa-5x"></i>
-                            </a>
-                            <ul class="dropdown-menu pull-right" role="menu" stop-click-propagation>
-                                <li role="menuitem">
-                                    <a ng-click="deleteAction(action);">
-                                        <i class="fa fa-trash-o"></i>
-                                        Delete
-                                    </a>
-                                </li>
-                            </ul>
+                <div dnd-list="group.actions" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
+                    <div dnd-draggable="action.id" dnd-effect-allowed="move" ng-repeat="action in group.actions">
+                        <div class="action" ng-class="{'solution-action': action.activityTemplate.category==='Solution'  && mode !== 'solution'}" layout-action ng-style="{'width' : action.activityTemplate.minPaneWidth || 330 + 'px'}">
+                            <div class="action-header solution-action-header handle" dropdown transfer-click-configure-pane ng-if="mode !== 'solution' || $index === 0">
+                                <p class="action-name">
+                                    {{action.label}}
+                                </p>
+                                <a class="action-menu" dropdown-toggle stop-click-propagation>
+                                    <i class="fa fa-gear fa-5x"></i>
+                                </a>
+                                <ul class="dropdown-menu pull-right" role="menu" stop-click-propagation>
+                                    <li role="menuitem">
+                                        <a ng-click="deleteAction(action);">
+                                            <i class="fa fa-trash-o"></i>
+                                            Delete
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div dnd-nodrag>
+                                <pane-configure-action id="paneConfigureAction" current-action="action" mode="mode"></pane-configure-action>
+                            </div>
                         </div>
-                        <pane-configure-action id="paneConfigureAction" current-action="action" mode="mode"></pane-configure-action>
+                            <div class="action-arrow-right"></div>
                     </div>
-                    <div class="action-arrow-right" ng-repeat-end></div>
+                    <div class="dndPlaceholder">
+                        <div class="action" style="width:330px;opacity: 0.6;background-color: black;">
+                            <div>
 
-                    <div class="action-to-add" ng-click="addAction()">
-                        <p class="action-name">Click to add action</p>
+                            </div>
+                        </div>
+                        <div class="action-arrow-right"></div>
                     </div>
                 </div>
-             </div>
+                <div class="action-to-add" ng-click="addAction(group)">
+                    <p class="action-name">Click to add action</p>
+                 </div>
+            </div>
         </div>
     </div>
     <!-- END MAIN CONTENT -->
     <pane-select-action></pane-select-action>
-
 </div>
