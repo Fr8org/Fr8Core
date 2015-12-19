@@ -4,25 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AutoMapper;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
-
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Hub.Services;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
-using Data.Infrastructure;
 
 namespace TerminalBase.BaseClasses
 {
@@ -56,15 +50,17 @@ namespace TerminalBase.BaseClasses
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
+        protected void CheckAuthentication(AuthorizationTokenDO authTokenDO)
+        {
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+        }
+
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
-            if (authTokenDO == null
-                || string.IsNullOrEmpty(authTokenDO.Token))
-            {
-                return true;
-            }
-
-            return false;
+            return authTokenDO == null || string.IsNullOrEmpty(authTokenDO.Token);
         }
 
         protected async Task<PayloadDTO> GetProcessPayload(ActionDO actionDO, Guid containerId)
