@@ -4,7 +4,7 @@
     <Sites>
       <Site name="terminalAzure" physicalDirectory="..\..\..\terminalAzure\azure.publish">
         <Bindings>
-          <Binding name="Endpoint1" endpointName="terminalAzure"  />
+          <Binding name="Endpoint1" endpointName="terminalAzure" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalAzure.dev-terminals.fr8.co" />
         </Bindings>
       </Site>
