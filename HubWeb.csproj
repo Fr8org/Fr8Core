@@ -733,7 +733,6 @@
     <Content Include="Documentation\UploadBrandProfiles.html" />
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
-    <Content Include="Scripts\app\_compiled.js" />
     <Content Include="_PowerShellScripts\RunIntegrationTests.ps1" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
@@ -4375,19 +4374,19 @@
       $(CleanDependsOn);
       CleanBowerComponents;
     </CleanDependsOn>
-	<CleanDependsOn>
+    <CleanDependsOn>
 	  $(CleanDependsOn);
 	  RemoveCompiledJsFiles;
     </CleanDependsOn>
   </PropertyGroup>
   <Target Name="CleanBowerComponents">
-	<RemoveDir Directories="bower_components" />
+    <RemoveDir Directories="bower_components" />
   </Target>
   <Target Name="RemoveCompiledJsFiles">
     <ItemGroup>
       <_CompiledJsFiles Include="Scripts\app\**\*.js" />
     </ItemGroup>
-	<Delete Files="@(_CompiledJsFiles)" />
+    <Delete Files="@(_CompiledJsFiles)" />
   </Target>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
 </Project>
