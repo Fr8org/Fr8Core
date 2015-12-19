@@ -63,7 +63,7 @@ namespace terminalQuickBooks.Services
         /// </summary>
         /// <param name="StandardAccountingTransactionCM"></param>
         /// <returns>JournalEntry</returns>
-        public Intuit.Ipp.Data.JournalEntry GetJournalEntryFromCM(StandardAccountingTransactionDTO curAccountTransactionDTO)
+        public Intuit.Ipp.Data.JournalEntry GetJournalEntryFromAccountingTransactionDTO(StandardAccountingTransactionDTO curAccountTransactionDTO)
         {
             var curJournalEntry = new Intuit.Ipp.Data.JournalEntry();
             //Pack Standard Accounting Transaction DTO with data
@@ -106,7 +106,7 @@ namespace terminalQuickBooks.Services
         /// <param name="authTokenDO"></param>
         public void Create(StandardAccountingTransactionDTO curAccountingTransactionDto, AuthorizationTokenDO authTokenDO)
         {
-            var curJournalEntry = GetJournalEntryFromCM(curAccountingTransactionDto);
+            var curJournalEntry = GetJournalEntryFromAccountingTransactionDTO(curAccountingTransactionDto);
             var curDataService = _quickBooksIntegration.GetDataService(authTokenDO);
             try
             {
@@ -127,7 +127,7 @@ namespace terminalQuickBooks.Services
         /// <returns></returns>
         public StandardAccountingTransactionDTO Find(StandardAccountingTransactionDTO curAccountingTransactionDto, AuthorizationTokenDO authTokenDO)
         {
-            var curJournalEntry = GetJournalEntryFromCM(curAccountingTransactionDto);
+            var curJournalEntry = GetJournalEntryFromAccountingTransactionDTO(curAccountingTransactionDto);
             var curDataService = _quickBooksIntegration.GetDataService(authTokenDO);
             Intuit.Ipp.Data.JournalEntry resultJournalEntry;
             try

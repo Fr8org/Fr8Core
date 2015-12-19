@@ -14,8 +14,9 @@ namespace terminalQuickBooks.Tests.Services
             //Assign
             var _journalEntry = new JournalEntry();
             var curCrate = Fixtures.Fixtures.GetAccountingTransactionCM();
+            var curTransactionDTO = curCrate.AccountingTransactionDTOList[0];
             //Act
-            var journalEntry = _journalEntry.GetJournalEntryFromCM(curCrate);
+            var journalEntry = _journalEntry.GetJournalEntryFromAccountingTransactionDTO(curTransactionDTO);
             //Assert First Line
             Assert.AreEqual("100",journalEntry.Line[0].Amount.ToString());
             Assert.AreEqual("1",journalEntry.Line[0].Id.ToString());
@@ -42,8 +43,7 @@ namespace terminalQuickBooks.Tests.Services
             var _journalEntry=new JournalEntry();
             var curJournalEntry = Fixtures.Fixtures.CreateJournalEntry();
             //Act
-            var curCrate = _journalEntry.GetAccountingTransactionData(curJournalEntry);
-            var curTransactionDTO = curCrate.AccountingTransactionDTOList[0];
+            var curTransactionDTO = _journalEntry.GetAccountingTransactionData(curJournalEntry);
             //Assert General Data
             Assert.AreEqual("DocNu1", curTransactionDTO.Name);
             Assert.AreEqual(DateTime.UtcNow.Date, curTransactionDTO.TransactionDate);

@@ -31,6 +31,10 @@ namespace terminalQuickBooksTests.Integration
         public async void Create_Journal_Entry_Configuration_Check_With_No_Upstream_Crate()
         {
             //Arrange
+            var curMessage =
+                "When this Action runs, it will be expecting to find a Crate of Standard Accounting Transactions. " +
+                "Right now, it doesn't detect any Upstream Actions that produce that kind of Crate. " +
+                "Please add an action upstream (to the left) of this action that does so.";
             var configureUrl = GetTerminalConfigureUrl();
             var requestActionDTO = HealthMonitor_FixtureData.Action_Create_Journal_Entry_v1_InitialConfiguration_ActionDTO();
             //Act
@@ -44,8 +48,8 @@ namespace terminalQuickBooksTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var curTextBlock = (TextBlock)crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
-            Assert.AreEqual("Create Journal Entry", curTextBlock.Label);
-            Assert.AreEqual("In order to Create a Journal Entry, an upstream action needs to provide a StandardAccountingTransactionCM.", curTextBlock.Value);
+            Assert.AreEqual("Create a Journal Entry", curTextBlock.Label);
+            Assert.AreEqual(curMessage, curTextBlock.Value);
             Assert.AreEqual("alert alert-warning", curTextBlock.CssClass);
         }
         [Test, Category("Integration.terminalQuickBooks")]
