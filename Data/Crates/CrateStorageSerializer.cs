@@ -144,11 +144,9 @@ namespace Data.Crates
 
             if (serializer != null)
             {
-                var content = proxy.Contents != null ? serializer.Deserialize(proxy.Contents) : null;
-
-                if (content != null)
+                if (proxy.Contents != null)
                 {
-                    crate = Crate.FromContent(content, proxy.Id);
+                    crate = Crate.FromContent(serializer.Deserialize(proxy.Contents), proxy.Id);
                 }
                 else
                 {

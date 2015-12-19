@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.UI.WebControls;
 using Data.Constants;
 using Data.Control;
 using Data.Infrastructure;
@@ -37,13 +36,10 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var tokenDO = uow.AuthorizationTokenRepository.FindTokenByUserId(userId);
-                if (tokenDO != null)
-                {
-                    return tokenDO.Token;
-                }
+                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at => at.UserID == userId);
+                if (curAuthToken != null)
+                    return curAuthToken.Token;
             }
-
             return null;
         }
 
@@ -51,7 +47,10 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAuthToken = uow.AuthorizationTokenRepository.FindToken(userId, terminalId, AuthorizationTokenState.Active);
+                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
+                    at.UserID == userId
+                    && at.TerminalID == terminalId
+                    && at.AuthorizationTokenState == AuthorizationTokenState.Active);
 
                 if (curAuthToken != null)
                     return curAuthToken.Token;
@@ -59,26 +58,26 @@ namespace Hub.Services
             return null;
         }
 
-//        public string GetTerminalToken(int terminalId)
-//        {
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
-//                    at.TerminalID == terminalId
-//                    && at.AuthorizationTokenState == AuthorizationTokenState.Active);
-//
-//                if (curAuthToken != null)
-//                    return curAuthToken.Token;
-//            }
-//            return null;
-//        }
+        public string GetTerminalToken(int terminalId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
+                    at.TerminalID == terminalId
+                    && at.AuthorizationTokenState == AuthorizationTokenState.Active);
+
+                if (curAuthToken != null)
+                    return curAuthToken.Token;
+            }
+            return null;
+        }
 
 
         public void AddOrUpdateToken(string userId, string token)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var tokenDO = uow.AuthorizationTokenRepository.FindTokenByUserId(userId);
+                var tokenDO = uow.AuthorizationTokenRepository.FindOne(at => at.UserID == userId);
                 if (tokenDO == null)
                 {
                     tokenDO = new AuthorizationTokenDO()
@@ -92,7 +91,6 @@ namespace Hub.Services
 
 				tokenDO.ExpiresAt = currentTime.AddYears(100);
                 tokenDO.Token = token;
-
                 uow.SaveChanges();
             }
         }
@@ -101,8 +99,7 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var tokenDO = uow.AuthorizationTokenRepository.FindTokenByUserId(userId);
-                
+                var tokenDO = uow.AuthorizationTokenRepository.FindOne(at => at.UserID == userId);
                 if (tokenDO != null)
                 {
                     uow.AuthorizationTokenRepository.Remove(tokenDO);
@@ -152,7 +149,9 @@ namespace Hub.Services
                     var accountId = dockyardAccount.Id;
 
                     // Try to find AuthToken for specified terminal and account.
-                    var authToken = uow.AuthorizationTokenRepository.FindToken(accountId, activityTemplate.Terminal.Id, null);
+                    var authToken = uow.AuthorizationTokenRepository
+                        .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id
+                            && x.UserDO.Id == accountId);
 
                     // If AuthToken is not empty, fill AuthToken property for ActionDTO.
                     if (authToken != null && !string.IsNullOrEmpty(authToken.Token))
@@ -203,7 +202,8 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var authToken = uow.AuthorizationTokenRepository.FindToken(account.Id, terminal.Id, null);
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindOne(x => x.UserDO.Id == account.Id && x.Terminal.Id == terminal.Id);
 
                 if (terminalResponseAuthTokenDTO != null)
                 {
@@ -274,7 +274,8 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var authToken = uow.AuthorizationTokenRepository.FindTokenByExternalState(authTokenDTO.ExternalStateToken);
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindOne(x => x.ExternalStateToken == authTokenDTO.ExternalStateToken);
 
                 if (authToken == null)
                 {
@@ -313,7 +314,9 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var authToken = uow.AuthorizationTokenRepository.FindToken(user.Id, terminal.Id, null);
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindOne(x => x.Terminal.Id == terminal.Id
+                        && x.UserDO.Id == user.Id);
 
                 if (authToken == null)
                 {
@@ -448,7 +451,9 @@ namespace Hub.Services
                     RemoveAuthenticationCrate(curActionDTO);
                     RemoveAuthenticationLabel(curActionDTO);
 
-                    var authToken = uow.AuthorizationTokenRepository.FindToken(account.Id, activityTemplate.Terminal.Id, null);
+                    var authToken = uow.AuthorizationTokenRepository
+                        .FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id
+                            && x.UserDO.Id == account.Id);
 
                     if (authToken == null || string.IsNullOrEmpty(authToken.Token))
                     {
@@ -483,7 +488,7 @@ namespace Hub.Services
 
                 if (activityTemplate.AuthenticationType != AuthenticationType.None)
                 {
-                    var token = uow.AuthorizationTokenRepository.FindToken(account.Id, activityTemplate.Terminal.Id, null);
+                    var token = uow.AuthorizationTokenRepository.FindOne(x => x.Terminal.Id == activityTemplate.Terminal.Id && x.UserDO.Id == account.Id);
                     
                     if (token != null)
                     {

@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using Data.Interfaces.DataTransferObjects;
+using StructureMap;
 using terminalSalesforce.Infrastructure;
 using System.Threading.Tasks;
 using Data.Interfaces.Manifests;
+using Salesforce.Common;
 using Hub.Managers;
 using terminalSalesforce.Services;
 using TerminalBase.Infrastructure;
@@ -20,31 +22,40 @@ namespace terminalSalesforce.Actions
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
 
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
         }
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            PayloadDTO processPayload = null;
 
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            processPayload = await GetProcessPayload(curActionDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+                {
+                    throw new ApplicationException("No AuthToken provided.");
+                }
+
 
             var lastName = ExtractControlFieldValue(curActionDO, "lastName");
+                if (string.IsNullOrEmpty(lastName))
+                {
+                    throw new ApplicationException("No last name found in action.");
+                }
 
-            if (string.IsNullOrEmpty(lastName))
-            {
-                throw new ApplicationException("No last name found in action.");
-            }
+                var company = ExtractControlFieldValue(curActionDO, "companyName");
+                if (string.IsNullOrEmpty(company))
+                {
+                    throw new ApplicationException("No company name found in action.");
+                }
 
-            var company = ExtractControlFieldValue(curActionDO, "companyName");
-            if (string.IsNullOrEmpty(company))
-            {
-                throw new ApplicationException("No company name found in action.");
-            }
-
-            bool result = _salesforce.CreateLead(curActionDO, authTokenDO);
+                bool result = _salesforce.CreateLead(curActionDO, authTokenDO);
+           
           
             return processPayload;
         }
@@ -55,12 +66,12 @@ namespace terminalSalesforce.Actions
             {
                 return ConfigurationRequestType.Initial;
             }
-
             var storage = Crate.GetStorage(curActionDO);
 
             var hasConfigurationControlsCrate = storage
                 .CratesOfType<StandardConfigurationControlsCM>(c => c.Label == "Configuration_Controls").FirstOrDefault() != null;
-            
+
+
             if (hasConfigurationControlsCrate)
             {
                 return ConfigurationRequestType.Followup;

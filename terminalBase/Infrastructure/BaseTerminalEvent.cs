@@ -62,32 +62,6 @@ namespace TerminalBase.Infrastructure
 
         }
 
-        public Task<string> SendEventReport(string terminalName, string message)
-        {
-            //SF DEBUG -- Skip this event call for local testing
-            //return;
-
-
-            //make Post call
-            var restClient = PrepareRestClient();
-            const string eventWebServerUrl = "EventWebServerUrl";
-            string url = CloudConfigurationManager.GetSetting(eventWebServerUrl);
-            var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
-            {
-                ObjectId = terminalName,
-                CustomerId = "not_applicable",
-                Data = message,
-                PrimaryCategory = "Operations",
-                SecondaryCategory = "System Startup",
-                Activity = "system startup"
-            });
-            //TODO inpect this
-            //I am not sure what to supply for parameters eventName and palletId, so i passed terminalName and eventType
-            return restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                _crateManager.ToDto(_eventReportCrateFactory.Create("Terminal Event", terminalName, loggingDataCrate)));
-
-        }
-
         /// <summary>
         /// Sends "Terminal Incident" to report terminal Error
         /// </summary>

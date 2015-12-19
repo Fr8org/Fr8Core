@@ -66,10 +66,9 @@ namespace terminalTwilio.Actions
                 {
                     updater.CrateStorage.Remove(curUpstreamFieldsCrate);
                 }
-
-                var upstreamFields = await MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields");
-                if(upstreamFields != null)
-                    updater.CrateStorage.Add(upstreamFields);
+                var curUpstreamFields = GetRegisteredSenderNumbersData().ToArray();
+                curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
+                updater.CrateStorage.Add(curUpstreamFieldsCrate);
             }
             return await Task.FromResult(curActionDO);
         }
@@ -137,9 +136,9 @@ namespace terminalTwilio.Actions
             }
             try
             {
-                FieldDTO smsFieldDTO = ParseSMSNumberAndMsg(controlsCrate, processPayload);
-                string smsNumber = smsFieldDTO.Key;
-                string smsBody = smsFieldDTO.Value;
+                KeyValuePair<string, string> smsInfo = ParseSMSNumberAndMsg(controlsCrate);
+                string smsNumber = smsInfo.Key;
+                string smsBody = smsInfo.Value;
 
                 if (String.IsNullOrEmpty(smsNumber))
                 {
@@ -175,7 +174,7 @@ namespace terminalTwilio.Actions
         /// </summary>
         /// <param name="crateDTO"></param>
         /// <returns>Key = SMS Number; Value = SMS Body</returns>
-        public FieldDTO ParseSMSNumberAndMsg(Crate crateDTO, PayloadDTO processPayload)
+        public KeyValuePair<string, string> ParseSMSNumberAndMsg(Crate crateDTO)
         {
             var standardControls = crateDTO.Get<StandardConfigurationControlsCM>();
             if (standardControls == null)
@@ -183,8 +182,8 @@ namespace terminalTwilio.Actions
                 throw new ArgumentException("CrateDTO is not a standard UI control");
             }
             var smsBodyFields = standardControls.FindByName("SMS_Body");
-            var smsNumber = GetSMSNumber((TextSource)standardControls.Controls[0], processPayload);
-            return new FieldDTO(smsNumber, smsBodyFields.Value);
+            var smsNumber = GetSMSNumber((TextSource)standardControls.Controls[0]);
+            return new KeyValuePair<string, string>(smsNumber, smsBodyFields.Value);
         }
 
         //private string GetSMSNumber(RadioButtonGroup radioButtonGroupControl)
@@ -205,7 +204,7 @@ namespace terminalTwilio.Actions
         //    return smsNumber;
         //}
 
-        private string GetSMSNumber(TextSource control, PayloadDTO processPayload)
+        private string GetSMSNumber(TextSource control)
         {
             if (control == null)
             {
@@ -216,8 +215,7 @@ namespace terminalTwilio.Actions
                 case "specific":
                     return control.Value;
                 case "upstream":
-                    //get the payload data 'Key' based on the selected control.Value and get its 'Value' from payload data
-                    return Crate.GetFieldByKey<StandardPayloadDataCM>(processPayload.CrateStorage, control.Value);
+                    return control.Value;
                 default:
                     throw new ApplicationException("Could not extract number, unknown mode.");
             }

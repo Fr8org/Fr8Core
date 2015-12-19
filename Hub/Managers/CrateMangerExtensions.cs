@@ -1,5 +1,4 @@
-﻿using System;
-using Data.Crates;
+﻿using Data.Crates;
 using Data.Entities;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
@@ -11,19 +10,16 @@ namespace Hub.Managers
     {
         public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManger, ActionDO action)
         {
-            if (action == null) throw new ArgumentNullException("action");
             return crateManger.UpdateStorage(() => action.CrateStorage);
         }
 
         public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManger, ActionDTO action)
         {
-            if (action == null) throw new ArgumentNullException("action");
             return crateManger.UpdateStorage(() => action.CrateStorage);
         }
 
         public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManger, PayloadDTO payload)
         {
-            if (payload == null) throw new ArgumentNullException("payload");
             return crateManger.UpdateStorage(() => payload.CrateStorage);
         }
 

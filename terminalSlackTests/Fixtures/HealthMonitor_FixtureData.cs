@@ -1,6 +1,12 @@
 ﻿using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using Hub.Services;
 
 namespace terminalSlackTests.Fixtures
 {
@@ -35,7 +41,7 @@ namespace terminalSlackTests.Fixtures
         {
             return new AuthorizationTokenDTO()
             {
-                Token = @"xoxp-9815816992-9816213634-14997343526-d99a1c9198"
+                Token = @"xoxp-7518126694-11767329056-15941434949-2ca03232a3"
             };
         }
 
@@ -55,21 +61,6 @@ namespace terminalSlackTests.Fixtures
                new FieldDTO("user_name", "sergeyp"),
                new FieldDTO("text", "test")
            };
-        }
-
-        public static ActionDTO Publish_To_Slack_v1_InitialConfiguration_ActionDTO(bool isAuthToken = true)
-        {
-            var activityTemplate = Monitor_Channel_v1_ActivityTemplate();
-
-            return new ActionDTO()
-            {
-                Id = Guid.NewGuid(),
-                Name = "Select Slack Channel",
-                Label = "Selected_Slack_Channel",
-                AuthToken = isAuthToken ? Slack_AuthToken() : null,
-                ActivityTemplate = activityTemplate,
-                ActivityTemplateId = activityTemplate.Id
-            };
         }
     }
 }

@@ -7,11 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using TerminalBase.BaseClasses;
 using terminalGoogle.DataTransferObjects;
 using Hub.Managers;
 using terminalGoogle.Services;
 using TerminalBase.Infrastructure;
+using AutoMapper;
 using Data.Control;
 
 namespace terminalGoogle.Actions
@@ -37,8 +39,10 @@ namespace terminalGoogle.Actions
 
         public override Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
-
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
             return base.Configure(curActionDO, authTokenDO);
         }
             
@@ -96,13 +100,15 @@ namespace terminalGoogle.Actions
 
         private async Task<Crate> PackCrate_GoogleForms(GoogleAuthDTO authDTO)
         {
+            Crate crate;
+
             if (string.IsNullOrEmpty(authDTO.RefreshToken))
                 throw new ArgumentNullException("Token is empty");
 
             var files = await _googleDrive.GetGoogleForms(authDTO);
 
             var curFields = files.Select(file => new FieldDTO() { Key = file.Value, Value = file.Key }).ToArray();
-            Crate crate = Crate.CreateDesignTimeFieldsCrate("Available Forms", curFields);
+            crate = Crate.CreateDesignTimeFieldsCrate("Available Forms", curFields);
 
             return await Task.FromResult(crate);
         }
@@ -131,7 +137,7 @@ namespace terminalGoogle.Actions
 
             var formId = googleFormControl.Value;
 
-            if (string.IsNullOrEmpty(formId))
+            if (String.IsNullOrEmpty(formId))
                 throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
 
             var result = await _googleDrive.UploadAppScript(googleAuthDTO, formId);
@@ -152,7 +158,10 @@ namespace terminalGoogle.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
 
             var processPayload = await GetProcessPayload(curActionDO, containerId);
             var payloadFields = ExtractPayloadFields(processPayload);
@@ -169,7 +178,7 @@ namespace terminalGoogle.Actions
         private List<FieldDTO> CreatePayloadFormResponseFields(List<FieldDTO> payloadfields)
         {
             List<FieldDTO> formFieldResponse = new List<FieldDTO>();
-            string[] formresponses = payloadfields.FirstOrDefault(w => w.Key == "response").Value.Split(new char[] { '&' });
+            string[] formresponses = payloadfields.Where(w => w.Key == "response").FirstOrDefault().Value.Split(new char[] { '&' });
 
             if (formresponses.Length > 0)
             {

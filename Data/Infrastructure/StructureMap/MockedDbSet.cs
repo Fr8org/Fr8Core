@@ -3,21 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using Data.Entities;
 
 namespace Data.Infrastructure.StructureMap
 {
     public abstract class MockedDbSet : IEnumerable
     {
-        internal abstract void Save();
-        public abstract IEnumerable DeletedEntries { get; }
-        public abstract IEnumerable ModifiedEntries { get; }
+        public abstract void Save();
         public abstract IEnumerable LocalEnumerable { get; }
         public abstract IEnumerator GetEnumerator();
         public abstract void WipeDatabase();
@@ -28,46 +23,9 @@ namespace Data.Infrastructure.StructureMap
         where TEntityType : class
     {
         private static readonly HashSet<TEntityType> SavedSet = new HashSet<TEntityType>();
-        private static readonly Dictionary<TEntityType, string> Digests = new Dictionary<TEntityType, string>();
         private readonly HashSet<TEntityType> _rowsToDelete = new HashSet<TEntityType>(); 
         private readonly HashSet<TEntityType> _set = new HashSet<TEntityType>();
         private readonly IEnumerable<MockedDbSet> _subSets;
-        private static readonly List<Func<TEntityType, object>> DigestProperties;
-
-
-        static MockedDbSet()
-        {
-            DigestProperties = new List<Func<TEntityType, object>>();
-            
-            foreach (var prop in typeof(TEntityType).GetProperties(BindingFlags.Instance | BindingFlags.Public))
-            {
-                if (prop.GetCustomAttribute<NotMappedAttribute>() != null)
-                {
-                    continue;
-                }
-
-                if (IsTypeSuitableForDigest(prop.PropertyType) && prop.CanRead)
-                {
-                    var p = prop;
-                    DigestProperties.Add(x => p.GetValue(x));
-                }
-            }
-        }
-
-        private static bool IsTypeSuitableForDigest(Type type)
-        {
-            if (type  == typeof(string) || type.IsValueType)
-            {
-                return true;
-            }
-
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>))
-            {
-                return IsTypeSuitableForDigest(type.GetGenericArguments()[0]);
-            }
-
-            return false;
-        }
 
         public override void WipeDatabase()
         {
@@ -84,38 +42,6 @@ namespace Data.Infrastructure.StructureMap
                     foreach (var val in subSet.LocalEnumerable.OfType<TEntityType>())
                         yield return val;
             }
-        }
-
-        public override IEnumerable ModifiedEntries
-        {
-            get
-            {
-                if (typeof (AuthorizationTokenDO) == typeof (TEntityType))
-                {
-                    int wtf = 0;
-                }
-                foreach (var entry in SavedSet)
-                {
-                    if (_rowsToDelete.Contains(entry))
-                    {
-                        yield break;
-                    }
-
-                    string digest;
-
-                    Digests.TryGetValue(entry, out digest);
-
-                    if (digest != ComputeEntityDigest(entry))
-                    {
-                        yield return entry;
-                    }
-                }
-            }
-        }
-
-        public override IEnumerable DeletedEntries
-        {
-            get { return _rowsToDelete; }
         }
 
         private IEnumerable<TEntityType> MergedSets
@@ -347,52 +273,19 @@ namespace Data.Infrastructure.StructureMap
             }
         }
 
-        private string ComputeEntityDigest(TEntityType entity)
+        public override void Save()
         {
-            if (entity == null)
+            foreach (var set in _set)
             {
-                return null;
-            }
-
-            var sb = new StringBuilder();
-
-            foreach (var prop in DigestProperties)
-            {
-                sb.Append('|');
-                sb.Append(prop(entity));
-            }
-
-            return sb.ToString();
-        }
-
-        internal override void Save()
-        {
-            foreach (var entity in _set)
-            {
-                if (!SavedSet.Contains(entity))
-                {
-                    SavedSet.Add(entity);
-                    Digests[entity] = ComputeEntityDigest(entity);
-                }
-                else
-                {
-                    if (!_rowsToDelete.Contains(entity))
-                    {
-                        Digests[entity] = ComputeEntityDigest(entity);
-                    }
-                }
+                if (!SavedSet.Contains(set))
+                    SavedSet.Add(set);
             }
 
             foreach (var rowToDelete in _rowsToDelete)
             {
                 if (SavedSet.Contains(rowToDelete))
-                {
                     SavedSet.Remove(rowToDelete);
-                    Digests.Remove(rowToDelete);
-                }
             }
-
-            _rowsToDelete.Clear();
         }
 
         public override IEnumerable LocalEnumerable

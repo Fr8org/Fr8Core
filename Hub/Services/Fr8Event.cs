@@ -66,7 +66,7 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //find the corresponding DockyardAccount
-                var authToken = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(eventReportMS.ExternalAccountId);
+                var authToken = uow.AuthorizationTokenRepository.FindOne(at => at.ExternalAccountId == eventReportMS.ExternalAccountId);
                 if (authToken == null)
                 {
                     return;

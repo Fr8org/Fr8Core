@@ -32,7 +32,10 @@ namespace terminalDocuSign.Actions
 
         public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
 
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }

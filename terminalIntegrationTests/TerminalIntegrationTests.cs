@@ -148,8 +148,8 @@ namespace terminalIntegrationTests
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var authToken = uow.AuthorizationTokenRepository.FindTokenById(_authToken.Id.ToString());
-
+                var authToken = uow.AuthorizationTokenRepository.GetQuery()
+                    .SingleOrDefault(x => x.Id == _authToken.Id);
                 if (authToken != null)
                 {
                     uow.AuthorizationTokenRepository.Remove(authToken);

@@ -1,18 +1,23 @@
-﻿﻿using System;
+﻿
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 ﻿using Data.Control;
 ﻿using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-﻿using Hub.Managers;
+
+using Hub.Interfaces;
+using Hub.Managers;
 using Newtonsoft.Json;
-﻿using terminalDocuSign.DataTransferObjects;
+using StructureMap;
+using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Data.Entities;
+using Data.Crates;
 ﻿using Data.States;
 
 namespace terminalDocuSign.Actions
@@ -28,14 +33,21 @@ namespace terminalDocuSign.Actions
 
         public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
 
             return await ProcessConfigurationRequest(curActionDO, dto => ConfigurationRequestType.Initial, authTokenDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO,
+            Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
 
             var processPayload = await GetProcessPayload(actionDO, containerId);
 
@@ -140,7 +152,10 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(PackControlsCrate(textBlock));
             }
-            
+
+            // var templateId = upstream.SelectMany(x => x.Content.Fields).FirstOrDefault(x => x.Key == "TemplateId");
+            //var templateId = templateId.Value;
+
             // If DocuSignTemplate Id was found, then add design-time fields.
             if (templateId != null && !string.IsNullOrEmpty(templateId.Value))
             {

@@ -110,7 +110,7 @@ namespace terminalTwilio.Tests.Actions
             _twilioAction = new Send_Via_Twilio_v1();
             var crateDTO = FixtureData.CrateDTOForTwilioConfiguration();
 
-            var smsINfo = _twilioAction.ParseSMSNumberAndMsg(crateDTO, null);
+            var smsINfo = _twilioAction.ParseSMSNumberAndMsg(crateDTO);
 
             Assert.AreEqual(smsINfo.Key, "+15005550006");
             Assert.AreEqual(smsINfo.Value, "DO-1437 test");

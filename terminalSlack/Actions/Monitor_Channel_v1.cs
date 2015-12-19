@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
 using Hub.Managers;
+using Newtonsoft.Json;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using TerminalBase.Infrastructure;
@@ -26,7 +28,10 @@ namespace terminalSlack.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
 
             var processPayload = await GetProcessPayload(actionDO, containerId);
             var payloadFields = ExtractPayloadFields(processPayload);
@@ -72,9 +77,12 @@ namespace terminalSlack.Actions
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
 
-            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator,authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x),authTokenDO);
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)

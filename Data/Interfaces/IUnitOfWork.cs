@@ -36,7 +36,7 @@ namespace Data.Interfaces
         //QuestionRepository QuestionRepository { get; }
         //AnswerRepository AnswerRepository { get; }
         //QuestionResponseRepository QuestionResponseRepository { get; }
-        IAuthorizationTokenRepository AuthorizationTokenRepository { get; }
+        AuthorizationTokenRepository AuthorizationTokenRepository { get; }
         LogRepository LogRepository { get; }
         ProfileNodeRepository ProfileNodeRepository { get; }
         ProfileItemRepository ProfileItemRepository { get; }

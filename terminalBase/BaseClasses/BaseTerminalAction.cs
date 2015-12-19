@@ -4,19 +4,25 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AutoMapper;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
+
 using Hub.Interfaces;
 using Hub.Managers;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using Hub.Services;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
+using Data.Infrastructure;
 
 namespace TerminalBase.BaseClasses
 {
@@ -50,17 +56,15 @@ namespace TerminalBase.BaseClasses
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
-        protected void CheckAuthentication(AuthorizationTokenDO authTokenDO)
-        {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
-        }
-
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
-            return authTokenDO == null || string.IsNullOrEmpty(authTokenDO.Token);
+            if (authTokenDO == null
+                || string.IsNullOrEmpty(authTokenDO.Token))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         protected async Task<PayloadDTO> GetProcessPayload(ActionDO actionDO, Guid containerId)
@@ -553,38 +557,6 @@ namespace TerminalBase.BaseClasses
                 crate.Content.Fields.Clear();
                 crate.Content.Fields.AddRange(fields);
             }
-        }
-
-        protected virtual async Task<Crate> MergeUpstreamFields<TManifest>(ActionDO curActionDO, string label)
-        {
-            List<Data.Crates.Crate<TManifest>> crates = null;
-
-            try
-            {
-                //throws exception from test classes when it cannot call webservice
-                crates = await GetCratesByDirection<TManifest>(curActionDO, CrateDirection.Upstream);
-            }
-            catch { }
-
-            if (crates != null)
-            {
-                FieldDTO[] upstreamFields;
-                Crate availableFieldsCrate = null;
-                if (crates is List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>)
-                {
-                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).SelectMany(x => x.Content.Fields).ToArray();
-
-                    availableFieldsCrate =
-                        Crate.CreateDesignTimeFieldsCrate(
-                            label,
-                            upstreamFields
-                        );
-                }
-
-                return availableFieldsCrate;
-            }
-
-            return await Task.FromResult<Crate>(null);
         }
     }
 }

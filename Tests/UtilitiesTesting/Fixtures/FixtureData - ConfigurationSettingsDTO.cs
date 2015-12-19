@@ -33,6 +33,15 @@ namespace UtilitiesTesting.Fixtures
             return curCrateStorage;
         }
 
+        public static ControlDefinitionDTO TestConnectionString1()
+        {
+            return new TextBlock()
+            {
+                Name = "Connection_String",
+                Value = @"Server = tcp:s79ifqsqga.database.windows.net,1433; Database = demodb_health; User ID = alexeddodb@s79ifqsqga; Password = Thales89; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30; "
+            };
+        }
+
         public static ControlDefinitionDTO TestConnectionString2()
         {
             return new TextBlock()
