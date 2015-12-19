@@ -43,11 +43,12 @@
             var result = new ActionDTO(this.parentRouteNodeId, this.id, this.isTempId);
             result.name = this.name;
             result.name = this.label;
+            result.ordering = this.ordering;
             return result;
         }
 
         static isActionValid(action: interfaces.IActionVM) {
-            return action && action.$resolved && !action.isTempId
+            return action && action.$resolved && !action.isTempId;
         }
 
         static create(dataObject: interfaces.IActionDTO): ActionDTO {
