@@ -208,6 +208,10 @@
     max-width: 450px;
 }
 
+div.action {
+    border-radius: 10px!important;
+}
+
 .action-name {
     text-align: center;
 }
@@ -235,11 +239,16 @@
     position: relative;
 }
 
-    .action-header p {
-        font-weight: 800;
-        font-size: 22px;
-        color: white;
-    }
+div.action-header {
+    border-top-left-radius: 10px!important;
+    border-top-right-radius: 10px!important;
+}
+
+.action-header p {
+    font-weight: 800;
+    font-size: 22px;
+    color: white;
+}
 
 .solution-action{
         min-height:180px;

@@ -4,6 +4,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
 using Data.Interfaces;
+using System;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security.DataProtection;
 
 namespace Hub.Security
 {
@@ -17,7 +20,12 @@ namespace Hub.Security
         public DockyardIdentityManager(IUserStore<Fr8AccountDO> store)
             : base(store)
         {
-            UserTokenProvider = new EmailTokenProvider<Fr8AccountDO>();
+            var dataProtectionProvider = new DpapiDataProtectionProvider("fr8");
+            this.UserTokenProvider = new DataProtectorTokenProvider<Fr8AccountDO>(dataProtectionProvider.Create())
+            {
+                // Expiration time.
+                TokenLifespan = TimeSpan.FromHours(24)
+            };
         }
     }
 }
