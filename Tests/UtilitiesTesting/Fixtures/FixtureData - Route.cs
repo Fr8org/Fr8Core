@@ -96,7 +96,7 @@ namespace UtilitiesTesting.Fixtures
                     RouteState = RouteState.Active,
                     Fr8Account = testUser
                 };
-                uow.RouteRepository.Add(routeDO);
+                uow.RouteNodeRepository.Add(routeDO);
 
                 var actionTemplate = ActionTemplate();
 

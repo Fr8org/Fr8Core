@@ -254,8 +254,8 @@ namespace terminalDocuSign.Actions
             //get selected check boxes (i.e. user wanted to subscribe these DocuSign events to monitor for)
             var curSelectedDocuSignEvents =
                 curConfigControlsCrate.Controls
-                    .Where(configControl => configControl.Type.Equals(ControlTypes.CheckBox) && configControl.Selected)
-                    .Select(checkBox => checkBox.Label.Replace(" ", ""));
+                    .Where(configControl => configControl.Type.Equals(ControlTypes.CheckBox) && configControl.Selected && configControl.Name.StartsWith("Event_"))
+                    .Select(checkBox => checkBox.Name.Substring("Event_".Length).Replace("_", ""));
 
             //create standard event subscription crate with user selected DocuSign events
             var curEventSubscriptionCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions",
@@ -276,7 +276,7 @@ namespace terminalDocuSign.Actions
             {
                 if (eventCheckBox.Selected)
                 {
-                    subscriptions.Add(eventCheckBox.Label);
+                    subscriptions.Add(eventCheckBox.Name.Substring("Event_".Length).Replace("_", ""));
                 }
             }
 
