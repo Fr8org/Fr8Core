@@ -161,7 +161,7 @@ namespace terminalGoogleTests.Unit
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var formID = crateStorage.CrateContentsOfType<StandardPayloadDataCM>().SingleOrDefault();
 
-            Assert.Greater(0, formID.PayloadObjects.SelectMany(s => s.PayloadObject).Count());
+            Assert.Greater(formID.PayloadObjects.SelectMany(s => s.PayloadObject).Count(), 0);
         }
 
         /// <summary>

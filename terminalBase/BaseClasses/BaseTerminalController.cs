@@ -158,21 +158,11 @@ namespace TerminalBase.BaseClasses
                         }
                     case "activate":
                         {
-                            Task<ActionDO> resutlActionDO;
-
                             //activate is an optional method so it may be missing
                             if (curMethodInfo == null) return Mapper.Map<ActionDTO>(curActionDO);
 
-                            var param = curMethodInfo.GetParameters();
-                            if (param.Length == 2)
-                                resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                            else
-                            {
-                                response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-                                return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
-                            }
-
-                            return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                            Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                         }
                     case "deactivate":
                         {
