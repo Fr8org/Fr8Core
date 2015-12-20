@@ -57,6 +57,9 @@ namespace Data.Infrastructure
         public delegate void EmailProcessingHandler(string dateReceived, string errorMessage);
         public static event EmailProcessingHandler AlertEmailProcessingFailure;
 
+        public delegate void IncidentOAuthAuthenticationFailedHandler(string requestQueryString, string errorMessage);
+        public static event IncidentOAuthAuthenticationFailedHandler IncidentOAuthAuthenticationFailed;
+
         public delegate void UserRegistrationHandler(Fr8AccountDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
 
@@ -450,6 +453,12 @@ namespace Data.Infrastructure
         {
             var handler = IncidentMissingFieldInPayload;
             if (handler != null) handler(fieldKey, actionName, actiondId);
+        }
+
+        public static void OAuthAuthenticationFailed(string requestQueryString, string errorMessage)
+        {
+            var handler = IncidentOAuthAuthenticationFailed;
+            if (handler != null) handler(requestQueryString, errorMessage);
         }
 
         public static void ActionActivated(ActionDO action)
