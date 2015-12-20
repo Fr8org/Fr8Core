@@ -28,8 +28,7 @@ namespace TerminalBase.Infrastructure
 
         public BaseTerminalEvent()
         {
-            //Regex used to fetch http://localhost:30643 
-            eventWebServerUrl = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/api/v1/fr8_events";
+            eventWebServerUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/event";
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
             _crateManager = ObjectFactory.GetInstance<CrateManager>();
@@ -44,8 +43,6 @@ namespace TerminalBase.Infrastructure
 
             //make Post call
             var restClient = PrepareRestClient();
-            const string eventWebServerUrl = "EventWebServerUrl";
-            string url = CloudConfigurationManager.GetSetting(eventWebServerUrl);
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
             {
                 ObjectId = terminalName,
@@ -57,7 +54,7 @@ namespace TerminalBase.Infrastructure
             });
             //TODO inpect this
             //I am not sure what to supply for parameters eventName and palletId, so i passed terminalName and eventType
-            return restClient.PostAsync(new Uri(url, UriKind.Absolute),
+            return restClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
                 _crateManager.ToDto(_eventReportCrateFactory.Create(eventType, terminalName, loggingDataCrate)));
 
         }
@@ -70,8 +67,6 @@ namespace TerminalBase.Infrastructure
 
             //make Post call
             var restClient = PrepareRestClient();
-            const string eventWebServerUrl = "EventWebServerUrl";
-            string url = CloudConfigurationManager.GetSetting(eventWebServerUrl);
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
             {
                 ObjectId = terminalName,
@@ -83,7 +78,7 @@ namespace TerminalBase.Infrastructure
             });
             //TODO inpect this
             //I am not sure what to supply for parameters eventName and palletId, so i passed terminalName and eventType
-            return restClient.PostAsync(new Uri(url, UriKind.Absolute),
+            return restClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
                 _crateManager.ToDto(_eventReportCrateFactory.Create("Terminal Event", terminalName, loggingDataCrate)));
 
         }
@@ -99,8 +94,6 @@ namespace TerminalBase.Infrastructure
         {
             //prepare the REST client to make the POST to fr8's Event Controller
             var restClient = PrepareRestClient();
-            const string eventWebServerUrl = "EventWebServerUrl";
-            string url = CloudConfigurationManager.GetSetting(eventWebServerUrl);
 
             //create event logging data with required information
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
@@ -114,7 +107,7 @@ namespace TerminalBase.Infrastructure
             });
 
             //return the response from the fr8's Event Controller
-            return restClient.PostAsync(new Uri(url, UriKind.Absolute),
+            return restClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
                 _crateManager.ToDto(_eventReportCrateFactory.Create("Terminal Incident", terminalName, loggingDataCrate)));
         }
 
