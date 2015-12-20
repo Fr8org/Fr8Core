@@ -10,6 +10,7 @@ using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 using Newtonsoft.Json;
 using Data.Infrastructure;
+using Utilities.Logging;
 
 namespace TerminalBase.BaseClasses
 {
@@ -31,7 +32,16 @@ namespace TerminalBase.BaseClasses
         public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError)
         {
             var exceptionMessage = terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
-            return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name));
+            try {
+                return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name));
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = "An error has occurred in terminal {0}.             \r\n{1}             \r\n";
+                errorMessage += "Additionally, an error has occurred while trying to post error details to the Hub.             \r\n{2}";
+                Logger.GetLogger().ErrorFormat(errorMessage, terminalName, exceptionMessage, ex.ToString());
+                throw;
+            }
         }
 
         /// <summary>
