@@ -344,6 +344,7 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var root = uow.RouteNodeRepository.GetByKey(id);
+
                 
                 var queue = new Queue<RouteNodeDO>();
                 queue.Enqueue(root);
