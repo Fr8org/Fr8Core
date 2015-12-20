@@ -145,8 +145,11 @@ namespace TerminalBase.BaseClasses
                     case "run":
                         {
                             OnStartAction(curTerminal, activityTemplateName);
-                            Task<PayloadDTO> resultPayloadDTO = (Task<PayloadDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
-                            return await resultPayloadDTO.ContinueWith((t) => OnCompletedAction(curTerminal));
+                            var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
+                                .Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
+                            await OnCompletedAction(curTerminal);
+
+                            return resultPayloadDTO;
                         }
                     case "initialconfigurationresponse":
                         {
