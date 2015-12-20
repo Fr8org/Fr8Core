@@ -16,7 +16,6 @@ using Hub.Interfaces;
 using System.Threading.Tasks;
 using HubWeb.ViewModels;
 using Newtonsoft.Json;
-using Utilities;
 using Hub.Managers;
 using Data.Crates;
 using Utilities.Interfaces;
@@ -93,8 +92,9 @@ namespace HubWeb.Controllers
                 );
 
                 if (curRoutes.Any())
-                {               
-                    return Ok(curRoutes.Select(Mapper.Map<RouteEmptyDTO>).ToArray());
+                {
+                    var queryableRepoOrdered = curRoutes.OrderByDescending(x => x.LastUpdated);
+                    return Ok(queryableRepoOrdered.Select(Mapper.Map<RouteEmptyDTO>).ToArray());
                 }
             }
 
