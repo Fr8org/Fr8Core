@@ -121,7 +121,8 @@ namespace terminalGoogleTests.Unit
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
         [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException)
+            ExpectedException = typeof(RestfulServiceException),
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
         )]
         public async void Receive_Google_Form_Initial_Configuration_NoAuth()
         {
