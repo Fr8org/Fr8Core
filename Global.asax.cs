@@ -138,7 +138,9 @@ namespace HubWeb
         private void NormalizeUrl()
         {
             // Ignore requests to dev and API since API clients usually cannot process 301 redirects
-            if (Request.Url.PathAndQuery.StartsWith("/api") || Request.Url.Host.Contains("dev"))
+            if (Request.Url.PathAndQuery.ToLower().StartsWith("/api") 
+                || Request.Url.PathAndQuery.ToLower().StartsWith("/authenticationcallback")
+                || Request.Url.Host.ToLower().Contains("dev"))
                 return;
 
             // Force user to fr8.co from fr8.company (old address)
