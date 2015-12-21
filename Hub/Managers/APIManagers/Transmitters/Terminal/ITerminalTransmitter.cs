@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Data.Constants;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -14,5 +15,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
         /// <param name="actionDTO">ActionDTO</param>
         /// <returns></returns>
         Task<TResponse> CallActionAsync<TResponse>(string actionType, ActionDTO actionDTO);
+
+        Task<PayloadDTO> RunActionAsync(ActionState actionState, ActionDTO actionDTO);
     }
 }

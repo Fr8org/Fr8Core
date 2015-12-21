@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Data.Constants;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
@@ -27,9 +28,14 @@ namespace terminalSlack.Controllers
         }
 
         [HttpPost]
-        public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
+        public Task<object> Execute([FromUri] String type, [FromUri] string state, [FromBody] ActionDTO curActionDTO)
         {
-            return _baseTerminalController.HandleFr8Request(curTerminal, actionType, curActionDTO);
+            ActionState? actionState = null;
+            if (!string.IsNullOrEmpty(state))
+            {
+                actionState = (ActionState)Enum.Parse(typeof(ActionState), state, true);
+            }
+            return _baseTerminalController.HandleFr8Request(curTerminal, actionState, type, curActionDTO);
         }
     }
 }

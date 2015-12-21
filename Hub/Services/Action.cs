@@ -476,7 +476,7 @@ namespace Hub.Services
                     using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
                     {
                         updater.CrateStorage = _crate.FromDto(payload.CrateStorage);
-                }
+                    }
                     //curContainerDO.CrateStorage = payload.CrateStorage;
                 }
 
@@ -494,7 +494,7 @@ namespace Hub.Services
 
             try
             {
-                var payloadDTO = await CallTerminalActionAsync<PayloadDTO>("Run", curActionDO, curContainerDO.Id);
+                var payloadDTO = await RunActionAsync(curActionState, curActionDO, curContainerDO.Id);
                 return payloadDTO;
 
             }
@@ -591,6 +591,31 @@ namespace Hub.Services
 
         //    return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<PayloadDTO>(actionName, dto);
         //}
+
+        private Task<PayloadDTO> RunActionAsync(ActionState curActionState, ActionDO curActionDO, Guid containerId)
+        {
+            if (curActionDO == null) throw new ArgumentNullException("curActionDO");
+
+            var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
+            dto.ContainerId = containerId;
+            _authorizationToken.PrepareAuthToken(dto);
+
+            EventManager.ActionDispatched(curActionDO, containerId);
+
+            if (containerId != Guid.Empty)
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var containerDO = uow.ContainerRepository.GetByKey(containerId);
+                    EventManager.ContainerSent(containerDO, curActionDO);
+                    var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>().RunActionAsync(curActionState, dto);
+                    EventManager.ContainerReceived(containerDO, curActionDO);
+                    return reponse;
+                }
+            }
+
+            return ObjectFactory.GetInstance<ITerminalTransmitter>().RunActionAsync(curActionState, dto);
+        }
 
         private Task<TResult> CallTerminalActionAsync<TResult>(string actionName, ActionDO curActionDO, Guid containerId)
         {

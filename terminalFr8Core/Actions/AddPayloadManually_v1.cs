@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
@@ -18,7 +19,7 @@ namespace terminalFr8Core.Actions
 {
     public class AddPayloadManually_v1 : BaseTerminalAction
     {
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, ActionState curActionState, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var processPayload = await GetProcessPayload(curActionDO, containerId);
 

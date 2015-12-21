@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
+using Data.Constants;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -101,7 +102,7 @@ namespace TerminalBase.BaseClasses
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, ActionDTO curActionDTO)
+        public async Task<object> HandleFr8Request(string curTerminal, ActionState? curActionState, string curActionPath, ActionDTO curActionDTO)
         {
             if (curActionDTO == null)
                 throw new ArgumentNullException("curActionDTO");
@@ -156,7 +157,7 @@ namespace TerminalBase.BaseClasses
                         {
                             OnStartAction(curTerminal, activityTemplateName);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
-                                .Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
+                                .Invoke(curObject, new Object[] { curActionDO, curActionState, curContainerId, curAuthTokenDO });
                             await OnCompletedAction(curTerminal);
 
                             return resultPayloadDTO;
