@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using Data.Constants;
 using Data.Control;
 using Data.Infrastructure;
@@ -36,10 +37,13 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at => at.UserID == userId);
-                if (curAuthToken != null)
-                    return curAuthToken.Token;
+                var tokenDO = uow.AuthorizationTokenRepository.FindTokenByUserId(userId);
+                if (tokenDO != null)
+                {
+                    return tokenDO.Token;
+                }
             }
+
             return null;
         }
 
@@ -47,10 +51,7 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
-                    at.UserID == userId
-                    && at.TerminalID == terminalId
-                    && at.AuthorizationTokenState == AuthorizationTokenState.Active);
+                var curAuthToken = uow.AuthorizationTokenRepository.FindToken(userId, terminalId, AuthorizationTokenState.Active);
 
                 if (curAuthToken != null)
                     return curAuthToken.Token;
@@ -58,26 +59,26 @@ namespace Hub.Services
             return null;
         }
 
-        public string GetTerminalToken(int terminalId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
-                    at.TerminalID == terminalId
-                    && at.AuthorizationTokenState == AuthorizationTokenState.Active);
-
-                if (curAuthToken != null)
-                    return curAuthToken.Token;
-            }
-            return null;
-        }
+//        public string GetTerminalToken(int terminalId)
+//        {
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
+//                    at.TerminalID == terminalId
+//                    && at.AuthorizationTokenState == AuthorizationTokenState.Active);
+//
+//                if (curAuthToken != null)
+//                    return curAuthToken.Token;
+//            }
+//            return null;
+//        }
 
 
         public void AddOrUpdateToken(string userId, string token)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var tokenDO = uow.AuthorizationTokenRepository.FindOne(at => at.UserID == userId);
+                var tokenDO = uow.AuthorizationTokenRepository.FindTokenByUserId(userId);
                 if (tokenDO == null)
                 {
                     tokenDO = new AuthorizationTokenDO()
@@ -91,6 +92,7 @@ namespace Hub.Services
 
 				tokenDO.ExpiresAt = currentTime.AddYears(100);
                 tokenDO.Token = token;
+
                 uow.SaveChanges();
             }
         }
@@ -99,7 +101,8 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var tokenDO = uow.AuthorizationTokenRepository.FindOne(at => at.UserID == userId);
+                var tokenDO = uow.AuthorizationTokenRepository.FindTokenByUserId(userId);
+                
                 if (tokenDO != null)
                 {
                     uow.AuthorizationTokenRepository.Remove(tokenDO);
@@ -289,8 +292,7 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var authToken = uow.AuthorizationTokenRepository
-                    .FindOne(x => x.ExternalStateToken == authTokenDTO.ExternalStateToken);
+                var authToken = uow.AuthorizationTokenRepository.FindTokenByExternalState(authTokenDTO.ExternalStateToken);
 
                 if (authToken == null)
                 {

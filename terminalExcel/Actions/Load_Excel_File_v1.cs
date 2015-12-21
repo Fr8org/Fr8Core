@@ -231,14 +231,14 @@ namespace terminalExcel.Actions
                 updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
                 updater.CrateStorage.Add(PackControls(new ActionUi(true)));
 
-            if (filePathsFromUserSelection.Length > 0)
-            {
+                if (filePathsFromUserSelection.Length > 0)
+                {
                     var selectedFilePath = filePathsFromUserSelection[0].select_file.Value;
                     TransformExcelFileDataToStandardTableDataCrate(storage, selectedFilePath);
+                }
             }
 
-                return curActionDO;
-            }
+            return curActionDO;
         }
 
         private void TransformExcelFileDataToStandardTableDataCrate(CrateStorage storage, string selectedFilePath)

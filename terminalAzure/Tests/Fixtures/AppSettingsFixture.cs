@@ -8,8 +8,7 @@ namespace terminalAzure.Tests.Fixtures
         private static readonly Dictionary<string, string> _settings
             = new Dictionary<string, string>()
         {
-            { "CoreWebServerUrl", "http://localhost:30643/" },
-            { "EventWebServerUrl", "http://localhost:30643/api/event" }
+            { "CoreWebServerUrl", "http://localhost:30643/" }
         };
 
         public string GetSetting(string name)

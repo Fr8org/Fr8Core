@@ -24,6 +24,7 @@ module dockyard.controllers {
         deleteAction: (action: model.ActionDTO) => void;
         selectAction(action): void;
         isBusy: () => boolean;
+        onActionDrop: (group: model.ActionGroup, actionId: string, index: number) => void;
     }
 
     //Setup aliases
@@ -95,6 +96,163 @@ module dockyard.controllers {
                     this.selectAction(action, null);
             }
 
+            //Group: which group action is dropped to
+            //actionId: id of dropped action
+            //dropped index
+            $scope.onActionDrop = (group: model.ActionGroup, actionId: string, index: number) => {
+
+                var realAction = this.findActionById(actionId);
+                if (realAction === null) {
+                    return;
+                }
+                
+                //let's remove this action from it's old parent
+                var downstreamActions: model.ActionDTO[] = this.findAndRemoveAction(realAction);
+
+                //TODO check parent action change with a more solid method
+                //this action is moved to a different parent
+                if (realAction.parentRouteNodeId !== group.actions[0].parentRouteNodeId) {
+                    //set new parent
+                    realAction.parentRouteNodeId = group.actions[0].parentRouteNodeId;
+                } else {
+                    //this action is moved to same parent
+                    //our index calculation might have been wrong
+                    //while dragging an action we don't delete that action
+                    //we just make it hidden - so it calculates dragged action too while calculating index
+                    if (realAction.ordering <= index) {
+                        index -= 1;
+                    }
+                }
+
+                //now we should inject it to proper position and get downstream actions
+                downstreamActions = downstreamActions.concat(this.insertActionToParent(realAction, index));
+
+                //let's add our current action to configure list
+                downstreamActions.push(realAction);
+
+                //let's re-render route builder
+                this.renderRoute(<interfaces.IRouteVM>this.$scope.current.route);
+
+                //if this action is dragged to same parent as it was before
+                //there might be duplicate actions in our downstreamactions array
+                //let's eliminate them
+                var uniqueDownstreamActions = _.uniq(downstreamActions, (action: model.ActionDTO) => action.id);
+                
+                //let's wait for UI to finish it's rendering
+                this.$timeout(() => {
+                    //reconfigure those actions
+                    this.reConfigure(uniqueDownstreamActions);    
+                });
+                
+            };
+
+        }
+
+        //re-orders actions according to their position on array
+        private reOrderActions(actions: model.ActionDTO[]) {
+            for (var i = 0; i < actions.length; i++) {
+                actions[i].ordering = i + 1;
+            }
+        }
+
+        private reConfigure(actions: model.ActionDTO[]) {
+            for (var i = 0; i < actions.length; i++) {
+                
+                this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure], new pca.ActionReconfigureEventArgs(actions[i]));
+                if (actions[i].childrenActions.length > 0) {
+                    this.reConfigure(<model.ActionDTO[]>actions[i].childrenActions);
+                }
+            }
+        }
+
+        //inserts specified action to it's parent and returns downstream actions
+        private insertActionToParent(action: model.ActionDTO, index: number): model.ActionDTO[] {
+            //we should update childActions property of specified action
+            var newParent = this.findActionById(action.parentRouteNodeId);
+            var newList: interfaces.IActionDTO[];
+            //might be root level
+            if (newParent !== null) {
+                newList = newParent.childrenActions;
+            } else {
+                //lets check subroutes
+                var subRoute = this.findSubRouteById(action.parentRouteNodeId);
+                newList = subRoute.actions;
+            }
+
+            //now we should inject this action to it's new parent to proper position
+            newList.splice(index, 0, action);
+
+            //set their ordering according to their position
+            this.reOrderActions(<model.ActionDTO[]>newList);
+
+            //lets call reconfigure on downstream actions
+            return <model.ActionDTO[]>newList.slice(index + 1, newList.length);
+        }
+        
+        //removes specified action from it's parent and returns downstream actions
+        private findAndRemoveAction(action: model.ActionDTO): model.ActionDTO[] {
+            var currentParent = this.findActionById(action.parentRouteNodeId);
+            var listToRemoveActionFrom: interfaces.IActionDTO[];
+            //might be root level
+            if (currentParent !== null) {
+                listToRemoveActionFrom = currentParent.childrenActions;
+            } else {
+                //lets check subroutes
+                var subRoute = this.findSubRouteById(action.parentRouteNodeId);
+                listToRemoveActionFrom = subRoute.actions;
+            }
+
+            var index = 0;
+            //remove this action from it's old parent
+            for (var i = 0; i < listToRemoveActionFrom.length; i++) {
+                if (listToRemoveActionFrom[i].id === action.id) {
+                    listToRemoveActionFrom.splice(i, 1);
+                    index = i;
+                    break;
+                }
+            }
+            this.reOrderActions(<model.ActionDTO[]>listToRemoveActionFrom);
+
+            //return downstream actions of removed action
+            return <model.ActionDTO[]>listToRemoveActionFrom.slice(index, listToRemoveActionFrom.length);
+        }
+
+        private findSubRouteById(id: string): model.SubrouteDTO {
+            for (var i = 0; i < this.$scope.current.route.subroutes.length; i++) {
+                if (this.$scope.current.route.subroutes[i].id === id) {
+                    return this.$scope.current.route.subroutes[i];
+                }
+            }
+
+            return null;
+        }
+
+        private findActionById(id: string): model.ActionDTO {
+            for (var subroute of this.$scope.current.route.subroutes) {
+                for (var action of subroute.actions) {
+                    var foundAction = this.searchAction(id, subroute.actions);
+                    if (foundAction !== null) {
+                        return foundAction;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private searchAction(id: string, actionList: model.ActionDTO[]): model.ActionDTO {
+            for (var i = 0; i < actionList.length; i++) {
+                if (actionList[i].id === id) {
+                    return actionList[i];
+                }
+                if (actionList[i].childrenActions.length) {
+                    var foundAction = this.searchAction(id, <model.ActionDTO[]>actionList[i].childrenActions);
+                    if (foundAction !== null) {
+                        return foundAction;
+                    }
+                }
+            }
+            return null;
         }
 
         /*
@@ -147,7 +305,7 @@ module dockyard.controllers {
                 }
             }
 
-            this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);
+            this.$scope.actionGroups = this.LayoutService.placeActions(actions, curRoute.startingSubrouteId);  
         }
 
         // If action updated, notify interested parties and update $scope.current.action
@@ -178,7 +336,6 @@ module dockyard.controllers {
             }
 
         private addAction(group: model.ActionGroup) {
-            console.log('Add action');
             var self = this;
             var promise = this.RouteBuilderService.saveCurrent(this.$scope.current);
             promise.then((result: model.RouteBuilderState) => {
@@ -194,8 +351,6 @@ module dockyard.controllers {
         }
 
         private deleteAction(action: model.ActionDTO) {
-            //TODO -> should we generate an event for delete event?
-
             var self = this;
             self.ActionService.deleteById({ id: action.id, confirmed: false }).$promise.then((response) => {
                 self.reloadRoute();
@@ -208,18 +363,15 @@ module dockyard.controllers {
                         self.reloadRoute();
                     });
                 });
-            });
-            
-            
+            }); 
         }
 
-        
 
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
 
             var activityTemplate = eventArgs.activityTemplate;
             // Generate next Id.
-            var id = this.LocalIdentityGenerator.getNextId();
+            var id = this.LocalIdentityGenerator.getNextId();                
             var parentId = this.$scope.currentSubroute.id;
             if (eventArgs.group !== null && eventArgs.group.parentAction !== null) {
                 parentId = eventArgs.group.parentAction.id;

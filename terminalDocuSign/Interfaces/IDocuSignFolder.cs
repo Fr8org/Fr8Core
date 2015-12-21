@@ -1,0 +1,12 @@
+﻿using System;
+using System.Collections.Generic;
+using terminalDocuSign.Infrastructure;
+
+namespace terminalDocuSign.Interfaces
+{
+    public interface IDocuSignFolder
+    {
+        List<DocusignFolderInfo> GetFolders(string login, string password);
+        List<FolderItem> Search(string login, string password, string searchText, string folderId, string status = null, DateTime? fromDate = null, DateTime? toDate = null);
+    }
+}

@@ -10,6 +10,7 @@ using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Services;
 using HubWeb.ViewModels;
+using Data.Infrastructure;
 
 namespace HubWeb.Controllers
 {
@@ -29,7 +30,6 @@ namespace HubWeb.Controllers
             string terminalName,
             string terminalVersion)
         {
-
             if (string.IsNullOrEmpty(terminalName) || string.IsNullOrEmpty(terminalVersion))
             {
                 throw new ApplicationException("TerminalName or TerminalVersion is not specified.");
@@ -66,6 +66,7 @@ namespace HubWeb.Controllers
             }
             else
             {
+                EventManager.OAuthAuthenticationFailed(requestQueryString, error);
                 return View("Error", new AuthenticationErrorVM()
                 {
                     Error = error

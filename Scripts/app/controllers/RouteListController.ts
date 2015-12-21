@@ -106,7 +106,7 @@ module dockyard.controllers {
             this.$modal.open({
                 animation: true,
                 templateUrl: 'modalDeleteConfirmation',
-                controller: 'RouteListController__DeleteConfirmation',
+                controller: 'RouteListController__DeleteConfirmation'
 
             }).result.then(() => {
                 //Deletion confirmed

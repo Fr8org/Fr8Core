@@ -20,7 +20,7 @@ namespace terminalDocuSignTests.Integration
         {
             var storage = new CrateStorage();
 
-            storage.Add(Data.Crates.Crate.FromContent("Config", new Query_DocuSign_v1.RuntimeConfiguration()));
+            storage.Add(Data.Crates.Crate.FromContent("Config", new Query_DocuSign_v1.ActionUi()));
             
             return storage;
         }
@@ -38,6 +38,8 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalConfigureUrl();
 
             var requestActionDTO = HealthMonitor_FixtureData.Query_DocuSign_v1_InitialConfiguration_ActionDTO();
+
+            requestActionDTO.AuthToken = null;
 
             await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
@@ -70,7 +72,7 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Action was not configured correctly.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Action was not configured correctly""}"
         )]
         public async void Query_DocuSign_Run_NoConfig()
         {

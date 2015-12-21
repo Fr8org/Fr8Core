@@ -33,5 +33,6 @@ namespace Data.Interfaces.DataTransferObjects
         public AuthorizationTokenDTO AuthToken { get; set; }
 
         public ActionDTO[] ChildrenActions { get; set; }
+        public int Ordering { get; set; }
     }
 }

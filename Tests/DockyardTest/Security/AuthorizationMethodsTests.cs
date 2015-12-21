@@ -132,14 +132,14 @@ namespace DockyardTest.Security
             Assert.IsNull(token);
         }
 
-        [Test]
-        public void CanGetTerminalToken()
-        {
-            var tokenDO = CreateAndAddTokenDO();
-            var testToken = _authorization.GetTerminalToken(tokenDO.TerminalID);
-
-            Assert.AreEqual(Token, testToken);            
-        }
+//        [Test]
+//        public void CanGetTerminalToken()
+//        {
+//            var tokenDO = CreateAndAddTokenDO();
+//            var testToken = _authorization.GetTerminalToken(tokenDO.TerminalID);
+//
+//            Assert.AreEqual(Token, testToken);            
+//        }
 
         [Test]
         public void CanUpdateToken()
