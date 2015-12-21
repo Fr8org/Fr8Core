@@ -114,7 +114,7 @@ namespace Hub.Services
                 case ActionResponse.RequestSuspend:
                     throw new ExecutionPausedException();
                 case ActionResponse.Null:
-                    
+                    //let's assume this is success for now
                     break;
                 case ActionResponse.Error:
                     //TODO retry action execution until 3 errors??
@@ -126,6 +126,11 @@ namespace Hub.Services
             }
         }
 
+        /// <summary>
+        /// Adds current action as the last element of stack
+        /// </summary>
+        /// <param name="uow"></param>
+        /// <param name="curContainerDO"></param>
         private void PushAction(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
@@ -137,6 +142,12 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
+        /// <summary>
+        /// Removes last action from stack
+        /// </summary>
+        /// <param name="uow"></param>
+        /// <param name="curContainerDO"></param>
+        /// <returns></returns>
         private int PopAction(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             var remainingActionCount = 0;
@@ -152,9 +163,17 @@ namespace Hub.Services
             return remainingActionCount;
         }
 
+
+        /* 
+        *          a
+        *       b     c 
+        *     d   E  f  g  
+        * 
+        * 
+        * We traverse this tree in this order a-b-d-E-b-c-f-g-c-a-NULL 
+        */
         /// <summary>
         /// Moves to next Route
-        /// TODO: prepare and insert wiki page here (bahadir)
         /// </summary>
         /// <param name="uow"></param>
         /// <param name="curContainerDO"></param>
@@ -284,17 +303,6 @@ namespace Hub.Services
                 var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, actionResponse);
                 MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);
             }
-
-            /*
-
-            if (curContainerDO.CurrentRouteNode != null)
-            {
-                
-            }
-            else
-            {
-                throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
-            }*/
         }
 
         // Return the Containers of current Account
