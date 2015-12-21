@@ -21,7 +21,7 @@ using Utilities;
 
 namespace terminalFr8Core.Actions
 {
-    public class Delay_v1 : BaseTerminalAction
+    public class SetDelay_v1 : BaseTerminalAction
     {
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
