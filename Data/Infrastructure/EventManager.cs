@@ -138,7 +138,7 @@ namespace Data.Infrastructure
         public delegate void IncidentDocuSignFieldMissingHandler(string envelopeId, string fieldName);
         public static event IncidentDocuSignFieldMissingHandler IncidentDocuSignFieldMissing;
 
-        public delegate void IncidentMissingFieldInPayloadHandler(string fieldKey, string actionName, string actionId);
+        public delegate void IncidentMissingFieldInPayloadHandler(string fieldKey, ActionDO action, string curUserId);
         public static event IncidentMissingFieldInPayloadHandler IncidentMissingFieldInPayload;
 
         public delegate void UnparseableNotificationReceivedHandler(string curNotificationUrl, string curNotificationPayload);
@@ -449,10 +449,10 @@ namespace Data.Infrastructure
             var handler = IncidentDocuSignFieldMissing;
             if (handler != null) handler(envelopeId, fieldName);
         }
-        public static void MissingFieldInPayload(string fieldKey, string actionName, string actiondId)
+        public static void MissingFieldInPayload(string fieldKey, ActionDO action, string userId)
         {
             var handler = IncidentMissingFieldInPayload;
-            if (handler != null) handler(fieldKey, actionName, actiondId);
+            if (handler != null) handler(fieldKey, action, userId);
         }
 
         public static void OAuthAuthenticationFailed(string requestQueryString, string errorMessage)
