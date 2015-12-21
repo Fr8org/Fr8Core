@@ -54,7 +54,7 @@ namespace terminalDocuSign.Services
             return control;
         }
 
-        public Crate PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
+        public Crate PackCrate_DocuSignTemplateNames(DocuSignAuth authDTO)
         {
             var template = new DocuSignTemplate();
 
@@ -69,7 +69,7 @@ namespace terminalDocuSign.Services
 
         public StandardPayloadDataCM CreateActionPayload(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
             var docusignEnvelope = new DocuSignEnvelope(
                 docuSignAuthDTO.Email,
@@ -125,7 +125,7 @@ namespace terminalDocuSign.Services
             updater.CrateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
             if (!String.IsNullOrEmpty(envelopeId))
             {
-                var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+                var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
                 var userDefinedFields = this.ExtractFieldsAndAddToCrate(envelopeId, docuSignAuthDTO, curActionDO);
                 updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", userDefinedFields.ToArray()));
                 return userDefinedFields.Count();
@@ -140,7 +140,7 @@ namespace terminalDocuSign.Services
         /// <param name="docuSignAuthDTO">DocuSign authentication token.</param>
         /// <param name="curActionDO">ActionDO object representing the current action. The crate with extracted 
         /// fields will be added to this Action replacing any older instances of that crate.</param>
-        public IEnumerable<FieldDTO> ExtractFieldsAndAddToCrate(string docuSignTemplateId, DocuSignAuthDTO docuSignAuthDTO, ActionDO curActionDO)
+        public IEnumerable<FieldDTO> ExtractFieldsAndAddToCrate(string docuSignTemplateId, DocuSignAuth docuSignAuthDTO, ActionDO curActionDO)
 
         {
             if (!string.IsNullOrEmpty(docuSignTemplateId))
@@ -164,7 +164,7 @@ namespace terminalDocuSign.Services
             throw new ApplicationException("Docusign TemplateId is null or emty");
         }
 
-        public Crate CrateCrateFromFields(string docuSignTemplateId, DocuSignAuthDTO docuSignAuthDTO, string crateLabel)
+        public Crate CrateCrateFromFields(string docuSignTemplateId, DocuSignAuth docuSignAuthDTO, string crateLabel)
         {
             if (!string.IsNullOrEmpty(docuSignTemplateId))
             {

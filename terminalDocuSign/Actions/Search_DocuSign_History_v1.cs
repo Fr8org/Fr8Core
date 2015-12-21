@@ -80,7 +80,7 @@ namespace terminalDocuSign.Actions
         
         protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
             var controls = new ActionUi();
 
             using (var updater = Crate.UpdateStorage(curActionDO))
@@ -168,7 +168,7 @@ namespace terminalDocuSign.Actions
             return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
 
-        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthDTO authDTO)
+        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuth authDTO)
         {
             var docusignFolder = new DocusignFolder();
             var folders = docusignFolder.GetFolders(authDTO.Email, authDTO.ApiPassword);

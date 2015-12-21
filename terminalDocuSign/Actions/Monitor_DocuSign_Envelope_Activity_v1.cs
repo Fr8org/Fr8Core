@@ -44,7 +44,7 @@ namespace terminalDocuSign.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected Crate PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
+        protected Crate PackCrate_DocuSignTemplateNames(DocuSignAuth authDTO)
         {
             var template = new DocuSignTemplate();
 
@@ -229,7 +229,7 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert
-                .DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+                .DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
 
             var crateControls = PackCrate_ConfigurationControls();
@@ -429,7 +429,7 @@ namespace terminalDocuSign.Actions
             return templateRecipientPicker;
         }
 
-        private Crate PackCrate_TemplateNames(DocuSignAuthDTO authDTO)
+        private Crate PackCrate_TemplateNames(DocuSignAuth authDTO)
         {
             var template = new DocuSignTemplate();
             var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);

@@ -49,7 +49,7 @@ namespace terminalDocuSign.Actions
 
             var processPayload = await GetProcessPayload(curActionDO, containerId);
 
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
             var curEnvelope = new Envelope();
             curEnvelope.Login = new DocuSignPackager()
@@ -135,7 +135,7 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
             var template = new DocuSignTemplate();
             template.Login = new DocuSignPackager().Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
@@ -163,7 +163,7 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {

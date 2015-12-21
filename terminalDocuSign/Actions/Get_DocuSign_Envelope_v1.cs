@@ -79,7 +79,7 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
             //get envelopeIdFromUpstreamActions
             var upstream = await GetCratesByDirection<StandardDesignTimeFieldsCM>(curActionDO, CrateDirection.Upstream);
@@ -139,7 +139,7 @@ namespace terminalDocuSign.Actions
                 result = envelopeId.ToString();
             else
             {
-                var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDo.Token);
+                var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDo.Token);
                 var selectedTemplate = (_docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO).Get()
                     as StandardDesignTimeFieldsCM).Fields.Where(a => a.Key.ToLowerInvariant() == control.Value.ToLowerInvariant()).FirstOrDefault();
                 result = (selectedTemplate != null) ? selectedTemplate.Value : "";
