@@ -148,6 +148,11 @@ namespace Hub.Services
             return GetNextActivity(currentActivity, true, root);
         }
 
+        public bool HasChildren(RouteNodeDO currentActivity)
+        {
+            return currentActivity.ChildNodes.Count > 0;
+        }
+
         private RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, bool depthFirst, RouteNodeDO root)
         {
             // Move to the first child if current activity has nested ones

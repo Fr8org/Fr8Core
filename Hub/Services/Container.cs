@@ -57,6 +57,11 @@ namespace Hub.Services
             return next;
         }
 
+        private bool HasChildren(RouteNodeDO routeNode)
+        {
+            return _activity.HasChildren(routeNode);
+        }
+
         private RouteNodeDO GetNextSibling(RouteNodeDO routeNode)
         {
             var next = _activity.GetNextSibling(routeNode);
@@ -148,7 +153,8 @@ namespace Hub.Services
         }
 
         /// <summary>
-        /// TODO restructure this function to use RouteNode Service
+        /// Moves to next Route
+        /// TODO: prepare and insert wiki page here (bahadir)
         /// </summary>
         /// <param name="uow"></param>
         /// <param name="curContainerDO"></param>
@@ -156,7 +162,7 @@ namespace Hub.Services
         private void MoveToNextRoute(IUnitOfWork uow, ContainerDO curContainerDO, bool skipChildren)
         {
 
-            if (skipChildren || curContainerDO.CurrentRouteNode.ChildNodes.Count < 1)
+            if (skipChildren || !HasChildren(curContainerDO.CurrentRouteNode))
             {
                 //if we are going up or forward remove this action from stack
                 var remainingActionCount = PopAction(uow, curContainerDO);
@@ -245,18 +251,6 @@ namespace Hub.Services
             throw new Exception("This shouldn't happen");
         }
 
-        private async Task ProcessActionTree(IUnitOfWork uow, ContainerDO curContainerDO)
-        {
-            while (curContainerDO.CurrentRouteNode != null)
-            {
-                var actionState = GetActionState(uow, curContainerDO);
-                var actionResponse = await ProcessAction(uow, curContainerDO, actionState);
-                ProcessCurrentActionResponse(uow, curContainerDO, actionResponse);
-                var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, actionResponse);
-                MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);                
-            }
-        }
-
         private bool HasOperationalStateCrate(ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
@@ -282,22 +276,25 @@ namespace Hub.Services
                 uow.SaveChanges();
             }
 
+            while (curContainerDO.CurrentRouteNode != null)
+            {
+                var actionState = GetActionState(uow, curContainerDO);
+                var actionResponse = await ProcessAction(uow, curContainerDO, actionState);
+                ProcessCurrentActionResponse(uow, curContainerDO, actionResponse);
+                var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, actionResponse);
+                MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);
+            }
+
+            /*
 
             if (curContainerDO.CurrentRouteNode != null)
             {
-                while (curContainerDO.CurrentRouteNode != null)
-                {
-                    var actionState = GetActionState(uow, curContainerDO);
-                    var actionResponse = await ProcessAction(uow, curContainerDO, actionState);
-                    ProcessCurrentActionResponse(uow, curContainerDO, actionResponse);
-                    var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, actionResponse);
-                    MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);
-                }
+                
             }
             else
             {
                 throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
-            }
+            }*/
         }
 
         // Return the Containers of current Account
