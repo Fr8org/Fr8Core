@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
@@ -16,7 +17,7 @@ namespace Hub.Interfaces
 
         List<RouteNodeDO> GetDownstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO);
 
-        Task Process(Guid curActivityId, ContainerDO curContainerDO);
+        Task Process(Guid curActivityId, ActionState curActionState, ContainerDO curContainerDO);
 
         IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount);
         IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, Func<ActivityTemplateDO, bool> predicate);

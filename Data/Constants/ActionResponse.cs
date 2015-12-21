@@ -12,6 +12,8 @@ namespace Data.Constants
         Success,
         Error,
         RequestTerminate,
-        RequestSuspend
+        RequestSuspend,
+        SkipChildren,
+        ReProcessChildren
     }
 }

@@ -68,6 +68,11 @@ namespace Hub.Services
             return next;
         }
 
+        private RouteNodeDO GetParent(RouteNodeDO routeNode)
+        {
+            return routeNode.ParentRouteNode;
+        }
+
         private void SetCurrentNode(IUnitOfWork uow, ContainerDO curContainerDO, RouteNodeDO curRouteNode)
         {
             curContainerDO.CurrentRouteNode = curRouteNode;
@@ -180,9 +185,9 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
-        private void ProcessCurrentActionState(IUnitOfWork uow, ContainerDO curContainerDo)
+        private void ProcessCurrentActionResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActionResponse response)
         {
-            switch (GetCurrentActionResponse(curContainerDo))
+            switch (response)
             {
                 case ActionResponse.Success:
                     ResetActionResponse(uow, curContainerDo);
@@ -212,8 +217,8 @@ namespace Hub.Services
                 //this function is called to find last action we were paused - if we were paused at all
                 if (ShouldProcessCurrentAction(curContainerDO))
                 {
-                    await _activity.Process(me.Id, curContainerDO);
-                    ProcessCurrentActionState(uow, curContainerDO);
+                    await _activity.Process(me.Id, ActionState.InitialRun, curContainerDO);
+                    ProcessCurrentActionResponse(uow, curContainerDO, GetCurrentActionResponse(curContainerDO));
                 }
                 
                 if (!ShouldProcessChildren(curContainerDO))
@@ -225,6 +230,128 @@ namespace Hub.Services
                 {
                     break;
                 }
+            }
+        }
+
+        private void PushAction(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.ActionStack.Add(curContainerDO.CurrentRouteNode.Id);
+            }
+
+            uow.SaveChanges();
+        }
+
+        private int PopAction(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            var remainingActionCount = 0;
+            using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.ActionStack.RemoveAt(operationalState.ActionStack.Count - 1);
+                remainingActionCount = operationalState.ActionStack.Count;
+            }
+
+            uow.SaveChanges();
+
+            return remainingActionCount;
+        }
+
+        /// <summary>
+        /// TODO restructure this function to use RouteNode Service
+        /// </summary>
+        /// <param name="uow"></param>
+        /// <param name="curContainerDO"></param>
+        /// <param name="skipChildren"></param>
+        private void MoveToNextRoute(IUnitOfWork uow, ContainerDO curContainerDO, bool skipChildren)
+        {
+
+            if (skipChildren || curContainerDO.CurrentRouteNode.ChildNodes.Count < 1)
+            {
+                //if we are going up or forward remove this action from stack
+                var remainingActionCount = PopAction(uow, curContainerDO);
+                var nextSibling = GetNextSibling(curContainerDO.CurrentRouteNode);
+                //we shouldn't go a higher level than we started processing
+                //on this case we shouldn't call getParent
+                if (remainingActionCount == 0 && nextSibling == null)
+                {
+                    curContainerDO.CurrentRouteNode = null;
+                    curContainerDO.CurrentRouteNodeId = null;
+                }
+                else
+                {
+                    curContainerDO.CurrentRouteNode = nextSibling ?? GetParent(curContainerDO.CurrentRouteNode);
+                    curContainerDO.CurrentRouteNodeId = curContainerDO.CurrentRouteNode != null ? curContainerDO.CurrentRouteNode.Id : (Guid?)null;
+                }
+                
+            }
+            else
+            {
+                var firstChild = GetFirstChild(curContainerDO.CurrentRouteNode);
+                curContainerDO.CurrentRouteNode = firstChild;
+                curContainerDO.CurrentRouteNodeId = curContainerDO.CurrentRouteNode.Id;
+            }
+            uow.SaveChanges();
+        }
+
+        private ActionState GetActionState(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
+            var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
+            if (operationalState.ActionStack.Any() &&
+                operationalState.ActionStack.Last() == curContainerDO.CurrentRouteNode.Id)
+            {
+                return ActionState.ReturnFromChildren;
+            }
+            //push this action to stack
+            PushAction(uow, curContainerDO);
+            return ActionState.InitialRun;
+        }
+
+        private async Task<ActionResponse> ProcessAction(IUnitOfWork uow, ContainerDO curContainerDO, ActionState state)
+        {
+            await _activity.Process(curContainerDO.CurrentRouteNode.Id, state, curContainerDO);
+            return GetCurrentActionResponse(curContainerDO);
+        }
+
+        private bool ShouldSkipChildren(ContainerDO curContainerDO, ActionState state, ActionResponse response)
+        {
+            //first let's check if there is a child action related response
+            if (response == ActionResponse.SkipChildren)
+            {
+                return true;
+            }
+            else if (response == ActionResponse.ReProcessChildren)
+            {
+                return false;
+            }
+
+            //otherwise we will assume this is a regular action
+            //so we will process it's children once
+
+            if (state == ActionState.InitialRun)
+            {
+                return false;
+            }
+            else if (state == ActionState.ReturnFromChildren)
+            {
+                return true;
+            }
+
+            throw new Exception("This shouldn't happen");
+        }
+
+        private async Task ProcessActionTree2(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            while (curContainerDO.CurrentRouteNode != null)
+            {
+                var actionState = GetActionState(uow, curContainerDO);
+                var actionResponse = await ProcessAction(uow, curContainerDO, actionState);
+                ProcessCurrentActionResponse(uow, curContainerDO, actionResponse);
+                var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, actionResponse);
+                MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);                
             }
         }
 
@@ -256,9 +383,10 @@ namespace Hub.Services
 
             if (curContainerDO.CurrentRouteNode != null)
             {
-                await ProcessActionTree(uow, curContainerDO);
+                await ProcessActionTree2(uow, curContainerDO);
+                //await ProcessActionTree(uow, curContainerDO);
                 //to mark container as finished
-                SetCurrentNode(uow, curContainerDO, null);
+                //SetCurrentNode(uow, curContainerDO, null);
             }
             else
             {

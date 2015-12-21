@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -464,11 +465,11 @@ namespace Hub.Services
         //            return curAction;
         //        }
 
-        public async Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow)
+        public async Task PrepareToExecute(ActionDO curAction, ActionState curActionState, ContainerDO curContainerDO, IUnitOfWork uow)
         {
                 EventManager.ActionStarted(curAction);
 
-                var payload = await Run(curAction, curContainerDO);
+                var payload = await Run(curAction, curActionState, curContainerDO);
 
                 if (payload != null)
                 {
@@ -484,7 +485,7 @@ namespace Hub.Services
             }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, ActionState curActionState, ContainerDO curContainerDO)
         {
             if (curActionDO == null)
             {
@@ -564,6 +565,32 @@ namespace Hub.Services
         {
             return await CallTerminalActionAsync<ActionDTO>("deactivate", curActionDO, Guid.Empty);
         }
+
+        //private Task<PayloadDTO> RunActionAsync(string actionName, ActionDO curActionDO, Guid containerId)
+        //{
+        //    if (actionName == null) throw new ArgumentNullException("actionName");
+        //    if (curActionDO == null) throw new ArgumentNullException("curActionDO");
+
+        //    var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
+        //    dto.ContainerId = containerId;
+        //    _authorizationToken.PrepareAuthToken(dto);
+
+        //    EventManager.ActionDispatched(curActionDO, containerId);
+
+        //    if (containerId != Guid.Empty)
+        //    {
+        //        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //        {
+        //            var containerDO = uow.ContainerRepository.GetByKey(containerId);
+        //            EventManager.ContainerSent(containerDO, curActionDO);
+        //            var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<PayloadDTO>(actionName, dto);
+        //            EventManager.ContainerReceived(containerDO, curActionDO);
+        //            return reponse;
+        //        }
+        //    }
+
+        //    return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<PayloadDTO>(actionName, dto);
+        //}
 
         private Task<TResult> CallTerminalActionAsync<TResult>(string actionName, ActionDO curActionDO, Guid containerId)
         {
