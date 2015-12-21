@@ -33,7 +33,8 @@ namespace TerminalBase.BaseClasses
         public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError)
         {
             var exceptionMessage = terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
-            try {
+            try
+            {
                 return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name));
             }
             catch (Exception ex)
@@ -220,7 +221,7 @@ namespace TerminalBase.BaseClasses
                 };
 
                 var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
-                EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e);
+                EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e, curActionDO.Id.ToString());
                 throw;
             }
         }

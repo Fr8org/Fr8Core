@@ -324,7 +324,7 @@ namespace Hub.Services
             }
             catch (ArgumentException e)
             {
-                EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message);
+                    EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message, curActionDO.Id.ToString());
                 throw;
             }
                 catch (RestfulServiceException e)
@@ -341,7 +341,7 @@ namespace Hub.Services
                             PreserveReferencesHandling = PreserveReferencesHandling.Objects
                         };
                         var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
-                        EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
+                        EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message, curActionDO.Id.ToString());
                         throw;
                     }
                 }
@@ -354,7 +354,7 @@ namespace Hub.Services
                     };
 
                     var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
-                    EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
+                    EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message, curActionDO.Id.ToString());
                 throw;
             }
 
@@ -476,7 +476,7 @@ namespace Hub.Services
                     using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
                     {
                         updater.CrateStorage = _crate.FromDto(payload.CrateStorage);
-                    }
+                }
                     //curContainerDO.CrateStorage = payload.CrateStorage;
                 }
 
@@ -500,7 +500,7 @@ namespace Hub.Services
             }
             catch (ArgumentException e)
             {
-                EventManager.TerminalRunFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message);
+                EventManager.TerminalRunFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message, curActionDO.Id.ToString());
                 throw;
             }
             catch (Exception e)
@@ -511,7 +511,7 @@ namespace Hub.Services
                 };
 
                 var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
-                EventManager.TerminalRunFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
+                EventManager.TerminalRunFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message, curActionDO.Id.ToString());
                 throw;
             }
         }
@@ -551,12 +551,12 @@ namespace Hub.Services
             }
             catch (ArgumentException)
             {
-                EventManager.TerminalActionActivationFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO));
+                EventManager.TerminalActionActivationFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), curActionDO.Id.ToString());
                 throw;
             }
             catch
             {
-                EventManager.TerminalActionActivationFailed(curActionDO.ActivityTemplate.Terminal.Endpoint, JsonConvert.SerializeObject(curActionDO));
+                EventManager.TerminalActionActivationFailed(curActionDO.ActivityTemplate.Terminal.Endpoint, JsonConvert.SerializeObject(curActionDO), curActionDO.Id.ToString());
                 throw;
             }
         }
