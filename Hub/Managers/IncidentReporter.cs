@@ -43,13 +43,13 @@ namespace Hub.Managers
             EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
         }
 
-        private void ProcessIncidentTerminalActionActivationFailed(string terminalUrl, string curActionDTO)
+        private void ProcessIncidentTerminalActionActivationFailed(string terminalUrl, string curActionDTO, string objectId)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
                 Data = terminalUrl + "      " + curActionDTO,
-                ObjectId = "unknown",
+                ObjectId = objectId,
                 PrimaryCategory = "Action",
                 SecondaryCategory = "Activation",
                 Activity = "Completed"
@@ -81,29 +81,31 @@ namespace Hub.Managers
             _eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity, EventReporter.EventType.Error);
         }
 
-        private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string curAction, string errorMessage)
+        private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string curAction, string errorMessage, string objectId)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
                 Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
-                ObjectId = "unknown",
+                ObjectId = objectId,
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Configure",
+                Component = "Hub",
                 Activity = "Configuration Failed"
             };
             SaveAndLogIncident(incident);
         }
 
-        private void ProcessIncidentTerminalInternalFailureOccurred(string curTerminalUrl, string curAction, Exception e)
+        private void ProcessIncidentTerminalInternalFailureOccurred(string curTerminalUrl, string curAction, Exception e, string objectId)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
                 Data = curTerminalUrl + "      " + curAction + " " + e.Message + " \r\nStack trace: \r\n" + e.StackTrace,
-                ObjectId = "unknown",
+                ObjectId = objectId,
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Configure",
+                Component = "Terminal",
                 Activity = "Configuration Failed"
             };
 
@@ -112,15 +114,16 @@ namespace Hub.Managers
             LogIncident(incident);
         }
 
-        private void ProcessIncidentTerminalRunFailed(string curTerminalUrl, string curAction, string errorMessage)
+        private void ProcessIncidentTerminalRunFailed(string curTerminalUrl, string curAction, string errorMessage, string objectId)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
                 Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
-                ObjectId = "unknown",
+                ObjectId = objectId,
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Configure",
+                Component = "Hub",
                 Activity = "Configuration Failed"
             };
             SaveAndLogIncident(incident);
@@ -149,6 +152,7 @@ namespace Hub.Managers
                 Data = incidentItem.Data,
                 PrimaryCategory = incidentItem.PrimaryCategory,
                 SecondaryCategory = incidentItem.SecondaryCategory,
+                Component = "Terminal",
                 Activity = incidentItem.Activity
             };
 
