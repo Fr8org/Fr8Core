@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 
 namespace Data.Constants
 {
-    public enum ActionState
+    public enum ActionResponse
     {
-        Completed = 0,
-        Pending = 1
+        Null = 0,
+        Success,
+        Error,
+        RequestTerminate,
+        RequestSuspend
     }
 }

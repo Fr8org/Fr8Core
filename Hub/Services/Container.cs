@@ -122,18 +122,11 @@ namespace Hub.Services
             return true;
         }
 
-        private ActionState? GetCurrentActionState(ContainerDO curContainerDO)
+        private ActionResponse GetCurrentActionResponse(ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
             var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
-            var currentActionState =
-                operationalState.States.FirstOrDefault(s => s.Id == curContainerDO.CurrentRouteNode.Id.ToString());
-            if (currentActionState == null)
-            {
-                return null;
-            }
-
-            return currentActionState.State;
+            return operationalState.CurrentActionResponse;
         }
 
         private Guid GetPausedRouteNodeId(ContainerDO curContainerDO)
@@ -176,16 +169,12 @@ namespace Hub.Services
         /// </summary>
         /// <param name="uow"></param>
         /// <param name="curContainerDo"></param>
-        private void MarkCurrentActionAsCompleted(IUnitOfWork uow, ContainerDO curContainerDo)
+        private void ResetActionResponse(IUnitOfWork uow, ContainerDO curContainerDo)
         {
             using (var updater = _crate.UpdateStorage(() => curContainerDo.CrateStorage))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.States.Add(new OperationalStateCM.ActionStateMatch
-                {
-                    Id = curContainerDo.CurrentRouteNode.Id.ToString(),
-                    State = ActionState.Completed
-                });
+                operationalState.CurrentActionResponse = ActionResponse.Null;
             }
 
             uow.SaveChanges();
@@ -193,17 +182,23 @@ namespace Hub.Services
 
         private void ProcessCurrentActionState(IUnitOfWork uow, ContainerDO curContainerDo)
         {
-            switch (GetCurrentActionState(curContainerDo))
+            switch (GetCurrentActionResponse(curContainerDo))
             {
-                case ActionState.Completed:
+                case ActionResponse.Success:
+                    ResetActionResponse(uow, curContainerDo);
                     //do nothing
                     break;
-                case ActionState.Pending:
+                case ActionResponse.RequestSuspend:
                     MarkCurrentActionAsPausedAction(uow, curContainerDo);
                     throw new ExecutionPausedException();
-                case null:
-                    MarkCurrentActionAsCompleted(uow, curContainerDo);
+                case ActionResponse.Null:
+                    
                     break;
+                case ActionResponse.Error:
+                    //TODO retry action execution until 3 errors??
+                    throw new Exception("Error on action with id " + curContainerDo.CurrentRouteNode.Id);
+                case ActionResponse.RequestTerminate:
+                    throw new Exception("Termination request from action with id " + curContainerDo.CurrentRouteNode.Id);
                 default:
                     throw new Exception("Unknown action state on action with id " + curContainerDo.CurrentRouteNode.Id);
             }

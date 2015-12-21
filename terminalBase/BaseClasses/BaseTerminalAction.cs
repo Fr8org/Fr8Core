@@ -50,6 +50,73 @@ namespace TerminalBase.BaseClasses
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
+        /// <summary>
+        /// Creates a suspend request for hub execution
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO SuspendHubExecution(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.RequestSuspend;
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// Creates a terminate request for hub execution
+        /// TODO: we could include a reason message with this request
+        /// after that we could stop throwing exceptions on actions
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO TerminateHubExecution(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.RequestTerminate;
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// returns success to hub
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO Success(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.Success;
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// returns error to hub
+        /// TODO: maybe we should include an error message
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO Error(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.Error;
+            }
+
+            return payload;
+        }
+
         protected void CheckAuthentication(AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))

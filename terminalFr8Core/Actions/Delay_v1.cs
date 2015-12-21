@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.UI;
 using AutoMapper;
 using Data.Constants;
 using Data.Control;
@@ -26,8 +27,6 @@ namespace terminalFr8Core.Actions
         {
             var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
             var payloadStorage = Crate.GetStorage(curPayloadDTO);
-
-            var actionId = curActionDO.Id.ToString();
             var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
             //check for operations crate
             if (operationsCrate == null)
@@ -36,25 +35,21 @@ namespace terminalFr8Core.Actions
             }
             
             //find our action state in operations crate
-            var myState = operationsCrate.States.FirstOrDefault(l => l.Id == actionId);
-            if (myState == null)
+            var myPreviousResponse = operationsCrate.CurrentActionResponse;
+            if (myPreviousResponse == ActionResponse.Null)
             {
-                //this is first time we are being called
-                CreatePendingState(actionId, curPayloadDTO);
-
                 //get user selected design time duration
                 var delayDuration = GetUserDefinedDelayDuration(curActionDO);
                 var alarmDTO = CreateAlarm(curActionDO, containerId, delayDuration);
                 //post to hub to create an alarm
                 await HubCommunicator.CreateAlarm(alarmDTO);
-            }
-            else
-            {
-                //this is second time we are being called. this means alarm has triggered
-                MarkActionAsCompleted(actionId, curPayloadDTO);
+
+                return SuspendHubExecution(curPayloadDTO);
             }
 
-            return curPayloadDTO;
+            
+            //this is second time we are being called. this means alarm has triggered
+            return Success(curPayloadDTO);
         }
 
         private AlarmDTO CreateAlarm(ActionDO actionDO, Guid containerId, TimeSpan duration)
@@ -68,31 +63,6 @@ namespace terminalFr8Core.Actions
                 StartTime = DateTime.UtcNow.Add(duration)
             };
         }
-
-        private void CreatePendingState(string actionId, PayloadDTO payload)
-        {
-            using (var updater = Crate.UpdateStorage(payload))
-            {
-                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.States.Add(new OperationalStateCM.ActionStateMatch
-                {
-                    Id = actionId,
-                    State = ActionState.Pending
-                });
-            }
-        }
-
-        private void MarkActionAsCompleted(string actionId, PayloadDTO payload)
-        {
-            using (var updater = Crate.UpdateStorage(payload))
-            {
-                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                var actionState = operationalState.States.First(s => s.Id == actionId);
-                actionState.State = ActionState.Completed;
-            }
-        }
-
-
         private TimeSpan GetUserDefinedDelayDuration(ActionDO curActionDO)
         {
             var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
