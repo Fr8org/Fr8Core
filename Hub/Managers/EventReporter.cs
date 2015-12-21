@@ -788,6 +788,7 @@ namespace Hub.Managers
                 Data = eventDataCm.Data,
                 PrimaryCategory = eventDataCm.PrimaryCategory,
                 SecondaryCategory = eventDataCm.SecondaryCategory,
+                Component = "Terminal",
                 Activity = eventDataCm.Activity
             };
 
