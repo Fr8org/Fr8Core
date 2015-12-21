@@ -99,8 +99,8 @@ namespace DockyardTest.Controllers
             var tokenDO = CreateAndAddTokenDO();
 
             var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", tokenDO.TerminalID);
-            activityTemplateDO.AuthenticationType = AuthenticationType.Internal;
             activityTemplateDO.Terminal = tokenDO.Terminal;
+            activityTemplateDO.Terminal.AuthenticationType = AuthenticationType.Internal;
 
             var actionDO = FixtureData.TestAction1();
             actionDO.ActivityTemplate = activityTemplateDO;
@@ -118,7 +118,7 @@ namespace DockyardTest.Controllers
                 Password = "Password",
                 Username = "Username",
                 Domain = "Domain",
-                ActionId = actionDO.Id
+                TerminalId = activityTemplateDO.Terminal.Id
             };
 
             var result = _authenticationController.Authenticate(credentialsDTO);
