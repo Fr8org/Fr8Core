@@ -23,16 +23,16 @@ namespace Data.Infrastructure
         public delegate void EntityStateChangedHandler(string entityName, object id, string stateName, string stateValue);
         public static event EntityStateChangedHandler AlertEntityStateChanged;
 
-        public delegate void IncidentTerminalConfigurePOSTFailureHandler(string terminalUrl, string curActionDTO, string errorMessage);
+        public delegate void IncidentTerminalConfigurePOSTFailureHandler(string terminalUrl, string curActionDTO, string errorMessage, string objectId);
         public static event IncidentTerminalConfigurePOSTFailureHandler IncidentTerminalConfigureFailed;
 
-        public delegate void IncidentTerminalRunPOSTFailureHandler(string terminalUrl, string curActionDTO, string errorMessage);
+        public delegate void IncidentTerminalRunPOSTFailureHandler(string terminalUrl, string curActionDTO, string errorMessage, string objectId);
         public static event IncidentTerminalRunPOSTFailureHandler IncidentTerminalRunFailed;
 
-        public delegate void IncidentTerminalInternalFailureHandler(string terminalUrl, string curActionDTO, Exception e);
+        public delegate void IncidentTerminalInternalFailureHandler(string terminalUrl, string curActionDTO, Exception e, string objectId);
         public static event IncidentTerminalInternalFailureHandler IncidentTerminalInternalFailureOccurred;
 
-        public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string curActionDTO);
+        public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string curActionDTO, string objectId);
         public static event IncidentTerminalActionActivationPOSTFailureHandler IncidentTerminalActionActivationFailed;
 
         public delegate void TerminalActionActivatedHandler(ActionDO action);
@@ -157,28 +157,28 @@ namespace Data.Infrastructure
         #region Method
 
 
-        public static void TerminalConfigureFailed(string terminalUrl, string actionDTO, string errorMessage)
+        public static void TerminalConfigureFailed(string terminalUrl, string actionDTO, string errorMessage, string objectId)
         {
             IncidentTerminalConfigurePOSTFailureHandler handler = IncidentTerminalConfigureFailed;
-            if (handler != null) handler(terminalUrl, actionDTO, errorMessage);
+            if (handler != null) handler(terminalUrl, actionDTO, errorMessage, objectId);
         }
 
-        public static void TerminalRunFailed(string terminalUrl, string actionDTO, string errorMessage)
+        public static void TerminalRunFailed(string terminalUrl, string actionDTO, string errorMessage, string objectId)
         {
             IncidentTerminalRunPOSTFailureHandler handler = IncidentTerminalRunFailed;
-            if (handler != null) handler(terminalUrl, actionDTO, errorMessage);
+            if (handler != null) handler(terminalUrl, actionDTO, errorMessage, objectId);
         }
 
-        public static void TerminalInternalFailureOccurred(string terminalUrl, string actionDTO, Exception e)
+        public static void TerminalInternalFailureOccurred(string terminalUrl, string actionDTO, Exception e, string objectId)
         {
             IncidentTerminalInternalFailureHandler handler = IncidentTerminalInternalFailureOccurred;
-            if (handler != null) handler(terminalUrl, actionDTO, e);
+            if (handler != null) handler(terminalUrl, actionDTO, e, objectId);
         }
 
-        public static void TerminalActionActivationFailed(string terminalUrl, string actionDTO)
+        public static void TerminalActionActivationFailed(string terminalUrl, string actionDTO, string objectId)
         {
             IncidentTerminalActionActivationPOSTFailureHandler handler = IncidentTerminalActionActivationFailed;
-            if (handler != null) handler(terminalUrl, actionDTO);
+            if (handler != null) handler(terminalUrl, actionDTO, objectId);
         }
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))
