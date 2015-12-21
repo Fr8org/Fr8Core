@@ -73,99 +73,12 @@ namespace Hub.Services
             return routeNode.ParentRouteNode;
         }
 
-        private void SetCurrentNode(IUnitOfWork uow, ContainerDO curContainerDO, RouteNodeDO curRouteNode)
-        {
-            curContainerDO.CurrentRouteNode = curRouteNode;
-            curContainerDO.CurrentRouteNodeId = curRouteNode != null ? curRouteNode.Id : (Guid?)null;
-            uow.SaveChanges();
-        }        
-
-        private async Task ProcessChildActions(IUnitOfWork uow, ContainerDO curContainerDO)
-        {
-            var me = curContainerDO.CurrentRouteNode;
-            var currentChild = GetFirstChild(me);
-            while (currentChild != null)
-            {
-                SetCurrentNode(uow, curContainerDO, currentChild);
-                await ProcessActionTree(uow, curContainerDO);
-                currentChild = GetNextSibling(currentChild);
-            }
-            SetCurrentNode(uow, curContainerDO, me);
-        }
-
-        private bool ShouldLoopBreak(ContainerDO curContainerDO)
-        {
-            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
-            var operationalStatus = storage.CrateContentsOfType<OperationalStateCM>().Single();
-            if (operationalStatus.Loops.Single(l => l.Id == curContainerDO.CurrentRouteNode.Id.ToString()).BreakSignalReceived)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        private bool ActionProcessingComplete(ContainerDO curContainerDO)
-        {
-            var curRouteNode = curContainerDO.CurrentRouteNode as ActionDO;
-            if (curRouteNode != null && curRouteNode.ActivityTemplate.Type == ActivityType.Loop && !ShouldLoopBreak(curContainerDO))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool ShouldProcessChildren(ContainerDO curContainerDO)
-        {
-            var curRouteNode = curContainerDO.CurrentRouteNode as ActionDO;
-
-            if (curRouteNode != null && curRouteNode.ActivityTemplate.Type == ActivityType.Loop && ShouldLoopBreak(curContainerDO))
-            {
-                return false;
-            }
-
-            return true;
-        }
 
         private ActionResponse GetCurrentActionResponse(ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
             var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
             return operationalState.CurrentActionResponse;
-        }
-
-        private Guid GetPausedRouteNodeId(ContainerDO curContainerDO)
-        {
-            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
-            var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
-            return operationalState.PausedRouteNodeId;
-        }
-
-        private bool ShouldProcessCurrentAction(ContainerDO curContainerDO)
-        {
-            //TODO should we mind other states of container?????
-            if (curContainerDO.ContainerState != ContainerState.Pending)
-            {
-                return true;
-            }//container won't process already processed actions. it continues until paused action is found. this is used to create same stack before pause
-            else if (GetPausedRouteNodeId(curContainerDO) == curContainerDO.CurrentRouteNode.Id)
-            {
-                
-                curContainerDO.ContainerState = ContainerState.Executing;
-                return true;
-            }
-            return false;
-        }
-
-        private void MarkCurrentActionAsPausedAction(IUnitOfWork uow, ContainerDO curContainerDo)
-        {
-            using (var updater = _crate.UpdateStorage(() => curContainerDo.CrateStorage))
-            {
-                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.PausedRouteNodeId = curContainerDo.CurrentRouteNode.Id;
-            }
-
-            uow.SaveChanges();
         }
 
         /// <summary>
@@ -194,7 +107,6 @@ namespace Hub.Services
                     //do nothing
                     break;
                 case ActionResponse.RequestSuspend:
-                    MarkCurrentActionAsPausedAction(uow, curContainerDo);
                     throw new ExecutionPausedException();
                 case ActionResponse.Null:
                     
@@ -206,30 +118,6 @@ namespace Hub.Services
                     throw new Exception("Termination request from action with id " + curContainerDo.CurrentRouteNode.Id);
                 default:
                     throw new Exception("Unknown action state on action with id " + curContainerDo.CurrentRouteNode.Id);
-            }
-        }
-
-        public async Task ProcessActionTree(IUnitOfWork uow, ContainerDO curContainerDO)
-        {
-            var me = curContainerDO.CurrentRouteNode;
-            while(true)
-            {
-                //this function is called to find last action we were paused - if we were paused at all
-                if (ShouldProcessCurrentAction(curContainerDO))
-                {
-                    await _activity.Process(me.Id, ActionState.InitialRun, curContainerDO);
-                    ProcessCurrentActionResponse(uow, curContainerDO, GetCurrentActionResponse(curContainerDO));
-                }
-                
-                if (!ShouldProcessChildren(curContainerDO))
-                {
-                    break;
-                }
-                await ProcessChildActions(uow, curContainerDO);
-                if (ActionProcessingComplete(curContainerDO))
-                {
-                    break;
-                }
             }
         }
 
@@ -295,7 +183,14 @@ namespace Hub.Services
             }
             uow.SaveChanges();
         }
-
+        /// <summary>
+        /// Checks if this action was run before by looking at stack
+        /// if stack contains id of this action it assumes this is a comeback from this action's children
+        /// if stack doesn't contain id of this action this function assumes this will be first time this actions runs
+        /// </summary>
+        /// <param name="uow"></param>
+        /// <param name="curContainerDO"></param>
+        /// <returns></returns>
         private ActionState GetActionState(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
@@ -310,6 +205,13 @@ namespace Hub.Services
             return ActionState.InitialRun;
         }
 
+        /// <summary>
+        /// Run current action and return it's response
+        /// </summary>
+        /// <param name="uow"></param>
+        /// <param name="curContainerDO"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
         private async Task<ActionResponse> ProcessAction(IUnitOfWork uow, ContainerDO curContainerDO, ActionState state)
         {
             await _activity.Process(curContainerDO.CurrentRouteNode.Id, state, curContainerDO);
@@ -343,7 +245,7 @@ namespace Hub.Services
             throw new Exception("This shouldn't happen");
         }
 
-        private async Task ProcessActionTree2(IUnitOfWork uow, ContainerDO curContainerDO)
+        private async Task ProcessActionTree(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             while (curContainerDO.CurrentRouteNode != null)
             {
@@ -383,10 +285,14 @@ namespace Hub.Services
 
             if (curContainerDO.CurrentRouteNode != null)
             {
-                await ProcessActionTree2(uow, curContainerDO);
-                //await ProcessActionTree(uow, curContainerDO);
-                //to mark container as finished
-                //SetCurrentNode(uow, curContainerDO, null);
+                while (curContainerDO.CurrentRouteNode != null)
+                {
+                    var actionState = GetActionState(uow, curContainerDO);
+                    var actionResponse = await ProcessAction(uow, curContainerDO, actionState);
+                    ProcessCurrentActionResponse(uow, curContainerDO, actionResponse);
+                    var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, actionResponse);
+                    MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);
+                }
             }
             else
             {
