@@ -27,7 +27,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var validToken = uow.AuthorizationTokenRepository.GetQuery().FirstOrDefault(t => t.Id.ToString() == token);
+                var validToken = uow.AuthorizationTokenRepository.FindTokenById(token);
                 
 				if (validToken == null)
                     throw new HttpException(404, "Authorization token not found.");

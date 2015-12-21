@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Exceptions;
 using Hub.Managers;
 using Newtonsoft.Json;
 using terminalGoogle.DataTransferObjects;
@@ -42,28 +39,22 @@ namespace terminalGoogle.Actions
 
         public override Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            CheckAuthentication(authTokenDO);
+
             return base.Configure(curActionDO, authTokenDO);
         }
 
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId,
-            AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
-            return await CreateStandardPayloadDataFromStandardTableData(curActionDO,containerId);
+            CheckAuthentication(authTokenDO);
+
+            return await CreateStandardPayloadDataFromStandardTableData(curActionDO, containerId);
         }
 
-        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(
-            ActionDO curActionDO, Guid containerId)
+        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, Guid containerId)
         {
             var processPayload = await GetProcessPayload(curActionDO, containerId);
 
@@ -72,6 +63,7 @@ namespace terminalGoogle.Actions
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
             var payloadDataCrate = Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
+
             using (var updater = Crate.UpdateStorage(processPayload))
             {
                 updater.CrateStorage.Add(payloadDataCrate);

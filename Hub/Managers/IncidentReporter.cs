@@ -38,6 +38,7 @@ namespace Hub.Managers
             EventManager.TerminalIncidentReported += LogTerminalIncident;
             EventManager.UnparseableNotificationReceived += LogUnparseableNotificationIncident;
             EventManager.IncidentDocuSignFieldMissing += IncidentDocuSignFieldMissing;
+            EventManager.IncidentOAuthAuthenticationFailed += OAuthAuthenticationFailed;
             EventManager.IncidentMissingFieldInPayload += IncidentMissingFieldInPayload;
             EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
         }
@@ -110,6 +111,7 @@ namespace Hub.Managers
             // so only log incidents 
             LogIncident(incident);
         }
+
         private void ProcessIncidentTerminalRunFailed(string curTerminalUrl, string curAction, string errorMessage)
         {
             var incident = new IncidentDO
@@ -123,6 +125,21 @@ namespace Hub.Managers
             };
             SaveAndLogIncident(incident);
         }
+
+        private void OAuthAuthenticationFailed(string curRequestQueryString, string errorMessage)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = "Query string: " + curRequestQueryString + "      \r\n" + errorMessage,
+                ObjectId = "unknown",
+                PrimaryCategory = "Terminal",
+                SecondaryCategory = "Authentication",
+                Activity = "OAuth Authentication Failed"
+            };
+            SaveAndLogIncident(incident);
+        }
+
         private void LogTerminalIncident(LoggingDataCm incidentItem)
         {
             var currentIncident = new IncidentDO

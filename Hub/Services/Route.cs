@@ -317,7 +317,7 @@ namespace Hub.Services
             foreach (var curRoute in curRoutes)
             {
                 //get the 1st activity
-                var actionDO = GetFirstActivity(curRoute.Id) as ActionDO;
+                var actionDO = GetFirstActionWithEventSubscriptions(curRoute.Id);
 
                 if (actionDO != null)
                 {
@@ -340,7 +340,42 @@ namespace Hub.Services
             return subscribingRoutes;
         }
 
+        private ActionDO GetFirstActionWithEventSubscriptions(Guid id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var root = uow.RouteNodeRepository.GetByKey(id);
 
+                
+                var queue = new Queue<RouteNodeDO>();
+                queue.Enqueue(root);
+
+                while (queue.Count > 0)
+                {
+                    var routeNode = queue.Dequeue();
+                    var action = routeNode as ActionDO;
+
+                    if (action != null)
+                    {
+                        var storage = _crate.GetStorage(action.CrateStorage);
+                        if (storage.CratesOfType<EventSubscriptionCM>().Count() > 0)
+                        {
+                            return action;
+                        }
+                    }
+
+                    if (routeNode.ChildNodes != null)
+                    {
+                        foreach (var childNode in routeNode.ChildNodes)
+                        {
+                            queue.Enqueue(childNode);
+                        }
+                    }
+                }
+
+                return null;
+            }
+        }
 
         public RouteNodeDO GetFirstActivity(Guid curRouteId)
         {
