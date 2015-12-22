@@ -103,7 +103,7 @@ namespace Hub.Services
         * We traverse this tree in this order a-b-d-E-b-c-f-g-c-a-NULL 
         */
         /// <summary>
-        /// Moves to next Route
+        /// Moves to next Route and returns action state of this new route
         /// </summary>
         /// <param name="uow"></param>
         /// <param name="curContainerDO"></param>
