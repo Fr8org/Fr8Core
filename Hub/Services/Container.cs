@@ -79,7 +79,8 @@ namespace Hub.Services
                     //do nothing
                     break;
                 case ActionResponse.RequestSuspend:
-                    throw new ExecutionPausedException();
+                    curContainerDo.ContainerState = ContainerState.Pending;
+                    break;
                 case ActionResponse.Null:
                     //let's assume this is success for now
                     break;
@@ -196,14 +197,11 @@ namespace Hub.Services
             if (!HasOperationalStateCrate(curContainerDO))
             {
                 AddOperationalStateCrate(uow, curContainerDO);
-                uow.SaveChanges();
             }
 
-            if (curContainerDO.ContainerState == ContainerState.Unstarted)
-            {
-                curContainerDO.ContainerState = ContainerState.Executing;
-                uow.SaveChanges();
-            }
+            curContainerDO.ContainerState = ContainerState.Executing;
+            uow.SaveChanges();
+            
 
             if (curContainerDO.CurrentRouteNode == null)
             {
@@ -215,9 +213,16 @@ namespace Hub.Services
             {
                 var actionResponse = await ProcessAction(uow, curContainerDO, actionState);
                 ProcessCurrentActionResponse(uow, curContainerDO, actionResponse);
+                if (curContainerDO.ContainerState != ContainerState.Executing)
+                {
+                    //we should stop action processing here
+                    //there might have happened a problem or a pause request
+                    return;
+                }
                 var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, actionResponse);
                 actionState = MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);
             }
+
         }
 
         // Return the Containers of current Account

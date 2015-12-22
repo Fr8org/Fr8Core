@@ -222,7 +222,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
-    <Compile Include="Exceptions\ExecutionPausedException.cs" />
     <Compile Include="Exceptions\AmbiguityException.cs" />
     <Compile Include="Exceptions\AuthenticationExeception.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />

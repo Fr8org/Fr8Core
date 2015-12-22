@@ -290,11 +290,6 @@ namespace HubWeb.Controllers
 
                     return Ok(Mapper.Map<ContainerDTO>(containerDO));
                 }
-                catch (ExecutionPausedException e)
-                {
-                    string message = String.Format("Route \"{0}\" execution paused", routeDO.Name);
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
-                }
                 catch
                 {
                     string message = String.Format("Route \"{0}\" failed", routeDO.Name);

@@ -503,14 +503,7 @@ namespace Hub.Services
             try
             {
                 await _container.Run(uow, curContainerDO);
-                curContainerDO.ContainerState = ContainerState.Completed;
-
                 return curContainerDO;
-            }
-            catch (ExecutionPausedException e)
-            {
-                curContainerDO.ContainerState = ContainerState.Pending;
-                throw;
             }
             catch
             {
