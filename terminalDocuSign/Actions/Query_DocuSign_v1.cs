@@ -20,7 +20,7 @@ namespace terminalDocuSign.Actions
 {
     public class Query_DocuSign_v1  : BaseTerminalAction
     {
-        private class QuerySettings
+        public class QuerySettings
         {
             public string SearchText;
             public DateTime? FromDate;
