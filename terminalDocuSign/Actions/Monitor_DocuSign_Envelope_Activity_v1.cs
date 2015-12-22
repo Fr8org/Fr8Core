@@ -1,3 +1,4 @@
+using Data.Constants;
 using Data.Entities;
 using TerminalBase.Infrastructure;
 using System;
@@ -112,13 +113,18 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(processPayload);
+            }
 
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue;
             GetTemplateRecipientPickerValue(curActionDO, out curSelectedOption, out curSelectedValue);
 
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            
             string envelopeId = string.Empty;
 
             //retrieve envelope ID based on the selected option and its value
@@ -152,7 +158,10 @@ namespace terminalDocuSign.Actions
 
             // Make sure that it exists
             if (string.IsNullOrEmpty(envelopeId))
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
+            {
+                return Error(processPayload, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
+            }
+            
 
             //Create a run-time fields
             var fields = CreateDocuSignEventFields();
@@ -185,7 +194,7 @@ namespace terminalDocuSign.Actions
             }
             }
 
-            return processPayload;
+            return Success(processPayload);
         }
 
         private string GetValueForKey(PayloadDTO curPayloadDTO, string curKey)
@@ -308,7 +317,7 @@ namespace terminalDocuSign.Actions
             var fieldEnvelopeSent = new CheckBox()
             {
                 Label = "You sent a DocuSign Envelope",
-                Name = "Envelope Sent",
+                Name = "Event_Envelope_Sent",
                 Events = new List<ControlEvent>()
                 {
                     new ControlEvent("onChange", "requestConfig")
@@ -318,7 +327,7 @@ namespace terminalDocuSign.Actions
             var fieldEnvelopeReceived = new CheckBox()
             {
                 Label = "Someone received an Envelope you sent",
-                Name = "Envelope Received",
+                Name = "Event_Envelope_Received",
                 Events = new List<ControlEvent>()
                 {
                     new ControlEvent("onChange", "requestConfig")
@@ -328,7 +337,7 @@ namespace terminalDocuSign.Actions
             var fieldRecipientSigned = new CheckBox()
             {
                 Label = "One of your Recipients signed an Envelope",
-                Name = "Recipient Signed",
+                Name = "Event_Recipient_Signed",
                 Events = new List<ControlEvent>()
                 {
                     new ControlEvent("onChange", "requestConfig")

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Crates;
 using Newtonsoft.Json;
 using Data.Interfaces;
@@ -26,7 +27,7 @@ namespace terminalFr8Core.Actions
 
             if (controlsMS == null)
             {
-                throw new ApplicationException("Could not find ControlsConfiguration crate.");
+                return Error(processPayload, "Could not find ControlsConfiguration crate.");
             }
 
             var fieldListControl = controlsMS.Controls
@@ -34,7 +35,7 @@ namespace terminalFr8Core.Actions
 
             if (fieldListControl == null)
             {
-                throw new ApplicationException("Could not find FieldListControl.");
+                return Error(processPayload, "Could not find FieldListControl.");
             }
 
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
@@ -53,7 +54,7 @@ namespace terminalFr8Core.Actions
             //
             //            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { cratePayload });
 
-            return processPayload;
+            return Success(processPayload);
         }
 
         public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)

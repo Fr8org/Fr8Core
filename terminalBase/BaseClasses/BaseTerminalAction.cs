@@ -50,6 +50,122 @@ namespace TerminalBase.BaseClasses
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
+        /// <summary>
+        /// Creates a suspend request for hub execution
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO SuspendHubExecution(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.RequestSuspend;
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// Creates a terminate request for hub execution
+        /// TODO: we could include a reason message with this request
+        /// after that we could stop throwing exceptions on actions
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO TerminateHubExecution(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.RequestTerminate;
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// returns success to hub
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO Success(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.Success;
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// skips children of this action
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO SkipChildren(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.SkipChildren;
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// returns error to hub
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActionErrorCode? errorCode = null)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.Error;
+                operationalState.CurrentActionErrorCode = errorCode;
+                operationalState.CurrentActionErrorMessage = errorMessage;
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// returns Needs authentication error to hub
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO NeedsAuthenticationError(PayloadDTO payload)
+        {
+            return Error(payload, "No AuthToken provided.", ActionErrorCode.NO_AUTH_TOKEN_PROVIDED);
+        }
+
+        /// <summary>
+        /// Creates a reprocess child actions request
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO ReProcessChildActions(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.ReProcessChildren;
+            }
+
+            return payload;
+        }
+
+
+        public virtual async Task<PayloadDTO> ChildrenExecuted(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            return Success(await GetProcessPayload(curActionDO, containerId));
+        }
+
         protected void CheckAuthentication(AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
@@ -593,6 +709,25 @@ namespace TerminalBase.BaseClasses
             }
 
             return await Task.FromResult<Crate>(null);
+        }
+
+        /// <summary>
+        /// Creates TextBlock control and fills it with label, value and CssClass
+        /// </summary>
+        /// <param name="curLabel">Label</param>
+        /// <param name="curValue">Value</param>
+        /// <param name="curCssClass">Css Class</param>
+        /// <param name="curName">Name</param>
+        /// <returns>TextBlock control</returns>
+        protected TextBlock GenerateTextBlock(string curLabel, string curValue, string curCssClass, string curName = "unnamed")
+        {
+            return new TextBlock
+            {
+                Name = curName,
+                Label = curLabel,
+                Value = curValue,
+                CssClass = curCssClass
+            };
         }
     }
 }

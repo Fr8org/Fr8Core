@@ -39,12 +39,11 @@ namespace terminalDropboxTests.Actions
             //Arrange
             var curActionDO = FixtureData.GetJiraIssueTestActionDO1();
             var container = FixtureData.TestContainer();
-
             //Act
             var payloadDTOResult = _get_Jira_Issue_v1.Run(curActionDO, container.Id, FixtureData.JiraAuthorizationToken()).Result;
 
             //Assert
-            var jiraIssue = JsonConvert.DeserializeObject<StandardPayloadDataCM>(payloadDTOResult.CrateStorage.Crates[0].Contents.ToString());
+            var jiraIssue = JsonConvert.DeserializeObject<StandardPayloadDataCM>(payloadDTOResult.CrateStorage.Crates[1].Contents.ToString());
             Assert.AreEqual("FR-1245", jiraIssue.PayloadObjects[0].PayloadObject.First(x => x.Key == "Key").Value);
             Assert.AreEqual("admin", jiraIssue.PayloadObjects[0].PayloadObject.First(x => x.Key == "Reporter").Value);
 

@@ -130,28 +130,32 @@
       <HintPath>packages\logentries.log4net.2.4.2\lib\net40\LogentriesLog4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.ApplicationInsights, Version=1.0.0.4220, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.1.0.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+    <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.0.1011, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.Agent.Intercept.1.2.0\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.ApplicationInsights.Extensibility.DependencyCollector, Version=1.0.0.4227, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.DependencyCollector.1.0.0\lib\net45\Microsoft.ApplicationInsights.Extensibility.DependencyCollector.dll</HintPath>
+    <Reference Include="Microsoft.AI.DependencyCollector, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.DependencyCollector.1.2.3\lib\net45\Microsoft.AI.DependencyCollector.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector, Version=1.0.0.4231, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.PerfCounterCollector.1.0.0\lib\net45\Microsoft.ApplicationInsights.Extensibility.PerfCounterCollector.dll</HintPath>
+    <Reference Include="Microsoft.AI.PerfCounterCollector, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.PerfCounterCollector.1.2.3\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.ApplicationInsights.Extensibility.Web, Version=1.0.0.4227, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.Web.1.0.0\lib\net45\Microsoft.ApplicationInsights.Extensibility.Web.dll</HintPath>
+    <Reference Include="Microsoft.AI.ServerTelemetryChannel, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.1.2.3\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.ApplicationInsights.Log4NetAppender, Version=1.0.0.4221, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Microsoft.ApplicationInsights.Log4NetAppender.1.0.0\lib\net45\Microsoft.ApplicationInsights.Log4NetAppender.dll</HintPath>
+    <Reference Include="Microsoft.AI.Web, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.Web.1.2.3\lib\net45\Microsoft.AI.Web.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.ApplicationInsights.Web.TelemetryChannel, Version=1.0.0.4227, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.Web.TelemetryChannel.1.0.0\lib\net45\Microsoft.ApplicationInsights.Web.TelemetryChannel.dll</HintPath>
+    <Reference Include="Microsoft.AI.WindowsServer, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.WindowsServer.1.2.3\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=1.2.3.490, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -167,10 +171,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Diagnostics.Instrumentation.Extensions.Intercept, Version=0.17.0.194, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.Agent.Intercept.0.17.0\lib\net45\Microsoft.Diagnostics.Instrumentation.Extensions.Intercept.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
@@ -491,6 +491,7 @@
     <Content Include="Content\icons\web_services\ms-azure-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-excel-icon-64x64.png" />
     <Content Include="Content\icons\web_services\papertrail-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\quickbooks-icon-64x64.png" />
     <Content Include="Content\icons\web_services\salesforce-icon-64x64.png" />
     <Content Include="Content\icons\web_services\sendgrid-icon-64x64.png" />
     <Content Include="Content\icons\web_services\slack-icon-64x64.png" />
@@ -735,7 +736,18 @@
     <Content Include="Documentation\UploadBrandProfiles.html" />
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
-    <Content Include="_PowerShellScripts\RunIntegrationTests.ps1" />
+    <Content Include="Scripts\ai.0.15.0-build58334.js" />
+    <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
+    <Content Include="_PowerShellScripts\RunIntegrationTests-DEV.ps1" />
+    <Content Include="_PowerShellScripts\DEV-HealthMonitor.exe.config" />
+    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-DEV.ps1" />
+    <Content Include="_PowerShellScripts\DEV-job-run.cmd" />
+    <Content Include="_PowerShellScripts\DEV-settings.job" />
+    <Content Include="_PowerShellScripts\MASTER-HealthMonitor.exe.config" />
+    <Content Include="_PowerShellScripts\RunIntegrationTests-MASTER.ps1" />
+    <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
+    <Content Include="_PowerShellScripts\MASTER-settings.job" />
+    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
@@ -846,7 +858,6 @@
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\WebServiceListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\WebServiceFormController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\SolutionController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Counter.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Duration.ts" />
@@ -4162,7 +4173,6 @@
     <Content Include="Views\AngularTemplate\_RouteList.cshtml" />
     <Content Include="Views\AngularTemplate\SolutionList.cshtml" />
     <Content Include="Views\AngularTemplate\_DeleteRouteModal.cshtml" />
-    <Content Include="Views\AngularTemplate\Solution.cshtml" />
     <Content Include="Views\AuthenticationCallback\Error.cshtml" />
     <Content Include="Views\AngularTemplate\WebServiceList.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilder.cshtml" />
@@ -4315,7 +4325,6 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('packages\Microsoft.ApplicationInsights.Agent.Intercept.0.17.0\build\Microsoft.ApplicationInsights.Agent.Intercept.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.ApplicationInsights.Agent.Intercept.0.17.0\build\Microsoft.ApplicationInsights.Agent.Intercept.targets'))" />
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>

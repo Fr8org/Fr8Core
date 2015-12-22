@@ -152,9 +152,14 @@ namespace terminalGoogle.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
-
             var processPayload = await GetProcessPayload(curActionDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(processPayload);
+            }
+
+            
             var payloadFields = ExtractPayloadFields(processPayload);
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
             
@@ -163,7 +168,7 @@ namespace terminalGoogle.Actions
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(formResponseFields)));
             }
 
-            return processPayload;
+            return Success(processPayload);
         }
 
         private List<FieldDTO> CreatePayloadFormResponseFields(List<FieldDTO> payloadfields)

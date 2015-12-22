@@ -145,7 +145,9 @@ namespace terminalAzureTests.Integration
             {
                 updater.CrateStorage.Add(CreateConnectionStringCrate());
             }
-            
+
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
             AddPayloadCrate(
                actionDTO,
                new StandardPayloadDataCM(

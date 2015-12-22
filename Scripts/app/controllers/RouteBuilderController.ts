@@ -7,8 +7,13 @@
 module dockyard.controllers {
     'use strict';
 
+    // This is a fix for incomplit ts defenition for angular-ui module
+    interface ngState extends ng.ui.IState {
+        current: ng.ui.IState;
+    }
+
     export interface IRouteBuilderScope extends ng.IScope {
-        routeId: number;
+        routeId: string;
         subroutes: Array<model.SubrouteDTO>;
         fields: Array<model.Field>;
         currentSubroute: model.SubrouteDTO;
@@ -25,6 +30,8 @@ module dockyard.controllers {
         selectAction(action): void;
         isBusy: () => boolean;
         onActionDrop: (group: model.ActionGroup, actionId: string, index: number) => void;
+        mode: string;
+        solutionName: string;
     }
 
     //Setup aliases
@@ -60,7 +67,7 @@ module dockyard.controllers {
         constructor(
             private $scope: IRouteBuilderScope,
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
-            private $state: ng.ui.IState,
+            private $state: ngState,
             private ActionService: services.IActionService,
             private $http: ng.IHttpService,
             private RouteService: services.IRouteService,
@@ -72,12 +79,10 @@ module dockyard.controllers {
             private LayoutService: services.ILayoutService
             ) {
 
-            this.$scope.routeId = $state.params.id;
             this.$scope.current = new model.RouteBuilderState();
             this.$scope.actionGroups = [];
 
             this.setupMessageProcessing();
-            $timeout(() => this.loadRoute(), 500, true);
 
             this.$scope.addAction = (group: model.ActionGroup) => {
                 this.addAction(group);
@@ -146,6 +151,7 @@ module dockyard.controllers {
                 
             };
 
+            this.processState($state);
         }
 
         //re-orders actions according to their position on array
@@ -238,7 +244,7 @@ module dockyard.controllers {
             }
 
             return null;
-        }
+            }
 
         private searchAction(id: string, actionList: model.ActionDTO[]): model.ActionDTO {
             for (var i = 0; i < actionList.length; i++) {
@@ -253,6 +259,43 @@ module dockyard.controllers {
                 }
             }
             return null;
+        }
+
+        private processState($state: ngState) {
+            if ($state.params.solutionName) {
+                var isGuid = /\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/.test($state.params.solutionName);
+                if (isGuid) {
+                    this.$scope.routeId = $state.params.solutionName;
+                } else {
+                    return this.createNewSolution($state.params.solutionName);
+                }
+            } else {
+                this.$scope.routeId = $state.params.id;
+            }
+
+            this.loadRoute();
+        }
+
+        private createNewSolution(solutionName: string) {
+            var route = this.ActionService.createSolution({
+                solutionName: solutionName
+            });
+            route.$promise.then((curRoute: interfaces.IRouteVM) => {
+                this.$scope.routeId = curRoute.id;
+                this.onRouteLoad('solution', curRoute);
+            });
+        }
+
+        private loadRoute(mode = 'route') {
+            var routePromise = this.RouteService.getFull({ id: this.$scope.routeId });
+            routePromise.$promise.then(this.onRouteLoad.bind(this, mode));
+        }
+
+        private onRouteLoad(mode: string, curRoute: interfaces.IRouteVM) {
+            this.$scope.mode = mode;
+            this.$scope.current.route = curRoute;
+            this.$scope.currentSubroute = curRoute.subroutes[0];
+            this.renderRoute(curRoute);
         }
 
         /*
@@ -283,16 +326,9 @@ module dockyard.controllers {
 
             this.$scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation],
                 (event: ng.IAngularEvent, eventArgs: pwd.LongRunningOperationEventArgs) => this.PaneWorkflowDesigner_LongRunningOperation(eventArgs));
-        }
 
-        private loadRoute() {
-            var routePromise = this.RouteService.getFull({ id: this.$scope.routeId });
-            var self = this;
-            routePromise.$promise.then((curRoute: interfaces.IRouteVM) => {
-                this.$scope.current.route = curRoute;
-                this.$scope.currentSubroute = curRoute.subroutes[0];
-                this.renderRoute(curRoute);
-            });
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_SetSolutionMode], () => this.PaneConfigureAction_SetSolutionMode());
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsDetected], () => this.PaneConfigureAction_ChildActionsDetected());
         }
 
         private renderRoute(curRoute: interfaces.IRouteVM) {
@@ -345,7 +381,7 @@ module dockyard.controllers {
         }
 
         private reloadRoute() {
-            this.$scope.actionGroups = [];
+            //this.$scope.actionGroups = [];
             this.$scope.current = new model.RouteBuilderState();
             this.loadRoute();
         }
@@ -530,6 +566,14 @@ module dockyard.controllers {
             if (this._longRunningActionsCounter < 0) {
                 this._longRunningActionsCounter = 0;
             }
+        }
+
+        private PaneConfigureAction_SetSolutionMode() {
+            this.loadRoute('solution');
+        }
+
+        private PaneConfigureAction_ChildActionsDetected() {
+            this.loadRoute();
         }
     }
     app.controller('RouteBuilderController', RouteBuilderController);

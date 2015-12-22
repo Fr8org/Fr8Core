@@ -5,7 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
+using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
+using Hub.Managers;
 using Microsoft.Owin.Hosting;
 using Owin;
 
@@ -49,11 +52,19 @@ namespace terminalIntegrationTests.Fixtures
             return WebApp.Start<ActivitiesController_SelfHostStartup>(url: CoreEndPoint);
         }
 
+        
+
         public static PayloadDTO CratePayloadDTOForSendEmailViaSendGridConfiguration
         {
             get
             {
-                PayloadDTO payloadDTO = new PayloadDTO(UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1());
+                var payloadDTO = new PayloadDTO(UtilitiesTesting.Fixtures.FixtureData.TestContainer_Id_1());
+                using (var updater = new CrateManager().UpdateStorage(payloadDTO))
+                {
+                    var operationalStatus = new OperationalStateCM();
+                    var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
+                    updater.CrateStorage.Add(operationsCrate);
+                }
                 return payloadDTO;
             }
         }

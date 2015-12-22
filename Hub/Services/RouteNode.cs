@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Constants;
 using Data.Crates;
 using Newtonsoft.Json;
 using StructureMap;
@@ -118,6 +119,11 @@ namespace Hub.Services
             return downstreamList;
         }
 
+        public RouteNodeDO GetParent(RouteNodeDO currentActivity)
+        {
+            return currentActivity.ParentRouteNode;
+        }
+
         public RouteNodeDO GetNextSibling(RouteNodeDO currentActivity)
         {
             // Move to the next activity of the current activity's parent
@@ -145,6 +151,11 @@ namespace Hub.Services
         public RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, RouteNodeDO root)
         {
             return GetNextActivity(currentActivity, true, root);
+        }
+
+        public bool HasChildren(RouteNodeDO currentActivity)
+        {
+            return currentActivity.ChildNodes.Count > 0;
         }
 
         private RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, bool depthFirst, RouteNodeDO root)
@@ -231,7 +242,7 @@ namespace Hub.Services
 
 
 
-        public async Task Process(Guid curActivityId, ContainerDO containerDO)
+        public async Task Process(Guid curActivityId, ActionState curActionState, ContainerDO containerDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -247,7 +258,7 @@ namespace Hub.Services
                 if (curActivityDO is ActionDO)
                 {
                     IAction _action = ObjectFactory.GetInstance<IAction>();
-                    await _action.PrepareToExecute((ActionDO)curActivityDO, curContainerDO, uow);
+                    await _action.PrepareToExecute((ActionDO)curActivityDO, curActionState, curContainerDO, uow);
                     //TODO inspect this
                     //why do we get container from db again???
                     containerDO.CrateStorage = curContainerDO.CrateStorage;

@@ -87,7 +87,7 @@ namespace terminalExcel.Actions
 
             if (!tableDataMS.FirstRowHeaders)
             {
-                throw new Exception("No headers found in the Standard Table Data Manifest.");
+                return Error(processPayload, "No headers found in the Standard Table Data Manifest.");
             }
 
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
@@ -98,7 +98,7 @@ namespace terminalExcel.Actions
             {
                 updater.CrateStorage.Add(Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS));
             }
-            return processPayload;            
+            return Success(processPayload);        
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(ActionDO actionDO, CrateStorage curCrateStorageDTO)
