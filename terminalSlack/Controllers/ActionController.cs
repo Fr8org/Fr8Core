@@ -28,14 +28,9 @@ namespace terminalSlack.Controllers
         }
 
         [HttpPost]
-        public Task<object> Execute([FromUri] String type, [FromUri] string state, [FromBody] ActionDTO curActionDTO)
+        public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
-            ActionState? actionState = null;
-            if (!string.IsNullOrEmpty(state))
-            {
-                actionState = (ActionState)Enum.Parse(typeof(ActionState), state, true);
-            }
-            return _baseTerminalController.HandleFr8Request(curTerminal, actionState, type, curActionDTO);
+            return _baseTerminalController.HandleFr8Request(curTerminal, actionType, curActionDTO);
         }
     }
 }

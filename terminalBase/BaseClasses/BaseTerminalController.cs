@@ -103,7 +103,7 @@ namespace TerminalBase.BaseClasses
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public async Task<object> HandleFr8Request(string curTerminal, ActionState? curActionState, string curActionPath, ActionDTO curActionDTO)
+        public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, ActionDTO curActionDTO)
         {
             if (curActionDTO == null)
                 throw new ArgumentNullException("curActionDTO");
@@ -127,6 +127,7 @@ namespace TerminalBase.BaseClasses
                     curActionDTO.ActivityTemplate.Name,
                     curActionDTO.ActivityTemplate.Version,
                     curTerminal), "curActionDTO");
+
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
             object curObject = Activator.CreateInstance(calledType);
 
@@ -155,10 +156,11 @@ namespace TerminalBase.BaseClasses
                             return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                         }
                     case "run":
+                    case "childrenexecuted":
                         {
                             OnStartAction(curTerminal, activityTemplateName);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
-                                .Invoke(curObject, new Object[] { curActionDO, curActionState, curContainerId, curAuthTokenDO });
+                                .Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
                             await OnCompletedAction(curTerminal);
 
                             return resultPayloadDTO;

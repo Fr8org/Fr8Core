@@ -294,20 +294,14 @@ namespace Hub.Services
                 curContainerDO.ContainerState = ContainerState.Executing;
                 uow.SaveChanges();
             }
-            try
+            
+            while (curContainerDO.CurrentRouteNode != null)
             {
-                while (curContainerDO.CurrentRouteNode != null)
-                {
-                    var actionState = GetActionState(uow, curContainerDO);
-                    var actionResponse = await ProcessAction(uow, curContainerDO, actionState);
-                    ProcessCurrentActionResponse(uow, curContainerDO, actionResponse);
-                    var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, actionResponse);
-                    MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);
-                }
-            }
-            catch (Exception e)
-            {
-                int a = 12;
+                var actionState = GetActionState(uow, curContainerDO);
+                var actionResponse = await ProcessAction(uow, curContainerDO, actionState);
+                ProcessCurrentActionResponse(uow, curContainerDO, actionResponse);
+                var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, actionResponse);
+                MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);
             }
         }
 

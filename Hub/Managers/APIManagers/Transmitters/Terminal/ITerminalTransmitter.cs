@@ -15,7 +15,5 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
         /// <param name="actionDTO">ActionDTO</param>
         /// <returns></returns>
         Task<TResponse> CallActionAsync<TResponse>(string actionType, ActionDTO actionDTO);
-
-        Task<PayloadDTO> RunActionAsync(ActionState actionState, ActionDTO actionDTO);
     }
 }

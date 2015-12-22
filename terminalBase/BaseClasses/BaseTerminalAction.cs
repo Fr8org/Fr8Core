@@ -101,6 +101,22 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
+        /// skips children of this action
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO SkipChildren(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.SkipChildren;
+            }
+
+            return payload;
+        }
+
+        /// <summary>
         /// returns error to hub
         /// TODO: maybe we should include an error message
         /// </summary>
@@ -115,6 +131,28 @@ namespace TerminalBase.BaseClasses
             }
 
             return payload;
+        }
+
+        /// <summary>
+        /// Creates a reprocess child actions request
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO ReProcessChildActions(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.ReProcessChildren;
+            }
+
+            return payload;
+        }
+
+
+        public virtual async Task<PayloadDTO> ChildrenExecuted(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            return Success(await GetProcessPayload(curActionDO, containerId));
         }
 
         protected void CheckAuthentication(AuthorizationTokenDO authTokenDO)
