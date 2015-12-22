@@ -36,20 +36,20 @@ namespace terminalFr8Core.Actions
             
             //find our action state in operations crate
             var myPreviousResponse = operationsCrate.CurrentActionResponse;
-            if (myPreviousResponse == ActionResponse.Null)
+            if (myPreviousResponse == ActionResponse.RequestSuspend)
             {
-                //get user selected design time duration
-                var delayDuration = GetUserDefinedDelayDuration(curActionDO);
-                var alarmDTO = CreateAlarm(curActionDO, containerId, delayDuration);
-                //post to hub to create an alarm
-                await HubCommunicator.CreateAlarm(alarmDTO);
-
-                return SuspendHubExecution(curPayloadDTO);
+                //this is second time we are being called. this means alarm has triggered
+                return Success(curPayloadDTO);
             }
 
+            //get user selected design time duration
+            var delayDuration = GetUserDefinedDelayDuration(curActionDO);
+            var alarmDTO = CreateAlarm(curActionDO, containerId, delayDuration);
+            //post to hub to create an alarm
+            await HubCommunicator.CreateAlarm(alarmDTO);
+
+            return SuspendHubExecution(curPayloadDTO);
             
-            //this is second time we are being called. this means alarm has triggered
-            return Success(curPayloadDTO);
         }
 
         private AlarmDTO CreateAlarm(ActionDO actionDO, Guid containerId, TimeSpan duration)

@@ -18,8 +18,6 @@ namespace Data.Interfaces.Manifests
         }
 
         public List<LoopStatus> Loops { get; set; }
-
-        public List<Guid> ActionStack { get; set; }
         
         //current action response
         public ActionResponse CurrentActionResponse { get; set; }
@@ -31,7 +29,6 @@ namespace Data.Interfaces.Manifests
             : base(MT.OperationalStatus)
         {
             Loops = new List<LoopStatus>();
-            ActionStack = new List<Guid>();
         }
 
     }
