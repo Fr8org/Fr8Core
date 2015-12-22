@@ -44,5 +44,6 @@ namespace Hub.Managers
         Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
         Crate CreateOperationalStatusCrate(string label, OperationalStateCM eventReport);
         StandardPayloadDataCM TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataCM tableDataMS);
+        string GetFieldByKey<T>(CrateStorageDTO curCrateStorage, string findKey) where T : Manifest;
     }
 }

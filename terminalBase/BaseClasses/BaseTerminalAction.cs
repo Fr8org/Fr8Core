@@ -4,25 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AutoMapper;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
-
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Hub.Services;
 using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
-using Data.Infrastructure;
 
 namespace TerminalBase.BaseClasses
 {
@@ -56,15 +50,17 @@ namespace TerminalBase.BaseClasses
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
+        protected void CheckAuthentication(AuthorizationTokenDO authTokenDO)
+        {
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+        }
+
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
-            if (authTokenDO == null
-                || string.IsNullOrEmpty(authTokenDO.Token))
-            {
-                return true;
-            }
-
-            return false;
+            return authTokenDO == null || string.IsNullOrEmpty(authTokenDO.Token);
         }
 
         protected async Task<PayloadDTO> GetProcessPayload(ActionDO actionDO, Guid containerId)
@@ -443,20 +439,28 @@ namespace TerminalBase.BaseClasses
 
             var returnValue = string.Empty;
 
-            switch (radioButton.Name)
+            try
             {
-                case "specific":
-                    returnValue = radioButton.Controls[0].Value;
-                    break;
+                switch (radioButton.Name)
+                {
+                    case "specific":
+                        returnValue = radioButton.Controls[0].Value;
+                        break;
 
-                case "upstream":
-                    var recipientField = radioButton.Controls[0];
-                    returnValue = ExtractPayloadFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value, curAction);
-                    break;
+                    case "upstream":
+                        var recipientField = radioButton.Controls[0];
+                        returnValue = ExtractPayloadFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value, curAction);
+                        break;
 
-                default:
-                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+                    default:
+                        throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+                }
             }
+            catch (ApplicationException)
+            {
+
+            }
+
             return returnValue;
         }
 
@@ -473,8 +477,8 @@ namespace TerminalBase.BaseClasses
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            var reporter = new IncidentReporter();
-            reporter.IncidentMissingFieldInPayload(fieldKey, curAction.Name, curAction.Id.ToString());
+            IncidentReporter reporter = new IncidentReporter();
+            reporter.IncidentMissingFieldInPayload(fieldKey, curAction, "");
 
             throw new ApplicationException("No field found with specified key.");
         }
@@ -557,6 +561,38 @@ namespace TerminalBase.BaseClasses
                 crate.Content.Fields.Clear();
                 crate.Content.Fields.AddRange(fields);
             }
+        }
+
+        protected virtual async Task<Crate> MergeUpstreamFields<TManifest>(ActionDO curActionDO, string label)
+        {
+            List<Data.Crates.Crate<TManifest>> crates = null;
+
+            try
+            {
+                //throws exception from test classes when it cannot call webservice
+                crates = await GetCratesByDirection<TManifest>(curActionDO, CrateDirection.Upstream);
+            }
+            catch { }
+
+            if (crates != null)
+            {
+                FieldDTO[] upstreamFields;
+                Crate availableFieldsCrate = null;
+                if (crates is List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>)
+                {
+                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).SelectMany(x => x.Content.Fields).ToArray();
+
+                    availableFieldsCrate =
+                        Crate.CreateDesignTimeFieldsCrate(
+                            label,
+                            upstreamFields
+                        );
+                }
+
+                return availableFieldsCrate;
+            }
+
+            return await Task.FromResult<Crate>(null);
         }
     }
 }

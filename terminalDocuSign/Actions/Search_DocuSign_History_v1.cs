@@ -10,8 +10,9 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using Newtonsoft.Json;
+using StructureMap;
 using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Infrastructure;
+using terminalDocuSign.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
@@ -19,7 +20,7 @@ namespace terminalDocuSign.Actions
 {
     public class Search_DocuSign_History_v1  : BaseTerminalAction
     {
-        private class ActionUi : StandardConfigurationControlsCM
+        internal class ActionUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
             public TextBox SearchText { get; set; }
@@ -68,9 +69,11 @@ namespace terminalDocuSign.Actions
             }
         }
         
-        static Search_DocuSign_History_v1()
+        private readonly IDocuSignFolder _docuSignFolder;
+      
+        public Search_DocuSign_History_v1()
         {
-            ManifestDiscovery.Default.RegisterManifest(typeof(Query_DocuSign_v1.RuntimeConfiguration));
+            _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
         }
         
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -78,8 +81,13 @@ namespace terminalDocuSign.Actions
             return await GetProcessPayload(curActionDO, containerId);
         }
         
-        protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
             var controls = new ActionUi();
 
@@ -90,13 +98,18 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
             }
 
-            ConfigureNestedActions(curActionDO, controls);
+            await ConfigureNestedActions(curActionDO, controls);
             
-            return Task.FromResult(curActionDO);
+            return curActionDO;
         }
 
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
+            if (NeedsAuthentication(authTokenDO))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 var ui = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
@@ -119,11 +132,11 @@ namespace terminalDocuSign.Actions
 
         private async Task ConfigureNestedActions(ActionDO curActionDO, ActionUi ui)
         {
-            var config = new Query_DocuSign_v1.RuntimeConfiguration
+            var config = new Query_DocuSign_v1.ActionUi
             {
-                Folder = ui.Folder.Value, 
-                Status = ui.Status.Value, 
-                SearchText = ui.SearchText.Value
+                Folder = {Value = ui.Folder.Value}, 
+                Status = {Value = ui.Status.Value}, 
+                SearchText = {Value = ui.SearchText.Value}
             };
             
             var template = (await FindTemplates(curActionDO, x => x.Name == "Query_DocuSign")).FirstOrDefault();
@@ -148,6 +161,7 @@ namespace terminalDocuSign.Actions
             {
                 action = new ActionDO
                 {
+                    ActivityTemplate = template,
                     IsTempId = true,
                     CreateDate = DateTime.UtcNow,
                     Name = "Query DocuSign",
@@ -170,8 +184,7 @@ namespace terminalDocuSign.Actions
 
         private IEnumerable<Crate> PackDesignTimeData(DocuSignAuth authDTO)
         {
-            var docusignFolder = new DocusignFolder();
-            var folders = docusignFolder.GetFolders(authDTO.Email, authDTO.ApiPassword);
+            var folders = _docuSignFolder.GetFolders(authDTO.Email, authDTO.ApiPassword);
             var fields = new List<FieldDTO>();
             
             foreach (var folder in folders)

@@ -9,7 +9,7 @@
         subscribedDocuSignTemplates: Array<string>;
         externalEventSubscription: Array<number>; 
         startingSubrouteId: number;
-        subroutes: Array<SubrouteDTO>
+        subroutes: Array<SubrouteDTO>;
     }
 
     export enum RouteState {
