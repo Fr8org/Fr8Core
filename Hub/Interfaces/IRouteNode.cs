@@ -24,6 +24,7 @@ namespace Hub.Interfaces
 
         RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, RouteNodeDO root);
         RouteNodeDO GetNextSibling(RouteNodeDO currentActivity);
+        RouteNodeDO GetParent(RouteNodeDO currentActivity);
         RouteNodeDO GetFirstChild(RouteNodeDO currentActivity);
 	    bool HasChildren(RouteNodeDO currentActivity);
 

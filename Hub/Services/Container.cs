@@ -46,39 +46,6 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
-        private RouteNodeDO GetFirstChild(RouteNodeDO routeNode)
-        {
-            var next = _activity.GetFirstChild(routeNode);
-            if (next != null && next == routeNode)
-            {
-                throw new Exception(string.Format("Cycle detected. Current activty is {0}", routeNode.Id));
-            }
-
-            return next;
-        }
-
-        private bool HasChildren(RouteNodeDO routeNode)
-        {
-            return _activity.HasChildren(routeNode);
-        }
-
-        private RouteNodeDO GetNextSibling(RouteNodeDO routeNode)
-        {
-            var next = _activity.GetNextSibling(routeNode);
-            if (next != null && next == routeNode)
-            {
-                throw new Exception(string.Format("Cycle detected. Current activty is {0}", routeNode.Id));
-            }
-
-            return next;
-        }
-
-        private RouteNodeDO GetParent(RouteNodeDO routeNode)
-        {
-            return routeNode.ParentRouteNode;
-        }
-
-
         private ActionResponse GetCurrentActionResponse(ContainerDO curContainerDO)
         {
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
@@ -145,12 +112,12 @@ namespace Hub.Services
         {
             var state = ActionState.InitialRun;
             
-            if (skipChildren || !HasChildren(curContainerDO.CurrentRouteNode))
+            if (skipChildren || !_activity.HasChildren(curContainerDO.CurrentRouteNode))
             {
-                var nextSibling = GetNextSibling(curContainerDO.CurrentRouteNode);
+                var nextSibling = _activity.GetNextSibling(curContainerDO.CurrentRouteNode);
                 if (nextSibling == null)
                 {
-                    var parent = GetParent(curContainerDO.CurrentRouteNode);
+                    var parent = _activity.GetParent(curContainerDO.CurrentRouteNode);
                     curContainerDO.CurrentRouteNode = parent;
                     curContainerDO.CurrentRouteNodeId = parent != null ? parent.Id : (Guid?)null;
                     state = ActionState.ReturnFromChildren;
@@ -164,7 +131,7 @@ namespace Hub.Services
             }
             else
             {
-                var firstChild = GetFirstChild(curContainerDO.CurrentRouteNode);
+                var firstChild = _activity.GetFirstChild(curContainerDO.CurrentRouteNode);
                 curContainerDO.CurrentRouteNode = firstChild;
                 curContainerDO.CurrentRouteNodeId = curContainerDO.CurrentRouteNode.Id;
             }

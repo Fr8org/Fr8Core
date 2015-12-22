@@ -119,6 +119,11 @@ namespace Hub.Services
             return downstreamList;
         }
 
+        public RouteNodeDO GetParent(RouteNodeDO currentActivity)
+        {
+            return currentActivity.ParentRouteNode;
+        }
+
         public RouteNodeDO GetNextSibling(RouteNodeDO currentActivity)
         {
             // Move to the next activity of the current activity's parent
