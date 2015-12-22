@@ -158,7 +158,7 @@ namespace TerminalBase.BaseClasses
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 
-        public virtual async Task<ActionDO> Activate(ActionDO curActionDO)
+        public virtual async Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //Returns Task<ActivityDTO> using FromResult as the return type is known
             return await Task.FromResult<ActionDO>(curActionDO);
@@ -439,20 +439,28 @@ namespace TerminalBase.BaseClasses
 
             var returnValue = string.Empty;
 
-            switch (radioButton.Name)
+            try
             {
-                case "specific":
-                    returnValue = radioButton.Controls[0].Value;
-                    break;
+                switch (radioButton.Name)
+                {
+                    case "specific":
+                        returnValue = radioButton.Controls[0].Value;
+                        break;
 
-                case "upstream":
-                    var recipientField = radioButton.Controls[0];
-                    returnValue = ExtractPayloadFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value, curAction);
-                    break;
+                    case "upstream":
+                        var recipientField = radioButton.Controls[0];
+                        returnValue = ExtractPayloadFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value, curAction);
+                        break;
 
-                default:
-                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+                    default:
+                        throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+                }
             }
+            catch (ApplicationException)
+            {
+
+            }
+
             return returnValue;
         }
 
@@ -469,8 +477,8 @@ namespace TerminalBase.BaseClasses
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            var reporter = new IncidentReporter();
-            reporter.IncidentMissingFieldInPayload(fieldKey, curAction.Name, curAction.Id.ToString());
+            IncidentReporter reporter = new IncidentReporter();
+            reporter.IncidentMissingFieldInPayload(fieldKey, curAction, "");
 
             throw new ApplicationException("No field found with specified key.");
         }

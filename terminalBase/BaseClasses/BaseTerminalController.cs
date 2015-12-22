@@ -10,6 +10,7 @@ using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 using Newtonsoft.Json;
 using Data.Infrastructure;
+using Utilities.Logging;
 
 namespace TerminalBase.BaseClasses
 {
@@ -31,7 +32,17 @@ namespace TerminalBase.BaseClasses
         public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError)
         {
             var exceptionMessage = terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
-            return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name));
+            try
+            {
+                return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name));
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = "An error has occurred in terminal {0}.             \r\n{1}             \r\n";
+                errorMessage += "Additionally, an error has occurred while trying to post error details to the Hub.             \r\n{2}";
+                Logger.GetLogger().ErrorFormat(errorMessage, terminalName, exceptionMessage, ex.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -144,10 +155,10 @@ namespace TerminalBase.BaseClasses
                         }
                     case "run":
                         {
-                            OnStartAction(curTerminal, activityTemplateName);
+                            OnStartAction(curTerminal, activityTemplateName, isTestActivityTemplate);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
                                 .Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
-                            await OnCompletedAction(curTerminal);
+                            await OnCompletedAction(curTerminal, isTestActivityTemplate);
 
                             return resultPayloadDTO;
                         }
@@ -163,21 +174,11 @@ namespace TerminalBase.BaseClasses
                         }
                     case "activate":
                         {
-                            Task<ActionDO> resutlActionDO;
-
                             //activate is an optional method so it may be missing
                             if (curMethodInfo == null) return Mapper.Map<ActionDTO>(curActionDO);
 
-                            var param = curMethodInfo.GetParameters();
-                            if (param.Length == 2)
-                                resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                            else
-                            {
-                                response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-                                return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
-                            }
-
-                            return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                            Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                         }
                     case "deactivate":
                         {
@@ -209,19 +210,25 @@ namespace TerminalBase.BaseClasses
                 };
 
                 var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
-                EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e);
+                EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e, curActionDO.Id.ToString());
                 throw;
             }
         }
-        private void OnStartAction(string terminalName, string actionName)
+        private void OnStartAction(string terminalName, string actionName, bool isTestActivityTemplate)
         {
+            if (isTestActivityTemplate)
+                return;
+
             _baseTerminalEvent.SendEventReport(
                 terminalName,
                 string.Format("{0} began processing this Container at {1}. Sending to Action {2}", terminalName, DateTime.Now.ToString("G"), actionName));
         }
 
-        private Task OnCompletedAction(string terminalName)
+        private Task OnCompletedAction(string terminalName, bool isTestActivityTemplate)
         {
+            if (isTestActivityTemplate)
+                return Task.FromResult<object>(null);
+
             return Task.Run(() =>
              _baseTerminalEvent.SendEventReport(
                  terminalName,

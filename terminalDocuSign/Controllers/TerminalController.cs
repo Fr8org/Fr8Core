@@ -56,8 +56,8 @@ namespace terminalDocuSign.Controllers
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "Receive_DocuSign_Envelope",
-                Label = "Receive DocuSign Envelope",
+                Name = "Get_DocuSign_Envelope",
+                Label = "Get DocuSign Envelope",
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
                 AuthenticationType = AuthenticationType.Internal,

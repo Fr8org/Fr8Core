@@ -9,7 +9,6 @@ namespace terminalDocuSign.Tests.Fixtures
             = new Dictionary<string, string>()
         {
             { "CoreWebServerUrl", "http://localhost:30643/" },
-            { "EventWebServerUrl", "http://localhost:30643/api/event" },
             { "DocuSignLoginEmail", "64684b41-bdfd-4121-8f81-c825a6a03582" },
             { "DocuSignLoginPassword", "grolier34" },
             { "DocuSignIntegratorKey", "TEST-4057de18-b5ae-43be-a408-565be7755cef" },
