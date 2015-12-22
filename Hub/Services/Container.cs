@@ -238,6 +238,11 @@ namespace Hub.Services
                 uow.SaveChanges();
             }
 
+            if (curContainerDO.CurrentRouteNode == null)
+            {
+                throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
+            }
+
             var actionState = ActionState.InitialRun;
             while (curContainerDO.CurrentRouteNode != null)
             {

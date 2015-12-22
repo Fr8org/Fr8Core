@@ -160,11 +160,13 @@ namespace DockyardTest.Services
             {
                 //Arrange
                 //Create a Route 
+                
                 var curRoute = FixtureData.TestRouteWithSubscribeEvent();
 
                 //Create activity mock to process the actions
                 Mock<IRouteNode> activityMock = new Mock<IRouteNode>(MockBehavior.Default);
                 activityMock.Setup(a => a.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActionState>(), It.IsAny<ContainerDO>())).Returns(Task.Delay(1));
+                activityMock.Setup(a => a.HasChildren(It.IsAny<RouteNodeDO>())).Returns(true);
                 activityMock.Setup(a => a.GetFirstChild(It.IsAny<RouteNodeDO>())).Returns(curRoute.ChildNodes.First().ChildNodes.First());
                 ObjectFactory.Container.Inject(typeof(IRouteNode), activityMock.Object);
 
