@@ -19,6 +19,7 @@ namespace Data.Entities
         public string CustomerId { get; set; }
         public string PrimaryCategory { get; set; }
         public string SecondaryCategory { get; set; }
+        public string Component { get; set; }
         public string Activity { get; set; }
         public string Data { get; set; }
         public string Status { get; set; }
