@@ -34,11 +34,11 @@ namespace Data.Crates
             get { return _crates[key]; }
             set { _crates[key] = value; }
         }
-     
+
         /**********************************************************************************/
         // Functions
         /**********************************************************************************/
-        
+
         public CrateStorage()
         {
         }
@@ -59,7 +59,7 @@ namespace Data.Crates
                 _crates.Add(crate.Id, crate);
             }
         }
-        
+
         /**********************************************************************************/
         /// <summary>
         /// Add new crate to storage
@@ -69,7 +69,7 @@ namespace Data.Crates
         {
             _crates.Add(crate.Id, crate);
         }
-        
+
         /**********************************************************************************/
         /// <summary>
         /// Add collection of crates to storage
@@ -91,7 +91,7 @@ namespace Data.Crates
         {
             _crates.Clear();
         }
-        
+
         /**********************************************************************************/
         /// <summary>
         /// Returns first crate that complies with the predicate and with content of the give type.
@@ -290,6 +290,29 @@ namespace Data.Crates
         public int RemoveByLabel(string label)
         {
             return RemoveUsingPredicate(x => x.Label == label);
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Replaces all crates that have label mathching to passed crate label with passed crate 
+        /// </summary>
+        /// <returns></returns>
+        public int ReplaceByLabel(Crate crate)
+        {
+            int affected_items = 0;
+            var predicate = new Predicate<Crate>(x => x.Label == crate.Label);
+
+            foreach (var key in _crates.Keys.ToArray())
+            {
+                if (predicate(_crates[key]))
+                {
+                    _crates.Remove(key);
+                    affected_items++;
+                }
+            }
+
+            this.Add(crate);
+            return affected_items;
         }
 
         /**********************************************************************************/
