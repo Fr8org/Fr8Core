@@ -19,6 +19,7 @@ using TerminalBase.Infrastructure;
 using Data.Entities;
 using Data.Crates;
 using Data.States;
+using Utilities;
 
 namespace terminalDocuSign.Actions
 {
@@ -80,14 +81,10 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
-
-            //get envelopeIdFromUpstreamActions
-            var upstream = await GetCratesByDirection<StandardDesignTimeFieldsCM>(curActionDO, CrateDirection.Upstream);
-
             var control = CreateSpecificOrUpstreamValueChooser(
                "TemplateId or TemplateName",
                "EnvelopeIdSelector",
-               "Upstream Terminal-Provided Design-Time Fields"
+               "Upstream Design-Time Fields"
             );
 
             control.Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") };
@@ -108,10 +105,9 @@ namespace terminalDocuSign.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                updater.CrateStorage.RemoveByLabel("Upstream Terminal-Provided Design-Time Fields");
                 var curUpstreamFields = (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream)).Fields.ToArray();
-                var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Design-Time Fields", curUpstreamFields);
-                updater.CrateStorage.Add(upstreamFieldsCrate);
+                var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Design-Time Fields", curUpstreamFields);
+                updater.CrateStorage.ReplaceByLabel(upstreamFieldsCrate);
 
                 var control = FindControl(Crate.GetStorage(curActionDO), "EnvelopeIdSelector");
                 string envelopeId = GetEnvelopeID(control as TextSource, authTokenDO);
@@ -129,22 +125,24 @@ namespace terminalDocuSign.Actions
 
         private string GetEnvelopeID(ControlDefinitionDTO control, AuthorizationTokenDO authTokenDo)
         {
+            string envelopeId;
             TextSource textSource = (TextSource)control;
             if (textSource.ValueSource == null || string.IsNullOrEmpty(textSource.Value))
                 return null;
 
-            string result = "";
-            Guid envelopeId;
-            if (Guid.TryParse(control.Value, out envelopeId))
-                result = envelopeId.ToString();
-            else
-            {
-                var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDo.Token);
-                var selectedTemplate = (_docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO).Get()
-                    as StandardDesignTimeFieldsCM).Fields.Where(a => a.Key.ToLowerInvariant() == control.Value.ToLowerInvariant()).FirstOrDefault();
-                result = (selectedTemplate != null) ? selectedTemplate.Value : "";
-            }
-            return result;
+            //Gets EnvelopeId either by EnvelopeId or TemplateName
+            if (string.IsNullOrEmpty(control.Value))
+                if (control.Value.IsGuid())
+                    envelopeId = control.Value;
+                else
+                {
+                    var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDo.Token);
+                    var availableTemplates = (_docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO).Get()
+                        as StandardDesignTimeFieldsCM).Fields;
+                    var selectedTemplate = availableTemplates.Where(a => a.Key.ToLowerInvariant() == control.Value.ToLowerInvariant()).FirstOrDefault();
+                    envelopeId = (selectedTemplate != null) ? selectedTemplate.Value : "";
+                }
+            return envelopeId;
         }
     }
 }

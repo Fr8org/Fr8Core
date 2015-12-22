@@ -106,6 +106,7 @@ namespace terminalDocuSign.Services
             return manifestSchema.Fields;
         }
 
+        //Has to be retrofit after https://maginot.atlassian.net/browse/FR-1280 is done
         public string GetEnvelopeIdFromPayload(PayloadDTO curPayloadDTO)
         {
             var standardPayload = Crate.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>().FirstOrDefault();
@@ -122,15 +123,16 @@ namespace terminalDocuSign.Services
 
         public int UpdateUserDefinedFields(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, ICrateStorageUpdater updater, string envelopeId)
         {
+            int fieldCount = 0;
             updater.CrateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
             if (!String.IsNullOrEmpty(envelopeId))
             {
                 var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
                 var userDefinedFields = this.ExtractFieldsAndAddToCrate(envelopeId, docuSignAuthDTO, curActionDO);
                 updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", userDefinedFields.ToArray()));
-                return userDefinedFields.Count();
+                fieldCount = userDefinedFields.Count();
             }
-            return 0;
+            return fieldCount;
         }
 
         /// <summary>
@@ -141,7 +143,6 @@ namespace terminalDocuSign.Services
         /// <param name="curActionDO">ActionDO object representing the current action. The crate with extracted 
         /// fields will be added to this Action replacing any older instances of that crate.</param>
         public IEnumerable<FieldDTO> ExtractFieldsAndAddToCrate(string docuSignTemplateId, DocuSignAuth docuSignAuthDTO, ActionDO curActionDO)
-
         {
             if (!string.IsNullOrEmpty(docuSignTemplateId))
             {
@@ -183,7 +184,6 @@ namespace terminalDocuSign.Services
 
                 return Crate.CreateDesignTimeFieldsCrate(crateLabel, fieldCollection.ToArray());
             }
-
             return null;
         }
     }
