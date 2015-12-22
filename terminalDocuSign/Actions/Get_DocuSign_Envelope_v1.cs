@@ -125,7 +125,7 @@ namespace terminalDocuSign.Actions
 
         private string GetEnvelopeID(ControlDefinitionDTO control, AuthorizationTokenDO authTokenDo)
         {
-            string envelopeId;
+            string envelopeId = "";
             TextSource textSource = (TextSource)control;
             if (textSource.ValueSource == null || string.IsNullOrEmpty(textSource.Value))
                 return null;
