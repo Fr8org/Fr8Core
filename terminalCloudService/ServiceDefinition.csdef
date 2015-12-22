@@ -67,6 +67,11 @@
           <Binding name="Endpoint1" endpointName="terminalQuickBooks" />
         </Bindings>
       </Site>
+    <Site name="terminalYammer" physicalDirectory="..\..\..\terminalYammer\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="terminalYammer" />
+        </Bindings>
+      </Site>
     </Sites>
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
@@ -85,6 +90,7 @@
       <InputEndpoint name="terminalDropbox" protocol="http" port="19760" />
       <InputEndpoint name="terminalAtlassian" protocol="http" port="39768" />
       <InputEndpoint name="terminalQuickBooks" protocol="http" port="48317" />
+      <InputEndpoint name="terminalYammer" protocol="http" port="39555" />
     </Endpoints>
     <Imports>
       <Import moduleName="RemoteAccess" />

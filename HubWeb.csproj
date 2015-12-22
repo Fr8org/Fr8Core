@@ -494,6 +494,7 @@
     <Content Include="Content\icons\web_services\slack-icon-64x64.png" />
     <Content Include="Content\icons\web_services\twilio-icon-64x64.png" />
     <Content Include="Content\icons\web_services\unknown-service.png" />
+    <Content Include="Content\icons\web_services\yammer-64x64.png" />
     <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\backgrounds\about-bg.jpg" />
     <Content Include="Content\img\backgrounds\bg-overlay.png" />
