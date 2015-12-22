@@ -86,7 +86,7 @@ namespace terminalDocuSign.Actions
                     }
                     else
                     {
-                        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+                        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
                         //build a controls crate to render the pane
                         var configurationControlsCrate = await CreateConfigurationControlsCrate(curActionDO);
@@ -162,7 +162,7 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActionDO> FollowupConfigurationResponse(
             ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
             _docuSignManager.ExtractFieldsAndAddToCrate(_docuSignTemplateValue, docuSignAuthDTO, curActionDO);
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(curActionDO, null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))

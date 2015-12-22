@@ -100,10 +100,6 @@
       <Project>{62219aa6-9276-4935-b934-f0f50ecef6fb}</Project>
       <Name>terminalGoogleTests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\terminalSalesforceTests\terminalSalesforceTests.csproj">
-      <Project>{fda06158-a81e-46b4-9f25-5ab76dfd400a}</Project>
-      <Name>terminalSalesforceTests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\terminalSendGridTests\terminalSendGridTests.csproj">
       <Project>{ee3e1e99-175f-4507-96da-421fcd0f6d9e}</Project>
       <Name>terminalSendGridTests</Name>

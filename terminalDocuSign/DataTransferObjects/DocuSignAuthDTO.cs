@@ -1,6 +1,6 @@
 ﻿namespace terminalDocuSign.DataTransferObjects
 {
-    public class DocuSignAuthDTO
+    public class DocuSignAuth
     {
         public string Email { get; set; }
         public string ApiPassword { get; set; }
