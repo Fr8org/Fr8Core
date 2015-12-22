@@ -158,7 +158,7 @@ namespace TerminalBase.BaseClasses
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 
-        public virtual async Task<ActionDO> Activate(ActionDO curActionDO)
+        public virtual async Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //Returns Task<ActivityDTO> using FromResult as the return type is known
             return await Task.FromResult<ActionDO>(curActionDO);
