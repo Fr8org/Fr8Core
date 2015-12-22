@@ -155,10 +155,10 @@ namespace TerminalBase.BaseClasses
                         }
                     case "run":
                         {
-                            OnStartAction(curTerminal, activityTemplateName);
+                            OnStartAction(curTerminal, activityTemplateName, isTestActivityTemplate);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
                                 .Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
-                            await OnCompletedAction(curTerminal);
+                            await OnCompletedAction(curTerminal, isTestActivityTemplate);
 
                             return resultPayloadDTO;
                         }
@@ -214,15 +214,21 @@ namespace TerminalBase.BaseClasses
                 throw;
             }
         }
-        private void OnStartAction(string terminalName, string actionName)
+        private void OnStartAction(string terminalName, string actionName, bool isTestActivityTemplate)
         {
+            if (isTestActivityTemplate)
+                return;
+
             _baseTerminalEvent.SendEventReport(
                 terminalName,
                 string.Format("{0} began processing this Container at {1}. Sending to Action {2}", terminalName, DateTime.Now.ToString("G"), actionName));
         }
 
-        private Task OnCompletedAction(string terminalName)
+        private Task OnCompletedAction(string terminalName, bool isTestActivityTemplate)
         {
+            if (isTestActivityTemplate)
+                return Task.FromResult<object>(null);
+
             return Task.Run(() =>
              _baseTerminalEvent.SendEventReport(
                  terminalName,
