@@ -158,10 +158,10 @@ namespace TerminalBase.BaseClasses
                     case "run":
                     case "childrenexecuted":
                         {
-                            OnStartAction(curTerminal, activityTemplateName);
+                            OnStartAction(curTerminal, activityTemplateName, isTestActivityTemplate);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
                                 .Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
-                            await OnCompletedAction(curTerminal);
+                            await OnCompletedAction(curTerminal, isTestActivityTemplate);
 
                             return resultPayloadDTO;
                         }
@@ -177,21 +177,11 @@ namespace TerminalBase.BaseClasses
                         }
                     case "activate":
                         {
-                            Task<ActionDO> resutlActionDO;
-
                             //activate is an optional method so it may be missing
                             if (curMethodInfo == null) return Mapper.Map<ActionDTO>(curActionDO);
 
-                            var param = curMethodInfo.GetParameters();
-                            if (param.Length == 2)
-                                resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                            else
-                            {
-                                response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-                                return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
-                            }
-
-                            return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                            Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                         }
                     case "deactivate":
                         {
@@ -227,15 +217,21 @@ namespace TerminalBase.BaseClasses
                 throw;
             }
         }
-        private void OnStartAction(string terminalName, string actionName)
+        private void OnStartAction(string terminalName, string actionName, bool isTestActivityTemplate)
         {
+            if (isTestActivityTemplate)
+                return;
+
             _baseTerminalEvent.SendEventReport(
                 terminalName,
                 string.Format("{0} began processing this Container at {1}. Sending to Action {2}", terminalName, DateTime.Now.ToString("G"), actionName));
         }
 
-        private Task OnCompletedAction(string terminalName)
+        private Task OnCompletedAction(string terminalName, bool isTestActivityTemplate)
         {
+            if (isTestActivityTemplate)
+                return Task.FromResult<object>(null);
+
             return Task.Run(() =>
              _baseTerminalEvent.SendEventReport(
                  terminalName,

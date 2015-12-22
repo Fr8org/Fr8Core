@@ -101,7 +101,7 @@ namespace terminalGoogleTests.Integration
         /// Spreadsheet with the following structure is passed: {{(1,1),(1,2)},{(2,1),(2,2)}}
         /// Required fields are tested
         /// </summary> 
-        [Test, Category("Integration.terminalGoogle"), Ignore]
+        [Test, Category("Integration.terminalGoogle")]
         public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Row_And_Column_Table()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -128,7 +128,7 @@ namespace terminalGoogleTests.Integration
             Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
-            Assert.AreEqual(true, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
+            Assert.IsFalse(crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
             Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
             Assert.AreEqual("(2,2)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[1].Cell.Value);
         }
@@ -136,7 +136,7 @@ namespace terminalGoogleTests.Integration
         /// Spreadsheet with the following structure is passed: {{(1,1)},{(2,2)}}
         /// Required fields are tested
         /// </summary> 
-        [Test, Category("Integration.terminalGoogle"), Ignore]
+        [Test, Category("Integration.terminalGoogle")]
         public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Column_Only_Table()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -163,14 +163,14 @@ namespace terminalGoogleTests.Integration
             Assert.AreEqual(4, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
-            Assert.AreEqual(true, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
+            Assert.IsFalse(crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
             Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
         }
         /// <summary>
         /// Spreadsheet with the following structure is passed: {{(1,1),(1,2)}}
         /// Required fields are tested
         /// </summary> 
-        [Test, Category("Integration.terminalGoogle"), Ignore]
+        [Test, Category("Integration.terminalGoogle")]
         public async void Extract_Spreadsheet_Data_v1_FollowupConfiguration_Row_Only_Table()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -197,7 +197,7 @@ namespace terminalGoogleTests.Integration
             Assert.AreEqual(3, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardTableDataCM>().Count());
-            Assert.AreEqual(true, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
+            Assert.IsFalse(crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.FirstRowHeaders);
             Assert.AreEqual(0, crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table.Count);
         }
         /////////////
