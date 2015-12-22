@@ -81,12 +81,7 @@ namespace terminalSlack.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
+            return Crate.IsStorageEmpty(curActionDO) ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
         }
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -104,6 +99,16 @@ namespace terminalSlack.Actions
                 updater.CrateStorage.Add(crateControls);
                 updater.CrateStorage.Add(crateAvailableChannels);
                 updater.CrateStorage.Add(crateAvailableFields);
+            }
+
+            return curActionDO;
+        }
+
+        protected async override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActionDO));
             }
 
             return curActionDO;
@@ -151,7 +156,6 @@ namespace terminalSlack.Actions
         {
             var curUpstreamFields =
                 (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream))
-
                 .Where(x => x.Label != "Available Channels")
                 .SelectMany(x => x.Content.Fields)
                 .ToArray();
