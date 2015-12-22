@@ -30,6 +30,38 @@ namespace terminalFr8Core.Actions
         {
             var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
             var payloadStorage = Crate.GetStorage(curPayloadDTO);
+            var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
+            if (operationsCrate == null)
+            {
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "This Action can't run without OperationalStateCM crate");
+            }
+            //set default loop index for initial state
+            CreateLoop(curActionDO.Id.ToString(), curPayloadDTO);
+
+            if (await ShouldBreakLoop(curPayloadDTO, curActionDO))
+            {
+                return SkipChildren(curPayloadDTO);
+            }
+            return Success(curPayloadDTO);
+        }
+
+        public override async Task<PayloadDTO> ChildrenExecuted(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
+            IncrementLoopIndex(curActionDO.Id.ToString(), curPayloadDTO);
+            //check if we need to end this loop
+            if (await ShouldBreakLoop(curPayloadDTO, curActionDO))
+            {
+                BreakLoop(curActionDO.Id.ToString(), curPayloadDTO);
+                return Success(curPayloadDTO);
+            }
+            
+            return ReProcessChildActions(curPayloadDTO);
+        }
+
+        private async Task<bool> ShouldBreakLoop(PayloadDTO curPayloadDTO, ActionDO curActionDO)
+        {
+            var payloadStorage = Crate.GetStorage(curPayloadDTO);
 
             var loopId = curActionDO.Id.ToString();
             var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
@@ -38,27 +70,20 @@ namespace terminalFr8Core.Actions
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "This Action can't run without OperationalStateCM crate");
             }
             //set default loop index for initial state
-            var currentLoopIndex = 0;
+            
             var myLoop = operationsCrate.Loops.FirstOrDefault(l => l.Id == loopId);
-            if (myLoop == null)
-            {
-                CreateLoop(curActionDO.Id.ToString(), curPayloadDTO);
-            }
-            else
-            {
-                currentLoopIndex = IncrementLoopIndex(curActionDO.Id.ToString(), curPayloadDTO);
-            }
+            var currentLoopIndex = myLoop.Index;
 
             //get user selected design time values
             var manifestType = GetSelectedCrateManifestTypeToProcess(curActionDO);
             var label = GetSelectedLabelToProcess(curActionDO);
-            
+
             //find crate by user selected values
             var crateToProcess = payloadStorage.FirstOrDefault(c => /*c.ManifestType.Type == manifestType && */c.Label == label);
 
             if (crateToProcess == null)
             {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + manifestType + "\" and Label: \""+label+"\"");
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + manifestType + "\" and Label: \"" + label + "\"");
             }
 
             Object[] dataList = null;
@@ -73,10 +98,10 @@ namespace terminalFr8Core.Actions
             //check if we need to end this loop
             if (currentLoopIndex > dataList.Length - 1)
             {
-                BreakLoop(curActionDO.Id.ToString(), curPayloadDTO);
+                return true;
             }
-
-            return curPayloadDTO;
+            
+            return false;
         }
 
         private void BreakLoop(string loopId, PayloadDTO payload)

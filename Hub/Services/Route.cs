@@ -546,10 +546,7 @@ namespace Hub.Services
                 {
                     throw new ApplicationException("Attempted to Continue a Process that wasn't pending");
                 }
-                //TODO think of a better way for this
-                //i am doing this to create same stack before container was paused
-                //container won't process already processed actions
-                curContainerDO.CurrentRouteNode = GetRootActivity(uow, curContainerDO.Route);
+                //continue from where we left
                 return await Run(uow, curContainerDO);
             }
         }

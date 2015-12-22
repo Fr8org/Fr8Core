@@ -164,7 +164,7 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO()
             {
-                Name = "Delay",
+                Name = "SetDelay",
                 Label = "Delay Action Processing",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,

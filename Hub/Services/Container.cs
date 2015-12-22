@@ -112,6 +112,7 @@ namespace Hub.Services
                     //do nothing
                     break;
                 case ActionResponse.RequestSuspend:
+                    PopAction(uow, curContainerDo);
                     throw new ExecutionPausedException();
                 case ActionResponse.Null:
                     //let's assume this is success for now
