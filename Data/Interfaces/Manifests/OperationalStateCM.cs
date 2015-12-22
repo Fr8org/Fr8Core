@@ -20,10 +20,7 @@ namespace Data.Interfaces.Manifests
         public List<LoopStatus> Loops { get; set; }
         
         //current action response
-        public ActionResponse CurrentActionResponse { get; set; }
-
-        public Guid PausedRouteNodeId { get; set; }
-        
+        public ActionResponse CurrentActionResponse { get; set; }       
 
         public OperationalStateCM()
             : base(MT.OperationalStatus)

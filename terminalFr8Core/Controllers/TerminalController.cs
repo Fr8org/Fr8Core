@@ -4,7 +4,6 @@ using System.Web.Http;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Services;
 using Utilities.Configuration.Azure;
 using Data.Interfaces.Manifests;
 
