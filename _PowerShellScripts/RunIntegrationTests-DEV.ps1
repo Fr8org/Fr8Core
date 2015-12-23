@@ -7,4 +7,6 @@ Write-Host "Copying HealthMonitor config file"
 Copy-Item $SrcConfigFile -Destination $DstConfigFile -Force
 
 Write-Host $HealthMonitorCmd
+
+Start-Sleep -s 20
 Invoke-Expression $HealthMonitorCmd

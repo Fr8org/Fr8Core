@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
+using Data.Constants;
 using InternalInterface = Hub.Interfaces;
 using Hub.Interfaces;
 // This alias is used to avoid ambiguity between StructureMap.Container and Core.Services.Container
@@ -146,7 +147,7 @@ namespace DockyardTest.Services
         {
             var _activity = new Mock<IRouteNode>();
             _activity
-                .Setup(c => c.Process(It.IsAny<Guid>(), It.IsAny<ContainerDO>()))
+                .Setup(c => c.Process(It.IsAny<Guid>(), It.IsAny<ActionState>(), It.IsAny<ContainerDO>()))
                 .Returns(Task.Delay(100))
                 .Verifiable();
             ContainerDO containerDO = FixtureData.TestContainerWithCurrentActivityAndNextActivity();
@@ -166,7 +167,7 @@ namespace DockyardTest.Services
 
             Assert.AreNotEqual(originalCurrentActivity, containerDO.CurrentRouteNode);
             Assert.IsNull(containerDO.CurrentRouteNode);
-            _activity.Verify(p => p.Process(It.IsAny<Guid>(), It.IsAny<ContainerDO>()));
+            _activity.Verify(p => p.Process(It.IsAny<Guid>(), It.IsAny<ActionState>(), It.IsAny<ContainerDO>()));
         }
 
 //        [Test]

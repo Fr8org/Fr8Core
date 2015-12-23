@@ -16,6 +16,8 @@ namespace TerminalBase.Infrastructure
 
         Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction);
 
+        Task CreateAlarm(AlarmDTO alarmDTO);
+
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO);
 
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(

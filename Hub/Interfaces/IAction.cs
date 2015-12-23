@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Data.Constants;
 using Newtonsoft.Json.Linq;
 using Data.Entities;
 using Data.Interfaces;
@@ -25,9 +26,9 @@ namespace Hub.Interfaces
 
         Task<RouteNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string name,
                                              string label = null, Guid? parentNodeId = null, bool createRoute = false);
-        
-        Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow);
-        Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO);
+
+        Task PrepareToExecute(ActionDO curAction, ActionState curActionState, ContainerDO curContainerDO, IUnitOfWork uow);
+        Task<PayloadDTO> Run(ActionDO curActionDO, ActionState curActionState, ContainerDO curContainerDO);
        // string Authenticate(ActionDO curActionDO);
         
         Task<ActionDTO> Activate(ActionDO curActionDO);
