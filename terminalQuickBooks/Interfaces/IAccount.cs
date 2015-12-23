@@ -4,11 +4,13 @@ using System.Linq;
 using System.Web;
 using Data.Entities;
 using Intuit.Ipp.Data;
+using terminalQuickBooks.Infrastructure;
 
 namespace terminalQuickBooks.Interfaces
 {
     public interface IAccount
     {
         List<Account> GetAccountList(AuthorizationTokenDO authTokenDO);
+        List<QuickBooksAccount> GetChartOfAccounts(AuthorizationTokenDO authTokenDO);
     }
 }

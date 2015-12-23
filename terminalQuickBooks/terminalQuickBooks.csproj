@@ -257,16 +257,18 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Create_Journal_Entry_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
+    <Compile Include="Infrastructure\QuickbooksAccount.cs" />
+    <Compile Include="Interfaces\IAccount.cs" />
     <Compile Include="Interfaces\IJournalEntry.cs" />
     <Compile Include="Interfaces\IQuickBooksIntegration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfHostFactory.cs" />
+    <Compile Include="Services\Account.cs" />
     <Compile Include="Services\JournalEntry.cs" />
     <Compile Include="Services\QuickBooksIntegration.cs" />
     <Compile Include="Tests\Fixtures\Fixtures.cs" />
@@ -300,6 +302,9 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Actions\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
