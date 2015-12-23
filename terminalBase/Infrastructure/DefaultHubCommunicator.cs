@@ -47,6 +47,14 @@ namespace TerminalBase.Infrastructure
             return _routeNode.GetCratesByDirection(actionDO.Id, direction);
         }
 
+        public async Task CreateAlarm(AlarmDTO alarmDTO)
+        {
+            var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/alarms";
+
+            await _restfulServiceClient.PostAsync(new Uri(hubAlarmsUrl), alarmDTO);
+        }
+
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") 

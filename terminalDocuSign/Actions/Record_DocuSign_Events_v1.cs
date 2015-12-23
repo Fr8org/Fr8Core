@@ -61,12 +61,12 @@ namespace terminalDocuSign.Actions
              * Note: We should not call Activate at the time of Configuration. For this action, it may be valid use case.
              * Because this particular action will be used internally, it would be easy to execute the Process directly.
              */
-            await Activate(curActionDO);
+            await Activate(curActionDO, null);
 
             return await Task.FromResult(curActionDO);
         }
 
-        public override Task<ActionDO> Activate(ActionDO curActionDO)
+        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();

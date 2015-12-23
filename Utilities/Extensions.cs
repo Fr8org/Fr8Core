@@ -25,6 +25,12 @@ namespace Utilities
             return new Uri(value);
         }
 
+        public static bool IsGuid(this string value)
+        {
+            Guid guid;
+            return Guid.TryParse(value, out guid);
+        }
+
         public static string StringCSharpLineBreakToHTMLLineBreak(this string value)
         {
             if (String.IsNullOrEmpty(value))
@@ -83,7 +89,7 @@ namespace Utilities
             return String.Compare(left, right, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
-       
+
 
         /// <summary>
         /// Uses Uri.EscapeDataString() based on recommendations on MSDN
@@ -101,10 +107,10 @@ namespace Utilities
         {
             return Convert.ToString(value);
         }
-		  public static string format(this string msg, params object[] args)
-		  {
-			  return string.Format(msg, args);
-		  }
+        public static string format(this string msg, params object[] args)
+        {
+            return string.Format(msg, args);
+        }
     }
 
     public static class UriExtensions
@@ -172,46 +178,49 @@ namespace Utilities
         public static string GenerateDateFromText(this string selected)
         {
             DateTime validDatetime;
-            if (!DateTime.TryParse(selected, out validDatetime)) {
+            if (!DateTime.TryParse(selected, out validDatetime))
+            {
                 return "Invalid Selection";
             }
             return validDatetime.ToString("MM/dd/yyyy HH:mm");
         }
     }
 
-	 public static class EnumExtensions
-	 {
-		 public static string GetEnumDescription(this Enum value, string defaultValue = null)
-		 {
-			 return value.GetEnumAttribute<DescriptionAttribute>(a => a.Description, defaultValue);
-		 }
-		 public static string GetEnumDisplayName(this Enum value, string defaultValue = null)
-		 {
-			 return value.GetEnumAttribute<DisplayAttribute>(a => a.Name, defaultValue);
-		 }
-		 private static string GetEnumAttribute<TAttr>(this Enum value, Func<TAttr, string> expr, string defaultValue = null) where TAttr : Attribute
-		 {
-			 FieldInfo fi = value.GetType().GetField(value.ToString());
-			 var attributes = fi.GetCustomAttributes<TAttr>(false).ToArray();
-			 return (attributes != null && attributes.Length > 0) ? expr(attributes.First()) : (defaultValue ?? value.ToString());
-		 }
-	 }
+    public static class EnumExtensions
+    {
+        public static string GetEnumDescription(this Enum value, string defaultValue = null)
+        {
+            return value.GetEnumAttribute<DescriptionAttribute>(a => a.Description, defaultValue);
+        }
+        public static string GetEnumDisplayName(this Enum value, string defaultValue = null)
+        {
+            return value.GetEnumAttribute<DisplayAttribute>(a => a.Name, defaultValue);
+        }
+        private static string GetEnumAttribute<TAttr>(this Enum value, Func<TAttr, string> expr, string defaultValue = null) where TAttr : Attribute
+        {
+            FieldInfo fi = value.GetType().GetField(value.ToString());
+            var attributes = fi.GetCustomAttributes<TAttr>(false).ToArray();
+            return (attributes != null && attributes.Length > 0) ? expr(attributes.First()) : (defaultValue ?? value.ToString());
+        }
+    }
 
 
-    public static class TypeExtensions 
+    public static class TypeExtensions
     {
         /// <summary>
         /// Retrieves all assemblies active in the current application
         /// WARNING: This will return EVERY assembly in your current domain, this is a costly operation and should only be used
         /// during initialization
         /// </summary>
-        private static IList<Assembly> Environment {
+        private static IList<Assembly> Environment
+        {
             get { return AppDomain.CurrentDomain.GetAssemblies().ToList(); }
         }
         /// <summary>
         /// Retrieves just the Base.NET framework assembly
         /// </summary>
-        private static Assembly Base {
+        private static Assembly Base
+        {
             get { return Assembly.GetExecutingAssembly(); }
         }
 
@@ -221,8 +230,10 @@ namespace Utilities
         /// <typeparam name="TBase"></typeparam>
         /// <param name="includeBase">Includes the provided TBase type in the list</param>        
         /// <returns>A list of all types that implement the interface or inherit from the class</returns>
-        public static Type[] GetInternalTypes<TBase>(params Type[] excludeTypes) {
-            if (typeof(TBase).IsInterface) {
+        public static Type[] GetInternalTypes<TBase>(params Type[] excludeTypes)
+        {
+            if (typeof(TBase).IsInterface)
+            {
                 return Base.GetTypes()
                            .Where(t => t.GetInterfaces().Contains(typeof(TBase)) && !excludeTypes.Contains(t))
                            .ToArray();
@@ -239,8 +250,10 @@ namespace Utilities
         /// <typeparam name="TBase">The base type to search for (all inherited class types of TBase will be matched)</typeparam>
         /// <param name="excludeTypes">Types to exclude from the results</param>
         /// <returns>A list of instances from the search results as type TBase</returns>
-        public static TBase[] GetInternalTypesAsInstance<TBase>(params Type[] excludeTypes) {
-            if (typeof(TBase).IsInterface) {
+        public static TBase[] GetInternalTypesAsInstance<TBase>(params Type[] excludeTypes)
+        {
+            if (typeof(TBase).IsInterface)
+            {
                 return Base.GetTypes()
                                     .Where(t => t.GetInterfaces().Contains(typeof(TBase)) && !excludeTypes.Contains(t))
                                     .Select(t => (TBase)Activator.CreateInstance(t))
@@ -261,7 +274,8 @@ namespace Utilities
         /// <param name="inherit">Use inheritance in the search result</param>
         /// <param name="excludeTypes">Exclude types in this enumerable list</param>
         /// <returns>All types that contain the specified attribute</returns>
-        public static Type[] GetInternalTypesWithAttribute<TAttr>(bool inherit = false, params Type[] excludeTypes) {
+        public static Type[] GetInternalTypesWithAttribute<TAttr>(bool inherit = false, params Type[] excludeTypes)
+        {
             return Base.GetTypes().Where(t => t.GetCustomAttributes(typeof(TAttr), inherit).Length > 0 && !excludeTypes.Contains(t)).ToArray();
         }
 
@@ -272,11 +286,15 @@ namespace Utilities
         /// <typeparam name="TBase">The base type class or interface from which types returned in the list inherit from or implement.</typeparam>
         /// <param name="excludeTypes">Exclude types in this enumerable list</param>
         /// <returns>An array of matched types</returns>
-        public static Type[] GetTypes<TBase>(params Type[] excludeTypes) {
+        public static Type[] GetTypes<TBase>(params Type[] excludeTypes)
+        {
             List<Type> tlist = new List<Type>();
-            foreach (Assembly a in Environment) {
-                try {
-                    if (typeof(TBase).IsInterface) {
+            foreach (Assembly a in Environment)
+            {
+                try
+                {
+                    if (typeof(TBase).IsInterface)
+                    {
                         tlist.AddRange(a.GetTypes()
                                             .Where(t => t.GetInterfaces().Contains(typeof(TBase)) && !excludeTypes.Contains(t) && t.IsClass && !t.IsAbstract)
                                             .ToList());
@@ -287,7 +305,8 @@ namespace Utilities
                                             .ToArray());
                     }
                 }
-                catch (Exception) {
+                catch (Exception)
+                {
                     //TODO:: Log failed type reflections
                 }
             }
@@ -300,11 +319,15 @@ namespace Utilities
         /// <typeparam name="TBase">The base type to search for (all inherited class types of TBase will be matched)</typeparam>
         /// <param name="excludeTypes">Exclude types in this enumerable list</param>
         /// <returns>An array of instances that inherit or implement the matched type</returns>
-        public static TBase[] GetTypesAsInstance<TBase>(params Type[] excludeTypes) {
+        public static TBase[] GetTypesAsInstance<TBase>(params Type[] excludeTypes)
+        {
             List<TBase> inst = new List<TBase>();
-            foreach (Assembly a in Environment) {
-                try {
-                    if (typeof(TBase).IsInterface) {
+            foreach (Assembly a in Environment)
+            {
+                try
+                {
+                    if (typeof(TBase).IsInterface)
+                    {
                         inst.AddRange(a.GetTypes()
                                        .Where(t => t.GetInterfaces().Contains(typeof(TBase)) && !excludeTypes.Contains(t))
                                        .Select(t => (TBase)Activator.CreateInstance(t))
@@ -317,7 +340,8 @@ namespace Utilities
                                        .ToArray());
                     }
                 }
-                catch (Exception) {
+                catch (Exception)
+                {
                     //TODO:: Log failed type reflections
                 }
             }
@@ -332,21 +356,26 @@ namespace Utilities
         /// <param name="inherit">Use inheritance in the search</param>
         /// <param name="excludeTypes">Exclude these types from the search results</param>
         /// <returns>A list of types that contain the specified attribute type</returns>
-        public static Type[] GetTypesWithAttribute<TAttr>(bool inherit = false, params Type[] excludeTypes) {
+        public static Type[] GetTypesWithAttribute<TAttr>(bool inherit = false, params Type[] excludeTypes)
+        {
             List<Type> tlist = new List<Type>();
-            foreach (Assembly a in Environment) {
-                try {
+            foreach (Assembly a in Environment)
+            {
+                try
+                {
                     tlist.AddRange(a.GetTypes().Where(t => t.GetCustomAttributes(typeof(TAttr), inherit).Length > 0 && !excludeTypes.Contains(t))
                                     .ToList());
                 }
-                catch (Exception) {
+                catch (Exception)
+                {
                     //TODO:: Log failed type reflections
                 }
             }
             return tlist.ToArray();
         }
 
-        public static Type[] GetBestGenericArgs(this Type t) {
+        public static Type[] GetBestGenericArgs(this Type t)
+        {
             Type[] args = t.GetGenericArguments();
             Type[] cnst = args.SelectMany(x => x.GetGenericArguments()).ToArray();
             return (cnst.Length > 0) ? cnst.Take(cnst.Length)
@@ -357,7 +386,8 @@ namespace Utilities
                                            .ToArray();
         }
 
-        public static bool IsActionDelegate(this Type t) {
+        public static bool IsActionDelegate(this Type t)
+        {
             if (t.IsSubclassOf(typeof(MulticastDelegate)) &&
                t.GetMethod("Invoke").ReturnType == typeof(void))
                 return true;
