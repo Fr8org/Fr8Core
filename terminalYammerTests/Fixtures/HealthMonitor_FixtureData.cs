@@ -25,24 +25,6 @@ namespace terminalYammerTests.Fixtures
             };
         }
 
-
-        internal static IEnumerable<FieldDTO> YammerEventFields()
-        {
-            return new List<FieldDTO>()
-           {
-              new FieldDTO("token", "sU3N7wdnhXmml1zR2dVLf6PV"),
-               new FieldDTO("team_id", "T07F83QLE"),
-               new FieldDTO("team_domain", "dockyardteam"),
-               new FieldDTO("service_id", "16193135954"),
-               new FieldDTO("channel_id", "C0BU4CH25"),
-               new FieldDTO("channel_name", "Yammer - plugin - test"),
-               new FieldDTO("timestamp", "1449594901.000014"),
-               new FieldDTO("user_id"," U0BNK9P1N"),
-               new FieldDTO("user_name", "sergeyp"),
-               new FieldDTO("text", "test")
-           };
-        }
-
         public static ActionDTO Post_To_Yammer_v1_InitialConfiguration_ActionDTO(bool isAuthToken = true)
         {
             var activityTemplate = Post_To_Yammer_v1_ActivityTemplate();

@@ -18,7 +18,7 @@ namespace terminalYammerTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
-    [Category("terminalYammer.Integration")]
+    [Category("Integration.terminalYammer")]
     public class Post_To_Yammer_v1_Tests : BaseHealthMonitorTest
     {
         public override string TerminalName
@@ -100,6 +100,39 @@ namespace terminalYammerTests.Integration
             Assert.NotNull(responseFollowUpActionDTO);
         }
 
-        
+        // After Running the Post to yammer run method each time messagge will be posted on the group.
+        // We haven't selected the group. We are expecting the exception from run method 
+        [Test]
+        [ExpectedException(
+            ExpectedException = typeof(RestfulServiceException),
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No selected group found in action.""}"
+        )]
+        public async void Post_To_Yammer_Run_Return_Payload()
+        {
+            //Arrange
+            var runUrl = GetTerminalRunUrl();
+
+            var actionDTO = await ConfigurationRequest();
+
+            AddPayloadCrate(
+                actionDTO,
+                new StandardPayloadDataCM(
+                    new FieldDTO("message", "Hello")
+                ),
+                "Payload crate"
+            );
+
+            actionDTO.AuthToken = HealthMonitor_FixtureData.Yammer_AuthToken();
+            //Act
+            var responsePayloadDTO =
+                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+
+            //Assert
+            var crateStorage = Crate.FromDto(responsePayloadDTO.CrateStorage);
+
+            var StandardPayloadDataCM = crateStorage.CrateContentsOfType<StandardPayloadDataCM>().SingleOrDefault();
+
+            Assert.IsNotNull(StandardPayloadDataCM);
+        }
     }
 }

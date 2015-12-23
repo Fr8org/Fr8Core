@@ -51,8 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
-    <Compile Include="Integration\Post_To_Yammer_v1_Tests.cs" />
-    <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
+    <Compile Include="Integration\Post_To_Yammer_v1Tests.cs" />
+    <Compile Include="Integration\Terminal_Discover_v1_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
