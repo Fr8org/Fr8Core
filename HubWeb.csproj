@@ -727,7 +727,8 @@
     <Content Include="Documentation\UploadBrandProfiles.html" />
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
-    <Content Include="_PowerShellScripts\RunIntegrationTests.ps1" />
+    <Content Include="_PowerShellScripts\RunIntegrationTests-DEV.ps1" />
+    <Content Include="_PowerShellScripts\DEV-HealthMonitor.exe.config" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
