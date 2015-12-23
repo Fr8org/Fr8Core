@@ -113,7 +113,7 @@ namespace terminalAzure.Actions
             var dbService = new DbService();
             dbService.WriteCommand(curCommandArgs);
 
-            return processPayload;
+            return Success(processPayload);
         }
 
         //===============================================================================================

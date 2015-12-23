@@ -113,9 +113,12 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
-
             var curProcessPayload = await GetProcessPayload(actionDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(curProcessPayload);
+            }
 
             var curEventReport = Crate.GetStorage(curProcessPayload).CrateContentsOfType<EventReportCM>().First();
 
@@ -154,7 +157,7 @@ namespace terminalDocuSign.Actions
                 }
             }
 
-            return curProcessPayload;
+            return Success(curProcessPayload);
         }
     }
 }

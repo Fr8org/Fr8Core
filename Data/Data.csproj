@@ -227,6 +227,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\ActionErrorCode.cs" />
     <Compile Include="Constants\ActionResponse.cs" />
     <Compile Include="Constants\ActionState.cs" />
     <Compile Include="Constants\FieldValidationResult.cs" />

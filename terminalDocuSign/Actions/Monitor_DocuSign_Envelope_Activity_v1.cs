@@ -1,3 +1,4 @@
+using Data.Constants;
 using Data.Entities;
 using TerminalBase.Infrastructure;
 using System;
@@ -112,13 +113,18 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(processPayload);
+            }
 
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue;
             GetTemplateRecipientPickerValue(curActionDO, out curSelectedOption, out curSelectedValue);
 
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            
             string envelopeId = string.Empty;
 
             //retrieve envelope ID based on the selected option and its value
@@ -152,7 +158,10 @@ namespace terminalDocuSign.Actions
 
             // Make sure that it exists
             if (string.IsNullOrEmpty(envelopeId))
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
+            {
+                return Error(processPayload, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
+            }
+            
 
             //Create a run-time fields
             var fields = CreateDocuSignEventFields();
@@ -185,7 +194,7 @@ namespace terminalDocuSign.Actions
             }
             }
 
-            return processPayload;
+            return Success(processPayload);
         }
 
         private string GetValueForKey(PayloadDTO curPayloadDTO, string curKey)
