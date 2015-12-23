@@ -64,6 +64,17 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 330
             };
 
+            var getDocuSignTemplateActionTemplate = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Get_DocuSign_Template",
+                Label = "Get DocuSign Template",
+                Category = ActivityCategory.Receivers,
+                Terminal = terminal,
+                AuthenticationType = AuthenticationType.Internal,
+                MinPaneWidth = 330
+            };
+
             var recordDocuSignEvents = new ActivityTemplateDTO
             {
                 Name = "Record_DocuSign_Events",
@@ -141,7 +152,8 @@ namespace terminalDocuSign.Controllers
                 collectFormDataSolution,
                 richDocumentNotificationsSolution,
                 queryDocusign,
-                searchDocusignHistory
+                searchDocusignHistory,
+                getDocuSignTemplateActionTemplate
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
