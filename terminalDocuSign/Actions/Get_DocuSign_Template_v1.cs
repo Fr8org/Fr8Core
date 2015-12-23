@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
@@ -47,28 +48,46 @@ namespace terminalDocuSign.Actions
             Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var processPayload = await GetProcessPayload(actionDO, containerId);
-            /*
+            
             if (NeedsAuthentication(authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                //return NeedsAuthenticationError(processPayload);
+                //TODO change this after 1882 merge
+                return Error(processPayload);
+                //throw new ApplicationException("No AuthToken provided.");
             }
-
-            
-
             //Get envlopeId
-            var control = FindControl(Crate.GetStorage(actionDO), "EnvelopeIdSelector");
-            string envelopeId = GetEnvelopeID(control, authTokenDO);
-            if (envelopeId == null)
+            var control = (DropDownList) FindControl(Crate.GetStorage(actionDO), "Available_Templates");
+            string selectedDocusignTemplateId = control.Value;
+            if (selectedDocusignTemplateId == null)
             {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
+                //TODO change this after 1882 merge
+                return Error(processPayload);
             }
 
-            using (var updater = Crate.UpdateStorage(() => processPayload.CrateStorage))
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+            //lets download specified template from user's docusign account
+            var downloadedTemplate = _docuSignManager.DownloadDocuSignTemplate(docuSignAuthDTO, selectedDocusignTemplateId);
+            //and add it to payload
+            var templateCrate = CreateDocuSignTemplateCrateFromDto(downloadedTemplate);
+            using (var updater = Crate.UpdateStorage(processPayload))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", _docuSignManager.CreateActionPayload(actionDO, authTokenDO, envelopeId)));
+                updater.CrateStorage.Add(templateCrate);
             }
-            */
             return Success(processPayload);
+        }
+
+        private Crate CreateDocuSignTemplateCrateFromDto(DocuSignTemplateDTO template)
+        {
+            var manifest = new DocuSignTemplateCM
+            {
+                Body = JsonConvert.SerializeObject(template),
+                CreateDate = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
+                Name = template.Name,
+                Status = template.EnvelopeData.status
+            };
+
+            return Data.Crates.Crate.FromContent("DocuSign Template", manifest);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
@@ -117,11 +136,5 @@ namespace terminalDocuSign.Actions
             };
             return PackControlsCrate(availableTemplates);
         }
-
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
-        {
-            return curActionDO;
-        }
-
     }
 }

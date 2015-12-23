@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using AutoMapper;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.States;
+using DocuSign.Integrations.Client;
 using StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -14,6 +16,7 @@ using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
 using Data.Entities;
 using Newtonsoft.Json;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Services
 {
@@ -52,6 +55,13 @@ namespace terminalDocuSign.Services
             }
 
             return control;
+        }
+
+        public DocuSignTemplateDTO DownloadDocuSignTemplate(DocuSignAuth authDTO, string templateId)
+        {
+            var template = new DocuSignTemplate();
+            var templateDTO = template.GetTemplateById(authDTO.Email, authDTO.ApiPassword, templateId);
+            return templateDTO;
         }
 
         public Crate PackCrate_DocuSignTemplateNames(DocuSignAuth authDTO)
