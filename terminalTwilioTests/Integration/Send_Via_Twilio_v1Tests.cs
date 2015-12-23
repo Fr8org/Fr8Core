@@ -24,7 +24,7 @@ namespace terminalTwilioTests.Integration
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
-        [Test, Category("Integration.terminalTwilio"), Ignore]
+        [Test, Category("Integration.terminalTwilio")]
         public async void Send_Via_Twilio_Initial_Configuration_Check_Crate_Structure()
         {
             //Arrange
@@ -52,7 +52,7 @@ namespace terminalTwilioTests.Integration
         /// <summary>
         /// Expect null when ActionDTO with no StandardConfigurationControlsCM Crate.
         /// </summary>
-        [Test, Category("Integration.terminalTwilio"), Ignore]
+        [Test, Category("Integration.terminalTwilio")]
         public async void Send_Via_Twilio_Run_With_No_SMS_Number_Provided()
         {
             //Arrange
@@ -69,7 +69,7 @@ namespace terminalTwilioTests.Integration
         /// Test Twilio Service. Preconfigure Crates with testing number.
         /// Expect that the status of the message is not fail or undelivered.
         /// </summary>
-        [Test, Category("Integration.terminalTwilio"), Ignore]
+        [Test, Category("Integration.terminalTwilio")]
         public async void Send_Via_Twilio_Run_Send_SMS_With_Correct_Number()
         {
             //Arrange
