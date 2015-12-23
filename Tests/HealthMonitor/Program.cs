@@ -31,8 +31,11 @@ namespace HealthMonitor
 
             if (sendEmailReport)
             {
-                var reportNotifier = new TestReportNotifier();
-                reportNotifier.Notify(htmlReport);
+                if (report.Tests.Any(x => !x.Success))
+                {
+                    var reportNotifier = new TestReportNotifier();
+                    reportNotifier.Notify(htmlReport);
+                }
             }
 
             Console.ForegroundColor = ConsoleColor.Green;
