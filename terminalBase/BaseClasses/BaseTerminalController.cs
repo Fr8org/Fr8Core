@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
+using Data.Constants;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -126,6 +127,7 @@ namespace TerminalBase.BaseClasses
                     curActionDTO.ActivityTemplate.Name,
                     curActionDTO.ActivityTemplate.Version,
                     curTerminal), "curActionDTO");
+
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
             object curObject = Activator.CreateInstance(calledType);
 
@@ -154,6 +156,7 @@ namespace TerminalBase.BaseClasses
                             return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
                         }
                     case "run":
+                    case "childrenexecuted":
                         {
                             OnStartAction(curTerminal, activityTemplateName, isTestActivityTemplate);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo

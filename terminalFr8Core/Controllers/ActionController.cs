@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using Data.Constants;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;

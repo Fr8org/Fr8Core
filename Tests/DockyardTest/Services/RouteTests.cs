@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Moq;
 using StructureMap;
 using Data.Entities;
@@ -159,11 +160,14 @@ namespace DockyardTest.Services
             {
                 //Arrange
                 //Create a Route 
+                
                 var curRoute = FixtureData.TestRouteWithSubscribeEvent();
 
                 //Create activity mock to process the actions
                 Mock<IRouteNode> activityMock = new Mock<IRouteNode>(MockBehavior.Default);
-                activityMock.Setup(a => a.Process(FixtureData.GetTestGuidById(1), It.IsAny<ContainerDO>())).Returns(Task.Delay(1));
+                activityMock.Setup(a => a.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActionState>(), It.IsAny<ContainerDO>())).Returns(Task.Delay(1));
+                activityMock.Setup(a => a.HasChildren(It.Is<RouteNodeDO>(r => r.Id == curRoute.StartingSubroute.Id))).Returns(true);
+                activityMock.Setup(a => a.HasChildren(It.Is<RouteNodeDO>(r => r.Id != curRoute.StartingSubroute.Id))).Returns(false);
                 activityMock.Setup(a => a.GetFirstChild(It.IsAny<RouteNodeDO>())).Returns(curRoute.ChildNodes.First().ChildNodes.First());
                 ObjectFactory.Container.Inject(typeof(IRouteNode), activityMock.Object);
 
@@ -173,7 +177,7 @@ namespace DockyardTest.Services
 
                 //Assert
                 //since we have only one action in the template, the process should be called exactly once
-                activityMock.Verify(activity => activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ContainerDO>()), Times.Exactly(1));
+                activityMock.Verify(activity => activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActionState>(), It.IsAny<ContainerDO>()), Times.Exactly(1));
             }
         }
 

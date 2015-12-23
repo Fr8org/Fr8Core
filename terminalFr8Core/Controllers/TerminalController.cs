@@ -4,7 +4,6 @@ using System.Web.Http;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Services;
 using Utilities.Configuration.Azure;
 using Data.Interfaces.Manifests;
 
@@ -160,6 +159,17 @@ namespace terminalFr8Core.Controllers
                 WebService = webService,
                 Version = "1",
                 Type = ActivityType.Loop
+            });
+
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "SetDelay",
+                Label = "Delay Action Processing",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                Type = ActivityType.Standard
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
