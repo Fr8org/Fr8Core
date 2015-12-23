@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
@@ -16,14 +17,16 @@ namespace Hub.Interfaces
 
         List<RouteNodeDO> GetDownstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO);
 
-        Task Process(Guid curActivityId, ContainerDO curContainerDO);
+        Task Process(Guid curActivityId, ActionState curActionState, ContainerDO curContainerDO);
 
         IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount);
         IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, Func<ActivityTemplateDO, bool> predicate);
 
         RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, RouteNodeDO root);
         RouteNodeDO GetNextSibling(RouteNodeDO currentActivity);
+        RouteNodeDO GetParent(RouteNodeDO currentActivity);
         RouteNodeDO GetFirstChild(RouteNodeDO currentActivity);
+	    bool HasChildren(RouteNodeDO currentActivity);
 
         void Delete(IUnitOfWork uow, RouteNodeDO activity);
 

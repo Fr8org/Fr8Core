@@ -106,6 +106,11 @@ namespace HealthMonitor.Utility
             AddHubCrate(actionDTO, crateManifest, "HealthMonitor_PayloadCrate", crateLabel);
         }
 
+        public void AddOperationalStateCrate(ActionDTO actionDTO, OperationalStateCM operationalState)
+        {
+            AddPayloadCrate(actionDTO, operationalState, "Operational Status");
+        }
+
         public async Task<TResponse> HttpPostAsync<TRequest, TResponse>(string url, TRequest request)
         {
             return await RestfulServiceClient.PostAsync<TRequest, TResponse>(new Uri(url), request);

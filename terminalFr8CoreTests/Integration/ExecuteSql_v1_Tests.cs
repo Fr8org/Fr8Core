@@ -64,7 +64,7 @@ namespace terminalFr8CoreTests.Integration
         /// <summary>
         /// Test run-time for action Run().
         /// </summary>
-        [Test]
+        [Test, Ignore]
         public async void ExecuteSql_Run()
         {
             var runUrl = GetTerminalRunUrl();

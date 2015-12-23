@@ -112,6 +112,10 @@
       <Project>{1246a6d6-fb9d-4564-8e86-a9f14a7ad177}</Project>
       <Name>terminalSlackTests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\terminalTwilioTests\terminalTwilioTests.csproj">
+      <Project>{6b807ab1-f549-49cb-9f52-52bc33d23443}</Project>
+      <Name>terminalTwilioTests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\terminalYammerTests\terminalYammerTests.csproj">
       <Project>{d2638cb3-33d6-443f-bc87-e20260d3c9ef}</Project>
       <Name>terminalYammerTests</Name>

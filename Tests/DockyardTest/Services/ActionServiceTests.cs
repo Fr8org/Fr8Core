@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Helpers;
 using AutoMapper;
+using Data.Constants;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -474,7 +475,7 @@ namespace DockyardTest.Services
             //Act
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var response = _action.PrepareToExecute(actionDo, containerDO, uow);
+                var response = _action.PrepareToExecute(actionDo, ActionState.InitialRun, containerDO, uow);
 
                 //Assert
                 Assert.That(response.Status, Is.EqualTo(TaskStatus.RanToCompletion));
@@ -554,12 +555,12 @@ namespace DockyardTest.Services
             ContainerDO containerDO = FixtureData.TestContainer1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
             var executeActionMock = new Mock<IAction>();
-            executeActionMock.Setup(s => s.Run(actionDo, containerDO)).Returns<Task<PayloadDTO>>(null);
+            executeActionMock.Setup(s => s.Run(actionDo, It.IsAny<ActionState>(), containerDO)).Returns<Task<PayloadDTO>>(null);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var count = uow.ActionRepository.GetAll().Count();
-                await _action.PrepareToExecute(actionDo, containerDO, uow);
+                await _action.PrepareToExecute(actionDo, ActionState.InitialRun, containerDO, uow);
                 //Assert.AreEqual(uow.ActionRepository.GetAll().Count(), count + 1);
             }
             Assert.IsNull(containerDO.CrateStorage);
@@ -596,7 +597,7 @@ namespace DockyardTest.Services
                 ObjectFactory.Configure(cfg => cfg.For<ITerminalTransmitter>().Use(terminalClientMock.Object));
 
                 var count = uow.ActionRepository.GetAll().Count();
-                await _action.PrepareToExecute(actionDo, containerDO, uow);
+                await _action.PrepareToExecute(actionDo, ActionState.InitialRun, containerDO, uow);
                 //Assert.AreEqual(uow.ActionRepository.GetAll().Count(), count + 1);
             }
             Assert.IsNotNull(containerDO.CrateStorage);
@@ -624,7 +625,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var count = uow.ActionRepository.GetAll().Count();
-                await _action.PrepareToExecute(actionDo, containerDO, uow);
+                await _action.PrepareToExecute(actionDo, ActionState.InitialRun, containerDO, uow);
                 //Assert.AreEqual(uow.ActionRepository.GetAll().Count(), count + 1);
             }
             Assert.IsTrue(_eventReceived);
