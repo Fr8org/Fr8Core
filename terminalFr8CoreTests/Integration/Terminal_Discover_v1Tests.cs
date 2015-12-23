@@ -12,7 +12,7 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
     {
-        private const int Fr8CoreActionCount = 11;
+        private const int Fr8CoreActionCount = 12;
 
         private const string FilterUsingRunTimeDataName = "FilterUsingRunTimeData";
         private const string MapFieldsName = "MapFields";
@@ -25,6 +25,7 @@ namespace terminalFr8CoreTests.Integration
         private const string ManageRouteName = "ManageRoute";
         private const string FindObjectsSolutionName = "FindObjects_Solution";
         private const string LoopName = "Loop";
+        private const string SetDelayName = "SetDelay";
 
         public override string TerminalName
         {
@@ -51,6 +52,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ManageRouteName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == FindObjectsSolutionName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == LoopName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == SetDelayName));
         }
     }
 }
