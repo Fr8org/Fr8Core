@@ -5,7 +5,7 @@ var sourcemaps = require('gulp-sourcemaps');
 var templateCache = require('gulp-angular-templatecache');
 
 gulp.task('bower', function () {
-    return bower({ layout: "byComponent" });
+    return bower({ layout: "byComponent", force: true });
 });
 
 gulp.task('concattemplates', function () {
