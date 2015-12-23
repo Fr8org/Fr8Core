@@ -8,10 +8,12 @@ namespace HealthMonitor
     {
         static void Main(string[] args)
         {
-            new Program().Run();
+            var sendEmailReport = args != null && args.Contains("--email-report");
+
+            new Program().Run(sendEmailReport);
         }
 
-        private void Run()
+        private void Run(bool sendEmailReport)
         {
             CoreExtensions.Host.InitializeService();
 
@@ -27,8 +29,14 @@ namespace HealthMonitor
 
             // System.IO.File.WriteAllText("c:\\temp\\fr8-report.html", htmlReport);
 
-            var reportNotifier = new TestReportNotifier();
-            reportNotifier.Notify(htmlReport);
+            if (sendEmailReport)
+            {
+                if (report.Tests.Any(x => !x.Success))
+                {
+                    var reportNotifier = new TestReportNotifier();
+                    reportNotifier.Notify(htmlReport);
+                }
+            }
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Integration tests result: {0} / {1} passed", report.Tests.Count(x => x.Success), report.Tests.Count());

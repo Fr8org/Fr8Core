@@ -317,7 +317,7 @@ namespace terminalDocuSign.Actions
             var fieldEnvelopeSent = new CheckBox()
             {
                 Label = "You sent a DocuSign Envelope",
-                Name = "Envelope Sent",
+                Name = "Event_Envelope_Sent",
                 Events = new List<ControlEvent>()
                 {
                     new ControlEvent("onChange", "requestConfig")
@@ -327,7 +327,7 @@ namespace terminalDocuSign.Actions
             var fieldEnvelopeReceived = new CheckBox()
             {
                 Label = "Someone received an Envelope you sent",
-                Name = "Envelope Received",
+                Name = "Event_Envelope_Received",
                 Events = new List<ControlEvent>()
                 {
                     new ControlEvent("onChange", "requestConfig")
@@ -337,7 +337,7 @@ namespace terminalDocuSign.Actions
             var fieldRecipientSigned = new CheckBox()
             {
                 Label = "One of your Recipients signed an Envelope",
-                Name = "Recipient Signed",
+                Name = "Event_Recipient_Signed",
                 Events = new List<ControlEvent>()
                 {
                     new ControlEvent("onChange", "requestConfig")
