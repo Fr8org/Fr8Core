@@ -28,7 +28,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
                 throw new ArgumentNullException("actionDTO");
             }
 
-            if ((actionDTO.ActivityTemplateId  == null || actionDTO.ActivityTemplateId == 0) && actionDTO.ActivityTemplate == null)
+            if ((actionDTO.ActivityTemplateId == null || actionDTO.ActivityTemplateId == 0) && actionDTO.ActivityTemplate == null)
             {
                 throw new ArgumentOutOfRangeException("actionDTO", actionDTO.ActivityTemplateId, "ActivityTemplate must be specified either explicitly or by using ActivityTemplateId");
             }
@@ -45,7 +45,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             {
                 terminalId = actionDTO.ActivityTemplate.TerminalId;
             }
-           
+
             var terminal = ObjectFactory.GetInstance<ITerminal>().GetAll().FirstOrDefault(x => x.Id == terminalId);
 
 
@@ -54,7 +54,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
                 BaseUri = null;
             }
             else
-        {
+            {
                 BaseUri = new Uri(terminal.Endpoint.StartsWith("http") ? terminal.Endpoint : "http://" + terminal.Endpoint);
             }
 

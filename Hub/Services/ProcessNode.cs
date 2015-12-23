@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Constants;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
@@ -91,7 +92,7 @@ namespace Hub.Services
 
                     do
                     {
-                        activityService.Process(currentAction.Id, curProcessNode.ParentContainer);
+                        activityService.Process(currentAction.Id, ActionState.InitialRun, curProcessNode.ParentContainer);
                         currentAction = activityService.GetNextActivity(currentAction, curSubroute);
                     } while (currentAction != null);
                 }
