@@ -29,7 +29,7 @@ namespace terminalGoogle.Actions
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             if (authTokenDO == null) return true;
-            if (!base.NeedsAuthentication(authTokenDO)) 
+            if (!base.NeedsAuthentication(authTokenDO))
                 return false;
             var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             // we may also post token to google api to check its validity
@@ -43,6 +43,7 @@ namespace terminalGoogle.Actions
 
             return base.Configure(curActionDO, authTokenDO);
         }
+
 
         /// <summary>
         /// Action processing infrastructure.
@@ -68,8 +69,8 @@ namespace terminalGoogle.Actions
             {
                 updater.CrateStorage.Add(payloadDataCrate);
             }
-            
-            return processPayload;            
+
+            return processPayload;
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(ActionDO curActionDO)
@@ -137,7 +138,9 @@ namespace terminalGoogle.Actions
                         Value = pair.Key,
                         Selected = string.Equals(pair.Key, selectedSpreadsheet, StringComparison.OrdinalIgnoreCase)
                     })
-                    .ToList()
+                    .ToList(),
+                selectedKey = spreadsheets.Where(a => a.Key == selectedSpreadsheet).FirstOrDefault().Value,
+                Value = selectedSpreadsheet
             };
             controlList.Add(spreadsheetControl);
 
@@ -182,23 +185,12 @@ namespace terminalGoogle.Actions
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-
-            var spreadsheetsFromUserSelection =
-                Crate.GetStorage(curActionDO.CrateStorage)
-                    .CrateContentsOfType<StandardConfigurationControlsCM>()
-                    .Select(m => m.FindByName("select_spreadsheet"))
-                    .Where(d => d != null)
-                    .Select(d => d.Value)
-                    .Where(v => !string.IsNullOrEmpty(v))
-                    .ToArray();
-
+            var spreadsheetsFromUserSelectionControl = FindControl(Crate.GetStorage(curActionDO.CrateStorage), "select_spreadsheet");
 
             var hasDesignTimeFields = Crate.GetStorage(curActionDO)
-                .Any(x => x.IsOfType<StandardConfigurationControlsCM>()
+                .Any(x => x.IsOfType<StandardConfigurationControlsCM>());
 
-                    && x.Label == "Worksheet Column Headers");
-
-            if (spreadsheetsFromUserSelection.Any() || hasDesignTimeFields)
+            if (hasDesignTimeFields && !string.IsNullOrEmpty(spreadsheetsFromUserSelectionControl.Value))
             {
                 return ConfigurationRequestType.Followup;
             }
@@ -216,7 +208,6 @@ namespace terminalGoogle.Actions
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             var spreadsheets = _google.EnumerateSpreadsheetsUris(authDTO);
             var configControlsCrate = CreateConfigurationControlsCrate(spreadsheets, spreadsheetsFromUserSelection);
-
             // Remove previously created configuration control crate
             using (var updater = Crate.UpdateStorage(curActionDO))
             {

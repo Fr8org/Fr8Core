@@ -67,7 +67,6 @@ namespace terminalFr8Core.Actions
         {
             var mappingPane = new MappingPane()
             {
-                Label = "Configure Mapping",
                 Name = "Selected_Mapping",
                 Required = true
             };
@@ -89,8 +88,11 @@ namespace terminalFr8Core.Actions
             //Get all the downstream fields to be mapped (right DDLBs)
             var curDownstreamFields =
                 (await GetDesignTimeFields(curActionDO, CrateDirection.Downstream))
-                .Fields
+                .Fields.Where(field => field.Availability != AvailabilityType.Configuration)
                 .ToArray();
+
+            if (!(NeedsConfiguration(curActionDO, curUpstreamFields, curDownstreamFields)))
+                return curActionDO;
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
             var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields);
@@ -99,6 +101,7 @@ namespace terminalFr8Core.Actions
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
+                AddInitialTextBlock(updater.CrateStorage);
                 if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
                 {
                     AddErrorTextBlock(updater.CrateStorage);
@@ -113,6 +116,18 @@ namespace terminalFr8Core.Actions
             }
 
             return curActionDO;
+        }
+
+        private void AddInitialTextBlock(CrateStorage storage)
+        {
+            var textBlock = new TextBlock()
+            {
+                Name = "InfoBlock",
+                Value = "When this route is executed, the values found in the fields on the left will be used for the fields on the right",
+                CssClass = "well well-lg"
+            };
+
+            AddControl(storage, textBlock);
         }
 
         private void AddErrorTextBlock(CrateStorage storage)
@@ -131,15 +146,9 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Check if initial configuration was requested.
         /// </summary>
-        private bool CheckIsInitialConfiguration(ActionDO curAction)
+        private bool NeedsConfiguration(ActionDO curAction, FieldDTO[] curUpstreamFields, FieldDTO[] curDownstreamFields)
         {
-            CrateStorage storage;
-
-            // Check nullability for CrateStorage and Crates array length.
-            if (curAction.CrateStorage == null || (storage = Crate.GetStorage(curAction.CrateStorage)).Count == 0)
-            {
-                return true;
-            }
+            CrateStorage storage = storage = Crate.GetStorage(curAction.CrateStorage);
 
             var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();
             var downStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").FirstOrDefault();
@@ -151,26 +160,25 @@ namespace terminalFr8Core.Actions
                 || downStreamFields.Fields == null
                 || downStreamFields.Fields.Count == 0)
             {
+
                 return true;
             }
-
-            // If all rules are passed, then it is not an initial configuration request.
-            return false;
+            else
+            {
+                // true if current up/downstream fields don't match saved up/downstream fields
+                return !(upStreamFields.Fields.All(curUpstreamFields.Contains) && downStreamFields.Fields.All(curDownstreamFields.Contains));
+            }
         }
+
+
         /// <summary>
         /// ConfigurationEvaluator always returns Initial,
         /// since Initial and FollowUp phases are the same for current action.
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (CheckIsInitialConfiguration(curActionDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-            else
-            {
-                return ConfigurationRequestType.Followup;
-            }
+            return ConfigurationRequestType.Initial;
+
         }
     }
 }
