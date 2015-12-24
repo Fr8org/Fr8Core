@@ -109,13 +109,11 @@ namespace terminalGoogleTests.Unit
 
             //Assert
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-
-            var standardDesignTimeFieldsCM = crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().SingleOrDefault();
+            var standardDesignTimeFieldsCM = crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Where(x => x.Label == "Available Forms").ToArray();
 
             Assert.IsNotNull(standardDesignTimeFieldsCM);
-            Assert.AreEqual(1, crateStorage.Where(s => s.Label == "Available Forms").Count());
-
-            Assert.Greater(0, standardDesignTimeFieldsCM.Fields.Count());
+            Assert.Greater(standardDesignTimeFieldsCM.Count(), 0);
+            Assert.Greater(standardDesignTimeFieldsCM.First().Content.Fields.Count(), 0);
         }
 
         /// <summary>
@@ -164,7 +162,7 @@ namespace terminalGoogleTests.Unit
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var formID = crateStorage.CrateContentsOfType<StandardPayloadDataCM>().SingleOrDefault();
 
-            Assert.Greater(0, formID.PayloadObjects.SelectMany(s => s.PayloadObject).Count());
+            Assert.Greater(formID.PayloadObjects.SelectMany(s => s.PayloadObject).Count(), 0);
         }
 
         /// <summary>
@@ -173,7 +171,7 @@ namespace terminalGoogleTests.Unit
         [Test, Category("Integration.terminalGoogle")]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No payload fields extracted""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""EventReportCrate is empty.""}"
             )]
         public async void Receive_Google_Form_Run_WithInvalidPapertrailUrl_ShouldThrowException()
         {
@@ -200,6 +198,22 @@ namespace terminalGoogleTests.Unit
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var actionDTO = fixture.Receive_Google_Form_v1_Run_ActionDTO();
 
+            AddPayloadCrate(
+               actionDTO,
+               new EventReportCM()
+               {
+                   EventPayload = new CrateStorage()
+                   {
+                        Data.Crates.Crate.FromContent(
+                            "Response",
+                            new StandardPayloadDataCM(
+                                new FieldDTO("response", "key1=value1&key2=value2")
+                            )
+                        )
+                   }
+               }
+            );
+
             //Act
             var responsePayloadDTO =
                 await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
@@ -211,7 +225,7 @@ namespace terminalGoogleTests.Unit
 
             Assert.IsNotNull(standardDesignTimeFieldsCM);
             var fields = standardDesignTimeFieldsCM.PayloadObjects.SelectMany(s => s.PayloadObject);
-            Assert.Greater(0, fields.Count());
+            Assert.Greater(fields.Count(), 0);
         }
     }
 }

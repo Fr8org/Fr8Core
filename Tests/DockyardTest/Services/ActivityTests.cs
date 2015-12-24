@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Constants;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
@@ -159,7 +160,7 @@ namespace DockyardTest.Services
         {
             _activity = ObjectFactory.GetInstance<IRouteNode>();
             var containerDO = FixtureData.TestContainer1();
-            Task result = _activity.Process(It.IsAny<Guid>(), containerDO);
+            Task result = _activity.Process(It.IsAny<Guid>(), It.IsAny<ActionState>(), containerDO);
             Assert.AreEqual(result.Exception.InnerException.Message, "Cannot find Activity with the supplied curActivityId");
         }
 
@@ -183,7 +184,7 @@ namespace DockyardTest.Services
 
                 ContainerDO containerDO = FixtureData.TestContainer1();
                 _activity = ObjectFactory.GetInstance<IRouteNode>();
-                _activity.Process(FixtureData.GetTestGuidById(1), containerDO);
+                _activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActionState>(), containerDO);
             }
         }
 

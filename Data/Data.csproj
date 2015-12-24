@@ -227,6 +227,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\ActionResponse.cs" />
+    <Compile Include="Constants\ActionState.cs" />
     <Compile Include="Constants\FieldValidationResult.cs" />
     <Compile Include="Constants\ActivityDirection.cs" />
     <Compile Include="Constants\ManifestIdEnum.cs" />
@@ -509,6 +511,10 @@
     <Compile Include="Migrations\201512161607506_SplitAuthorizationTokenDO.cs" />
     <Compile Include="Migrations\201512161607506_SplitAuthorizationTokenDO.Designer.cs">
       <DependentUpon>201512161607506_SplitAuthorizationTokenDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201512211641017_AddedComponentToHistoryItemDO.cs" />
+    <Compile Include="Migrations\201512211641017_AddedComponentToHistoryItemDO.Designer.cs">
+      <DependentUpon>201512211641017_AddedComponentToHistoryItemDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -851,6 +857,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512161607506_SplitAuthorizationTokenDO.resx">
       <DependentUpon>201512161607506_SplitAuthorizationTokenDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512211641017_AddedComponentToHistoryItemDO.resx">
+      <DependentUpon>201512211641017_AddedComponentToHistoryItemDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

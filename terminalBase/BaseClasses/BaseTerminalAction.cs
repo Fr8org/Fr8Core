@@ -50,6 +50,111 @@ namespace TerminalBase.BaseClasses
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
+        /// <summary>
+        /// Creates a suspend request for hub execution
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO SuspendHubExecution(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.RequestSuspend;
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// Creates a terminate request for hub execution
+        /// TODO: we could include a reason message with this request
+        /// after that we could stop throwing exceptions on actions
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO TerminateHubExecution(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.RequestTerminate;
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// returns success to hub
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO Success(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.Success;
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// skips children of this action
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO SkipChildren(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.SkipChildren;
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// returns error to hub
+        /// TODO: maybe we should include an error message
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO Error(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.Error;
+            }
+
+            return payload;
+        }
+
+        /// <summary>
+        /// Creates a reprocess child actions request
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO ReProcessChildActions(PayloadDTO payload)
+        {
+            using (var updater = Crate.UpdateStorage(payload))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.ReProcessChildren;
+            }
+
+            return payload;
+        }
+
+
+        public virtual async Task<PayloadDTO> ChildrenExecuted(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            return Success(await GetProcessPayload(curActionDO, containerId));
+        }
+
         protected void CheckAuthentication(AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
@@ -158,7 +263,7 @@ namespace TerminalBase.BaseClasses
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 
-        public virtual async Task<ActionDO> Activate(ActionDO curActionDO)
+        public virtual async Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //Returns Task<ActivityDTO> using FromResult as the return type is known
             return await Task.FromResult<ActionDO>(curActionDO);
@@ -433,20 +538,28 @@ namespace TerminalBase.BaseClasses
 
             var returnValue = string.Empty;
 
-            switch (radioButton.Name)
+            try
             {
-                case "specific":
-                    returnValue = radioButton.Controls[0].Value;
-                    break;
+                switch (radioButton.Name)
+                {
+                    case "specific":
+                        returnValue = radioButton.Controls[0].Value;
+                        break;
 
-                case "upstream":
-                    var recipientField = radioButton.Controls[0];
-                    returnValue = ExtractPayloadFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value, curAction);
-                    break;
+                    case "upstream":
+                        var recipientField = radioButton.Controls[0];
+                        returnValue = ExtractPayloadFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value, curAction);
+                        break;
 
-                default:
-                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+                    default:
+                        throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+                }
             }
+            catch (ApplicationException)
+            {
+
+            }
+
             return returnValue;
         }
 
@@ -463,8 +576,8 @@ namespace TerminalBase.BaseClasses
             if (fieldValues.Length > 0)
                 return fieldValues[0];
 
-            var reporter = new IncidentReporter();
-            reporter.IncidentMissingFieldInPayload(fieldKey, curAction.Name, curAction.Id.ToString());
+            IncidentReporter reporter = new IncidentReporter();
+            reporter.IncidentMissingFieldInPayload(fieldKey, curAction, "");
 
             throw new ApplicationException("No field found with specified key.");
         }

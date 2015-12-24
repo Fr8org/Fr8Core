@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -323,7 +324,7 @@ namespace Hub.Services
             }
             catch (ArgumentException e)
             {
-                EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message);
+                    EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message, curActionDO.Id.ToString());
                 throw;
             }
                 catch (RestfulServiceException e)
@@ -340,7 +341,7 @@ namespace Hub.Services
                             PreserveReferencesHandling = PreserveReferencesHandling.Objects
                         };
                         var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
-                        EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
+                        EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message, curActionDO.Id.ToString());
                         throw;
                     }
                 }
@@ -353,7 +354,7 @@ namespace Hub.Services
                     };
 
                     var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
-                    EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
+                    EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message, curActionDO.Id.ToString());
                 throw;
             }
 
@@ -464,11 +465,11 @@ namespace Hub.Services
         //            return curAction;
         //        }
 
-        public async Task PrepareToExecute(ActionDO curAction, ContainerDO curContainerDO, IUnitOfWork uow)
+        public async Task PrepareToExecute(ActionDO curAction, ActionState curActionState, ContainerDO curContainerDO, IUnitOfWork uow)
         {
                 EventManager.ActionStarted(curAction);
 
-                var payload = await Run(curAction, curContainerDO);
+                var payload = await Run(curAction, curActionState, curContainerDO);
 
                 if (payload != null)
                 {
@@ -484,7 +485,7 @@ namespace Hub.Services
             }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, ContainerDO curContainerDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, ActionState curActionState, ContainerDO curContainerDO)
         {
             if (curActionDO == null)
             {
@@ -493,13 +494,14 @@ namespace Hub.Services
 
             try
             {
-                var payloadDTO = await CallTerminalActionAsync<PayloadDTO>("Run", curActionDO, curContainerDO.Id);
+                var actionName = curActionState == ActionState.InitialRun ? "Run" : "ChildrenExecuted";
+                var payloadDTO = await CallTerminalActionAsync<PayloadDTO>(actionName, curActionDO, curContainerDO.Id);
                 return payloadDTO;
 
             }
             catch (ArgumentException e)
             {
-                EventManager.TerminalRunFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message);
+                EventManager.TerminalRunFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message, curActionDO.Id.ToString());
                 throw;
             }
             catch (Exception e)
@@ -510,7 +512,7 @@ namespace Hub.Services
                 };
 
                 var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
-                EventManager.TerminalRunFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message);
+                EventManager.TerminalRunFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message, curActionDO.Id.ToString());
                 throw;
             }
         }
@@ -550,12 +552,12 @@ namespace Hub.Services
             }
             catch (ArgumentException)
             {
-                EventManager.TerminalActionActivationFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO));
+                EventManager.TerminalActionActivationFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), curActionDO.Id.ToString());
                 throw;
             }
             catch
             {
-                EventManager.TerminalActionActivationFailed(curActionDO.ActivityTemplate.Terminal.Endpoint, JsonConvert.SerializeObject(curActionDO));
+                EventManager.TerminalActionActivationFailed(curActionDO.ActivityTemplate.Terminal.Endpoint, JsonConvert.SerializeObject(curActionDO), curActionDO.Id.ToString());
                 throw;
             }
         }
@@ -564,6 +566,32 @@ namespace Hub.Services
         {
             return await CallTerminalActionAsync<ActionDTO>("deactivate", curActionDO, Guid.Empty);
         }
+
+        //private Task<PayloadDTO> RunActionAsync(string actionName, ActionDO curActionDO, Guid containerId)
+        //{
+        //    if (actionName == null) throw new ArgumentNullException("actionName");
+        //    if (curActionDO == null) throw new ArgumentNullException("curActionDO");
+
+        //    var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
+        //    dto.ContainerId = containerId;
+        //    _authorizationToken.PrepareAuthToken(dto);
+
+        //    EventManager.ActionDispatched(curActionDO, containerId);
+
+        //    if (containerId != Guid.Empty)
+        //    {
+        //        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //        {
+        //            var containerDO = uow.ContainerRepository.GetByKey(containerId);
+        //            EventManager.ContainerSent(containerDO, curActionDO);
+        //            var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<PayloadDTO>(actionName, dto);
+        //            EventManager.ContainerReceived(containerDO, curActionDO);
+        //            return reponse;
+        //        }
+        //    }
+
+        //    return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActionAsync<PayloadDTO>(actionName, dto);
+        //}
 
         private Task<TResult> CallTerminalActionAsync<TResult>(string actionName, ActionDO curActionDO, Guid containerId)
         {

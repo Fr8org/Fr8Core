@@ -34,7 +34,7 @@ namespace HubTests.Managers
 
             var data = terminalUrl + "      " + actionDTO + " " + errorMessage;
 
-            EventManager.TerminalRunFailed(terminalUrl, actionDTO, errorMessage);
+            EventManager.TerminalRunFailed(terminalUrl, actionDTO, errorMessage, System.Guid.NewGuid().ToString());
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {   
