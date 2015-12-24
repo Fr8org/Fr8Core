@@ -131,11 +131,9 @@ namespace terminalSlack.Actions
 
             AddControl(
                 crateStorage,
-                new TextBlock()
-                {
-                    Name = "Info_Label",
-                    Value = "Slack doesn't currently offer a way for us to automatically request events for this channel. You can do it manually here. use the following values: URL: <strong>http://www.fr8.company/events?dockyard_plugin=terminalSlack&version=1.0</strong>"
-                });
+                GenerateTextBlock("Info_Label",
+                    "Slack doesn't currently offer a way for us to automatically request events for this channel. You can do it manually here. use the following values: URL: <strong>http://www.fr8.company/events?dockyard_plugin=terminalSlack&version=1.0</strong>",
+                    "", "Info_Label"));
         }
 
         private Crate CreateDesignTimeFieldsCrate()

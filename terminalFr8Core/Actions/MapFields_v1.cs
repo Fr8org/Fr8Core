@@ -119,8 +119,7 @@ namespace terminalFr8Core.Actions
         {
             var textBlock = GenerateTextBlock("Error",
                 "This Action works by mapping upstream data (from the left) to downstream fields (on the right)",
-                "well well-lg");
-            textBlock.Name = "MapFieldsErrorMessage";
+                "well well-lg","MapFieldsErrorMessage");
             AddControl(storage, textBlock);
         }
 

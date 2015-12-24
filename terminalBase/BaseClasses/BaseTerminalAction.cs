@@ -349,13 +349,7 @@ namespace TerminalBase.BaseClasses
         {
             ControlDefinitionDTO[] controls =
             {
-                new TextBlock()
-                {
-                    Label = fieldLabel,
-                    Value = errorMessage,
-                    CssClass = "well well-lg"
-
-                }
+                GenerateTextBlock(fieldLabel,errorMessage,"well well-lg")
             };
 
             var crateControls = Crate.CreateStandardConfigurationControlsCrate(
@@ -479,13 +473,7 @@ namespace TerminalBase.BaseClasses
         {
             AddControl(
                 storage,
-                new TextBlock()
-                {
-                    Name = name,
-                    Label = label,
-                    Value = text,
-                    CssClass = "well well-lg"
-                }
+                GenerateTextBlock(label,text,"well well-lg",name)
             );
         }
 
@@ -593,10 +581,11 @@ namespace TerminalBase.BaseClasses
         /// <param name="curValue">Value</param>
         /// <param name="curCssClass">Css Class</param>
         /// <returns></returns>
-        protected TextBlock GenerateTextBlock(string curLabel, string curValue, string curCssClass)
+        protected TextBlock GenerateTextBlock(string curLabel, string curValue, string curCssClass, string curName = "unnamed")
         {
             return new TextBlock
             {
+                Name = curName,
                 Label = curLabel,
                 Value = curValue,
                 CssClass = curCssClass
