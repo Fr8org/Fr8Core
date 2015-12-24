@@ -118,19 +118,30 @@ namespace TerminalBase.BaseClasses
 
         /// <summary>
         /// returns error to hub
-        /// TODO: maybe we should include an error message
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
-        protected PayloadDTO Error(PayloadDTO payload)
+        protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActionErrorCode? errorCode = null)
         {
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActionResponse = ActionResponse.Error;
+                operationalState.CurrentActionErrorCode = errorCode;
+                operationalState.CurrentActionErrorMessage = errorMessage;
             }
 
             return payload;
+        }
+
+        /// <summary>
+        /// returns Needs authentication error to hub
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO NeedsAuthenticationError(PayloadDTO payload)
+        {
+            return Error(payload, "No AuthToken provided.", ActionErrorCode.NO_AUTH_TOKEN_PROVIDED);
         }
 
         /// <summary>

@@ -75,7 +75,7 @@ namespace Hub.Services
             switch (response)
             {
                 case ActionResponse.Success:
-                    ResetActionResponse(uow, curContainerDo);
+                    //ResetActionResponse(uow, curContainerDo);
                     //do nothing
                     break;
                 case ActionResponse.RequestSuspend:

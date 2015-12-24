@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Control;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -45,19 +46,19 @@ namespace terminalDocuSign.Actions
         public async Task<PayloadDTO> Run(ActionDO actionDO,
             Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            var processPayload = await GetProcessPayload(actionDO, containerId);
+
             if (NeedsAuthentication(authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return NeedsAuthenticationError(processPayload);
             }
-
-            var processPayload = await GetProcessPayload(actionDO, containerId);
 
             //Get envlopeId
             var control = FindControl(Crate.GetStorage(actionDO), "EnvelopeIdSelector");
             string envelopeId = GetEnvelopeID(control, authTokenDO);
             if (envelopeId == null)
             {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
+                return Error(processPayload, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
             }
 
             using (var updater = Crate.UpdateStorage(() => processPayload.CrateStorage))
@@ -65,7 +66,7 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", _docuSignManager.CreateActionPayload(actionDO, authTokenDO, envelopeId)));
             }
 
-            return processPayload;
+            return Success(processPayload);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)

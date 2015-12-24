@@ -42,7 +42,7 @@ namespace terminalFr8Core.Actions
             ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane);
             if (filterPaneControl == null)
             {
-                throw new ApplicationException("No control found with Type == \"filterPane\"");
+                return Error(curPayloadDTO, "No control found with Type == \"filterPane\"");
             }
 
             var valuesCrates = Crate.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>();
@@ -58,7 +58,7 @@ namespace terminalFr8Core.Actions
             // Evaluate criteria using Contents json body of found Crate.
             var result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curValues);
 
-            return curPayloadDTO;
+            return Success(curPayloadDTO);
         }
 
         private bool Evaluate(string criteria, Guid processId, IEnumerable<FieldDTO> values)

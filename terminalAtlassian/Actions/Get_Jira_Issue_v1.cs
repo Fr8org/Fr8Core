@@ -48,7 +48,7 @@ namespace terminalAtlassian.Actions
                 updater.CrateStorage.Add(PackCrate_JiraIssueDetails(jiraIssue));
             }
 
-            return processPayload;
+            return Success(processPayload);
         }
 
         private string ExtractJiraKey(ActionDO curActionDO)

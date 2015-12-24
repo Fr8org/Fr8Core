@@ -60,7 +60,7 @@ namespace terminalFr8Core.Actions
                     uow.SaveChanges();
                 }
 
-                return curProcessPayload;
+                return Success(curProcessPayload);
             }
         }
 
