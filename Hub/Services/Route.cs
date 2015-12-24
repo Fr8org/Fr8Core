@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using AutoMapper;
+using Hub.Exceptions;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using Data.Entities;
@@ -457,8 +458,7 @@ namespace Hub.Services
         /// <returns></returns>
         public ContainerDO Create(IUnitOfWork uow, Guid routeId, Crate curEvent)
         {
-            var containerDO = new ContainerDO();
-            containerDO.Id = Guid.NewGuid();
+            var containerDO = new ContainerDO {Id = Guid.NewGuid()};
 
             var curRoute = uow.RouteRepository.GetByKey(routeId);
             if (curRoute == null)
@@ -493,40 +493,55 @@ namespace Hub.Services
             return containerDO;
         }
 
+        private async Task<ContainerDO> Run(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            if (curContainerDO.ContainerState == ContainerState.Failed || curContainerDO.ContainerState == ContainerState.Completed)
+            {
+                throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
+            }
+
+            try
+            {
+                await _container.Run(uow, curContainerDO);
+                return curContainerDO;
+            }
+            catch
+            {
+                curContainerDO.ContainerState = ContainerState.Failed;
+                throw;
+            }
+            finally
+            {
+                //TODO is this necessary? let's leave it as it is
+                /*
+                curContainerDO.CurrentRouteNode = null;
+                curContainerDO.NextRouteNode = null;
+                 * */
+                uow.SaveChanges();
+            }
+        }
+
         public async Task<ContainerDO> Run(RouteDO curRoute, Crate curEvent)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curContainerDO = Create(uow, curRoute.Id, curEvent);
-
-                if (curContainerDO.ContainerState == ContainerState.Failed || curContainerDO.ContainerState == ContainerState.Completed)
-                {
-                    throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
-                }
-
-                curContainerDO.ContainerState = ContainerState.Executing;
-                uow.SaveChanges();
-
-                try
-                {
-                    await _container.Run(uow, curContainerDO);
-                    curContainerDO.ContainerState = ContainerState.Completed;
-
-                    return curContainerDO;
-                }
-                catch
-                {
-                    curContainerDO.ContainerState = ContainerState.Failed;
-                    throw;
-                }
-                finally
-                {
-                    curContainerDO.CurrentRouteNode = null;
-                    curContainerDO.NextRouteNode = null;
-                    uow.SaveChanges();
-                }
+                return await Run(uow, curContainerDO);
             }
+        }
 
+        public async Task<ContainerDO> Continue(Guid containerId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curContainerDO = uow.ContainerRepository.GetByKey(containerId);
+                if (curContainerDO.ContainerState != ContainerState.Pending)
+                {
+                    throw new ApplicationException("Attempted to Continue a Process that wasn't pending");
+                }
+                //continue from where we left
+                return await Run(uow, curContainerDO);
+            }
         }
 
         /// <summary>

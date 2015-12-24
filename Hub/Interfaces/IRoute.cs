@@ -32,5 +32,6 @@ namespace Hub.Interfaces
 
         ContainerDO Create(IUnitOfWork uow, Guid routeId, Crate curEvent);
         Task<ContainerDO> Run(RouteDO curRoute, Crate curEvent);
+        Task<ContainerDO> Continue(Guid containerId);
     }
 }    

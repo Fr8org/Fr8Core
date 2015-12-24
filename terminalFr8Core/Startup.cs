@@ -1,6 +1,5 @@
 ﻿using Microsoft.Owin;
 using Owin;
-using Hub.StructureMap;
 
 [assembly: OwinStartup(typeof(terminalFr8Core.Startup))]
 
