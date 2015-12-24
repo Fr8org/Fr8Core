@@ -8,6 +8,7 @@ namespace Data.Interfaces.Manifests
         public string DockyardStorageUrl { get; set; }
         public string Filename { get; set; }
         public string Filetype { get; set; }
+        public string TextRepresentation { get; set; }
 
 		  public StandardFileHandleMS()
 			  : base(Constants.MT.StandardFileHandle)

@@ -5,6 +5,7 @@ using System.Web;
 using Data.Crates;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
+using Newtonsoft.Json;
 using StructureMap;
 
 namespace terminalFr8Core.Services
@@ -13,7 +14,10 @@ namespace terminalFr8Core.Services
     {
         public StandardFileHandleMS ConvertToStandardFileHandle(DocuSignTemplateCM input)
         {
-            return null;
+            return new StandardFileHandleMS
+            {
+                TextRepresentation = JsonConvert.SerializeObject(input)
+            };
         }
 
         public Crate Convert(Crate input)
