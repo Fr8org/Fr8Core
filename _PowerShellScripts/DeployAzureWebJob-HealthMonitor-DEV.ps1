@@ -50,17 +50,23 @@ Compress-Archive -Path $archiveFiles -DestinationPath $outputArchiveFile -Force
 
 # Deploy AzureWebsiteJob.
 Write-Host "Deploying AzureWebsiteJob"
-$site = Get-AzureWebsite -Name "fr8dev"
+$site = Get-AzureWebsite -Name "fr8"
+# $site = Get-AzureWebsite -Name "fr8dev"
 
-New-AzureWebsiteJob -Name $site.Name `
+New-AzureWebsiteJob -Name $site[0].Name `
   -JobName "HealthMonitor-Continuous" `
-  -JobType Continuous `
+  -JobType Triggered `
   -JobFile $outputArchiveFile;
+
+# New-AzureWebsiteJob -Name $site.Name `
+#   -JobName "HealthMonitor-Continuous" `
+#   -JobType triggered `
+#   -JobFile $outputArchiveFile;
 
 
 # Remove zip archive.
-Write-Host "Removing current deployment zip archive"
-Remove-Item $outputArchiveFile -Force -Recurse
+# Write-Host "Removing current deployment zip archive"
+# Remove-Item $outputArchiveFile -Force -Recurse
 
 # Remove current archive folder.
 Write-Host "Removing current Dev-WebJob-Archive folder"
