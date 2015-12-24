@@ -1,4 +1,3 @@
-
 using Data.Entities;
 using TerminalBase.Infrastructure;
 using System;
@@ -26,25 +25,17 @@ namespace terminalDocuSign.Actions
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
-            {
-                return ConfigurationRequestType.Initial;
+            return Crate.IsStorageEmpty(curActionDO) ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
             }
 
-            return ConfigurationRequestType.Followup;
-        }
-
-        protected Crate PackCrate_DocuSignTemplateNames(DocuSignAuthDTO authDTO)
+        protected Crate PackCrate_DocuSignTemplateNames(DocuSignAuth authDTO)
         {
             var template = new DocuSignTemplate();
 
@@ -91,7 +82,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public override Task<ActionDO> Activate(ActionDO curActionDO)
+        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             DocuSignAccount docuSignAccount = new DocuSignAccount();
             ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
@@ -121,10 +112,7 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            CheckAuthentication(authTokenDO);
 
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue;
@@ -163,7 +151,7 @@ namespace terminalDocuSign.Actions
             }
 
             // Make sure that it exists
-            if (String.IsNullOrEmpty(envelopeId))
+            if (string.IsNullOrEmpty(envelopeId))
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
 
             //Create a run-time fields
@@ -172,7 +160,6 @@ namespace terminalDocuSign.Actions
             {
                 field.Value = GetValueForKey(processPayload, field.Key);
             }
-
 
             //Create log message
             var logMessages = new StandardLoggingCM()
@@ -191,6 +178,11 @@ namespace terminalDocuSign.Actions
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
+                if (curSelectedOption == "template")
+                {
+                    var userDefinedFieldsPayload = _docuSignManager.CreateActionPayload(curActionDO, authTokenDO, curSelectedValue);
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
+            }
             }
 
             return processPayload;
@@ -223,14 +215,11 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert
-                .DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
-
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
             var crateControls = PackCrate_ConfigurationControls();
             var crateDesignTimeFields = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             var eventFields = Crate.CreateDesignTimeFieldsCrate("DocuSign Event Fields", CreateDocuSignEventFields().ToArray());
-
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
@@ -252,11 +241,15 @@ namespace terminalDocuSign.Actions
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 UpdateSelectedEvents(updater.CrateStorage);
+                string selectedOption, selectedValue;
+                GetTemplateRecipientPickerValue(curActionDO, out selectedOption, out selectedValue);
+                _docuSignManager.UpdateUserDefinedFields(curActionDO, authTokenDO, updater, selectedValue);
             }
+
+
 
             return Task.FromResult(curActionDO);
         }
-
 
         /// <summary>
         /// Updates event subscriptions list by user checked check boxes.
@@ -271,8 +264,8 @@ namespace terminalDocuSign.Actions
             //get selected check boxes (i.e. user wanted to subscribe these DocuSign events to monitor for)
             var curSelectedDocuSignEvents =
                 curConfigControlsCrate.Controls
-                    .Where(configControl => configControl.Type.Equals(ControlTypes.CheckBox) && configControl.Selected)
-                    .Select(checkBox => checkBox.Label.Replace(" ", ""));
+                    .Where(configControl => configControl.Type.Equals(ControlTypes.CheckBox) && configControl.Selected && configControl.Name.StartsWith("Event_"))
+                    .Select(checkBox => checkBox.Name.Substring("Event_".Length).Replace("_", ""));
 
             //create standard event subscription crate with user selected DocuSign events
             var curEventSubscriptionCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscriptions",
@@ -293,7 +286,7 @@ namespace terminalDocuSign.Actions
             {
                 if (eventCheckBox.Selected)
                 {
-                    subscriptions.Add(eventCheckBox.Label);
+                    subscriptions.Add(eventCheckBox.Name.Substring("Event_".Length).Replace("_", ""));
                 }
             }
 
@@ -411,11 +404,10 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-
             return templateRecipientPicker;
         }
 
-        private Crate PackCrate_TemplateNames(DocuSignAuthDTO authDTO)
+        private Crate PackCrate_TemplateNames(DocuSignAuth authDTO)
         {
             var template = new DocuSignTemplate();
             var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
@@ -425,8 +417,6 @@ namespace terminalDocuSign.Actions
                 fields);
             return createDesignTimeFields;
         }
-
-
 
         private List<FieldDTO> CreateDocuSignEventFields()
         {

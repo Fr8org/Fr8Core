@@ -102,7 +102,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/WebServiceFormController.js',
         'Scripts/app/controllers/TerminalListController.js',
         'Scripts/app/controllers/TerminalFormController.js',
-        'Scripts/app/controllers/SolutionController.js',
         'Scripts/app/controllers/SolutionListController.js',
         'Scripts/app/controllers/NotifierController.js',
         'Scripts/app/controllers/RouteActionsDialogController.js',

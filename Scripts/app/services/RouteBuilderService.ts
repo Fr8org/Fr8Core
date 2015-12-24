@@ -18,10 +18,10 @@ module dockyard.services {
         configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IActionVM>;
         getByRoute: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
         create: (args: { actionTemplateId: number, name: string, label: string, parentNideId: number, createRoute: boolean }) => ng.resource.IResource<model.RouteDTO | model.ActionDTO>;
-        createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.RouteDTO>;
+        createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.RouteDTO>
         //TODO make resource class do this operation
-        deleteById: (id: { id: string; confirmed: boolean }) => ng.resource.IResource<string>;
-        
+        deleteById: (id: { id: string; confirmed: boolean }) => ng.resource.IResource < string >
+        batchSave: (actionList: interfaces.IActionDTO[]) => ng.resource.IResource < interfaces.IActionVM >
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
 
@@ -155,9 +155,9 @@ module dockyard.services {
     */
     app.factory('ActionService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
         <IActionService>$resource('/api/actions?id=:id',
-            {
-                id: '@id'
-            },
+                {
+                    id: '@id'
+                },
             {
                 'save': {
                     method: 'POST',
@@ -166,7 +166,6 @@ module dockyard.services {
                     params: {
                         suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
                     }
-
                 },
                 //'get': {
                 //    transformResponse: function (data) {

@@ -9,7 +9,17 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_RenderConfiguration,
         PaneConfigureAction_ChildActionsDetected,
         PaneConfigureAction_ChildActionsReconfiguration,
-        PaneConfigureAction_ReloadAction
+        PaneConfigureAction_ReloadAction,
+        PaneConfigureAction_SetSolutionMode
+    }
+
+    export class ActionReconfigureEventArgs {
+        public action: interfaces.IActionDTO
+
+        constructor(action: interfaces.IActionDTO) {
+            // Clone Action to prevent any issues due to possible mutation of source object
+            this.action = angular.extend({}, action);
+        }
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
@@ -69,6 +79,7 @@ module dockyard.directives.paneConfigureAction {
         configurationWatchUnregisterer: Function;
         mode: string;
         reconfigureChildrenActions: boolean;
+        setSolutionMode: () => void;
     }
 
 
@@ -96,7 +107,7 @@ module dockyard.directives.paneConfigureAction {
         public controller: ($scope: IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
             currentAction: '=',
-            mode: '@'
+            mode: '='
         };
         public restrict = 'E';
 
@@ -130,9 +141,20 @@ module dockyard.directives.paneConfigureAction {
                 $scope.loadConfiguration = loadConfiguration;
                 $scope.onConfigurationChanged = onConfigurationChanged;
                 $scope.processConfiguration = processConfiguration;
+                $scope.setSolutionMode = setSolutionMode;
 
-                $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], () => {
-                    loadConfiguration();
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
+                    //this might be a general reconfigure command
+                    //TODO there shouldn't be a general reconfigure command - we should check it's usage and remove it - note by bahadir
+                    if (reConfigureActionEventArgs === null || typeof reConfigureActionEventArgs === 'undefined') {
+                        loadConfiguration();
+                        return;
+                    }
+
+                    if (reConfigureActionEventArgs.action.id === $scope.currentAction.id) {
+                        loadConfiguration();
+                    }
+
                 });
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_ReloadAction], (event: ng.IAngularEvent, reloadActionEventArgs: ReloadActionEventArgs) => {
@@ -362,6 +384,11 @@ module dockyard.directives.paneConfigureAction {
                             };
                             setTimeout(isClosedHandler, 500);
                         });
+                }
+
+                function setSolutionMode() {
+                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_SetSolutionMode]);
+
                 }
             }
         }    

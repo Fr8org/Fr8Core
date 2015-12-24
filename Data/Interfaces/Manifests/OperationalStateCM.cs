@@ -17,8 +17,10 @@ namespace Data.Interfaces.Manifests
             public int Level { get; set; }
         }
 
-        public List<LoopStatus> Loops { get; set; } 
+        public List<LoopStatus> Loops { get; set; }
         
+        //current action response
+        public ActionResponse CurrentActionResponse { get; set; }       
 
         public OperationalStateCM()
             : base(MT.OperationalStatus)

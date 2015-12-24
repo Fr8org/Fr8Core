@@ -89,7 +89,7 @@ namespace terminalSlackTests.Integration
             );
         }
 
-        [Test]
+        [Test, Ignore]
         public async void Monitor_Channel_Run_RightChannel_Test()
         {
             var runUrl = GetTerminalRunUrl();
@@ -107,7 +107,7 @@ namespace terminalSlackTests.Integration
             Assert.AreEqual(1, slackPayload.AllValues().Where(a => a.Key == "text" && a.Value == "test").Count());
         }
 
-        [Test]
+        [Test, Ignore]
         [ExpectedException(ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = "{\"status\":\"terminal_error\",\"message\":\"Unexpected channel-id.\"}")]
         public async void Monitor_Channel_Run_WrongChannel_Test()

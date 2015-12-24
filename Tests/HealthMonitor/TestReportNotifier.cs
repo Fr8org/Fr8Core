@@ -49,7 +49,7 @@ namespace HealthMonitor
             return string.Format("Test report {0:R}", DateTime.Now);
         }
 
-        public async void Notify(string htmlReport)
+        public void Notify(string htmlReport)
         {
             var toEmails = GetToEmails();
             if (toEmails == null)
