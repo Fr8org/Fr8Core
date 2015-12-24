@@ -50,14 +50,17 @@ namespace terminalFr8Core.Actions
             {
                 filteredCrates = filteredCrates.Where(s => s.Label == upstreamDataChooser.SelectedLabel);
             }
-            /*
-            //not sure what to do with this
-            if (upstreamDataChooser.SelectedFieldType != null)
-            {
-                //filteredCrates = filteredCrates.Where(s => s.?? == upstreamDataChooser.SelectedFieldType);
-            }*/
 
             var fieldList = FindFieldsOfCrates(filteredCrates);
+
+            
+            if (upstreamDataChooser.SelectedFieldType != null)
+            {
+                //not quite sure what to do with this
+                fieldList = fieldList.Where(s => s.Tags == upstreamDataChooser.SelectedFieldType);
+            }
+
+
             var prefixValue = GetRowPrefix(curActionDO);
             if (prefixValue == null)
             {
@@ -179,10 +182,13 @@ namespace terminalFr8Core.Actions
         private async Task<List<FieldDTO>> GetFieldTypesByManifestTypeAndLabel(ActionDO curActionDO, string manifestType, string label)
         {
             var upstreamCrates = await GetCratesByDirection(curActionDO, CrateDirection.Upstream);
-            return upstreamCrates
-                    .Where(c => c.ManifestType.Type == manifestType && c.Label == label)
-                    .GroupBy(c => c.Label)
-                    .Select(c => new FieldDTO(c.Key, c.Key)).ToList();
+            var filteredUpstreamCrates =
+                upstreamCrates.Where(c => c.ManifestType.Type == manifestType && c.Label == label);
+
+            var filteredFields = FindFieldsOfCrates(filteredUpstreamCrates);
+
+            return filteredFields.GroupBy(f => f.Tags).Select(f => new FieldDTO(f.Key, f.Key)).ToList();
+
         }
 
         private async Task<List<FieldDTO>> GetLabelsByManifestType(ActionDO curActionDO, string manifestType)
@@ -259,18 +265,6 @@ namespace terminalFr8Core.Actions
         {
             var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             var upstreamDataChooser = (UpstreamDataChooser)controlsMS.Controls.Single(x => x.Type == ControlTypes.UpstreamDataChooser && x.Name == "Upstream_data_chooser");
-            if (upstreamDataChooser.SelectedLabel != null && upstreamDataChooser.SelectedManifest != null)
-            {
-                /*
-                var labelList = await GetFieldTypesByManifestTypeAndLabel(curActionDO, upstreamDataChooser.SelectedManifest);
-
-                using (var updater = Crate.UpdateStorage(curActionDO))
-                {
-                    updater.CrateStorage.RemoveByLabel("Upstream Crate Label List");
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Upstream Crate Label List", new StandardDesignTimeFieldsCM() { Fields = labelList }));
-                }
-                 * */
-            }
             if (upstreamDataChooser.SelectedManifest != null)
             {
                 var labelList = await GetLabelsByManifestType(curActionDO, upstreamDataChooser.SelectedManifest);
