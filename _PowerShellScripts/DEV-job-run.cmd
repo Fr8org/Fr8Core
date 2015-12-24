@@ -1,0 +1,1 @@
+HealthMonitor.exe --email-report
