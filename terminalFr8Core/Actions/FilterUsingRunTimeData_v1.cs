@@ -196,9 +196,9 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authToken)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authToken)
         {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authToken);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authToken);
         }
 
         private Crate CreateControlsCrate()
@@ -225,7 +225,6 @@ namespace terminalFr8Core.Actions
         {
             if (curActionDO.Id != Guid.Empty)
             {
-                //this conversion from actiondto to Action should be moved back to the controller edge
                 var curUpstreamFields =
                     (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
                     .Fields
