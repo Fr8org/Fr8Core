@@ -41,10 +41,9 @@ namespace terminalDropboxTests.Actions
             //Arrange
             var curActionDO = FixtureData.GetFileListTestActionDO1();
             var container = FixtureData.TestContainer();
-
             //Act
             var payloadDTOResult = _getFileList_v1.Run(curActionDO, container.Id, FixtureData.DropboxAuthorizationToken()).Result;
-            var jsonData = ((JValue)(payloadDTOResult.CrateStorage.Crates[0].Contents)).Value.ToString();
+            var jsonData = ((JValue)(payloadDTOResult.CrateStorage.Crates[1].Contents)).Value.ToString();
             var dropboxFileList = JsonConvert.DeserializeObject<List<string>>(jsonData);
             
             // Assert

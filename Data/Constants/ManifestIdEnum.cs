@@ -88,7 +88,10 @@ namespace Data.Constants
         DocuSignRecipient = 26,
 
         [Display(Name = "Operational State")]
-        OperationalStatus = 27
+        OperationalStatus = 27,
+
+        [Display(Name = "Docusign Template")]
+        DocuSignTemplate = 28
     }
 }
 
