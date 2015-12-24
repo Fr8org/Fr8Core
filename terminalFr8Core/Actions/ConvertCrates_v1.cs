@@ -26,6 +26,11 @@ namespace terminalFr8Core.Actions
 {
     public class ConvertCrates_v1 : BaseTerminalAction
     {
+        private static readonly Dictionary<MT, MT> ConversionMap = new Dictionary<MT, MT>
+        {
+            
+        };
+
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
@@ -52,29 +57,14 @@ namespace terminalFr8Core.Actions
             return curActionDO;
         }
 
-        private async Task<List<FieldDTO>> GetLabelsByManifestType(ActionDO curActionDO, string manifestType)
-        {
-            var upstreamCrates = await GetCratesByDirection(curActionDO, CrateDirection.Upstream);
-            return upstreamCrates
-                    .Where(c => c.ManifestType.Type == manifestType)
-                    .GroupBy(c => c.Label)
-                    .Select(c => new FieldDTO(c.Key, c.Key)).ToList();
-        }
-
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
-            var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_Manifests");
+            var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_From_Manifests");
 
             if (manifestTypeDropdown.Value != null)
             {
-                var labelList = await GetLabelsByManifestType(curActionDO, manifestTypeDropdown.Value);
-
-                using (var updater = Crate.UpdateStorage(curActionDO))
-                {
-                    updater.CrateStorage.RemoveByLabel("Available Labels");
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Available Labels", new StandardDesignTimeFieldsCM() { Fields = labelList }));
-                }
+                
             }
 
             return curActionDO;
