@@ -12,7 +12,7 @@ namespace terminalDocuSignTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
     {
-        private const int ActionCount = 9;
+        private const int ActionCount = 10;
         private const string Extract_Data_From_Envelopes_Name = "Extract_Data_From_Envelopes";
         private const string Mail_Merge_Into_DocuSign_Name = "Mail_Merge_Into_DocuSign";
         private const string Monitor_DocuSign_Name = "Monitor_DocuSign_Envelope_Activity";
