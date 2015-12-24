@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
@@ -25,48 +26,80 @@ namespace Data.Repositories
 
         protected override void ProcessChanges(IEnumerable<AuthorizationTokenDO> adds, IEnumerable<AuthorizationTokenDO> updates, IEnumerable<AuthorizationTokenDO> deletes)
         {
-            var tasks = new List<Task>();
-
-            foreach (var token in adds)
+            RunInNewThread(() =>
             {
-                if (string.IsNullOrWhiteSpace(token.Token))
+                var tasks = new List<Task>();
+
+                foreach (var token in adds)
                 {
-                    continue;
+                    if (string.IsNullOrWhiteSpace(token.Token))
+                    {
+                        continue;
+                    }
+
+                    tasks.Add(UpdateSecretAsync(FormatSecretName(token.Id), token.Token));
                 }
 
-                tasks.Add(UpdateSecretAsync(FormatSecretName(token.Id), token.Token));
-            }
-
-            foreach (var token in updates)
-            {
-                var secretId = FormatSecretName(token.Id);
-
-                if (string.IsNullOrWhiteSpace(token.Token))
+                foreach (var token in updates)
                 {
-                    tasks.Add(DeleteSecretAsync(secretId));
+                    var secretId = FormatSecretName(token.Id);
+
+                    if (string.IsNullOrWhiteSpace(token.Token))
+                    {
+                        tasks.Add(DeleteSecretAsync(secretId));
+                    }
+                    else
+                    {
+                        tasks.Add(UpdateSecretAsync(secretId, token.Token));
+                    }
                 }
-                else
+
+                foreach (var token in deletes)
                 {
-                    tasks.Add(UpdateSecretAsync(secretId, token.Token));
+                    tasks.Add(DeleteSecretAsync(FormatSecretName(token.Id)));
                 }
-            }
 
-            foreach (var token in deletes)
-            {
-                tasks.Add(DeleteSecretAsync(FormatSecretName(token.Id)));
-            }
+                if (tasks.Count == 0)
+                {
+                    return 0;
+                }
 
-            if (tasks.Count == 0)
-            {
-                return;
-            }
-            
-            Task.WaitAll(tasks.ToArray());
+                Task.WaitAll(tasks.ToArray());
+
+                return 0;
+            });
         }
 
         protected override string QuerySecurePart(Guid id)
         {
-            return QuerySecurePartAsync(id).Result;
+            return RunInNewThread(() => QuerySecurePartAsync(id).Result);
+        }
+
+        private static T RunInNewThread<T>(Func<T> func)
+        {
+            using (var sync = new ManualResetEventSlim(false))
+            {
+                T result = default (T);
+
+                ThreadPool.QueueUserWorkItem(_ =>
+                {
+                    try
+                    {
+                        result = func();
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    finally
+                    {
+                        sync.Set();
+                    }
+                });
+
+                sync.Wait();
+
+                return result;
+            }
         }
 
         private async Task<string> QuerySecurePartAsync(Guid id)
@@ -75,7 +108,7 @@ namespace Data.Repositories
 
             try
             {
-                return (await _client.GetSecretAsync(_ketVaultUrl, secretId).ConfigureAwait(false)).Value;
+                return (await _client.GetSecretAsync(_ketVaultUrl, secretId)).Value;
             }
             catch
             {
@@ -87,7 +120,7 @@ namespace Data.Repositories
         {
             try
             {
-                await _client.SetSecretAsync(_ketVaultUrl, secret, value).ConfigureAwait(false);
+                await _client.SetSecretAsync(_ketVaultUrl, secret, value);
             }
             catch
             {
@@ -98,7 +131,7 @@ namespace Data.Repositories
         {
             try
             {
-                await _client.DeleteSecretAsync(_ketVaultUrl, secret).ConfigureAwait(false);
+                await _client.DeleteSecretAsync(_ketVaultUrl, secret);
             }
             catch
             {
