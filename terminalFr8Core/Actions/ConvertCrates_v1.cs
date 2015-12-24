@@ -28,7 +28,7 @@ namespace terminalFr8Core.Actions
     {
         private static readonly Dictionary<MT, MT> ConversionMap = new Dictionary<MT, MT>
         {
-            
+            { MT.DocuSignTemplate, MT.StandardFileHandle }
         };
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -51,7 +51,7 @@ namespace terminalFr8Core.Actions
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                updater.CrateStorage.Add(await GetUpstreamManifestTypes(curActionDO));
+                updater.CrateStorage.Add(GetUpstreamAvailableFromManifests());
             }
 
             return curActionDO;
@@ -62,19 +62,40 @@ namespace terminalFr8Core.Actions
             var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_From_Manifests");
 
-            if (manifestTypeDropdown.Value != null)
+            
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                
+                updater.CrateStorage.RemoveUsingPredicate(c => c.IsOfType<StandardDesignTimeFieldsCM>() && c.Label == "Available From Manifests");
+                updater.CrateStorage.RemoveUsingPredicate(c => c.IsOfType<StandardDesignTimeFieldsCM>() && c.Label == "Available To Manifests");
+                if (manifestTypeDropdown.Value != null)
+                {
+                    updater.CrateStorage.Add(GetAvailableToManifests(manifestTypeDropdown.Value));
+                }
             }
-
+            
             return curActionDO;
         }
 
-        private async Task<Crate> GetUpstreamManifestTypes(ActionDO curActionDO)
+        private Crate GetAvailableToManifests(String manifestId)
         {
-            var upstreamCrates = await GetCratesByDirection(curActionDO, CrateDirection.Upstream);
-            var manifestTypeOptions = upstreamCrates.GroupBy(c => c.ManifestType).Select(c => new FieldDTO(c.Key.Type, c.Key.Type));
-            var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Available From Manifests", manifestTypeOptions.ToArray());
+            var manifestType = (MT) Int32.Parse(manifestId);
+            var toManifestList = ConversionMap.Where(c => c.Key == manifestType)
+                .Select(c => c.Value)
+                .Select(c => new FieldDTO(c.GetEnumDisplayName(), ((int) c).ToString(CultureInfo.InvariantCulture)));
+
+            var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Available To Manifests", toManifestList.ToArray());
+            return queryFieldsCrate;
+        }
+
+        private Crate GetUpstreamAvailableFromManifests()
+        {
+            
+            var toManifestList = ConversionMap
+                .GroupBy(c => c.Key)
+                .Select(c => c.Key)
+                .Select(c => new FieldDTO(c.GetEnumDisplayName(), ((int)c).ToString(CultureInfo.InvariantCulture)));
+
+            var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Available From Manifests", toManifestList.ToArray());
             return queryFieldsCrate;
         }
 
