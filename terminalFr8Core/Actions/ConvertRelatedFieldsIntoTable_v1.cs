@@ -41,19 +41,21 @@ namespace terminalFr8Core.Actions
             
             var filteredCrates = storage.Where(s => true);
             //add filtering according to upstream data chooser
-            /*if (upstreamDataChooser.SelectedManifest != null)
+
+            if (upstreamDataChooser.SelectedManifest != null)
             {
                 filteredCrates = filteredCrates.Where(s => s.ManifestType.Type == upstreamDataChooser.SelectedManifest);
-            }*/
+            }
             if (upstreamDataChooser.SelectedLabel != null)
             {
                 filteredCrates = filteredCrates.Where(s => s.Label == upstreamDataChooser.SelectedLabel);
             }
+            /*
             //not sure what to do with this
             if (upstreamDataChooser.SelectedFieldType != null)
             {
                 //filteredCrates = filteredCrates.Where(s => s.?? == upstreamDataChooser.SelectedFieldType);
-            }
+            }*/
 
             var fieldList = FindFieldsOfCrates(filteredCrates);
             var prefixValue = GetRowPrefix(curActionDO);
@@ -85,7 +87,7 @@ namespace terminalFr8Core.Actions
                 updater.CrateStorage.Add(tableDataCrate);
             }
 
-            return curPayloadDTO;
+            return Success(curPayloadDTO);
         }
 
         private IEnumerable<FieldDTO> FindFieldsOfCrates(IEnumerable<Crate> crates)
