@@ -20,15 +20,28 @@ using Newtonsoft.Json.Linq;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalFr8Core.Services;
 using Utilities;
 
 namespace terminalFr8Core.Actions
 {
     public class ConvertCrates_v1 : BaseTerminalAction
     {
-        private static readonly Dictionary<MT, MT> ConversionMap = new Dictionary<MT, MT>
+        private class ManifestTypeMatch
         {
-            { MT.DocuSignTemplate, MT.StandardFileHandle }
+            public ManifestTypeMatch(MT From, MT To)
+            {
+                this.From = From;
+                this.To = To;
+            }
+
+            public MT From { get; set; }
+            public MT To { get; set; }
+        }
+
+        private static readonly Dictionary<ManifestTypeMatch, ICrateConversion> ConversionMap = new Dictionary<ManifestTypeMatch, ICrateConversion>
+        {
+            { new ManifestTypeMatch(MT.DocuSignTemplate, MT.StandardFileHandle), new DocuSignTemplateToStandardFileDescriptionConversion() }
         };
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -52,6 +65,8 @@ namespace terminalFr8Core.Actions
             }
             var toManifestType = Int32.Parse(toDropdown.Value);
 
+            var convertor = ConversionMap.FirstOrDefault(c => c.Key.From == (MT)fromManifestType && c.Key.To == (MT) toManifestType).Value;
+
             //find user selected crate in payload
             var payloadStorage = Crate.GetStorage(curPayloadDTO);
             var userSelectedFromCrate = payloadStorage.FirstOrDefault(c => c.ManifestType.Id == fromManifestType);
@@ -60,8 +75,12 @@ namespace terminalFr8Core.Actions
                 return Error(curPayloadDTO/*, "Unable to find crate with Manifest Type : "+ fromDropdown.selectedKey*/);
             }
 
-            var userSelectedToCrate = payloadStorage.FirstOrDefault(c => c.ManifestType.Id == toManifestType);
+            var convertedCrate = convertor.Convert(userSelectedFromCrate);
 
+            using (var updater = Crate.UpdateStorage(curPayloadDTO))
+            {
+                updater.CrateStorage.Add(convertedCrate);
+            }
 
             return Success(curPayloadDTO);
         }
@@ -79,7 +98,7 @@ namespace terminalFr8Core.Actions
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                updater.CrateStorage.Add(GetUpstreamAvailableFromManifests());
+                updater.CrateStorage.Add(GetAvailableFromManifests());
             }
 
             return curActionDO;
@@ -107,19 +126,18 @@ namespace terminalFr8Core.Actions
         private Crate GetAvailableToManifests(String manifestId)
         {
             var manifestType = (MT) Int32.Parse(manifestId);
-            var toManifestList = ConversionMap.Where(c => c.Key == manifestType)
-                .Select(c => c.Value)
+            var toManifestList = ConversionMap.Where(c => c.Key.From == manifestType)
+                .Select(c => c.Key.To)
                 .Select(c => new FieldDTO(c.GetEnumDisplayName(), ((int) c).ToString(CultureInfo.InvariantCulture)));
 
             var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Available To Manifests", toManifestList.ToArray());
             return queryFieldsCrate;
         }
 
-        private Crate GetUpstreamAvailableFromManifests()
+        private Crate GetAvailableFromManifests()
         {
-            
             var toManifestList = ConversionMap
-                .GroupBy(c => c.Key)
+                .GroupBy(c => c.Key.From)
                 .Select(c => c.Key)
                 .Select(c => new FieldDTO(c.GetEnumDisplayName(), ((int)c).ToString(CultureInfo.InvariantCulture)));
 
