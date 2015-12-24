@@ -491,7 +491,7 @@
     <Content Include="Content\icons\web_services\ms-azure-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-excel-icon-64x64.png" />
     <Content Include="Content\icons\web_services\papertrail-icon-64x64.png" />
-    <Content Include="Content\icons\web_services\quick-books-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\quickbooks-icon-64x64.png" />
     <Content Include="Content\icons\web_services\salesforce-icon-64x64.png" />
     <Content Include="Content\icons\web_services\sendgrid-icon-64x64.png" />
     <Content Include="Content\icons\web_services\slack-icon-64x64.png" />

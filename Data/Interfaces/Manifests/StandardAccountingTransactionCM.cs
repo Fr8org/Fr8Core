@@ -10,7 +10,7 @@ namespace Data.Interfaces.Manifests
 {
     public class StandardAccountingTransactionCM : Manifest
     {
-        public List<StandardAccountingTransactionDTO> AccountingTransactionDTOList{ get; set; }
+        public List<StandardAccountingTransactionDTO> AccountingTransactions{ get; set; }
         public StandardAccountingTransactionCM()
             : base(Constants.MT.StandardAccountTransaction)
         {

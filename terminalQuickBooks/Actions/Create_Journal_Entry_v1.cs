@@ -28,27 +28,30 @@ namespace terminalQuickBooks.Actions
             }
             return await ProcessConfigurationRequest(curActionDO, dto => ConfigurationRequestType.Initial, authTokenDO);
         }
+        //It is assumed that Action is the child of the Loop action.
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
                 throw new ApplicationException("No AuthToken provided.");
             var processPayload = await GetProcessPayload(curActionDO, containerId);
-            //Obtain the crate of type StandardAccountingTransactionCM
+            //Obtain the crate of type StandardAccountingTransactionCM that holds the required information
             var curStandardAccountingTransactionCM = Crate.FromDto(processPayload.CrateStorage).CratesOfType<StandardAccountingTransactionCM>().Single().Content;
+            //Obtain the crate of type OperationalStateCM to extract the correct StandardAccountingTransactionDTO
+            var curOperationalStateCM = Crate.FromDto(processPayload.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
+            //Get the LoopId that is equal to the Action.Id for to obtain the correct StandardAccountingTransactionDTO
+            var curLoopId = curActionDO.Id.ToString();
             //Validate fields of the StandardAccountingTransactionCM crate
             ValidateStandardAccountingTransactionCM(curStandardAccountingTransactionCM);
-            //Get the number of Accounting Transactions for iteration
-            var curNumberOfTransactions = curStandardAccountingTransactionCM.AccountingTransactionDTOList.Count;
-            //Iterate through all transactions that are inside of the StandardAccountingTransactionCM crate
-            for (int i = 0; i < curNumberOfTransactions; i++)
-            {
-                //Take StandardAccountingTransactionDTO from curStandardAccountingTransactionCM crate
-                var curStandardAccountingTransactionDTO = curStandardAccountingTransactionCM.AccountingTransactionDTOList[i];
-                //Check that all required fields exists in the StandardAccountingTransactionDTO object
-                ValidateAccountingTransation(curStandardAccountingTransactionDTO);
-                //Use service to create Journal Entry Object
-                _journalEntry.Create(curStandardAccountingTransactionDTO, authTokenDO);
-            }
+            //Get the list of the StandardAccountingTransactionDTO
+            var curTransactionList = curStandardAccountingTransactionCM.AccountingTransactions;
+            //Get the current index of Accounting Transactions
+            var currentIndexOfTransactions = GetLoopIndex(curOperationalStateCM, curLoopId);
+            //Take StandardAccountingTransactionDTO from curTransactionList using core function GetCurrentElement
+            var curStandardAccountingTransactionDTO = (StandardAccountingTransactionDTO)GetCurrentElement(curTransactionList, currentIndexOfTransactions);
+            //Check that all required fields exists in the StandardAccountingTransactionDTO object
+            ValidateAccountingTransation(curStandardAccountingTransactionDTO);
+            //Use service to create Journal Entry Object
+            _journalEntry.Create(curStandardAccountingTransactionDTO, authTokenDO);
             return processPayload;
         }
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -95,7 +98,7 @@ namespace terminalQuickBooks.Actions
             {
                 throw new ArgumentNullException("No StandardAccountingTransationDTO provided");
             }
-            if (curAccountingTransactionDtoTransactionDTO.FinancialLines == null 
+            if (curAccountingTransactionDtoTransactionDTO.FinancialLines == null
                 || curAccountingTransactionDtoTransactionDTO.FinancialLines.Count == 0
                 || curAccountingTransactionDtoTransactionDTO.TransactionDate == null)
             {
@@ -125,11 +128,11 @@ namespace terminalQuickBooks.Actions
 
         private void ValidateStandardAccountingTransactionCM(StandardAccountingTransactionCM crate)
         {
-            if (crate.AccountingTransactionDTOList == null)
+            if (crate.AccountingTransactions == null)
             {
                 throw new NullReferenceException("AccountingTransactionDTOList is null");
             }
-            if (crate.AccountingTransactionDTOList.Count == 0)
+            if (crate.AccountingTransactions.Count == 0)
             {
                 throw new Exception("No Transactions in the AccountingTransactionDTOList");
             }
