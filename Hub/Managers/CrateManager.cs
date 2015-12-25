@@ -212,5 +212,11 @@ namespace Hub.Managers
 
             return key;
         }
+
+        public IEnumerable<FieldDTO> GetFields(Crate crate)
+        {
+            
+            return null;
+        }
     }
 }

@@ -32,6 +32,8 @@ namespace TerminalBase.BaseClasses
         protected ICrateManager Crate;
         private readonly ITerminal _terminal;
 
+        protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
+
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
 
@@ -160,6 +162,22 @@ namespace TerminalBase.BaseClasses
             return payload;
         }
 
+        //protected IEnumerable<FieldDTO> FilterCratesByUpstreamDataChooser(UpstreamDataChooser dataChooser, CrateStorage storage)
+        //{
+        //    var filteredCrates = storage.Where(s => true);
+
+        //    //add filtering according to upstream data chooser
+        //    if (upstreamDataChooser.SelectedManifest != null)
+        //    {
+        //        filteredCrates = filteredCrates.Where(s => s.ManifestType.Type == upstreamDataChooser.SelectedManifest);
+        //    }
+        //    if (upstreamDataChooser.SelectedLabel != null)
+        //    {
+        //        filteredCrates = filteredCrates.Where(s => s.Label == upstreamDataChooser.SelectedLabel);
+        //    }
+        //    return null;
+        //}
+
 
         public virtual async Task<PayloadDTO> ChildrenExecuted(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
@@ -172,6 +190,11 @@ namespace TerminalBase.BaseClasses
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
+        }
+
+        protected StandardConfigurationControlsCM GetConfigurationControls(ActionDO actionDO)
+        {
+            return Crate.GetStorage(actionDO).CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == ConfigurationControlsLabel).FirstOrDefault();
         }
 
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
@@ -376,7 +399,7 @@ namespace TerminalBase.BaseClasses
 
         protected Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
-            return Crate<StandardConfigurationControlsCM>.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(controlsList));
+            return Crate<StandardConfigurationControlsCM>.FromContent(ConfigurationControlsLabel, new StandardConfigurationControlsCM(controlsList));
         }
 
         protected string ExtractControlFieldValue(ActionDO curActionDO, string fieldName)
@@ -475,7 +498,7 @@ namespace TerminalBase.BaseClasses
             };
 
             var crateControls = Crate.CreateStandardConfigurationControlsCrate(
-                        "Configuration_Controls", controls
+                        ConfigurationControlsLabel, controls
                     );
 
             return crateControls;
@@ -655,7 +678,7 @@ namespace TerminalBase.BaseClasses
 
             if (controlsCrate == null)
             {
-                controlsCrate = Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls");
+                controlsCrate = Crate.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel);
                 storage.Add(controlsCrate);
             }
 
