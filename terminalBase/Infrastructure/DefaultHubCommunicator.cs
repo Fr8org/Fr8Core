@@ -10,6 +10,7 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities.Configuration.Azure;
+using System.IO;
 
 namespace TerminalBase.Infrastructure
 {
@@ -95,6 +96,19 @@ namespace TerminalBase.Infrastructure
                 .GetAsync<List<ActivityTemplateDTO>>(new Uri(hubUrl));
 
             return templates;
+        }
+
+        public async Task<FileDO> SaveFile(string name, Stream stream)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files";
+
+            var allCategories = await _restfulServiceClient
+                .PostAsync(new Uri(hubUrl));
+
+            var templates = allCategories.SelectMany(x => x.Activities);
+            return null;
+            throw new NotImplementedException();
         }
     }
 }

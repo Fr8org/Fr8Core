@@ -5,6 +5,7 @@ using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using System.IO;
 
 namespace TerminalBase.Infrastructure
 {
@@ -17,6 +18,8 @@ namespace TerminalBase.Infrastructure
         Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction);
 
         Task CreateAlarm(AlarmDTO alarmDTO);
+
+        Task<FileDO> SaveFile(string name, Stream stream);
 
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO);
 

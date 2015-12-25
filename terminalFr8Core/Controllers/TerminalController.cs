@@ -184,6 +184,17 @@ namespace terminalFr8Core.Controllers
                 Type = ActivityType.Standard
             });
 
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "StoreFile",
+                Label = "Store File",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                Type = ActivityType.Standard
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
