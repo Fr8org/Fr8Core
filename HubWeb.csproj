@@ -745,6 +745,9 @@
     <Content Include="_PowerShellScripts\DEV-settings.job" />
     <Content Include="_PowerShellScripts\MASTER-HealthMonitor.exe.config" />
     <Content Include="_PowerShellScripts\RunIntegrationTests-MASTER.ps1" />
+    <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
+    <Content Include="_PowerShellScripts\MASTER-settings.job" />
+    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
