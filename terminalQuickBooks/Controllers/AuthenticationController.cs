@@ -13,7 +13,7 @@ namespace terminalQuickBooks.Controllers
     {
         private const string curTerminal = "terminalQuickBooks";
 
-        private readonly IQuickBooksIntegration _quickBooksIntegration;
+        private readonly IConnectivity _quickBooksIntegration;
 
 
         public AuthenticationController()

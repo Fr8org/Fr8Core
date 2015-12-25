@@ -16,7 +16,7 @@ namespace terminalQuickBooks.Tests.Services
             var curCrate = Fixtures.Fixtures.GetAccountingTransactionCM();
             var curTransactionDTO = curCrate.AccountingTransactions[0];
             //Act
-            var journalEntry = _journalEntry.GetJournalEntryFromAccountingTransactionDTO(curTransactionDTO);
+            var journalEntry = _journalEntry.CreateQbJournalEntry(curTransactionDTO);
             //Assert First Line
             Assert.AreEqual("100",journalEntry.Line[0].Amount.ToString());
             Assert.AreEqual("1",journalEntry.Line[0].Id.ToString());

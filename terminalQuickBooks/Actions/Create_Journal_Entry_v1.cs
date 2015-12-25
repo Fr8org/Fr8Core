@@ -22,37 +22,8 @@ namespace terminalQuickBooks.Actions
         }
         public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            CheckAuthentication(authTokenDO);
             return await ProcessConfigurationRequest(curActionDO, dto => ConfigurationRequestType.Initial, authTokenDO);
-        }
-        //It is assumed that Action is the child of the Loop action.
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            if (NeedsAuthentication(authTokenDO))
-                throw new ApplicationException("No AuthToken provided.");
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
-            //Obtain the crate of type StandardAccountingTransactionCM that holds the required information
-            var curStandardAccountingTransactionCM = Crate.FromDto(processPayload.CrateStorage).CratesOfType<StandardAccountingTransactionCM>().Single().Content;
-            //Obtain the crate of type OperationalStateCM to extract the correct StandardAccountingTransactionDTO
-            var curOperationalStateCM = Crate.FromDto(processPayload.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
-            //Get the LoopId that is equal to the Action.Id for to obtain the correct StandardAccountingTransactionDTO
-            var curLoopId = curActionDO.Id.ToString();
-            //Validate fields of the StandardAccountingTransactionCM crate
-            ValidateStandardAccountingTransactionCM(curStandardAccountingTransactionCM);
-            //Get the list of the StandardAccountingTransactionDTO
-            var curTransactionList = curStandardAccountingTransactionCM.AccountingTransactions;
-            //Get the current index of Accounting Transactions
-            var currentIndexOfTransactions = GetLoopIndex(curOperationalStateCM, curLoopId);
-            //Take StandardAccountingTransactionDTO from curTransactionList using core function GetCurrentElement
-            var curStandardAccountingTransactionDTO = (StandardAccountingTransactionDTO)GetCurrentElement(curTransactionList, currentIndexOfTransactions);
-            //Check that all required fields exists in the StandardAccountingTransactionDTO object
-            ValidateAccountingTransation(curStandardAccountingTransactionDTO);
-            //Use service to create Journal Entry Object
-            _journalEntry.Create(curStandardAccountingTransactionDTO, authTokenDO);
-            return processPayload;
         }
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
@@ -91,7 +62,31 @@ namespace terminalQuickBooks.Actions
             }
             return curActionDO;
         }
-
+        //It is assumed that Action is the child of the Loop action.
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            CheckAuthentication(authTokenDO);
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            //Obtain the crate of type StandardAccountingTransactionCM that holds the required information
+            var curStandardAccountingTransactionCM = Crate.FromDto(processPayload.CrateStorage).CratesOfType<StandardAccountingTransactionCM>().Single().Content;
+            //Obtain the crate of type OperationalStateCM to extract the correct StandardAccountingTransactionDTO
+            var curOperationalStateCM = Crate.FromDto(processPayload.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
+            //Get the LoopId that is equal to the Action.Id for to obtain the correct StandardAccountingTransactionDTO
+            var curLoopId = curActionDO.Id.ToString();
+            //Validate fields of the StandardAccountingTransactionCM crate
+            ValidateStandardAccountingTransactionCM(curStandardAccountingTransactionCM);
+            //Get the list of the StandardAccountingTransactionDTO
+            var curTransactionList = curStandardAccountingTransactionCM.AccountingTransactions;
+            //Get the current index of Accounting Transactions
+            var currentIndexOfTransactions = GetLoopIndex(curOperationalStateCM, curLoopId);
+            //Take StandardAccountingTransactionDTO from curTransactionList using core function GetCurrentElement
+            var curStandardAccountingTransactionDTO = (StandardAccountingTransactionDTO)GetCurrentElement(curTransactionList, currentIndexOfTransactions);
+            //Check that all required fields exists in the StandardAccountingTransactionDTO object
+            ValidateAccountingTransation(curStandardAccountingTransactionDTO);
+            //Use service to create Journal Entry Object
+            _journalEntry.Create(curStandardAccountingTransactionDTO, authTokenDO);
+            return processPayload;
+        }
         private void ValidateAccountingTransation(StandardAccountingTransactionDTO curAccountingTransactionDtoTransactionDTO)
         {
             if (curAccountingTransactionDtoTransactionDTO == null)
