@@ -42,7 +42,10 @@ namespace Data.Entities
                 ActivityTemplateId = this.ActivityTemplateId
             };
         }
-
+        public string GetLoopId()
+        {
+            return Id.ToString();
+        }
 //        public CrateStorageDTO CrateStorageDTO()
 //        {
 //            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);

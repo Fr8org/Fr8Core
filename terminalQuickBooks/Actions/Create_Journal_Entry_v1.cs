@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
+using Data.Crates;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Data.Entities;
@@ -68,11 +69,11 @@ namespace terminalQuickBooks.Actions
             CheckAuthentication(authTokenDO);
             var processPayload = await GetProcessPayload(curActionDO, containerId);
             //Obtain the crate of type StandardAccountingTransactionCM that holds the required information
-            var curStandardAccountingTransactionCM = Crate.FromDto(processPayload.CrateStorage).CratesOfType<StandardAccountingTransactionCM>().Single().Content;
+            var curStandardAccountingTransactionCM = Crate.GetByManifest<StandardAccountingTransactionCM>(processPayload);
             //Obtain the crate of type OperationalStateCM to extract the correct StandardAccountingTransactionDTO
-            var curOperationalStateCM = Crate.FromDto(processPayload.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
+            var curOperationalStateCM = Crate.GetOperationalState(processPayload);
             //Get the LoopId that is equal to the Action.Id for to obtain the correct StandardAccountingTransactionDTO
-            var curLoopId = curActionDO.Id.ToString();
+            var curLoopId = curActionDO.GetLoopId();
             //Validate fields of the StandardAccountingTransactionCM crate
             StandardAccountingTransactionCM.Validate(curStandardAccountingTransactionCM);
             //Get the list of the StandardAccountingTransactionDTO

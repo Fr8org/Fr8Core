@@ -13,19 +13,19 @@ namespace terminalQuickBooks.Controllers
     {
         private const string curTerminal = "terminalQuickBooks";
 
-        private readonly IConnectivity _quickBooksIntegration;
+        private readonly IConnectivity _connectivity;
 
 
         public AuthenticationController()
         {
-            _quickBooksIntegration = new QuickBooksIntegration();
+            _connectivity = new Connectivity();
         }
 
         [HttpPost]
         [Route("initial_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
-            var url = _quickBooksIntegration.CreateAuthUrl();
+            var url = _connectivity.CreateAuthUrl();
 
             var externalAuthUrlDTO = new ExternalAuthUrlDTO()
             {
@@ -52,7 +52,7 @@ namespace terminalQuickBooks.Controllers
                     throw new ApplicationException("OAuth Token or OAuth Verifier or Realm ID or Data Source is empty.");
                 }
 
-                var oauthToken = await _quickBooksIntegration.GetOAuthToken(oauth_token, oauth_verifier, realm_id);
+                var oauthToken = await _connectivity.GetOAuthToken(oauth_token, oauth_verifier, realm_id);
 
                 return new AuthorizationTokenDTO()
                 {
