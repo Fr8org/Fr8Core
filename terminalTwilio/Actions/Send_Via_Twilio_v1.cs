@@ -153,7 +153,6 @@ namespace terminalTwilio.Actions
                     var curFieldDTOList = CreateKeyValuePairList(curMessage);
                     using (var updater = Crate.UpdateStorage(processPayload))
                     {
-                        updater.CrateStorage.Clear();
                         updater.CrateStorage.Add(PackCrate_TwilioMessageDetails(curFieldDTOList));
                     }
                 }
