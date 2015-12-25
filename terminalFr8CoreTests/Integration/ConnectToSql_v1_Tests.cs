@@ -246,7 +246,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.NotNull(responsePayloadDTO);
 
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
-            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
         }
     }
 }
