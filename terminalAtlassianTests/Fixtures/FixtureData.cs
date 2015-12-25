@@ -73,7 +73,13 @@ namespace terminalAtlassianTests.Fixtures
         {
             get
             {
-                PayloadDTO payloadDTO = new PayloadDTO(TestContainerGuid());
+                var payloadDTO = new PayloadDTO(TestContainerGuid());
+                using (var updater = new CrateManager().UpdateStorage(payloadDTO))
+                {
+                    var operationalStatus = new OperationalStateCM();
+                    var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
+                    updater.CrateStorage.Add(operationsCrate);
+                }
                 return payloadDTO;
             }
         }

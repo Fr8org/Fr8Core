@@ -97,7 +97,7 @@ namespace terminalPapertrail.Tests.Actions
             ActionDO testAction = new ActionDO();
             await _action_under_test.Configure(testAction);
             await _action_under_test.Configure(testAction);
-
+            
             //Act
             var result = await _action_under_test.Run(testAction, Guid.NewGuid(), null);
 

@@ -31,7 +31,7 @@ namespace terminalFr8Core.Actions
             //check for operations crate
             if (operationsCrate == null)
             {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "This Action can't run without OperationalStateCM crate");
+                return Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActionErrorCode.PAYLOAD_DATA_MISSING);
             }
             
             //find our action state in operations crate

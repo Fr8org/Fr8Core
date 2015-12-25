@@ -13,7 +13,6 @@ namespace Data.Constants
         StandardDesignTimeFields = 3,
 
         [Display(Name = "Dockyard Terminal Event or Incident Report")]
-
         EventOrIncidentReport = 2,
 
         [Display(Name = "Standard Payload Keys")]
@@ -82,11 +81,17 @@ namespace Data.Constants
         [Display(Name = "Standard File List")]
         StandardFileList = 24,
 
+        [Display(Name = "Standard Accounting Transaction")]
+        StandardAccountTransaction = 25,
+
         [Display(Name = "Docusign Recipient")]
         DocuSignRecipient = 26,
 
         [Display(Name = "Operational State")]
-        OperationalStatus = 27
+        OperationalStatus = 27,
+
+        [Display(Name = "Docusign Template")]
+        DocuSignTemplate = 28
     }
 }
 
