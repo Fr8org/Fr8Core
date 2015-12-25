@@ -19,8 +19,10 @@ namespace terminalBaseTests.BaseClasses
     {
         IDisposable _coreServer;
         BaseTerminalController _baseTerminalController;
-        string terminalName = "terminalDocuSign";
+        string terminalName = "terminalBaseTests";
         ICrateManager CrateManagerHelper;
+
+
         [SetUp]
         public override void SetUp()
         {

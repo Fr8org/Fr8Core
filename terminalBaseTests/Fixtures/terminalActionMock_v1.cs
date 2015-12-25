@@ -10,7 +10,7 @@ using Hub.Managers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Crates;
 using Data.Control;
-namespace terminalTests.Actions
+namespace terminalBaseTests.Actions
 {
     public class terminalActionMock_v1 : BaseTerminalAction
     {
