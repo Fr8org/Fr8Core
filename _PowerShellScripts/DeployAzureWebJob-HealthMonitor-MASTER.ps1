@@ -1,7 +1,7 @@
 $rootDir = Split-Path -parent $PSCommandPath
 
-$archiveFolderName = "$rootDir\Dev-WebJob-Archive"
-$outputArchiveFile = "$rootDir\dev-azurewebsitejob.zip"
+$archiveFolderName = "$rootDir\Master-WebJob-Archive"
+$outputArchiveFile = "$rootDir\master-azurewebsitejob.zip"
 
 # Check if archive folder exists, remove if it does.
 If (Test-Path $archiveFolderName){
@@ -27,19 +27,19 @@ Copy-Item $srcFiles -Destination $archiveFolderName -Exclude $exclude -Force -Re
 
 # Copy HealthMonitor config-file to archive folder.
 Write-Host "Copying HealthMonitor config file"
-$srcConfigFile = "$rootDir\DEV-HealthMonitor.exe.config"
+$srcConfigFile = "$rootDir\MASTER-HealthMonitor.exe.config"
 $dstConfigFile = "$archiveFolderName\HealthMonitor.exe.config"
 Copy-Item $srcConfigFile -Destination $dstConfigFile -Force
 
 # Copy settings.job to archive folder.
 Write-Host "Copying HealthMonitor settings.job file"
-$srcSettingsFile = "$rootDir\DEV-settings.job"
+$srcSettingsFile = "$rootDir\MASTER-settings.job"
 $dstSettingsFile = "$archiveFolderName\settings.job"
 Copy-Item $srcSettingsFile -Destination $dstSettingsFile -Force
 
 # Copy run.cmd to archive folder
 Write-Host "Copying run.cmd file"
-$srcRunFile = "$rootDir\DEV-job-run.cmd"
+$srcRunFile = "$rootDir\MASTER-job-run.cmd"
 $dstRunFile = "$archiveFolderName\run.cmd"
 Copy-Item $srcRunFile -Destination $dstRunFile -Force
 
@@ -54,7 +54,7 @@ $site = Get-AzureWebsite -Name "fr8"
 # $site = Get-AzureWebsite -Name "fr8dev"
 
 New-AzureWebsiteJob -Name $site[0].Name `
-  -JobName "HealthMonitor-Dev" `
+  -JobName "HealthMonitor-Master" `
   -JobType Triggered `
   -JobFile $outputArchiveFile;
 
@@ -69,5 +69,5 @@ New-AzureWebsiteJob -Name $site[0].Name `
 # Remove-Item $outputArchiveFile -Force -Recurse
 
 # Remove current archive folder.
-Write-Host "Removing current Dev-WebJob-Archive folder"
+Write-Host "Removing current Master-WebJob-Archive folder"
 Remove-Item $archiveFolderName -Force -Recurse

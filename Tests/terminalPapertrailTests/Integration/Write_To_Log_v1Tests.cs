@@ -118,6 +118,8 @@ namespace terminalPapertrailTests.Integration
                         }
                 });
 
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
             //Act
             var responsePayloadDTO =
                 await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
@@ -170,8 +172,10 @@ namespace terminalPapertrailTests.Integration
                         }
                 });
 
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
             //Act
-            var responsePayloadDTO = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
 
         /// <summary>
