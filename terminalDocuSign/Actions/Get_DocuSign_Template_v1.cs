@@ -51,10 +51,7 @@ namespace terminalDocuSign.Actions
             
             if (NeedsAuthentication(authTokenDO))
             {
-                //return NeedsAuthenticationError(processPayload);
-                //TODO change this after 1882 merge
-                return Error(processPayload);
-                //throw new ApplicationException("No AuthToken provided.");
+                return NeedsAuthenticationError(processPayload);
             }
             //Get envlopeId
             var control = (DropDownList) FindControl(Crate.GetStorage(actionDO), "Available_Templates");
@@ -62,7 +59,7 @@ namespace terminalDocuSign.Actions
             if (selectedDocusignTemplateId == null)
             {
                 //TODO change this after 1882 merge
-                return Error(processPayload);
+                return Error(processPayload, "No Template was selected at design time", ActionErrorCode.DESIGN_TIME_DATA_MISSING);
             }
 
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);

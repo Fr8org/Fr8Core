@@ -113,6 +113,8 @@ namespace terminalSendGridTests.Integration
                 updater.CrateStorage.Add(CreateCrates());
             }
 
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
             AddPayloadCrate(
                actionDTO,
                new StandardPayloadDataCM() { }
