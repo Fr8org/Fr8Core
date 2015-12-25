@@ -53,6 +53,13 @@ namespace terminalDocuSign.Tests.Actions
 
             PayloadDTO payloadDto = new PayloadDTO(Guid.Empty);
             payloadDto.CrateStorage = new CrateStorageDTO();
+            using (var updater = new CrateManager().UpdateStorage(payloadDto))
+            {
+                var operationalStatus = new OperationalStateCM();
+                var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
+                updater.CrateStorage.Add(operationsCrate);
+            }
+
 
             var restfulServiceClient = new Mock<IRestfulServiceClient>();
             restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>()))

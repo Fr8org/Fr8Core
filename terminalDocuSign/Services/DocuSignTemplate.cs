@@ -59,6 +59,24 @@ namespace terminalDocuSign.Services
             return docuSignTemplateListDTO;
         }
 
+        public DocuSignTemplateDTO GetTemplateById(string email, string apiPassword, string templateId)
+        {
+            if (templateId == null)
+                throw new ArgumentNullException("templateId");
+            if (templateId == string.Empty)
+                throw new ArgumentException("templateId is empty", "templateId");
+
+            var docuSignPackager = new DocuSignPackager();
+            Login = docuSignPackager.Login(email, apiPassword);
+
+            // Get template
+            var jObjTemplate = GetTemplate(templateId);
+            // Checking is it ok?
+            DocuSignUtils.ThrowInvalidOperationExceptionIfError(jObjTemplate);
+
+            return Mapper.Map<DocuSignTemplateDTO>(jObjTemplate);
+        }
+
         public DocuSignTemplateDTO GetTemplateById(string templateId)
         {
             if (templateId == null)

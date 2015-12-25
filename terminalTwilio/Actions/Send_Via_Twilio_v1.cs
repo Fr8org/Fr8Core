@@ -133,7 +133,7 @@ namespace terminalTwilio.Actions
             if (controlsCrate == null)
             {
                 PackCrate_WarningMessage(curActionDO, "No StandardConfigurationControlsCM crate provided", "No Controls");
-                return null;
+                return Error(processPayload, "No StandardConfigurationControlsCM crate provided");
             }
             try
             {
@@ -144,7 +144,7 @@ namespace terminalTwilio.Actions
                 if (String.IsNullOrEmpty(smsNumber))
                 {
                     PackCrate_WarningMessage(curActionDO, "No SMS Number Provided", "No Number");
-                    return null;
+                    return Error(processPayload, "No SMS Number Provided");
                 }
                 try
                 {
@@ -161,13 +161,15 @@ namespace terminalTwilio.Actions
                 {
                     EventManager.TwilioSMSSendFailure(smsNumber, smsBody, ex.Message);
                     PackCrate_WarningMessage(curActionDO, ex.Message, "Twilio Service Failure");
+                    return Error(processPayload, "Twilio Service Failure");
                 }
             }
             catch (ArgumentException appEx)
             {
                 PackCrate_WarningMessage(curActionDO, appEx.Message, "SMS Number");
+                return Error(processPayload, appEx.Message);
             }
-            return processPayload;
+            return Success(processPayload);
         }
 
         /// <summary>
@@ -238,12 +240,7 @@ namespace terminalTwilio.Actions
 
         private void PackCrate_WarningMessage(ActionDO actionDO, string warningMessage, string warningLabel)
         {
-            var textBlock = new TextBlock
-            {
-                Label = warningLabel,
-                Value = warningMessage,
-                CssClass = "alert alert-warning"
-            };
+            var textBlock = GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
             using (var updater = Crate.UpdateStorage(actionDO))
             {
                 updater.CrateStorage.Clear();

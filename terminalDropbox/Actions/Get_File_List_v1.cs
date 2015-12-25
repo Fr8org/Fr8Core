@@ -33,9 +33,12 @@ namespace terminalDropbox.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
-
             var processPayload = await GetProcessPayload(curActionDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(processPayload);
+            }
 
             var fileNames = await _dropboxService.GetFileList(authTokenDO);
 
@@ -44,7 +47,7 @@ namespace terminalDropbox.Actions
                 updater.CrateStorage.Add(PackCrate_DropboxFileList(fileNames));
             }
 
-            return processPayload;
+            return Success(processPayload);
         }
 
         private Crate PackCrate_DropboxFileList(List<string> fileNames)
