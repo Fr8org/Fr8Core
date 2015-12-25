@@ -99,6 +99,8 @@ namespace terminalFr8CoreTests.Integration
                 "Sql Connection String"
             );
 
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
             var responsePayloadDTO =
                 await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
 

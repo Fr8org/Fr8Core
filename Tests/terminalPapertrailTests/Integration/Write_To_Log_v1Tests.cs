@@ -140,6 +140,10 @@ namespace terminalPapertrailTests.Integration
         /// Should throw exception
         /// </summary>
         [Test]
+        [ExpectedException(
+            ExpectedException = typeof(RestfulServiceException),
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Papertrail URL and PORT are not in the correct format. The given URL is InvalidUrl""}"
+            )]
         public async void Write_To_Log_Run_WithInvalidPapertrailUrl_ShouldThrowException()
         {
             //Arrange
@@ -171,8 +175,7 @@ namespace terminalPapertrailTests.Integration
             AddOperationalStateCrate(actionDTO, new OperationalStateCM());
 
             //Act
-            var payload = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
-            CheckIfPayloadHasNeedsAuthenticationError(payload);
+            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
 
         /// <summary>

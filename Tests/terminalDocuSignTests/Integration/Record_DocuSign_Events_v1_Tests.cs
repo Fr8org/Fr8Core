@@ -156,6 +156,8 @@ namespace terminalDocuSignTests.Integration
                }
            );
 
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
             var responsePayloadDTO =
                 await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
             

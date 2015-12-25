@@ -318,18 +318,15 @@ namespace terminalGoogleTests.Integration
         /// Test run-time without Auth-Token.
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}"
-        )]
         public async void Extract_Spreadsheet_Data_v1_Run_NoAuth()
         {
-            var configureUrl = GetTerminalRunUrl();
+            var runUrl = GetTerminalRunUrl();
 
             var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = null;
-
-            await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+            AddOperationalStateCrate(requestActionDTO, new OperationalStateCM());
+            var payload = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
+            CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
         /////////////
         /// Run Tests End
