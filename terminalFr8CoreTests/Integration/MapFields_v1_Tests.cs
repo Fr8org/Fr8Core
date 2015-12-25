@@ -163,6 +163,8 @@ namespace terminalFr8CoreTests.Integration
 
             var runUrl = GetTerminalRunUrl();
 
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
             var payload = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
 
             Assert.NotNull(payload);

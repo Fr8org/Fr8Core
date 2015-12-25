@@ -233,6 +233,8 @@ namespace terminalFr8CoreTests.Integration
 
             var actionDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
 
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
             AddPayloadCrate(
                actionDTO,
                new EventReportCM()

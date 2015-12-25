@@ -103,18 +103,15 @@ namespace terminalDocuSignTests.Integration
         /// Test run-time without Auth-Token.
         /// </summary>
         [Test]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}"
-        )]
         public async void Record_DocuSign_Events_Run_NoAuth()
         {
             var runUrl = GetTerminalRunUrl();
             
             var requestActionDTO = HealthMonitor_FixtureData.Record_Docusign_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = null;
-
-            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
+            AddOperationalStateCrate(requestActionDTO, new OperationalStateCM());
+            var payload = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
+            CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
 
         /// <summary>
