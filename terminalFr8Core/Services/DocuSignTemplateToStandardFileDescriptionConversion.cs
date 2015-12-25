@@ -12,9 +12,9 @@ namespace terminalFr8Core.Services
 {
     public class DocuSignTemplateToStandardFileDescriptionConversion : ICrateConversion
     {
-        public StandardFileHandleMS ConvertToStandardFileHandle(DocuSignTemplateCM input)
+        public StandardFileDescriptionCM ConvertToStandardFileHandle(DocuSignTemplateCM input)
         {
-            return new StandardFileHandleMS
+            return new StandardFileDescriptionCM
             {
                 TextRepresentation = JsonConvert.SerializeObject(input)
             };
