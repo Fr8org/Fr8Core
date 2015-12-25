@@ -69,7 +69,7 @@ namespace terminalBaseTests.BaseClasses
         [Test]
         public async void HandleFr8Request_Configure_ReturnsActionDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request("terminalActionMock", "configure", Fixture_HandleRequest.terminalMockActionDTO());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "configure", Fixture_HandleRequest.terminalMockActionDTO());
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(ActionDTO), result);
@@ -83,7 +83,7 @@ namespace terminalBaseTests.BaseClasses
         [Test]
         public async void HandleFr8Request_Run_ReturnsPayloadDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request("terminalActionMock", "run", Fixture_HandleRequest.terminalMockActionDTO());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "run", Fixture_HandleRequest.terminalMockActionDTO());
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(PayloadDTO), result);
@@ -92,7 +92,7 @@ namespace terminalBaseTests.BaseClasses
         [Test]
         public async void HandleFr8Request_ChildrenExecuted_ReturnsPayloadDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request("terminalActionMock", "childrenexecuted", Fixture_HandleRequest.terminalMockActionDTO());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "childrenexecuted", Fixture_HandleRequest.terminalMockActionDTO());
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(PayloadDTO), result);
@@ -101,7 +101,7 @@ namespace terminalBaseTests.BaseClasses
         [Test]
         public async void HandleFr8Request_InitialConfigurationResponse_ReturnsActionDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request("terminalActionMock", "initialconfigurationresponse", Fixture_HandleRequest.terminalMockActionDTO());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "initialconfigurationresponse", Fixture_HandleRequest.terminalMockActionDTO());
 
             var crateStorage = CrateManagerHelper.FromDto(((ActionDTO)result).CrateStorage);
             var crateResult = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
@@ -112,7 +112,7 @@ namespace terminalBaseTests.BaseClasses
         [Test]
         public async void HandleFr8Request_FollowupConfigurationResponse_ReturnsActionDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request("terminalActionMock", "followupconfigurationresponse", Fixture_HandleRequest.terminalMockActionDTO());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "followupconfigurationresponse", Fixture_HandleRequest.terminalMockActionDTO());
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(ActionDTO), result);
@@ -126,7 +126,7 @@ namespace terminalBaseTests.BaseClasses
         [Test]
         public async void HandleFr8Request_Activate_ReturnsActionDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request("terminalActionMock", "activate", Fixture_HandleRequest.terminalMockActionDTO());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "activate", Fixture_HandleRequest.terminalMockActionDTO());
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(ActionDTO), result);
@@ -140,7 +140,7 @@ namespace terminalBaseTests.BaseClasses
         [Test]
         public async void HandleFr8Request_Othermethod_ReturnsActionDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request("terminalActionMock", "OtherMethod", Fixture_HandleRequest.terminalMockActionDTO());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "OtherMethod", Fixture_HandleRequest.terminalMockActionDTO());
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(ActionDTO), result);

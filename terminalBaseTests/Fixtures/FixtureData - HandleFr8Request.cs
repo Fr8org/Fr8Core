@@ -14,7 +14,7 @@ namespace terminalTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = 1,
-                Name = "terminalBaseTests_TEST",
+                Name = "terminalActionMock_TEST",
                 Version = "1"
             };
         }
@@ -24,7 +24,7 @@ namespace terminalTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = 1,
-                Name = "terminalBaseTests",
+                Name = "terminalActionMock",
                 Version = "1"
             };
         }
