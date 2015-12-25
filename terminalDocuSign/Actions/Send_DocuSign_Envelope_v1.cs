@@ -210,6 +210,8 @@ namespace terminalDocuSign.Actions
                     standartFields.ToArray()
                 );
 
+                updater.CrateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
+                updater.CrateStorage.RemoveByLabel("DocuSignTemplateStandardFields");
                 updater.CrateStorage.Add(crateUserDefinedDTO);
                 updater.CrateStorage.Add(crateStandardDTO);
 

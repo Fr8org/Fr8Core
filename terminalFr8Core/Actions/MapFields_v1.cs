@@ -101,13 +101,13 @@ namespace terminalFr8Core.Actions
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
-                AddInitialTextBlock(updater.CrateStorage);
                 if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
                 {
                     AddErrorTextBlock(updater.CrateStorage);
                 }
                 else
                 {
+                    AddInitialTextBlock(updater.CrateStorage);
                     AddMappingPane(updater.CrateStorage);
                 }
 
@@ -135,8 +135,7 @@ namespace terminalFr8Core.Actions
             var textBlock = new TextBlock()
             {
                 Name = "MapFieldsErrorMessage",
-                Label = "Error",
-                Value = "This Action works by mapping upstream data (from the left) to downstream fields (on the right)",
+                Value = "In order to work this Action needs upstream and downstream Actions configured",
                 CssClass = "well well-lg"
             };
 
@@ -166,7 +165,10 @@ namespace terminalFr8Core.Actions
             else
             {
                 // true if current up/downstream fields don't match saved up/downstream fields
-                return !(upStreamFields.Fields.All(curUpstreamFields.Contains) && downStreamFields.Fields.All(curDownstreamFields.Contains));
+                bool upstreamMatch = upStreamFields.Fields.Where(a => curUpstreamFields.Any(b => b.Key == a.Key)).Count() == upStreamFields.Fields.Count;
+                bool downstreamMatch = downStreamFields.Fields.Where(a => curDownstreamFields.Any(b => b.Key == a.Key)).Count() == downStreamFields.Fields.Count;
+
+                return !(upstreamMatch & downstreamMatch);
             }
         }
 
