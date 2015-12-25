@@ -78,7 +78,7 @@ namespace terminalTwilioTests.Integration
         /// Test Twilio Service. Preconfigure Crates with testing number.
         /// Expect that the status of the message is not fail or undelivered.
         /// </summary>
-        [Test, Category("Integration.terminalTwilio")]
+        [Test, Category("Integration.terminalTwilio"), Ignore]
         public async void Send_Via_Twilio_Run_Send_SMS_With_Correct_Number()
         {
             //Arrange
