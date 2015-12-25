@@ -3,6 +3,7 @@ using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Hub.Managers;
 using Newtonsoft.Json;
 
 namespace terminalDropboxTests.Fixtures
@@ -66,6 +67,12 @@ namespace terminalDropboxTests.Fixtures
             get
             {
                 PayloadDTO payloadDTO = new PayloadDTO(TestContainerGuid());
+                using (var updater = new CrateManager().UpdateStorage(payloadDTO))
+                {
+                    var operationalStatus = new OperationalStateCM();
+                    var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
+                    updater.CrateStorage.Add(operationsCrate);
+                }
                 return payloadDTO;
             }
         }

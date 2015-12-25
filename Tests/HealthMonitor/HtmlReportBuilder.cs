@@ -33,7 +33,7 @@ namespace HealthMonitor
                 </head>
                 <body>
                     <div style=""margin: 10px 0 10px 0"">
-                        Tests passed: {0} / {1}
+                        Tests passed: {0} / {1}, Application: {2}
                     </div>
                     <table style=""width:100%"">
                         <thead>
@@ -46,7 +46,7 @@ namespace HealthMonitor
                             </tr>
                         </thead>
                         <tbody>
-                            {2}
+                            {3}
                         </tbody>
                     </table>
                 </body>
@@ -62,9 +62,9 @@ namespace HealthMonitor
             </tr>";
 
 
-        public string CreateWrapper(int success, int total, string content)
+        public string CreateWrapper(string appName, int success, int total, string content)
         {
-            return string.Format(WrapperHtmlTemplate, success, total, content);
+            return string.Format(WrapperHtmlTemplate, success, total, appName, content);
         }
 
         public string CreateTestReportItemPart(TestReportItem item, int index)
@@ -80,7 +80,7 @@ namespace HealthMonitor
             );
         }
 
-        public string BuildReport(TestReport report)
+        public string BuildReport(string appName, TestReport report)
         {
             var sb = new StringBuilder();
 
@@ -92,6 +92,7 @@ namespace HealthMonitor
             }
 
             var fullContent = CreateWrapper(
+                appName,
                 report.Tests.Count(x => x.Success),
                 report.Tests.Count(),
                 sb.ToString()

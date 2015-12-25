@@ -26,15 +26,29 @@ namespace terminalSlack.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
-
             var processPayload = await GetProcessPayload(actionDO, containerId);
-            var payloadFields = ExtractPayloadFields(processPayload);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(processPayload);
+            }
+
+
+            List<FieldDTO> payloadFields;
+            try
+            {
+                payloadFields = ExtractPayloadFields(processPayload);
+            }
+            catch (ArgumentException)
+            {
+                return processPayload;
+            }
+            
 
             var payloadChannelIdField = payloadFields.FirstOrDefault(x => x.Key == "channel_id");
             if (payloadChannelIdField == null)
             {
-                throw new ApplicationException("No channel_id field found in payload.");
+                return Error(processPayload, "No channel_id field found in payload.");
             }
 
             var payloadChannelId = payloadChannelIdField.Value;
@@ -42,7 +56,7 @@ namespace terminalSlack.Actions
 
             if (payloadChannelId != actionChannelId)
             {
-                throw new ApplicationException("Unexpected channel-id.");
+                return Error(processPayload, "Unexpected channel-id.");
             }
 
             using (var updater = Crate.UpdateStorage(processPayload))
@@ -50,7 +64,7 @@ namespace terminalSlack.Actions
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Slack Payload Data", new StandardPayloadDataCM(payloadFields)));
             }
 
-            return processPayload;
+            return Success(processPayload);
         }
 
         private List<FieldDTO> ExtractPayloadFields(PayloadDTO processPayload)
@@ -58,13 +72,15 @@ namespace terminalSlack.Actions
             var eventReportMS = Crate.GetStorage(processPayload).CrateContentsOfType<EventReportCM>().SingleOrDefault();
             if (eventReportMS == null)
             {
-                throw new ApplicationException("EventReportCrate is empty.");
+                Error(processPayload, "EventReportCrate is empty.");
+                throw new ArgumentException();
             }
 
             var eventFieldsCrate = eventReportMS.EventPayload.SingleOrDefault();
             if (eventFieldsCrate == null)
             {
-                throw new ApplicationException("EventReportMS.EventPayload is empty.");
+                Error(processPayload, "EventReportMS.EventPayload is empty.");
+                throw new ArgumentException();
             }
 
             return eventReportMS.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
