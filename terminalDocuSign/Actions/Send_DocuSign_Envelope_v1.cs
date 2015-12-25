@@ -40,12 +40,12 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            if (authTokenDO == null)
-            {
-                throw new ApplicationException("No auth token provided.");
-            }
-
             var processPayload = await GetProcessPayload(curActionDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(processPayload);
+            }
 
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
@@ -59,7 +59,7 @@ namespace terminalDocuSign.Actions
 
             var result = curEnvelope.Create();
 
-            return processPayload;
+            return Success(processPayload);
         }
 
         private string ExtractTemplateId(ActionDO curActionDO)

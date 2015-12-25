@@ -198,7 +198,7 @@ namespace terminalSendGrid.Actions
 
             await _emailPackager.Send(mailerDO);
 
-            return processPayload;
+            return Success(processPayload);
         }
     }
 }

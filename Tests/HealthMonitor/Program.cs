@@ -8,12 +8,28 @@ namespace HealthMonitor
     {
         static void Main(string[] args)
         {
-            var sendEmailReport = args != null && args.Contains("--email-report");
+            var sendEmailReport = false;
+            var appName = "Unspecified App";
 
-            new Program().Run(sendEmailReport);
+            if (args != null)
+            {
+                for (var i = 0; i < args.Length; ++i)
+                {
+                    if (args[i] == "--email-report")
+                    {
+                        sendEmailReport = true;
+                    }
+                    else if (i > 0 && args[i - 1] == "--app-name" && args[i] != null)
+                    {
+                        appName = args[i];
+                    }
+                }
+            }
+
+            new Program().Run(sendEmailReport, appName);
         }
 
-        private void Run(bool sendEmailReport)
+        private void Run(bool sendEmailReport, string appName)
         {
             CoreExtensions.Host.InitializeService();
 
@@ -24,21 +40,22 @@ namespace HealthMonitor
             // var report = testRunner.Run(package);
             var report = testRunner.Run();
 
-            var reportBuilder = new HtmlReportBuilder();
-            var htmlReport = reportBuilder.BuildReport(report);
-
             // System.IO.File.WriteAllText("c:\\temp\\fr8-report.html", htmlReport);
 
             if (sendEmailReport)
             {
                 if (report.Tests.Any(x => !x.Success))
                 {
+                    var reportBuilder = new HtmlReportBuilder();
+                    var htmlReport = reportBuilder.BuildReport(appName, report);
+
                     var reportNotifier = new TestReportNotifier();
-                    reportNotifier.Notify(htmlReport);
+                    reportNotifier.Notify(appName, htmlReport);
                 }
             }
 
             Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Application: {0}", appName);
             Console.WriteLine("Integration tests result: {0} / {1} passed", report.Tests.Count(x => x.Success), report.Tests.Count());
             Console.ForegroundColor = ConsoleColor.Gray;
 

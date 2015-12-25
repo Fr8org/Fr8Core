@@ -37,7 +37,7 @@ namespace terminalDocuSign.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return null;
+            return Success(await GetProcessPayload(curActionDO, containerId));
         }
 
         /// <summary>

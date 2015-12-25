@@ -29,7 +29,7 @@ namespace terminalGoogle.Actions
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             if (authTokenDO == null) return true;
-            if (!base.NeedsAuthentication(authTokenDO))
+            if (!base.NeedsAuthentication(authTokenDO)) 
                 return false;
             var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             // we may also post token to google api to check its validity
@@ -50,15 +50,18 @@ namespace terminalGoogle.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
-
-            return await CreateStandardPayloadDataFromStandardTableData(curActionDO, containerId);
-        }
-
-        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, Guid containerId)
-        {
             var processPayload = await GetProcessPayload(curActionDO, containerId);
 
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(processPayload);
+            }
+
+            return await CreateStandardPayloadDataFromStandardTableData(curActionDO, containerId, processPayload);
+        }
+
+        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, Guid containerId, PayloadDTO processPayload)
+        {
             var tableDataMS = await GetTargetTableData(curActionDO);
 
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
@@ -69,8 +72,8 @@ namespace terminalGoogle.Actions
             {
                 updater.CrateStorage.Add(payloadDataCrate);
             }
-
-            return processPayload;
+            
+            return Success(processPayload);            
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(ActionDO curActionDO)

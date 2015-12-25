@@ -42,7 +42,7 @@ namespace terminalFr8Core.Actions
             ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane);
             if (filterPaneControl == null)
             {
-                throw new ApplicationException("No control found with Type == \"filterPane\"");
+                return Error(curPayloadDTO, "No control found with Type == \"filterPane\"");
             }
 
             var valuesCrates = Crate.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>();
@@ -58,7 +58,7 @@ namespace terminalFr8Core.Actions
             // Evaluate criteria using Contents json body of found Crate.
             var result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curValues);
 
-            return curPayloadDTO;
+            return Success(curPayloadDTO);
         }
 
         private bool Evaluate(string criteria, Guid processId, IEnumerable<FieldDTO> values)
@@ -196,9 +196,9 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authToken)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authToken)
         {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authToken);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authToken);
         }
 
         private Crate CreateControlsCrate()
@@ -225,7 +225,6 @@ namespace terminalFr8Core.Actions
         {
             if (curActionDO.Id != Guid.Empty)
             {
-                //this conversion from actiondto to Action should be moved back to the controller edge
                 var curUpstreamFields =
                     (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
                     .Fields

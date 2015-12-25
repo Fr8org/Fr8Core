@@ -54,7 +54,7 @@ $site = Get-AzureWebsite -Name "fr8"
 # $site = Get-AzureWebsite -Name "fr8dev"
 
 New-AzureWebsiteJob -Name $site[0].Name `
-  -JobName "HealthMonitor-Continuous" `
+  -JobName "HealthMonitor-Dev" `
   -JobType Triggered `
   -JobFile $outputArchiveFile;
 
