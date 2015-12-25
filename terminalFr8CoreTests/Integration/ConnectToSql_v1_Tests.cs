@@ -243,7 +243,10 @@ namespace terminalFr8CoreTests.Integration
             var responsePayloadDTO =
                 await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
 
-            Assert.IsNull(responsePayloadDTO);
+            Assert.NotNull(responsePayloadDTO);
+
+            var crateStorage = Crate.GetStorage(responsePayloadDTO);
+            Assert.AreEqual(1, crateStorage.Count);
         }
     }
 }

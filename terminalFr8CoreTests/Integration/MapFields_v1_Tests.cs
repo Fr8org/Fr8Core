@@ -170,7 +170,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.NotNull(payload);
 
             var crateStorage = Crate.GetStorage(payload);
-            Assert.AreEqual(1, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardPayloadDataCM>().Count());
 
             var fields = crateStorage.CrateContentsOfType<StandardPayloadDataCM>().Single().AllValues().ToList();
