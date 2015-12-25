@@ -373,7 +373,7 @@ namespace terminalFr8Core.Actions
             var sqlQueryCM = ExtractSelectedQueryFromCrate(actionCrateStorage);
             if (sqlQueryCM == null)
             {
-                throw new ApplicationException("Selected Query crate was not found in Action's CrateStorage");
+                return Error(processPayload, "Selected Query crate was not found in Action's CrateStorage");
             }
 
             var sqlQueryCrate = Crate<StandardQueryCM>.FromContent("Sql Query", sqlQueryCM);
@@ -383,7 +383,7 @@ namespace terminalFr8Core.Actions
                 updater.CrateStorage.Add(sqlQueryCrate);
             }
 
-            return processPayload;
+            return Success(processPayload);
         }
 
         #endregion Execution.

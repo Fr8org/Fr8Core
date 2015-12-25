@@ -15,6 +15,16 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
+        public static void AddOperationalStateCrate(PayloadDTO payload)
+        {
+            using (var updater = new CrateManager().UpdateStorage(payload))
+            {
+                var operationalStatus = new OperationalStateCM();
+                var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
+                updater.CrateStorage.Add(operationsCrate);
+            }
+        }
+
         public static PayloadDTO PayloadDTO1()
         {
             List<FieldDTO> curFields = new List<FieldDTO>()
@@ -31,6 +41,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 updater.CrateStorage.Add(Crate.FromContent("Standard Event Report", curEventReportMS));
             }
+
+            AddOperationalStateCrate(payload);
 
             return payload;
         }
@@ -50,7 +62,9 @@ namespace UtilitiesTesting.Fixtures
             {
                 updater.CrateStorage.Add(Crate.FromContent("Standard Payload Data", standardPayload));
             }
-            
+
+            AddOperationalStateCrate(payload);
+
             return payload;
         }
 

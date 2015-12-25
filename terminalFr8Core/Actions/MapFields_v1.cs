@@ -26,30 +26,32 @@ namespace terminalFr8Core.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            var processPayload = await GetProcessPayload(actionDO, containerId);
+
             var curControlsMS = Crate.GetStorage(actionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (curControlsMS == null)
             {
-                throw new ApplicationException("No controls crate found.");
+                return Error(processPayload, "No controls crate found.");
             }
 
             var curMappingControl = curControlsMS.Controls.FirstOrDefault(x => x.Name == "Selected_Mapping");
 
             if (curMappingControl == null || string.IsNullOrEmpty(curMappingControl.Value))
             {
-                throw new ApplicationException("No Selected_Mapping control found.");
+                return Error(processPayload, "No Selected_Mapping control found.");
             }
 
             var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
 
-            var processPayload = await GetProcessPayload(actionDO, containerId);
+            
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(mappedFields)));
             }
-            return processPayload;
+            return Success(processPayload);
         }
 
         /// <summary>
@@ -117,14 +119,10 @@ namespace terminalFr8Core.Actions
 
         private void AddErrorTextBlock(CrateStorage storage)
         {
-            var textBlock = new TextBlock()
-            {
-                Name = "MapFieldsErrorMessage",
-                Label = "Error",
-                Value = "This Action works by mapping upstream data (from the left) to downstream fields (on the right)",
-                CssClass = "well well-lg"
-            };
-
+            var textBlock = GenerateTextBlock("Error",
+                "This Action works by mapping upstream data (from the left) to downstream fields (on the right)",
+                "well well-lg");
+            textBlock.Name = "MapFieldsErrorMessage";
             AddControl(storage, textBlock);
         }
 
