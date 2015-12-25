@@ -54,8 +54,9 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual("B", upstream.Fields[0].Value);
 
             var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
-            Assert.AreEqual(1, controls.Controls.Count);
-            Assert.IsTrue(controls.Controls[0] is MappingPane);            
+            Assert.AreEqual(2, controls.Controls.Count);
+            Assert.IsTrue(controls.Controls[0] is TextBlock);  
+            Assert.IsTrue(controls.Controls[1] is MappingPane);            
         }
 
         private async Task<ActionDTO> ConfigureWithUpstreamDownstreamData()
@@ -93,7 +94,7 @@ namespace terminalFr8CoreTests.Integration
                 var storage = updater.CrateStorage;
                 var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
-                var mappingPane = (MappingPane)controls.Controls[0];
+                var mappingPane = (MappingPane)controls.Controls[1];
                 var mapping = new List<FieldDTO>()
                 {
                     new FieldDTO("A", "C")
@@ -146,7 +147,7 @@ namespace terminalFr8CoreTests.Integration
             AssertCrateContent_FollowUp(crateStorage);
 
             var followUpControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
-            var followUpMappingPane = (MappingPane)followUpControls.Controls[0];
+            var followUpMappingPane = (MappingPane)followUpControls.Controls[1];
             var followUpMapping = JsonConvert.DeserializeObject<List<FieldDTO>>(
                 followUpMappingPane.Value
             );
