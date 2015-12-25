@@ -10,6 +10,7 @@ using Hub.Managers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Crates;
 using Data.Control;
+using Data.Interfaces.Manifests;
 namespace terminalBaseTests.Actions
 {
     public class terminalActionMock_v1 : BaseTerminalAction
@@ -17,7 +18,7 @@ namespace terminalBaseTests.Actions
         public override Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             AddCrateMethodInvoked(curActionDO, "Configure");
-            return base.Configure(curActionDO, authTokenDO);
+            return Task.FromResult(curActionDO);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
@@ -79,6 +80,7 @@ namespace terminalBaseTests.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
+                updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
                 updater.CrateStorage = new CrateStorage(CreateControlsCrate(methodName));
             }
         }

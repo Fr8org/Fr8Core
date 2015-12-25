@@ -10,6 +10,10 @@ using Data.Crates;
 using Hub.Managers;
 using Data.Interfaces.Manifests;
 using System.Linq;
+using terminalBaseTests.Actions;
+using Hub.StructureMap;
+using StructureMap;
+using TerminalBase.Infrastructure;
 
 namespace terminalBaseTests.BaseClasses
 {
@@ -27,6 +31,8 @@ namespace terminalBaseTests.BaseClasses
         public override void SetUp()
         {
             base.SetUp();
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
+            ObjectFactory.Configure(cfg => cfg.For<IHubCommunicator>().Use<DefaultHubCommunicator>());
             CrateManagerHelper = new CrateManager();
             _baseTerminalController = new BaseTerminalController();
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
@@ -53,7 +59,9 @@ namespace terminalBaseTests.BaseClasses
         [ExpectedException(typeof(ArgumentException))]
         public async void HandleFr8Request_NullActivityTemplate_ThrowsException()
         {
-            await _baseTerminalController.HandleFr8Request(terminalName, "", null);
+            var actionDTO = Fixture_HandleRequest.terminalMockActionDTO();
+            actionDTO.ActivityTemplate = null;
+            await _baseTerminalController.HandleFr8Request(terminalName, "", actionDTO);
         }
 
         [Test]
@@ -83,7 +91,7 @@ namespace terminalBaseTests.BaseClasses
         [Test]
         public async void HandleFr8Request_Run_ReturnsPayloadDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request(terminalName, "run", Fixture_HandleRequest.terminalMockActionDTO());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "run", Fixture_HandleRequest.terminalMockActionDTOTest());
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(PayloadDTO), result);
@@ -92,13 +100,13 @@ namespace terminalBaseTests.BaseClasses
         [Test]
         public async void HandleFr8Request_ChildrenExecuted_ReturnsPayloadDTO()
         {
-            var result = await _baseTerminalController.HandleFr8Request(terminalName, "childrenexecuted", Fixture_HandleRequest.terminalMockActionDTO());
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "childrenexecuted", Fixture_HandleRequest.terminalMockActionDTOTest());
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOf(typeof(PayloadDTO), result);
         }
 
-        [Test]
+        [Test, Ignore]
         public async void HandleFr8Request_InitialConfigurationResponse_ReturnsActionDTO()
         {
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "initialconfigurationresponse", Fixture_HandleRequest.terminalMockActionDTO());
@@ -109,7 +117,7 @@ namespace terminalBaseTests.BaseClasses
             Assert.Greater(crateResult.Controls.Where(x => x.Label.ToLower() == "initialconfigurationresponse").Count(), 0);
         }
 
-        [Test]
+        [Test, Ignore]
         public async void HandleFr8Request_FollowupConfigurationResponse_ReturnsActionDTO()
         {
             var result = await _baseTerminalController.HandleFr8Request(terminalName, "followupconfigurationresponse", Fixture_HandleRequest.terminalMockActionDTO());
@@ -135,6 +143,20 @@ namespace terminalBaseTests.BaseClasses
             var crateResult = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             Assert.Greater(crateResult.Controls.Where(x => x.Label.ToLower() == "activate").Count(), 0);
+        }
+
+        [Test]
+        public async void HandleFr8Request_Deactivate_ReturnsActionDTO()
+        {
+            var result = await _baseTerminalController.HandleFr8Request(terminalName, "deactivate", Fixture_HandleRequest.terminalMockActionDTO());
+
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf(typeof(ActionDTO), result);
+
+            var crateStorage = CrateManagerHelper.FromDto(((ActionDTO)result).CrateStorage);
+            var crateResult = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+
+            Assert.Greater(crateResult.Controls.Where(x => x.Label.ToLower() == "deactivate").Count(), 0);
         }
 
         [Test]
