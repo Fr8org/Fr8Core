@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
@@ -140,11 +141,7 @@ namespace terminalPapertrailTests.Integration
         /// Should throw exception
         /// </summary>
         [Test]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Papertrail URL and PORT are not in the correct format. The given URL is InvalidUrl""}"
-            )]
-        public async void Write_To_Log_Run_WithInvalidPapertrailUrl_ShouldThrowException()
+        public async void Write_To_Log_Run_WithInvalidPapertrailUrl_ShouldReturnError()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
@@ -175,7 +172,13 @@ namespace terminalPapertrailTests.Integration
             AddOperationalStateCrate(actionDTO, new OperationalStateCM());
 
             //Act
-            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            var payload = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+
+            var storage = Crate.GetStorage(payload);
+            var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
+
+            Assert.AreEqual(ActionResponse.Error, operationalStateCM.CurrentActionResponse);
+            Assert.AreEqual("Papertrail URL and PORT are not in the correct format. The given URL is InvalidUrl", operationalStateCM.CurrentActionErrorMessage);
         }
 
         /// <summary>

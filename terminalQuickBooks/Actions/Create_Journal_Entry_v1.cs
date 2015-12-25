@@ -74,7 +74,7 @@ namespace terminalQuickBooks.Actions
             //Get the LoopId that is equal to the Action.Id for to obtain the correct StandardAccountingTransactionDTO
             var curLoopId = curActionDO.Id.ToString();
             //Validate fields of the StandardAccountingTransactionCM crate
-            ValidateStandardAccountingTransactionCM(curStandardAccountingTransactionCM);
+            StandardAccountingTransactionCM.Validate(curStandardAccountingTransactionCM);
             //Get the list of the StandardAccountingTransactionDTO
             var curTransactionList = curStandardAccountingTransactionCM.AccountingTransactions;
             //Get the current index of Accounting Transactions
@@ -82,55 +82,10 @@ namespace terminalQuickBooks.Actions
             //Take StandardAccountingTransactionDTO from curTransactionList using core function GetCurrentElement
             var curStandardAccountingTransactionDTO = (StandardAccountingTransactionDTO)GetCurrentElement(curTransactionList, currentIndexOfTransactions);
             //Check that all required fields exists in the StandardAccountingTransactionDTO object
-            ValidateAccountingTransation(curStandardAccountingTransactionDTO);
+            StandardAccountingTransactionCM.ValidateAccountingTransation(curStandardAccountingTransactionDTO);
             //Use service to create Journal Entry Object
             _journalEntry.Create(curStandardAccountingTransactionDTO, authTokenDO);
             return processPayload;
-        }
-        private void ValidateAccountingTransation(StandardAccountingTransactionDTO curAccountingTransactionDtoTransactionDTO)
-        {
-            if (curAccountingTransactionDtoTransactionDTO == null)
-            {
-                throw new ArgumentNullException("No StandardAccountingTransationDTO provided");
-            }
-            if (curAccountingTransactionDtoTransactionDTO.FinancialLines == null
-                || curAccountingTransactionDtoTransactionDTO.FinancialLines.Count == 0
-                || curAccountingTransactionDtoTransactionDTO.TransactionDate == null)
-            {
-                throw new Exception("No Financial Lines or Transaction Date Provided");
-            }
-            foreach (var curFinLineDTO in curAccountingTransactionDtoTransactionDTO.FinancialLines)
-            {
-                ValidateFinancialLineDTO(curFinLineDTO);
-            }
-        }
-
-        private void ValidateFinancialLineDTO(FinancialLineDTO finLineDTO)
-        {
-            if (finLineDTO.AccountId == null || finLineDTO.AccountName == null)
-            {
-                throw new Exception("Some Account Data is Missing");
-            }
-            if (finLineDTO.Amount == null)
-            {
-                throw new Exception("Amount is missing");
-            }
-            if (finLineDTO.DebitOrCredit == null)
-            {
-                throw new Exception("Debit/Credit information is missing");
-            }
-        }
-
-        private void ValidateStandardAccountingTransactionCM(StandardAccountingTransactionCM crate)
-        {
-            if (crate.AccountingTransactions == null)
-            {
-                throw new NullReferenceException("AccountingTransactionDTOList is null");
-            }
-            if (crate.AccountingTransactions.Count == 0)
-            {
-                throw new Exception("No Transactions in the AccountingTransactionDTOList");
-            }
-        }
+        }     
     }
 }

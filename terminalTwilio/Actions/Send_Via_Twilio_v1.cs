@@ -36,20 +36,20 @@ namespace terminalTwilio.Actions
         {
             return await ProcessConfigurationRequest(curActionDO, actionDO => ConfigurationRequestType.Initial, authTokenDO);
         }
+        
         /*
         //this entire function gets passed as a delegate to the main processing code in the base class
         //currently many actions have two stages of configuration, and this method determines which stage should be applied
-        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO)) 
-            { 
+            if (Crate.IsStorageEmpty(curActionDO))
+            {
                 return ConfigurationRequestType.Initial;
             }
 
-
             return ConfigurationRequestType.Followup;
-        }
-        */
+        }*/
+        
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
@@ -153,7 +153,6 @@ namespace terminalTwilio.Actions
                     var curFieldDTOList = CreateKeyValuePairList(curMessage);
                     using (var updater = Crate.UpdateStorage(processPayload))
                     {
-                        updater.CrateStorage.Clear();
                         updater.CrateStorage.Add(PackCrate_TwilioMessageDetails(curFieldDTOList));
                     }
                 }
