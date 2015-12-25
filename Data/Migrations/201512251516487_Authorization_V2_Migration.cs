@@ -2,7 +2,7 @@ namespace Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class Authorization_V2_Migration : DbMigration
     {
         public override void Up()
@@ -55,7 +55,7 @@ namespace Data.Migrations
             DropIndex("dbo.ActivityTemplate", new[] { "AuthenticationType" });
             DropColumn("dbo.ActivityTemplate", "AuthenticationType");
         }
-        
+
         public override void Down()
         {
             // AddColumn("dbo.ActivityTemplate", "AuthenticationType", c => c.Int(nullable: false));

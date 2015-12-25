@@ -511,10 +511,6 @@
     <Compile Include="Migrations\201512141152067_AddedActivityTypeToActivityTemplateDO.Designer.cs">
       <DependentUpon>201512141152067_AddedActivityTypeToActivityTemplateDO.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201512170851270_Authorization_V2_Migration.cs" />
-    <Compile Include="Migrations\201512170851270_Authorization_V2_Migration.Designer.cs">
-      <DependentUpon>201512170851270_Authorization_V2_Migration.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201512161607506_SplitAuthorizationTokenDO.cs" />
     <Compile Include="Migrations\201512161607506_SplitAuthorizationTokenDO.Designer.cs">
       <DependentUpon>201512161607506_SplitAuthorizationTokenDO.cs</DependentUpon>
@@ -522,6 +518,10 @@
     <Compile Include="Migrations\201512211641017_AddedComponentToHistoryItemDO.cs" />
     <Compile Include="Migrations\201512211641017_AddedComponentToHistoryItemDO.Designer.cs">
       <DependentUpon>201512211641017_AddedComponentToHistoryItemDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201512251516487_Authorization_V2_Migration.cs" />
+    <Compile Include="Migrations\201512251516487_Authorization_V2_Migration.Designer.cs">
+      <DependentUpon>201512251516487_Authorization_V2_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -862,14 +862,14 @@
     <EmbeddedResource Include="Migrations\201512141152067_AddedActivityTypeToActivityTemplateDO.resx">
       <DependentUpon>201512141152067_AddedActivityTypeToActivityTemplateDO.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201512170851270_Authorization_V2_Migration.resx">
-      <DependentUpon>201512170851270_Authorization_V2_Migration.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512161607506_SplitAuthorizationTokenDO.resx">
       <DependentUpon>201512161607506_SplitAuthorizationTokenDO.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512211641017_AddedComponentToHistoryItemDO.resx">
       <DependentUpon>201512211641017_AddedComponentToHistoryItemDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512251516487_Authorization_V2_Migration.resx">
+      <DependentUpon>201512251516487_Authorization_V2_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

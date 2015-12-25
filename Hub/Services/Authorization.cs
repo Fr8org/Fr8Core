@@ -163,7 +163,12 @@ namespace Hub.Services
                         throw new ApplicationException("Could not find ActionDO for Action's RouteNode.");
                     }
 
-                    var authToken = actionDO.AuthorizationToken;
+                    AuthorizationTokenDO authToken = null;
+                    if (actionDO.AuthorizationTokenId.HasValue)
+                    {
+                        authToken = uow.AuthorizationTokenRepository
+                            .FindTokenById(actionDO.AuthorizationTokenId.ToString());
+                    }
 
                     // If AuthToken is not empty, fill AuthToken property for ActionDTO.
                     if (authToken != null && !string.IsNullOrEmpty(authToken.Token))
@@ -477,7 +482,12 @@ namespace Hub.Services
                         throw new NullReferenceException("Current action was not found.");
                     }
 
-                    var authToken = actionDO.AuthorizationToken;
+                    AuthorizationTokenDO authToken = null;
+
+                    if (actionDO.AuthorizationTokenId != null)
+                    {
+                        authToken = uow.AuthorizationTokenRepository.FindTokenById(actionDO.AuthorizationTokenId.Value.ToString());
+                    }
 
                     if (authToken == null || string.IsNullOrEmpty(authToken.Token))
                     {
