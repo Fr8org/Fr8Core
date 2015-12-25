@@ -16,9 +16,10 @@ namespace Data.Interfaces.Manifests
             public bool BreakSignalReceived { get; set; }
             public int Level { get; set; }
         }
-
-        public List<LoopStatus> Loops { get; set; } 
-        
+        public List<LoopStatus> Loops { get; set; }
+        public ActionResponse CurrentActionResponse { get; set; }
+        public ActionErrorCode? CurrentActionErrorCode { get; set; }
+        public string CurrentActionErrorMessage { get; set; }
 
         public OperationalStateCM()
             : base(MT.OperationalStatus)

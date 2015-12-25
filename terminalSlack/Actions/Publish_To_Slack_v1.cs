@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
@@ -28,20 +29,23 @@ namespace terminalSlack.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
-
             var processPayload = await GetProcessPayload(actionDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(processPayload);
+            }
 
             var actionChannelId = ExtractControlFieldValue(actionDO, "Selected_Slack_Channel");
             if (string.IsNullOrEmpty(actionChannelId))
             {
-                throw new ApplicationException("No selected channelId found in action.");
+                return Error(processPayload, "No selected channelId found in action.");
             }
 
             var actionFieldName = ExtractControlFieldValue(actionDO, "Select_Message_Field");
             if (string.IsNullOrEmpty(actionFieldName))
             {
-                throw new ApplicationException("No selected field found in action.");
+                return Error(processPayload, "No selected field found in action.");
             }
 
             var payloadFields = ExtractPayloadFields(processPayload);
@@ -49,13 +53,13 @@ namespace terminalSlack.Actions
             var payloadMessageField = payloadFields.FirstOrDefault(x => x.Key == actionFieldName);
             if (payloadMessageField == null)
             {
-                throw new ApplicationException("No specified field found in action.");
+                return Error(processPayload, "No specified field found in action.");
             }
 
             await _slackIntegration.PostMessageToChat(authTokenDO.Token,
                 actionChannelId, payloadMessageField.Value);
 
-            return processPayload;
+            return Success(processPayload);
         }
 
         private List<FieldDTO> ExtractPayloadFields(PayloadDTO processPayload)
@@ -80,12 +84,7 @@ namespace terminalSlack.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
+            return Crate.IsStorageEmpty(curActionDO) ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
         }
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -103,6 +102,16 @@ namespace terminalSlack.Actions
                 updater.CrateStorage.Add(crateControls);
                 updater.CrateStorage.Add(crateAvailableChannels);
                 updater.CrateStorage.Add(crateAvailableFields);
+            }
+
+            return curActionDO;
+        }
+
+        protected async override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActionDO));
             }
 
             return curActionDO;
@@ -150,7 +159,6 @@ namespace terminalSlack.Actions
         {
             var curUpstreamFields =
                 (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream))
-
                 .Where(x => x.Label != "Available Channels")
                 .SelectMany(x => x.Content.Fields)
                 .ToArray();

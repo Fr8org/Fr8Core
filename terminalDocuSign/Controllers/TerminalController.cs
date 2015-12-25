@@ -57,8 +57,19 @@ namespace terminalDocuSign.Controllers
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "Receive_DocuSign_Envelope",
-                Label = "Receive DocuSign Envelope",
+                Name = "Get_DocuSign_Envelope",
+                Label = "Get DocuSign Envelope",
+                Category = ActivityCategory.Receivers,
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                MinPaneWidth = 330
+            };
+
+            var getDocuSignTemplateActionTemplate = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Get_DocuSign_Template",
+                Label = "Get DocuSign Template",
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
                 NeedsAuthentication = true,
@@ -142,7 +153,8 @@ namespace terminalDocuSign.Controllers
                 collectFormDataSolution,
                 richDocumentNotificationsSolution,
                 queryDocusign,
-                searchDocusignHistory
+                searchDocusignHistory,
+                getDocuSignTemplateActionTemplate
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

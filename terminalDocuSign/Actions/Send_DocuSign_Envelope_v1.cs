@@ -39,14 +39,14 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            if (authTokenDO == null)
-            {
-                throw new ApplicationException("No auth token provided.");
-            }
-
             var processPayload = await GetProcessPayload(curActionDO, containerId);
 
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(processPayload);
+            }
+
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
             var curEnvelope = new Envelope();
             curEnvelope.Login = new DocuSignPackager()
@@ -58,7 +58,7 @@ namespace terminalDocuSign.Actions
 
             var result = curEnvelope.Create();
 
-            return processPayload;
+            return Success(processPayload);
         }
 
         private string ExtractTemplateId(ActionDO curActionDO)
@@ -132,7 +132,7 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
             var template = new DocuSignTemplate();
             template.Login = new DocuSignPackager().Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
@@ -160,7 +160,7 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {

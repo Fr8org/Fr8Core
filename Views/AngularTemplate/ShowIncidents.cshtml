@@ -15,6 +15,7 @@
                             <th>Primary Category</th>
                             <th>Secondary Category</th>
                             <th>Activity</th>
+                            <th>Component</th>
                             <th>Data</th>
                             <th>Customer Id	</th>
                             <th>Object Id	</th>
@@ -27,6 +28,7 @@
                             <td>{{ incident.primaryCategory}}</td>
                             <td>{{ incident.secondaryCategory}}</td>
                             <td>{{ incident.activity}}</td>
+                            <td>{{ incident.component}}</td>
                             <td ng-if="isSelectedRow(incident)" style="white-space: pre-wrap; word-wrap: break-word;">{{incident.data}}</td>
                             <td ng-if="!isSelectedRow(incident)" style="white-space: pre-wrap; word-wrap: break-word;">{{shrinkData(incident.data)}}</td>
                             <td>{{ incident.customerId}}</td>

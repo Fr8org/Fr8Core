@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using Hub.Exceptions;
 using HubWeb.Controllers.Helpers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
@@ -269,9 +270,8 @@ namespace HubWeb.Controllers
                     curCrate = _crate.FromDto(curCrateDto);
                 }
                 catch (Exception ex)
-        {
+                {
 					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "You payload is invalid. Make sure that it represents a valid crate object JSON.");
-
 					return BadRequest();
 				}
 			}
@@ -284,17 +284,17 @@ namespace HubWeb.Controllers
                 {
                     var containerDO = await _route.Run(routeDO, curCrate);
 
-	                string message = String.Format("Route \"{0}\" executed", routeDO.Name);
+                    string message = String.Format("Route \"{0}\" executed", routeDO.Name);
 
-					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
 
                     return Ok(Mapper.Map<ContainerDTO>(containerDO));
                 }
                 catch
                 {
-	                string message = String.Format("Route \"{0}\" failed", routeDO.Name);
+                    string message = String.Format("Route \"{0}\" failed", routeDO.Name);
 
-					_pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
                 }
 
                 return Ok();

@@ -68,17 +68,17 @@ namespace terminalDocuSign.Actions
                 Controls.Add(new RunRouteButton());
             }
         }
-
+        
         private readonly IDocuSignFolder _docuSignFolder;
       
         public Search_DocuSign_History_v1()
         {
             _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
         }
-
+        
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return await GetProcessPayload(curActionDO, containerId);
+            return Success(await GetProcessPayload(curActionDO, containerId));
         }
         
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -88,7 +88,7 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
             var controls = new ActionUi();
 
             using (var updater = Crate.UpdateStorage(curActionDO))
@@ -182,7 +182,7 @@ namespace terminalDocuSign.Actions
             return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
 
-        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthDTO authDTO)
+        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuth authDTO)
         {
             var folders = _docuSignFolder.GetFolders(authDTO.Email, authDTO.ApiPassword);
             var fields = new List<FieldDTO>();

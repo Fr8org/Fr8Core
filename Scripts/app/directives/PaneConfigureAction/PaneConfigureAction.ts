@@ -9,7 +9,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_RenderConfiguration,
         PaneConfigureAction_ChildActionsDetected,
         PaneConfigureAction_ChildActionsReconfiguration,
-        PaneConfigureAction_ReloadAction
+        PaneConfigureAction_ReloadAction,
+        PaneConfigureAction_SetSolutionMode
     }
 
     export class ActionReconfigureEventArgs {
@@ -78,6 +79,7 @@ module dockyard.directives.paneConfigureAction {
         configurationWatchUnregisterer: Function;
         mode: string;
         reconfigureChildrenActions: boolean;
+        setSolutionMode: () => void;
     }
 
 
@@ -105,7 +107,7 @@ module dockyard.directives.paneConfigureAction {
         public controller: ($scope: IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
             currentAction: '=',
-            mode: '@'
+            mode: '='
         };
         public restrict = 'E';
 
@@ -139,6 +141,7 @@ module dockyard.directives.paneConfigureAction {
                 $scope.loadConfiguration = loadConfiguration;
                 $scope.onConfigurationChanged = onConfigurationChanged;
                 $scope.processConfiguration = processConfiguration;
+                $scope.setSolutionMode = setSolutionMode;
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
                     //this might be a general reconfigure command
@@ -403,6 +406,11 @@ module dockyard.directives.paneConfigureAction {
                 //             setTimeout(isClosedHandler, 500);
                 //         });
                 // }
+
+                function setSolutionMode() {
+                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_SetSolutionMode]);
+
+                }
             }
         }    
 

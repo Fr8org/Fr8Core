@@ -129,11 +129,12 @@ namespace TerminalBase.Infrastructure
         /// <param name="parser">delegate method</param>
         public async Task Process(string curExternalEventPayload,EventParser parser)
         {
+            var fr8EventUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/fr8event/processdockyardevents";
             var eventReportCrateDTO = _crateManager.ToDto(parser.Invoke(curExternalEventPayload));
             
             if (eventReportCrateDTO != null)
             {
-                await new HttpClient().PostAsJsonAsync(new Uri(eventWebServerUrl, UriKind.Absolute), eventReportCrateDTO);
+                await new HttpClient().PostAsJsonAsync(new Uri(fr8EventUrl, UriKind.Absolute), eventReportCrateDTO);
             }
         }
     }
