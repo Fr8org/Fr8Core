@@ -117,29 +117,7 @@ namespace terminalQuickBooks.Services
                 throw curException;
             }
         }
-        /// <summary>
-        /// Method is created for testing purposes
-        /// It takes StandardAccountingTransactionDTO as an input, converts it into journal entry, looks for similar journal entries in the Sandbox,
-        /// takes first occurance from the list, and returns converted back crate object
-        /// </summary>
-        /// <param name="StandardAccountingTransactionDTO"></param>
-        /// <param name="authTokenDO"></param>
-        /// <returns></returns>
-        public StandardAccountingTransactionDTO Find(StandardAccountingTransactionDTO curAccountingTransactionDto, AuthorizationTokenDO authTokenDO)
-        {
-            var curJournalEntry = CreateQbJournalEntry(curAccountingTransactionDto);
-            var curDataService = _qbConnectivity.GetDataService(authTokenDO);
-            Intuit.Ipp.Data.JournalEntry resultJournalEntry;
-            try
-            {
-                 resultJournalEntry = curDataService.FindAll(curJournalEntry).ToList().First();
-                 return GetAccountingTransactionData(resultJournalEntry);
-            }
-            catch (Exception curException)
-            {
-                throw curException;
-            }
-        }
+       
          /// <summary>
          /// This method is used to convert DebitOrCredit string value to PostingTypeEnum Enumerator
          /// </summary>
