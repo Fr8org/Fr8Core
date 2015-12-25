@@ -17,15 +17,15 @@ namespace terminalDropbox.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverTerminals()
         {
-
             var terminal = new TerminalDTO()
-
             {
                 Name = "terminalDropbox",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.External
             };
+
             var webService = new WebServiceDTO
             {
                 Name = "Dropbox",
@@ -33,20 +33,18 @@ namespace terminalDropbox.Controllers
             };
 
             var getFileListAction = new ActivityTemplateDTO()
-
             {
                 Version = "1",
                 Name = "Get_File_List",
                 Label = "Get File List",
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.External,
-
+                NeedsAuthentication = true,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
             };
-            var actionList = new List<ActivityTemplateDTO>()
 
+            var actionList = new List<ActivityTemplateDTO>()
             {
                 getFileListAction
             };
@@ -56,6 +54,7 @@ namespace terminalDropbox.Controllers
                 Definition = terminal,
                 Actions = actionList
             };
+
             return Json(curStandardFr8TerminalCM);
         }
     }

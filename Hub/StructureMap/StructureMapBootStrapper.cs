@@ -126,6 +126,7 @@ namespace Hub.StructureMap
                 For<IFindObjectsRoute>().Use<FindObjectsRoute>();
 	            For<ITime>().Use<Time>();
 	            For<IPusherNotifier>().Use<PusherNotifier>();
+                For<IAuthorization>().Use<Authorization>();
             }
         }
 
@@ -185,6 +186,7 @@ namespace Hub.StructureMap
                 For<IFr8Event>().Use<Fr8Event>();
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsRoute>().Use<FindObjectsRoute>();
+                For<IAuthorization>().Use<Authorization>();
 
 				var timeMock = new Mock<ITime>();
 	            For<ITime>().Use(timeMock.Object);

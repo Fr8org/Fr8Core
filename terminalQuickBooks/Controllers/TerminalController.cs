@@ -27,7 +27,8 @@ namespace terminalQuickBooks.Controllers
                 Name = "terminalQuickBooks",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.External
             };
             var webService = new WebServiceDTO()
             {
@@ -41,7 +42,7 @@ namespace terminalQuickBooks.Controllers
                 Label = "Create Journal Entry",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.External,
+                NeedsAuthentication = true,
                 MinPaneWidth = 330,
                 WebService = webService
             };

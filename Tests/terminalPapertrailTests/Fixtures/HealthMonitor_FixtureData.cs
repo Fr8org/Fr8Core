@@ -13,8 +13,7 @@ namespace terminalPapertrailTests.Fixtures
             {
                 Id = 1,
                 Name = "Write_To_Log_TEST",
-                Version = "1",
-                AuthenticationType = AuthenticationType.None
+                Version = "1"
             };
         }
 

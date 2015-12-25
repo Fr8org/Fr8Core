@@ -27,7 +27,8 @@ namespace terminalSalesforce.Controllers
                 Name = "terminalSalesforce",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.External
             };
 
 	        var webService = new WebServiceDTO
@@ -41,7 +42,7 @@ namespace terminalSalesforce.Controllers
                 Name = "Create_Lead",
                 Label = "Create Lead",
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.External,
+                NeedsAuthentication = true,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
@@ -53,7 +54,7 @@ namespace terminalSalesforce.Controllers
                 Name = "Create_Contact",
                 Label = "Create Contact",
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.External,
+                NeedsAuthentication = true,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
@@ -65,7 +66,7 @@ namespace terminalSalesforce.Controllers
                 Name = "Create_Account",
                 Label = "Create Account",
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.External,
+                NeedsAuthentication = true,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
@@ -81,6 +82,7 @@ namespace terminalSalesforce.Controllers
                 Definition = terminal,
                 Actions = actionList
             };
+
             return Json(curStandardFr8TerminalCM);
         }
     }
