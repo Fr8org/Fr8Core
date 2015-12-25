@@ -221,7 +221,7 @@ namespace Hub.Services
                     if (!string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalAccountId))
                     {
                         authToken = uow.AuthorizationTokenRepository
-                            .GetAll()
+                            .GetPublicDataQuery()
                             .FirstOrDefault(x => x.TerminalID == curTerminal.Id
                                 && x.UserID == curAccount.Id
                                 && x.ExternalAccountId == terminalResponseAuthTokenDTO.ExternalAccountId
@@ -330,7 +330,7 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var authToken = uow.AuthorizationTokenRepository
-                    .GetAll()
+                    .GetPublicDataQuery()
                     .FirstOrDefault(x => x.TerminalID == terminal.Id
                         && x.UserID == user.Id
                         && x.ExternalAccountId == null
@@ -547,7 +547,7 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var authTokens = uow.AuthorizationTokenRepository
-                    .GetQuery()
+                    .GetPublicDataQuery()
                     .Where(x => x.UserID == accountId)
                     .OrderBy(x => x.ExternalAccountId)
                     .ToList();
@@ -566,7 +566,7 @@ namespace Hub.Services
                     throw new ApplicationException("Could not find specified Action.");
                 }
 
-                var authToken = uow.AuthorizationTokenRepository.GetByKey(authTokenId);
+                var authToken = uow.AuthorizationTokenRepository.FindTokenById(authTokenId.ToString());
                 if (authToken == null)
                 {
                     throw new ApplicationException("Could not find specified AuthToken.");
@@ -583,7 +583,7 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var authToken = uow.AuthorizationTokenRepository
-                    .GetQuery()
+                    .GetPublicDataQuery()
                     .Where(x => x.UserID == accountId && x.Id == authTokenId)
                     .SingleOrDefault();
 
