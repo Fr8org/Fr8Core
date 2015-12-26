@@ -113,11 +113,11 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
-                return NeedsAuthenticationError(processPayload);
+                return NeedsAuthenticationError(payloadCrates);
             }
 
             //get currently selected option and its value
@@ -136,21 +136,21 @@ namespace terminalDocuSign.Actions
                         //filter the incoming envelope by template value selected by the user
                         var curAvailableTemplates = Crate.GetStorage(curActionDO).CratesOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").Single().Content;
                         var selectedTemplateName = curAvailableTemplates.Fields.Single(a => a.Value == curSelectedValue).Key;
-                        var incommingTemplate = GetValueForKey(processPayload, "TemplateName");
+                        var incommingTemplate = GetValueForKey(payloadCrates, "TemplateName");
                         if (selectedTemplateName == incommingTemplate)
                         {
-                            envelopeId = GetValueForKey(processPayload, "EnvelopeId");
+                            envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
                         }
 
                         break;
                     case "recipient":
                         //filter incoming envelope by recipient email address specified by the user
-                        var curRecipientEmail = GetValueForKey(processPayload, "RecipientEmail");
+                        var curRecipientEmail = GetValueForKey(payloadCrates, "RecipientEmail");
 
                         //if the incoming envelope's recipient is user specified one, get the envelope ID
                         if (curRecipientEmail.Equals(curSelectedValue))
                         {
-                            envelopeId = GetValueForKey(processPayload, "EnvelopeId");
+                            envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
                         }
                         break;
                 }
@@ -159,7 +159,7 @@ namespace terminalDocuSign.Actions
             // Make sure that it exists
             if (string.IsNullOrEmpty(envelopeId))
             {
-                return Error(processPayload, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
+                return Error(payloadCrates, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
             }
             
 
@@ -167,7 +167,7 @@ namespace terminalDocuSign.Actions
             var fields = CreateDocuSignEventFields();
             foreach (var field in fields)
             {
-                field.Value = GetValueForKey(processPayload, field.Key);
+                field.Value = GetValueForKey(payloadCrates, field.Key);
             }
 
             //Create log message
@@ -183,7 +183,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            using (var updater = Crate.UpdateStorage(processPayload))
+            using (var updater = Crate.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
@@ -194,7 +194,7 @@ namespace terminalDocuSign.Actions
             }
             }
 
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
         private string GetValueForKey(PayloadDTO curPayloadDTO, string curKey)

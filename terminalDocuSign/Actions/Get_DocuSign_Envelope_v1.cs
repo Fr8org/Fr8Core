@@ -46,11 +46,11 @@ namespace terminalDocuSign.Actions
         public async Task<PayloadDTO> Run(ActionDO actionDO,
             Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(actionDO, containerId);
+            var payloadCrates = await GetPayload(actionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
-                return NeedsAuthenticationError(processPayload);
+                return NeedsAuthenticationError(payloadCrates);
             }
 
             //Get envlopeId
@@ -58,15 +58,15 @@ namespace terminalDocuSign.Actions
             string envelopeId = GetEnvelopeID(control, authTokenDO);
             if (envelopeId == null)
             {
-                return Error(processPayload, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
+                return Error(payloadCrates, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
             }
 
-            using (var updater = Crate.UpdateStorage(() => processPayload.CrateStorage))
+            using (var updater = Crate.UpdateStorage(() => payloadCrates.CrateStorage))
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", _docuSignManager.CreateActionPayload(actionDO, authTokenDO, envelopeId)));
             }
 
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)

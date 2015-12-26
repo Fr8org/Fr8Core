@@ -35,7 +35,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
+            var curPayloadDTO = await GetPayload(curActionDO, containerId);
 
             var controlsMS = Action.GetControlsManifest(curActionDO);
 
