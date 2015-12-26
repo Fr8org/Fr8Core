@@ -147,12 +147,9 @@ namespace terminalGoogle.Actions
             };
             controlList.Add(spreadsheetControl);
 
-            var textBlockControlField = new TextBlock()
-            {
-                Label = "",
-                Value = "This Action will try to extract a table of rows from the first worksheet in the selected spreadsheet. The rows should have a header row.",
-                CssClass = "well well-lg TextBlockClass"
-            };
+            var textBlockControlField = GenerateTextBlock("",
+                "This Action will try to extract a table of rows from the first worksheet in the selected spreadsheet. The rows should have a header row.",
+                "well well-lg TextBlockClass");
             controlList.Add(textBlockControlField);
             return PackControlsCrate(controlList.ToArray());
         }
