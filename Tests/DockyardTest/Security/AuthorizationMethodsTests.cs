@@ -205,6 +205,7 @@ namespace DockyardTest.Security
                     Id = FixtureData.GetTestGuidById(1),
                     ActivityTemplateId = activityTemplateDO.Id,
                     ActivityTemplate = activityTemplateDO,
+                    AuthorizationTokenId = tokenDO.Id,
                     AuthorizationToken = tokenDO,
                     Ordering = 1
                 };
