@@ -39,6 +39,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/WebServiceActionSetDTO.js',
         'Scripts/app/model/TerminalDTO.js',
         'Scripts/app/model/TerminalActionSetDTO.js',
+        'Scripts/app/model/ManageAuthToken.js',
         'Scripts/app/services/CrateHelper.js',
         'Scripts/app/services/RouteBuilderService.js',
         'Scripts/app/services/StringService.js',
@@ -52,6 +53,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/UserService.js',
         'Scripts/app/services/WebServiceService.js',
         'Scripts/app/services/TerminalService.js',
+        'Scripts/app/services/ManageAuthTokenService.js',
         'Scripts/app/filters/RouteState.js',
         'Scripts/app/filters/ContainerState.js',
         'Scripts/app/filters/FilterByTag.js',
@@ -96,6 +98,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/AccountListController.js',
         'Scripts/app/controllers/AccountDetailsController.js',
         'Scripts/app/controllers/InternalAuthenticationController.js',
+        'Scripts/app/controllers/AuthenticationDialogController.js',
         'Scripts/app/controllers/SelectActionController.js',
         'Scripts/app/controllers/ContainerListController.js',
         'Scripts/app/controllers/ContainerDetailsController.js',
@@ -108,10 +111,11 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/RouteActionsDialogController.js',
         'Scripts/app/controllers/FindObjectsController.js',
         'Scripts/app/controllers/FindObjectsResultsController.js',
+        'Scripts/app/controllers/ManageAuthTokenController.js',
         'Scripts/app/controllers/PayloadFormController.js',
         'Scripts/app/controllers/TerminalListController.js',
-        'Scripts/app/controllers/TerminalFormController.js'
-
+        'Scripts/app/controllers/TerminalFormController.js',
+        'Scripts/app/controllers/ManageAuthTokenController.js'
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('_compiled.js'))

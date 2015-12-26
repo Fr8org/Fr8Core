@@ -50,17 +50,17 @@ namespace terminalGoogle.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
-                return NeedsAuthenticationError(processPayload);
+                return NeedsAuthenticationError(payloadCrates);
             }
 
-            return await CreateStandardPayloadDataFromStandardTableData(curActionDO, containerId, processPayload);
+            return await CreateStandardPayloadDataFromStandardTableData(curActionDO, containerId, payloadCrates);
         }
 
-        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, Guid containerId, PayloadDTO processPayload)
+        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, Guid containerId, PayloadDTO payloadCrates)
         {
             var tableDataMS = await GetTargetTableData(curActionDO);
 
@@ -68,12 +68,12 @@ namespace terminalGoogle.Actions
             // Add a crate of PayloadData to action's crate storage
             var payloadDataCrate = Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
 
-            using (var updater = Crate.UpdateStorage(processPayload))
+            using (var updater = Crate.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(payloadDataCrate);
             }
             
-            return Success(processPayload);            
+            return Success(payloadCrates);            
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(ActionDO curActionDO)
@@ -147,12 +147,9 @@ namespace terminalGoogle.Actions
             };
             controlList.Add(spreadsheetControl);
 
-            var textBlockControlField = new TextBlock()
-            {
-                Label = "",
-                Value = "This Action will try to extract a table of rows from the first worksheet in the selected spreadsheet. The rows should have a header row.",
-                CssClass = "well well-lg TextBlockClass"
-            };
+            var textBlockControlField = GenerateTextBlock("",
+                "This Action will try to extract a table of rows from the first worksheet in the selected spreadsheet. The rows should have a header row.",
+                "well well-lg TextBlockClass");
             controlList.Add(textBlockControlField);
             return PackControlsCrate(controlList.ToArray());
         }

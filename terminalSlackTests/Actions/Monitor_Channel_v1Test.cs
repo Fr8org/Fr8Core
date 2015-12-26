@@ -89,12 +89,12 @@ namespace terminalSlackTests.Integration
             );
         }
 
-        [Test, Ignore]
+        [Test]
         public async void Monitor_Channel_Run_RightChannel_Test()
         {
             var runUrl = GetTerminalRunUrl();
 
-            ActionDTO actionDTO = await GetConfiguredActionWithDDLBSelected("slack-plugin-test");
+            ActionDTO actionDTO = await GetConfiguredActionWithDDLBSelected("general");
 
             var responsePayloadDTO =
              await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
@@ -107,13 +107,13 @@ namespace terminalSlackTests.Integration
             Assert.AreEqual(1, slackPayload.AllValues().Where(a => a.Key == "text" && a.Value == "test").Count());
         }
 
-        [Test, Ignore]
+        [Test]
         [ExpectedException(ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = "{\"status\":\"terminal_error\",\"message\":\"Unexpected channel-id.\"}")]
         public async void Monitor_Channel_Run_WrongChannel_Test()
         {
             var runUrl = GetTerminalRunUrl();
-            var actionDTO = await GetConfiguredActionWithDDLBSelected("dev");
+            var actionDTO = await GetConfiguredActionWithDDLBSelected("random");
             var responsePayloadDTO =
                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
@@ -153,10 +153,56 @@ namespace terminalSlackTests.Integration
                 var channels = await slackIntegraion.GetChannelList(HealthMonitor_FixtureData.Slack_AuthToken().Token);
 
                 var ddlb = (DropDownList)controls.Controls[0];
-                ddlb.Value = channels.Where(a => a.Key == selectedChannel).FirstOrDefault().Value;
+                var channel = channels.Where(a => a.Key == selectedChannel).FirstOrDefault();
+                if (channel != null)
+                    ddlb.Value = channel.Value;
             }
 
             return actionDTO;
         }
+
+        [Test]
+        public async void Monitor_Channel_Activate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalActivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
+        [Test]
+        public async void Monitor_Channel_Deactivate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalDeactivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
     }
+
+
 }

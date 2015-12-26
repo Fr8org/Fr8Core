@@ -8,7 +8,7 @@ using terminalQuickBooks.Interfaces;
 
 namespace terminalQuickBooks.Services
 {
-    public class Account: IAccount
+    public class ChartOfAccounts: IChartOfAccounts
     {
         /// <summary>
         /// Obtains list of accounts from Quick
@@ -17,8 +17,8 @@ namespace terminalQuickBooks.Services
         /// <returns>List of Accounts of Intuit type</returns>
         public List<Intuit.Ipp.Data.Account> GetAccountList(AuthorizationTokenDO authTokenDO)
         {
-            var _quickBooksIntegration = new QuickBooksIntegration();
-            var curDataService = _quickBooksIntegration.GetDataService(authTokenDO);
+            var _qbConnectivity = new Connectivity();
+            var curDataService = _qbConnectivity.GetDataService(authTokenDO);
             var curAccountList = curDataService.FindAll(new Intuit.Ipp.Data.Account()).ToList();
             return curAccountList;
         }

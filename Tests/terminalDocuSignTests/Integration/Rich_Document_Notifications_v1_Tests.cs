@@ -49,7 +49,8 @@ namespace terminalDocuSignTests.Integration
                 Name = "terminalDocuSign",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                Endpoint = GetTerminalUrl()
+                Endpoint = GetTerminalUrl(),
+                AuthenticationType = AuthenticationType.Internal
             };
 
             var docusignEventActionTemplate = new ActivityTemplateDTO()
@@ -59,7 +60,7 @@ namespace terminalDocuSignTests.Integration
                 Label = "Monitor DocuSign Envelope Activity",
                 Category = ActivityCategory.Monitors,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.Internal,
+                NeedsAuthentication = true,
                 MinPaneWidth = 330
             };
 
@@ -185,6 +186,48 @@ namespace terminalDocuSignTests.Integration
              Assert.NotNull(responseActionDTO.CrateStorage.Crates);
              Assert.AreEqual(1, responseActionDTO.ChildrenActions.Length);
              Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Monitor DocuSign"));
+        }
+
+        [Test]
+        public async void Rich_Document_Notifications_Activate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalActivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
+        [Test]
+        public async void Rich_Document_Notifications_Deactivate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalDeactivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
         }
     }
 }

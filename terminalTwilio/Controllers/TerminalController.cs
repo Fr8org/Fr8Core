@@ -21,7 +21,8 @@ namespace terminalTwilio.Controllers
                 Name = "terminalTwilio",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.None
             };
 
 	        var webService = new WebServiceDTO
@@ -39,7 +40,6 @@ namespace terminalTwilio.Controllers
                 Version = "1",
                 Description = "Send Via Twilio: Description",
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.None,
                 MinPaneWidth = 330,
                 WebService = webService
             };
@@ -54,6 +54,7 @@ namespace terminalTwilio.Controllers
                 Definition = terminal,
                 Actions = actionList
             };
+
             return Json(curStandardFr8TerminalCM);
         }
     }

@@ -48,7 +48,7 @@ namespace terminalSlackTests.Fixtures
                new FieldDTO("team_id", "T07F83QLE"),
                new FieldDTO("team_domain", "dockyardteam"),
                new FieldDTO("service_id", "16193135954"),
-               new FieldDTO("channel_id", "C0BU4CH25"),
+               new FieldDTO("channel_id", "C09Q069KL"),
                new FieldDTO("channel_name", "slack - plugin - test"),
                new FieldDTO("timestamp", "1449594901.000014"),
                new FieldDTO("user_id"," U0BNK9P1N"),

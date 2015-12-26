@@ -70,7 +70,7 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDTO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetProcessPayload(curActionDTO, containerId));
+            return Success(await GetPayload(curActionDTO, containerId));
         }
 
         #endregion Execution.
