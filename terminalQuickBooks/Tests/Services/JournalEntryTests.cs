@@ -1,22 +1,42 @@
 ﻿using System;
+using System.Linq;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Migrations;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using Hub.StructureMap;
 using Intuit.Ipp.Data;
 using NUnit.Framework;
+using StructureMap;
+using terminalQuickBooks.Actions;
+using terminalQuickBooks.Services;
+using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 using JournalEntry = terminalQuickBooks.Services.JournalEntry;
+using Task = System.Threading.Tasks.Task;
 
 namespace terminalQuickBooks.Tests.Services
 {
     public class JournalEntryTests : BaseTest
     {
+        private JournalEntry _journalEntry;
+        private Connectivity _connectivity;
+        public override void SetUp()
+        {
+            base.SetUp();
+            TerminalBootstrapper.ConfigureTest();
+            _journalEntry = new JournalEntry();
+            _connectivity = new Connectivity();
+        }
         [Test]
         public void JournalEntryService_ConvertsCrate_To_JouralEntry()
         {
             //Assign
             var _journalEntry = new JournalEntry();
             var curCrate = Fixtures.Fixtures.GetAccountingTransactionCM();
-            var curTransactionDTO = curCrate.AccountingTransactionDTOList[0];
+            var curTransactionDTO = curCrate.AccountingTransactions[0];
             //Act
-            var journalEntry = _journalEntry.GetJournalEntryFromAccountingTransactionDTO(curTransactionDTO);
+            var journalEntry = _journalEntry.CreateQbJournalEntry(curTransactionDTO);
             //Assert First Line
             Assert.AreEqual("100",journalEntry.Line[0].Amount.ToString());
             Assert.AreEqual("1",journalEntry.Line[0].Id.ToString());
@@ -62,6 +82,29 @@ namespace terminalQuickBooks.Tests.Services
             Assert.AreEqual("100", curSecondLine.Amount.ToString());
             Assert.AreEqual(PostingTypeEnum.Credit.ToString(), curSecondLine.DebitOrCredit);
             Assert.AreEqual("That is the second line description", curSecondLine.Description);
+        }
+        /// <summary>
+        /// Method is created for testing purposes
+        /// It takes StandardAccountingTransactionDTO as an input, converts it into journal entry, looks for similar journal entries in the Sandbox,
+        /// takes first occurance from the list, and returns converted back crate object
+        /// </summary>
+        /// <param name="StandardAccountingTransactionDTO"></param>
+        /// <param name="authTokenDO"></param>
+        /// <returns></returns>
+        public StandardAccountingTransactionDTO Find(StandardAccountingTransactionDTO curAccountingTransactionDto, AuthorizationTokenDO authTokenDO)
+        {
+            var curJournalEntry = _journalEntry.CreateQbJournalEntry(curAccountingTransactionDto);
+            var curDataService = _connectivity.GetDataService(authTokenDO);
+            Intuit.Ipp.Data.JournalEntry resultJournalEntry;
+            try
+            {
+                resultJournalEntry = curDataService.FindAll(curJournalEntry).ToList().First();
+                return _journalEntry.GetAccountingTransactionData(resultJournalEntry);
+            }
+            catch (Exception curException)
+            {
+                throw curException;
+            }
         }
     }
 }

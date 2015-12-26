@@ -43,11 +43,16 @@ namespace Data.Entities
             };
         }
 
+
         [ForeignKey("AuthorizationToken")]
         public Guid? AuthorizationTokenId { get; set; }
 
         public virtual AuthorizationTokenDO AuthorizationToken { get; set; }
 
+        public string GetLoopId()
+        {
+            return Id.ToString();
+        }
 //        public CrateStorageDTO CrateStorageDTO()
 //        {
 //            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);

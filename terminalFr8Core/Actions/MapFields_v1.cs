@@ -45,7 +45,7 @@ namespace terminalFr8Core.Actions
             var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
 
-
+            
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
             {
@@ -134,13 +134,9 @@ namespace terminalFr8Core.Actions
 
         private void AddErrorTextBlock(CrateStorage storage)
         {
-            var textBlock = new TextBlock()
-            {
-                Name = "MapFieldsErrorMessage",
-                Value = "In order to work this Action needs upstream and downstream Actions configured",
-                CssClass = "well well-lg"
-            };
-
+            var textBlock = GenerateTextBlock("Error",
+                "In order to work this Action needs upstream and downstream Actions configured",
+                "well well-lg","MapFieldsErrorMessage");
             AddControl(storage, textBlock);
         }
 
@@ -148,7 +144,7 @@ namespace terminalFr8Core.Actions
         /// Check if initial configuration was requested.
         /// </summary>
         private bool NeedsConfiguration(ActionDO curAction, FieldDTO[] curUpstreamFields, FieldDTO[] curDownstreamFields)
-        {
+            {
             CrateStorage storage = storage = Crate.GetStorage(curAction.CrateStorage);
 
             var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();
