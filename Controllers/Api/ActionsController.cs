@@ -34,7 +34,7 @@ namespace HubWeb.Controllers
         private readonly ISubroute _subRoute;
         private readonly IRoute _route;
 
-        private readonly Authorization _authorization;
+        private readonly IAuthorization _authorization;
 
         public ActionsController()
         {
@@ -43,7 +43,7 @@ namespace HubWeb.Controllers
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _subRoute = ObjectFactory.GetInstance<ISubroute>();
             _route = ObjectFactory.GetInstance<IRoute>();
-            _authorization = new Authorization();
+            _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
 
         public ActionsController(IAction service)

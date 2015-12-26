@@ -42,6 +42,13 @@ namespace Data.Entities
                 ActivityTemplateId = this.ActivityTemplateId
             };
         }
+
+
+        [ForeignKey("AuthorizationToken")]
+        public Guid? AuthorizationTokenId { get; set; }
+
+        public virtual AuthorizationTokenDO AuthorizationToken { get; set; }
+
         public string GetLoopId()
         {
             return Id.ToString();
