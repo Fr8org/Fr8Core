@@ -318,15 +318,15 @@ namespace Hub.Services
             {
                 curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
 
-            try
-            {
-                tempActionDTO = await CallTerminalActionAsync<ActionDTO>("configure", curActionDO, Guid.Empty);
-            }
-            catch (ArgumentException e)
-            {
-                    EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message, curActionDO.Id.ToString());
-                throw;
-            }
+                try
+                {
+                    tempActionDTO = await CallTerminalActionAsync<ActionDTO>("configure", curActionDO, Guid.Empty);
+                }
+                catch (ArgumentException e)
+                {
+                        EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message, curActionDO.Id.ToString());
+                    throw;
+                }
                 catch (RestfulServiceException e)
                 {
                     // terminal requested token invalidation

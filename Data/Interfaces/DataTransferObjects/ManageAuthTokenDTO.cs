@@ -47,5 +47,8 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("authTokenId")]
         public Guid AuthTokenId { get; set; }
+
+        [JsonProperty("isMain")]
+        public bool IsMain { get; set; }
     }
 }

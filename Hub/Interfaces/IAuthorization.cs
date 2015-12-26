@@ -27,7 +27,9 @@ namespace Hub.Interfaces
 
         IEnumerable<AuthorizationTokenDO> GetAllTokens(string accountId);
 
-        void GrantToken(Guid actionId, Guid uthTokenId);
+        void SetMainToken(string userId, Guid authTokenId);
+
+        void GrantToken(Guid actionId, Guid authTokenId);
 
         void RevokeToken(string accountId, Guid authTokenId);
     }

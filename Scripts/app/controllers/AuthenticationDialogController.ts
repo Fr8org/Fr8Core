@@ -32,6 +32,8 @@
             var _terminalActions = [];
             var _loading = false;
 
+            $scope.terminals = [];
+
             $scope.linkAccount = function (terminal) {
                 if (terminal.authenticationType === 2 || terminal.authenticationType === 4) {
                     _authenticateInternal(terminal);
@@ -56,7 +58,8 @@
                         if ($scope.terminals[j].id === terminalId) {
                             data.push({
                                 actionId: _terminalActions[i].actionId,
-                                authTokenId: (<any>$scope.terminals[j]).selectedAuthTokenId
+                                authTokenId: (<any>$scope.terminals[j]).selectedAuthTokenId,
+                                isMain: (<any>$scope.terminals[j]).isMain
                             });
                             break;
                         }

@@ -484,9 +484,36 @@ namespace Hub.Services
 
                     AuthorizationTokenDO authToken = null;
 
+                    // Check if action has assigned auth-token.
                     if (actionDO.AuthorizationTokenId != null)
                     {
                         authToken = uow.AuthorizationTokenRepository.FindTokenById(actionDO.AuthorizationTokenId.Value.ToString());
+                    }
+
+                    // If action does not have assigned auth-token,
+                    // then look for AuthToken with IsMain == true,
+                    // and assign that token to action.
+                    else
+                    {
+                        var mainAuthTokenId = uow.AuthorizationTokenRepository
+                            .GetPublicDataQuery()
+                            .Where(x => x.UserID == userId
+                                && x.TerminalID == activityTemplate.Terminal.Id
+                                && x.IsMain == true)
+                            .Select(x => (Guid?)x.Id)
+                            .FirstOrDefault();
+
+                        if (mainAuthTokenId.HasValue)
+                        {
+                            authToken = uow.AuthorizationTokenRepository
+                                .FindTokenById(mainAuthTokenId.Value.ToString());
+                        }
+
+                        if (authToken != null)
+                        {
+                            actionDO.AuthorizationToken = authToken;
+                            uow.SaveChanges();
+                        }
                     }
 
                     if (authToken == null || string.IsNullOrEmpty(authToken.Token))
@@ -614,6 +641,38 @@ namespace Hub.Services
                     uow.AuthorizationTokenRepository.Remove(authToken);
                     uow.SaveChanges();
                 }
+            }
+        }
+
+        public void SetMainToken(string userId, Guid authTokenId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var mainAuthToken = uow.AuthorizationTokenRepository
+                    .FindTokenById(authTokenId.ToString());
+
+                if (mainAuthToken == null)
+                {
+                    throw new ApplicationException("Unable to find specified Auth-Token.");
+                }
+
+                var siblingIds = uow.AuthorizationTokenRepository
+                    .GetPublicDataQuery()
+                    .Where(x => x.UserID == userId && x.TerminalID == mainAuthToken.TerminalID)
+                    .Select(x => x.Id)
+                    .ToList();
+
+                foreach (var siblingId in siblingIds)
+                {
+                    var siblingAuthToken = uow.AuthorizationTokenRepository
+                        .FindTokenById(siblingId.ToString());
+
+                    siblingAuthToken.IsMain = false;
+                }
+
+                mainAuthToken.IsMain = true;
+
+                uow.SaveChanges();
             }
         }
     }

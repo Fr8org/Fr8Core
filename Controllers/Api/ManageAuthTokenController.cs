@@ -116,9 +116,16 @@ namespace HubWeb.Controllers.Api
         [HttpPost]
         public IHttpActionResult Apply(IEnumerable<ManageAuthToken_Apply> apply)
         {
+            var userId = User.Identity.GetUserId();
+
             foreach (var applyItem in apply)
             {
                 Authorization.GrantToken(applyItem.ActionId, applyItem.AuthTokenId);
+
+                if (applyItem.IsMain)
+                {
+                    Authorization.SetMainToken(userId, applyItem.AuthTokenId);
+                }
             }
 
             return Ok();
