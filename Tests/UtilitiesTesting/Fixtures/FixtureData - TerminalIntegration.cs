@@ -58,7 +58,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "terminalDocuSign",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = TestTerminal_DocuSign_EndPoint,
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.Internal
             };
         }
 
@@ -69,7 +70,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "terminalDockyardCore",
                 Endpoint = TestTerminal_Core_EndPoint,
                 TerminalStatus = TerminalStatus.Active,
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.None
             };
         }
 
@@ -80,7 +82,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "terminalAzureSqlServer",
                 Endpoint = TestTerminal_AzureSqlServer_EndPoint,
                 TerminalStatus = TerminalStatus.Active,
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.None
             };
         }
 
@@ -98,7 +101,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "terminalExcel",
                 TerminalStatus = TerminalStatus.Active,
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.None
             };
         }
 
@@ -110,7 +114,7 @@ namespace UtilitiesTesting.Fixtures
                 Label = "Monitor DocuSign",
                 Version = "1",
                 Terminal = TestTerminal_DocuSign(),
-                AuthenticationType = AuthenticationType.Internal
+                NeedsAuthentication = true
             };
         }
 
@@ -123,7 +127,7 @@ namespace UtilitiesTesting.Fixtures
                 Version = "1",
                 Category = ActivityCategory.Forwarders,
                 Terminal = TestTerminal_DocuSign(),
-                AuthenticationType = AuthenticationType.Internal,
+                NeedsAuthentication = true,
                 MinPaneWidth = 330
             };
         }
@@ -146,8 +150,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "FilterUsingRunTimeData",
                 Version = "1",
-                Terminal = TestTerminal_Core(),
-                AuthenticationType = AuthenticationType.None
+                Terminal = TestTerminal_Core()
             };
         }
 
@@ -157,8 +160,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "Write_To_Sql_Server",
                 Version = "1",
-                Terminal = TestTerminal_AzureSqlServer(),
-                AuthenticationType = AuthenticationType.None
+                Terminal = TestTerminal_AzureSqlServer()
             };
         }
 		  public static ActivityTemplateDO TestActivityTemplateDO_SendDocuSignEnvelope()
@@ -168,7 +170,7 @@ namespace UtilitiesTesting.Fixtures
 				  Name = "Send_DocuSign_Envelope",
 				  Version = "1",
 				  Terminal = TestTerminal_DocuSign(),
-                  AuthenticationType = AuthenticationType.Internal
+                  NeedsAuthentication = true
 			  };
 		  }
 
@@ -178,8 +180,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "ExtractData",
                 Version = "1",
-                Terminal = TestTerminal_ExtractData(),
-                AuthenticationType = AuthenticationType.None
+                Terminal = TestTerminal_ExtractData()
             };
         }
 

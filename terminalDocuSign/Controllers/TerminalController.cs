@@ -28,7 +28,8 @@ namespace terminalDocuSign.Controllers
                 Name = "terminalDocuSign",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.Internal
             };
 
             var waitForDocusignEventActionTemplate = new ActivityTemplateDTO()
@@ -38,7 +39,7 @@ namespace terminalDocuSign.Controllers
                 Label = "Monitor DocuSign Envelope Activity",
                 Category = ActivityCategory.Monitors,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.Internal,
+                NeedsAuthentication = true,
                 MinPaneWidth = 330
             };
 
@@ -49,7 +50,7 @@ namespace terminalDocuSign.Controllers
                 Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.Internal,
+                NeedsAuthentication = true,
                 MinPaneWidth = 330
             };
 
@@ -60,7 +61,7 @@ namespace terminalDocuSign.Controllers
                 Label = "Get DocuSign Envelope",
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.Internal,
+                NeedsAuthentication = true,
                 MinPaneWidth = 330
             };
 
@@ -71,7 +72,7 @@ namespace terminalDocuSign.Controllers
                 Label = "Get DocuSign Template",
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.Internal,
+                NeedsAuthentication = true,
                 MinPaneWidth = 330
             };
 
@@ -82,7 +83,7 @@ namespace terminalDocuSign.Controllers
                 Version = "1",
                 Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.Internal,
+                NeedsAuthentication = true,
                 MinPaneWidth = 330
             };
 
@@ -91,7 +92,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Mail_Merge_Into_DocuSign",
                 Label = "Mail Merge Into DocuSign",
                 Version = "1",
-                AuthenticationType = AuthenticationType.Internal,
+                NeedsAuthentication = true,
                 Category = ActivityCategory.Solution,
                 Terminal = terminal,
                 MinPaneWidth = 500
@@ -113,7 +114,7 @@ namespace terminalDocuSign.Controllers
                 Label = "Rich Document Notifications",
                 Version = "1",
                 Category = ActivityCategory.Solution,
-                AuthenticationType = AuthenticationType.Internal,
+                NeedsAuthentication = true,
                 Terminal = terminal,
                 MinPaneWidth = 380
             };
@@ -125,7 +126,7 @@ namespace terminalDocuSign.Controllers
                 Label = "Query DocuSign",
                 Version = "1",
                 Category = ActivityCategory.Processors,
-                AuthenticationType = AuthenticationType.Internal,
+                NeedsAuthentication = true,
                 Terminal = terminal,
                 MinPaneWidth = 380
             };
@@ -136,7 +137,7 @@ namespace terminalDocuSign.Controllers
                 Label = "Search DocuSign History",
                 Version = "1",
                 Category = ActivityCategory.Processors,
-                AuthenticationType = AuthenticationType.Internal,
+                NeedsAuthentication = true,
                 Terminal = terminal,
                 MinPaneWidth = 380
             };

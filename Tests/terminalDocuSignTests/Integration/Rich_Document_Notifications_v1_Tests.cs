@@ -49,7 +49,8 @@ namespace terminalDocuSignTests.Integration
                 Name = "terminalDocuSign",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
-                Endpoint = GetTerminalUrl()
+                Endpoint = GetTerminalUrl(),
+                AuthenticationType = AuthenticationType.Internal
             };
 
             var docusignEventActionTemplate = new ActivityTemplateDTO()
@@ -59,7 +60,7 @@ namespace terminalDocuSignTests.Integration
                 Label = "Monitor DocuSign Envelope Activity",
                 Category = ActivityCategory.Monitors,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.Internal,
+                NeedsAuthentication = true,
                 MinPaneWidth = 330
             };
 

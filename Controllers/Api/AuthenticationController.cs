@@ -8,6 +8,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Infrastructure.StructureMap;
+using Hub.Interfaces;
 using Hub.Services;
 
 namespace HubWeb.Controllers
@@ -15,13 +16,13 @@ namespace HubWeb.Controllers
     public class AuthenticationController : ApiController
     {
         private readonly ISecurityServices _security;
-        private readonly Authorization _authorization;
+        private readonly IAuthorization _authorization;
 
 
         public AuthenticationController()
         {
             _security = ObjectFactory.GetInstance<ISecurityServices>();
-            _authorization = new Authorization();
+            _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
 
         [HttpPost]
@@ -30,18 +31,17 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
         {
             Fr8AccountDO account;
-            ActivityTemplateDO activityTemplate;
+            TerminalDO terminalDO;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                activityTemplate = uow.ActivityTemplateRepository
+                terminalDO = uow.TerminalRepository
                     .GetQuery()
-                    .Include(x => x.Terminal)
-                    .SingleOrDefault(x => x.Id == credentials.ActivityTemplateId);
+                    .SingleOrDefault(x => x.Id == credentials.TerminalId);
 
-                if (activityTemplate == null)
+                if (terminalDO == null)
                 {
-                    throw new ApplicationException("ActivityTemplate was not found.");
+                    throw new ApplicationException("Terminal was not found.");
                 }
 
                 account = _security.GetCurrentAccount(uow);
@@ -49,10 +49,11 @@ namespace HubWeb.Controllers
 
             var error = await _authorization.AuthenticateInternal(
                 account,
-                activityTemplate,
+                terminalDO,
                 credentials.Domain,
                 credentials.Username,
-                credentials.Password);
+                credentials.Password
+            );
 
             return Ok(new { Error = error });
         }
@@ -61,27 +62,26 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [ActionName("initial_url")]
         public async Task<IHttpActionResult> GetOAuthInitiationURL(
-            [FromUri(Name = "id")] int activityTemplateId)
+            [FromUri(Name = "id")] int terminalId)
         {
             Fr8AccountDO account;
-            ActivityTemplateDO activityTemplate;
+            TerminalDO terminal;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                activityTemplate = uow.ActivityTemplateRepository
+                terminal = uow.TerminalRepository
                     .GetQuery()
-                    .Include(x => x.Terminal)
-                    .SingleOrDefault(x => x.Id == activityTemplateId);
+                    .SingleOrDefault(x => x.Id == terminalId);
 
-                if (activityTemplate == null)
+                if (terminal == null)
                 {
-                    throw new ApplicationException("ActivityTemplate was not found.");
+                    throw new ApplicationException("Terminal was not found.");
                 }
 
                 account = _security.GetCurrentAccount(uow);
             }
 
-            var externalAuthUrlDTO = await _authorization.GetOAuthInitiationURL(account, activityTemplate);
+            var externalAuthUrlDTO = await _authorization.GetOAuthInitiationURL(account, terminal);
             return Ok(new { Url = externalAuthUrlDTO.Url });
         }
     }

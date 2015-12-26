@@ -10,9 +10,18 @@
         category: string;
         type: string;
         minPaneWidth: number;
+        terminal: TerminalDTO;
 
-        constructor(id: number, name: string,
-            version: string, description: string, componentActivities: string, category: string, label?:string, minPaneWidth?:number, type?:string) {
+        constructor(
+            id: number,
+            name: string,
+            version: string,
+            description: string,
+            componentActivities: string,
+            category: string,
+            label?: string,
+            minPaneWidth?: number,
+            type?: string) {
 
             this.id = id;
             this.name = name;

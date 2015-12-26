@@ -265,11 +265,11 @@ namespace HubWeb
                             needSave = true;
                         }
 
-                        if (repositaryItem.AuthenticationType != registeredItem.AuthenticationType)
-                        {
-                            repositaryItem.AuthenticationType = registeredItem.AuthenticationType;
-                            needSave = true;
-                        }
+                        // if (repositaryItem.AuthenticationType != registeredItem.AuthenticationType)
+                        // {
+                        //     repositaryItem.AuthenticationType = registeredItem.AuthenticationType;
+                        //     needSave = true;
+                        // }
 
                         if (repositaryItem.ComponentActivities != registeredItem.ComponentActivities)
                         {

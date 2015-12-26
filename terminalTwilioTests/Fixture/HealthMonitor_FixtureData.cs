@@ -27,8 +27,7 @@ namespace terminalTwilioTests.Fixture
             {
                 Id = 1,
                 Name = "Send_Via_Twilio_TEST",
-                Version = "1",
-                AuthenticationType = AuthenticationType.None
+                Version = "1"
             };
         }
         public static ActionDTO Send_Via_Twilio_v1_InitialConfiguration_ActionDTO()
