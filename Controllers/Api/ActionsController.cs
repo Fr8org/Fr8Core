@@ -61,6 +61,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false)
         {
+            // WebMonitor.Tracer.Monitor.StartMonitoring("Creating action " + name);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userId = User.Identity.GetUserId();
@@ -108,6 +109,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
         {
+            // WebMonitor.Tracer.Monitor.StartMonitoring("Configuring action " + curActionDesignDTO.Name);
             curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
             ActionDTO actionDTO = await _action.Configure(User.Identity.GetUserId(), curActionDO);

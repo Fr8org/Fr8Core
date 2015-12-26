@@ -45,7 +45,7 @@ namespace terminalFr8Core.Actions
             var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
 
-            
+
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
             {
@@ -69,7 +69,6 @@ namespace terminalFr8Core.Actions
         {
             var mappingPane = new MappingPane()
             {
-                Label = "Configure Mapping",
                 Name = "Selected_Mapping",
                 Required = true
             };
@@ -91,8 +90,11 @@ namespace terminalFr8Core.Actions
             //Get all the downstream fields to be mapped (right DDLBs)
             var curDownstreamFields =
                 (await GetDesignTimeFields(curActionDO, CrateDirection.Downstream))
-                .Fields
+                .Fields.Where(field => field.Availability != AvailabilityType.Configuration)
                 .ToArray();
+
+            if (!(NeedsConfiguration(curActionDO, curUpstreamFields, curDownstreamFields)))
+                return curActionDO;
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
             var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields);
@@ -107,6 +109,7 @@ namespace terminalFr8Core.Actions
                 }
                 else
                 {
+                    AddInitialTextBlock(updater.CrateStorage);
                     AddMappingPane(updater.CrateStorage);
                 }
 
@@ -117,27 +120,36 @@ namespace terminalFr8Core.Actions
             return curActionDO;
         }
 
+        private void AddInitialTextBlock(CrateStorage storage)
+        {
+            var textBlock = new TextBlock()
+            {
+                Name = "InfoBlock",
+                Value = "When this route is executed, the values found in the fields on the left will be used for the fields on the right",
+                CssClass = "well well-lg"
+            };
+
+            AddControl(storage, textBlock);
+        }
+
         private void AddErrorTextBlock(CrateStorage storage)
         {
-            var textBlock = GenerateTextBlock("Error",
-                "This Action works by mapping upstream data (from the left) to downstream fields (on the right)",
-                "well well-lg");
-            textBlock.Name = "MapFieldsErrorMessage";
+            var textBlock = new TextBlock()
+            {
+                Name = "MapFieldsErrorMessage",
+                Value = "In order to work this Action needs upstream and downstream Actions configured",
+                CssClass = "well well-lg"
+            };
+
             AddControl(storage, textBlock);
         }
 
         /// <summary>
         /// Check if initial configuration was requested.
         /// </summary>
-        private bool CheckIsInitialConfiguration(ActionDO curAction)
+        private bool NeedsConfiguration(ActionDO curAction, FieldDTO[] curUpstreamFields, FieldDTO[] curDownstreamFields)
         {
-            CrateStorage storage;
-
-            // Check nullability for CrateStorage and Crates array length.
-            if (curAction.CrateStorage == null || (storage = Crate.GetStorage(curAction.CrateStorage)).Count == 0)
-            {
-                return true;
-            }
+            CrateStorage storage = storage = Crate.GetStorage(curAction.CrateStorage);
 
             var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();
             var downStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Downstream Terminal-Provided Fields").FirstOrDefault();
@@ -149,26 +161,28 @@ namespace terminalFr8Core.Actions
                 || downStreamFields.Fields == null
                 || downStreamFields.Fields.Count == 0)
             {
+
                 return true;
             }
+            else
+            {
+                // true if current up/downstream fields don't match saved up/downstream fields
+                bool upstreamMatch = upStreamFields.Fields.Where(a => curUpstreamFields.Any(b => b.Key == a.Key)).Count() == upStreamFields.Fields.Count;
+                bool downstreamMatch = downStreamFields.Fields.Where(a => curDownstreamFields.Any(b => b.Key == a.Key)).Count() == downStreamFields.Fields.Count;
 
-            // If all rules are passed, then it is not an initial configuration request.
-            return false;
+                return !(upstreamMatch & downstreamMatch);
+            }
         }
+
+
         /// <summary>
         /// ConfigurationEvaluator always returns Initial,
         /// since Initial and FollowUp phases are the same for current action.
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (CheckIsInitialConfiguration(curActionDO))
-            {
                 return ConfigurationRequestType.Initial;
-            }
-            else
-            {
-                return ConfigurationRequestType.Followup;
-            }
+
         }
     }
 }

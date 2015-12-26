@@ -25,7 +25,7 @@ namespace terminalFr8Core.Controllers
         public IHttpActionResult DiscoverTerminals()
         {
             var result = new List<ActivityTemplateDTO>();
-            
+
             var terminal = new TerminalDTO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
@@ -34,10 +34,10 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             };
 
-	        var webService = new WebServiceDTO
-	        {
-		        Name = "fr8 Core"
-	        };
+            var webService = new WebServiceDTO
+            {
+                Name = "fr8 Core"
+            };
 
             result.Add(new ActivityTemplateDTO
             {
@@ -46,8 +46,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",
-				MinPaneWidth = 330,
-				WebService = webService
+                MinPaneWidth = 330,
+                WebService = webService
             });
 
             result.Add(new ActivityTemplateDTO
@@ -56,8 +56,9 @@ namespace terminalFr8Core.Controllers
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
+                Tags = "AggressiveReload",
                 Version = "1",
-				MinPaneWidth = 380,
+                MinPaneWidth = 380,
                 WebService = webService
             });
 
@@ -68,7 +69,7 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",
-				MinPaneWidth = 330,
+                MinPaneWidth = 330,
                 WebService = webService
             });
 
