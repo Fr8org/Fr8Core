@@ -28,7 +28,7 @@ namespace terminalFr8Core.Actions
     {
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
+            var curPayloadDTO = await GetPayload(curActionDO, containerId);
             var payloadStorage = Crate.GetStorage(curPayloadDTO);
             var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
             if (operationsCrate == null)
@@ -53,7 +53,7 @@ namespace terminalFr8Core.Actions
 
         public override async Task<PayloadDTO> ChildrenExecuted(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
+            var curPayloadDTO = await GetPayload(curActionDO, containerId);
             IncrementLoopIndex(curActionDO.GetLoopId(), curPayloadDTO);
             try
             {

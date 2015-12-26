@@ -109,7 +109,7 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curProcessPayload = await GetProcessPayload(actionDO, containerId);
+            var curProcessPayload = await GetPayload(actionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {

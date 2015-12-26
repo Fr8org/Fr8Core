@@ -40,11 +40,11 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
-                return NeedsAuthenticationError(processPayload);
+                return NeedsAuthenticationError(payloadCrates);
             }
 
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
@@ -53,13 +53,13 @@ namespace terminalDocuSign.Actions
             curEnvelope.Login = new DocuSignPackager()
                 .Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
-            curEnvelope = AddTemplateData(curActionDO, processPayload, curEnvelope);
+            curEnvelope = AddTemplateData(curActionDO, payloadCrates, curEnvelope);
             curEnvelope.EmailSubject = "Test Message from Fr8";
             curEnvelope.Status = "sent";
 
             var result = curEnvelope.Create();
 
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
         private string ExtractTemplateId(ActionDO curActionDO)
@@ -77,12 +77,12 @@ namespace terminalDocuSign.Actions
             return result;
         }
 
-        private Envelope AddTemplateData(ActionDO actionDO, PayloadDTO processPayload, Envelope curEnvelope)
+        private Envelope AddTemplateData(ActionDO actionDO, PayloadDTO payloadCrates, Envelope curEnvelope)
         {
             var curTemplateId = ExtractTemplateId(actionDO);
             var curRecipientAddress = ExtractSpecificOrUpstreamValue(
                 actionDO,
-                processPayload,
+                payloadCrates,
                 "Recipient"
             );
 
