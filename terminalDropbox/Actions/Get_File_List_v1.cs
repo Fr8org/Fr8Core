@@ -33,21 +33,21 @@ namespace terminalDropbox.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
-                return NeedsAuthenticationError(processPayload);
+                return NeedsAuthenticationError(payloadCrates);
             }
 
             var fileNames = await _dropboxService.GetFileList(authTokenDO);
 
-            using (var updater = _crateManager.UpdateStorage(processPayload))
+            using (var updater = _crateManager.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(PackCrate_DropboxFileList(fileNames));
             }
 
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
         private Crate PackCrate_DropboxFileList(List<string> fileNames)

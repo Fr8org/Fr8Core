@@ -99,9 +99,13 @@ namespace terminalDocuSign.Actions
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
 
-            if (Int32.Parse(curConnectProfile.totalRecords) > 0 && curConnectProfile.configurations.Any(config => config.name.Equals("MonitorAllDocuSignEvents")))
+            if (Int32.Parse(curConnectProfile.totalRecords) > 0 && curConnectProfile.configurations.Any(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")))
             {
-                curDocuSignAccount.DeleteDocuSignConnectProfile("MonitorAllDocuSignEvents");
+                var monitorAllDocuSignEventsId = curConnectProfile.configurations.Where(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")).Select(s => s.connectId);
+                foreach (var connectId in monitorAllDocuSignEventsId)
+                {
+                    curDocuSignAccount.DeleteDocuSignConnectProfile(connectId);
+                }
             }
 
             return Task.FromResult<ActionDO>(curActionDO);
@@ -109,7 +113,7 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curProcessPayload = await GetProcessPayload(actionDO, containerId);
+            var curProcessPayload = await GetPayload(actionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
