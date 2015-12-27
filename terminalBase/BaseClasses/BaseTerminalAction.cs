@@ -162,7 +162,7 @@ namespace TerminalBase.BaseClasses
 
         public virtual async Task<PayloadDTO> ChildrenExecuted(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetProcessPayload(curActionDO, containerId));
+            return Success(await GetPayload(curActionDO, containerId));
         }
 
         protected void CheckAuthentication(AuthorizationTokenDO authTokenDO)
@@ -178,9 +178,9 @@ namespace TerminalBase.BaseClasses
             return authTokenDO == null || string.IsNullOrEmpty(authTokenDO.Token);
         }
 
-        protected async Task<PayloadDTO> GetProcessPayload(ActionDO actionDO, Guid containerId)
+        protected async Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId)
         {
-            return await HubCommunicator.GetProcessPayload(actionDO, containerId);
+            return await HubCommunicator.GetPayload(actionDO, containerId);
         }
 
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
@@ -356,6 +356,12 @@ namespace TerminalBase.BaseClasses
                 //extract the fields
                 StandardDesignTimeFieldsCM curStandardDesignTimeFieldsCrate = curCrate.Content;
 
+                foreach (var field in curStandardDesignTimeFieldsCrate.Fields)
+                {
+                    field.SourceCrateLabel = curCrate.Label;
+                    field.SourceCrateManifest = curCrate.ManifestType;
+                }
+
                 //add them to the pile
                 tempMS.Fields.AddRange(curStandardDesignTimeFieldsCrate.Fields);
             }
@@ -499,11 +505,11 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         protected string ExtractSpecificOrUpstreamValue(
            ActionDO actionDO,
-           PayloadDTO processPayload,
+           PayloadDTO payloadCrates,
            string controlName)
         {
             var designTimeCrateStorage = Crate.GetStorage(actionDO.CrateStorage);
-            var runTimeCrateStorage = Crate.FromDto(processPayload.CrateStorage);
+            var runTimeCrateStorage = Crate.FromDto(payloadCrates.CrateStorage);
 
             var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var control = controls.Controls.SingleOrDefault(c => c.Name == controlName);
