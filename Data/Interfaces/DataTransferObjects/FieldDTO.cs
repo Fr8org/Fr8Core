@@ -17,6 +17,12 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("availability")]
         public AvailabilityType Availability { get; set; }
 
+        [JsonProperty("sourceCrateManifest")]
+        public Crates.CrateManifestType SourceCrateManifest { get; set; }
+
+        [JsonProperty("sourceCrateLabel")]
+        public string SourceCrateLabel { get; set; }
+
         public FieldDTO()
         {
         }
