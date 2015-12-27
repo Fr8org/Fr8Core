@@ -62,6 +62,11 @@
         public value: string;
         public availability: AvailabilityType;
         public tags: string;
+        public sourceCrateLabel: string;
+        public sourceCrateManifest: {
+            Id: string;
+            Type: string;
+        }
     }
 
     export enum AvailabilityType {
