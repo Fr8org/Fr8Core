@@ -31,7 +31,7 @@ namespace HubWeb
             ConfigureAuth(app);
             ConfigureHangfire(app, "DockyardDB");
 
-            await RegisterTerminalActions();    
+            await RegisterTerminalActions();
 
             app.Use(async (context, next) =>
             {
@@ -48,13 +48,26 @@ namespace HubWeb
                     {
                         using (var forwarder = new HttpClient())
                         {
+                            Uri url = null;
                             foreach (var notificationPortForward in notificationPortForwards)
                             {
-                                var response = await
-                                    forwarder.PostAsync(
-                                        new Uri(string.Concat("http://", notificationPortForward, context.Request.Uri.PathAndQuery)),
-                                        new StreamContent(context.Request.Body));
-                                Logger.GetLogger().DebugFormat("Forwarding request {0} to {1}: {2}", context.Request.Uri.PathAndQuery, notificationPortForward, response);
+                                try
+                                {
+                                    url = new Uri(string.Concat("http://", notificationPortForward, context.Request.Uri.PathAndQuery));
+                                    var response = await
+                                        forwarder.PostAsync(
+                                            url,
+                                            new StreamContent(context.Request.Body));
+                                    Logger.GetLogger().DebugFormat("Forwarding request {0} to {1}: {2}", context.Request.Uri.PathAndQuery, notificationPortForward, response);
+                                }
+                                catch (TaskCanceledException)
+                                {
+                                    //Timeout
+                                    throw new TimeoutException(
+                                        String.Format("Timeout while making HTTP request.  \r\nURL: {0},   \r\nMethod: {1}",
+                                       url.ToString(),
+                                        HttpMethod.Post.Method));
+                                }
                             }
                         }
                     }
@@ -96,7 +109,7 @@ namespace HubWeb
             }
 
         }
-        
+
         public void AddMainSMSAlertToDb(CommunicationConfigurationRepository communicationConfigurationRepo)
         {
 
@@ -239,9 +252,9 @@ namespace HubWeb
                             needSave = true;
                         }
 
-                        if (registeredItem.WebServiceId != null && 
+                        if (registeredItem.WebServiceId != null &&
                             repositaryItem.WebServiceId != registeredItem.WebServiceId)
-                        {   
+                        {
                             repositaryItem.WebServiceId = registeredItem.WebServiceId;
                             needSave = true;
                         }
@@ -294,6 +307,7 @@ namespace HubWeb
                         repositaryItem.ActivityTemplateState = Data.States.ActivityTemplateState.Inactive;
                         needSave = true;
                         
+
                         var alertReporter = ObjectFactory.GetInstance<EventReporter>();
                         alertReporter.ActivityTemplateTerminalRegistrationError(
                             string.Format("Failed to Find Terminal For ActivityTemplate {0}.", repositaryItem.Name), "Disabling");
