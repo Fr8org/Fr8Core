@@ -46,7 +46,6 @@ namespace TerminalBase.BaseClasses
             Crate = new CrateManager();
             Action = ObjectFactory.GetInstance<IAction>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
-
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
