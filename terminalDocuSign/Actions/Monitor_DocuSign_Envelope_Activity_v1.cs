@@ -163,7 +163,7 @@ namespace terminalDocuSign.Actions
             }
             
 
-            //Create a run-time fields
+            //Create run-time fields
             var fields = CreateDocuSignEventFields();
             foreach (var field in fields)
             {
