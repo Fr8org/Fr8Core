@@ -106,31 +106,6 @@ namespace terminalBaseTests.BaseClasses
             Assert.IsInstanceOf(typeof(PayloadDTO), result);
         }
 
-        [Test, Ignore]
-        public async void HandleFr8Request_InitialConfigurationResponse_ReturnsActionDTO()
-        {
-            var result = await _baseTerminalController.HandleFr8Request(terminalName, "initialconfigurationresponse", Fixture_HandleRequest.terminalMockActionDTO());
-
-            var crateStorage = CrateManagerHelper.FromDto(((ActionDTO)result).CrateStorage);
-            var crateResult = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
-
-            Assert.Greater(crateResult.Controls.Where(x => x.Label.ToLower() == "initialconfigurationresponse").Count(), 0);
-        }
-
-        [Test, Ignore]
-        public async void HandleFr8Request_FollowupConfigurationResponse_ReturnsActionDTO()
-        {
-            var result = await _baseTerminalController.HandleFr8Request(terminalName, "followupconfigurationresponse", Fixture_HandleRequest.terminalMockActionDTO());
-
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof(ActionDTO), result);
-
-            var crateStorage = CrateManagerHelper.FromDto(((ActionDTO)result).CrateStorage);
-            var crateResult = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
-
-            Assert.Greater(crateResult.Controls.Where(x => x.Label.ToLower() == "followupconfigurationresponse").Count(), 0);
-        }
-
         [Test]
         public async void HandleFr8Request_Activate_ReturnsActionDTO()
         {
