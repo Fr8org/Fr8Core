@@ -66,20 +66,26 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             }
             catch (HttpRequestException ex)
             {
-                var errorMessage = ExtractErrorMessage(responseContent);
+                string errorMessage = String.Format("An error has ocurred while sending a {0} request to {1}. Response message:\r\n",
+                    request.RequestUri,
+                    request.Method.Method,
+                    ExtractErrorMessage(responseContent));
                 throw new RestfulServiceException(statusCode, errorMessage, ex);
             }
             catch (TaskCanceledException)
             {
                 //Timeout
                 throw new TimeoutException(
-                    String.Format("Timeout while making HTTP request.  \r\nURL: {0},   \r\nMethod: {1}", 
-                    request.RequestUri, 
+                    String.Format("Timeout while making HTTP request.  \r\nURL: {0},   \r\nMethod: {1}",
+                    request.RequestUri,
                     request.Method.Method));
             }
             catch (Exception ex)
             {
-                throw ex;
+                string errorMessage = String.Format("An error has ocurred while sending a {0} request to {1}.",
+                    request.RequestUri,
+                    request.Method.Method);
+                throw new ApplicationException(errorMessage);
             }
             return response;
         }
