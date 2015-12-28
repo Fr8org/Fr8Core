@@ -12,6 +12,7 @@ using Utilities.Configuration.Azure;
 using Newtonsoft.Json;
 using Data.Infrastructure;
 using Utilities.Logging;
+using Utilities;
 
 namespace TerminalBase.BaseClasses
 {
@@ -32,7 +33,7 @@ namespace TerminalBase.BaseClasses
         [HttpGet]
         public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError)
         {
-            var exceptionMessage = terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
+            var exceptionMessage = terminalError.GetFullExceptionMessage() + "      \r\n" + terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
             try
             {
                 return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name));

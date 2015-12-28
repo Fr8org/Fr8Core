@@ -123,7 +123,7 @@ namespace TerminalBase.Infrastructure
         }
 
         /// <summary>
-        /// Processsing the external event pay load received
+        /// Processing the external event pay load received
         /// </summary>
         /// <param name="curExternalEventPayload">event pay load received</param>
         /// <param name="parser">delegate method</param>
