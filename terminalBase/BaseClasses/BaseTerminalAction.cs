@@ -686,14 +686,14 @@ namespace TerminalBase.BaseClasses
                 {
                     upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).SelectMany(x => x.Content.Fields).ToArray();
 
-                    availableFieldsCrate =
+                    availableFieldsCrate = 
                         Crate.CreateDesignTimeFieldsCrate(
                             label,
                             upstreamFields
                         );
                 }
 
-                return availableFieldsCrate;
+                return await Task.FromResult(availableFieldsCrate);
             }
 
             return await Task.FromResult<Crate>(null);
