@@ -209,6 +209,9 @@ namespace Data.Control
         [JsonProperty("upstreamSourceLabel")]
         public string UpstreamSourceLabel;
 
+        [JsonProperty("textValue")]
+        public string TextValue;
+
         [JsonProperty("valueSource")]
         public string ValueSource;
 

@@ -127,22 +127,28 @@ namespace terminalDocuSign.Actions
         private string GetEnvelopeID(ControlDefinitionDTO control, AuthorizationTokenDO authTokenDo)
         {
             string envelopeId = "";
-            TextSource textSource = (TextSource)control;
-            if (textSource.ValueSource == null || string.IsNullOrEmpty(textSource.Value))
+            var textSource = (TextSource)control;
+            if (textSource.ValueSource == null)
                 return null;
 
+            var realTSValue = textSource.ValueSource == "specific" ? textSource.TextValue : textSource.Value;
+
             //Gets EnvelopeId either by EnvelopeId or TemplateName
-            if (string.IsNullOrEmpty(control.Value))
-                if (control.Value.IsGuid())
-                    envelopeId = control.Value;
+            if (!string.IsNullOrEmpty(realTSValue))
+            {
+                if (realTSValue.IsGuid())
+                {
+                    envelopeId = realTSValue;
+                }
                 else
                 {
                     var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDo.Token);
                     var availableTemplates = (_docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO).Get()
                         as StandardDesignTimeFieldsCM).Fields;
-                    var selectedTemplate = availableTemplates.Where(a => a.Key.ToLowerInvariant() == control.Value.ToLowerInvariant()).FirstOrDefault();
+                    var selectedTemplate = availableTemplates.FirstOrDefault(a => a.Key.ToLowerInvariant() == realTSValue.ToLowerInvariant());
                     envelopeId = (selectedTemplate != null) ? selectedTemplate.Value : "";
                 }
+            }
             return envelopeId;
         }
     }
