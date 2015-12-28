@@ -67,11 +67,11 @@ namespace terminalQuickBooks.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
             //Obtain the crate of type StandardAccountingTransactionCM that holds the required information
-            var curStandardAccountingTransactionCM = Crate.GetByManifest<StandardAccountingTransactionCM>(processPayload);
+            var curStandardAccountingTransactionCM = Crate.GetByManifest<StandardAccountingTransactionCM>(payloadCrates);
             //Obtain the crate of type OperationalStateCM to extract the correct StandardAccountingTransactionDTO
-            var curOperationalStateCM = Crate.GetOperationalState(processPayload);
+            var curOperationalStateCM = Crate.GetOperationalState(payloadCrates);
             //Get the LoopId that is equal to the Action.Id for to obtain the correct StandardAccountingTransactionDTO
             var curLoopId = curActionDO.GetLoopId();
             //Validate fields of the StandardAccountingTransactionCM crate
@@ -86,7 +86,7 @@ namespace terminalQuickBooks.Actions
             StandardAccountingTransactionCM.ValidateAccountingTransation(curStandardAccountingTransactionDTO);
             //Use service to create Journal Entry Object
             _journalEntry.Create(curStandardAccountingTransactionDTO, authTokenDO);
-            return processPayload;
+            return payloadCrates;
         }     
     }
 }

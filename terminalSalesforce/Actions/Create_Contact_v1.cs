@@ -25,22 +25,22 @@ namespace terminalSalesforce.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
-                return NeedsAuthenticationError(processPayload);
+                return NeedsAuthenticationError(payloadCrates);
             }
             
             var lastName = ExtractControlFieldValue(curActionDO, "lastName");
             if (string.IsNullOrEmpty(lastName))
             {
-                return Error(processPayload, "No last name found in action.");
+                return Error(payloadCrates, "No last name found in action.");
             }
 
             bool result = _salesforce.CreateContact(curActionDO, authTokenDO);
 
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
