@@ -23,27 +23,6 @@ namespace terminalSalesforce.Actions
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(processPayload);
-            }
-
-            var accountName = ExtractControlFieldValue(curActionDO, "accountName");
-            if (string.IsNullOrEmpty(accountName))
-            {
-                return Error(processPayload, "No account name found in action.");
-            }
-
-            bool result = _salesforce.CreateAccount(curActionDO, authTokenDO);
-
-            return Success(processPayload);
-        }
-
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             return ConfigurationRequestType.Initial;
@@ -83,6 +62,26 @@ namespace terminalSalesforce.Actions
             }
 
             return await Task.FromResult(curActionDO);
+        }
+
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            var processPayload = await GetProcessPayload(curActionDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(processPayload);
+            }
+
+            var accountName = ExtractControlFieldValue(curActionDO, "accountName");
+            if (string.IsNullOrEmpty(accountName))
+            {
+                return Error(processPayload, "No account name found in action.");
+            }
+
+            bool result = _salesforce.CreateAccount(curActionDO, authTokenDO);
+
+            return Success(processPayload);
         }
     }
 }
