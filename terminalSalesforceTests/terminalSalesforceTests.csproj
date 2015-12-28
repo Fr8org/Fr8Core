@@ -48,6 +48,7 @@
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Intergration\Create_Account_v1_Tests.cs" />
     <Compile Include="Intergration\Create_Contact_v1_Tests.cs" />
+    <Compile Include="Intergration\Create_Lead_v1_Tests.cs" />
     <Compile Include="Intergration\Terminal_Discover_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
