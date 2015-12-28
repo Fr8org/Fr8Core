@@ -25,6 +25,33 @@ namespace terminalSalesforce.Actions
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            var payloadCrates = await GetPayload(curActionDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(payloadCrates);
+            }
+
+            var lastName = ExtractControlFieldValue(curActionDO, "lastName");
+
+            if (string.IsNullOrEmpty(lastName))
+            {
+                return Error(payloadCrates, "No last name found in action.");
+            }
+
+            var company = ExtractControlFieldValue(curActionDO, "companyName");
+            if (string.IsNullOrEmpty(company))
+            {
+                return Error(payloadCrates, "No company name found in action.");
+            }
+
+            bool result = _salesforce.CreateLead(curActionDO, authTokenDO);
+          
+            return Success(payloadCrates);
+        }
+
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (Crate.IsStorageEmpty(curActionDO))
@@ -76,33 +103,6 @@ namespace terminalSalesforce.Actions
             }
 
             return await Task.FromResult(curActionDO);
-        }
-
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(processPayload);
-            }
-
-            var lastName = ExtractControlFieldValue(curActionDO, "lastName");
-
-            if (string.IsNullOrEmpty(lastName))
-            {
-                return Error(processPayload, "No last name found in action.");
-            }
-
-            var company = ExtractControlFieldValue(curActionDO, "companyName");
-            if (string.IsNullOrEmpty(company))
-            {
-                return Error(processPayload, "No company name found in action.");
-            }
-
-            bool result = _salesforce.CreateLead(curActionDO, authTokenDO);
-
-            return Success(processPayload);
         }
     }
 }

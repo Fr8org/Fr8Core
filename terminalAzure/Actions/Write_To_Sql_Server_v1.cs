@@ -106,14 +106,14 @@ namespace terminalAzure.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(actionDO, containerId);
+            var payloadCrates = await GetPayload(actionDO, containerId);
 
-            var curCommandArgs = PrepareSQLWrite(actionDO, processPayload);
+            var curCommandArgs = PrepareSQLWrite(actionDO, payloadCrates);
 
             var dbService = new DbService();
             dbService.WriteCommand(curCommandArgs);
 
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
         //===============================================================================================
@@ -179,18 +179,18 @@ namespace terminalAzure.Actions
 
         //EXECUTION-Related Methods
         //-----------------------------------------
-        private WriteCommandArgs PrepareSQLWrite(ActionDO curActionDO, PayloadDTO processPayload)
+        private WriteCommandArgs PrepareSQLWrite(ActionDO curActionDO, PayloadDTO payloadCrates)
         {
             var parser = new DbServiceJsonParser();
             var curConnStringObject = parser.ExtractConnectionString(curActionDO);
-            var curSQLData = ConvertProcessPayloadToSqlInputs(processPayload);
+            var curSQLData = ConvertProcessPayloadToSqlInputs(payloadCrates);
 
             return new WriteCommandArgs(ProviderName, curConnStringObject, curSQLData);
         }
 
-        private IEnumerable<Table> ConvertProcessPayloadToSqlInputs(PayloadDTO processPayload)
+        private IEnumerable<Table> ConvertProcessPayloadToSqlInputs(PayloadDTO payloadCrates)
         {
-            var mappedFieldsCrate = Crate.GetStorage(processPayload).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "MappedFields");
+            var mappedFieldsCrate = Crate.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "MappedFields");
 
 //            var mappedFieldsCrate = processPayload.CrateStorageDTO()
 //                .CrateDTO
@@ -203,7 +203,7 @@ namespace terminalAzure.Actions
                 throw new ApplicationException("No payload crate found with Label == MappdFields.");
             }
 
-            var valuesCrate = Crate.GetStorage(processPayload).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "DocuSign Envelope Data");
+            var valuesCrate = Crate.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "DocuSign Envelope Data");
 //
 //            var valuesCrate = processPayload.CrateStorageDTO()
 //                .CrateDTO

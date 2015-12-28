@@ -38,17 +38,17 @@ namespace terminalAtlassian.Actions
         {
             CheckAuthentication(authTokenDO);
 
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             string jiraKey = ExtractJiraKey(curActionDO);
             var jiraIssue = _atlassianService.GetJiraIssue(jiraKey, authTokenDO);
 
-            using (var updater = _crateManager.UpdateStorage(processPayload))
+            using (var updater = _crateManager.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(PackCrate_JiraIssueDetails(jiraIssue));
             }
 
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
         private string ExtractJiraKey(ActionDO curActionDO)
