@@ -494,19 +494,16 @@ namespace Hub.Services
             {
                 var actionName = curActionState == ActionState.InitialRun ? "Run" : "ChildrenExecuted";
                 var payloadDTO = await CallTerminalActionAsync<PayloadDTO>(actionName, curActionDO, curContainerDO.Id);
-                Utilities.Logging.Logger.GetLogger().Info("Action run for terminal " + curActionDO.ActivityTemplate.Label + " call successful");
                 return payloadDTO;
 
             }
             catch (ArgumentException e)
             {
-                Utilities.Logging.Logger.GetLogger().Info("Action run for terminal " + curActionDO.ActivityTemplate.Label + " call exception: " + e.Message);
                 EventManager.TerminalRunFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message, curActionDO.Id.ToString());
                 throw;
             }
             catch (Exception e)
             {
-                Utilities.Logging.Logger.GetLogger().Info("Action run for terminal " + curActionDO.ActivityTemplate.Label + " call argument exception: " + e.Message);
                 JsonSerializerSettings settings = new JsonSerializerSettings
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects
