@@ -630,3 +630,10 @@ div[dnd-list].dndDragover {
 
 
 /*END OF DRAG DROP RELATED CSS */
+
+.upstreamFieldChooser {
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+[ng-table-pagination] { display: none; }

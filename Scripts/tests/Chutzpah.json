@@ -37,6 +37,10 @@
       "Path": "../../bower_components/angular-datatables/dist/angular-datatables.js"
     },
     {
+      "Path": "../../bower_components/ng-table/dist/ng-table.min.js"
+    },
+
+    {
       "Path": "../../bower_components/ng-file-upload/ng-file-upload-all.min.js"
     },
     {

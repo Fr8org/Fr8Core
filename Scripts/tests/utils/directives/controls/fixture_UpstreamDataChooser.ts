@@ -8,7 +8,8 @@
             events: [],
             selectedManifest: null,
             selectedLabel: null,
-            selectedFieldType: null
+            selectedFieldType: null,
+            value: 'HolderEmail'
         }
 
         public static fieldWithValues = <model.UpstreamDataChooser> {
@@ -113,27 +114,52 @@
                                 {
                                     "key": "RecipientEmail",
                                     "value": null,
-                                    "tags": "EmailAddress"
+                                    "tags": "EmailAddress",
+                                    "sourceCrateLabel": "Label1",
+                                    "sourceCrateManifest": {
+                                        "Id": "3",
+                                        "Type": "Standard Design-Time Fields"
+                                    }
                                 },
                                 {
                                     "key": "DocumentName",
                                     "value": null,
-                                    "tags": null
+                                    "tags": null,
+                                    "sourceCrateLabel": "Label1",
+                                    "sourceCrateManifest": {
+                                        "Id": "3",
+                                        "Type": "Standard Design-Time Fields"
+                                    }
                                 },
                                     {
                                     "key": "CompletedDate",
                                     "value": null,
-                                    "tags": "Date"
+                                    "tags": "Date",
+                                    "sourceCrateLabel": "Label2",
+                                    "sourceCrateManifest": {
+                                        "Id": "3",
+                                        "Type": "Standard Design-Time Fields"
+                                    }
                                 },
                                 {
                                     "key": "HolderEmail",
                                     "value": null,
-                                    "tags": "EmailAddress"
+                                    "tags": "EmailAddress",
+                                    "sourceCrateLabel": "Label2",
+                                    "sourceCrateManifest": {
+                                        "Id": "3",
+                                        "Type": "Standard Design-Time Fields"
+                                    }
                                 },
                                 {
                                     "key": "Subject",
                                     "value": null,
-                                    "tags": null
+                                    "tags": null,
+                                    "sourceCrateLabel": "Label2",
+                                    "sourceCrateManifest": {
+                                        "Id": "3",
+                                        "Type": "Standard Design-Time Fields"
+                                    }
                                 }
                             ]
                         },
