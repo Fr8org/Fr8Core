@@ -1,1 +1,1 @@
-HealthMonitor.exe --email-report
+HealthMonitor.exe --email-report --app-name JOB-DEV

@@ -27,5 +27,53 @@ namespace terminalQuickBooksTests.Integration
         {
             get { return "terminalQuickBooks"; }
         }
+        [Test, Category("Integration.terminalQuickBooks")]
+        public async void Create_Journal_Entry_Configuration_Check_With_No_Upstream_Crate()
+        {
+            //Arrange
+            var curMessage =
+                "When this Action runs, it will be expecting to find a Crate of Standard Accounting Transactions. " +
+                "Right now, it doesn't detect any Upstream Actions that produce that kind of Crate. " +
+                "Please add an action upstream (to the left) of this action that does so.";
+            var configureUrl = GetTerminalConfigureUrl();
+            var requestActionDTO = HealthMonitor_FixtureData.Action_Create_Journal_Entry_v1_InitialConfiguration_ActionDTO();
+            //Act
+            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+            //Assert
+            Assert.NotNull(responseActionDTO);
+            Assert.NotNull(responseActionDTO.CrateStorage);
+            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+            var curTextBlock = (TextBlock)crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
+            Assert.AreEqual("Create a Journal Entry", curTextBlock.Label);
+            Assert.AreEqual(curMessage, curTextBlock.Value);
+            Assert.AreEqual("alert alert-warning", curTextBlock.CssClass);
+        }
+        [Test, Category("Integration.terminalQuickBooks")]
+        public async void Create_Journal_Entry_Configuration_Check_With_Upstream_Crate()
+        {
+            //Arrange
+            var configureUrl = GetTerminalConfigureUrl();
+            var requestActionDTO = HealthMonitor_FixtureData.Action_Create_Journal_Entry_v1_InitialConfiguration_ActionDTO();
+            var curStandAccTransCrate = HealthMonitor_FixtureData.GetAccountingTransactionCM();
+            AddUpstreamCrate(requestActionDTO, curStandAccTransCrate);
+            //Act
+            var responseActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+            //Assert
+            Assert.NotNull(responseActionDTO);
+            Assert.NotNull(responseActionDTO.CrateStorage);
+            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+            var curTextBlock = (TextBlock)crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
+            Assert.AreEqual("Create a Journal Entry", curTextBlock.Label);
+            Assert.AreEqual("This Action doesn't require any configuration.", curTextBlock.Value);
+            Assert.AreEqual("well well-lg", curTextBlock.CssClass);
+        }
     }
 }

@@ -28,7 +28,7 @@ namespace terminalFr8Core.Actions
     {
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
+            var curPayloadDTO = await GetPayload(curActionDO, containerId);
             var payloadStorage = Crate.GetStorage(curPayloadDTO);
             var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
             if (operationsCrate == null)
@@ -36,7 +36,7 @@ namespace terminalFr8Core.Actions
                 return Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActionErrorCode.PAYLOAD_DATA_MISSING);
             }
             //set default loop index for initial state
-            CreateLoop(curActionDO.Id.ToString(), curPayloadDTO);
+            CreateLoop(curActionDO.GetLoopId(), curPayloadDTO);
             try
             {
                 if (await ShouldBreakLoop(curPayloadDTO, curActionDO))
@@ -53,14 +53,14 @@ namespace terminalFr8Core.Actions
 
         public override async Task<PayloadDTO> ChildrenExecuted(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
-            IncrementLoopIndex(curActionDO.Id.ToString(), curPayloadDTO);
+            var curPayloadDTO = await GetPayload(curActionDO, containerId);
+            IncrementLoopIndex(curActionDO.GetLoopId(), curPayloadDTO);
             try
             {
                 //check if we need to end this loop
                 if (await ShouldBreakLoop(curPayloadDTO, curActionDO))
                 {
-                    BreakLoop(curActionDO.Id.ToString(), curPayloadDTO);
+                    BreakLoop(curActionDO.GetLoopId(), curPayloadDTO);
                     return Success(curPayloadDTO);
                 }
             }
@@ -76,7 +76,7 @@ namespace terminalFr8Core.Actions
         {
             var payloadStorage = Crate.GetStorage(curPayloadDTO);
 
-            var loopId = curActionDO.Id.ToString();
+            var loopId = curActionDO.GetLoopId();
             var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
             if (operationsCrate == null)
             {

@@ -163,7 +163,7 @@ namespace TerminalBase.BaseClasses
 
         public virtual async Task<PayloadDTO> ChildrenExecuted(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetProcessPayload(curActionDO, containerId));
+            return Success(await GetPayload(curActionDO, containerId));
         }
 
         protected void CheckAuthentication(AuthorizationTokenDO authTokenDO)
@@ -179,9 +179,9 @@ namespace TerminalBase.BaseClasses
             return authTokenDO == null || string.IsNullOrEmpty(authTokenDO.Token);
         }
 
-        protected async Task<PayloadDTO> GetProcessPayload(ActionDO actionDO, Guid containerId)
+        protected async Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId)
         {
-            return await HubCommunicator.GetProcessPayload(actionDO, containerId);
+            return await HubCommunicator.GetPayload(actionDO, containerId);
         }
 
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
@@ -357,6 +357,12 @@ namespace TerminalBase.BaseClasses
                 //extract the fields
                 StandardDesignTimeFieldsCM curStandardDesignTimeFieldsCrate = curCrate.Content;
 
+                foreach (var field in curStandardDesignTimeFieldsCrate.Fields)
+                {
+                    field.SourceCrateLabel = curCrate.Label;
+                    field.SourceCrateManifest = curCrate.ManifestType;
+                }
+
                 //add them to the pile
                 tempMS.Fields.AddRange(curStandardDesignTimeFieldsCrate.Fields);
             }
@@ -465,13 +471,7 @@ namespace TerminalBase.BaseClasses
         {
             ControlDefinitionDTO[] controls =
             {
-                new TextBlock()
-                {
-                    Label = fieldLabel,
-                    Value = errorMessage,
-                    CssClass = "well well-lg"
-
-                }
+                GenerateTextBlock(fieldLabel,errorMessage,"well well-lg")
             };
 
             var crateControls = Crate.CreateStandardConfigurationControlsCrate(
@@ -506,11 +506,11 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         protected string ExtractSpecificOrUpstreamValue(
            ActionDO actionDO,
-           PayloadDTO processPayload,
+           PayloadDTO payloadCrates,
            string controlName)
         {
             var designTimeCrateStorage = Crate.GetStorage(actionDO.CrateStorage);
-            var runTimeCrateStorage = Crate.FromDto(processPayload.CrateStorage);
+            var runTimeCrateStorage = Crate.FromDto(payloadCrates.CrateStorage);
 
             var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var control = controls.Controls.SingleOrDefault(c => c.Name == controlName);
@@ -603,13 +603,7 @@ namespace TerminalBase.BaseClasses
         {
             AddControl(
                 storage,
-                new TextBlock()
-                {
-                    Name = name,
-                    Label = label,
-                    Value = text,
-                    CssClass = "well well-lg"
-                }
+                GenerateTextBlock(label,text,"well well-lg",name)
             );
         }
 
@@ -729,5 +723,38 @@ namespace TerminalBase.BaseClasses
                 CssClass = curCssClass
             };
         }
+        /// <summary>
+        /// Method to be used with Loop Action
+        /// Is a helper method to decouple some of the GetCurrentElement Functionality
+        /// </summary>
+        /// <param name="operationalCrate">Crate of the OperationalStateCM</param>
+        /// <param name="loopId">Integer that is equal to the Action.Id</param>
+        /// <returns>Index or pointer of the current IEnumerable Object</returns>
+        protected int GetLoopIndex(OperationalStateCM operationalCrate, string loopId)
+        {
+            var curLoop = operationalCrate.Loops.FirstOrDefault(l => l.Id.Equals(loopId.ToString()));
+            if (curLoop == null)
+            {
+                throw new NullReferenceException("No Loop with the specified LoopId inside the provided OperationalStateCM crate");
+            }
+            var curIndex = curLoop.Index;
+            return curIndex;
+        }
+        /// <summary>
+        /// Trivial method to return element at specified index of the IEnumerable object.
+        /// To be used with Loop Action.
+        /// IMPORTANT: 
+        /// 1) Index update is performed by Loop Action
+        /// 2) Loop brake is preformed by Loop Action
+        /// </summary>
+        /// <param name="enumerableObject">Object of type IEnumerable</param>
+        /// <param name="objectIndex">Integer that points to the element</param>
+        /// <returns>Object of any type</returns>
+        protected object GetCurrentElement(IEnumerable<object> enumerableObject, int objectIndex)
+        {
+            var curElement = enumerableObject.ElementAt(objectIndex);
+            return curElement;
+        }
+
     }
 }

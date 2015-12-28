@@ -351,6 +351,7 @@
     <Compile Include="Controllers\Api\ActionsController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
+    <Compile Include="Controllers\Api\ManageAuthTokenController.cs" />
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
     <Compile Include="Controllers\Api\RoutesController.cs" />
@@ -745,13 +746,23 @@
     <Content Include="_PowerShellScripts\DEV-settings.job" />
     <Content Include="_PowerShellScripts\MASTER-HealthMonitor.exe.config" />
     <Content Include="_PowerShellScripts\RunIntegrationTests-MASTER.ps1" />
+    <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
+    <Content Include="_PowerShellScripts\MASTER-settings.job" />
+    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\AuthenticationDialogController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IManageAuthToken.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ITerminal.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ManageAuthToken.ts" />
     <TypeScriptCompile Include="Scripts\app\model\TerminalActionSetDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\TerminalDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ManageAuthTokenService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\TerminalService.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\RouteDetailsControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamDataChooser.ts" />
@@ -827,12 +838,15 @@
     <Content Include="Service References\Application Insights\ConnectedService.json" />
     <Content Include="Views\Welcome\Index.cshtml" />
     <Content Include="Views\AngularTemplate\RunRouteButton.cshtml" />
+    <Content Include="Views\AngularTemplate\ManageAuthTokens.cshtml" />
     <None Include="Properties\PublishProfiles\fr8dev - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\fr8dev - Web Deploy.pubxml" />
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <Content Include="Views\AngularTemplate\TerminalForm.cshtml" />
     <Content Include="Views\AngularTemplate\TerminalList.cshtml" />
+    <Content Include="Views\AngularTemplate\AuthenticationDialog.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamDataChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

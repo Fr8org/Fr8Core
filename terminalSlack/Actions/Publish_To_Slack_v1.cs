@@ -29,42 +29,39 @@ namespace terminalSlack.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(actionDO, containerId);
+            var payloadCrates = await GetPayload(actionDO, containerId);
+            string message; 
 
             if (NeedsAuthentication(authTokenDO))
             {
-                return NeedsAuthenticationError(processPayload);
+                return NeedsAuthenticationError(payloadCrates);
             }
 
             var actionChannelId = ExtractControlFieldValue(actionDO, "Selected_Slack_Channel");
             if (string.IsNullOrEmpty(actionChannelId))
             {
-                return Error(processPayload, "No selected channelId found in action.");
+                return Error(payloadCrates, "No selected channelId found in action.");
             }
 
-            var actionFieldName = ExtractControlFieldValue(actionDO, "Select_Message_Field");
-            if (string.IsNullOrEmpty(actionFieldName))
+            try
             {
-                return Error(processPayload, "No selected field found in action.");
+                message = ExtractSpecificOrUpstreamValue(actionDO, payloadCrates, "Select_Message_Field");
             }
-
-            var payloadFields = ExtractPayloadFields(processPayload);
-
-            var payloadMessageField = payloadFields.FirstOrDefault(x => x.Key == actionFieldName);
-            if (payloadMessageField == null)
+            catch (ApplicationException ex)
             {
-                return Error(processPayload, "No specified field found in action.");
+                return Error(payloadCrates, "Cannot get selected filed value from TextSource control in action. Detailed information: " + ex.Message);
             }
+
 
             await _slackIntegration.PostMessageToChat(authTokenDO.Token,
-                actionChannelId, payloadMessageField.Value);
+                actionChannelId, message);
 
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
-        private List<FieldDTO> ExtractPayloadFields(PayloadDTO processPayload)
+        private List<FieldDTO> ExtractPayloadFields(PayloadDTO payloadCrates)
         {
-            var payloadDataCrates = Crate.FromDto(processPayload.CrateStorage).CratesOfType<StandardPayloadDataCM>();
+            var payloadDataCrates = Crate.FromDto(payloadCrates.CrateStorage).CratesOfType<StandardPayloadDataCM>();
 
             var result = new List<FieldDTO>();
             foreach (var payloadDataCrate in payloadDataCrates)

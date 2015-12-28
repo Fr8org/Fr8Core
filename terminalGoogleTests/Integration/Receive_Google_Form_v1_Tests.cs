@@ -165,6 +165,48 @@ namespace terminalGoogleTests.Unit
             Assert.Greater(formID.PayloadObjects.SelectMany(s => s.PayloadObject).Count(), 0);
         }
 
+        [Test, Category("Integration.terminalGoogle")]
+        public async void Receive_Google_Form_Activate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalActivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = fixture.Receive_Google_Form_v1_ActivateDeactivate_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
+        [Test, Category("Integration.terminalGoogle")]
+        public async void Receive_Google_Form_Deactivate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalDeactivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = fixture.Receive_Google_Form_v1_ActivateDeactivate_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
         /// <summary>
         /// Should throw exception if cannot extract any data from google form
         /// </summary>

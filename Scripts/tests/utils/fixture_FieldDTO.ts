@@ -29,7 +29,7 @@ module dockyard.tests.utils.fixtures {
         public static textBlock: model.TextBlock = new model.TextBlock('<span>teststs</span>', 'well well-lg');
 
         public static dropDownListBox: model.DropDownList = {
-            listItems: [{ key: 'test1', selected: false, value: 'value1', tags: null, availability: model.AvailabilityType.Configuration }, { key: 'test2', selected: false, value: 'value2', tags: null, availability: model.AvailabilityType.Configuration }, { key: 'test3', selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration }],
+            listItems: [{ key: 'test1', selected: false, value: 'value1', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }, { key: 'test2', selected: false, value: 'value2', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }, { key: 'test3', selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }],
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel',
@@ -114,14 +114,14 @@ module dockyard.tests.utils.fixtures {
             listItems: [{
                 key: 'test1',
                 selected: false,
-                value: 'value1', tags: null, availability: model.AvailabilityType.Configuration
+                value: 'value1', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null
             },
                 {
                     key: 'test2',
                     selected: false,
-                    value: 'value2', tags: null, availability: model.AvailabilityType.Configuration
+                    value: 'value2', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null
                 },
-                { key: 'test3', selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration }],
+                { key: 'test3', selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }],
             name: 'test name',
             fieldLabel: 'test label',
             selectedKey: null
