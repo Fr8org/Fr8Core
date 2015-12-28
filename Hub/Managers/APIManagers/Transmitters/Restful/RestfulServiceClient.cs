@@ -48,6 +48,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             _innerClient = new HttpClient();
             _formatter = formatter;
             _formatterLogger = new FormatterLogger();
+            _innerClient.Timeout = new TimeSpan(0, 10, 0); //10 minutes
         }
 
         private async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request)
@@ -67,6 +68,18 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             {
                 var errorMessage = ExtractErrorMessage(responseContent);
                 throw new RestfulServiceException(statusCode, errorMessage, ex);
+            }
+            catch (TaskCanceledException)
+            {
+                //Timeout
+                throw new TimeoutException(
+                    String.Format("Timeout while making HTTP request.  \r\nURL: {0},   \r\nMethod: {1}", 
+                    request.RequestUri, 
+                    request.Method.Method));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
             return response;
         }

@@ -134,7 +134,21 @@ namespace TerminalBase.Infrastructure
             
             if (eventReportCrateDTO != null)
             {
-                await new HttpClient().PostAsJsonAsync(new Uri(fr8EventUrl, UriKind.Absolute), eventReportCrateDTO);
+                Uri url = new Uri(fr8EventUrl, UriKind.Absolute);
+                try
+                {
+                    HttpClient client = new HttpClient();
+                    client.Timeout = new TimeSpan(0, 10, 0); //10 minutes
+                    await client.PostAsJsonAsync(url, eventReportCrateDTO);
+                }
+                catch (TaskCanceledException)
+                {
+                    //Timeout
+                    throw new TimeoutException(
+                        String.Format("Timeout while making HTTP request.  \r\nURL: {0},   \r\nMethod: {1}",
+                        url.ToString(),
+                        HttpMethod.Post.Method));
+                }
             }
         }
     }
