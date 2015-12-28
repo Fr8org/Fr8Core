@@ -1,21 +1,21 @@
 ﻿
-using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 using terminalSalesforceTests.Fixtures;
-using Data.Control;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using System;
 
 namespace terminalSalesforceTests.Intergration
 {
     [Explicit]
-    public class Create_Account_v1_Tests : BaseHealthMonitorTest
+    public class Create_Contact_v1_Tests : BaseHealthMonitorTest
     {
         public override string TerminalName
         {
@@ -23,14 +23,14 @@ namespace terminalSalesforceTests.Intergration
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        public async void Create_Account_Initial_Configuration_Check_Crate_Structure()
+        public async void Create_Contact_Initial_Configuration_Check_Crate_Structure()
         {
             //Act
             var initialConfigActionDto = await PerformInitialConfiguration();
 
             //Assert
             Assert.IsNotNull(initialConfigActionDto.CrateStorage,
-                "Initial Configuration of Create Account action contains no crate storage");
+                "Initial Configuration of Create Contact action contains no crate storage");
 
             AssertConfigurationControls(Crate.FromDto(initialConfigActionDto.CrateStorage));
         }
@@ -40,13 +40,13 @@ namespace terminalSalesforceTests.Intergration
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
         )]
-        public async void Create_Account_Initial_Configuration_Without_AuthToken_Exception_Thrown()
+        public async void Create_Contact_Initial_Configuration_Without_AuthToken_Exception_Thrown()
         {
             //Arrange
             string terminalConfigureUrl = GetTerminalConfigureUrl();
 
-            //prepare the create account action DTO
-            var requestActionDTO = HealthMonitor_FixtureData.Create_Account_v1_InitialConfiguration_ActionDTO();
+            //prepare the create contact action DTO
+            var requestActionDTO = HealthMonitor_FixtureData.Create_Contact_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = null;
 
             //Act
@@ -55,11 +55,11 @@ namespace terminalSalesforceTests.Intergration
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        public async void Create_Account_Run_With_NoAuth_Check_NoAuthProvided_Error()
+        public async void Create_Contact_Run_With_NoAuth_Check_NoAuthProvided_Error()
         {
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
-            initialConfigActionDto = SetAccountName(initialConfigActionDto);
+            initialConfigActionDto = SetLastName(initialConfigActionDto);
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
 
             //Act
@@ -69,11 +69,11 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsNotNull(responseOperationalState);
             var curOperationalState =
                 Crate.FromDto(responseOperationalState.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
-            Assert.AreEqual("No AuthToken provided.", curOperationalState.CurrentActionErrorMessage, "Authentication is mishandled at action side."); 
+            Assert.AreEqual("No AuthToken provided.", curOperationalState.CurrentActionErrorMessage, "Authentication is mishandled at action side.");
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        public async void Create_Account_Run_With_NoAccountName_Check_NoAccountNameProvided_Error()
+        public async void Create_Contact_Run_With_NoLastName_Check_NoLastNameProvided_Error()
         {
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
@@ -87,15 +87,15 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsNotNull(responseOperationalState);
             var curOperationalState =
                 Crate.FromDto(responseOperationalState.CrateStorage).CratesOfType<OperationalStateCM>().Single().Content;
-            Assert.AreEqual("No account name found in action.", curOperationalState.CurrentActionErrorMessage, "Action works without account name");
+            Assert.AreEqual("No last name found in action.", curOperationalState.CurrentActionErrorMessage, "Action works without account name");
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        public async void Create_Account_Run_With_ValidParameter_Check_PayloadDto_OperationalState()
+        public async void Create_Contact_Run_With_ValidParameter_Check_PayloadDto_OperationalState()
         {
             //Arrange
             var initialConfigActionDto = await PerformInitialConfiguration();
-            initialConfigActionDto = SetAccountName(initialConfigActionDto);
+            initialConfigActionDto = SetLastName(initialConfigActionDto);
             initialConfigActionDto.AuthToken = HealthMonitor_FixtureData.Salesforce_AuthToken();
             AddOperationalStateCrate(initialConfigActionDto, new OperationalStateCM());
 
@@ -104,10 +104,10 @@ namespace terminalSalesforceTests.Intergration
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
-       }
+        }
 
         /// <summary>
-        /// Performs Initial Configuration request of Create Account action
+        /// Performs Initial Configuration request of Create Contact action
         /// </summary>
         private async Task<ActionDTO> PerformInitialConfiguration()
         {
@@ -115,7 +115,7 @@ namespace terminalSalesforceTests.Intergration
             string terminalConfigureUrl = GetTerminalConfigureUrl();
 
             //prepare the create account action DTO
-            var requestActionDTO = HealthMonitor_FixtureData.Create_Account_v1_InitialConfiguration_ActionDTO();
+            var requestActionDTO = HealthMonitor_FixtureData.Create_Contact_v1_InitialConfiguration_ActionDTO();
 
             //perform post request to terminal and return the result
             return await HttpPostAsync<ActionDTO, ActionDTO>(terminalConfigureUrl, requestActionDTO);
@@ -125,30 +125,33 @@ namespace terminalSalesforceTests.Intergration
         {
             var configurationControls = curActionCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
 
-            Assert.AreEqual(3, configurationControls.Content.Controls.Count,
-                "Create Account does not contain the required 3 fields.");
+            Assert.AreEqual(4, configurationControls.Content.Controls.Count,
+                "Create Contact does not contain the required 3 fields.");
 
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("accountName")),
-                "Create Account action does not have Account Name control");
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("firstName")),
+                "Create Contact action does not have First Name control");
 
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("accountNumber")),
-                "Create Account does not have Account Number control");
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("lastName")),
+                "Create Contact does not have Last Name control");
 
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("phone")),
-                "Create Account does not have Phone control");
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("mobilePhone")),
+                "Create Contact does not have Mobile Phone control");
+
+            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("email")),
+                "Create Contact does not have Email control");
 
             Assert.IsFalse(configurationControls.Content.Controls.Any(ctrl => ctrl.Events.Count != 1),
-                "Create Account controls are not subscribed to on Change events");
+                "Create Contact controls are not subscribed to on Change events");
         }
 
-        private ActionDTO SetAccountName(ActionDTO curActionDto)
+        private ActionDTO SetLastName(ActionDTO curActionDto)
         {
             using (var updater = Crate.UpdateStorage(curActionDto))
             {
                 var controls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
-                var targetUrlTextBox = (TextBox)controls.Controls[0];
-                targetUrlTextBox.Value = "IntegrationTestAccount";
+                var targetUrlTextBox = (TextBox)controls.Controls[1];
+                targetUrlTextBox.Value = "IntegrationTestContact";
             }
 
             return curActionDto;

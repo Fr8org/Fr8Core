@@ -28,6 +28,17 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
+        public static ActivityTemplateDTO Create_Contact_v1_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Create_Contact_TEST",
+                Label = "Create Contact",
+                NeedsAuthentication = true
+            };
+        }
+
         public static ActionDTO Create_Account_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Create_Account_v1_ActivityTemplate();
@@ -37,6 +48,21 @@ namespace terminalSalesforceTests.Fixtures
                 Id = Guid.NewGuid(),
                 Name = "Create_Account",
                 Label = "Create Account",
+                AuthToken = Salesforce_AuthToken(),
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
+        public static ActionDTO Create_Contact_v1_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = Create_Contact_v1_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Create_Contact",
+                Label = "Create Contact",
                 AuthToken = Salesforce_AuthToken(),
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id
