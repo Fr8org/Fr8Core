@@ -6,10 +6,6 @@ namespace Data.Entities
     {
         public int Id { get; set; }
 
-        public int? DocuSignTemplateID { get; set; }
-
-        public int? DocuSignEnvelopeID { get; set; }
-
         public string CloudStorageUrl { get; set; }
 
         public string OriginalFileName { get; set; }
