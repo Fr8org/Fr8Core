@@ -48,7 +48,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             _innerClient = new HttpClient();
             _formatter = formatter;
             _formatterLogger = new FormatterLogger();
-            _innerClient.Timeout = new TimeSpan(0, 10, 0); //10 minutes
+            _innerClient.Timeout = new TimeSpan(0, 1, 0); //1 minute
         }
 
         private async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request)
