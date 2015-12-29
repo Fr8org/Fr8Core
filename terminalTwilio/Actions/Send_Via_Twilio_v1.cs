@@ -215,7 +215,7 @@ namespace terminalTwilio.Actions
             switch (control.ValueSource)
             {
                 case "specific":
-                    return control.Value;
+                    return control.TextValue;
                 case "upstream":
                     //get the payload data 'Key' based on the selected control.Value and get its 'Value' from payload data
                     return Crate.GetFieldByKey<StandardPayloadDataCM>(payloadCrates.CrateStorage, control.Value);

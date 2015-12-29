@@ -94,6 +94,7 @@
     export class TextSource extends DropDownList {
         initialLabel: string;
         valueSource: string;
+        textValue: string;
     }
 
     export class TextBlockField extends ControlDefinitionDTO {
