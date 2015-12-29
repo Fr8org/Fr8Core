@@ -172,10 +172,11 @@ namespace terminalDocuSign.Actions
                 return actionDO;
             }
 
-            if (actionDO.ChildNodes == null || actionDO.ChildNodes.Count == 0)
-            {
-                await CreateEmptyMonitorDocuSignAction(actionDO, authTokenDO);
-            }
+            actionDO.ChildNodes = new List<RouteNodeDO>();
+
+            
+
+            await CreateEmptyMonitorDocuSignAction(actionDO, authTokenDO);
 
             if (specificRecipientOption.Selected)
             {
@@ -192,10 +193,6 @@ namespace terminalDocuSign.Actions
             {
                 var durationControl = (Duration)notifyWhenEventDoesntHappenRadio.Controls.First();
                 await CreateSetDelayAction(actionDO, durationControl);
-            }
-            else
-            {
-                //TODO what to do??
             }
 
 
@@ -253,7 +250,7 @@ namespace terminalDocuSign.Actions
 
         private async Task CreateEmptyMonitorDocuSignAction(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
-            actionDO.ChildNodes = new List<RouteNodeDO>();
+            
 
             const string monitorDocuSignTemplateName = "Monitor_DocuSign_Envelope_Activity";
             var monitorDocuSignTemplate = (await HubCommunicator.GetActivityTemplates(actionDO))
