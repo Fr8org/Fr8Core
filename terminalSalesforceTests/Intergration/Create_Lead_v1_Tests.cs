@@ -35,8 +35,7 @@ namespace terminalSalesforceTests.Intergration
 
         [Test, Category("intergration.terminalSalesforce")]
         [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedException = typeof(RestfulServiceException)
         )]
         public async void Create_Lead_Initial_Configuration_Without_AuthToken_Exception_Thrown()
         {
