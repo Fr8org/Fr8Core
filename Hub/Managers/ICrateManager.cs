@@ -47,5 +47,7 @@ namespace Hub.Managers
         string GetFieldByKey<T>(CrateStorageDTO curCrateStorage, string findKey) where T : Manifest;
         T GetByManifest<T>(PayloadDTO payloadDTO) where T : Manifest;
         OperationalStateCM GetOperationalState(PayloadDTO payloadDTO);
+        IEnumerable<FieldDTO> GetFields(IEnumerable<Crate> crates);
+        IEnumerable<string> GetLabelsByManifestType(IEnumerable<Crate> crates, string manifestType);
     }
 }

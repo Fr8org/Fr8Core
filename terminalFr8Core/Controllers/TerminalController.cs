@@ -167,6 +167,17 @@ namespace terminalFr8Core.Controllers
                 Type = ActivityType.Standard
             });
 
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "ConvertRelatedFieldsIntoTable",
+                Label = "Convert Related Fields Into a Table",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                MinPaneWidth = 400
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,

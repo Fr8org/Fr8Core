@@ -31,6 +31,7 @@ namespace TerminalBase.BaseClasses
         protected IAction Action;
         protected ICrateManager Crate;
         private readonly ITerminal _terminal;
+        protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
 
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
@@ -158,6 +159,17 @@ namespace TerminalBase.BaseClasses
             }
 
             return payload;
+        }
+
+        protected StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO)
+        {
+            var storage = Crate.GetStorage(curActionDO);
+            return GetConfigurationControls(storage);
+        }
+
+        protected StandardConfigurationControlsCM GetConfigurationControls(CrateStorage storage)
+        {
+            return storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == ConfigurationControlsLabel).Single();
         }
 
 
@@ -382,7 +394,7 @@ namespace TerminalBase.BaseClasses
 
         protected Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
-            return Crate<StandardConfigurationControlsCM>.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(controlsList));
+            return Crate<StandardConfigurationControlsCM>.FromContent(ConfigurationControlsLabel, new StandardConfigurationControlsCM(controlsList));
         }
 
         protected string ExtractControlFieldValue(ActionDO curActionDO, string fieldName)
@@ -475,7 +487,7 @@ namespace TerminalBase.BaseClasses
             };
 
             var crateControls = Crate.CreateStandardConfigurationControlsCrate(
-                        "Configuration_Controls", controls
+                        ConfigurationControlsLabel, controls
                     );
 
             return crateControls;
@@ -649,7 +661,7 @@ namespace TerminalBase.BaseClasses
 
             if (controlsCrate == null)
             {
-                controlsCrate = Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls");
+                controlsCrate = Crate.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel);
                 storage.Add(controlsCrate);
             }
 

@@ -847,6 +847,7 @@
     <Content Include="Views\AngularTemplate\AuthenticationDialog.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamDataChooser.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\UsersEmailList.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
