@@ -32,11 +32,10 @@ namespace terminalFr8Core.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
+            var curPayloadDTO = await GetPayload(curActionDO, containerId);
             var storage = Crate.GetStorage(curPayloadDTO);
 
-            var designTimeStorage = Crate.GetStorage(curActionDO);
-            var designTimeControls = designTimeStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+            var designTimeControls = GetConfigurationControls(curActionDO);
             var upstreamDataChooser = (UpstreamDataChooser)designTimeControls.Controls.Single(x => x.Type == ControlTypes.UpstreamDataChooser && x.Name == "Upstream_data_chooser");
             
             var filteredCrates = storage.Where(s => true);
@@ -51,7 +50,7 @@ namespace terminalFr8Core.Actions
                 filteredCrates = filteredCrates.Where(s => s.Label == upstreamDataChooser.SelectedLabel);
             }
 
-            var fieldList = FindFieldsOfCrates(filteredCrates);
+            var fieldList = Crate.GetFields(filteredCrates);
 
             
             if (upstreamDataChooser.SelectedFieldType != null)
@@ -61,20 +60,27 @@ namespace terminalFr8Core.Actions
             }
 
 
-            var prefixValue = GetRowPrefix(curActionDO);
+            var prefixValue = GetRowPrefix(designTimeControls);
             if (prefixValue == null)
             {
                 return Error(curPayloadDTO/*, "This action can't run without a selected column prefix"*/);
             }
-            var matchRegex = new Regex("^(" + prefixValue + ")[0-9]+");
-            
-            var rows = fieldList
-                .Where(f => matchRegex.IsMatch(f.Key))
+
+            var fieldsWithPrefix = ExtractFieldsContainingPrefix(fieldList, prefixValue);
+
+
+            //we get fields that match our conditions
+            //and convert them to TableRowDTO
+            var rows = fieldsWithPrefix
+                //select each field with their row number
+                //and remove prefix part
+                // Line4Expense is converted to lineNumber:4 field: {Key: Expense, Value: xxx}
                 .Select(f => new
                 {
                     lineNumber = Int32.Parse(Regex.Match(f.Key, FirstIntegerRegexPattern).Value),
                     field = new FieldDTO(f.Key.Substring(f.Key.IndexOf(Regex.Match(f.Key, FirstIntegerRegexPattern).Value, StringComparison.Ordinal)+1), f.Value)
                 })
+                //group by linenumber to prepare a table
                 .GroupBy(r => r.lineNumber)
                 .Select(r => new TableRowDTO
                 {
@@ -93,74 +99,17 @@ namespace terminalFr8Core.Actions
             return Success(curPayloadDTO);
         }
 
-        private IEnumerable<FieldDTO> FindFieldsOfCrates(IEnumerable<Crate> crates)
+        private IEnumerable<FieldDTO> ExtractFieldsContainingPrefix(IEnumerable<FieldDTO> fields, String prefix)
         {
-            var fields = new List<FieldDTO>();
-
-            foreach (var crate in crates)
-            {
-                //let's pass unknown manifests for now
-                if (!crate.IsKnownManifest)
-                {
-                    continue;
-                }
-
-                fields.AddRange(FindFieldsRecursive(crate.Get()));                
-            }
-
-            return fields;
+            //this regex searchs for strings that start with user typed prefix value
+            //and continues with a number example: "Line52_Expense", "Line4" are valid
+            var matchRegex = new Regex("^(" + prefix + ")[0-9]+");
+            return fields.Where(f => matchRegex.IsMatch(f.Key));
         }
 
-        private static IEnumerable<FieldDTO> FindFieldsRecursive(Object obj)
+        private string GetRowPrefix(StandardConfigurationControlsCM configurationControlsCM)
         {
-            var fields = new List<FieldDTO>();
-            if (obj is IEnumerable)
-            {
-                
-                var objList = obj as IEnumerable;
-                foreach (var element in objList)
-                {
-                    fields.AddRange(FindFieldsRecursive(element));
-                }
-                return fields;
-            }
-
-            var objType = obj.GetType();
-            bool isPrimitiveType = objType.IsPrimitive || objType.IsValueType || (objType == typeof(string));
-
-            if (!isPrimitiveType)
-            {
-                var field = obj as FieldDTO;
-                if (field != null)
-                {
-                    return new List<FieldDTO> {field};
-                }
-
-                var objProperties = objType.GetProperties();
-                var objFields = objType.GetFields();
-                foreach (var prop in objProperties)
-                {
-                    fields.AddRange(FindFieldsRecursive(prop.GetValue(obj)));
-                }
-
-                foreach (var prop in objFields)
-                {
-                    fields.AddRange(FindFieldsRecursive(prop.GetValue(obj)));
-                }
-            }
-
-            return fields;
-        }
-
-        private string GetRowPrefix(ActionDO curActionDO)
-        {
-            var actionStorage = Crate.GetStorage(curActionDO);
-            var confControls = actionStorage
-                .CrateContentsOfType<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls")
-                .SelectMany(c => c.Controls);
-
-            var prefixValue = confControls.Single(c => c.Name == "Selected_Table_Prefix").Value;
-            return prefixValue;
+            return configurationControlsCM.Controls.Single(c => c.Name == "Selected_Table_Prefix").Value;            
         }
 
         /// <summary>
@@ -179,25 +128,10 @@ namespace terminalFr8Core.Actions
             return queryFieldsCrate;
         }
 
-        private async Task<List<FieldDTO>> GetFieldTypesByManifestTypeAndLabel(ActionDO curActionDO, string manifestType, string label)
-        {
-            var upstreamCrates = await GetCratesByDirection(curActionDO, CrateDirection.Upstream);
-            var filteredUpstreamCrates =
-                upstreamCrates.Where(c => c.ManifestType.Type == manifestType && c.Label == label);
-
-            var filteredFields = FindFieldsOfCrates(filteredUpstreamCrates);
-
-            return filteredFields.GroupBy(f => f.Tags).Select(f => new FieldDTO(f.Key, f.Key)).ToList();
-
-        }
-
         private async Task<List<FieldDTO>> GetLabelsByManifestType(ActionDO curActionDO, string manifestType)
         {
             var upstreamCrates = await GetCratesByDirection(curActionDO, CrateDirection.Upstream);
-            return upstreamCrates
-                    .Where(c => c.ManifestType.Type == manifestType)
-                    .GroupBy(c => c.Label)
-                    .Select(c => new FieldDTO(c.Key, c.Key)).ToList();
+            return Crate.GetLabelsByManifestType(upstreamCrates, manifestType).Select(c => new FieldDTO(c, c)).ToList();
         }
 
         private Crate PackCrate_ConfigurationControls()
@@ -263,7 +197,8 @@ namespace terminalFr8Core.Actions
 
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+            var storage = Crate.GetStorage(curActionDO);
+            var controlsMS = GetConfigurationControls(storage);
             var upstreamDataChooser = (UpstreamDataChooser)controlsMS.Controls.Single(x => x.Type == ControlTypes.UpstreamDataChooser && x.Name == "Upstream_data_chooser");
             if (upstreamDataChooser.SelectedManifest != null)
             {
