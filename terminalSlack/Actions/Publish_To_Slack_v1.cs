@@ -30,6 +30,7 @@ namespace terminalSlack.Actions
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(actionDO, containerId);
+            string message; 
 
             if (NeedsAuthentication(authTokenDO))
             {
@@ -42,22 +43,18 @@ namespace terminalSlack.Actions
                 return Error(payloadCrates, "No selected channelId found in action.");
             }
 
-            var actionFieldName = ExtractControlFieldValue(actionDO, "Select_Message_Field");
-            if (string.IsNullOrEmpty(actionFieldName))
+            try
             {
-                return Error(payloadCrates, "No selected field found in action.");
+                message = ExtractSpecificOrUpstreamValue(actionDO, payloadCrates, "Select_Message_Field");
+            }
+            catch (ApplicationException ex)
+            {
+                return Error(payloadCrates, "Cannot get selected filed value from TextSource control in action. Detailed information: " + ex.Message);
             }
 
-            var payloadFields = ExtractPayloadFields(payloadCrates);
-
-            var payloadMessageField = payloadFields.FirstOrDefault(x => x.Key == actionFieldName);
-            if (payloadMessageField == null)
-            {
-                return Error(payloadCrates, "No specified field found in action.");
-            }
 
             await _slackIntegration.PostMessageToChat(authTokenDO.Token,
-                actionChannelId, payloadMessageField.Value);
+                actionChannelId, message);
 
             return Success(payloadCrates);
         }
