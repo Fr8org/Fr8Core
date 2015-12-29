@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace terminalYammer.DataTransferObjects
+namespace terminalYammer.Model
 {
-    public class YammerGroupDTO
+    public class YammerGroup
     {
         [JsonProperty("name")]
         public string Name { get; set; }

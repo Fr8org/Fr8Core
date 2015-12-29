@@ -9,11 +9,11 @@ using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using terminalYammer.Interfaces;
 using Utilities.Configuration.Azure;
-using terminalYammer.DataTransferObjects;
+using terminalYammer.Model;
 
 namespace terminalYammer.Services
 {
-    public class YammerIntegration : IYammerIntegration
+    public class Yammer : IYammer
     {
         /// <summary>
         /// Build external Yammer OAuth url.
@@ -35,7 +35,7 @@ namespace terminalYammer.Services
             using (var response = await httpClient.GetAsync(url))
             {
                 var responseString = await response.Content.ReadAsStringAsync();
-                var authEnvelope = JsonConvert.DeserializeObject<YammerAccessTokenDTO>(responseString);
+                var authEnvelope = JsonConvert.DeserializeObject<YammerAccessToken>(responseString);
 
                 return authEnvelope.TokenResponse.Token;    
             }
@@ -72,7 +72,7 @@ namespace terminalYammer.Services
             using (var response = await httpClient.GetAsync(url))
             {
                 var responseString = await response.Content.ReadAsStringAsync();
-                var groupsDTO = JsonConvert.DeserializeObject<List<YammerGroupDTO>>(responseString);
+                var groupsDTO = JsonConvert.DeserializeObject<List<YammerGroup>>(responseString);
 
                 var result = new List<FieldDTO>();
                 foreach (var group in groupsDTO)

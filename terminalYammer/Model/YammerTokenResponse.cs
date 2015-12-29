@@ -5,9 +5,9 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
 
-namespace terminalYammer.DataTransferObjects
+namespace terminalYammer.Model
 {
-    public class YammerTokenResponseDTO
+    public class YammerTokenResponse
     {
         [JsonProperty("user_id")]
         public string UserID { get; set; }

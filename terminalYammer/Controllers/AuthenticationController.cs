@@ -13,12 +13,12 @@ namespace terminalYammer.Controllers
     {
         private const string curTerminal = "terminalYammer";
 
-        private readonly IYammerIntegration _yammerIntegration;
+        private readonly IYammer _yammerIntegration;
 
 
         public AuthenticationController()
         {
-            _yammerIntegration = new YammerIntegration();
+            _yammerIntegration = new Yammer();
         }
 
         [HttpPost]
