@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
@@ -12,21 +11,34 @@ namespace Data.Repositories
 {
     class KeyVaultAuthorizationTokenRepository : AuthorizationTokenRepositoryBase
     {
-        private readonly ClientCredential _clientCredentials;
-        private readonly KeyVaultClient _client;
-        private readonly string _ketVaultUrl;
+        private static readonly ClientCredential ClientCredentials;
+        private static readonly KeyVaultClient Client;
+        private static readonly string KeyVaultUrl;
+        private static readonly int MaxWaitTimeout = 5000;
+
+        static KeyVaultAuthorizationTokenRepository()
+        {
+            Client = new KeyVaultClient(GetAccessToken);
+            ClientCredentials = new ClientCredential(CloudConfigurationManager.GetSetting("KeyVaultClientId"), CloudConfigurationManager.GetSetting("KeyVaultClientSecret"));
+            KeyVaultUrl = CloudConfigurationManager.GetSetting("KeyVaultUrl");
+
+            int timeout;
+            string timeoutStr = CloudConfigurationManager.GetSetting("KeyVaultTimeout");
+
+            if (!string.IsNullOrWhiteSpace(timeoutStr) && int.TryParse(timeoutStr, out timeout))
+            {
+                MaxWaitTimeout = timeout;
+            }
+        }
 
         public KeyVaultAuthorizationTokenRepository(IUnitOfWork uow) 
             : base(uow)
         {
-            _client = new KeyVaultClient(GetAccessToken);
-            _clientCredentials = new ClientCredential(CloudConfigurationManager.GetSetting("KeyVaultClientId"), CloudConfigurationManager.GetSetting("KeyVaultClientSecret"));
-            _ketVaultUrl = CloudConfigurationManager.GetSetting("KeyVaultUrl");
         }
-
+        
         protected override void ProcessChanges(IEnumerable<AuthorizationTokenDO> adds, IEnumerable<AuthorizationTokenDO> updates, IEnumerable<AuthorizationTokenDO> deletes)
         {
-            RunInNewThread(() =>
+           // using (WebMonitor.Tracer.Monitor.StartFrame("Processing changes"))
             {
                 var tasks = new List<Task>();
 
@@ -61,89 +73,88 @@ namespace Data.Repositories
 
                 if (tasks.Count == 0)
                 {
-                    return 0;
+                    return;
                 }
 
-                Task.WaitAll(tasks.ToArray());
-
-                return 0;
-            });
+               // using (WebMonitor.Tracer.Monitor.StartFrame("Commiting"))
+                {
+                    Task.WaitAll(tasks.ToArray(), MaxWaitTimeout);
+                }
+            }
         }
 
         protected override string QuerySecurePart(Guid id)
         {
-            return RunInNewThread(() => QuerySecurePartAsync(id).Result);
-        }
-
-        private static T RunInNewThread<T>(Func<T> func)
-        {
-            using (var sync = new ManualResetEventSlim(false))
+           // using (WebMonitor.Tracer.Monitor.StartFrame("QuerySecurePart"))
             {
-                T result = default (T);
+                var task = QuerySecurePartAsync(id);
 
-                ThreadPool.QueueUserWorkItem(_ =>
+                //using (WebMonitor.Tracer.Monitor.StartFrame("waiting for result"))
                 {
-                    try
-                    {
-                        result = func();
-                    }
-                    catch (Exception)
-                    {
-                    }
-                    finally
-                    {
-                        sync.Set();
-                    }
-                });
+                    task.Wait(MaxWaitTimeout);
+                }
 
-                sync.Wait();
-
-                return result;
+                return task.Result;
             }
         }
 
-        private async Task<string> QuerySecurePartAsync(Guid id)
+        private Task<string> QuerySecurePartAsync(Guid id)
         {
-            var secretId = FormatSecretName(id);
+            return Task.Run(async () =>
+            {
+                var secretId = FormatSecretName(id);
 
-            try
-            {
-                return (await _client.GetSecretAsync(_ketVaultUrl, secretId)).Value;
-            }
-            catch
-            {
-                return null;
-            }
+                try
+                {
+                    return (await Client.GetSecretAsync(KeyVaultUrl, secretId)).Value;
+                }
+                catch
+                {
+                    return null;
+                }
+            });
         }
 
-        private async Task UpdateSecretAsync(string secret, string value)
+        private Task UpdateSecretAsync(string secret, string value)
         {
-            try
+            return Task.Run(async () =>
             {
-                await _client.SetSecretAsync(_ketVaultUrl, secret, value);
-            }
-            catch
-            {
-            }
+                try
+                {
+                    await Client.SetSecretAsync(KeyVaultUrl, secret, value);
+                }
+                catch
+                {
+                }
+            });
         }
 
-        private async Task DeleteSecretAsync(string secret)
+        private Task DeleteSecretAsync(string secret)
         {
-            try
+            return Task.Run(async () =>
             {
-                await _client.DeleteSecretAsync(_ketVaultUrl, secret);
-            }
-            catch
-            {
-            }
+                try
+                {
+                    await Client.DeleteSecretAsync(KeyVaultUrl, secret);
+                }
+                catch
+                {
+                }
+            });
         }
 
-        public async Task<string> GetAccessToken(string authority, string resource, string scope)
+        public static Task<string> GetAccessToken(string authority, string resource, string scope)
         {
-            var context = new AuthenticationContext(authority, TokenCache.DefaultShared);
-            var result = await context.AcquireTokenAsync(resource, _clientCredentials);
+            return Task.Run(async () =>
+            {
+                //using (WebMonitor.Tracer.Monitor.StartFrame("GetAccessToken"))
+                {
 
-            return result.AccessToken;
+                    var context = new AuthenticationContext(authority, TokenCache.DefaultShared);
+                    var result = await context.AcquireTokenAsync(resource, ClientCredentials);
+                    return result.AccessToken;
+                }
+            });
         }
 
         private static string FormatSecretName(Guid id)

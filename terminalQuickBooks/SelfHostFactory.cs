@@ -34,8 +34,7 @@ namespace terminalQuickBooks
                     typeof(IHttpControllerTypeResolver),
                     new QuickBooksControllerTypeResolver()
                 );
-
-                app.UseWebApi(config);
+                app.Use(config);
             }
         }
         public static IDisposable CreateServer(string url)

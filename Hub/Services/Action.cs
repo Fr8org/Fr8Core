@@ -28,13 +28,13 @@ namespace Hub.Services
     public class Action : IAction
     {
         private readonly ICrateManager _crate;
-        private readonly Authorization _authorizationToken;
+        private readonly IAuthorization _authorizationToken;
 
         private readonly IRouteNode _routeNode;
 
         public Action()
         {
-            _authorizationToken = new Authorization();
+            _authorizationToken = ObjectFactory.GetInstance<IAuthorization>();
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
@@ -53,11 +53,11 @@ namespace Hub.Services
 
             action.ParentRouteNode = submittedActionData.ParentRouteNode;
             action.ParentRouteNodeId = submittedActionData.ParentRouteNodeId;
-          
+
             uow.SaveChanges();
 
             return uow.ActionRepository.GetByKey(submittedActionData.Id);
-            }
+        }
 
         public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
         {
@@ -167,7 +167,7 @@ namespace Hub.Services
                 }
 
                 submittedAction.Ordering = subroute.ChildNodes.Count > 0 ? subroute.ChildNodes.Max(x => x.Ordering) + 1 : 1;
-                
+
                 // Add Action to repo.
                 uow.ActionRepository.Add(submittedAction);
 
@@ -197,39 +197,39 @@ namespace Hub.Services
                 // Sync nested action structure
                 if (submittedAction.ChildNodes != null)
                 {
-                // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
-                // desired set of children. 
+                    // Dictionary is used to avoid O(action.ChildNodes.Count*existingAction.ChildNodes.Count) complexity when computing difference between sets. 
+                    // desired set of children. 
                     var newChildren = submittedAction.ChildNodes.OfType<ActionDO>().Where(x => !x.IsTempId).ToDictionary(x => x.Id, y => y);
-                // current set of children
-                var currentChildren = existingAction.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
+                    // current set of children
+                    var currentChildren = existingAction.ChildNodes.OfType<ActionDO>().ToDictionary(x => x.Id, y => y);
 
-                // Now we must find what child must be added to existingAction
-                // Chilren to be added are difference between set newChildren and currentChildren (those elements that exist in newChildren but do not exist in currentChildren).
+                    // Now we must find what child must be added to existingAction
+                    // Chilren to be added are difference between set newChildren and currentChildren (those elements that exist in newChildren but do not exist in currentChildren).
                     foreach (var newAction in submittedAction.ChildNodes.OfType<ActionDO>().Where(x => x.IsTempId || !currentChildren.ContainsKey(x.Id)).ToArray())
-                {
+                    {
                         newAction.ParentRouteNodeId = null;
                         newAction.ParentRouteNode = null;
                         var newChild = SaveAndUpdateRecursive(uow, newAction, existingAction, pendingConfiguration);
-                    existingAction.ChildNodes.Add(newChild);
-                }
+                        existingAction.ChildNodes.Add(newChild);
+                    }
 
-                
-                    
-                // Now we must find what child must be removed from existingAction
-                // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
-                foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
-                {
-                    existingAction.ChildNodes.Remove(actionToRemove.Value);
-                    //i (bahadir) commented out this line. currently our deletion mechanism already removes this action from it's parent
-                    //TODO talk to Vladimir about this
-                    //    _routeNode.Delete(uow, actionToRemove.Value);
-                }
-                // We just update those children that haven't changed (exists both in newChildren and currentChildren)
+
+
+                    // Now we must find what child must be removed from existingAction
+                    // Chilren to be removed are difference between set currentChildren and newChildren (those elements that exist in currentChildren but do not exist in newChildren).
+                    foreach (var actionToRemove in currentChildren.Where(x => !newChildren.ContainsKey(x.Key)).ToArray())
+                    {
+                        existingAction.ChildNodes.Remove(actionToRemove.Value);
+                        //i (bahadir) commented out this line. currently our deletion mechanism already removes this action from it's parent
+                        //TODO talk to Vladimir about this
+                        //    _routeNode.Delete(uow, actionToRemove.Value);
+                    }
+                    // We just update those children that haven't changed (exists both in newChildren and currentChildren)
                     foreach (var actionToUpdate in newChildren.Where(x => !x.Value.IsTempId && currentChildren.ContainsKey(x.Key)))
-                {
+                    {
                         SaveAndUpdateRecursive(uow, actionToUpdate.Value, existingAction, pendingConfiguration);
+                    }
                 }
-            }
             }
 
             return existingAction;
@@ -318,15 +318,15 @@ namespace Hub.Services
             {
                 curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
 
-            try
-            {
-                tempActionDTO = await CallTerminalActionAsync<ActionDTO>("configure", curActionDO, Guid.Empty);
-            }
-            catch (ArgumentException e)
-            {
+                try
+                {
+                    tempActionDTO = await CallTerminalActionAsync<ActionDTO>("configure", curActionDO, Guid.Empty);
+                }
+                catch (ArgumentException e)
+                {
                     EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(curActionDO), e.Message, curActionDO.Id.ToString());
-                throw;
-            }
+                    throw;
+                }
                 catch (RestfulServiceException e)
                 {
                     // terminal requested token invalidation
@@ -345,9 +345,8 @@ namespace Hub.Services
                         throw;
                     }
                 }
-            catch (Exception e)
-            {
-
+                catch (Exception e)
+                {
                     JsonSerializerSettings settings = new JsonSerializerSettings
                     {
                         PreserveReferencesHandling = PreserveReferencesHandling.Objects
@@ -355,9 +354,8 @@ namespace Hub.Services
 
                     var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
                     EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e.Message, curActionDO.Id.ToString());
-                throw;
-            }
-
+                    throw;
+                }
             }
 
             return Mapper.Map<ActionDO>(tempActionDTO);
@@ -423,14 +421,14 @@ namespace Hub.Services
                             {
                                 resettable.Reset();
                                 hasChanges = true;
+                            }
                         }
-                    }
 
                         if (!hasChanges)
-                {
+                        {
                             updater.DiscardChanges();
-                }
-                }
+                        }
+                    }
                 }
 
                 _routeNode.Delete(uow, curAction);
@@ -467,22 +465,22 @@ namespace Hub.Services
 
         public async Task PrepareToExecute(ActionDO curAction, ActionState curActionState, ContainerDO curContainerDO, IUnitOfWork uow)
         {
-                EventManager.ActionStarted(curAction);
+            EventManager.ActionStarted(curAction);
 
-                var payload = await Run(curAction, curActionState, curContainerDO);
+            var payload = await Run(curAction, curActionState, curContainerDO);
 
-                if (payload != null)
+            if (payload != null)
+            {
+                using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
                 {
-                    using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
-                    {
-                        updater.CrateStorage = _crate.FromDto(payload.CrateStorage);
+                    updater.CrateStorage = _crate.FromDto(payload.CrateStorage);
                 }
-                    //curContainerDO.CrateStorage = payload.CrateStorage;
-                }
-
-                uow.ActionRepository.Attach(curAction);
-                uow.SaveChanges();
+                //curContainerDO.CrateStorage = payload.CrateStorage;
             }
+
+            uow.ActionRepository.Attach(curAction);
+            uow.SaveChanges();
+        }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
         public async Task<PayloadDTO> Run(ActionDO curActionDO, ActionState curActionState, ContainerDO curContainerDO)
@@ -522,10 +520,10 @@ namespace Hub.Services
         public StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction)
         {
             var control = _crate.GetStorage(curAction.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-//            var curCrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curAction.CrateStorage);
-//            var curControlsCrate =
-//                _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, curCrateStorage)
-//                    .FirstOrDefault();
+            //            var curCrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curAction.CrateStorage);
+            //            var curControlsCrate =
+            //                _crate.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, curCrateStorage)
+            //                    .FirstOrDefault();
 
             if (control == null)
             {
@@ -620,27 +618,27 @@ namespace Hub.Services
         }
 
 
-//        public Task<IEnumerable<T>> FindCratesByManifestType<T>(ActionDO curActionDO, GetCrateDirection direction = GetCrateDirection.None)
-//        {
-//
-//        }
+        //        public Task<IEnumerable<T>> FindCratesByManifestType<T>(ActionDO curActionDO, GetCrateDirection direction = GetCrateDirection.None)
+        //        {
+        //
+        //        }
 
-//        public async Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Data.Interfaces.Manifests.Manifest curSchema, string key,
-//                                                                string fieldName = "name",
-//                                                                GetCrateDirection direction = GetCrateDirection.None)
-//        {
-//            var controlsCrates = _crate.GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO()).ToList();
-//
-//            if (direction != GetCrateDirection.None)
-//        {
-//                var upstreamCrates = await ObjectFactory.GetInstance<IRouteNode>()
-//                    .GetCratesByDirection(curActionDO.Id, curSchema.ManifestName, direction).ConfigureAwait(false);
-//
-//                controlsCrates.AddRange(upstreamCrates);
-//            }
-//
-//            var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: fieldName);
-//           return keys;
-//        }
+        //        public async Task<IEnumerable<JObject>> FindKeysByCrateManifestType(ActionDO curActionDO, Data.Interfaces.Manifests.Manifest curSchema, string key,
+        //                                                                string fieldName = "name",
+        //                                                                GetCrateDirection direction = GetCrateDirection.None)
+        //        {
+        //            var controlsCrates = _crate.GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO()).ToList();
+        //
+        //            if (direction != GetCrateDirection.None)
+        //        {
+        //                var upstreamCrates = await ObjectFactory.GetInstance<IRouteNode>()
+        //                    .GetCratesByDirection(curActionDO.Id, curSchema.ManifestName, direction).ConfigureAwait(false);
+        //
+        //                controlsCrates.AddRange(upstreamCrates);
+        //            }
+        //
+        //            var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: fieldName);
+        //           return keys;
+        //        }
     }
 }

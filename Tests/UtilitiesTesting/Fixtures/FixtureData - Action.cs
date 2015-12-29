@@ -383,7 +383,8 @@ namespace UtilitiesTesting.Fixtures
                 Id = 1,
                 Name = "AzureSqlServer",
                 TerminalStatus = 1,
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.None
             };
 
             ActivityTemplateDO curActivityTemplateDO = new ActivityTemplateDO
@@ -392,10 +393,8 @@ namespace UtilitiesTesting.Fixtures
                 //ActionType = "Write to Sql Server",
                 //ParentPluginRegistration = "pluginAzureSqlServer",
                 Version = "v1",
-                AuthenticationType = AuthenticationType.None,
                 Terminal = curTerminalDO,
                 TerminalId = 1,
-
             };
 
 

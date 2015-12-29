@@ -159,18 +159,18 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var findObjectHelper = new FindObjectHelper();
-            var payload = await GetProcessPayload(curActionDO, containerId);
+            var payload = await GetPayload(curActionDO, containerId);
 
             var columnTypes = await findObjectHelper.ExtractColumnTypes(this, curActionDO);
             if (columnTypes == null)
             {
-                throw new ApplicationException("No column types crate found.");
+                return Error(payload, "No column types crate found.");
             }
 
             var queryPayloadValue = ExtractSqlQuery(payload);
             if (queryPayloadValue == null)
             {
-                throw new ApplicationException("No Sql Query payload crate found.");
+                return Error(payload, "No Sql Query payload crate found.");
             }
 
             var connectionString = await ExtractConnectionString(curActionDO);
@@ -188,7 +188,7 @@ namespace terminalFr8Core.Actions
                 updater.CrateStorage.Add(payloadCMCrate);
             }
 
-            return payload;
+            return Success(payload);
         }
 
         #endregion Execution

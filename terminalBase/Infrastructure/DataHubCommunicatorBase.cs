@@ -35,7 +35,7 @@ namespace TerminalBase.Infrastructure
             }
         }
 
-        public Task<PayloadDTO> GetProcessPayload(ActionDO actionDO, Guid containerId)
+        public Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId)
         {
             var payload = new PayloadDTO(containerId)
             {

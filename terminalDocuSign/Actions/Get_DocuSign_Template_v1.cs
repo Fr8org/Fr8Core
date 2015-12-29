@@ -47,14 +47,11 @@ namespace terminalDocuSign.Actions
         public async Task<PayloadDTO> Run(ActionDO actionDO,
             Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(actionDO, containerId);
+            var payloadCrates = await GetPayload(actionDO, containerId);
             
             if (NeedsAuthentication(authTokenDO))
             {
-                //return NeedsAuthenticationError(processPayload);
-                //TODO change this after 1882 merge
-                return Error(processPayload);
-                //throw new ApplicationException("No AuthToken provided.");
+                return NeedsAuthenticationError(payloadCrates);
             }
             //Get envlopeId
             var control = (DropDownList) FindControl(Crate.GetStorage(actionDO), "Available_Templates");
@@ -62,7 +59,7 @@ namespace terminalDocuSign.Actions
             if (selectedDocusignTemplateId == null)
             {
                 //TODO change this after 1882 merge
-                return Error(processPayload);
+                return Error(payloadCrates, "No Template was selected at design time", ActionErrorCode.DESIGN_TIME_DATA_MISSING);
             }
 
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
@@ -70,11 +67,11 @@ namespace terminalDocuSign.Actions
             var downloadedTemplate = _docuSignManager.DownloadDocuSignTemplate(docuSignAuthDTO, selectedDocusignTemplateId);
             //and add it to payload
             var templateCrate = CreateDocuSignTemplateCrateFromDto(downloadedTemplate);
-            using (var updater = Crate.UpdateStorage(processPayload))
+            using (var updater = Crate.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(templateCrate);
             }
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
         private Crate CreateDocuSignTemplateCrateFromDto(DocuSignTemplateDTO template)

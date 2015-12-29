@@ -366,24 +366,24 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             var actionCrateStorage = Crate.GetStorage(curActionDO);
             
             var sqlQueryCM = ExtractSelectedQueryFromCrate(actionCrateStorage);
             if (sqlQueryCM == null)
             {
-                throw new ApplicationException("Selected Query crate was not found in Action's CrateStorage");
+                return Error(payloadCrates, "Selected Query crate was not found in Action's CrateStorage");
             }
 
             var sqlQueryCrate = Crate<StandardQueryCM>.FromContent("Sql Query", sqlQueryCM);
 
-            using (var updater = Crate.UpdateStorage(processPayload))
+            using (var updater = Crate.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(sqlQueryCrate);
             }
 
-            return processPayload;
+            return Success(payloadCrates);
         }
 
         #endregion Execution.

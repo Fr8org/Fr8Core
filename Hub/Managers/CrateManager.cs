@@ -212,5 +212,19 @@ namespace Hub.Managers
 
             return key;
         }
+
+        public OperationalStateCM GetOperationalState(PayloadDTO payloadDTO)
+        {
+            CrateStorage curCrateStorage = FromDto(payloadDTO.CrateStorage);
+            OperationalStateCM curOperationalState = curCrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            return curOperationalState;
+        }
+        //This method returns one crate of the specified Manifest Type from the payload
+        public T GetByManifest<T>(PayloadDTO payloadDTO) where T : Manifest
+        {
+            CrateStorage curCrateStorage = FromDto(payloadDTO.CrateStorage);
+            var curOperationalState = curCrateStorage.CratesOfType<T>().Single().Content;
+            return curOperationalState;
+        }
     }
 }

@@ -14,6 +14,7 @@ namespace Data.Entities
     {
         public TerminalDO()
         {
+            this.AuthenticationType = States.AuthenticationType.None;
             this.SubscriptionRequired = true;
         }
 
@@ -42,5 +43,11 @@ namespace Data.Entities
         public virtual Fr8AccountDO UserDO { get; set; }
 
         public string Description { get; set; }
+
+        [Required]
+        [ForeignKey("AuthenticationTypeTemplate")]
+        public int AuthenticationType { get; set; }
+
+        public virtual _AuthenticationTypeTemplate AuthenticationTypeTemplate { get; set; }
     }
 }

@@ -376,5 +376,12 @@ namespace Data.Crates
         }
 
         /**********************************************************************************/
+
+        public CrateManifestType GetManifestType<T>()
+        {
+            CrateManifestType manifestType;
+            ManifestTypeCache.TryResolveManifest(typeof (T), out manifestType);
+            return manifestType;
+        }
     }
 }
