@@ -19,7 +19,7 @@ module dockyard.directives.textSource {
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field);
                 }
-            }
+            };
         }];
 
         return {

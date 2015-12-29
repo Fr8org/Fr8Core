@@ -532,7 +532,7 @@ namespace TerminalBase.BaseClasses
             switch (textSourceControl.ValueSource)
             {
                 case "specific":
-                    return textSourceControl.Value;
+                    return textSourceControl.TextValue;
 
                 case "upstream":
                     return ExtractPayloadFieldValue(runTimeCrateStorage, textSourceControl.selectedKey, actionDO);
