@@ -78,7 +78,7 @@ namespace terminalExcel.Actions
 
         private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, Guid containerId)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             var tableDataMS = await GetTargetTableData(
                 curActionDO,
@@ -87,18 +87,18 @@ namespace terminalExcel.Actions
 
             if (!tableDataMS.FirstRowHeaders)
             {
-                throw new Exception("No headers found in the Standard Table Data Manifest.");
+                return Error(payloadCrates, "No headers found in the Standard Table Data Manifest.");
             }
 
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
             
             
-            using (var updater = Crate.UpdateStorage(processPayload))
+            using (var updater = Crate.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS));
             }
-            return processPayload;            
+            return Success(payloadCrates);        
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(ActionDO actionDO, CrateStorage curCrateStorageDTO)

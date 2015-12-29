@@ -77,7 +77,8 @@ namespace terminalDocuSign.Tests.Services
                 var recordDocuSignActivityTemplate = FixtureData.TestActivityTemplateDO_RecordDocuSignEvents();
                 var storeMTDataActivityTemplate = FixtureData.TestActivityTemplateDO_StoreMTData();
 
-                recordDocuSignActivityTemplate.AuthenticationType = storeMTDataActivityTemplate.AuthenticationType = AuthenticationType.None;
+                // TODO: fix this.
+                // recordDocuSignActivityTemplate.AuthenticationType = storeMTDataActivityTemplate.AuthenticationType = AuthenticationType.None;
 
                 uow.TerminalRepository.Add(recordDocuSignActivityTemplate.Terminal);
                 uow.TerminalRepository.Add(storeMTDataActivityTemplate.Terminal);

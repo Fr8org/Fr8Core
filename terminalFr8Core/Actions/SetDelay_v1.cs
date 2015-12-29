@@ -25,13 +25,13 @@ namespace terminalFr8Core.Actions
     {
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
+            var curPayloadDTO = await GetPayload(curActionDO, containerId);
             var payloadStorage = Crate.GetStorage(curPayloadDTO);
             var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
             //check for operations crate
             if (operationsCrate == null)
             {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "This Action can't run without OperationalStateCM crate");
+                return Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActionErrorCode.PAYLOAD_DATA_MISSING);
             }
             
             //find our action state in operations crate

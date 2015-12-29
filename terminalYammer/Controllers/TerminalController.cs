@@ -27,7 +27,8 @@ namespace terminalYammer.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalYammer",
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.External
             };
 
             var webService = new WebServiceDTO
@@ -43,7 +44,7 @@ namespace terminalYammer.Controllers
                 Tags = "Notifier",
                 Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.External,
+                NeedsAuthentication = true,
                 Version = "1",
                 Description = "Post To Yammer: Description",
                 MinPaneWidth = 330,

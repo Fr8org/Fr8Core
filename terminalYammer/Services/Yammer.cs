@@ -36,7 +36,6 @@ namespace terminalYammer.Services
             {
                 var responseString = await response.Content.ReadAsStringAsync();
                 var authEnvelope = JsonConvert.DeserializeObject<YammerAccessToken>(responseString);
-
                 return authEnvelope.TokenResponse.Token;    
             }
         }
@@ -51,15 +50,17 @@ namespace terminalYammer.Services
 
         public async Task<string> GetUserId(string oauthToken)
         {
-            var url = PrepareTokenUrl("YammmerOAuthTestUrl", oauthToken);
+            var url = PrepareTokenUrl("YammmerOAuthCurrentUserUrl", oauthToken);
 
             var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + oauthToken);
+
             using (var response = await httpClient.GetAsync(url))
             {
                 var responseString = await response.Content.ReadAsStringAsync();
                 var jsonObj = JsonConvert.DeserializeObject<JObject>(responseString);
 
-                return jsonObj.Value<string>("user_id");
+                return jsonObj.Value<string>("email");
             }
         }
 

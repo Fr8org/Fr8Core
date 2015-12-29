@@ -60,6 +60,13 @@ namespace terminalSendGrid.Tests.Actions
             var payLoadDto = FixtureData.CratePayloadDTOForSendEmailViaSendGridConfiguration;
             payLoadDto.CrateStorage = actionDto.CrateStorage;
 
+            using (var updater = new CrateManager().UpdateStorage(payLoadDto))
+            {
+                var operationalStatus = new OperationalStateCM();
+                var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
+                updater.CrateStorage.Add(operationsCrate);
+            }
+
             var restfulServiceClient = new Mock<IRestfulServiceClient>();
             restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>()))
                 .Returns(Task.FromResult(payLoadDto));

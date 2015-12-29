@@ -10,6 +10,8 @@
             private $scope,
             private $http: ng.IHttpService) {
 
+            var _loading = false;
+
             $scope.authError = false;
             $scope.authErrorText = null;
             $scope.mode = $scope.mode;
@@ -23,18 +25,23 @@
                 domain: "dockyard.company"
             };
 
+            $scope.isLoading = function () {
+                return _loading;
+            };
+
             $scope.submitForm = function () {
                 if (!$scope.form.$valid) {
                     return;
                 }
 
-
                 var data = {
-                    ActivityTemplateId: $scope.activityTemplateId,
+                    TerminalId: $scope.terminalId,
                     Username: $scope.formData.username,
                     Password: $scope.formData.password,
                     Domain: $scope.formData.domain
                 };
+
+                _loading = true;
 
                 $http.post('/api/authentication/token', data)
                     .then(function (res: any) {
@@ -49,6 +56,9 @@
                     })
                     .catch(function () {
                         $scope.authError = true;
+                    })
+                    .finally(function () {
+                        _loading = false;
                     });
             };
         }

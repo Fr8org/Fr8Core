@@ -26,6 +26,7 @@ namespace terminalDocuSign.Actions
 {
     public class Send_DocuSign_Envelope_v1 : BaseTerminalAction
     {
+        private DocuSignManager _docuSignManager = new DocuSignManager();
         public Send_DocuSign_Envelope_v1()
         {
         }
@@ -39,12 +40,12 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            if (authTokenDO == null)
-            {
-                throw new ApplicationException("No auth token provided.");
-            }
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(payloadCrates);
+            }
 
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
@@ -52,13 +53,13 @@ namespace terminalDocuSign.Actions
             curEnvelope.Login = new DocuSignPackager()
                 .Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
-            curEnvelope = AddTemplateData(curActionDO, processPayload, curEnvelope);
+            curEnvelope = AddTemplateData(curActionDO, payloadCrates, curEnvelope);
             curEnvelope.EmailSubject = "Test Message from Fr8";
             curEnvelope.Status = "sent";
 
             var result = curEnvelope.Create();
 
-            return processPayload;
+            return Success(payloadCrates);
         }
 
         private string ExtractTemplateId(ActionDO curActionDO)
@@ -76,12 +77,12 @@ namespace terminalDocuSign.Actions
             return result;
         }
 
-        private Envelope AddTemplateData(ActionDO actionDO, PayloadDTO processPayload, Envelope curEnvelope)
+        private Envelope AddTemplateData(ActionDO actionDO, PayloadDTO payloadCrates, Envelope curEnvelope)
         {
             var curTemplateId = ExtractTemplateId(actionDO);
             var curRecipientAddress = ExtractSpecificOrUpstreamValue(
                 actionDO,
-                processPayload,
+                payloadCrates,
                 "Recipient"
             );
 
@@ -134,10 +135,6 @@ namespace terminalDocuSign.Actions
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
-            var template = new DocuSignTemplate();
-            template.Login = new DocuSignPackager().Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
-
-
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
@@ -147,7 +144,7 @@ namespace terminalDocuSign.Actions
                 {
                     var crateControlsDTO = CreateDocusignTemplateConfigurationControls(curActionDO);
                     // and one to hold the available templates, which need to be requested from docusign
-                    var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
+                    var crateDesignTimeFieldsDTO = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
 
                     updater.CrateStorage = new CrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
                 }
@@ -213,9 +210,11 @@ namespace terminalDocuSign.Actions
                     standartFields.ToArray()
                 );
 
+                updater.CrateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
+                updater.CrateStorage.RemoveByLabel("DocuSignTemplateStandardFields");
                 updater.CrateStorage.Add(crateUserDefinedDTO);
                 updater.CrateStorage.Add(crateStandardDTO);
-                
+
             }
 
             return await Task.FromResult(curActionDO);
@@ -251,17 +250,6 @@ namespace terminalDocuSign.Actions
             };
 
             return Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
-        }
-
-        private Crate CreateDocusignTemplateNameCrate(IDocuSignTemplate template)
-        {
-            var templatesDTO = template.GetTemplates(null);
-            var fieldsDTO = templatesDTO.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToList();
-            var controls = new StandardDesignTimeFieldsCM()
-            {
-                Fields = fieldsDTO,
-            };
-            return Crate.CreateDesignTimeFieldsCrate("Available Templates", fieldsDTO.ToArray());
         }
 
         public async Task UpdateUpstreamCrate(ActionDO curActionDO)

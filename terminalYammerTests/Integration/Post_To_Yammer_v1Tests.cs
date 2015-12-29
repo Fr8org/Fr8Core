@@ -80,8 +80,7 @@ namespace terminalYammerTests.Integration
 
         [Test]
         [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedException = typeof(RestfulServiceException)
         )]
         public async void Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
         {
@@ -104,14 +103,12 @@ namespace terminalYammerTests.Integration
         // We haven't selected the group. We are expecting the exception from run method 
         [Test]
         [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No selected group found in action.""}"
+            ExpectedException = typeof(RestfulServiceException)
         )]
         public async void Post_To_Yammer_Run_Return_Payload()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
-
             var actionDTO = await ConfigurationRequest();
 
             AddPayloadCrate(
@@ -124,15 +121,15 @@ namespace terminalYammerTests.Integration
 
             actionDTO.AuthToken = HealthMonitor_FixtureData.Yammer_AuthToken();
             //Act
-            var responsePayloadDTO =
-                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+                var responsePayloadDTO =
+             await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
 
             //Assert
             var crateStorage = Crate.FromDto(responsePayloadDTO.CrateStorage);
-
             var StandardPayloadDataCM = crateStorage.CrateContentsOfType<StandardPayloadDataCM>().SingleOrDefault();
 
             Assert.IsNotNull(StandardPayloadDataCM);
+           
         }
     }
 }

@@ -9,7 +9,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_RenderConfiguration,
         PaneConfigureAction_ChildActionsDetected,
         PaneConfigureAction_ChildActionsReconfiguration,
-        PaneConfigureAction_ReloadAction
+        PaneConfigureAction_ReloadAction,
+        PaneConfigureAction_SetSolutionMode
     }
 
     export class ActionReconfigureEventArgs {
@@ -78,6 +79,7 @@ module dockyard.directives.paneConfigureAction {
         configurationWatchUnregisterer: Function;
         mode: string;
         reconfigureChildrenActions: boolean;
+        setSolutionMode: () => void;
     }
 
 
@@ -105,7 +107,7 @@ module dockyard.directives.paneConfigureAction {
         public controller: ($scope: IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
             currentAction: '=',
-            mode: '@'
+            mode: '='
         };
         public restrict = 'E';
 
@@ -139,6 +141,7 @@ module dockyard.directives.paneConfigureAction {
                 $scope.loadConfiguration = loadConfiguration;
                 $scope.onConfigurationChanged = onConfigurationChanged;
                 $scope.processConfiguration = processConfiguration;
+                $scope.setSolutionMode = setSolutionMode;
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
                     //this might be a general reconfigure command
@@ -310,18 +313,22 @@ module dockyard.directives.paneConfigureAction {
                         var authCrate = crateHelper
                             .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
 
-                        var authMS = <any>authCrate.contents;
+                        startAuthentication($scope.currentAction.id);
 
-                        // Dockyard auth mode.
-                        if (authMS.Mode == 1 || authMS.Mode == 3) {
-                            startInternalAuthentication($scope.currentAction.activityTemplate.id, authMS.Mode);
-                        }
+                        // TODO: remove this.
+                        // var authMS = <any>authCrate.contents;
 
-                        // External auth mode.                           
-                        else {
-                            // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                            startExternalAuthentication($scope.currentAction.activityTemplate.id);
-                        }
+                        // TODO: remove this.
+                        // // Dockyard auth mode.
+                        // if (authMS.Mode == 1 || authMS.Mode == 3) {
+                        //     startInternalAuthentication($scope.currentAction.id, authMS.Mode);
+                        // }
+                        // 
+                        // // External auth mode.                           
+                        // else {
+                        //     // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
+                        //     startExternalAuthentication($scope.currentAction.id);
+                        // }
                     }
 
                     $scope.currentAction.configurationControls =
@@ -335,52 +342,74 @@ module dockyard.directives.paneConfigureAction {
                     }, 1000);
                 }
 
-                function startInternalAuthentication(activityTemplateId: number, mode: number) {
-                    var self = this;
-
+                function startAuthentication(actionId: string) {
                     var modalScope = <any>$scope.$new(true);
-                    modalScope.activityTemplateId = activityTemplateId;
-                    modalScope.mode = mode;
+                    modalScope.actionIds = [actionId];
 
                     $modal.open({
                         animation: true,
-                        templateUrl: '/AngularTemplate/InternalAuthentication',
-                        controller: 'InternalAuthenticationController',
+                        templateUrl: '/AngularTemplate/AuthenticationDialog',
+                        controller: 'AuthenticationDialogController',
                         scope: modalScope
                     })
-                        .result.then(() => loadConfiguration());
+                    .result
+                    .then(() => loadConfiguration());
                 }
 
-                function startExternalAuthentication(activityTemplateId: number) {
-                    var self = this;
-                    var childWindow;
+                // TODO: remove this.
+                // function startInternalAuthentication(actionId: string, mode: number) {
+                //     var self = this;
+                // 
+                //     var modalScope = <any>$scope.$new(true);
+                //     modalScope.actionId = actionId;
+                //     modalScope.mode = mode;
+                //     
+                //     $modal.open({
+                //         animation: true,
+                //         templateUrl: '/AngularTemplate/InternalAuthentication',
+                //         controller: 'InternalAuthenticationController',
+                //         scope: modalScope
+                //     })
+                //     .result
+                //     .then(() => loadConfiguration());
+                // }
 
-                    var messageListener = function (event) {
-                        if (!event.data || event.data != 'external-auth-success') {
-                            return;
-                        }
+                // TODO: remove this.
+                // function startExternalAuthentication(actionId: string) {
+                //     var self = this;
+                //     var childWindow;
+                // 
+                //     var messageListener = function (event) {
+                //         if (!event.data || event.data != 'external-auth-success') {
+                //             return;
+                //         }
+                // 
+                //         childWindow.close();
+                //         loadConfiguration();
+                //     };
+                // 
+                //     $http
+                //         .get('/api/authentication/initial_url?id=' + actionId)
+                //         .then(res => {
+                //             var url = (<any>res.data).url;
+                //             childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
+                //             window.addEventListener('message', messageListener);
+                // 
+                //             var isClosedHandler = function () {
+                //                 if (childWindow.closed) {
+                //                     window.removeEventListener('message', messageListener);
+                //                 }
+                //                 else {
+                //                     setTimeout(isClosedHandler, 500);
+                //                 }
+                //             };
+                //             setTimeout(isClosedHandler, 500);
+                //         });
+                // }
 
-                        childWindow.close();
-                        loadConfiguration();
-                    };
+                function setSolutionMode() {
+                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_SetSolutionMode]);
 
-                    $http
-                        .get('/api/authentication/initial_url?id=' + activityTemplateId)
-                        .then(res => {
-                            var url = (<any>res.data).url;
-                            childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
-                            window.addEventListener('message', messageListener);
-
-                            var isClosedHandler = function () {
-                                if (childWindow.closed) {
-                                    window.removeEventListener('message', messageListener);
-                                }
-                                else {
-                                    setTimeout(isClosedHandler, 500);
-                                }
-                            };
-                            setTimeout(isClosedHandler, 500);
-                        });
                 }
             }
         }    

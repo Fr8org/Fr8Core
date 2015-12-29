@@ -31,7 +31,7 @@ namespace terminalYammer.Controllers
             var externalAuthUrlDTO = new ExternalAuthUrlDTO()
             {
                 ExternalStateToken = externalStateToken,
-                Url = url
+                Url = url,
             };
 
             return externalAuthUrlDTO;
@@ -55,11 +55,13 @@ namespace terminalYammer.Controllers
                 }
 
                 var oauthToken = await _yammerIntegration.GetOAuthToken(code);
+                var userID = await _yammerIntegration.GetUserId(oauthToken);
 
                 return new AuthorizationTokenDTO()
                 {
                     Token = oauthToken,
-                    ExternalStateToken = state
+                    ExternalStateToken = state,
+                    ExternalAccountId = userID
                 };
             }
             catch (Exception ex)

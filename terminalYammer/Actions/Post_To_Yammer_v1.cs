@@ -101,8 +101,8 @@ namespace terminalYammer.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+
             CheckAuthentication(authTokenDO);
-            var processPayload = await GetProcessPayload(actionDO, containerId);
             var ui = Crate.GetStorage(actionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (ui == null)
@@ -113,7 +113,9 @@ namespace terminalYammer.Actions
 
             ValidateYammerAction(groupMessageField.GroupID, "No selected group found in action.");
             ValidateYammerAction(groupMessageField.Message, "No selected field found in action.");
-            
+
+            var processPayload = await GetPayload(actionDO, containerId);
+
             var payloadMessageField = Crate.GetFieldByKey<StandardPayloadDataCM>(processPayload.CrateStorage, groupMessageField.Message);
 
             ValidateYammerAction(payloadMessageField, "No specified field found in action.");

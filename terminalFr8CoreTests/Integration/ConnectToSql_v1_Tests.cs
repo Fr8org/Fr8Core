@@ -233,6 +233,8 @@ namespace terminalFr8CoreTests.Integration
 
             var actionDTO = FixtureData.ConnectToSql_InitialConfiguration_ActionDTO();
 
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
             AddPayloadCrate(
                actionDTO,
                new EventReportCM()
@@ -241,7 +243,10 @@ namespace terminalFr8CoreTests.Integration
             var responsePayloadDTO =
                 await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
 
-            Assert.IsNull(responsePayloadDTO);
+            Assert.NotNull(responsePayloadDTO);
+
+            var crateStorage = Crate.GetStorage(responsePayloadDTO);
+            Assert.AreEqual(2, crateStorage.Count);
         }
     }
 }

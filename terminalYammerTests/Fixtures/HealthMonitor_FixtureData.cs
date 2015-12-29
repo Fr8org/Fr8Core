@@ -32,8 +32,8 @@ namespace terminalYammerTests.Fixtures
             return new ActionDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Select Yammer Group",
-                Label = "Selected_Yammer_Group",
+                Name = "Groups",
+                Label = "Selected Yammer Group",
                 AuthToken = isAuthToken ? Yammer_AuthToken() : null,
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id

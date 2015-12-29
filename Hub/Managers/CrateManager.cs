@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -211,6 +212,86 @@ namespace Hub.Managers
             }
 
             return key;
+        }
+
+        public OperationalStateCM GetOperationalState(PayloadDTO payloadDTO)
+        {
+            CrateStorage curCrateStorage = FromDto(payloadDTO.CrateStorage);
+            OperationalStateCM curOperationalState = curCrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            return curOperationalState;
+        }
+        //This method returns one crate of the specified Manifest Type from the payload
+        public T GetByManifest<T>(PayloadDTO payloadDTO) where T : Manifest
+        {
+            CrateStorage curCrateStorage = FromDto(payloadDTO.CrateStorage);
+            var curOperationalState = curCrateStorage.CratesOfType<T>().Single().Content;
+            return curOperationalState;
+        }
+
+        public IEnumerable<FieldDTO> GetFields(IEnumerable<Crate> crates)
+        {
+            var fields = new List<FieldDTO>();
+
+            foreach (var crate in crates)
+            {
+                //let's pass unknown manifests for now
+                if (!crate.IsKnownManifest)
+                {
+                    continue;
+                }
+
+                fields.AddRange(FindFieldsRecursive(crate.Get()));
+            }
+
+            return fields;
+        }
+
+        private static IEnumerable<FieldDTO> FindFieldsRecursive(Object obj)
+        {
+            var fields = new List<FieldDTO>();
+            if (obj is IEnumerable)
+            {
+
+                var objList = obj as IEnumerable;
+                foreach (var element in objList)
+                {
+                    fields.AddRange(FindFieldsRecursive(element));
+                }
+                return fields;
+            }
+
+            var objType = obj.GetType();
+            bool isPrimitiveType = objType.IsPrimitive || objType.IsValueType || (objType == typeof(string));
+
+            if (!isPrimitiveType)
+            {
+                var field = obj as FieldDTO;
+                if (field != null)
+                {
+                    return new List<FieldDTO> { field };
+                }
+
+                var objProperties = objType.GetProperties();
+                var objFields = objType.GetFields();
+                foreach (var prop in objProperties)
+                {
+                    fields.AddRange(FindFieldsRecursive(prop.GetValue(obj)));
+                }
+
+                foreach (var prop in objFields)
+                {
+                    fields.AddRange(FindFieldsRecursive(prop.GetValue(obj)));
+                }
+            }
+
+            return fields;
+        }
+
+        public IEnumerable<string> GetLabelsByManifestType(IEnumerable<Crate> crates, string manifestType)
+        {
+            return crates.Where(c => c.ManifestType.Type == manifestType)
+                    .GroupBy(c => c.Label)
+                    .Select(c => c.Key).ToList();
         }
     }
 }

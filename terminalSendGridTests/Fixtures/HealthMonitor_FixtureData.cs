@@ -19,8 +19,7 @@ namespace terminalSendGridTests.Fixtures
             {
                 Id = 1,
                 Name = "SendEmailViaSendGrid_TEST",
-                Version = "1",
-                AuthenticationType = AuthenticationType.None
+                Version = "1"
             };
         }
 

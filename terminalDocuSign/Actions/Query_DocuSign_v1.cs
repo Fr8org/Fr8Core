@@ -85,21 +85,23 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            var payload = await GetPayload(curActionDO, containerId);
+
             if (NeedsAuthentication(authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return NeedsAuthenticationError(payload);
             }
 
             var ui = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (ui == null)
             {
-                throw new ApplicationException("Action was not configured correctly");
+                return Error(payload, "Action was not configured correctly");
             }
 
 
             var settings = GetSettings(ui);
-            var payload = await GetProcessPayload(curActionDO, containerId);
+            
             var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
             var payloadCm = new StandardPayloadDataCM();
 
@@ -120,7 +122,7 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", payloadCm));
             }
 
-            return payload;
+            return Success(payload);
         }
 
         private void SearchFolder(QuerySettings configuration, IDocuSignFolder docuSignFolder, string folder, DocuSignAuth docuSignAuthDto, StandardPayloadDataCM payload)

@@ -64,26 +64,14 @@ namespace terminalFr8CoreTests.Integration
         /// <summary>
         /// Test run-time for action Run().
         /// </summary>
-        [Test, Ignore]
+        [Test]
         public async void ExecuteSql_Run()
         {
+
             var runUrl = GetTerminalRunUrl();
 
             var actionDTO = FixtureData.ExecuteSql_InitialConfiguration_ActionDTO();
-
-            using (var updater = Crate.UpdateStorage(actionDTO))
-            {
-                var lstFields = new List<FieldDTO>();
-                lstFields.Add(new FieldDTO() { Key = "Customer.Physician", Value = "String" });
-                lstFields.Add(new FieldDTO() { Key = "Customer.CurrentMedicalCondition", Value = "String" });
-
-                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("HealthMonitor_UpstreamCrate_Sql Column Types", lstFields.ToArray()));
-
-                lstFields.Clear();
-                lstFields.Add(new FieldDTO() { Key = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2().Value, Value = "value" });
-                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("HealthMonitor_UpstreamCrate_Sql Connection String", lstFields.ToArray()));
-            }
-
+            
             AddPayloadCrate(
                actionDTO,
                new StandardQueryCM()
@@ -94,6 +82,25 @@ namespace terminalFr8CoreTests.Integration
                "Sql Query"
             );
 
+            var lstFields = new List<FieldDTO>();
+            lstFields.Add(new FieldDTO() { Key = "Customer.Physician", Value = "String" });
+            lstFields.Add(new FieldDTO() { Key = "Customer.CurrentMedicalCondition", Value = "String" });
+            AddUpstreamCrate(
+                actionDTO,
+                new StandardDesignTimeFieldsCM(lstFields),
+                "Sql Column Types"
+            );
+
+            lstFields.Clear();
+            lstFields.Add(new FieldDTO() { Key = UtilitiesTesting.Fixtures.FixtureData.TestConnectionString2().Value, Value = "value" });
+            AddUpstreamCrate(
+                actionDTO,
+                new StandardDesignTimeFieldsCM(lstFields),
+                "Sql Connection String"
+            );
+
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
             var responsePayloadDTO =
                 await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
 
@@ -102,7 +109,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.NotNull(responsePayloadDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responsePayloadDTO.CrateStorage);
-            Assert.AreEqual(2, crateStorage.Count);
+            Assert.AreEqual(3, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardPayloadDataCM>().Count(x => x.Label == "Sql Query Result"));
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardQueryCM>().Count(x => x.Label == "Sql Query"));

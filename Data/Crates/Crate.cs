@@ -1,4 +1,5 @@
 using System;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
