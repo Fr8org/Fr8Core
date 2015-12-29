@@ -8,7 +8,7 @@ namespace Data.Interfaces.Manifests
 {
     public class StandardFileListCM : Manifest
     {
-        public List<StandardFileHandleMS> FileList { get; set; }
+        public List<StandardFileDescriptionCM> FileList { get; set; }
 
         public StandardFileListCM()
 			  :base(Constants.MT.StandardFileList)

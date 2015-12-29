@@ -52,6 +52,17 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
+                Name = "ConvertCrates",
+                Label = "Convert Crates",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                Version = "1",
+                MinPaneWidth = 330,
+                WebService = webService
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
                 Name = "MapFields",
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
