@@ -66,7 +66,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             }
             catch (HttpRequestException ex)
             {
-                string errorMessage = String.Format("An error has ocurred while sending a {0} request to {1}. Response message:\r\n",
+                string errorMessage = String.Format("An error has ocurred while sending a {0} request to {1}. Response message: {2}",
                     request.RequestUri,
                     request.Method.Method,
                     ExtractErrorMessage(responseContent));
