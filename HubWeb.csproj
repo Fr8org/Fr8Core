@@ -498,6 +498,7 @@
     <Content Include="Content\icons\web_services\slack-icon-64x64.png" />
     <Content Include="Content\icons\web_services\twilio-icon-64x64.png" />
     <Content Include="Content\icons\web_services\unknown-service.png" />
+    <Content Include="Content\icons\web_services\yammer-64x64.png" />
     <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\backgrounds\about-bg.jpg" />
     <Content Include="Content\img\backgrounds\bg-overlay.png" />
@@ -749,9 +750,11 @@
     <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
     <Content Include="_PowerShellScripts\MASTER-settings.job" />
     <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AuthenticationDialogController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />    <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalListController.ts" />
@@ -844,6 +847,8 @@
     <Content Include="Views\AngularTemplate\TerminalList.cshtml" />
     <Content Include="Views\AngularTemplate\AuthenticationDialog.cshtml" />
     <Content Include="Views\AngularTemplate\UpstreamDataChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\UsersEmailList.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

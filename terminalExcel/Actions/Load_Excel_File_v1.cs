@@ -128,7 +128,7 @@ namespace terminalExcel.Actions
                 throw new Exception("More than one Standard File Handle crates found upstream.");
 
             // Deserialize the Standard File Handle crate to StandardFileHandleMS object
-            StandardFileHandleMS fileHandleMS = upstreamFileHandleCrates.First().Get<StandardFileHandleMS>();
+            StandardFileDescriptionCM fileHandleMS = upstreamFileHandleCrates.First().Get<StandardFileDescriptionCM>();
 
             // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
             StandardTableDataCM tableDataMS = ExcelUtils.GetTableData(fileHandleMS.DockyardStorageUrl);
