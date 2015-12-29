@@ -161,6 +161,23 @@ namespace TerminalBase.BaseClasses
             return payload;
         }
 
+        protected ControlDefinitionDTO GetControl(StandardConfigurationControlsCM controls, string name, string controlType = null)
+        {
+            Func<ControlDefinitionDTO, bool> predicate = x => x.Name == name;
+            if (controlType != null)
+            {
+                predicate = x => x.Type == controlType && x.Name == name;
+            }
+
+            return controls.Controls.FirstOrDefault(predicate);
+        }
+
+        protected ControlDefinitionDTO GetControl(ActionDO curActionDO, string name, string controlType = null)
+        {
+            var controls = GetConfigurationControls(curActionDO);
+            return GetControl(controls, name, controlType);
+        }
+
         protected StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO)
         {
             var storage = Crate.GetStorage(curActionDO);

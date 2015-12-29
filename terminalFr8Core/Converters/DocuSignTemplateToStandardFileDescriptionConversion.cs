@@ -8,10 +8,11 @@ using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 
-namespace terminalFr8Core.Services
+namespace terminalFr8Core.Converters
 {
     public class DocuSignTemplateToStandardFileDescriptionConversion : ICrateConversion
     {
+        public static readonly string ConversionLabel = "From DocuSignTemplate To StandardFileDescription";
         public StandardFileHandleMS ConvertToStandardFileHandle(DocuSignTemplateCM input)
         {
             return new StandardFileHandleMS
@@ -28,7 +29,7 @@ namespace terminalFr8Core.Services
                 throw new Exception("Unknown crate type passed to DocuSignTemplateToStandardFileDescriptionConversion");
             }
             var outputManifest = ConvertToStandardFileHandle(inputManifest);
-            return Crate.FromContent("From DocuSignTemplate To StandardFileDescription", outputManifest);
+            return Crate.FromContent(ConversionLabel, outputManifest);
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Web;
 using Data.Crates;
 using Data.Interfaces.Manifests;
 
-namespace terminalFr8Core.Services
+namespace terminalFr8Core.Converters
 {
     public interface ICrateConversion
     {

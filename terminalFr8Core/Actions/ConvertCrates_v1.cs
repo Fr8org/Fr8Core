@@ -46,22 +46,23 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
+            var curPayloadDTO = await GetPayload(curActionDO, containerId);
 
             //find from type
-            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
-            var fromDropdown = (DropDownList)controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_From_Manifests");
+            var controlsMS = GetConfigurationControls(curActionDO);
+
+            var fromDropdown = (DropDownList)GetControl(controlsMS, "Available_From_Manifests", ControlTypes.DropDownList);
             if (string.IsNullOrEmpty(fromDropdown.Value))
             {
-                return Error(curPayloadDTO/*, "No value was selected on From Manifest Type Dropdown"*/);
+                return Error(curPayloadDTO, "No value was selected on From Manifest Type Dropdown", ActionErrorCode.DESIGN_TIME_DATA_MISSING);
             }
             var fromManifestType = Int32.Parse(fromDropdown.Value);
 
             //find target type 
-            var toDropdown = (DropDownList)controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_To_Manifests");
+            var toDropdown = (DropDownList)GetControl(controlsMS, "Available_To_Manifests", ControlTypes.DropDownList);
             if (string.IsNullOrEmpty(toDropdown.Value))
             {
-                return Error(curPayloadDTO/*, "No value was selected on To Manifest Type Dropdown"*/);
+                return Error(curPayloadDTO, "No value was selected on To Manifest Type Dropdown", ActionErrorCode.DESIGN_TIME_DATA_MISSING));
             }
             var toManifestType = Int32.Parse(toDropdown.Value);
 
@@ -72,7 +73,7 @@ namespace terminalFr8Core.Actions
             var userSelectedFromCrate = payloadStorage.FirstOrDefault(c => c.ManifestType.Id == fromManifestType);
             if (userSelectedFromCrate == null)
             {
-                return Error(curPayloadDTO/*, "Unable to find crate with Manifest Type : "+ fromDropdown.selectedKey*/);
+                return Error(curPayloadDTO, "Unable to find crate with Manifest Type : "+ fromDropdown.selectedKey, ActionErrorCode.PAYLOAD_DATA_MISSING);
             }
 
             var convertedCrate = convertor.Convert(userSelectedFromCrate);
@@ -169,7 +170,6 @@ namespace terminalFr8Core.Actions
                 Label = "To which Crate:",
                 Name = "Available_To_Manifests",
                 Value = null,
-                Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") },
                 Source = new FieldSourceDTO
                 {
                     Label = "Available To Manifests",
