@@ -246,7 +246,7 @@ namespace terminalExcel.Actions
 
                 if (!string.IsNullOrEmpty(uploadFilePath))
                 {
-                    TransformExcelFileDataToStandardTableDataCrate(storage, uploadFilePath);
+                    TransformExcelFileDataToStandardTableDataCrate(updater.CrateStorage, uploadFilePath);
                 }
             }
 
