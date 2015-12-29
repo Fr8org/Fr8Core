@@ -190,7 +190,8 @@ namespace terminalPapertrailTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Sequence contains no elements""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Sequence contains no elements""}",
+            MatchType = MessageMatch.Contains
             )]
         public async void Write_To_Log_Run_WithoutLogMessageInUpstreamAction_ShouldThrowException()
         {
