@@ -56,7 +56,6 @@ namespace terminalFr8Core.Controllers
                 Label = "Convert Crates",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.None,
                 Version = "1",
                 MinPaneWidth = 330,
                 WebService = webService
