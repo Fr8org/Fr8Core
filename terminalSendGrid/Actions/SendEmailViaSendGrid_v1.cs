@@ -155,21 +155,21 @@ namespace terminalSendGrid.Actions
         {
             var fromAddress = _configRepository.Get("OutboundFromAddress");
 
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             var emailAddress = ExtractSpecificOrUpstreamValue(
                 curActionDO,
-                processPayload,
+                payloadCrates,
                 "EmailAddress"
             );
             var emailSubject = ExtractSpecificOrUpstreamValue(
                 curActionDO,
-                processPayload,
+                payloadCrates,
                 "EmailSubject"
             );
             var emailBody = ExtractSpecificOrUpstreamValue(
                 curActionDO,
-                processPayload,
+                payloadCrates,
                 "EmailBody"
             );
 
@@ -198,7 +198,7 @@ namespace terminalSendGrid.Actions
 
             await _emailPackager.Send(mailerDO);
 
-            return processPayload;
+            return Success(payloadCrates);
         }
     }
 }

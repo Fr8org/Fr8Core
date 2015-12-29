@@ -8,7 +8,6 @@ using Data.Interfaces;
 using Data.States;
 using Data.States.Templates;
 using StructureMap;
-using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -16,9 +15,9 @@ namespace Data.Entities
     {
         public ActivityTemplateDO()
         {
-            this.AuthenticationType = States.AuthenticationType.None;
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
             this.Type = ActivityType.Standard;
+            this.NeedsAuthentication = false;
         }
 
         public ActivityTemplateDO(string name, string label, string version, string description, int terminalId, ActivityType type = ActivityType.Standard) : this()
@@ -74,11 +73,7 @@ namespace Data.Entities
 
         public string Description { get; set; }
 
-        [Required]
-        [ForeignKey("AuthenticationTypeTemplate")]
-        public int AuthenticationType { get; set; }
-
-        public virtual _AuthenticationTypeTemplate AuthenticationTypeTemplate { get; set; }
+        public bool NeedsAuthentication { get; set; }
 
         public string ComponentActivities { get; set; }
 

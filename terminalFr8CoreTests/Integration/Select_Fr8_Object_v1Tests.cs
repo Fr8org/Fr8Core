@@ -259,8 +259,7 @@ namespace terminalFr8CoreTests.Integration
 			{
 				Id = 1,
 				Name = "Select_Fr8_Object_TEST",
-				Version = "1",
-				AuthenticationType = AuthenticationType.None
+				Version = "1"
 			};
 
 			return activityTemplate;

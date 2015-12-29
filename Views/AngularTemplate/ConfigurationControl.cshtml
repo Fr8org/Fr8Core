@@ -149,5 +149,12 @@
         <upstream-data-chooser field="field" current-action='currentAction' change="onChange"></upstream-data-chooser>
     </div>
 
+    <!--
+        UpstreamFieldChooser
+    -->
+    <div ng-if='field.type === "UpstreamFieldChooser"'>
+        <upstream-field-chooser field="field" current-action="currentAction"></upstream-field-chooser>
+    </div>
+
     <!-- Add more configuration field templates below -->
 </div>

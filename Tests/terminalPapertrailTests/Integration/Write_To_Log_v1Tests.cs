@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
@@ -118,6 +119,8 @@ namespace terminalPapertrailTests.Integration
                         }
                 });
 
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
             //Act
             var responsePayloadDTO =
                 await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
@@ -138,11 +141,7 @@ namespace terminalPapertrailTests.Integration
         /// Should throw exception
         /// </summary>
         [Test]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Papertrail URL and PORT are not in the correct format. The given URL is InvalidUrl""}"
-            )]
-        public async void Write_To_Log_Run_WithInvalidPapertrailUrl_ShouldThrowException()
+        public async void Write_To_Log_Run_WithInvalidPapertrailUrl_ShouldReturnError()
         {
             //Arrange
             var runUrl = GetTerminalRunUrl();
@@ -170,8 +169,16 @@ namespace terminalPapertrailTests.Integration
                         }
                 });
 
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
             //Act
-            var responsePayloadDTO = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            var payload = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+
+            var storage = Crate.GetStorage(payload);
+            var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
+
+            Assert.AreEqual(ActionResponse.Error, operationalStateCM.CurrentActionResponse);
+            Assert.AreEqual("Papertrail URL and PORT are not in the correct format. The given URL is InvalidUrl", operationalStateCM.CurrentActionErrorMessage);
         }
 
         /// <summary>
@@ -241,6 +248,48 @@ namespace terminalPapertrailTests.Integration
             }
 
             return responseActionDTO;
+        }
+
+        [Test, Category("Integration.terminalPapertrail")]
+        public async void Write_To_Log_Activate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalActivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
+        [Test, Category("Integration.terminalPapertrail")]
+        public async void Write_To_Log_Deactivate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalDeactivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
         }
     }
 }

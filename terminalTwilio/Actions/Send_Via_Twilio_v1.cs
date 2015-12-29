@@ -36,20 +36,20 @@ namespace terminalTwilio.Actions
         {
             return await ProcessConfigurationRequest(curActionDO, actionDO => ConfigurationRequestType.Initial, authTokenDO);
         }
+        
         /*
         //this entire function gets passed as a delegate to the main processing code in the base class
         //currently many actions have two stages of configuration, and this method determines which stage should be applied
-        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            if (Crate.IsStorageEmpty(curActionDO)) 
-            { 
+            if (Crate.IsStorageEmpty(curActionDO))
+            {
                 return ConfigurationRequestType.Initial;
             }
 
-
             return ConfigurationRequestType.Followup;
-        }
-        */
+        }*/
+        
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
@@ -128,32 +128,31 @@ namespace terminalTwilio.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             Message curMessage;
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
             var controlsCrate = Crate.GetStorage(curActionDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (controlsCrate == null)
             {
                 PackCrate_WarningMessage(curActionDO, "No StandardConfigurationControlsCM crate provided", "No Controls");
-                return null;
+                return Error(payloadCrates, "No StandardConfigurationControlsCM crate provided");
             }
             try
             {
-                FieldDTO smsFieldDTO = ParseSMSNumberAndMsg(controlsCrate, processPayload);
+                FieldDTO smsFieldDTO = ParseSMSNumberAndMsg(controlsCrate, payloadCrates);
                 string smsNumber = smsFieldDTO.Key;
                 string smsBody = smsFieldDTO.Value;
 
                 if (String.IsNullOrEmpty(smsNumber))
                 {
                     PackCrate_WarningMessage(curActionDO, "No SMS Number Provided", "No Number");
-                    return null;
+                    return Error(payloadCrates, "No SMS Number Provided");
                 }
                 try
                 {
                     curMessage = _twilio.SendSms(smsNumber, smsBody);
                     EventManager.TwilioSMSSent(smsNumber, smsBody);
                     var curFieldDTOList = CreateKeyValuePairList(curMessage);
-                    using (var updater = Crate.UpdateStorage(processPayload))
+                    using (var updater = Crate.UpdateStorage(payloadCrates))
                     {
-                        updater.CrateStorage.Clear();
                         updater.CrateStorage.Add(PackCrate_TwilioMessageDetails(curFieldDTOList));
                     }
                 }
@@ -161,13 +160,15 @@ namespace terminalTwilio.Actions
                 {
                     EventManager.TwilioSMSSendFailure(smsNumber, smsBody, ex.Message);
                     PackCrate_WarningMessage(curActionDO, ex.Message, "Twilio Service Failure");
+                    return Error(payloadCrates, "Twilio Service Failure");
                 }
             }
             catch (ArgumentException appEx)
             {
                 PackCrate_WarningMessage(curActionDO, appEx.Message, "SMS Number");
+                return Error(payloadCrates, appEx.Message);
             }
-            return processPayload;
+            return Success(payloadCrates);
         }
 
         /// <summary>
@@ -175,7 +176,7 @@ namespace terminalTwilio.Actions
         /// </summary>
         /// <param name="crateDTO"></param>
         /// <returns>Key = SMS Number; Value = SMS Body</returns>
-        public FieldDTO ParseSMSNumberAndMsg(Crate crateDTO, PayloadDTO processPayload)
+        public FieldDTO ParseSMSNumberAndMsg(Crate crateDTO, PayloadDTO payloadCrates)
         {
             var standardControls = crateDTO.Get<StandardConfigurationControlsCM>();
             if (standardControls == null)
@@ -183,7 +184,7 @@ namespace terminalTwilio.Actions
                 throw new ArgumentException("CrateDTO is not a standard UI control");
             }
             var smsBodyFields = standardControls.FindByName("SMS_Body");
-            var smsNumber = GetSMSNumber((TextSource)standardControls.Controls[0], processPayload);
+            var smsNumber = GetSMSNumber((TextSource)standardControls.Controls[0], payloadCrates);
             return new FieldDTO(smsNumber, smsBodyFields.Value);
         }
 
@@ -205,7 +206,7 @@ namespace terminalTwilio.Actions
         //    return smsNumber;
         //}
 
-        private string GetSMSNumber(TextSource control, PayloadDTO processPayload)
+        private string GetSMSNumber(TextSource control, PayloadDTO payloadCrates)
         {
             if (control == null)
             {
@@ -214,10 +215,10 @@ namespace terminalTwilio.Actions
             switch (control.ValueSource)
             {
                 case "specific":
-                    return control.Value;
+                    return control.TextValue;
                 case "upstream":
                     //get the payload data 'Key' based on the selected control.Value and get its 'Value' from payload data
-                    return Crate.GetFieldByKey<StandardPayloadDataCM>(processPayload.CrateStorage, control.Value);
+                    return Crate.GetFieldByKey<StandardPayloadDataCM>(payloadCrates.CrateStorage, control.Value);
                 default:
                     throw new ApplicationException("Could not extract number, unknown mode.");
             }
@@ -238,12 +239,7 @@ namespace terminalTwilio.Actions
 
         private void PackCrate_WarningMessage(ActionDO actionDO, string warningMessage, string warningLabel)
         {
-            var textBlock = new TextBlock
-            {
-                Label = warningLabel,
-                Value = warningMessage,
-                CssClass = "alert alert-warning"
-            };
+            var textBlock = GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
             using (var updater = Crate.UpdateStorage(actionDO))
             {
                 updater.CrateStorage.Clear();

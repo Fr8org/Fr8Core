@@ -69,14 +69,21 @@ namespace terminalPapertrail.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            //get process payload
+            var curProcessPayload = await GetPayload(actionDO, containerId);
+
             //get the Papertrail URL value fromt configuration control
             string curPapertrailUrl;
             int curPapertrailPort;
 
-            GetPapertrailTargetUrlAndPort(actionDO, out curPapertrailUrl, out curPapertrailPort);
-
-            //get process payload
-            var curProcessPayload = await GetProcessPayload(actionDO, containerId);
+            try
+            {
+                GetPapertrailTargetUrlAndPort(actionDO, out curPapertrailUrl, out curPapertrailPort);
+            }
+            catch (ArgumentException e)
+            {
+                return Error(curProcessPayload, e.Message);
+            }
 
             //if there are valid URL and Port number
             if (!string.IsNullOrEmpty(curPapertrailUrl) && curPapertrailPort > 0)
@@ -97,7 +104,7 @@ namespace terminalPapertrail.Actions
                 }
             }
 
-            return curProcessPayload;
+            return Success(curProcessPayload);
         }
 
         private void GetPapertrailTargetUrlAndPort(ActionDO curActionDO, out string paperrrialTargetUrl, out int papertrailTargetPort)

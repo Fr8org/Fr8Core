@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Control;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -45,27 +46,27 @@ namespace terminalDocuSign.Actions
         public async Task<PayloadDTO> Run(ActionDO actionDO,
             Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            var payloadCrates = await GetPayload(actionDO, containerId);
+
             if (NeedsAuthentication(authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return NeedsAuthenticationError(payloadCrates);
             }
-
-            var processPayload = await GetProcessPayload(actionDO, containerId);
 
             //Get envlopeId
             var control = FindControl(Crate.GetStorage(actionDO), "EnvelopeIdSelector");
             string envelopeId = GetEnvelopeID(control, authTokenDO);
             if (envelopeId == null)
             {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
+                return Error(payloadCrates, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
             }
 
-            using (var updater = Crate.UpdateStorage(() => processPayload.CrateStorage))
+            using (var updater = Crate.UpdateStorage(() => payloadCrates.CrateStorage))
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", _docuSignManager.CreateActionPayload(actionDO, authTokenDO, envelopeId)));
             }
 
-            return processPayload;
+            return Success(payloadCrates);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
@@ -126,22 +127,28 @@ namespace terminalDocuSign.Actions
         private string GetEnvelopeID(ControlDefinitionDTO control, AuthorizationTokenDO authTokenDo)
         {
             string envelopeId = "";
-            TextSource textSource = (TextSource)control;
-            if (textSource.ValueSource == null || string.IsNullOrEmpty(textSource.Value))
+            var textSource = (TextSource)control;
+            if (textSource.ValueSource == null)
                 return null;
 
+            var realTSValue = textSource.ValueSource == "specific" ? textSource.TextValue : textSource.Value;
+
             //Gets EnvelopeId either by EnvelopeId or TemplateName
-            if (string.IsNullOrEmpty(control.Value))
-                if (control.Value.IsGuid())
-                    envelopeId = control.Value;
+            if (!string.IsNullOrEmpty(realTSValue))
+            {
+                if (realTSValue.IsGuid())
+                {
+                    envelopeId = realTSValue;
+                }
                 else
                 {
                     var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDo.Token);
                     var availableTemplates = (_docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO).Get()
                         as StandardDesignTimeFieldsCM).Fields;
-                    var selectedTemplate = availableTemplates.Where(a => a.Key.ToLowerInvariant() == control.Value.ToLowerInvariant()).FirstOrDefault();
+                    var selectedTemplate = availableTemplates.FirstOrDefault(a => a.Key.ToLowerInvariant() == realTSValue.ToLowerInvariant());
                     envelopeId = (selectedTemplate != null) ? selectedTemplate.Value : "";
                 }
+            }
             return envelopeId;
         }
     }

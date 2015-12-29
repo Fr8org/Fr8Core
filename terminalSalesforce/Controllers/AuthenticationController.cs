@@ -4,6 +4,7 @@ using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
+using Utilities.Logging;
 
 namespace terminalSalesforce.Controllers
 {
@@ -33,12 +34,17 @@ namespace terminalSalesforce.Controllers
             }
             catch (Exception ex)
             {
+                //The event reporting mechanism does not give the actual error message and it has been commented out in the BaseTerminal#ReportTerminalError
+                //Logging explicitly to log4net to see the logs in the App Insights.
+                Logger.GetLogger().Error("Terminal SalesForce Authentication error happened. The error message is " + ex.Message);
+
+                //Report the terminal error in the standard Fr8 Event Reporting mechanism
                 ReportTerminalError(curTerminal, ex);
 
                 return Task.FromResult(
                     new AuthorizationTokenDTO()
                     {
-                        Error = "An error occured while trying to authenticate, please try again later."
+                        Error = string.Format("An error occured ({0}) while trying to authenticate, please try again later.", ex.Message)
                     }
                 );
             }

@@ -118,19 +118,30 @@ namespace TerminalBase.BaseClasses
 
         /// <summary>
         /// returns error to hub
-        /// TODO: maybe we should include an error message
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
-        protected PayloadDTO Error(PayloadDTO payload)
+        protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActionErrorCode? errorCode = null)
         {
             using (var updater = Crate.UpdateStorage(payload))
             {
                 var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActionResponse = ActionResponse.Error;
+                operationalState.CurrentActionErrorCode = errorCode;
+                operationalState.CurrentActionErrorMessage = errorMessage;
             }
 
             return payload;
+        }
+
+        /// <summary>
+        /// returns Needs authentication error to hub
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO NeedsAuthenticationError(PayloadDTO payload)
+        {
+            return Error(payload, "No AuthToken provided.", ActionErrorCode.NO_AUTH_TOKEN_PROVIDED);
         }
 
         /// <summary>
@@ -152,7 +163,7 @@ namespace TerminalBase.BaseClasses
 
         public virtual async Task<PayloadDTO> ChildrenExecuted(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetProcessPayload(curActionDO, containerId));
+            return Success(await GetPayload(curActionDO, containerId));
         }
 
         protected void CheckAuthentication(AuthorizationTokenDO authTokenDO)
@@ -168,9 +179,9 @@ namespace TerminalBase.BaseClasses
             return authTokenDO == null || string.IsNullOrEmpty(authTokenDO.Token);
         }
 
-        protected async Task<PayloadDTO> GetProcessPayload(ActionDO actionDO, Guid containerId)
+        protected async Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId)
         {
-            return await HubCommunicator.GetProcessPayload(actionDO, containerId);
+            return await HubCommunicator.GetPayload(actionDO, containerId);
         }
 
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
@@ -346,6 +357,12 @@ namespace TerminalBase.BaseClasses
                 //extract the fields
                 StandardDesignTimeFieldsCM curStandardDesignTimeFieldsCrate = curCrate.Content;
 
+                foreach (var field in curStandardDesignTimeFieldsCrate.Fields)
+                {
+                    field.SourceCrateLabel = curCrate.Label;
+                    field.SourceCrateManifest = curCrate.ManifestType;
+                }
+
                 //add them to the pile
                 tempMS.Fields.AddRange(curStandardDesignTimeFieldsCrate.Fields);
             }
@@ -454,13 +471,7 @@ namespace TerminalBase.BaseClasses
         {
             ControlDefinitionDTO[] controls =
             {
-                new TextBlock()
-                {
-                    Label = fieldLabel,
-                    Value = errorMessage,
-                    CssClass = "well well-lg"
-
-                }
+                GenerateTextBlock(fieldLabel,errorMessage,"well well-lg")
             };
 
             var crateControls = Crate.CreateStandardConfigurationControlsCrate(
@@ -495,11 +506,11 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         protected string ExtractSpecificOrUpstreamValue(
            ActionDO actionDO,
-           PayloadDTO processPayload,
+           PayloadDTO payloadCrates,
            string controlName)
         {
             var designTimeCrateStorage = Crate.GetStorage(actionDO.CrateStorage);
-            var runTimeCrateStorage = Crate.FromDto(processPayload.CrateStorage);
+            var runTimeCrateStorage = Crate.FromDto(payloadCrates.CrateStorage);
 
             var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var control = controls.Controls.SingleOrDefault(c => c.Name == controlName);
@@ -521,7 +532,7 @@ namespace TerminalBase.BaseClasses
             switch (textSourceControl.ValueSource)
             {
                 case "specific":
-                    return textSourceControl.Value;
+                    return textSourceControl.TextValue;
 
                 case "upstream":
                     return ExtractPayloadFieldValue(runTimeCrateStorage, textSourceControl.selectedKey, actionDO);
@@ -592,13 +603,7 @@ namespace TerminalBase.BaseClasses
         {
             AddControl(
                 storage,
-                new TextBlock()
-                {
-                    Name = name,
-                    Label = label,
-                    Value = text,
-                    CssClass = "well well-lg"
-                }
+                GenerateTextBlock(label,text,"well well-lg",name)
             );
         }
 
@@ -699,5 +704,57 @@ namespace TerminalBase.BaseClasses
 
             return await Task.FromResult<Crate>(null);
         }
+
+        /// <summary>
+        /// Creates TextBlock control and fills it with label, value and CssClass
+        /// </summary>
+        /// <param name="curLabel">Label</param>
+        /// <param name="curValue">Value</param>
+        /// <param name="curCssClass">Css Class</param>
+        /// <param name="curName">Name</param>
+        /// <returns>TextBlock control</returns>
+        protected TextBlock GenerateTextBlock(string curLabel, string curValue, string curCssClass, string curName = "unnamed")
+        {
+            return new TextBlock
+            {
+                Name = curName,
+                Label = curLabel,
+                Value = curValue,
+                CssClass = curCssClass
+            };
+        }
+        /// <summary>
+        /// Method to be used with Loop Action
+        /// Is a helper method to decouple some of the GetCurrentElement Functionality
+        /// </summary>
+        /// <param name="operationalCrate">Crate of the OperationalStateCM</param>
+        /// <param name="loopId">Integer that is equal to the Action.Id</param>
+        /// <returns>Index or pointer of the current IEnumerable Object</returns>
+        protected int GetLoopIndex(OperationalStateCM operationalCrate, string loopId)
+        {
+            var curLoop = operationalCrate.Loops.FirstOrDefault(l => l.Id.Equals(loopId.ToString()));
+            if (curLoop == null)
+            {
+                throw new NullReferenceException("No Loop with the specified LoopId inside the provided OperationalStateCM crate");
+            }
+            var curIndex = curLoop.Index;
+            return curIndex;
+        }
+        /// <summary>
+        /// Trivial method to return element at specified index of the IEnumerable object.
+        /// To be used with Loop Action.
+        /// IMPORTANT: 
+        /// 1) Index update is performed by Loop Action
+        /// 2) Loop brake is preformed by Loop Action
+        /// </summary>
+        /// <param name="enumerableObject">Object of type IEnumerable</param>
+        /// <param name="objectIndex">Integer that points to the element</param>
+        /// <returns>Object of any type</returns>
+        protected object GetCurrentElement(IEnumerable<object> enumerableObject, int objectIndex)
+        {
+            var curElement = enumerableObject.ElementAt(objectIndex);
+            return curElement;
+        }
+
     }
 }
