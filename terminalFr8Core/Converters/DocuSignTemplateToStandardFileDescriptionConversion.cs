@@ -13,9 +13,9 @@ namespace terminalFr8Core.Converters
     public class DocuSignTemplateToStandardFileDescriptionConversion : ICrateConversion
     {
         public static readonly string ConversionLabel = "From DocuSignTemplate To StandardFileDescription";
-        public StandardFileHandleMS ConvertToStandardFileHandle(DocuSignTemplateCM input)
+        public StandardFileDescriptionCM ConvertToStandardFileHandle(DocuSignTemplateCM input)
         {
-            return new StandardFileHandleMS
+            return new StandardFileDescriptionCM
             {
                 TextRepresentation = JsonConvert.SerializeObject(input)
             };
