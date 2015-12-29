@@ -164,7 +164,7 @@ namespace TerminalBase.BaseClasses
         protected StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO)
         {
             var storage = Crate.GetStorage(curActionDO);
-            return storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == ConfigurationControlsLabel).Single();
+            return GetConfigurationControls(storage);
         }
 
         protected StandardConfigurationControlsCM GetConfigurationControls(CrateStorage storage)

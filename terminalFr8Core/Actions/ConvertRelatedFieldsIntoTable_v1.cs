@@ -28,6 +28,77 @@ namespace terminalFr8Core.Actions
         private const string FirstIntegerRegexPattern = "\\d+";
 
         /// <summary>
+        /// Configure infrastructure.
+        /// </summary>
+        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authToken)
+        {
+            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authToken);
+        }
+
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDataPackageDO)
+        {
+            if (Crate.IsStorageEmpty(curActionDataPackageDO))
+            {
+                return ConfigurationRequestType.Initial;
+            }
+            var storage = Crate.GetStorage(curActionDataPackageDO);
+            var hasControlsCrate = GetConfigurationControls(storage) != null;
+
+            var hasManifestTypeList = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Manifest Type List").Any();
+
+            if (hasControlsCrate && hasManifestTypeList)
+            {
+                return ConfigurationRequestType.Followup;
+            }
+
+            return ConfigurationRequestType.Initial;
+
+        }
+
+        /// <summary>
+        /// Looks for first Create with Id == "Standard Design-Time" among all upcoming Actions.
+        /// </summary>
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            if (curActionDO.Id != Guid.Empty)
+            {
+                //build a controls crate to render the pane
+                var configurationControlsCrate = PackCrate_ConfigurationControls();
+
+                using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
+                {
+                    updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
+                    updater.CrateStorage.Add(await GetUpstreamManifestTypes(curActionDO));
+                }
+            }
+            else
+            {
+                throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
+            }
+
+            return curActionDO;
+        }
+
+
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            var controlsMS = GetConfigurationControls(curActionDO);
+            var upstreamDataChooser = (UpstreamDataChooser)controlsMS.Controls.Single(x => x.Type == ControlTypes.UpstreamDataChooser && x.Name == "Upstream_data_chooser");
+            if (upstreamDataChooser.SelectedManifest != null)
+            {
+                var labelList = await GetLabelsByManifestType(curActionDO, upstreamDataChooser.SelectedManifest);
+
+                using (var updater = Crate.UpdateStorage(curActionDO))
+                {
+                    updater.CrateStorage.RemoveByLabel("Upstream Crate Label List");
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Upstream Crate Label List", new StandardDesignTimeFieldsCM() { Fields = labelList }));
+                }
+            }
+
+            return curActionDO;
+        }
+
+        /// <summary>
         /// Action processing infrastructure.
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -39,8 +110,8 @@ namespace terminalFr8Core.Actions
             var upstreamDataChooser = (UpstreamDataChooser)designTimeControls.Controls.Single(x => x.Type == ControlTypes.UpstreamDataChooser && x.Name == "Upstream_data_chooser");
             
             var filteredCrates = storage.Where(s => true);
+            
             //add filtering according to upstream data chooser
-
             if (upstreamDataChooser.SelectedManifest != null)
             {
                 filteredCrates = filteredCrates.Where(s => s.ManifestType.Type == upstreamDataChooser.SelectedManifest);
@@ -112,14 +183,6 @@ namespace terminalFr8Core.Actions
             return configurationControlsCM.Controls.Single(c => c.Name == "Selected_Table_Prefix").Value;            
         }
 
-        /// <summary>
-        /// Configure infrastructure.
-        /// </summary>
-        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authToken)
-        {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authToken);
-        }
-
         private async Task<Crate> GetUpstreamManifestTypes(ActionDO curActionDO)
         {
             var upstreamCrates = await GetCratesByDirection(curActionDO, CrateDirection.Upstream);
@@ -170,68 +233,6 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(actionExplanation, upstreamDataChooser, fieldSelectPrefix, fieldExplanation);
         }
 
-        /// <summary>
-        /// Looks for first Create with Id == "Standard Design-Time" among all upcoming Actions.
-        /// </summary>
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
-        {
-            if (curActionDO.Id != Guid.Empty)
-            {
-                //build a controls crate to render the pane
-                var configurationControlsCrate = PackCrate_ConfigurationControls();
 
-                using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
-                {
-                    updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                    updater.CrateStorage.Add(await GetUpstreamManifestTypes(curActionDO));
-                }
-            }
-            else
-            {
-                throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
-            }
-
-            return curActionDO;
-        }
-
-
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
-        {
-            var storage = Crate.GetStorage(curActionDO);
-            var controlsMS = GetConfigurationControls(storage);
-            var upstreamDataChooser = (UpstreamDataChooser)controlsMS.Controls.Single(x => x.Type == ControlTypes.UpstreamDataChooser && x.Name == "Upstream_data_chooser");
-            if (upstreamDataChooser.SelectedManifest != null)
-            {
-                var labelList = await GetLabelsByManifestType(curActionDO, upstreamDataChooser.SelectedManifest);
-
-                using (var updater = Crate.UpdateStorage(curActionDO))
-                {
-                    updater.CrateStorage.RemoveByLabel("Upstream Crate Label List");
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Upstream Crate Label List", new StandardDesignTimeFieldsCM() { Fields = labelList }));
-                }
-            }
-
-            return curActionDO;
-        }
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDataPackageDO)
-        {
-            if (Crate.IsStorageEmpty(curActionDataPackageDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-            var storage = Crate.GetStorage(curActionDataPackageDO);
-            var hasControlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>(x => x.Label == "Configuration_Controls").Any();
-
-            var hasManifestTypeList = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Manifest Type List").Any();
-
-            if (hasControlsCrate && hasManifestTypeList)
-            {
-                return ConfigurationRequestType.Followup;
-            }
-            
-            return ConfigurationRequestType.Initial;
-            
-        }
     }
 }
