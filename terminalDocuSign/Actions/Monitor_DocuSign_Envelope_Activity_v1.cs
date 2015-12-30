@@ -26,7 +26,7 @@ namespace terminalDocuSign.Actions
     {
         readonly DocuSignManager _docuSignManager = new DocuSignManager();
 
-        private const string DocuSignConnectName = "fr8DocuSignConnectProfile";
+        private const string DocuSignConnectName = "fr8DocuSignConnectConfiguration";
         private const string DocuSignOnEnvelopeSentEvent = "Sent";
         private const string DocuSignOnEnvelopeReceivedEvent = "Delivered";
         private const string DocuSignOnEnvelopeSignedEvent = "Completed";
@@ -125,14 +125,14 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Tries to get existing Docusign connect configuration for current user
         /// </summary>
-        /// <param name="account">DocusignAccount to create profile</param>
+        /// <param name="account">DocusignAccount to get configuration from</param>
         /// <param name="publishUrl">which url docusign will call</param>
         /// <param name="youSent">You sent a DocuSign Envelope</param>
         /// <param name="someoneReceived">Someone received an Envelope you sent</param>
         /// <param name="recipientSigned">One of your Recipients signed an Envelope</param>
         private Configuration GetDocuSignConnectConfiguration(DocuSignAccount account, string publishUrl, bool youSent, bool someoneReceived, bool recipientSigned)
         {
-            ConnectProfile connectProfile = account.GetDocuSignConnectProfiles();
+            var connectProfile = account.GetDocuSignConnectProfiles();
             var potentialConfigs = connectProfile
                 .configurations.Where(c => c.urlToPublishTo == publishUrl && c.allUsers == "true" && c.name == DocuSignConnectName);
 
@@ -155,7 +155,7 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Creates a Docusign connect configuration for current user
         /// </summary>
-        /// <param name="account">DocusignAccount to create profile</param>
+        /// <param name="account">DocusignAccount to create connect configuration</param>
         /// <param name="publishUrl">which url docusign will call</param>
         /// <param name="youSent">You sent a DocuSign Envelope</param>
         /// <param name="someoneReceived">Someone received an Envelope you sent</param>
