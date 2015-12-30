@@ -72,13 +72,31 @@ module dockyard.controllers {
         }
 
         private activateRoute(route) {
-            this.RouteService.activate(route);
-            location.reload();
-        };
+            this.RouteService.activate(route).$promise.then((result) => {
+                if (result === 'success') {
+                    location.reload();
+                } else {
+                    //activation failed
+                    //TODO show some kind of error message
+                }
+            }, () => {
+                //activation failed
+            });
+            
+        }
         private deactivateRoute(route) {
-            this.RouteService.deactivate(route);
-            location.reload();
-        };
+            this.RouteService.deactivate(route).$promise.then((result) => {
+                if (result === 'success') {
+                    location.reload();
+                } else {
+                    //deactivation failed
+                    //TODO show some kind of error message
+                }
+            }, () => {
+                //deactivation failed
+                //TODO show some kind of error message
+            });
+        }
         private executeRoute(routeId, $event) {
 			if ($event.ctrlKey) {
 				this.$modal.open({
