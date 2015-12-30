@@ -11,8 +11,7 @@ namespace Data.Interfaces.Manifests
     public class StandardAccountingTransactionCM : Manifest
     {
         public List<StandardAccountingTransactionDTO> AccountingTransactions{ get; set; }
-        public StandardAccountingTransactionCM()
-            : base(Constants.MT.StandardAccountTransaction)
+        public StandardAccountingTransactionCM(): base(Constants.MT.StandardAccountTransaction)
         {
         }
         public static void Validate(StandardAccountingTransactionCM crate )

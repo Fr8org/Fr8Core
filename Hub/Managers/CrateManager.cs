@@ -224,10 +224,9 @@ namespace Hub.Managers
         public T GetByManifest<T>(PayloadDTO payloadDTO) where T : Manifest
         {
             CrateStorage curCrateStorage = FromDto(payloadDTO.CrateStorage);
-            var curOperationalState = curCrateStorage.CratesOfType<T>().Single().Content;
-            return curOperationalState;
+            var curCrate = curCrateStorage.CratesOfType<T>().Single().Content;
+            return curCrate;
         }
-
         public IEnumerable<FieldDTO> GetFields(IEnumerable<Crate> crates)
         {
             var fields = new List<FieldDTO>();

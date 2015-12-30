@@ -91,7 +91,10 @@ namespace Data.Constants
         OperationalStatus = 27,
 
         [Display(Name = "Docusign Template")]
-        DocuSignTemplate = 28
+        DocuSignTemplate = 28,
+
+        [Display(Name = "Chart Of Accounts")]
+        ChartOfAccounts = 29
     }
 }
 

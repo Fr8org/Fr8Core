@@ -13,6 +13,11 @@ namespace Data.Interfaces.Manifests
 
         public List<TableRowDTO> Table { get; set; }
         public bool FirstRowHeaders { get; set; }
+
+        public TableRowDTO GetHeaderRow()
+        {
+            return Table[0];
+        }
     }
 
     public class TableRowDTO
