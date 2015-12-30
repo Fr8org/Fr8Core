@@ -23,13 +23,13 @@ namespace HubWeb.ExceptionHandling
     {
         public override void OnException(HttpActionExecutedContext context)
         {
-            if (context.Exception is TaskCanceledException)
-            {
-                // TaskCanceledException is an exception representing a successful task cancellation 
-                // Don't need to log it
-                // Ref: https://msdn.microsoft.com/en-us/library/dd997396(v=vs.110).aspx
-                return;
-            }
+            //if (context.Exception is TaskCanceledException)
+            //{
+            //    // TaskCanceledException is an exception representing a successful task cancellation 
+            //    // Don't need to log it
+            //    // Ref: https://msdn.microsoft.com/en-us/library/dd997396(v=vs.110).aspx
+            //    return;
+            //}
 
             ErrorDTO errorDto;
 
