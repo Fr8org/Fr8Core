@@ -54,6 +54,13 @@ namespace HubWeb.Controllers
                 fileList = Mapper.Map<IList<FileDTO>>(_fileService.FilesList(userId));
             }
 
+            int i = 1;
+            foreach (var file in fileList)
+            {
+                file.Tags = "tag" + i.ToString();
+                i++;
+            }
+
             return Ok(fileList);
         }
 

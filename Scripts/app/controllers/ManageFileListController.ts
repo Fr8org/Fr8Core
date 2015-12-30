@@ -66,6 +66,7 @@ module dockyard.controllers {
             return [
                 this.DTColumnBuilder.newColumn('id').withTitle('Id').notVisible(),
                 this.DTColumnBuilder.newColumn('originalFileName').withTitle('Original File Name'),
+                this.DTColumnBuilder.newColumn('tags').withTitle('Tags'),
                 this.DTColumnBuilder.newColumn(null)
                     .withTitle('Actions')
                     .notSortable()

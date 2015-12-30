@@ -9,8 +9,6 @@ namespace UtilitiesTesting.Fixtures
         {
             FileDO file = new FileDO
             {
-                DocuSignEnvelopeID = 1,
-                DocuSignTemplateID = 1,
                 CloudStorageUrl = string.Empty
             };
 

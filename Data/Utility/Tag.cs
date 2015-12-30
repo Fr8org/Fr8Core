@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Utilities
+namespace Data.Utility
 {
     public class Tag : BaseDO
     {
