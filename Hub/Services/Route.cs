@@ -173,6 +173,30 @@ namespace Hub.Services
             }
         }
 
+        /// <summary>
+        /// Iterates all RouteNode tree by traversing through children
+        /// </summary>
+        /// <typeparam name="TActivity"></typeparam>
+        /// <param name="rootNode"></param>
+        /// <returns></returns>
+        private IEnumerable<TActivity> EnumerateActivityTree<TActivity>(RouteNodeDO rootNode) where TActivity : RouteNodeDO
+        {
+            var RouteNodeStack = new Stack<RouteNodeDO>();
+            RouteNodeStack.Push(rootNode);
+
+            while (RouteNodeStack.Count > 0)
+            {
+                var result = RouteNodeStack.Pop();
+                if (result is TActivity)
+                {
+                    yield return result as TActivity;
+                }
+
+                foreach (var activityDo in result.ChildNodes.OfType<TActivity>())
+                    RouteNodeStack.Push(activityDo);
+            }
+        }
+
 
 
         public async Task<string> Activate(RouteDO curRoute)
@@ -186,20 +210,25 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var route = uow.RouteRepository.GetByKey(curRoute.Id);
-                var activities = EnumerateActivities<ActionDO>(route);
-                foreach (var curActionDO in activities)
+                //var activities = EnumerateActivities<ActionDO>(route);
+                foreach (SubrouteDO template in route.Subroutes)
                 {
-                    try
+                    var activities = EnumerateActivityTree<ActionDO>(template);
+                    foreach (var curActionDO in activities)
                     {
-                        var resultActivate = await _action.Activate(curActionDO);
+                        try
+                        {
+                            var resultActivate = await _action.Activate(curActionDO);
 
-                        result = "success";
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ApplicationException("Process template activation failed.", ex);
+                            result = "success";
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new ApplicationException("Process template activation failed.", ex);
+                        }
                     }
                 }
+                
 
                 uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Active;
                 uow.SaveChanges();
