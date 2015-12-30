@@ -31,5 +31,5 @@ module dockyard.controllers {
         }
     }
 
-    app.controller('FileDetailController', FileDetailsController);
+    app.controller('FileDetailsController', FileDetailsController);
 }
