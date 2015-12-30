@@ -16,7 +16,8 @@ var app = angular.module("app", [
     "ngToast",
     "frapontillo.bootstrap-switch",
     "ApplicationInsightsModule",
-    "dndLists"
+    "dndLists",
+    "ngTable"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */

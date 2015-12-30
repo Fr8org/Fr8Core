@@ -70,7 +70,7 @@ namespace terminalPapertrail.Actions
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             //get process payload
-            var curProcessPayload = await GetProcessPayload(actionDO, containerId);
+            var curProcessPayload = await GetPayload(actionDO, containerId);
 
             //get the Papertrail URL value fromt configuration control
             string curPapertrailUrl;

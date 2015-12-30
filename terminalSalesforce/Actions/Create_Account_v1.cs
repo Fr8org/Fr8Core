@@ -26,22 +26,22 @@ namespace terminalSalesforce.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
 
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
-                return NeedsAuthenticationError(processPayload);
+                return NeedsAuthenticationError(payloadCrates);
             }
 
             var accountName = ExtractControlFieldValue(curActionDO, "accountName");
             if (string.IsNullOrEmpty(accountName))
             {
-                return Error(processPayload, "No account name found in action.");
+                return Error(payloadCrates, "No account name found in action.");
             }
 
             bool result = _salesforce.CreateAccount(curActionDO, authTokenDO);
 
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)

@@ -10,7 +10,7 @@ using Intuit.Ipp.DataService;
 
 namespace terminalQuickBooks.Interfaces
 {
-    public interface IQuickBooksIntegration
+    public interface IConnectivity
     {
         string CreateAuthUrl();
         DataService GetDataService(AuthorizationTokenDO authTokenDO);

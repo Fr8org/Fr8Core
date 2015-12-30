@@ -26,32 +26,32 @@ namespace terminalFr8Core.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(actionDO, containerId);
+            var payloadCrates = await GetPayload(actionDO, containerId);
 
             var curControlsMS = Crate.GetStorage(actionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (curControlsMS == null)
             {
-                return Error(processPayload, "No controls crate found.");
+                return Error(payloadCrates, "No controls crate found.");
             }
 
             var curMappingControl = curControlsMS.Controls.FirstOrDefault(x => x.Name == "Selected_Mapping");
 
             if (curMappingControl == null || string.IsNullOrEmpty(curMappingControl.Value))
             {
-                return Error(processPayload, "No Selected_Mapping control found.");
+                return Error(payloadCrates, "No Selected_Mapping control found.");
             }
 
             var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
 
+            
 
-
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => payloadCrates.CrateStorage))
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(mappedFields)));
             }
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
         /// <summary>
@@ -134,13 +134,9 @@ namespace terminalFr8Core.Actions
 
         private void AddErrorTextBlock(CrateStorage storage)
         {
-            var textBlock = new TextBlock()
-            {
-                Name = "MapFieldsErrorMessage",
-                Value = "In order to work this Action needs upstream and downstream Actions configured",
-                CssClass = "well well-lg"
-            };
-
+            var textBlock = GenerateTextBlock("Error",
+                "In order to work this Action needs upstream and downstream Actions configured",
+                "well well-lg","MapFieldsErrorMessage");
             AddControl(storage, textBlock);
         }
 
@@ -148,7 +144,7 @@ namespace terminalFr8Core.Actions
         /// Check if initial configuration was requested.
         /// </summary>
         private bool NeedsConfiguration(ActionDO curAction, FieldDTO[] curUpstreamFields, FieldDTO[] curDownstreamFields)
-        {
+            {
             CrateStorage storage = storage = Crate.GetStorage(curAction.CrateStorage);
 
             var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();

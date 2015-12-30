@@ -50,17 +50,17 @@ namespace terminalGoogle.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
-                return NeedsAuthenticationError(processPayload);
+                return NeedsAuthenticationError(payloadCrates);
             }
 
-            return await CreateStandardPayloadDataFromStandardTableData(curActionDO, containerId, processPayload);
+            return await CreateStandardPayloadDataFromStandardTableData(curActionDO, containerId, payloadCrates);
         }
 
-        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, Guid containerId, PayloadDTO processPayload)
+        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, Guid containerId, PayloadDTO payloadCrates)
         {
             var tableDataMS = await GetTargetTableData(curActionDO);
 
@@ -68,12 +68,12 @@ namespace terminalGoogle.Actions
             // Add a crate of PayloadData to action's crate storage
             var payloadDataCrate = Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
 
-            using (var updater = Crate.UpdateStorage(processPayload))
+            using (var updater = Crate.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(payloadDataCrate);
             }
             
-            return Success(processPayload);            
+            return Success(payloadCrates);            
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(ActionDO curActionDO)
@@ -142,17 +142,14 @@ namespace terminalGoogle.Actions
                         Selected = string.Equals(pair.Key, selectedSpreadsheet, StringComparison.OrdinalIgnoreCase)
                     })
                     .ToList(),
-                selectedKey = spreadsheets.Where(a => a.Key == selectedSpreadsheet).FirstOrDefault().Value,
+                selectedKey = spreadsheets.FirstOrDefault(a => a.Key == selectedSpreadsheet).Value,
                 Value = selectedSpreadsheet
             };
             controlList.Add(spreadsheetControl);
 
-            var textBlockControlField = new TextBlock()
-            {
-                Label = "",
-                Value = "This Action will try to extract a table of rows from the first worksheet in the selected spreadsheet. The rows should have a header row.",
-                CssClass = "well well-lg TextBlockClass"
-            };
+            var textBlockControlField = GenerateTextBlock("",
+                "This Action will try to extract a table of rows from the first worksheet in the selected spreadsheet. The rows should have a header row.",
+                "well well-lg TextBlockClass");
             controlList.Add(textBlockControlField);
             return PackControlsCrate(controlList.ToArray());
         }
@@ -162,22 +159,15 @@ namespace terminalGoogle.Actions
         /// </summary>
         protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.Id != Guid.Empty)
-            {
-                //build a controls crate to render the pane
-                var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-                var spreadsheets = _google.EnumerateSpreadsheetsUris(authDTO);
-                var configurationControlsCrate = CreateConfigurationControlsCrate(spreadsheets);
 
-                using (var updater = Crate.UpdateStorage(curActionDO))
-                {
-                    updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                }
-            }
-            else
+            //build a controls crate to render the pane
+            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+            var spreadsheets = _google.EnumerateSpreadsheetsUris(authDTO);
+            var configurationControlsCrate = CreateConfigurationControlsCrate(spreadsheets);
+
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                throw new ArgumentException(
-                    "Configuration requires the submission of an Action that has a real ActionId.");
+                updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
             }
 
             return Task.FromResult(curActionDO);

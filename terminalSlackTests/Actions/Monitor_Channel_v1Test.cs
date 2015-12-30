@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Data.Control;
@@ -95,7 +96,7 @@ namespace terminalSlackTests.Integration
             var runUrl = GetTerminalRunUrl();
 
             ActionDTO actionDTO = await GetConfiguredActionWithDDLBSelected("general");
-
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
             var responsePayloadDTO =
              await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
 
@@ -108,14 +109,21 @@ namespace terminalSlackTests.Integration
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = "{\"status\":\"terminal_error\",\"message\":\"Unexpected channel-id.\"}")]
+        //[ExpectedException(ExpectedException = typeof(RestfulServiceException),
+        //    ExpectedMessage = "{\"status\":\"terminal_error\",\"message\":\"Unexpected channel-id.\"}")]
         public async void Monitor_Channel_Run_WrongChannel_Test()
         {
             var runUrl = GetTerminalRunUrl();
             var actionDTO = await GetConfiguredActionWithDDLBSelected("random");
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
             var responsePayloadDTO =
                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+
+            var storage = Crate.GetStorage(responsePayloadDTO);
+            var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
+
+            Assert.AreEqual(ActionResponse.Error, operationalStateCM.CurrentActionResponse);
+            Assert.AreEqual("Unexpected channel-id.", operationalStateCM.CurrentActionErrorMessage);
         }
 
         private async Task<ActionDTO> GetConfiguredActionWithDDLBSelected(string selectedChannel)
@@ -160,5 +168,49 @@ namespace terminalSlackTests.Integration
 
             return actionDTO;
         }
+
+        [Test]
+        public async void Monitor_Channel_Activate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalActivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
+        [Test]
+        public async void Monitor_Channel_Deactivate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalDeactivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
     }
+
+
 }

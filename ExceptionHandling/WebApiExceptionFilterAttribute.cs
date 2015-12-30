@@ -11,6 +11,7 @@ using Hub.Exceptions;
 using Hub.Managers;
 using TerminalBase;
 using Utilities;
+using System.Threading.Tasks;
 
 namespace HubWeb.ExceptionHandling
 {
@@ -22,14 +23,24 @@ namespace HubWeb.ExceptionHandling
     {
         public override void OnException(HttpActionExecutedContext context)
         {
+            if (context.Exception is TaskCanceledException)
+            {
+                // TaskCanceledException is an exception representing a successful task cancellation 
+                // Don't need to log it
+                // Ref: https://msdn.microsoft.com/en-us/library/dd997396(v=vs.110).aspx
+                return;
+            }
+
             ErrorDTO errorDto;
+
+            // Collect error messages of all inner exceptions
 
             var alertManager = ObjectFactory.GetInstance<EventReporter>();
             var ex = context.Exception;
 
             alertManager.UnhandledErrorCaught(
                 String.Format("Unhandled exception has occurred.\r\nError message: {0}\r\nCall stack:\r\n{1}",
-                ex.Message,
+                ex.GetFullExceptionMessage(),
                 ex.StackTrace));
 
             context.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
