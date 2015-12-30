@@ -73,12 +73,7 @@ module dockyard.controllers {
 
         private activateRoute(route) {
             this.RouteService.activate(route).$promise.then((result) => {
-                if (result === 'success') {
-                    location.reload();
-                } else {
-                    //activation failed
-                    //TODO show some kind of error message
-                }
+                location.reload();
             }, () => {
                 //activation failed
             });
@@ -86,12 +81,7 @@ module dockyard.controllers {
         }
         private deactivateRoute(route) {
             this.RouteService.deactivate(route).$promise.then((result) => {
-                if (result === 'success') {
-                    location.reload();
-                } else {
-                    //deactivation failed
-                    //TODO show some kind of error message
-                }
+                location.reload();
             }, () => {
                 //deactivation failed
                 //TODO show some kind of error message

@@ -102,12 +102,14 @@ module dockyard.services {
                 },
                 'activate': {
                     method: 'POST',
+                    isArray: false,
                     url: '/api/routes/activate/',
                     params: {
                     }
                 },
                 'deactivate': {
                     method: 'POST',
+                    isArray: false,
                     url: '/api/routes/deactivate/',
                     params: {
                     }

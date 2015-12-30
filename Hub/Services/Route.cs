@@ -210,7 +210,6 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var route = uow.RouteRepository.GetByKey(curRoute.Id);
-                //var activities = EnumerateActivities<ActionDO>(route);
                 foreach (SubrouteDO template in route.Subroutes)
                 {
                     var activities = EnumerateActivityTree<ActionDO>(template);
@@ -243,23 +242,28 @@ namespace Hub.Services
         {
             string result = "no action";
 
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                foreach (var curActionDO in EnumerateActivities<ActionDO>(curRoute))
-                {
-                    try
-                    {
-                        var resultD = await _action.Deactivate(curActionDO);
+                var route = uow.RouteRepository.GetByKey(curRoute.Id);
 
-                        result = "success";
-                    }
-                    catch (Exception ex)
+                foreach (SubrouteDO template in route.Subroutes)
+                {
+                    var activities = EnumerateActivityTree<ActionDO>(template);
+                    foreach (var curActionDO in activities)
                     {
-                        throw new ApplicationException("Process template Deactivation failed.", ex);
+                        try
+                        {
+                            var resultD = await _action.Deactivate(curActionDO);
+
+                            result = "success";
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new ApplicationException("Process template activation failed.", ex);
+                        }
                     }
                 }
-
+                
                 uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Inactive;
                 uow.SaveChanges();
             }
