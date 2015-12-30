@@ -34,7 +34,7 @@ namespace HubWeb.Controllers
             _fileService = fileService;
         }
 
-        public IHttpActionResult Get(int? id = null)
+        public IHttpActionResult Get()
         {
             IList<FileDTO> fileList;
 
@@ -62,6 +62,12 @@ namespace HubWeb.Controllers
             }
 
             return Ok(fileList);
+        }
+
+        public IHttpActionResult Get(int id)
+        {
+
+            return Ok();
         }
 
 

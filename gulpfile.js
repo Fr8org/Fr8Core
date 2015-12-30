@@ -95,6 +95,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/ReportIncidentController.js',
         'Scripts/app/controllers/RouteDetailsController.js',
         'Scripts/app/controllers/ManageFileListController.js',
+        'Scripts/app/controllers/FileDetailsController.js',
         'Scripts/app/controllers/AccountListController.js',
         'Scripts/app/controllers/AccountDetailsController.js',
         'Scripts/app/controllers/InternalAuthenticationController.js',
