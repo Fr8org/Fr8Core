@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
@@ -10,20 +11,27 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
+using Intuit.Ipp.Data;
 using terminalQuickBooks.Infrastructure;
 using terminalQuickBooks.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using Utilities;
+using Task = System.Threading.Tasks.Task;
 
 namespace terminalQuickBooks.Actions
 {
     public class Convert_TableData_To_AccountingTransactions_v1 : BaseTerminalAction
     {
+        private const string UpsteamCrateLabel = "DocuSignTableDataMappedToQuickbooks";
+        //Prefix and the OR related to it are included for testing purposes as
+        //HealthMonitor authomatically changes the crate label by adding the prefix.
+        private const string HealthMonitorPrefix = "HealthMonitor_UpstreamCrate_";
         private const string ButtonGroupNamePrefix = "Line";
         private ChartOfAccounts _chartOfAccounts;
-        private AccountDTO DebitLineAccount;
-        private ChartOfAccountsCM chartOfAccountsCrate;
-        private string AllTransactionsMemo;
+        private ChartOfAccountsCM ChartOfAccountsCrate;
+        private string MemoText;
+        private AccountDTO DebitAccount;
         public Convert_TableData_To_AccountingTransactions_v1()
         {
             _chartOfAccounts = new ChartOfAccounts();
@@ -42,23 +50,29 @@ namespace terminalQuickBooks.Actions
             //Grasp the user data from the controls in the follow up configuration
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                UpdateControlsData(updater.CrateStorage);
+                MemoText = GetMemoText(updater.CrateStorage);
+                DebitAccount = GetDebitAccount(updater.CrateStorage);
             }
             return Task.FromResult(curActionDO);
         }
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            DebitLineAccount = new AccountDTO();
             if (curActionDO.Id != Guid.Empty)
             {
+                //Check the availability of ChartOfAccountsCM
+                using (var updater = Crate.UpdateStorage(curActionDO))
+                {
+                    var crate = updater.CrateStorage.CrateContentsOfType<ChartOfAccountsCM>();
+                    if (crate != null && crate.Any())
+                        ChartOfAccountsCrate = crate.First();
+                }
                 //Get StandardTableDataCM crate using desing time
                 var tableDataCrate = await GetCratesByDirection<StandardTableDataCM>(curActionDO, CrateDirection.Upstream);
                 //In order to convert Table Data an upstream action needs to provide a StandardTableDataCM.
                 StandardConfigurationControlsCM actionControls;
-                
-                if (tableDataCrate.Count != 0 || tableDataCrate.Any(x => x.Label == "DocuSignTableDataMappedToQuickbooks"))
+                if (tableDataCrate.Count != 0 || tableDataCrate.Any(x => x.Label == UpsteamCrateLabel || x.Label == HealthMonitorPrefix + UpsteamCrateLabel))
                 {
-                    var curTable = tableDataCrate.Single(x => x.Label == "DocuSignTableDataMappedToQuickbooks").Content;
+                    var curTable = tableDataCrate.Single(x => x.Label == UpsteamCrateLabel || x.Label == HealthMonitorPrefix + UpsteamCrateLabel).Content;
                     var curFirstTableRow = curTable.GetHeaderRow();
                     ValidateTableHeaderRow(curFirstTableRow);
                     actionControls = ActionUI();
@@ -80,9 +94,8 @@ namespace terminalQuickBooks.Actions
                 }
                 using (var updater = Crate.UpdateStorage(curActionDO))
                 {
-                    updater.CrateStorage.Clear();
                     updater.CrateStorage.Add(PackControls(actionControls));
-                    updater.CrateStorage.AddRange(await PackSources(curActionDO, authTokenDO));
+                    updater.CrateStorage.AddRange(await PackSources(authTokenDO));
                 }
             }
             else
@@ -101,26 +114,44 @@ namespace terminalQuickBooks.Actions
         /// </returns>
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            
+            //CheckAuthentication(authTokenDO);
+            AccountDTO curDebitAccount = null;
+            string memoText="Unspecified";
             var payloadCrates = await GetPayload(curActionDO, containerId);
             //Obtain the crate of type StandardTableDataCM and label "DocuSignTableDataMappedToQuickbooks" that holds the required information in the tabular format
-            var curStandardTableDataCM = Crate.UpdateStorage(payloadCrates).CrateStorage.CrateContentsOfType<StandardTableDataCM>(x => x.Label == "DocuSignTableDataMappedToQuickbooks").Single();
+            var curStandardTableDataCM = GetCratesByDirection<StandardTableDataCM>(curActionDO, CrateDirection.Upstream).Result.Single(x => x.Label == UpsteamCrateLabel || x.Label == HealthMonitorPrefix + UpsteamCrateLabel).Content;
             //Validate the header row format
             ValidateTableHeaderRow(curStandardTableDataCM.GetHeaderRow());
             //The check on the accounts' existence in QB is performed only once in the run method
             //ChartOfAccounts is perloaded once and the accounts are compared with the the perloaded list
-            if (chartOfAccountsCrate == null || chartOfAccountsCrate.Accounts.Count == 0)
-                chartOfAccountsCrate = _chartOfAccounts.GetChartOfAccounts(authTokenDO);
-            var curStandardAccouningTransactionCM = GenerateTransactionCrate(curStandardTableDataCM,
-                chartOfAccountsCrate);
-
-            using (var updater = Crate.UpdateStorage(payloadCrates))
+            if (ChartOfAccountsCrate == null || ChartOfAccountsCrate.Accounts.Count == 0)
+                using (var updater = Crate.UpdateStorage(curActionDO))
+                {
+                    var crate = updater.CrateStorage.CrateContentsOfType<ChartOfAccountsCM>();
+                    ChartOfAccountsCrate = crate != null
+                        ? crate.Single()
+                        : _chartOfAccounts.GetChartOfAccounts(authTokenDO);
+                    curDebitAccount = GetDebitAccount(updater.CrateStorage);
+                    memoText = GetMemoText(updater.CrateStorage);
+                    //Check that the required input is provided by the user
+                    //Namely: debit/credit type
+                    ValidateControls(updater.CrateStorage);
+                }
+            StandardAccountingTransactionCM curStandardAccouningTransactionCM;
+            if (curDebitAccount != null)
             {
-                var curCrateToAdd = Crate<StandardAccountingTransactionCM>.FromContent(
-                    "StandardAccountingTransactionCM", curStandardAccouningTransactionCM);
-                updater.CrateStorage.Add(curCrateToAdd);
+                curStandardAccouningTransactionCM = GenerateTransactionCrate(curStandardTableDataCM,
+                    ChartOfAccountsCrate, curDebitAccount, memoText);
+                using (var updater = Crate.UpdateStorage(payloadCrates))
+                {
+                    var curCrateToAdd = Crate<StandardAccountingTransactionCM>.FromContent(
+                        "StandardAccountingTransactionCM", curStandardAccouningTransactionCM);
+                    updater.CrateStorage.Add(curCrateToAdd);
+                }
+                return Success(payloadCrates);
             }
-            return Success(payloadCrates);
+            return Error(payloadCrates, "No Debit Line Account data provided", ActionErrorCode.DESIGN_TIME_DATA_MISSING);
         }
         private StandardConfigurationControlsCM ActionUI()
         {
@@ -139,6 +170,7 @@ namespace terminalQuickBooks.Actions
                         new RadioButtonOption()
                         {
                             Value = "The table column name",
+                            Selected = true,
                             Controls = new List<ControlDefinitionDTO>
                             {
                                 new TextBox()
@@ -151,6 +183,7 @@ namespace terminalQuickBooks.Actions
                         new RadioButtonOption()
                         {
                             Value = "This account",
+                            Selected = false,
                             Controls = new List<ControlDefinitionDTO>
                             {
                                 new DropDownList()
@@ -196,7 +229,7 @@ namespace terminalQuickBooks.Actions
                         new RadioButtonOption()
                         {
                             Value = "The table column name",
-                            Selected = false,
+                            Selected = true,
                             Controls = new List<ControlDefinitionDTO>
                             {
                                 new TextBox()
@@ -209,6 +242,7 @@ namespace terminalQuickBooks.Actions
                         new RadioButtonOption()
                         {
                             Value = "This account",
+                            Selected = false,
                             Controls = new List<ControlDefinitionDTO>
                             {
                                 new DropDownList()
@@ -235,10 +269,15 @@ namespace terminalQuickBooks.Actions
             controls.Controls = accountNamePicker;
             return controls;
         }
-        private async Task<IEnumerable<Crate>> PackSources(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        private async Task<IEnumerable<Crate>> PackSources(AuthorizationTokenDO authTokenDO)
         {
             var sources = new List<Crate>();
-            var chartOfAccounts = _chartOfAccounts.GetChartOfAccounts(authTokenDO);
+            ChartOfAccountsCM chartOfAccounts;
+            //Check if private variable is null
+            if (ChartOfAccountsCrate == null)
+                chartOfAccounts = _chartOfAccounts.GetChartOfAccounts(authTokenDO);
+            else
+                chartOfAccounts = ChartOfAccountsCrate;
             sources.Add(
                 Crate.CreateDesignTimeFieldsCrate(
                     "Available ChartOfAccounts",
@@ -248,6 +287,14 @@ namespace terminalQuickBooks.Actions
             );
             return sources;
         }
+        private void ValidateControls(CrateStorage storage)
+        {
+            var controls = GetConfigurationControls(storage);
+            var curDebitCreditButtonGroup = (RadioButtonGroup)GetControl(controls, "Debit/Credit", ControlTypes.RadioButtonGroup);
+            //Check that the Debit/Credit type is selected
+            if (!curDebitCreditButtonGroup.Radios[0].Selected && !curDebitCreditButtonGroup.Radios[1].Selected)
+                throw new Exception("No debit/credit type of the first account is provided");
+        }
         /// <summary>
         /// This method should update controls data
         /// This action should be called from Crate.UpdateStorage(curActionDO)
@@ -255,14 +302,30 @@ namespace terminalQuickBooks.Actions
         /// ButtonGroup with the Name "Debit/Credit", update the debitLineAccount values
         /// 2) Extract Memo from the TextBlock with Name "Transaction_Memo"
         /// </summary>
-        private void UpdateControlsData(CrateStorage storage)
+        private string GetMemoText(CrateStorage storage)
         {
             var controls = GetConfigurationControls(storage);
+            var curMemoControl = (TextBox)GetControl(controls, "Transaction_Memo", ControlTypes.TextBox);
+            return curMemoControl.Value;
+        }
+        /// <summary>
+        /// This method has two purposes:
+        /// 1)It extracts the Name or Name & Id from the control crate;
+        /// 2)If the Id had not been extracted, it finds it from ChartOfAccountsCM crate
+        /// </summary>
+        /// <remarks>It is assumed that the method is called from using.
+        /// It is also assumed that ChartOfAccountCM is in the storage</remarks>
+        private AccountDTO GetDebitAccount(CrateStorage storage)
+        {
+            var debitAccount = new AccountDTO();
+            var controls = GetConfigurationControls(storage);
+            var accountsCrate = storage.CrateContentsOfType<ChartOfAccountsCM>().Single();
             var curDebitCreditButtonGroup = (RadioButtonGroup)GetControl(controls, "Debit/Credit", ControlTypes.RadioButtonGroup);
             //Depending on which button is selected (Debit or Credit) pass 1 or 2 to update the debitLineAccount private object
-            DebitLineAccount = ExtractAccountFromControl(controls, curDebitCreditButtonGroup.Radios[0].Selected ? 1 : 2);
-            var curMemoControl = (TextBox)GetControl(controls, "Transaction_Memo", ControlTypes.TextBox);
-            AllTransactionsMemo = curMemoControl.Value;
+            debitAccount = ExtractAccountFromControl(controls, curDebitCreditButtonGroup.Radios[0].Selected ? 1 : 2);
+            if (debitAccount.Id == null)
+                debitAccount.Id = accountsCrate.Accounts.First(a => a.Name == debitAccount.Name).Id;
+            return debitAccount;
         }
         /// <summary>
         /// This method extracts account data
@@ -293,7 +356,7 @@ namespace terminalQuickBooks.Actions
             curQBAccount.Id = curSelectedValue.Key;
             return curQBAccount;
         }
-        
+
         /// <summary>
         /// The columns are assumed to have the following titles:
         /// Date, Description, AnyExpenseType (like Food, Travel, Hotel, etc), AnyExpenseType, etc.
@@ -301,9 +364,9 @@ namespace terminalQuickBooks.Actions
         /// <param name="headerRow"></param>
         private void ValidateTableHeaderRow(TableRowDTO headerRow)
         {
-            if (headerRow.Row.Count <= 3)
+            if (headerRow.Row.Count < 3)
                 throw new Exception("The StandardTableDataCM contains less than 3 columns");
-            if (headerRow.Row.Any(x => x.Cell.Value == "Date") || headerRow.Row.Any(x => x.Cell.Value == "Description"))
+            if (headerRow.Row.All(x => x.Cell.Value != "Date") || headerRow.Row.All(x => x.Cell.Value != "Description"))
                 throw new Exception("The StandardTableDataCM does not contain Date or/and Description column");
         }
         /// <summary>
@@ -312,9 +375,10 @@ namespace terminalQuickBooks.Actions
         /// <param name="tableData">StandardTableDataCM crate</param>
         /// <param name="accounts">ChartOfAccountsCM preloaded from QuickBooks</param>
         /// <returns>StandardAccountingTransactionCM crate</returns>
-        public StandardAccountingTransactionCM GenerateTransactionCrate(StandardTableDataCM tableData, ChartOfAccountsCM accounts)
+        public StandardAccountingTransactionCM GenerateTransactionCrate(StandardTableDataCM tableData, ChartOfAccountsCM accounts, AccountDTO debitAccount, string memoText = "Unspecified")
         {
             var curTransactionCrate = new StandardAccountingTransactionCM();
+            curTransactionCrate.AccountingTransactions = new List<StandardAccountingTransactionDTO>();
             //Iterate through each column begining from the #3
             var curNumOfColumns = tableData.GetHeaderRow().Row.Count;
             var curHeaderRow = tableData.GetHeaderRow().Row;
@@ -332,9 +396,9 @@ namespace terminalQuickBooks.Actions
                     var curDescription = curCellList[1].Cell.Value;
                     var curAmount = curCellList[i].Cell.Value;
                     var creditLine = GenerateFinacialLine(curAccount, curDate, curDescription, curAmount, "Credit");
-                    var debitLine = GenerateFinacialLine(DebitLineAccount, curDate, curDescription, curAmount, "Debit");
+                    var debitLine = GenerateFinacialLine(debitAccount, curDate, curDescription, curAmount, "Debit");
                     curTransaction.TransactionDate = DateTime.Parse(curDate);
-                    curTransaction.Memo = AllTransactionsMemo;
+                    curTransaction.Memo = memoText;
                     curTransaction.FinancialLines = new List<FinancialLineDTO> { creditLine, debitLine };
                 }
                 curTransactionCrate.AccountingTransactions.Add(curTransaction);
@@ -344,15 +408,6 @@ namespace terminalQuickBooks.Actions
 
         public FinancialLineDTO GenerateFinacialLine(AccountDTO account, string date, string description, string amount, string debitOrCredit = "Credit")
         {
-            //Validate parameters
-            try
-            {
-                var curAmount = Decimal.Parse(amount);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Date or amount are in the incorrect format.");
-            }
             return new FinancialLineDTO
             {
                 AccountId = account.Id,
