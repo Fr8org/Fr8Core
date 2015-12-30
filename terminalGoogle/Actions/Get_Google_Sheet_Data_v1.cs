@@ -29,7 +29,7 @@ namespace terminalGoogle.Actions
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             if (authTokenDO == null) return true;
-            if (!base.NeedsAuthentication(authTokenDO)) 
+            if (!base.NeedsAuthentication(authTokenDO))
                 return false;
             var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             // we may also post token to google api to check its validity
@@ -72,6 +72,7 @@ namespace terminalGoogle.Actions
             {
                 updater.CrateStorage.Add(payloadDataCrate);
             }
+
             
             return Success(payloadCrates);            
         }
@@ -232,7 +233,7 @@ namespace terminalGoogle.Actions
                     updater.CrateStorage.RemoveByLabel(label);
                     var curCrateDTO = Crate.CreateDesignTimeFieldsCrate(
                                 label,
-                                headers.Select(col => new FieldDTO() { Key = col.Key, Value = col.Key }).ToArray()
+                                headers.Select(col => new FieldDTO() { Key = col.Key, Value = col.Key, Availability = Data.States.AvailabilityType.RunTime }).ToArray()
                             );
                     updater.CrateStorage.Add(curCrateDTO);
                 }
