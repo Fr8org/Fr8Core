@@ -181,19 +181,19 @@ namespace Hub.Services
         /// <returns></returns>
         private IEnumerable<TActivity> EnumerateActivityTree<TActivity>(RouteNodeDO rootNode) where TActivity : RouteNodeDO
         {
-            var RouteNodeStack = new Stack<RouteNodeDO>();
-            RouteNodeStack.Push(rootNode);
+            var routeNodeQueue = new Queue<RouteNodeDO>();
+            routeNodeQueue.Enqueue(rootNode);
 
-            while (RouteNodeStack.Count > 0)
+            while (routeNodeQueue.Count > 0)
             {
-                var result = RouteNodeStack.Pop();
+                var result = routeNodeQueue.Dequeue();
                 if (result is TActivity)
                 {
                     yield return result as TActivity;
                 }
 
                 foreach (var activityDo in result.ChildNodes.OfType<TActivity>())
-                    RouteNodeStack.Push(activityDo);
+                    routeNodeQueue.Enqueue(activityDo);
             }
         }
 
