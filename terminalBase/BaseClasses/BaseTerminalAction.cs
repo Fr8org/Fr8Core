@@ -31,6 +31,7 @@ namespace TerminalBase.BaseClasses
         protected IAction Action;
         protected ICrateManager Crate;
         private readonly ITerminal _terminal;
+        protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
 
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
@@ -46,7 +47,6 @@ namespace TerminalBase.BaseClasses
             Crate = new CrateManager();
             Action = ObjectFactory.GetInstance<IAction>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
-
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
@@ -158,6 +158,34 @@ namespace TerminalBase.BaseClasses
             }
 
             return payload;
+        }
+
+        protected ControlDefinitionDTO GetControl(StandardConfigurationControlsCM controls, string name, string controlType = null)
+        {
+            Func<ControlDefinitionDTO, bool> predicate = x => x.Name == name;
+            if (controlType != null)
+            {
+                predicate = x => x.Type == controlType && x.Name == name;
+            }
+
+            return controls.Controls.FirstOrDefault(predicate);
+        }
+
+        protected ControlDefinitionDTO GetControl(ActionDO curActionDO, string name, string controlType = null)
+        {
+            var controls = GetConfigurationControls(curActionDO);
+            return GetControl(controls, name, controlType);
+        }
+
+        protected StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO)
+        {
+            var storage = Crate.GetStorage(curActionDO);
+            return GetConfigurationControls(storage);
+        }
+
+        protected StandardConfigurationControlsCM GetConfigurationControls(CrateStorage storage)
+        {
+            return storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == ConfigurationControlsLabel).Single();
         }
 
 
@@ -382,7 +410,7 @@ namespace TerminalBase.BaseClasses
 
         protected Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
-            return Crate<StandardConfigurationControlsCM>.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(controlsList));
+            return Crate<StandardConfigurationControlsCM>.FromContent(ConfigurationControlsLabel, new StandardConfigurationControlsCM(controlsList));
         }
 
         protected string ExtractControlFieldValue(ActionDO curActionDO, string fieldName)
@@ -417,11 +445,11 @@ namespace TerminalBase.BaseClasses
             return field.Value;
         }
 
-        protected async virtual Task<List<Crate<StandardFileHandleMS>>>
+        protected async virtual Task<List<Crate<StandardFileDescriptionCM>>>
             GetUpstreamFileHandleCrates(ActionDO actionDO)
         {
             return await HubCommunicator
-                .GetCratesByDirection<StandardFileHandleMS>(
+                .GetCratesByDirection<StandardFileDescriptionCM>(
                     actionDO, CrateDirection.Upstream
                 );
         }
@@ -475,7 +503,7 @@ namespace TerminalBase.BaseClasses
             };
 
             var crateControls = Crate.CreateStandardConfigurationControlsCrate(
-                        "Configuration_Controls", controls
+                        ConfigurationControlsLabel, controls
                     );
 
             return crateControls;
@@ -532,7 +560,7 @@ namespace TerminalBase.BaseClasses
             switch (textSourceControl.ValueSource)
             {
                 case "specific":
-                    return textSourceControl.Value;
+                    return textSourceControl.TextValue;
 
                 case "upstream":
                     return ExtractPayloadFieldValue(runTimeCrateStorage, textSourceControl.selectedKey, actionDO);
@@ -603,7 +631,7 @@ namespace TerminalBase.BaseClasses
         {
             AddControl(
                 storage,
-                GenerateTextBlock(label,text,"well well-lg",name)
+                GenerateTextBlock(label, text, "well well-lg", name)
             );
         }
 
@@ -649,7 +677,7 @@ namespace TerminalBase.BaseClasses
 
             if (controlsCrate == null)
             {
-                controlsCrate = Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls");
+                controlsCrate = Crate.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel);
                 storage.Add(controlsCrate);
             }
 
@@ -699,7 +727,7 @@ namespace TerminalBase.BaseClasses
                         );
                 }
 
-                return availableFieldsCrate;
+                return await Task.FromResult(availableFieldsCrate);
             }
 
             return await Task.FromResult<Crate>(null);

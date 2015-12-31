@@ -2,8 +2,10 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Data.Crates;
+using Data.Entities;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -98,6 +100,5 @@ namespace Hub.Managers
                 }
             }
         }
-
     }
 }

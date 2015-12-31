@@ -105,6 +105,7 @@ module dockyard.tests.utils.fixtures {
             events: [],
             initialLabel: 'test label',
             value: null,
+            textValue: null,
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel',

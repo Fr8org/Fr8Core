@@ -48,7 +48,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             _innerClient = new HttpClient();
             _formatter = formatter;
             _formatterLogger = new FormatterLogger();
-            _innerClient.Timeout = new TimeSpan(0, 10, 0); //10 minutes
+            _innerClient.Timeout = new TimeSpan(0, 1, 0); //1 minute
         }
 
         private async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request)
@@ -66,7 +66,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             }
             catch (HttpRequestException ex)
             {
-                string errorMessage = String.Format("An error has ocurred while sending a {0} request to {1}. Response message:\r\n",
+                string errorMessage = String.Format("An error has ocurred while sending a {0} request to {1}. Response message: {2}",
                     request.RequestUri,
                     request.Method.Method,
                     ExtractErrorMessage(responseContent));

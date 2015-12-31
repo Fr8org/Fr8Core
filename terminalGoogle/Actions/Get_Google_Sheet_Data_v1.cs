@@ -142,7 +142,7 @@ namespace terminalGoogle.Actions
                         Selected = string.Equals(pair.Key, selectedSpreadsheet, StringComparison.OrdinalIgnoreCase)
                     })
                     .ToList(),
-                selectedKey = spreadsheets.Where(a => a.Key == selectedSpreadsheet).FirstOrDefault().Value,
+                selectedKey = spreadsheets.FirstOrDefault(a => a.Key == selectedSpreadsheet).Value,
                 Value = selectedSpreadsheet
             };
             controlList.Add(spreadsheetControl);
@@ -159,22 +159,15 @@ namespace terminalGoogle.Actions
         /// </summary>
         protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.Id != Guid.Empty)
-            {
-                //build a controls crate to render the pane
-                var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-                var spreadsheets = _google.EnumerateSpreadsheetsUris(authDTO);
-                var configurationControlsCrate = CreateConfigurationControlsCrate(spreadsheets);
 
-                using (var updater = Crate.UpdateStorage(curActionDO))
-                {
-                    updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                }
-            }
-            else
+            //build a controls crate to render the pane
+            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+            var spreadsheets = _google.EnumerateSpreadsheetsUris(authDTO);
+            var configurationControlsCrate = CreateConfigurationControlsCrate(spreadsheets);
+
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                throw new ArgumentException(
-                    "Configuration requires the submission of an Action that has a real ActionId.");
+                updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
             }
 
             return Task.FromResult(curActionDO);
