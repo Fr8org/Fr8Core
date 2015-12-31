@@ -198,7 +198,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Monitor_DocuSign_Initial_Configuration_NoAuth()
         {
@@ -309,7 +310,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Monitor_DocuSign_FollowUp_Configuration_NoAuth()
         {
@@ -357,6 +359,8 @@ namespace terminalDocuSignTests.Integration
                 }
             );
 
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
             var responsePayloadDTO =
                 await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
 
@@ -383,6 +387,8 @@ namespace terminalDocuSignTests.Integration
             actionDTO.Item1.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
 
             var preparedActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, actionDTO.Item1);
+
+            AddOperationalStateCrate(preparedActionDTO, new OperationalStateCM());
 
             AddPayloadCrate(
                 preparedActionDTO,
@@ -417,18 +423,57 @@ namespace terminalDocuSignTests.Integration
         /// Test run-time without Auth-Token.
         /// </summary>
         [Test]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}"
-        )]
         public async void Monitor_DocuSign_Run_NoAuth()
         {
             var runUrl = GetTerminalRunUrl();
 
             var requestActionDTO = HealthMonitor_FixtureData.Monitor_DocuSign_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = null;
+            AddOperationalStateCrate(requestActionDTO, new OperationalStateCM());
+            var payload = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
+            CheckIfPayloadHasNeedsAuthenticationError(payload);
+        }
 
-            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
+        [Test]
+        public async void Monitor_DocuSign_Activate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalActivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
+        [Test]
+        public async void Monitor_DocuSign_Deactivate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalDeactivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Monitor_DocuSign_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
         }
     }
 }

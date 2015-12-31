@@ -21,8 +21,7 @@
     <IISExpressUseClassicPipelineMode />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\dockyard\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>db998972</NuGetPackageImportStamp>
     <ApplicationInsightsResourceId>/subscriptions/1cbd9b53-df0a-4b58-a54c-567d986b5e4f/resourcegroups/terminalQuickBooks/providers/microsoft.insights/components/terminalQuickBooks</ApplicationInsightsResourceId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -71,7 +70,7 @@
       <HintPath>..\packages\IppDotNetSdkForQuickBooksApiV3.2.4.0\lib\Intuit.Ipp.Exception.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Intuit.Ipp.GlobalTaxService">
+    <Reference Include="Intuit.Ipp.GlobalTaxService, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\IppDotNetSdkForQuickBooksApiV3.2.4.0\lib\Intuit.Ipp.GlobalTaxService.dll</HintPath>
       <Private>True</Private>
     </Reference>
@@ -140,20 +139,12 @@
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Host.HttpListener, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Host.HttpListener.3.0.1\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Owin.Hosting, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Hosting.3.0.1\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Twitter, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Security.Twitter.3.0.1\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -162,6 +153,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -195,10 +189,6 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.Http.Owin, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Owin.5.2.3\lib\net45\System.Web.Http.Owin.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
@@ -217,12 +207,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Content Include="Global.asax" />
     <Content Include="index.html" />
-    <Content Include="packages.config" />
     <Content Include="ApplicationInsights.config">
       <TransformOnBuild>true</TransformOnBuild>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -243,7 +233,7 @@
       <IsTransformFile>True</IsTransformFile>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
+    <Content Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -260,18 +250,24 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\Create_Journal_Entry_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Actions\Create_Journal_Entry_v1.cs" />
+    <Compile Include="Actions\Convert_TableData_To_AccountingTransactions_v1.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
+    <Compile Include="Infrastructure\QuickbooksAccount.cs" />
+    <Compile Include="Interfaces\IChartOfAccounts.cs" />
     <Compile Include="Interfaces\IJournalEntry.cs" />
-    <Compile Include="Interfaces\IQuickBooksIntegration.cs" />
+    <Compile Include="Interfaces\IConnectivity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfHostFactory.cs" />
+    <Compile Include="Services\ChartOfAccounts.cs" />
     <Compile Include="Services\JournalEntry.cs" />
-    <Compile Include="Services\QuickBooksIntegration.cs" />
+    <Compile Include="Services\Connectivity.cs" />
+    <Compile Include="Tests\Fixtures\Fixtures.cs" />
+    <Compile Include="Tests\Services\JournalEntryTests.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -290,11 +286,19 @@
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
+      <Project>{6B855C3F-07A9-4787-9FDE-29FA567C43E2}</Project>
+      <Name>UtilitiesTesting</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

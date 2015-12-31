@@ -1,23 +1,16 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Control;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-
-using Hub.Interfaces;
 using Hub.Managers;
 using Newtonsoft.Json;
-using StructureMap;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
-using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Data.Entities;
-using Data.Crates;
 using Data.States;
 using Utilities;
 
@@ -45,27 +38,31 @@ namespace terminalDocuSign.Actions
         public async Task<PayloadDTO> Run(ActionDO actionDO,
             Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            var payloadCrates = await GetPayload(actionDO, containerId);
+
             if (NeedsAuthentication(authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return NeedsAuthenticationError(payloadCrates);
             }
 
-            var processPayload = await GetProcessPayload(actionDO, containerId);
-
-            //Get envlopeId
+            //Get envlopeId from configuration
             var control = FindControl(Crate.GetStorage(actionDO), "EnvelopeIdSelector");
             string envelopeId = GetEnvelopeID(control, authTokenDO);
-            if (envelopeId == null)
+            // if it's not valid, try to search upstream runtime values
+            if (!envelopeId.IsGuid())
+                envelopeId = ExtractSpecificOrUpstreamValue(actionDO, payloadCrates, "EnvelopeIdSelector");
+
+            if (string.IsNullOrEmpty(envelopeId))
             {
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
+                return Error(payloadCrates, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
             }
 
-            using (var updater = Crate.UpdateStorage(() => processPayload.CrateStorage))
+            using (var updater = Crate.UpdateStorage(() => payloadCrates.CrateStorage))
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", _docuSignManager.CreateActionPayload(actionDO, authTokenDO, envelopeId)));
             }
 
-            return processPayload;
+            return Success(payloadCrates);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
@@ -82,19 +79,17 @@ namespace terminalDocuSign.Actions
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
             var control = CreateSpecificOrUpstreamValueChooser(
-               "TemplateId or TemplateName",
+               "EnvelopeId",
                "EnvelopeIdSelector",
                "Upstream Design-Time Fields"
             );
 
             control.Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") };
 
-            var info_label = new TextBlock() { Name = "Info", CssClass = "well well-lg" };
-
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(PackControlsCrate(control, info_label));
+                updater.CrateStorage.Add(PackControlsCrate(control));
 
             }
 
@@ -112,36 +107,18 @@ namespace terminalDocuSign.Actions
                 var control = FindControl(Crate.GetStorage(curActionDO), "EnvelopeIdSelector");
                 string envelopeId = GetEnvelopeID(control as TextSource, authTokenDO);
                 int fieldsCount = _docuSignManager.UpdateUserDefinedFields(curActionDO, authTokenDO, updater, envelopeId);
-
-                var info_label = FindControl(updater.CrateStorage, "Info");
-                if (String.IsNullOrEmpty(envelopeId))
-                    info_label.Value = "Couldn't find Envelope by provided value";
-                else
-                    info_label.Value = String.Format("Found {0} field(s)", fieldsCount);
-
             }
             return await Task.FromResult(curActionDO);
         }
 
         private string GetEnvelopeID(ControlDefinitionDTO control, AuthorizationTokenDO authTokenDo)
         {
-            string envelopeId = "";
-            TextSource textSource = (TextSource)control;
-            if (textSource.ValueSource == null || string.IsNullOrEmpty(textSource.Value))
+            string envelopeId = null;
+            var textSource = (TextSource)control;
+            if (textSource.ValueSource == null)
                 return null;
 
-            //Gets EnvelopeId either by EnvelopeId or TemplateName
-            if (string.IsNullOrEmpty(control.Value))
-                if (control.Value.IsGuid())
-                    envelopeId = control.Value;
-                else
-                {
-                    var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDo.Token);
-                    var availableTemplates = (_docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO).Get()
-                        as StandardDesignTimeFieldsCM).Fields;
-                    var selectedTemplate = availableTemplates.Where(a => a.Key.ToLowerInvariant() == control.Value.ToLowerInvariant()).FirstOrDefault();
-                    envelopeId = (selectedTemplate != null) ? selectedTemplate.Value : "";
-                }
+            envelopeId = textSource.ValueSource == "specific" ? textSource.TextValue : textSource.Value;
             return envelopeId;
         }
     }

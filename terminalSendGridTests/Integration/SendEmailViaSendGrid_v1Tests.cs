@@ -55,7 +55,7 @@ namespace terminalSendGridTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             actionDTOInit = responseActionDTO;
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault());
-            Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().SingleOrDefault());
+            Assert.AreEqual(3, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().Count());
 
             var standardConfigurationControlCM = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>();
             Assert.AreEqual(1, standardConfigurationControlCM.Where(w => w.FindByName("EmailAddress") != null).Count());
@@ -86,7 +86,7 @@ namespace terminalSendGridTests.Integration
             responseActionDTO =
                 await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
-                    requestActionDTO
+                    responseActionDTO
                 );
 
             //Assert
@@ -96,7 +96,9 @@ namespace terminalSendGridTests.Integration
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields Body").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields Subject").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields Address").Count());
         }
 
         [Test, Category("Integration.terminalSendGrid")]
@@ -112,6 +114,8 @@ namespace terminalSendGridTests.Integration
             {
                 updater.CrateStorage.Add(CreateCrates());
             }
+
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
 
             AddPayloadCrate(
                actionDTO,
@@ -160,6 +164,48 @@ namespace terminalSendGridTests.Integration
         {
             var controls = new StandardConfigurationControlsCM(controlsList);
             return Crate<StandardConfigurationControlsCM>.FromContent("Configuration_Controls", controls);
+        }
+
+        [Test, Category("Integration.terminalSendGrid")]
+        public async void SendEmailViaSendGrid_Activate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalActivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
+        [Test, Category("Integration.terminalSendGrid")]
+        public async void SendEmailViaSendGrid_Deactivate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalDeactivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
         }
     }
 }

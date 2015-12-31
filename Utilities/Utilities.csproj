@@ -110,6 +110,7 @@
     <Compile Include="DateUtility.cs" />
     <Compile Include="Encryption.cs" />
     <Compile Include="Enumerations.cs" />
+    <Compile Include="ExceptionExtesion.cs" />
     <Compile Include="ExceptionHandling.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FileUtils.cs" />

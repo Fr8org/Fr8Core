@@ -11,106 +11,150 @@ namespace Data.Repositories
 {
     class KeyVaultAuthorizationTokenRepository : AuthorizationTokenRepositoryBase
     {
-        private readonly ClientCredential _clientCredentials;
-        private readonly KeyVaultClient _client;
-        private readonly string _ketVaultUrl;
+        private static readonly ClientCredential ClientCredentials;
+        private static readonly KeyVaultClient Client;
+        private static readonly string KeyVaultUrl;
+        private static readonly int MaxWaitTimeout = 5000;
+
+        static KeyVaultAuthorizationTokenRepository()
+        {
+            Client = new KeyVaultClient(GetAccessToken);
+            ClientCredentials = new ClientCredential(CloudConfigurationManager.GetSetting("KeyVaultClientId"), CloudConfigurationManager.GetSetting("KeyVaultClientSecret"));
+            KeyVaultUrl = CloudConfigurationManager.GetSetting("KeyVaultUrl");
+
+            int timeout;
+            string timeoutStr = CloudConfigurationManager.GetSetting("KeyVaultTimeout");
+
+            if (!string.IsNullOrWhiteSpace(timeoutStr) && int.TryParse(timeoutStr, out timeout))
+            {
+                MaxWaitTimeout = timeout;
+            }
+        }
 
         public KeyVaultAuthorizationTokenRepository(IUnitOfWork uow) 
             : base(uow)
         {
-            _client = new KeyVaultClient(GetAccessToken);
-            _clientCredentials = new ClientCredential(CloudConfigurationManager.GetSetting("KeyVaultClientId"), CloudConfigurationManager.GetSetting("KeyVaultClientSecret"));
-            _ketVaultUrl = CloudConfigurationManager.GetSetting("KeyVaultUrl");
         }
-
+        
         protected override void ProcessChanges(IEnumerable<AuthorizationTokenDO> adds, IEnumerable<AuthorizationTokenDO> updates, IEnumerable<AuthorizationTokenDO> deletes)
         {
-            var tasks = new List<Task>();
-
-            foreach (var token in adds)
+           // using (WebMonitor.Tracer.Monitor.StartFrame("Processing changes"))
             {
-                if (string.IsNullOrWhiteSpace(token.Token))
+                var tasks = new List<Task>();
+
+                foreach (var token in adds)
                 {
-                    continue;
+                    if (string.IsNullOrWhiteSpace(token.Token))
+                    {
+                        continue;
+                    }
+
+                    tasks.Add(UpdateSecretAsync(FormatSecretName(token.Id), token.Token));
                 }
 
-                tasks.Add(UpdateSecretAsync(FormatSecretName(token.Id), token.Token));
-            }
-
-            foreach (var token in updates)
-            {
-                var secretId = FormatSecretName(token.Id);
-
-                if (string.IsNullOrWhiteSpace(token.Token))
+                foreach (var token in updates)
                 {
-                    tasks.Add(DeleteSecretAsync(secretId));
+                    var secretId = FormatSecretName(token.Id);
+
+                    if (string.IsNullOrWhiteSpace(token.Token))
+                    {
+                        tasks.Add(DeleteSecretAsync(secretId));
+                    }
+                    else
+                    {
+                        tasks.Add(UpdateSecretAsync(secretId, token.Token));
+                    }
                 }
-                else
+
+                foreach (var token in deletes)
                 {
-                    tasks.Add(UpdateSecretAsync(secretId, token.Token));
+                    tasks.Add(DeleteSecretAsync(FormatSecretName(token.Id)));
+                }
+
+                if (tasks.Count == 0)
+                {
+                    return;
+                }
+
+               // using (WebMonitor.Tracer.Monitor.StartFrame("Commiting"))
+                {
+                    Task.WaitAll(tasks.ToArray(), MaxWaitTimeout);
                 }
             }
-
-            foreach (var token in deletes)
-            {
-                tasks.Add(DeleteSecretAsync(FormatSecretName(token.Id)));
-            }
-
-            if (tasks.Count == 0)
-            {
-                return;
-            }
-            
-            Task.WaitAll(tasks.ToArray());
         }
 
         protected override string QuerySecurePart(Guid id)
         {
-            return QuerySecurePartAsync(id).Result;
-        }
-
-        private async Task<string> QuerySecurePartAsync(Guid id)
-        {
-            var secretId = FormatSecretName(id);
-
-            try
+           // using (WebMonitor.Tracer.Monitor.StartFrame("QuerySecurePart"))
             {
-                return (await _client.GetSecretAsync(_ketVaultUrl, secretId).ConfigureAwait(false)).Value;
-            }
-            catch
-            {
-                return null;
+                var task = QuerySecurePartAsync(id);
+
+                //using (WebMonitor.Tracer.Monitor.StartFrame("waiting for result"))
+                {
+                    task.Wait(MaxWaitTimeout);
+                }
+
+                return task.Result;
             }
         }
 
-        private async Task UpdateSecretAsync(string secret, string value)
+        private Task<string> QuerySecurePartAsync(Guid id)
         {
-            try
+            return Task.Run(async () =>
             {
-                await _client.SetSecretAsync(_ketVaultUrl, secret, value).ConfigureAwait(false);
-            }
-            catch
-            {
-            }
+                var secretId = FormatSecretName(id);
+
+                try
+                {
+                    return (await Client.GetSecretAsync(KeyVaultUrl, secretId)).Value;
+                }
+                catch
+                {
+                    return null;
+                }
+            });
         }
 
-        private async Task DeleteSecretAsync(string secret)
+        private Task UpdateSecretAsync(string secret, string value)
         {
-            try
+            return Task.Run(async () =>
             {
-                await _client.DeleteSecretAsync(_ketVaultUrl, secret).ConfigureAwait(false);
-            }
-            catch
-            {
-            }
+                try
+                {
+                    await Client.SetSecretAsync(KeyVaultUrl, secret, value);
+                }
+                catch
+                {
+                }
+            });
         }
 
-        public async Task<string> GetAccessToken(string authority, string resource, string scope)
+        private Task DeleteSecretAsync(string secret)
         {
-            var context = new AuthenticationContext(authority, TokenCache.DefaultShared);
-            var result = await context.AcquireTokenAsync(resource, _clientCredentials);
+            return Task.Run(async () =>
+            {
+                try
+                {
+                    await Client.DeleteSecretAsync(KeyVaultUrl, secret);
+                }
+                catch
+                {
+                }
+            });
+        }
 
-            return result.AccessToken;
+        public static Task<string> GetAccessToken(string authority, string resource, string scope)
+        {
+            return Task.Run(async () =>
+            {
+                //using (WebMonitor.Tracer.Monitor.StartFrame("GetAccessToken"))
+                {
+
+                    var context = new AuthenticationContext(authority, TokenCache.DefaultShared);
+                    var result = await context.AcquireTokenAsync(resource, ClientCredentials);
+                    return result.AccessToken;
+                }
+            });
         }
 
         private static string FormatSecretName(Guid id)

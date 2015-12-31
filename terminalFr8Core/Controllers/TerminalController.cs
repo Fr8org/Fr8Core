@@ -25,7 +25,7 @@ namespace terminalFr8Core.Controllers
         public IHttpActionResult DiscoverTerminals()
         {
             var result = new List<ActivityTemplateDTO>();
-            
+
             var terminal = new TerminalDTO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
@@ -34,10 +34,10 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             };
 
-	        var webService = new WebServiceDTO
-	        {
-		        Name = "fr8 Core"
-	        };
+            var webService = new WebServiceDTO
+            {
+                Name = "fr8 Core"
+            };
 
             result.Add(new ActivityTemplateDTO
             {
@@ -45,11 +45,20 @@ namespace terminalFr8Core.Controllers
                 Label = "Filter Using Runtime Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
-                AuthenticationType = AuthenticationType.None,
                 Version = "1",
-				MinPaneWidth = 330,
-				WebService = webService
+                MinPaneWidth = 330,
+                WebService = webService
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "ConvertCrates",
+                Label = "Convert Crates",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                Version = "1",
+                MinPaneWidth = 330,
+                WebService = webService
             });
 
             result.Add(new ActivityTemplateDTO
@@ -58,10 +67,9 @@ namespace terminalFr8Core.Controllers
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
-                AuthenticationType = AuthenticationType.None,
+                Tags = "AggressiveReload",
                 Version = "1",
-				MinPaneWidth = 380,
+                MinPaneWidth = 380,
                 WebService = webService
             });
 
@@ -71,10 +79,8 @@ namespace terminalFr8Core.Controllers
                 Label = "Add Payload Manually",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
-                AuthenticationType = AuthenticationType.None,
                 Version = "1",
-				MinPaneWidth = 330,
+                MinPaneWidth = 330,
                 WebService = webService
             });
 
@@ -170,6 +176,17 @@ namespace terminalFr8Core.Controllers
                 WebService = webService,
                 Version = "1",
                 Type = ActivityType.Standard
+            });
+
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "ConvertRelatedFieldsIntoTable",
+                Label = "Convert Related Fields Into a Table",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                MinPaneWidth = 400
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
