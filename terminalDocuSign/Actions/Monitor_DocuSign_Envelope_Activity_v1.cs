@@ -26,7 +26,12 @@ namespace terminalDocuSign.Actions
     {
         readonly DocuSignManager _docuSignManager = new DocuSignManager();
 
+#if DEV
+        private const string DocuSignConnectName = "fr8DocuSignConnectConfigurationDev";
+#else
         private const string DocuSignConnectName = "fr8DocuSignConnectConfiguration";
+#endif
+
         private const string DocuSignOnEnvelopeSentEvent = "Sent";
         private const string DocuSignOnEnvelopeReceivedEvent = "Delivered";
         private const string DocuSignOnEnvelopeSignedEvent = "Completed";
@@ -184,6 +189,9 @@ namespace terminalDocuSign.Actions
                 envelopeEvents += DocuSignOnEnvelopeSignedEvent;
             }
 
+            //since localhost based url's won't work
+            //let's not do anything on debug configuration
+        #if !DEBUG
             account.CreateDocuSignConnectProfile(new Configuration
             {
                 name = DocuSignConnectName,
@@ -205,6 +213,9 @@ namespace terminalDocuSign.Actions
                 useSoapInterface = "false",
                 signMessageWithX509Certificate = "false"
             });
+        #endif
+
+
         }
 
         public override Task<ActionDO> Deactivate(ActionDO curActionDO)
@@ -218,7 +229,9 @@ namespace terminalDocuSign.Actions
 
             if (existingConfig != null)
             {
+            #if !DEBUG
                 docuSignAccount.DeleteDocuSignConnectProfile(existingConfig.connectId);
+             #endif
             }
             return Task.FromResult<ActionDO>(curActionDO);
         }
