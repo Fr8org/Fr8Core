@@ -19,6 +19,7 @@ using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using Utilities.Configuration.Azure;
+using Data.States;
 
 namespace terminalDocuSign.Actions
 {
@@ -48,7 +49,7 @@ namespace terminalDocuSign.Actions
             var template = new DocuSignTemplate();
 
             var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
-            var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();
+            var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id, Availability = AvailabilityType.Configuration }).ToArray();
             var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
                 "Available Templates",
                 fields);
