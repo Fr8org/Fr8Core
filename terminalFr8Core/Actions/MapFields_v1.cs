@@ -26,32 +26,34 @@ namespace terminalFr8Core.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(actionDO, containerId);
+            var processPayload = await GetPayload(actionDO, containerId);
 
             var curControlsMS = Crate.GetStorage(actionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (curControlsMS == null)
             {
-                return Error(payloadCrates, "No controls crate found.");
+                return Error(processPayload, "No controls crate found.");
             }
 
             var curMappingControl = curControlsMS.Controls.FirstOrDefault(x => x.Name == "Selected_Mapping");
 
             if (curMappingControl == null || string.IsNullOrEmpty(curMappingControl.Value))
             {
-                return Error(payloadCrates, "No Selected_Mapping control found.");
+                return Error(processPayload, "No Selected_Mapping control found.");
             }
 
             var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
+            var storage = Crate.FromDto(processPayload.CrateStorage);
 
-            
 
-            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => payloadCrates.CrateStorage))
+            var processedMappedFields = mappedFields.Select(a => { return new FieldDTO(a.Value, ExtractPayloadFieldValue(storage, a.Key, actionDO)); });
+
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
             {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(mappedFields)));
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
+                return Success(processPayload);
             }
-            return Success(payloadCrates);
         }
 
         /// <summary>
@@ -97,8 +99,8 @@ namespace terminalFr8Core.Actions
                 return curActionDO;
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
-            var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields);
-            var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
+            var downstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
+            var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields.ToList().Select(a => { a.Availability = AvailabilityType.Configuration; return a; }).ToArray());
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
@@ -136,7 +138,7 @@ namespace terminalFr8Core.Actions
         {
             var textBlock = GenerateTextBlock("Error",
                 "In order to work this Action needs upstream and downstream Actions configured",
-                "well well-lg","MapFieldsErrorMessage");
+                "well well-lg", "MapFieldsErrorMessage");
             AddControl(storage, textBlock);
         }
 
@@ -144,7 +146,7 @@ namespace terminalFr8Core.Actions
         /// Check if initial configuration was requested.
         /// </summary>
         private bool NeedsConfiguration(ActionDO curAction, FieldDTO[] curUpstreamFields, FieldDTO[] curDownstreamFields)
-            {
+        {
             CrateStorage storage = storage = Crate.GetStorage(curAction.CrateStorage);
 
             var upStreamFields = storage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").FirstOrDefault();
@@ -177,7 +179,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-                return ConfigurationRequestType.Initial;
+            return ConfigurationRequestType.Initial;
 
         }
     }
