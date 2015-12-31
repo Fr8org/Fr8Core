@@ -13,7 +13,6 @@ namespace terminalQuickBooks
         public static void Register(HttpConfiguration config)
         {
             BaseTerminalWebApiConfig.Register("QuickBooks", config);
-
         }
     }
 }

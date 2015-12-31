@@ -103,7 +103,8 @@ namespace terminalDocuSignTests.Integration
         [Test, Category("Integration.terminalDocuSign")]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Receive_DocuSign_Envelope_Configuration_NoAuth()
         {
