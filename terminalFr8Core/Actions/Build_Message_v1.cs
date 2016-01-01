@@ -65,8 +65,8 @@ namespace terminalFr8Core.Actions
                 Console.WriteLine(str);
 
             }
-            
-            var curProcessPayload = await GetProcessPayload(curActionDO, containerId);
+
+            var curProcessPayload = await GetPayload(curActionDO, containerId);
 
             result = result.Replace("<p>", String.Empty).Replace("</p>", " ");
 
@@ -79,7 +79,7 @@ namespace terminalFr8Core.Actions
 
             //var messageBody = JsonConvert.DeserializeObject<List<FieldDTO>>(result);
 
-            using (var updater = Crate.UpdateStorage(() => curProcessPayload.CrateStorage))
+            using (var updater = Crate.UpdateStorage(curProcessPayload))
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("MessageBody", new StandardPayloadDataCM(newFields)));
             }

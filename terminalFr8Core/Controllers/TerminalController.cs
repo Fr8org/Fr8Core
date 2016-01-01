@@ -44,7 +44,6 @@ namespace terminalFr8Core.Controllers
                 Name = "Build_Message",
                 Label = "Build a Message",
                 Category = ActivityCategory.Processors,
-                AuthenticationType = AuthenticationType.None,
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1"
