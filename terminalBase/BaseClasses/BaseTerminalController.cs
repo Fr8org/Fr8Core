@@ -13,6 +13,12 @@ using Newtonsoft.Json;
 using Data.Infrastructure;
 using Utilities.Logging;
 using Utilities;
+using System.Net.Http;
+using System.IO;
+using System.Web.Routing;
+using System.Net;
+using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
 
 namespace TerminalBase.BaseClasses
 {
@@ -237,6 +243,34 @@ namespace TerminalBase.BaseClasses
              _baseTerminalEvent.SendEventReport(
                  terminalName,
                  string.Format("{0} completed processing this Container at {1}.", terminalName, DateTime.Now.ToString("G"))));
+        }
+
+        public HttpResponseMessage GetActionDocumentation(string helpPath)
+        {
+            string htmlContent = FindDocumentation(helpPath);
+
+            var response = new HttpResponseMessage();
+            response.Content = new StringContent(htmlContent);
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
+
+            return response;
+        }
+
+        private string FindDocumentation(string helppath)
+        {
+            string filename = System.Web.Hosting.HostingEnvironment.MapPath(string.Format("~\\Documentation\\{0}.html", helppath));
+            string content = "";
+
+            try
+            {
+                content = System.IO.File.ReadAllText(filename);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex.InnerException);
+            }
+
+            return content;
         }
     }
 }

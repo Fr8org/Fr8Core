@@ -394,4 +394,19 @@ namespace Data.Control
             Type = ControlTypes.UpstreamFieldChooser;
         }
     }
+
+    public class HelpControlDTO
+    {
+        public HelpControlDTO(string helpPath, string documentationSupport)
+        {
+            this.HelpPath = helpPath;
+            this.DocumentationSupport = documentationSupport;
+        }
+
+        [JsonProperty("helpPath")]
+        public string HelpPath { get; set; }
+
+        [JsonProperty("documentationSupport")]
+        public string DocumentationSupport { get; set; }
+    }
 }
