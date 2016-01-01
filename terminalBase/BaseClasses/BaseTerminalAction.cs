@@ -718,7 +718,7 @@ namespace TerminalBase.BaseClasses
                 Crate availableFieldsCrate = null;
                 if (crates is List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>)
                 {
-                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).SelectMany(x => x.Content.Fields).ToArray();
+                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).Where(w => w.Content.Fields.Where(x => x.Availability != AvailabilityType.Configuration).Count() == 1).SelectMany(x => x.Content.Fields).ToArray();
 
                     availableFieldsCrate =
                         Crate.CreateDesignTimeFieldsCrate(

@@ -144,7 +144,7 @@ namespace terminalSendGrid.Actions
                 CreateEmailBodyTextSourceControl()
             };
 
-            return Crate.CreateStandardConfigurationControlsCrate("Send Grid", controls.ToArray());
+            return Crate.CreateStandardConfigurationControlsCrate("SendGrid", controls.ToArray());
         }
 
         private async Task<Crate> GetAvailableDataFields(ActionDO curActionDO)
