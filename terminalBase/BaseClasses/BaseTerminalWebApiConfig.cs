@@ -20,6 +20,10 @@ namespace TerminalBase.BaseClasses
                 defaults: new { id = RouteParameter.Optional }
             );
             curTerminalConfiguration.Routes.MapHttpRoute(
+               name: string.Format("Terminal{0}RouteDocumentation", curTerminalName),
+               routeTemplate: "actions/documentation/{*helpPath}",
+               defaults: new { controller = "Action", action = "Documentation", helpPath = RouteParameter.Optional });
+            curTerminalConfiguration.Routes.MapHttpRoute(
                 name: string.Format("Terminal{0}ActionCatchAll", curTerminalName),
                 routeTemplate: "actions/{*actionType}",
                 defaults: new { controller = "Action", action = "Execute", terminal = name }); //It calls ActionController#Execute in an MVC style
@@ -35,6 +39,10 @@ namespace TerminalBase.BaseClasses
                 routeTemplate: string.Format("terminal_{0}", curTerminalName) + "/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+            curTerminalRoutes.MapHttpRoute(
+                name: string.Format("Terminal{0}RouteDocumentation", curTerminalName),
+                routeTemplate: "actions/documentation/{*helpPath}",
+                defaults: new { controller = "Action", action = "Documentation", helpPath = RouteParameter.Optional });
             curTerminalRoutes.MapHttpRoute(
                 name: string.Format("Terminal{0}RouteActionCatchAll", curTerminalName),
                 routeTemplate: "actions/{*actionType}",

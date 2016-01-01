@@ -532,7 +532,8 @@ namespace terminalDocuSign.Actions
                                     Label = "Available Templates",
                                     ManifestType = CrateManifestTypes.StandardDesignTimeFields
                                 },
-                                Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
+                                Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")},
+                                Help = new HelpControlDTO("Monitor_DocuSign_Envelope_DocuSignTemplateHelp", "Minicon")
                             }
                         }
                     }
