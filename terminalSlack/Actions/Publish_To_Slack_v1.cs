@@ -87,7 +87,7 @@ namespace terminalSlack.Actions
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var oauthToken = authTokenDO.Token;
-            var channels = await _slackIntegration.GetChannelList(oauthToken);
+            var channels = await _slackIntegration.GetAllChannelList(oauthToken);
 
             var crateControls = PackCrate_ConfigurationControls();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
