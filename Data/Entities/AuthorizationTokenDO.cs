@@ -21,7 +21,10 @@ namespace Data.Entities
         }
 
         public Guid Id { get; set; }
+
+        [NotMapped]
         public String Token { get; set; }
+
         public String RedirectURL { get; set; }
         public String SegmentTrackingEventName { get; set; }
         public String SegmentTrackingProperties { get; set; }
@@ -50,5 +53,7 @@ namespace Data.Entities
 
         //Additional Attributes such as version number ,  instance url etc..
         public String AdditionalAttributes { get; set; }
+
+        public bool IsMain { get; set; }
     }
 }

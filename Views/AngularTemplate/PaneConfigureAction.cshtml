@@ -1,5 +1,5 @@
 ﻿<div class="pane-configure-action" block-if="processing === true" ng-click="loadConfiguration()">
-    <div ng-if="!(currentAction.activityTemplate.category==='Solution' && mode !== 'Solution')">
+    <div ng-if="!(currentAction.activityTemplate.category==='Solution' && mode !== 'solution')">
         <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
             <configuration-control current-action="currentAction" field="field" />
         </div>
@@ -9,7 +9,7 @@
             </div>
         </div>
     </div>
-    <div class="pane-configure-action-returnToSolution" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'Solution'">
+    <div class="pane-configure-action-returnToSolution" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'">
         <label>This solution has {{currentAction.childrenActions.length}} {{currentAction.childrenActions.length > 1 ? "parts" : "part"}}: </label>
         <div class="solution-parts">
             <label ng-repeat="childAction in currentAction.childrenActions">
@@ -18,8 +18,8 @@
         </div>
         
     </div>
-    <div class="return-to-solution-container" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'Solution'">
-        <a stop-click-propagation href="{{'#/solution/' + currentAction.id}}">
+    <div class="return-to-solution-container" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'">
+        <a stop-click-propagation ng-click="setSolutionMode()">
             <span class="return-to-solution">Return to Solution Introduction</span>
         </a>
     </div>

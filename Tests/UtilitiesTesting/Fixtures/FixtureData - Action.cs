@@ -383,7 +383,8 @@ namespace UtilitiesTesting.Fixtures
                 Id = 1,
                 Name = "AzureSqlServer",
                 TerminalStatus = 1,
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.None
             };
 
             ActivityTemplateDO curActivityTemplateDO = new ActivityTemplateDO
@@ -392,10 +393,8 @@ namespace UtilitiesTesting.Fixtures
                 //ActionType = "Write to Sql Server",
                 //ParentPluginRegistration = "pluginAzureSqlServer",
                 Version = "v1",
-                AuthenticationType = AuthenticationType.None,
                 Terminal = curTerminalDO,
                 TerminalId = 1,
-
             };
 
 
@@ -519,9 +518,13 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO TestActionTree()
         {
-            var curCratesDTO = FixtureData.TestCrateDTO1();
+            var curCratesDTO1 = FixtureData.TestCrateDTO1();
+            var curCratesDTO2 = FixtureData.TestCrateDTO2();
+            var curCratesDTO3 = FixtureData.TestCrateDTO3();
             var crateStorageDTO = new CrateStorage();
-            crateStorageDTO.AddRange(curCratesDTO);
+            crateStorageDTO.AddRange(curCratesDTO1);
+            crateStorageDTO.AddRange(curCratesDTO2);
+            crateStorageDTO.AddRange(curCratesDTO3);
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
             string crateStorage = JsonConvert.SerializeObject(crateManager.ToDto(crateStorageDTO));
             

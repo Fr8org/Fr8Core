@@ -4,7 +4,6 @@ using System.Web.Http;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Services;
 using Utilities.Configuration.Azure;
 using Data.Interfaces.Manifests;
 
@@ -26,7 +25,7 @@ namespace terminalFr8Core.Controllers
         public IHttpActionResult DiscoverTerminals()
         {
             var result = new List<ActivityTemplateDTO>();
-            
+
             var terminal = new TerminalDTO
             {
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
@@ -35,10 +34,10 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             };
 
-	        var webService = new WebServiceDTO
-	        {
-		        Name = "fr8 Core"
-	        };
+            var webService = new WebServiceDTO
+            {
+                Name = "fr8 Core"
+            };
 
             result.Add(new ActivityTemplateDTO
             {
@@ -57,11 +56,20 @@ namespace terminalFr8Core.Controllers
                 Label = "Filter Using Runtime Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
-                AuthenticationType = AuthenticationType.None,
                 Version = "1",
-				MinPaneWidth = 330,
-				WebService = webService
+                MinPaneWidth = 330,
+                WebService = webService
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "ConvertCrates",
+                Label = "Convert Crates",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                Version = "1",
+                MinPaneWidth = 330,
+                WebService = webService
             });
 
             result.Add(new ActivityTemplateDTO
@@ -70,10 +78,9 @@ namespace terminalFr8Core.Controllers
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
-                AuthenticationType = AuthenticationType.None,
+                Tags = "AggressiveReload",
                 Version = "1",
-				MinPaneWidth = 380,
+                MinPaneWidth = 380,
                 WebService = webService
             });
 
@@ -83,10 +90,8 @@ namespace terminalFr8Core.Controllers
                 Label = "Add Payload Manually",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
-                AuthenticationType = AuthenticationType.None,
                 Version = "1",
-				MinPaneWidth = 330,
+                MinPaneWidth = 330,
                 WebService = webService
             });
 
@@ -158,7 +163,41 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Solution,
                 Terminal = terminal,
                 WebService = webService,
-                Version = "1"
+                Version = "1",
+                Type = ActivityType.Solution
+            });
+
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "Loop",
+                Label = "Fr8 Core Loop",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                Type = ActivityType.Loop
+            });
+
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "SetDelay",
+                Label = "Delay Action Processing",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                Type = ActivityType.Standard
+            });
+
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "ConvertRelatedFieldsIntoTable",
+                Label = "Convert Related Fields Into a Table",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                MinPaneWidth = 400
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

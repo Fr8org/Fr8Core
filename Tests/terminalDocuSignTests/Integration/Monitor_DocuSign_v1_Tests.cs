@@ -40,24 +40,23 @@ namespace terminalDocuSignTests.Integration
 
         private void AssertControls(StandardConfigurationControlsCM controls)
         {
-            Assert.AreEqual(6, controls.Controls.Count);
+            Assert.AreEqual(5, controls.Controls.Count);
 
             // Assert that first control is a RadioButtonGroup 
             // with Label == "TemplateRecipientPicker"
             // and event: onChange => requestConfig.
-            Assert.IsTrue(controls.Controls[5] is RadioButtonGroup);
-            Assert.AreEqual("TemplateRecipientPicker", controls.Controls[5].Name);
-            Assert.AreEqual(1, controls.Controls[5].Events.Count);
-            Assert.AreEqual("onChange", controls.Controls[5].Events[0].Name);
-            Assert.AreEqual("requestConfig", controls.Controls[5].Events[0].Handler);
+            Assert.IsTrue(controls.Controls[4] is RadioButtonGroup);
+            Assert.AreEqual("TemplateRecipientPicker", controls.Controls[4].Name);
+            Assert.AreEqual(1, controls.Controls[4].Events.Count);
+            Assert.AreEqual("onChange", controls.Controls[4].Events[0].Name);
+            Assert.AreEqual("requestConfig", controls.Controls[4].Events[0].Handler);
 
             // Assert that 2nd-5th controls are a CheckBoxes
             // with corresponding labels and event: onChange => requestConfig.
             var checkBoxLabels = new[] {
                 "Event_Envelope_Sent",
                 "Event_Envelope_Received",
-                "Event_Recipient_Signed",
-                "Event_Recipient_Sent"
+                "Event_Recipient_Signed"
             };
 
             for (var i = 0; i < checkBoxLabels.Length; ++i)
@@ -72,7 +71,7 @@ namespace terminalDocuSignTests.Integration
             }
 
             // Assert that radio group contains two radios labeled "recipient" and "template".
-            var radioButtonGroup = (RadioButtonGroup)controls.Controls[5];
+            var radioButtonGroup = (RadioButtonGroup)controls.Controls[4];
             Assert.AreEqual(2, radioButtonGroup.Radios.Count);
             Assert.AreEqual("recipient", radioButtonGroup.Radios[0].Name);
             Assert.AreEqual("template", radioButtonGroup.Radios[1].Name);
@@ -118,7 +117,7 @@ namespace terminalDocuSignTests.Integration
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
-                var radioGroup = (RadioButtonGroup)controls.Controls[5];
+                var radioGroup = (RadioButtonGroup)controls.Controls[4];
                 radioGroup.Radios[0].Selected = true;
                 radioGroup.Radios[1].Selected = false;
 
@@ -150,7 +149,7 @@ namespace terminalDocuSignTests.Integration
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
-                var radioGroup = (RadioButtonGroup)controls.Controls[5];
+                var radioGroup = (RadioButtonGroup)controls.Controls[4];
                 radioGroup.Radios[0].Selected = false;
                 radioGroup.Radios[1].Selected = true;
 
@@ -199,7 +198,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Monitor_DocuSign_Initial_Configuration_NoAuth()
         {
@@ -310,7 +310,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Monitor_DocuSign_FollowUp_Configuration_NoAuth()
         {
@@ -358,6 +359,8 @@ namespace terminalDocuSignTests.Integration
                 }
             );
 
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
             var responsePayloadDTO =
                 await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
 
@@ -377,11 +380,18 @@ namespace terminalDocuSignTests.Integration
         {
             var envelopeId = Guid.NewGuid().ToString();
 
+            var configureUrl = GetTerminalConfigureUrl();
             var runUrl = GetTerminalRunUrl();
 
             var actionDTO = await GetActionDTO_WithTemplateValue();
+            actionDTO.Item1.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
+
+            var preparedActionDTO = await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, actionDTO.Item1);
+
+            AddOperationalStateCrate(preparedActionDTO, new OperationalStateCM());
+
             AddPayloadCrate(
-                actionDTO.Item1,
+                preparedActionDTO,
                 new EventReportCM()
                 {
                     EventPayload = new CrateStorage()
@@ -397,8 +407,10 @@ namespace terminalDocuSignTests.Integration
                 }
             );
 
+            preparedActionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
+
             var responsePayloadDTO =
-                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO.Item1);
+                await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, preparedActionDTO);
 
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
             Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Count());
@@ -411,18 +423,57 @@ namespace terminalDocuSignTests.Integration
         /// Test run-time without Auth-Token.
         /// </summary>
         [Test]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}"
-        )]
         public async void Monitor_DocuSign_Run_NoAuth()
         {
             var runUrl = GetTerminalRunUrl();
 
             var requestActionDTO = HealthMonitor_FixtureData.Monitor_DocuSign_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = null;
+            AddOperationalStateCrate(requestActionDTO, new OperationalStateCM());
+            var payload = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
+            CheckIfPayloadHasNeedsAuthenticationError(payload);
+        }
 
-            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
+        [Test]
+        public async void Monitor_DocuSign_Activate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalActivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
+        [Test]
+        public async void Monitor_DocuSign_Deactivate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalDeactivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Monitor_DocuSign_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
         }
     }
 }

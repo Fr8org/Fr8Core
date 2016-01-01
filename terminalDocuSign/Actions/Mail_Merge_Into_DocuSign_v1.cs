@@ -35,15 +35,15 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return null;
+            return Success(await GetPayload(curActionDO, containerId));
         }
 
         /// <summary>
         /// Create configuration controls crate.
         /// </summary>
-        private async Task<Crate> CreateConfigurationControlsCrate()
+        private async Task<Crate> CreateConfigurationControlsCrate(ActionDO actionDO)
         {
             var controlList = new List<ControlDefinitionDTO>();
 
@@ -51,7 +51,7 @@ namespace terminalDocuSign.Actions
             {
                 Label = "1. Where is your Source Data?",
                 Name = "DataSource",
-                ListItems = await GetDataSourceListItems("Table Data Generator")
+                ListItems = await GetDataSourceListItems(actionDO, "Table Data Generator")
             });
 
             controlList.Add(DocuSignManager.CreateDocuSignTemplatePicker(false, "DocuSignTemplate", "2. Use which DocuSign Template?"));
@@ -64,16 +64,17 @@ namespace terminalDocuSign.Actions
             return PackControlsCrate(controlList.ToArray());
         }
 
-        private async Task<List<ListItem>> GetDataSourceListItems(string tag)
+        private async Task<List<ListItem>> GetDataSourceListItems(ActionDO actionDO, string tag)
         {
-            var curActivityTempaltes = await GetActivityTemplates(tag);
+            var curActivityTempaltes = await HubCommunicator.GetActivityTemplates(actionDO, tag);
             return curActivityTempaltes.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
         }
 
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(
+            ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (curActionDO.Id != Guid.Empty)
             {
@@ -85,10 +86,10 @@ namespace terminalDocuSign.Actions
                     }
                     else
                     {
-                        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+                        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
                         //build a controls crate to render the pane
-                        var configurationControlsCrate = await CreateConfigurationControlsCrate();
+                        var configurationControlsCrate = await CreateConfigurationControlsCrate(curActionDO);
                         var templatesFieldCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
 
                         updater.CrateStorage = new CrateStorage(templatesFieldCrate, configurationControlsCrate);
@@ -116,7 +117,14 @@ namespace terminalDocuSign.Actions
         private T GetStdConfigurationControl<T>(CrateStorage storage, string name)
             where T : ControlDefinitionDTO
         {
-            return (T)storage.CrateContentsOfType<StandardConfigurationControlsCM>().First().FindByName(name);
+            var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            if (controls == null)
+            {
+                return null;
+            }
+
+            var control = (T)controls.FindByName(name);
+            return control;
         }
 
         /// <summary>
@@ -128,7 +136,10 @@ namespace terminalDocuSign.Actions
             if (curActionDO.ChildNodes.Count() > 0) return ConfigurationRequestType.Initial;
 
             var storage = Crate.GetStorage(curActionDO);
-            if (storage == null || storage.Count() == 0) return ConfigurationRequestType.Initial;
+            if (storage == null || storage.Count() == 0)
+            {
+                return ConfigurationRequestType.Initial;
+            }
 
             // "Follow up" phase is when Continue button is clicked 
             Button button = GetStdConfigurationControl<Button>(storage, "Continue");
@@ -148,11 +159,14 @@ namespace terminalDocuSign.Actions
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(
+            ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
             _docuSignManager.ExtractFieldsAndAddToCrate(_docuSignTemplateValue, docuSignAuthDTO, curActionDO);
-            var curActivityTemplates = (await GetActivityTemplates()).ToList();
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(curActionDO, null))
+                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .ToList();
 
             try
             {

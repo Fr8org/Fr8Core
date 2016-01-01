@@ -28,8 +28,7 @@ namespace TerminalBase.Infrastructure
 
         public BaseTerminalEvent()
         {
-            //Regex used to fetch http://localhost:30643 
-            eventWebServerUrl = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/api/v1/fr8_events";
+            eventWebServerUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/event";
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
             _crateManager = ObjectFactory.GetInstance<CrateManager>();
@@ -44,8 +43,6 @@ namespace TerminalBase.Infrastructure
 
             //make Post call
             var restClient = PrepareRestClient();
-            const string eventWebServerUrl = "EventWebServerUrl";
-            string url = CloudConfigurationManager.GetSetting(eventWebServerUrl);
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
             {
                 ObjectId = terminalName,
@@ -57,8 +54,32 @@ namespace TerminalBase.Infrastructure
             });
             //TODO inpect this
             //I am not sure what to supply for parameters eventName and palletId, so i passed terminalName and eventType
-            return restClient.PostAsync(new Uri(url, UriKind.Absolute),
+            return restClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
                 _crateManager.ToDto(_eventReportCrateFactory.Create(eventType, terminalName, loggingDataCrate)));
+
+        }
+
+        public Task<string> SendEventReport(string terminalName, string message)
+        {
+            //SF DEBUG -- Skip this event call for local testing
+            //return;
+
+
+            //make Post call
+            var restClient = PrepareRestClient();
+            var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
+            {
+                ObjectId = terminalName,
+                CustomerId = "not_applicable",
+                Data = message,
+                PrimaryCategory = "Operations",
+                SecondaryCategory = "System Startup",
+                Activity = "system startup"
+            });
+            //TODO inpect this
+            //I am not sure what to supply for parameters eventName and palletId, so i passed terminalName and eventType
+            return restClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
+                _crateManager.ToDto(_eventReportCrateFactory.Create("Terminal Event", terminalName, loggingDataCrate)));
 
         }
 
@@ -73,8 +94,6 @@ namespace TerminalBase.Infrastructure
         {
             //prepare the REST client to make the POST to fr8's Event Controller
             var restClient = PrepareRestClient();
-            const string eventWebServerUrl = "EventWebServerUrl";
-            string url = CloudConfigurationManager.GetSetting(eventWebServerUrl);
 
             //create event logging data with required information
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
@@ -88,7 +107,7 @@ namespace TerminalBase.Infrastructure
             });
 
             //return the response from the fr8's Event Controller
-            return restClient.PostAsync(new Uri(url, UriKind.Absolute),
+            return restClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
                 _crateManager.ToDto(_eventReportCrateFactory.Create("Terminal Incident", terminalName, loggingDataCrate)));
         }
 
@@ -104,17 +123,32 @@ namespace TerminalBase.Infrastructure
         }
 
         /// <summary>
-        /// Processsing the external event pay load received
+        /// Processing the external event pay load received
         /// </summary>
         /// <param name="curExternalEventPayload">event pay load received</param>
         /// <param name="parser">delegate method</param>
         public async Task Process(string curExternalEventPayload,EventParser parser)
         {
+            var fr8EventUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/fr8event/processdockyardevents";
             var eventReportCrateDTO = _crateManager.ToDto(parser.Invoke(curExternalEventPayload));
             
             if (eventReportCrateDTO != null)
             {
-                await new HttpClient().PostAsJsonAsync(new Uri(eventWebServerUrl, UriKind.Absolute), eventReportCrateDTO);
+                Uri url = new Uri(fr8EventUrl, UriKind.Absolute);
+                try
+                {
+                    HttpClient client = new HttpClient();
+                    client.Timeout = new TimeSpan(0, 10, 0); //10 minutes
+                    await client.PostAsJsonAsync(url, eventReportCrateDTO);
+                }
+                catch (TaskCanceledException)
+                {
+                    //Timeout
+                    throw new TimeoutException(
+                        String.Format("Timeout while making HTTP request.  \r\nURL: {0},   \r\nMethod: {1}",
+                        url.ToString(),
+                        HttpMethod.Post.Method));
+                }
             }
         }
     }

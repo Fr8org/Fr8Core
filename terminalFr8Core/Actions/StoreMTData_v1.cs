@@ -30,7 +30,7 @@ namespace terminalFr8Core.Actions
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //get the process payload
-                var curProcessPayload = await GetProcessPayload(actionDO, containerId);
+                var curProcessPayload = await GetPayload(actionDO, containerId);
 
                 //get docu sign envelope crate from payload
                 var curDocuSignEnvelopeCrate = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<DocuSignEnvelopeCM>().Single(x => x.Label == "DocuSign Envelope Manifest");
@@ -39,10 +39,7 @@ namespace terminalFr8Core.Actions
                 if (curDocuSignEnvelopeCrate != null)
                 {
                     DocuSignEnvelopeCM docuSignEnvelope = curDocuSignEnvelopeCrate.Content;
-                    curFr8AccountId =
-                        uow.AuthorizationTokenRepository.GetQuery()
-                            .Single(auth => auth.ExternalAccountId.Equals(docuSignEnvelope.ExternalAccountId))
-                            .UserDO.Id;
+                    curFr8AccountId = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(docuSignEnvelope.ExternalAccountId).UserDO.Id;
 
                     //store envelope in MT database
                     uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEnvelopeCM>(uow, curFr8AccountId, docuSignEnvelope, e => e.EnvelopeId);
@@ -56,17 +53,14 @@ namespace terminalFr8Core.Actions
                 {
                     DocuSignEventCM docuSignEvent = curDocuSignEventCrate.Content;
 
-                    curFr8AccountId =
-                        uow.AuthorizationTokenRepository.GetQuery()
-                            .Single(auth => auth.ExternalAccountId.Equals(docuSignEvent.ExternalAccountId))
-                            .UserDO.Id;
+                    curFr8AccountId = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(docuSignEvent.ExternalAccountId).UserDO.Id;
 
                     //store event in MT database
                     uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEventCM>(uow, curFr8AccountId, docuSignEvent, e => e.EnvelopeId);
                     uow.SaveChanges();
                 }
 
-                return curProcessPayload;
+                return Success(curProcessPayload);
             }
         }
 

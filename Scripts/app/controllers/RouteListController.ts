@@ -72,13 +72,21 @@ module dockyard.controllers {
         }
 
         private activateRoute(route) {
-            this.RouteService.activate(route);
-            location.reload();
-        };
+            this.RouteService.activate(route).$promise.then((result) => {
+                location.reload();
+            }, () => {
+                //activation failed
+            });
+            
+        }
         private deactivateRoute(route) {
-            this.RouteService.deactivate(route);
-            location.reload();
-        };
+            this.RouteService.deactivate(route).$promise.then((result) => {
+                location.reload();
+            }, () => {
+                //deactivation failed
+                //TODO show some kind of error message
+            });
+        }
         private executeRoute(routeId, $event) {
 			if ($event.ctrlKey) {
 				this.$modal.open({
@@ -106,7 +114,7 @@ module dockyard.controllers {
             this.$modal.open({
                 animation: true,
                 templateUrl: 'modalDeleteConfirmation',
-                controller: 'RouteListController__DeleteConfirmation',
+                controller: 'RouteListController__DeleteConfirmation'
 
             }).result.then(() => {
                 //Deletion confirmed

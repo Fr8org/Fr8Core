@@ -27,8 +27,8 @@ namespace terminalExcel.Actions
         {
             [JsonIgnore]
             public readonly ControlDefinitionDTO select_file;
-            
-            public ActionUi(bool includeTextBlockControl)
+
+            public ActionUi(string uploadedFileName = null)
             {
                 Controls = new List<ControlDefinitionDTO>();
 
@@ -38,9 +38,9 @@ namespace terminalExcel.Actions
                     Name = "select_file",
                     Required = true,
                     Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
+                    {
+                        new ControlEvent("onChange", "requestConfig")
+                    },
                     Source = new FieldSourceDTO
                     {
                         Label = "Select an Excel file",
@@ -48,22 +48,22 @@ namespace terminalExcel.Actions
                     },
                 }));
 
+                if (!string.IsNullOrEmpty(uploadedFileName))
+                {
+                    Controls.Add(new TextBlock
+                    {
+                        Label = "",
+                        Value = "Uploaded file: " + uploadedFileName,
+                        CssClass = "well well-lg"
+                    });
+                }
+
                 Controls.Add(new TextBlock
                 {
                     Label = "",
                     Value = "This Action will try to extract a table of rows from the first spreadsheet in the file. The rows should have a header row.",
                     CssClass = "well well-lg TextBlockClass"
-                });
-                
-                if (includeTextBlockControl)
-                {
-                    Controls.Add(new TextBlock
-                    {
-                        Label = "",
-                        Value = "File successfully uploaded.",
-                        CssClass = "well well-lg"
-                    });
-                }
+                });                
             }
         }
 
@@ -78,7 +78,7 @@ namespace terminalExcel.Actions
 
         private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, Guid containerId)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             var tableDataMS = await GetTargetTableData(
                 curActionDO,
@@ -87,18 +87,18 @@ namespace terminalExcel.Actions
 
             if (!tableDataMS.FirstRowHeaders)
             {
-                throw new Exception("No headers found in the Standard Table Data Manifest.");
+                return Error(payloadCrates, "No headers found in the Standard Table Data Manifest.");
             }
 
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
             
             
-            using (var updater = Crate.UpdateStorage(processPayload))
+            using (var updater = Crate.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS));
             }
-            return processPayload;            
+            return Success(payloadCrates);        
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(ActionDO actionDO, CrateStorage curCrateStorageDTO)
@@ -128,7 +128,7 @@ namespace terminalExcel.Actions
                 throw new Exception("More than one Standard File Handle crates found upstream.");
 
             // Deserialize the Standard File Handle crate to StandardFileHandleMS object
-            StandardFileHandleMS fileHandleMS = upstreamFileHandleCrates.First().Get<StandardFileHandleMS>();
+            StandardFileDescriptionCM fileHandleMS = upstreamFileHandleCrates.First().Get<StandardFileDescriptionCM>();
 
             // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
             StandardTableDataCM tableDataMS = ExcelUtils.GetTableData(fileHandleMS.DockyardStorageUrl);
@@ -165,7 +165,6 @@ namespace terminalExcel.Actions
         {
             if (curActionDO.Id != Guid.Empty)
             {
-
                 //Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
                 Crate upstreamFieldsCrate = await MergeUpstreamFields(curActionDO, "Select Excel File");
 
@@ -173,8 +172,8 @@ namespace terminalExcel.Actions
                 {
                     updater.CrateStorage.Clear();
                     updater.CrateStorage.Add(upstreamFieldsCrate);
-                    updater.CrateStorage.Add(PackControls(new ActionUi(false)));
-            }
+                    updater.CrateStorage.Add(PackControls(new ActionUi()));
+                }
             }
             else
             {
@@ -188,34 +187,23 @@ namespace terminalExcel.Actions
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            var storage = Crate.GetStorage(curActionDO);
-
-            var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
-                .Where(x =>
-                {
-                    var ui = new ActionUi(false);
-                    ui.ClonePropertiesFrom(x);
-                    return !string.IsNullOrEmpty(ui.select_file.Value);
-                }).ToArray();
-
-            var hasDesignTimeFields = storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Spreadsheet Column Headers");
-
-            if (filePathsFromUserSelection.Length == 1 || hasDesignTimeFields)
+            if (Crate.IsStorageEmpty(curActionDO))
             {
-                return ConfigurationRequestType.Followup;
+                return ConfigurationRequestType.Initial;
             }
 
-            return ConfigurationRequestType.Initial;
+            return ConfigurationRequestType.Followup;
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override Task<ActionDO> FollowupConfigurationResponse(
+            ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var storage = Crate.GetStorage(curActionDO);
             var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
                 .Select(x =>
                 {
-                    var ui = new ActionUi(false);
+                    var ui = new ActionUi();
                     ui.ClonePropertiesFrom(x);
                     return ui;
                 })
@@ -228,17 +216,57 @@ namespace terminalExcel.Actions
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
+                string uploadFilePath = null;
+                if (filePathsFromUserSelection.Length > 0)
+                {
+                    uploadFilePath = filePathsFromUserSelection[0].select_file.Value;
+                }
+
+                string fileName = null;
+                if (!string.IsNullOrEmpty(uploadFilePath))
+                {
+                    fileName = ExtractFileName(uploadFilePath);
+                }
+                else
+                {
+                    var labelControl = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
+                        .First()
+                        .Controls
+                        .Where(x => x.Value != null && x.Value.StartsWith("Uploaded file: "))
+                        .FirstOrDefault();
+
+                    if (labelControl != null)
+                    {
+                        fileName = labelControl.Value.Substring("Uploaded file: ".Length);
+                    }
+                }
+
                 updater.CrateStorage.Remove<StandardConfigurationControlsCM>();
-                updater.CrateStorage.Add(PackControls(new ActionUi(true)));
+                updater.CrateStorage.Add(PackControls(new ActionUi(fileName)));
 
-            if (filePathsFromUserSelection.Length > 0)
+                if (!string.IsNullOrEmpty(uploadFilePath))
+                {
+                    TransformExcelFileDataToStandardTableDataCrate(updater.CrateStorage, uploadFilePath);
+                }
+            }
+
+            return Task.FromResult(curActionDO);
+        }
+
+        private string ExtractFileName(string uploadFilePath)
+        {
+            if (uploadFilePath == null)
             {
-                    var selectedFilePath = filePathsFromUserSelection[0].select_file.Value;
-                    TransformExcelFileDataToStandardTableDataCrate(storage, selectedFilePath);
+                return null;
             }
 
-                return curActionDO;
+            var index = uploadFilePath.LastIndexOf('/');
+            if (index >= 0 && (uploadFilePath.Length > index + 1))
+            {
+                return uploadFilePath.Substring(index + 1);
             }
+
+            return uploadFilePath;
         }
 
         private void TransformExcelFileDataToStandardTableDataCrate(CrateStorage storage, string selectedFilePath)

@@ -25,11 +25,11 @@ namespace Data.Crates
                     return manifestType != CrateManifestType.Unknown;
                 }
 
-                var manifestAttr = (CrateManifestTypeAttribute)type.GetCustomAttribute(typeof(CrateManifestTypeAttribute));
+                var manifestAttr = (CrateManifestTypeAttribute)type.GetCustomAttribute(typeof(CrateManifestTypeAttribute), false);
 
                 if (manifestAttr == null || manifestAttr.ManifestType == null)
                 {
-                    if (typeof(Manifest).IsAssignableFrom(type))
+                    if (typeof(Manifest).IsAssignableFrom(type) && !type.IsAbstract)
                     {
                         var sampleManifest = ((Manifest)Activator.CreateInstance(type));
                         manifestType = sampleManifest.ManifestType;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,9 +8,7 @@ using Data.Crates;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Newtonsoft.Json;
 using Hub.Managers;
-using Hub.Services;
 using StructureMap;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
@@ -29,10 +26,7 @@ namespace terminalDocuSign.Actions
         /// <returns></returns>
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            CheckAuthentication(authTokenDO);
 
             return await ProcessConfigurationRequest(curActionDO, x => ConfigurationRequestType.Initial,authTokenDO);
         }
@@ -43,12 +37,8 @@ namespace terminalDocuSign.Actions
              * Discussed with Alexei and it is required to have empty Standard UI Control in the crate.
              * So we create a text block which informs the user that this particular aciton does not require any configuration.
              */
-            var textBlock = new TextBlock()
-            {
-                Label = "Monitor All DocuSign events",
-                Value = "This Action doesn't require any configuration.",
-                CssClass = "well well-lg"
-            };
+            var textBlock = GenerateTextBlock("Monitor All DocuSign events",
+                "This Action doesn't require any configuration.", "well well-lg");
             var curControlsCrate = PackControlsCrate(textBlock);
 
             //create a Standard Event Subscription crate
@@ -71,12 +61,12 @@ namespace terminalDocuSign.Actions
              * Note: We should not call Activate at the time of Configuration. For this action, it may be valid use case.
              * Because this particular action will be used internally, it would be easy to execute the Process directly.
              */
-            await Activate(curActionDO);
+            await Activate(curActionDO, null);
 
             return await Task.FromResult(curActionDO);
         }
 
-        public override Task<ActionDO> Activate(ActionDO curActionDO)
+        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
@@ -109,9 +99,13 @@ namespace terminalDocuSign.Actions
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
 
-            if (Int32.Parse(curConnectProfile.totalRecords) > 0 && curConnectProfile.configurations.Any(config => config.name.Equals("MonitorAllDocuSignEvents")))
+            if (Int32.Parse(curConnectProfile.totalRecords) > 0 && curConnectProfile.configurations.Any(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")))
             {
-                curDocuSignAccount.DeleteDocuSignConnectProfile("MonitorAllDocuSignEvents");
+                var monitorAllDocuSignEventsId = curConnectProfile.configurations.Where(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")).Select(s => s.connectId);
+                foreach (var connectId in monitorAllDocuSignEventsId)
+                {
+                    curDocuSignAccount.DeleteDocuSignConnectProfile(connectId);
+                }
             }
 
             return Task.FromResult<ActionDO>(curActionDO);
@@ -119,12 +113,12 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            var curProcessPayload = await GetPayload(actionDO, containerId);
+
             if (NeedsAuthentication(authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return NeedsAuthenticationError(curProcessPayload);
             }
-
-            var curProcessPayload = await GetProcessPayload(actionDO, containerId);
 
             var curEventReport = Crate.GetStorage(curProcessPayload).CrateContentsOfType<EventReportCM>().First();
 
@@ -163,7 +157,7 @@ namespace terminalDocuSign.Actions
                 }
             }
 
-            return curProcessPayload;
+            return Success(curProcessPayload);
         }
     }
 }

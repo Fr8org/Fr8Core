@@ -17,8 +17,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("version")]
         public string Version { get; set; }
-        [JsonProperty("authenticationType")]
-        public int AuthenticationType { get; set; }
 
         [JsonProperty("webService")]
         public WebServiceDTO WebService { get; set; }
@@ -35,14 +33,19 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonConverter(typeof(StringEnumConverter))]
         public ActivityCategory Category { get; set; }
 
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ActivityType Type { get; set; }
+
         [JsonProperty("minPaneWidth")]
         public int MinPaneWidth { get; set; }
 
         public ActivityTemplateDTO()
         {
-            AuthenticationType = States.AuthenticationType.None;
+            Type = ActivityType.Standard;
         }
 
         public string Description { get; set; }
+
+        public bool NeedsAuthentication { get; set; }
     }
 }

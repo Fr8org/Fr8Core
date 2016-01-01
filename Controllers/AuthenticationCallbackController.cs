@@ -10,19 +10,19 @@ using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Services;
 using HubWeb.ViewModels;
+using Data.Infrastructure;
 
 namespace HubWeb.Controllers
 {
     public class AuthenticationCallbackController : Controller
     {
         private readonly IAction _action;
-
-        private readonly Authorization _authorization;
+        private readonly IAuthorization _authorization;
 
         public AuthenticationCallbackController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
-            _authorization = new Authorization();
+            _authorization = ObjectFactory.GetInstance<IAuthorization>();
         }
 
         [HttpGet]
@@ -30,7 +30,6 @@ namespace HubWeb.Controllers
             string terminalName,
             string terminalVersion)
         {
-
             if (string.IsNullOrEmpty(terminalName) || string.IsNullOrEmpty(terminalVersion))
             {
                 throw new ApplicationException("TerminalName or TerminalVersion is not specified.");
@@ -67,6 +66,7 @@ namespace HubWeb.Controllers
             }
             else
             {
+                EventManager.OAuthAuthenticationFailed(requestQueryString, error);
                 return View("Error", new AuthenticationErrorVM()
                 {
                     Error = error

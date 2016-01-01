@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace TerminalBase
 {
+    //TODO remove this?
     public enum TerminalErrorCode
     {
         [Description("The terminal was passed a request that required a connection string, and it was not found.")]

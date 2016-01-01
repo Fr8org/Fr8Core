@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Crates;
+using Data.Interfaces.Manifests;
+using Hub.Exceptions;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
@@ -31,44 +34,195 @@ namespace Hub.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
+        private void AddOperationalStateCrate(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            using (var updater = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
+            {
+                var operationalStatus = new OperationalStateCM();
+                var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
+                updater.CrateStorage.Add(operationsCrate);
+            }
 
-        public async Task Execute(IUnitOfWork uow, ContainerDO curContainerDO)
+            uow.SaveChanges();
+        }
+
+        private ActionResponse GetCurrentActionResponse(ContainerDO curContainerDO)
+        {
+            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
+            var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
+            return operationalState.CurrentActionResponse;
+        }
+
+        /// <summary>
+        /// For actions who don't bother with returning a state. 
+        /// We will assume those actions are completed without a problem
+        /// </summary>
+        /// <param name="uow"></param>
+        /// <param name="curContainerDo"></param>
+        private void ResetActionResponse(IUnitOfWork uow, ContainerDO curContainerDo)
+        {
+            using (var updater = _crate.UpdateStorage(() => curContainerDo.CrateStorage))
+            {
+                var operationalState = updater.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActionResponse = ActionResponse.Null;
+            }
+
+            uow.SaveChanges();
+        }
+
+        private void ProcessCurrentActionResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActionResponse response)
+        {
+            switch (response)
+            {
+                case ActionResponse.Success:
+                    //ResetActionResponse(uow, curContainerDo);
+                    //do nothing
+                    break;
+                case ActionResponse.RequestSuspend:
+                    curContainerDo.ContainerState = ContainerState.Pending;
+                    break;
+                case ActionResponse.Null:
+                    //let's assume this is success for now
+                    break;
+                case ActionResponse.Error:
+                    //TODO retry action execution until 3 errors??
+                    throw new Exception("Error on action with id " + curContainerDo.CurrentRouteNode.Id);
+                case ActionResponse.RequestTerminate:
+                    throw new Exception("Termination request from action with id " + curContainerDo.CurrentRouteNode.Id);
+                default:
+                    throw new Exception("Unknown action state on action with id " + curContainerDo.CurrentRouteNode.Id);
+            }
+        }
+
+
+        /* 
+        *          a
+        *       b     c 
+        *     d   E  f  g  
+        * 
+        * 
+        * We traverse this tree in this order a-b-d-E-b-c-f-g-c-a-NULL 
+        */
+        /// <summary>
+        /// Moves to next Route and returns action state of this new route
+        /// </summary>
+        /// <param name="uow"></param>
+        /// <param name="curContainerDO"></param>
+        /// <param name="skipChildren"></param>
+        private ActionState MoveToNextRoute(IUnitOfWork uow, ContainerDO curContainerDO, bool skipChildren)
+        {
+            var state = ActionState.InitialRun;
+            
+            if (skipChildren || !_activity.HasChildren(curContainerDO.CurrentRouteNode))
+            {
+                var nextSibling = _activity.GetNextSibling(curContainerDO.CurrentRouteNode);
+                if (nextSibling == null)
+                {
+                    var parent = _activity.GetParent(curContainerDO.CurrentRouteNode);
+                    curContainerDO.CurrentRouteNode = parent;
+                    curContainerDO.CurrentRouteNodeId = parent != null ? parent.Id : (Guid?)null;
+                    state = ActionState.ReturnFromChildren;
+                }
+                else
+                {
+                    curContainerDO.CurrentRouteNode = nextSibling;
+                    curContainerDO.CurrentRouteNodeId = nextSibling.Id;
+                }
+                
+            }
+            else
+            {
+                var firstChild = _activity.GetFirstChild(curContainerDO.CurrentRouteNode);
+                curContainerDO.CurrentRouteNode = firstChild;
+                curContainerDO.CurrentRouteNodeId = curContainerDO.CurrentRouteNode.Id;
+            }
+            uow.SaveChanges();
+
+            return state;
+        }
+
+        /// <summary>
+        /// Run current action and return it's response
+        /// </summary>
+        /// <param name="uow"></param>
+        /// <param name="curContainerDO"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        private async Task<ActionResponse> ProcessAction(IUnitOfWork uow, ContainerDO curContainerDO, ActionState state)
+        {
+            await _activity.Process(curContainerDO.CurrentRouteNode.Id, state, curContainerDO);
+            return GetCurrentActionResponse(curContainerDO);
+        }
+
+        private bool ShouldSkipChildren(ContainerDO curContainerDO, ActionState state, ActionResponse response)
+        {
+            //first let's check if there is a child action related response
+            if (response == ActionResponse.SkipChildren)
+            {
+                return true;
+            }
+            else if (response == ActionResponse.ReProcessChildren)
+            {
+                return false;
+            }
+
+            //otherwise we will assume this is a regular action
+            //so we will process it's children once
+
+            if (state == ActionState.InitialRun)
+            {
+                return false;
+            }
+            else if (state == ActionState.ReturnFromChildren)
+            {
+                return true;
+            }
+
+            throw new Exception("This shouldn't happen");
+        }
+
+        private bool HasOperationalStateCrate(ContainerDO curContainerDO)
+        {
+            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
+            var operationalState = storage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
+            return operationalState != null;
+        }
+
+        public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             if (curContainerDO == null)
                 throw new ArgumentNullException("ContainerDO is null");
 
-            if (curContainerDO.CurrentRouteNode != null)
+            //if payload already has operational state create we shouldn't create another
+            if (!HasOperationalStateCrate(curContainerDO))
             {
-
-                //break if CurrentActivity Is NULL, it means all activities 
-                //are processed that there is no Next Activity to set as Current Activity
-                do
-                {
-                    await _activity.Process(curContainerDO.CurrentRouteNode.Id, curContainerDO);
-                    // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-                } while (MoveToTheNextActivity(uow, curContainerDO) != null);
+                AddOperationalStateCrate(uow, curContainerDO);
             }
-            else
+
+            curContainerDO.ContainerState = ContainerState.Executing;
+            uow.SaveChanges();
+            
+
+            if (curContainerDO.CurrentRouteNode == null)
             {
                 throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
             }
-        }
 
-        private RouteNodeDO MoveToTheNextActivity(IUnitOfWork uow, ContainerDO curContainerDo)
-        {
-            var next =  ObjectFactory.GetInstance<IRouteNode>().GetNextActivity(curContainerDo.CurrentRouteNode, null);
-
-            // very simple check for cycles
-            if (next != null && next == curContainerDo.CurrentRouteNode)
+            var actionState = ActionState.InitialRun;
+            while (curContainerDO.CurrentRouteNode != null)
+            {
+                var actionResponse = await ProcessAction(uow, curContainerDO, actionState);
+                ProcessCurrentActionResponse(uow, curContainerDO, actionResponse);
+                if (curContainerDO.ContainerState != ContainerState.Executing)
                 {
-                throw new Exception(string.Format("Cycle detected. Current activty is {0}", curContainerDo.CurrentRouteNode.Id));
+                    //we should stop action processing here
+                    //there might have happened a problem or a pause request
+                    return;
+                }
+                var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, actionResponse);
+                actionState = MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);
             }
 
-            curContainerDo.CurrentRouteNode = next;
-
-            uow.SaveChanges();
-
-            return next;
         }
 
         // Return the Containers of current Account

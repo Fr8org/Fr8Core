@@ -3,6 +3,7 @@ using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Hub.Managers;
 using Newtonsoft.Json;
 
 namespace terminalSendGrid.Tests.Fixtures
@@ -77,7 +78,13 @@ namespace terminalSendGrid.Tests.Fixtures
         {
             get
             {
-                PayloadDTO payloadDTO = new PayloadDTO(PayloadDTO_ContainerId());
+                var payloadDTO = new PayloadDTO(PayloadDTO_ContainerId());
+                using (var updater = new CrateManager().UpdateStorage(payloadDTO))
+                {
+                    var operationalStatus = new OperationalStateCM();
+                    var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
+                    updater.CrateStorage.Add(operationsCrate);
+                }
                 return payloadDTO;
             }
         }

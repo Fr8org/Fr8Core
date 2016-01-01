@@ -1,10 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace terminalDocuSign.Infrastructure
 {
     public class FolderListResponse
     {
         [JsonProperty("folders")]
-        public DocusignFolderInfo[] Folders { get; set; }
+        public List<DocusignFolderInfo> Folders { get; set; }
     }
 }

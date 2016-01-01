@@ -22,7 +22,8 @@ namespace terminalAtlassian.Controllers
                 Name = "terminalAtlassian",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.InternalWithDomain
             };
 
             var webService = new WebServiceDTO
@@ -37,7 +38,7 @@ namespace terminalAtlassian.Controllers
                 Name = "Get_Jira_Issue",
                 Label = "Get Jira Issue",
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.InternalWithDomain,
+                NeedsAuthentication = true,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
@@ -53,6 +54,7 @@ namespace terminalAtlassian.Controllers
                 Definition = terminal,
                 Actions = actionList
             };
+
             return Json(curStandardFr8TerminalCM);
         }
     }

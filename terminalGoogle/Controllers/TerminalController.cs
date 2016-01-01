@@ -35,6 +35,7 @@ namespace terminalGoogle.Controllers
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalGoogle",
                 Version = "1",
+                AuthenticationType = AuthenticationType.External
             };
 
             var extractDataAction = new ActivityTemplateDTO
@@ -45,7 +46,7 @@ namespace terminalGoogle.Controllers
                 Description = "Extract Spreadsheet Data: Description",
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.External,
+                NeedsAuthentication = true,
                 MinPaneWidth = 300,
                 WebService = webService,
                 Tags = "Table Data Generator"
@@ -58,7 +59,7 @@ namespace terminalGoogle.Controllers
                 Version = "1",
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.External,
+                NeedsAuthentication = true,
                 WebService = webService,
                 MinPaneWidth = 300
             };

@@ -37,7 +37,7 @@ namespace terminalDocuSign.Controllers
                     };
                 }
 
-                var docuSignAuthDTO = new DocuSignAuthDTO()
+                var docuSignAuthDTO = new DocuSignAuth()
                 {
                     Email = curCredentials.Username,
                     ApiPassword = oauthToken

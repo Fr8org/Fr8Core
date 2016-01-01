@@ -322,7 +322,7 @@ namespace terminalDocuSign.Actions
         private Crate PackAvailableTemplates(AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert
-                .DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+                .DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
             var crate = DocuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             crate.Label = "AvailableTemplates";
@@ -357,9 +357,9 @@ namespace terminalDocuSign.Actions
             return availableHandlersCrate;
         }
 
-        public Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Task.FromResult<PayloadDTO>(null);
+            return Success(await GetPayload(curActionDO, containerId));
         }
     }
 }

@@ -12,6 +12,7 @@
         currentView: string;
         childrenActions: Array<interfaces.IActionDTO>;
         height: number = 300;
+        ordering: number;
 
         constructor(
             parentActivityId: string,
@@ -33,7 +34,8 @@
                 name: this.name,
                 label: this.label,
                 crateStorage: this.crateStorage,
-                configurationControls: this.configurationControls
+                configurationControls: this.configurationControls,
+                ordering: this.ordering
             };
         }
 
@@ -41,11 +43,12 @@
             var result = new ActionDTO(this.parentRouteNodeId, this.id, this.isTempId);
             result.name = this.name;
             result.name = this.label;
+            result.ordering = this.ordering;
             return result;
         }
 
         static isActionValid(action: interfaces.IActionVM) {
-            return action && action.$resolved && !action.isTempId
+            return action && action.$resolved && !action.isTempId;
         }
 
         static create(dataObject: interfaces.IActionDTO): ActionDTO {
@@ -59,6 +62,7 @@
             result.name = dataObject.name;
             result.label = dataObject.label;
             result.parentRouteNodeId = dataObject.parentRouteNodeId;
+            result.ordering = dataObject.ordering;
             return result;
         }
     }

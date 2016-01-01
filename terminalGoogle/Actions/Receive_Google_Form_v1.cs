@@ -7,13 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using TerminalBase.BaseClasses;
 using terminalGoogle.DataTransferObjects;
 using Hub.Managers;
 using terminalGoogle.Services;
 using TerminalBase.Infrastructure;
-using AutoMapper;
 using Data.Control;
 
 namespace terminalGoogle.Actions
@@ -39,10 +37,8 @@ namespace terminalGoogle.Actions
 
         public override Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            CheckAuthentication(authTokenDO);
+
             return base.Configure(curActionDO, authTokenDO);
         }
             
@@ -100,15 +96,13 @@ namespace terminalGoogle.Actions
 
         private async Task<Crate> PackCrate_GoogleForms(GoogleAuthDTO authDTO)
         {
-            Crate crate;
-
             if (string.IsNullOrEmpty(authDTO.RefreshToken))
                 throw new ArgumentNullException("Token is empty");
 
             var files = await _googleDrive.GetGoogleForms(authDTO);
 
             var curFields = files.Select(file => new FieldDTO() { Key = file.Value, Value = file.Key }).ToArray();
-            crate = Crate.CreateDesignTimeFieldsCrate("Available Forms", curFields);
+            Crate crate = Crate.CreateDesignTimeFieldsCrate("Available Forms", curFields);
 
             return await Task.FromResult(crate);
         }
@@ -137,7 +131,7 @@ namespace terminalGoogle.Actions
 
             var formId = googleFormControl.Value;
 
-            if (String.IsNullOrEmpty(formId))
+            if (string.IsNullOrEmpty(formId))
                 throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
 
             var result = await _googleDrive.UploadAppScript(googleAuthDTO, formId);
@@ -158,27 +152,29 @@ namespace terminalGoogle.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            var payloadCrates = await GetPayload(curActionDO, containerId);
+
             if (NeedsAuthentication(authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return NeedsAuthenticationError(payloadCrates);
             }
 
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
-            var payloadFields = ExtractPayloadFields(processPayload);
+            
+            var payloadFields = ExtractPayloadFields(payloadCrates);
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
             
-            using (var updater = Crate.UpdateStorage(processPayload))
+            using (var updater = Crate.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(formResponseFields)));
             }
 
-            return processPayload;
+            return Success(payloadCrates);
         }
 
         private List<FieldDTO> CreatePayloadFormResponseFields(List<FieldDTO> payloadfields)
         {
             List<FieldDTO> formFieldResponse = new List<FieldDTO>();
-            string[] formresponses = payloadfields.Where(w => w.Key == "response").FirstOrDefault().Value.Split(new char[] { '&' });
+            string[] formresponses = payloadfields.FirstOrDefault(w => w.Key == "response").Value.Split(new char[] { '&' });
 
             if (formresponses.Length > 0)
             {
@@ -202,9 +198,9 @@ namespace terminalGoogle.Actions
             return formFieldResponse;
         }
 
-        private List<FieldDTO> ExtractPayloadFields(PayloadDTO processPayload)
+        private List<FieldDTO> ExtractPayloadFields(PayloadDTO payloadCrates)
         {
-            var eventReportMS = Crate.GetStorage(processPayload).CrateContentsOfType<EventReportCM>().SingleOrDefault();
+            var eventReportMS = Crate.GetStorage(payloadCrates).CrateContentsOfType<EventReportCM>().SingleOrDefault();
             if (eventReportMS == null)
             {
                 throw new ApplicationException("EventReportCrate is empty.");

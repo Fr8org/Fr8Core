@@ -10,6 +10,7 @@ using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Errors;
 using Utilities;
+using System.Threading.Tasks;
 
 namespace TerminalBase
 {
@@ -17,6 +18,14 @@ namespace TerminalBase
     {
         public override void OnException(HttpActionExecutedContext actionExecutedContext)
         {
+            //if (actionExecutedContext.Exception is TaskCanceledException)
+            //{
+            //    // TaskCanceledException is an exception representing a successful task cancellation 
+            //    // Don't need to log it
+            //    // Ref: https://msdn.microsoft.com/en-us/library/dd997396(v=vs.110).aspx
+            //    return;
+            //}
+
             //get the terminal error details
             var curTerminalError = actionExecutedContext.Exception;
             var terminalName = GetTerminalName(actionExecutedContext.ActionContext.ControllerContext.Controller);
@@ -50,10 +59,10 @@ namespace TerminalBase
                 var terminalError =
                     JsonConvert.SerializeObject(new {status = "terminal_error", message = terminalEx.ErrorCode.GetEnumDescription()});
                 actionExecutedContext.Response.Content = new StringContent(terminalError, Encoding.UTF8, "application/json");
-            }
+            }   
             else
             {
-                //if terminal error is general exception, place expcetion message
+                //if terminal error is general exception, place exception message
                 var detailedMessage =
                     JsonConvert.SerializeObject(new { status = "terminal_error", message = curTerminalError.Message });
                 actionExecutedContext.Response.Content = new StringContent(detailedMessage, Encoding.UTF8, "application/json");

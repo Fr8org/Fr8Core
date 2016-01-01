@@ -1,12 +1,6 @@
 ﻿using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using Hub.Services;
 
 namespace terminalSlackTests.Fixtures
 {
@@ -41,7 +35,7 @@ namespace terminalSlackTests.Fixtures
         {
             return new AuthorizationTokenDTO()
             {
-                Token = @"xoxp-7518126694-11767329056-15941434949-2ca03232a3"
+                Token = @"xoxp-9815816992-9816213634-14997343526-d99a1c9198"
             };
         }
 
@@ -54,13 +48,28 @@ namespace terminalSlackTests.Fixtures
                new FieldDTO("team_id", "T07F83QLE"),
                new FieldDTO("team_domain", "dockyardteam"),
                new FieldDTO("service_id", "16193135954"),
-               new FieldDTO("channel_id", "C0BU4CH25"),
+               new FieldDTO("channel_id", "C09Q069KL"),
                new FieldDTO("channel_name", "slack - plugin - test"),
                new FieldDTO("timestamp", "1449594901.000014"),
                new FieldDTO("user_id"," U0BNK9P1N"),
                new FieldDTO("user_name", "sergeyp"),
                new FieldDTO("text", "test")
            };
+        }
+
+        public static ActionDTO Publish_To_Slack_v1_InitialConfiguration_ActionDTO(bool isAuthToken = true)
+        {
+            var activityTemplate = Monitor_Channel_v1_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Select Slack Channel",
+                Label = "Selected_Slack_Channel",
+                AuthToken = isAuthToken ? Slack_AuthToken() : null,
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
         }
     }
 }

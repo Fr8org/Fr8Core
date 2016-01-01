@@ -122,7 +122,7 @@ module dockyard.directives.filePicker {
             }).progress((event: any) => {
                 console.log('Loaded: ' + event.loaded + ' / ' + event.total);
             })
-                .success((fileDTO: interfaces.IFileDescriptionDTO) => {
+            .success((fileDTO: interfaces.IFileDescriptionDTO) => {
                  deferred.resolve(fileDTO);
             })
             .error((data: any, status: any) => {

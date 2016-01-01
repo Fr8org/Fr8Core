@@ -1,4 +1,5 @@
 ﻿using Data.Control;
+using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
@@ -54,7 +55,7 @@ namespace terminalSendGridTests.Integration
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             actionDTOInit = responseActionDTO;
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault());
-            Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().SingleOrDefault());
+            Assert.AreEqual(3, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>().Count());
 
             var standardConfigurationControlCM = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>();
             Assert.AreEqual(1, standardConfigurationControlCM.Where(w => w.FindByName("EmailAddress") != null).Count());
@@ -85,7 +86,7 @@ namespace terminalSendGridTests.Integration
             responseActionDTO =
                 await HttpPostAsync<ActionDTO, ActionDTO>(
                     configureUrl,
-                    requestActionDTO
+                    responseActionDTO
                 );
 
             //Assert
@@ -95,7 +96,9 @@ namespace terminalSendGridTests.Integration
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields Body").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields Subject").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Upstream Terminal-Provided Fields Address").Count());
         }
 
         [Test, Category("Integration.terminalSendGrid")]
@@ -104,16 +107,20 @@ namespace terminalSendGridTests.Integration
             //Arrange
             var runUrl = GetTerminalRunUrl();
 
-            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var actionDTO = actionDTOInit;
+            var actionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
 
-            //updating controls
-            var standardControls = Crate.FromDto(actionDTO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            foreach (TextSource control in standardControls.Controls)
+
+            using (var updater = Crate.UpdateStorage(actionDTO))
             {
-                control.ValueSource = "specific";
-                control.Value = (control.Name == "EmailAddress") ? "test@mail.com" : "test";
+                updater.CrateStorage.Add(CreateCrates());
             }
+
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
+
+            AddPayloadCrate(
+               actionDTO,
+               new StandardPayloadDataCM() { }
+            );
 
             //Act
             var responsePayloadDTO =
@@ -125,7 +132,80 @@ namespace terminalSendGridTests.Integration
             var StandardPayloadDataCM = crateStorage.CrateContentsOfType<StandardPayloadDataCM>().SingleOrDefault();
 
             Assert.IsNotNull(StandardPayloadDataCM);
-            Assert.GreaterOrEqual(1, StandardPayloadDataCM.PayloadObjects.Count());
+        }
+
+        private Crate CreateCrates()
+        {
+            var control = new TextSource()
+            {
+                Name = "EmailAddress",
+                ValueSource = "specific",
+                Value = "test@mail.com"
+            };
+
+            var control2 = new TextSource()
+            {
+                Name = "EmailSubject",
+                ValueSource = "specific",
+                Value = "test subject"
+            };
+
+            var control3 = new TextSource()
+            {
+                Name = "EmailBody",
+                ValueSource = "specific",
+                Value = "test body"
+            };
+
+            return PackControlsCrate(control, control2, control3);
+        }
+
+        private Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
+        {
+            var controls = new StandardConfigurationControlsCM(controlsList);
+            return Crate<StandardConfigurationControlsCM>.FromContent("Configuration_Controls", controls);
+        }
+
+        [Test, Category("Integration.terminalSendGrid")]
+        public async void SendEmailViaSendGrid_Activate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalActivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
+        [Test, Category("Integration.terminalSendGrid")]
+        public async void SendEmailViaSendGrid_Deactivate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalDeactivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.SendEmailViaSendGrid_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
         }
     }
 }

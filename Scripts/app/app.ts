@@ -15,7 +15,9 @@ var app = angular.module("app", [
     "pusher-angular",
     "ngToast",
     "frapontillo.bootstrap-switch",
-    "ApplicationInsightsModule"
+    "ApplicationInsightsModule",
+    "dndLists",
+    "ngTable"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -205,7 +207,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
 
         .state('configureSolution', {
             url: "/solution/{solutionName}",
-            templateUrl: "/AngularTemplate/Solution",
+            templateUrl: "/AngularTemplate/RouteBuilder",
             data: { pageTitle: 'Create a Solution', pageSubTitle: '' }
         })
 
@@ -237,6 +239,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: "/terminals",
             templateUrl: "/AngularTemplate/TerminalList",
             data: { pageTitle: 'Terminals', pageSubTitle: '' }
+        })
+
+        .state('manageAuthTokens', {
+            url: '/manageAuthTokens',
+            templateUrl: '/AngularTemplate/ManageAuthTokens',
+            data: { pageTitle: 'Manage Auth Tokens', pageSubTitle: '' }
         });
 }]);
 

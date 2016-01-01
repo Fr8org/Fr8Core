@@ -1,4 +1,5 @@
-﻿using Data.States.Templates;
+﻿using Data.States;
+using Data.States.Templates;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AutoMapper;
@@ -25,6 +26,9 @@ namespace Data.Entities
         [NotMapped]
         public bool IsTempId { get; set; }
 
+        [NotMapped]
+        public string ExplicitData { get; set; }
+
         public string currentView { get; set; }
 
         public override RouteNodeDO Clone()
@@ -39,6 +43,16 @@ namespace Data.Entities
             };
         }
 
+
+        [ForeignKey("AuthorizationToken")]
+        public Guid? AuthorizationTokenId { get; set; }
+
+        public virtual AuthorizationTokenDO AuthorizationToken { get; set; }
+
+        public string GetLoopId()
+        {
+            return Id.ToString();
+        }
 //        public CrateStorageDTO CrateStorageDTO()
 //        {
 //            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);

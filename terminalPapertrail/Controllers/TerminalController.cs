@@ -38,7 +38,6 @@ namespace terminalPapertrail.Controllers
                 Label = "Write To Log",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.None,
                 MinPaneWidth = 330,
                 WebService = webService
                 

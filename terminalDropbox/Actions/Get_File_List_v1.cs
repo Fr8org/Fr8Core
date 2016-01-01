@@ -1,19 +1,14 @@
 ﻿using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Dropbox.Api;
 using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalDropbox.Interfaces;
 using terminalDropbox.Services;
 
 namespace terminalDropbox.Actions
@@ -27,37 +22,34 @@ namespace terminalDropbox.Actions
         {
             _dropboxService = ObjectFactory.GetInstance<DropboxService>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-
         }
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            PayloadDTO processPayload = null;
-
-            processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return NeedsAuthenticationError(payloadCrates);
             }
 
             var fileNames = await _dropboxService.GetFileList(authTokenDO);
-            using (var updater = _crateManager.UpdateStorage(processPayload))
+
+            using (var updater = _crateManager.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(PackCrate_DropboxFileList(fileNames));
             }
-            return processPayload;
+
+            return Success(payloadCrates);
         }
+
         private Crate PackCrate_DropboxFileList(List<string> fileNames)
         {
             return Data.Crates.Crate.FromJson("Dropbox File List", JsonConvert.SerializeObject(fileNames));

@@ -29,43 +29,38 @@ namespace terminalAtlassian.Actions
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            PayloadDTO processPayload = null;
+            CheckAuthentication(authTokenDO);
 
-            processPayload = await GetProcessPayload(curActionDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             string jiraKey = ExtractJiraKey(curActionDO);
             var jiraIssue = _atlassianService.GetJiraIssue(jiraKey, authTokenDO);
 
-            using (var updater = _crateManager.UpdateStorage(processPayload))
+            using (var updater = _crateManager.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(PackCrate_JiraIssueDetails(jiraIssue));
             }
-            return processPayload;
+
+            return Success(payloadCrates);
         }
 
         private string ExtractJiraKey(ActionDO curActionDO)
         {
             var controls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
             var templateTextBox = controls.SingleOrDefault(x => x.Name == "jira_key");
+
             if (templateTextBox == null)
             {
                 throw new ApplicationException("Could not find jira_key TextBox control.");
             }
+
             return templateTextBox.Value;
         }
 
@@ -80,9 +75,9 @@ namespace terminalAtlassian.Actions
             {
                 return ConfigurationRequestType.Initial;
             }
+
             return ConfigurationRequestType.Followup;
         }
-
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
@@ -104,8 +99,8 @@ namespace terminalAtlassian.Actions
                 Required = true,
                 Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
             };
+
             return PackControlsCrate(control);
         }
-
     }
 }
