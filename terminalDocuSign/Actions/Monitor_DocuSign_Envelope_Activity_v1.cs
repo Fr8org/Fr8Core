@@ -381,9 +381,7 @@ namespace terminalDocuSign.Actions
                 _docuSignManager.UpdateUserDefinedFields(curActionDO, authTokenDO, updater, selectedValue);
             }
 
-
-
-            return Task.FromResult(curActionDO);
+            return Activate(curActionDO, authTokenDO);
         }
 
         /// <summary>
