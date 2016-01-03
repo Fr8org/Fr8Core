@@ -18,15 +18,83 @@ namespace terminalFr8Core.Actions
 {
     public class Build_Message_v1 : BaseTerminalAction
     {
-        public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
+            if (Crate.IsStorageEmpty(curActionDO))
+            {
+                return ConfigurationRequestType.Initial;
+            }
+            else
+            {
+                return ConfigurationRequestType.Followup;
+            }
+        }
+
+        protected async override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(CreateControlsCrate());
+            }
+
+            return await AddDesignTimeFieldsSource(curActionDO);
+        }
+
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            return await base.FollowupConfigurationResponse(curActionDO, authTokenDO);
+        }
+
+        private Crate CreateControlsCrate()
+        {
+            var controls = new List<ControlDefinitionDTO>()
+            {
+                new TextBox()
+                {
+                    Label = "Name",
+                    Name = "Name"
+                },
+                new TextArea()
+                {
+                    Label = "Body",
+                    Name = "Body"
+                    ,IsReadOnly = false
+                    ,Value = "test"
+                    , Required = true
+                },
+                new DropDownList
+                {
+                    Name = "AvailableFields",
+                    Required = true,
+					Label = "Available Fields",
+                    Source = new FieldSourceDTO
+                    {
+                        Label = "Available Fields",
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                    }
+                }
+            };
+
+            return Crate.CreateStandardConfigurationControlsCrate("Craft a Message", controls.ToArray());
+        }
+
+        private async Task<ActionDO> AddDesignTimeFieldsSource(ActionDO curActionDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                updater.CrateStorage.RemoveByLabel("Available Fields");
+
+                var upstreamFieldsAddress = await MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Available Fields");
+                if (upstreamFieldsAddress != null)
+                    updater.CrateStorage.Add(upstreamFieldsAddress);
+            }
+
+            return curActionDO;
         }
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            
-
             var controlsMS = Crate.GetStorage(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO, "Available Run-Time Objects");
             FieldDTO[] curSelectedFields = curMergedUpstreamRunTimeObjects.Content.Fields.Select(field => new FieldDTO { Key = field.Key, Value = field.Value }).ToArray();
@@ -87,80 +155,5 @@ namespace terminalFr8Core.Actions
             return curProcessPayload;
 
         }
-
-
-        protected async override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
-        {
-            //build a controls crate to render the pane
-            var textBlock = new TextBlock()
-            {
-                Label = "Create a Message",
-                Name = "CreateaMessage"
-            };
-            var name = new TextBox()
-            {
-                Label = "Name:",
-                Name = "Name",
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
-
-            };
-
-            var messageBody = new TextArea()
-            {
-                Label = "Body:",
-                Name = "Body",
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
-            };
-
-            //var curUpstreamFields =
-            //    (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
-            //    .Fields
-            //    .ToArray();
-
-            //var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
-
-            var curMergedUpstreamRunTimeObjects = await MergeUpstreamFields(curActionDO, "Available Run-Time Objects");
-            //added focusConfig in PaneConfigureAction.ts
-            var fieldSelectObjectTypes = new DropDownList()
-            {
-                Label = "Available Fields",
-                Name = "Available Fields",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "focusConfig") },
-                Source = new FieldSourceDTO
-                {
-                    Label = curMergedUpstreamRunTimeObjects.Label,
-                    ManifestType = curMergedUpstreamRunTimeObjects.ManifestType.Type
-                }
-            };
-
-            var curConfigurationControlsCrate = PackControlsCrate(textBlock, name, messageBody, fieldSelectObjectTypes);
-
-
-            FieldDTO[] curSelectedFields = curMergedUpstreamRunTimeObjects.Content.Fields.Select(field => new FieldDTO { Key = field.Key, Value = field.Value }).ToArray();
-
-            var curSelectedObjectType = Crate.CreateDesignTimeFieldsCrate("SelectedObjectTypes", curSelectedFields);
-
-            using (var updater = Crate.UpdateStorage(curActionDO))
-            {
-                if (curActionDO.CrateStorage == null)
-                {
-                    updater.CrateStorage.Clear();
-                    updater.CrateStorage.Add(curConfigurationControlsCrate);
-                    updater.CrateStorage.Add(curMergedUpstreamRunTimeObjects);
-                    updater.CrateStorage.Add(curSelectedObjectType);
-                }
-            }
-
-            return curActionDO;
-        }
-
-
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
-        {
-            return ConfigurationRequestType.Initial;
-        }
-
-        
     }
 }
