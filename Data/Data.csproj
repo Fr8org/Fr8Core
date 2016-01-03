@@ -528,6 +528,10 @@
     <Compile Include="Migrations\201512311353389_Removed_From_FileDO.Designer.cs">
       <DependentUpon>201512311353389_Removed_From_FileDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201601031440042_Added_Tag_And_FileTags.cs" />
+    <Compile Include="Migrations\201601031440042_Added_Tag_And_FileTags.Designer.cs">
+      <DependentUpon>201601031440042_Added_Tag_And_FileTags.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -880,6 +884,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512311353389_Removed_From_FileDO.resx">
       <DependentUpon>201512311353389_Removed_From_FileDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601031440042_Added_Tag_And_FileTags.resx">
+      <DependentUpon>201601031440042_Added_Tag_And_FileTags.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
