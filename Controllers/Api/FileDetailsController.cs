@@ -13,34 +13,39 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Services;
+using System.Web.Http.Description;
 
 namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
-    //[RoutePrefix("api/manageFile")]
-    public class ManageFileController : ApiController
+    //[RoutePrefix("api/fileDetails")]
+    public class FileDetailsController : ApiController
     {
         private readonly IFile _fileService;
         private readonly ISecurityServices _security;
 
-        public ManageFileController()
+        public FileDetailsController()
             : this(ObjectFactory.GetInstance<IFile>())
         {
         }
 
-        public ManageFileController(IFile fileService)
+        public FileDetailsController(IFile fileService)
         {
-            _security = ObjectFactory.GetInstance<ISecurityServices>();
             _fileService = fileService;
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
-        public IHttpActionResult Get()
+        [HttpGet]
+        //[Route("getDetails/{id:int}")]
+        [ActionName("getDetails")]
+        [ResponseType(typeof(FileDTO))]
+        public IHttpActionResult GetDetails(int id)
         {
-            IList<FileDTO> fileList;
+            FileDTO fileDto = null;
 
             if (_security.IsCurrentUserHasRole(Roles.Admin))
             {
-                fileList = Mapper.Map<IList<FileDTO>>(_fileService.AllFilesList());
+                fileDto = Mapper.Map<FileDTO>(_fileService.GetFileByAdmin(id));
             }
             else
             {
@@ -51,25 +56,10 @@ namespace HubWeb.Controllers
                     userId = _security.GetCurrentAccount(uow).Id;
                 }
 
-                fileList = Mapper.Map<IList<FileDTO>>(_fileService.FilesList(userId));
+                fileDto = Mapper.Map<FileDTO>(_fileService.GetFile(id, userId));
             }
 
-            int i = 1;
-            foreach (var file in fileList)
-            {
-                file.Tags = "tag" + i.ToString();
-                i++;
-            }
-
-            return Ok(fileList);
-        }
-
-        [HttpGet]
-        public IHttpActionResult Delete(int id)
-        {
-            _fileService.Delete(id);
-
-            return Ok();
+            return Ok(fileDto);
         }
     }
 }

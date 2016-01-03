@@ -14,20 +14,17 @@ module dockyard.controllers {
         // See http://docs.angularjs.org/guide/di
         public static $inject = [
             '$scope',
-            'ManageFileService',
+            'FileDetailsService',
             '$state'
         ];
 
         constructor(
             private $scope: IFileDetailsScope,
-            private ManageFileService: services.IManageFileService,
+            private FileDetailsService: services.IFileDetailsService,
             private $state: ng.ui.IState) {
 
-            alert("consstructor")
-            ManageFileService.get({ id: $state.params.id }).$promise.then(function (data) {
-                alert("2");
-                $scope.file = data;
-            });
+            alert("consstructor id = " + $state.params.id);
+            $scope.file = FileDetailsService.getDetails({ id: $state.params.id });
         }
     }
 

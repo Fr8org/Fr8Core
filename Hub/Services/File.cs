@@ -84,5 +84,29 @@ namespace Hub.Services
                 return files;
             }
         }
+
+        public FileDO GetFileByAdmin (int fileId)
+        {
+            return GetFile(fileId, null);
+        }
+
+        public FileDO GetFile(int fileId, string dockyardAccountId)
+        {
+            FileDO file = null;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                file = uow.FileRepository.GetByKey(fileId);
+                if (file != null)
+                {
+                    if (dockyardAccountId != null && file.DockyardAccountID != dockyardAccountId)
+                    {
+                        return null;
+                    }
+                }
+
+                return file;
+            }
+        }
     }
 }

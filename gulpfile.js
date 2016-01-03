@@ -46,6 +46,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/LocalIdentityGenerator.js',
         'Scripts/app/services/ReportService.js',
         'Scripts/app/services/ManageFileService.js',
+        'Scripts/app/services/FileDetailsService.js',
         'Scripts/app/services/ContainerService.js',
         'Scripts/app/services/UIHelperService.js',
         'Scripts/app/services/LayoutService.js',
