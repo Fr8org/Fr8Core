@@ -116,7 +116,7 @@ namespace Hub.Services
 
         public void Delete(IUnitOfWork uow, Guid id)
         {
-            var curRoute = uow.RouteRepository.GetQuery().SingleOrDefault(pt => pt.Id == id);
+            var curRoute = uow.RouteRepository.GetQuery().Include(c => c.ChildContainers).SingleOrDefault(pt => pt.Id == id);
 
             if (curRoute == null)
             {
@@ -124,6 +124,12 @@ namespace Hub.Services
             }
 
             _activity.Delete(uow, curRoute);
+
+            var containers = curRoute.ChildContainers;
+            foreach (var container in containers)
+            {
+                uow.ContainerRepository.Remove(container);
+            }
         }
 
         public IList<SubrouteDO> GetSubroutes(RouteDO curRouteDO)
