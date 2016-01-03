@@ -126,9 +126,12 @@ namespace Hub.Services
             _activity.Delete(uow, curRoute);
 
             var containers = curRoute.ChildContainers;
-            foreach (var container in containers)
+            if (containers != null)
             {
-                uow.ContainerRepository.Remove(container);
+                foreach (var container in containers)
+                {
+                    uow.ContainerRepository.Remove(container);
+                }
             }
         }
 
