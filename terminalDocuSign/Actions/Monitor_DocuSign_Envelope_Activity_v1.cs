@@ -1,3 +1,4 @@
+using System.Web.UI;
 using Data.Constants;
 using Data.Entities;
 using TerminalBase.Infrastructure;
@@ -17,12 +18,24 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
+using Utilities.Configuration.Azure;
+using Data.States;
 
 namespace terminalDocuSign.Actions
 {
     public class Monitor_DocuSign_Envelope_Activity_v1 : BaseTerminalAction
     {
-        DocuSignManager _docuSignManager = new DocuSignManager();
+        readonly DocuSignManager _docuSignManager = new DocuSignManager();
+
+#if DEV
+        private const string DocuSignConnectName = "fr8DocuSignConnectConfigurationDev";
+#else
+        private const string DocuSignConnectName = "fr8DocuSignConnectConfiguration";
+#endif
+
+        private const string DocuSignOnEnvelopeSentEvent = "Sent";
+        private const string DocuSignOnEnvelopeReceivedEvent = "Delivered";
+        private const string DocuSignOnEnvelopeSignedEvent = "Completed";
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
@@ -41,7 +54,7 @@ namespace terminalDocuSign.Actions
             var template = new DocuSignTemplate();
 
             var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
-            var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();
+            var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id, Availability = AvailabilityType.Configuration }).ToArray();
             var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
                 "Available Templates",
                 fields);
@@ -83,32 +96,145 @@ namespace terminalDocuSign.Actions
             }
         }
 
+        private void GetUserSelectedEnvelopeEvents(ActionDO curActionDO, out bool youSent, out bool someoneReceived, out bool recipientSigned)
+        {
+            var configControls = GetConfigurationControls(curActionDO);
+            var eventCheckBoxes = configControls.Controls.Where(c => c.Type == ControlTypes.CheckBox).ToList();
+            youSent = eventCheckBoxes.Any(c => c.Name == "Event_Envelope_Sent" && c.Selected);
+            someoneReceived = eventCheckBoxes.Any(c => c.Name == "Event_Envelope_Received" && c.Selected);
+            recipientSigned = eventCheckBoxes.Any(c => c.Name == "Event_Recipient_Signed" && c.Selected);
+        }
+
+        private string GetDocusignPublishUrl()
+        {
+            var endPoint = CloudConfigurationManager.GetSetting("TerminalEndpoint");
+            return "http://" + endPoint + "/terminals/terminalDocuSign/events";
+        }
+
         public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            DocuSignAccount docuSignAccount = new DocuSignAccount();
-            ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
-            if (Int32.Parse(connectProfile.totalRecords) > 0)
+            var docuSignAccount = new DocuSignAccount();
+            var publishUrl = GetDocusignPublishUrl();
+            bool youSent,someoneReceived, recipientSigned;
+            GetUserSelectedEnvelopeEvents(curActionDO, out youSent, out someoneReceived, out recipientSigned);
+
+            var existingConfig = GetDocuSignConnectConfiguration(docuSignAccount, publishUrl, youSent, someoneReceived, recipientSigned);
+
+            if (existingConfig == null)
             {
-                return Task.FromResult<ActionDO>(curActionDO); // Will be changed when implementation is plumbed in.
+                CreateDocuSignConnectConfiguration(docuSignAccount, publishUrl, youSent, someoneReceived, recipientSigned);    
             }
-            else
+
+            return Task.FromResult<ActionDO>(curActionDO);
+        }
+
+        /// <summary>
+        /// Tries to get existing Docusign connect configuration for current user
+        /// </summary>
+        /// <param name="account">DocusignAccount to get configuration from</param>
+        /// <param name="publishUrl">which url docusign will call</param>
+        /// <param name="youSent">You sent a DocuSign Envelope</param>
+        /// <param name="someoneReceived">Someone received an Envelope you sent</param>
+        /// <param name="recipientSigned">One of your Recipients signed an Envelope</param>
+        private Configuration GetDocuSignConnectConfiguration(DocuSignAccount account, string publishUrl, bool youSent, bool someoneReceived, bool recipientSigned)
+        {
+            var connectProfile = account.GetDocuSignConnectProfiles();
+            var potentialConfigs = connectProfile
+                .configurations.Where(c => c.urlToPublishTo == publishUrl && c.allUsers == "true" && c.name == DocuSignConnectName);
+
+            if (youSent)
             {
-                throw new Exception("Error during activation of the Monitor DocuSign Action");
+                potentialConfigs = potentialConfigs.Where(c => c.envelopeEvents.Contains(DocuSignOnEnvelopeSentEvent));
             }
+            if (someoneReceived)
+            {
+                potentialConfigs = potentialConfigs.Where(c => c.envelopeEvents.Contains(DocuSignOnEnvelopeReceivedEvent));
+            }
+            if (recipientSigned)
+            {
+                potentialConfigs = potentialConfigs.Where(c => c.envelopeEvents.Contains(DocuSignOnEnvelopeSignedEvent));
+            }
+
+            return potentialConfigs.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Creates a Docusign connect configuration for current user
+        /// </summary>
+        /// <param name="account">DocusignAccount to create connect configuration</param>
+        /// <param name="publishUrl">which url docusign will call</param>
+        /// <param name="youSent">You sent a DocuSign Envelope</param>
+        /// <param name="someoneReceived">Someone received an Envelope you sent</param>
+        /// <param name="recipientSigned">One of your Recipients signed an Envelope</param>
+        private void CreateDocuSignConnectConfiguration(DocuSignAccount account, string publishUrl ,bool youSent, bool someoneReceived, bool recipientSigned)
+        {
+            var envelopeEvents = "";
+            if (youSent)
+            {
+                envelopeEvents = DocuSignOnEnvelopeSentEvent;
+            }
+            if (someoneReceived)
+            {
+                if (envelopeEvents.Length > 0)
+                {
+                    envelopeEvents += ",";
+                }
+                envelopeEvents += DocuSignOnEnvelopeReceivedEvent;
+            }
+            if (recipientSigned)
+            {
+                if (envelopeEvents.Length > 0)
+                {
+                    envelopeEvents += ",";
+                }
+                envelopeEvents += DocuSignOnEnvelopeSignedEvent;
+            }
+
+            //since localhost based url's won't work
+            //let's not do anything on debug configuration
+        #if !DEBUG
+            account.CreateDocuSignConnectProfile(new Configuration
+            {
+                name = DocuSignConnectName,
+                allUsers = "true",
+                configurationType = "custom",
+                allowEnvelopePublish = "true",
+                envelopeEvents = envelopeEvents,
+                urlToPublishTo = publishUrl,
+                enableLog = "true",
+                includeDocuments = "false",
+                requiresAcknowledgement = "false",
+                includeCertSoapHeader = "false",
+                includeCertificateOfCompletion = "false",
+                includeTimeZoneInformation = "false",
+                includeDocumentFields = "false",
+                includeEnvelopeVoidReason = "true",
+                includeSenderAccountasCustomField = "false",
+                recipientEvents = "",
+                useSoapInterface = "false",
+                signMessageWithX509Certificate = "false"
+            });
+        #endif
+
+
         }
 
         public override Task<ActionDO> Deactivate(ActionDO curActionDO)
         {
-            DocuSignAccount docuSignAccount = new DocuSignAccount();
-            ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
-            if (Int32.Parse(connectProfile.totalRecords) > 0)
+            var docuSignAccount = new DocuSignAccount();
+            var publishUrl = GetDocusignPublishUrl();
+            bool youSent, someoneReceived, recipientSigned;
+            GetUserSelectedEnvelopeEvents(curActionDO, out youSent, out someoneReceived, out recipientSigned);
+
+            var existingConfig = GetDocuSignConnectConfiguration(docuSignAccount, publishUrl, youSent, someoneReceived, recipientSigned);
+
+            if (existingConfig != null)
             {
-                return Task.FromResult<ActionDO>(curActionDO); // Will be changed when implementation is plumbed in.
+            #if !DEBUG
+                docuSignAccount.DeleteDocuSignConnectProfile(existingConfig.connectId);
+             #endif
             }
-            else
-            {
-                throw new Exception("Error during activation of the Monitor DocuSign Action");
-            }
+            return Task.FromResult<ActionDO>(curActionDO);
         }
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -406,7 +532,8 @@ namespace terminalDocuSign.Actions
                                     Label = "Available Templates",
                                     ManifestType = CrateManifestTypes.StandardDesignTimeFields
                                 },
-                                Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
+                                Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")},
+                                Help = new HelpControlDTO("Monitor_DocuSign_Envelope_DocuSignTemplateHelp", "Minicon")
                             }
                         }
                     }

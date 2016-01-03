@@ -328,6 +328,7 @@
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
+    <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
     <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignTemplateCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />

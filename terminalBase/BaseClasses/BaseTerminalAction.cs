@@ -47,7 +47,6 @@ namespace TerminalBase.BaseClasses
             Crate = new CrateManager();
             Action = ObjectFactory.GetInstance<IAction>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
-
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
@@ -632,7 +631,7 @@ namespace TerminalBase.BaseClasses
         {
             AddControl(
                 storage,
-                GenerateTextBlock(label,text,"well well-lg",name)
+                GenerateTextBlock(label, text, "well well-lg", name)
             );
         }
 
@@ -719,9 +718,9 @@ namespace TerminalBase.BaseClasses
                 Crate availableFieldsCrate = null;
                 if (crates is List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>)
                 {
-                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).SelectMany(x => x.Content.Fields).ToArray();
+                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).Where(w => w.Content.Fields.Where(x => x.Availability != AvailabilityType.Configuration).Count() == 1).SelectMany(x => x.Content.Fields).ToArray();
 
-                    availableFieldsCrate = 
+                    availableFieldsCrate =
                         Crate.CreateDesignTimeFieldsCrate(
                             label,
                             upstreamFields
