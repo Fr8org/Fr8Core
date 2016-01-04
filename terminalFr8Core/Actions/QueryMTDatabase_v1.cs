@@ -76,11 +76,11 @@ namespace terminalFr8Core.Actions
         private Guid GetCurrentFr8UserId(ActionDO curActionDO)
         {
             return Guid.NewGuid();
-            /*
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionRepository.GetQuery().Where(a => a.Id == curActionDO.Id).Select(a => a.);
-            }*/
+                
+                //return uow.ActionRepository.GetQuery().Where(a => a.Id == curActionDO.Id).Select(a => a.);
+            }
         }
 
         private IEnumerable<FieldDTO> GetObjects()
