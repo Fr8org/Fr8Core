@@ -80,11 +80,11 @@ namespace terminalDocuSign.Actions
         private Envelope AddTemplateData(ActionDO actionDO, PayloadDTO payloadCrates, Envelope curEnvelope)
         {
             var curTemplateId = ExtractTemplateId(actionDO);
-            var curRecipientAddress = ExtractSpecificOrUpstreamValue(
-                actionDO,
-                payloadCrates,
-                "Recipient"
-            );
+            var payloadCrateStorage = Crate.GetStorage(payloadCrates);
+            var configurationControls = GetConfigurationControls(actionDO);
+            var recipientField = (TextSource)GetControl(configurationControls, "Recipient", ControlTypes.TextSource);
+
+            var curRecipientAddress = recipientField.GetValue(payloadCrateStorage);
 
             curEnvelope.TemplateId = curTemplateId;
             curEnvelope.TemplateRoles = new TemplateRole[]

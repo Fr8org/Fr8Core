@@ -120,6 +120,8 @@ namespace TerminalBase.BaseClasses
         /// returns error to hub
         /// </summary>
         /// <param name="payload"></param>
+        /// <param name="errorMessage"></param>
+        /// <param name="errorCode"></param>
         /// <returns></returns>
         protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActionErrorCode? errorCode = null)
         {
@@ -532,10 +534,7 @@ namespace TerminalBase.BaseClasses
         /// <summary>
         /// Extract value from RadioButtonGroup or TextSource where specific value or upstream field was specified.
         /// </summary>
-        protected string ExtractSpecificOrUpstreamValue(
-           ActionDO actionDO,
-           PayloadDTO payloadCrates,
-           string controlName)
+        protected string ExtractSpecificOrUpstreamValue(ActionDO actionDO,PayloadDTO payloadCrates,string controlName)
         {
             var designTimeCrateStorage = Crate.GetStorage(actionDO.CrateStorage);
             var runTimeCrateStorage = Crate.FromDto(payloadCrates.CrateStorage);
@@ -555,7 +554,7 @@ namespace TerminalBase.BaseClasses
                 throw new ApplicationException("TextSource control was expected but not found.");
             }
 
-            TextSource textSourceControl = (TextSource)control;
+            var textSourceControl = (TextSource)control;
 
             switch (textSourceControl.ValueSource)
             {
