@@ -54,31 +54,7 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            if (controlsMS == null)
-            {
-                throw new ApplicationException("Could not find ControlsConfiguration crate.");
-            }
-
-            var fieldListControl = controlsMS.Controls.SingleOrDefault(x => x.Type == ControlTypes.FieldList);
-
-            if (fieldListControl == null)
-            {
-                throw new ApplicationException("Could not find FieldListControl.");
-            }
-
-            if (fieldListControl.Value != null)
-            {
-                var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
-                userDefinedPayload.ForEach(x => x.Value = x.Key);
-
-                using (var updater = Crate.UpdateStorage(curActionDO))
-                {
-                    updater.CrateStorage.RemoveByLabel("ManuallyAddedPayload");
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardDesignTimeFieldsCM() { Fields = userDefinedPayload }));
-                }
-            }
+            
 
             return Task.FromResult(curActionDO);
         }
@@ -86,39 +62,25 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActionDO, containerId);
-
-            var controlsMS = Crate.GetStorage(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            if (controlsMS == null)
-            {
-                return Error(payloadCrates, "Could not find ControlsConfiguration crate.");
-            }
-
-            var fieldListControl = controlsMS.Controls
-                .SingleOrDefault(x => x.Type == ControlTypes.FieldList);
-
-            if (fieldListControl == null)
-            {
-                return Error(payloadCrates, "Could not find FieldListControl.");
-            }
-
-            var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
-
-            using (var updater = Crate.UpdateStorage(() => payloadCrates.CrateStorage))
-            {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
-            }
-            //
-            //            var cratePayload = Crate.Create(
-            //                "Manual Payload Data",
-            //                JsonConvert.SerializeObject(userDefinedPayload),
-            //                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
-            //                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
-            //                );
-            //
-            //            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { cratePayload });
-
             return Success(payloadCrates);
+        }
+
+        private IEnumerable<FieldDTO> GetFieldsByObjectId(string objectId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.MTObjectRepository.GetAll().Select(c => new FieldDTO(c.Name, c.Id.ToString(CultureInfo.InvariantCulture)));
+            }
+        }
+
+        private Guid GetCurrentFr8UserId(ActionDO curActionDO)
+        {
+            return Guid.NewGuid();
+            /*
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.ActionRepository.GetQuery().Where(a => a.Id == curActionDO.Id).Select(a => a.);
+            }*/
         }
 
         private IEnumerable<FieldDTO> GetObjects()
@@ -136,6 +98,7 @@ namespace terminalFr8Core.Actions
                 Label = "Object List",
                 Name = "Available_Objects",
                 Value = null,
+                Events = new List<ControlEvent>{ ControlEvent.RequestConfig },
                 Source = new FieldSourceDTO
                 {
                     Label = "Queryable Objects",
