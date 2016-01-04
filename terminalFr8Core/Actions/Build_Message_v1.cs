@@ -60,7 +60,6 @@ namespace terminalFr8Core.Actions
                     Label = "Body",
                     Name = "Body"
                     ,IsReadOnly = false
-                    ,Value = "test"
                     , Required = true
                 },
                 new DropDownList
