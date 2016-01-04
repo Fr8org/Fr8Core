@@ -175,8 +175,7 @@ namespace terminalQuickBooks.Actions
                             {
                                 new TextBox()
                                 {
-                                    Name = "Account_One_TextBoxValue",
-                                    Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
+                                    Name = "Account_One_TextBoxValue"
                                 }
                             }
                         },
@@ -193,8 +192,7 @@ namespace terminalQuickBooks.Actions
                                     {
                                         Label = "Available ChartOfAccounts",
                                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                    },
-                                    Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
+                                    }
                                 }
                             }
                         }
@@ -234,8 +232,7 @@ namespace terminalQuickBooks.Actions
                             {
                                 new TextBox()
                                 {
-                                    Name = "Account_Two_TextBoxValue",
-                                    Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
+                                    Name = "Account_Two_TextBoxValue"
                                 }
                             }
                         },
@@ -252,8 +249,7 @@ namespace terminalQuickBooks.Actions
                                     {
                                         Label = "Available ChartOfAccounts",
                                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                    },
-                                    Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
+                                    }
                                 }
                             }
                         }

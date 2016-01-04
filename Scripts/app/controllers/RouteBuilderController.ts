@@ -244,7 +244,7 @@ module dockyard.controllers {
             }
 
             return null;
-            }
+        }
 
         private searchAction(id: string, actionList: model.ActionDTO[]): model.ActionDTO {
             for (var i = 0; i < actionList.length; i++) {
