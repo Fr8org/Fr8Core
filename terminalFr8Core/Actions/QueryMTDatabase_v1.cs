@@ -64,7 +64,11 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            
+            IEnumerable<MT_Object> list = null;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                list = uow.MTObjectRepository.GetAll();
+            }
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
 

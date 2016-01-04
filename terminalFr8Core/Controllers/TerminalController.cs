@@ -189,6 +189,16 @@ namespace terminalFr8Core.Controllers
                 MinPaneWidth = 400
             });
 
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "QueryMTDatabase",
+                Label = "Query MT Database",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1"
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
