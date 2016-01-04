@@ -39,18 +39,18 @@ namespace terminalDocuSign.Actions
             Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(actionDO, containerId);
-
+            var payloadCrateStorage = Crate.GetStorage(payloadCrates);
             if (NeedsAuthentication(authTokenDO))
             {
                 return NeedsAuthenticationError(payloadCrates);
             }
 
             //Get envlopeId from configuration
-            var control = FindControl(Crate.GetStorage(actionDO), "EnvelopeIdSelector");
+            var control = (TextSource)FindControl(Crate.GetStorage(actionDO), "EnvelopeIdSelector");
             string envelopeId = GetEnvelopeID(control, authTokenDO);
             // if it's not valid, try to search upstream runtime values
             if (!envelopeId.IsGuid())
-                envelopeId = ExtractSpecificOrUpstreamValue(actionDO, payloadCrates, "EnvelopeIdSelector");
+                envelopeId = control.GetValue(payloadCrateStorage);
 
             if (string.IsNullOrEmpty(envelopeId))
             {
