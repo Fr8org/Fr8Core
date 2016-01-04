@@ -39,7 +39,7 @@ namespace terminalFr8Core.Actions
             CreateLoop(curActionDO.GetLoopId(), curPayloadDTO);
             try
             {
-                if (await ShouldBreakLoop(curPayloadDTO, curActionDO))
+                if (ShouldBreakLoop(curPayloadDTO, curActionDO))
                 {
                     return SkipChildren(curPayloadDTO);
                 }
@@ -58,7 +58,7 @@ namespace terminalFr8Core.Actions
             try
             {
                 //check if we need to end this loop
-                if (await ShouldBreakLoop(curPayloadDTO, curActionDO))
+                if (ShouldBreakLoop(curPayloadDTO, curActionDO))
                 {
                     BreakLoop(curActionDO.GetLoopId(), curPayloadDTO);
                     return Success(curPayloadDTO);
@@ -72,7 +72,7 @@ namespace terminalFr8Core.Actions
             return ReProcessChildActions(curPayloadDTO);
         }
 
-        private async Task<bool> ShouldBreakLoop(PayloadDTO curPayloadDTO, ActionDO curActionDO)
+        private bool ShouldBreakLoop(PayloadDTO curPayloadDTO, ActionDO curActionDO)
         {
             var payloadStorage = Crate.GetStorage(curPayloadDTO);
 
@@ -318,7 +318,7 @@ namespace terminalFr8Core.Actions
                 Label = "Crate Manifest",
                 Name = "Available_Manifests",
                 Value = null,
-                Events = new List<ControlEvent>{ new ControlEvent("onChange", "requestConfig") },
+                Events = new List<ControlEvent>{ ControlEvent.RequestConfig },
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Manifests",
@@ -331,7 +331,6 @@ namespace terminalFr8Core.Actions
                 Label = "Crate Label",
                 Name = "Available_Labels",
                 Value = null,
-                Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") },
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Labels",

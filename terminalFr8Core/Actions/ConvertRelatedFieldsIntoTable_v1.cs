@@ -208,20 +208,13 @@ namespace terminalFr8Core.Actions
             {
                 Name = "Upstream_data_chooser",
                 Label = "Please select data type",
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                }
+                Events = new List<ControlEvent>(){ControlEvent.RequestConfig}
             };
             var fieldSelectPrefix = new TextBox()
             {
                 Label = "All field data that starts with the prefix",
                 Name = "Selected_Table_Prefix",
-                Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                }
+                Required = true
             };
             var fieldExplanation = new TextBlock()
             {
