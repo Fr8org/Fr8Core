@@ -31,7 +31,7 @@ namespace terminalDocuSign.Actions
         {
         }
 
-        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
@@ -100,7 +100,7 @@ namespace terminalDocuSign.Actions
             return curEnvelope;
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             // Do we have any crate? If no, it means that it's Initial configuration
             if (Crate.IsStorageEmpty(curActionDO))
