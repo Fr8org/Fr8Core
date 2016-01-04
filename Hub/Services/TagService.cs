@@ -20,14 +20,17 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 List<Tag> tags = new List<Tag>();
-                //tags = uow.FileRepository.FindList(f => f.DockyardAccountID == dockyardAccountId).ToList();
+                tags = uow.TagRepository.GetAll().ToList();
                 return tags;
             }
         }
 
         public Tag GetTag(int id)
         {
-            throw new NotImplementedException();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.TagRepository.GetByKey(id);
+            }
         }
 
         public Tag GetTagByKey(string key)
