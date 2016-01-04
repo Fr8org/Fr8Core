@@ -53,32 +53,28 @@ namespace terminalSalesforce.Actions
             var firstNameCrate = new TextBox()
             {
                 Label = "First Name",
-                Name = "firstName",
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Name = "firstName"
 
             };
             var lastName = new TextBox()
             {
                 Label = "Last Name",
                 Name = "lastName",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Required = true
             };
 
             var mobileNumber = new TextBox()
             {
                 Label = "Mobile Phone",
                 Name = "mobilePhone",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Required = true
             };
 
             var email = new TextBox()
             {
                 Label = "Email",
                 Name = "email",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Required = true
             };
 
             var controls = PackControlsCrate(firstNameCrate, lastName, mobileNumber, email);

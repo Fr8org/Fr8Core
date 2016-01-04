@@ -113,16 +113,13 @@ namespace terminalFr8Core.Actions
                 Label = "Fill the values for other actions",
                 Name = "Selected_Fields",
                 Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                }
+                Events = new List<ControlEvent>(){ControlEvent.RequestConfig}
             };
 
             return PackControlsCrate(fieldFilterPane);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (Crate.IsStorageEmpty(curActionDO))
             {

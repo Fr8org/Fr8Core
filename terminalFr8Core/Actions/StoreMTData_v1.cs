@@ -100,7 +100,6 @@ namespace terminalFr8Core.Actions
                 Label = "Save Which Data Types?",
                 Name = "Save Object Name",
                 Required = true,
-                Events = new List<ControlEvent>(),
                 Source = new FieldSourceDTO
                 {
                     Label = curMergedUpstreamRunTimeObjects.Label,

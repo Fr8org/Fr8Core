@@ -52,7 +52,7 @@ namespace terminalSalesforce.Actions
             return Success(payloadCrates);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (Crate.IsStorageEmpty(curActionDO))
             {
@@ -77,23 +77,20 @@ namespace terminalSalesforce.Actions
             var firstNameCrate = new TextBox()
             {
                 Label = "First Name",
-                Name = "firstName",
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Name = "firstName"
 
             };
             var lastNAme = new TextBox()
             {
                 Label = "Last Name",
                 Name = "lastName",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Required = true
             };
             var company = new TextBox()
             {
                 Label = "Company ",
                 Name = "companyName",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Required = true
             };
 
             using (var updater = Crate.UpdateStorage(curActionDO))

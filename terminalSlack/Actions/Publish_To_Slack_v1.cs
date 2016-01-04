@@ -121,10 +121,6 @@ namespace terminalSlack.Actions
                 Label = "Select Slack Channel",
                 Name = "Selected_Slack_Channel",
                 Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Channels",

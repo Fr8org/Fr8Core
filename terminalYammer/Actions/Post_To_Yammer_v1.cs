@@ -46,7 +46,6 @@ namespace terminalYammer.Actions
                    Label = "Select Yammer Group",
                    Name = "Groups",
                    Required = true,
-                   Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") },
                    Source = new FieldSourceDTO { Label = "Available Groups", ManifestType = CrateManifestTypes.StandardDesignTimeFields }
                }));
 
