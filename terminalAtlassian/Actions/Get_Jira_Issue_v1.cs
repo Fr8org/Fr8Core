@@ -96,8 +96,7 @@ namespace terminalAtlassian.Actions
             {
                 Label = "Jira Key",
                 Name = "jira_key",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Required = true
             };
 
             return PackControlsCrate(control);
