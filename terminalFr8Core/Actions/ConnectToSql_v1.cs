@@ -59,10 +59,7 @@ namespace terminalFr8Core.Actions
                 Label = "SQL Connection String",
                 Name = "ConnectionString",
                 Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                }
+                Events = new List<ControlEvent>(){ControlEvent.RequestConfig}
             };
 
             return PackControlsCrate(control);

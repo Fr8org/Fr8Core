@@ -442,6 +442,11 @@ namespace terminalDocuSignTests.Integration
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
+            using (var updater = Crate.UpdateStorage(requestActionDTO))
+            {
+                updater.CrateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
+            }
+            
 
             //Act
             var responseActionDTO =
@@ -463,7 +468,10 @@ namespace terminalDocuSignTests.Integration
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestActionDTO = HealthMonitor_FixtureData.Monitor_DocuSign_v1_InitialConfiguration_ActionDTO();
-
+            using (var updater = Crate.UpdateStorage(requestActionDTO))
+            {
+                updater.CrateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
+            }
             //Act
             var responseActionDTO =
                 await HttpPostAsync<ActionDTO, ActionDTO>(

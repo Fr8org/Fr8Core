@@ -144,7 +144,7 @@ namespace terminalSendGrid.Actions
                 CreateEmailBodyTextSourceControl()
             };
 
-            return Crate.CreateStandardConfigurationControlsCrate("Send Grid", controls.ToArray());
+            return Crate.CreateStandardConfigurationControlsCrate("SendGrid", controls.ToArray());
         }
 
         private async Task<Crate> GetAvailableDataFields(ActionDO curActionDO)
@@ -176,21 +176,15 @@ namespace terminalSendGrid.Actions
 
             var payloadCrates = await GetPayload(curActionDO, containerId);
 
-            var emailAddress = ExtractSpecificOrUpstreamValue(
-                curActionDO,
-                payloadCrates,
-                "EmailAddress"
-            );
-            var emailSubject = ExtractSpecificOrUpstreamValue(
-                curActionDO,
-                payloadCrates,
-                "EmailSubject"
-            );
-            var emailBody = ExtractSpecificOrUpstreamValue(
-                curActionDO,
-                payloadCrates,
-                "EmailBody"
-            );
+            var payloadCrateStorage = Crate.GetStorage(payloadCrates);
+            var configurationControls = GetConfigurationControls(curActionDO);
+            var emailAddressField = (TextSource)GetControl(configurationControls, "EmailAddress", ControlTypes.TextSource);
+            var emailSubjectField = (TextSource)GetControl(configurationControls, "EmailSubject", ControlTypes.TextSource);
+            var emailBodyField = (TextSource)GetControl(configurationControls, "EmailBody", ControlTypes.TextSource);
+
+            var emailAddress = emailAddressField.GetValue(payloadCrateStorage);
+            var emailSubject = emailSubjectField.GetValue(payloadCrateStorage);
+            var emailBody = emailBodyField.GetValue(payloadCrateStorage);
 
             var mailerDO = new TerminalMailerDO()
             {
