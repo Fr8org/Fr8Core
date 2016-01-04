@@ -43,9 +43,12 @@ namespace terminalSlack.Actions
                 return Error(payloadCrates, "No selected channelId found in action.");
             }
 
+            var payloadCrateStorage = Crate.GetStorage(payloadCrates);
+            var configurationControls = GetConfigurationControls(actionDO);
+            var messageField = (TextSource)GetControl(configurationControls, "Select_Message_Field", ControlTypes.TextSource);
             try
             {
-                message = ExtractSpecificOrUpstreamValue(actionDO, payloadCrates, "Select_Message_Field");
+                message = messageField.GetValue(payloadCrateStorage);
             }
             catch (ApplicationException ex)
             {
@@ -121,10 +124,6 @@ namespace terminalSlack.Actions
                 Label = "Select Slack Channel",
                 Name = "Selected_Slack_Channel",
                 Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Channels",

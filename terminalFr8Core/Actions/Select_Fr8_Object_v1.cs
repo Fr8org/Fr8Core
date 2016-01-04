@@ -35,10 +35,7 @@ namespace terminalFr8Core.Actions
                     Name = "Selected_Fr8_Object",
                     Value = "",
                     Required = true,
-                    Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onChange", "requestConfig")
-                    },
+                    Events = new List<ControlEvent>(){ ControlEvent.RequestConfig },
                     Source = new FieldSourceDTO
                     {
                         Label = "Select Fr8 Object",

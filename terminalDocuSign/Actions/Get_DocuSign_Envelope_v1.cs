@@ -25,7 +25,7 @@ namespace terminalDocuSign.Actions
             _docuSignManager = new DocuSignManager();
         }
 
-        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
@@ -33,36 +33,6 @@ namespace terminalDocuSign.Actions
             }
 
             return await ProcessConfigurationRequest(curActionDO, dto => ConfigurationEvaluator(dto), authTokenDO);
-        }
-
-        public async Task<PayloadDTO> Run(ActionDO actionDO,
-            Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var payloadCrates = await GetPayload(actionDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-
-            //Get envlopeId from configuration
-            var control = FindControl(Crate.GetStorage(actionDO), "EnvelopeIdSelector");
-            string envelopeId = GetEnvelopeID(control, authTokenDO);
-            // if it's not valid, try to search upstream runtime values
-            if (!envelopeId.IsGuid())
-                envelopeId = ExtractSpecificOrUpstreamValue(actionDO, payloadCrates, "EnvelopeIdSelector");
-
-            if (string.IsNullOrEmpty(envelopeId))
-            {
-                return Error(payloadCrates, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
-            }
-
-            using (var updater = Crate.UpdateStorage(() => payloadCrates.CrateStorage))
-            {
-                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", _docuSignManager.CreateActionPayload(actionDO, authTokenDO, envelopeId)));
-            }
-
-            return Success(payloadCrates);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
@@ -109,6 +79,35 @@ namespace terminalDocuSign.Actions
                 int fieldsCount = _docuSignManager.UpdateUserDefinedFields(curActionDO, authTokenDO, updater, envelopeId);
             }
             return await Task.FromResult(curActionDO);
+        }
+
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            var payloadCrates = await GetPayload(actionDO, containerId);
+            var payloadCrateStorage = Crate.GetStorage(payloadCrates);
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(payloadCrates);
+            }
+
+            //Get envlopeId from configuration
+            var control = (TextSource)FindControl(Crate.GetStorage(actionDO), "EnvelopeIdSelector");
+            string envelopeId = GetEnvelopeID(control, authTokenDO);
+            // if it's not valid, try to search upstream runtime values
+            if (!envelopeId.IsGuid())
+                envelopeId = control.GetValue(payloadCrateStorage);
+
+            if (string.IsNullOrEmpty(envelopeId))
+            {
+                return Error(payloadCrates, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
+            }
+
+            using (var updater = Crate.UpdateStorage(() => payloadCrates.CrateStorage))
+            {
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", _docuSignManager.CreateActionPayload(actionDO, authTokenDO, envelopeId)));
+            }
+
+            return Success(payloadCrates);
         }
 
         private string GetEnvelopeID(ControlDefinitionDTO control, AuthorizationTokenDO authTokenDo)
