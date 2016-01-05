@@ -72,9 +72,21 @@ namespace terminalSalesforce.Controllers
                 WebService = webService
             };
 
+            var getDataAction = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Salesforce_Get_Data",
+                Label = "Salesforce Get Data",
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                Category = ActivityCategory.Processors,
+                MinPaneWidth = 330,
+                WebService = webService
+            };
+
             var actionList = new List<ActivityTemplateDTO>()
             {
-                createLeadAction,createContactAction,createAccountAction
+                createLeadAction,createContactAction,createAccountAction, getDataAction
             };
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
