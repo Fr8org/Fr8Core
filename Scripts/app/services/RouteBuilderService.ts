@@ -9,8 +9,8 @@ module dockyard.services {
         getFull: (id: Object) => interfaces.IRouteVM;
         getByAction: (id: { id: string }) => interfaces.IRouteVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
-        activate: (route: model.RouteDTO) => void;
-        deactivate: (route: model.RouteDTO) => void;
+        activate: (route: model.RouteDTO) => ng.resource.IResource<string>;
+        deactivate: (route: model.RouteDTO) => ng.resource.IResource<string>;
         update: (data: { id: string, name: string}) => interfaces.IRouteVM;
     }
 
@@ -102,12 +102,14 @@ module dockyard.services {
                 },
                 'activate': {
                     method: 'POST',
+                    isArray: false,
                     url: '/api/routes/activate/',
                     params: {
                     }
                 },
                 'deactivate': {
                     method: 'POST',
+                    isArray: false,
                     url: '/api/routes/deactivate/',
                     params: {
                     }

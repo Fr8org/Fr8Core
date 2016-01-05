@@ -40,7 +40,8 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Monitors,
                 Terminal = terminal,
                 NeedsAuthentication = true,
-                MinPaneWidth = 330
+                MinPaneWidth = 330,
+                Help = new Data.Control.HelpControlDTO("Monitor_DocuSign_Envelope_Activity_SampleHelp1", "MenuItem")
             };
 
             var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDTO()

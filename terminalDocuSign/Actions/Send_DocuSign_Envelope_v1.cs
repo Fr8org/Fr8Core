@@ -31,7 +31,7 @@ namespace terminalDocuSign.Actions
         {
         }
 
-        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
@@ -80,11 +80,11 @@ namespace terminalDocuSign.Actions
         private Envelope AddTemplateData(ActionDO actionDO, PayloadDTO payloadCrates, Envelope curEnvelope)
         {
             var curTemplateId = ExtractTemplateId(actionDO);
-            var curRecipientAddress = ExtractSpecificOrUpstreamValue(
-                actionDO,
-                payloadCrates,
-                "Recipient"
-            );
+            var payloadCrateStorage = Crate.GetStorage(payloadCrates);
+            var configurationControls = GetConfigurationControls(actionDO);
+            var recipientField = (TextSource)GetControl(configurationControls, "Recipient", ControlTypes.TextSource);
+
+            var curRecipientAddress = recipientField.GetValue(payloadCrateStorage);
 
             curEnvelope.TemplateId = curTemplateId;
             curEnvelope.TemplateRoles = new TemplateRole[]
@@ -100,7 +100,7 @@ namespace terminalDocuSign.Actions
             return curEnvelope;
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             // Do we have any crate? If no, it means that it's Initial configuration
             if (Crate.IsStorageEmpty(curActionDO))
@@ -148,9 +148,11 @@ namespace terminalDocuSign.Actions
 
                     updater.CrateStorage = new CrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
                 }
+
+                await UpdateUpstreamCrate(curActionDO, updater);
             }
 
-            await UpdateUpstreamCrate(curActionDO);
+
 
             return curActionDO;
         }
@@ -166,7 +168,7 @@ namespace terminalDocuSign.Actions
                     return curActionDO;
                 }
 
-                await UpdateUpstreamCrate(curActionDO);
+                await UpdateUpstreamCrate(curActionDO, updater);
 
                 // Try to find Configuration_Controls.
                 var stdCfgControlMS = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
@@ -220,6 +222,8 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult(curActionDO);
         }
 
+
+
         private Crate CreateDocusignTemplateConfigurationControls(ActionDO curActionDO)
         {
             var fieldSelectDocusignTemplateDTO = new DropDownList()
@@ -252,26 +256,24 @@ namespace terminalDocuSign.Actions
             return Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
 
-        public async Task UpdateUpstreamCrate(ActionDO curActionDO)
+        public async Task UpdateUpstreamCrate(ActionDO curActionDO, ICrateStorageUpdater updater)
         {
-            using (var updater = Crate.UpdateStorage(curActionDO))
+            // Build a crate with the list of available upstream fields
+            var curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.StandardDesignTimeFields
+                                                                                && c.Label == "Upstream Terminal-Provided Fields");
+
+            if (curUpstreamFieldsCrate != null)
             {
-                // Build a crate with the list of available upstream fields
-                var curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.StandardDesignTimeFields
-                                                                                    && c.Label == "Upstream Terminal-Provided Fields");
-
-                if (curUpstreamFieldsCrate != null)
-                {
-                    updater.CrateStorage.Remove(curUpstreamFieldsCrate);
-                }
-
-                var curUpstreamFields = (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
-                    .Fields
-                    .ToArray();
-
-                curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
-                updater.CrateStorage.Add(curUpstreamFieldsCrate);
+                updater.CrateStorage.Remove(curUpstreamFieldsCrate);
             }
+
+            var curUpstreamFields = (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
+                .Fields.Where(a => a.Availability == AvailabilityType.RunTime)
+                .ToArray();
+
+            curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
+            updater.CrateStorage.Add(curUpstreamFieldsCrate);
         }
+
     }
 }

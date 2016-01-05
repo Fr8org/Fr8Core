@@ -301,7 +301,16 @@ namespace HubWeb
                             repositaryItem.Description = registeredItem.Description;
                             needSave = true;
                         }
+                    }
+                    else
+                    {
+                        repositaryItem.ActivityTemplateState = Data.States.ActivityTemplateState.Inactive;
+                        needSave = true;
+                        
 
+                        var alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                        alertReporter.ActivityTemplateTerminalRegistrationError(
+                            string.Format("Failed to Find Terminal For ActivityTemplate {0}.", repositaryItem.Name), "Disabling");
                     }
                 }
 

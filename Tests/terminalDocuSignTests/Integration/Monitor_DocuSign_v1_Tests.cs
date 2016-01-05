@@ -198,7 +198,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Monitor_DocuSign_Initial_Configuration_NoAuth()
         {
@@ -309,7 +310,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Monitor_DocuSign_FollowUp_Configuration_NoAuth()
         {
@@ -440,6 +442,11 @@ namespace terminalDocuSignTests.Integration
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestActionDTO = HealthMonitor_FixtureData.Mail_Merge_Into_DocuSign_v1_InitialConfiguration_ActionDTO();
+            using (var updater = Crate.UpdateStorage(requestActionDTO))
+            {
+                updater.CrateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
+            }
+            
 
             //Act
             var responseActionDTO =
@@ -461,7 +468,10 @@ namespace terminalDocuSignTests.Integration
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestActionDTO = HealthMonitor_FixtureData.Monitor_DocuSign_v1_InitialConfiguration_ActionDTO();
-
+            using (var updater = Crate.UpdateStorage(requestActionDTO))
+            {
+                updater.CrateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
+            }
             //Act
             var responseActionDTO =
                 await HttpPostAsync<ActionDTO, ActionDTO>(

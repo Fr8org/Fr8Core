@@ -191,10 +191,7 @@ namespace terminalFr8Core.Actions
                     Label = "Select Object",
                     Name = "SelectObjectDdl",
                     Required = true,
-                    Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onChange", "requestConfig")
-                    },
+                    Events = new List<ControlEvent>(){ControlEvent.RequestConfig},
                     Source = new FieldSourceDTO
                     {
                         Label = "Available Tables",

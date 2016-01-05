@@ -28,5 +28,11 @@ namespace terminalDocuSign.Controllers
         {
             return _baseTerminalController.HandleFr8Request(curTerminal, actionType, curActionDTO);
         }
+
+        [HttpPost]
+        public HttpResponseMessage Documentation(string helpPath)
+        {
+            return _baseTerminalController.GetActionDocumentation(helpPath);
+        }
     }
 }

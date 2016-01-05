@@ -18,13 +18,13 @@ namespace TerminalBase
     {
         public override void OnException(HttpActionExecutedContext actionExecutedContext)
         {
-            if (actionExecutedContext.Exception is TaskCanceledException)
-            {
-                // TaskCanceledException is an exception representing a successful task cancellation 
-                // Don't need to log it
-                // Ref: https://msdn.microsoft.com/en-us/library/dd997396(v=vs.110).aspx
-                return;
-            }
+            //if (actionExecutedContext.Exception is TaskCanceledException)
+            //{
+            //    // TaskCanceledException is an exception representing a successful task cancellation 
+            //    // Don't need to log it
+            //    // Ref: https://msdn.microsoft.com/en-us/library/dd997396(v=vs.110).aspx
+            //    return;
+            //}
 
             //get the terminal error details
             var curTerminalError = actionExecutedContext.Exception;

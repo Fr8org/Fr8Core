@@ -26,7 +26,7 @@ namespace terminalDropbox.Infrastructure
         {
             get
             {
-                return dropboxAuthCallbackURLDomain + "/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalDropbox&terminalVersion=1";
+                return dropboxAuthCallbackURLDomain + "AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalDropbox&terminalVersion=1";
             }
         }
 

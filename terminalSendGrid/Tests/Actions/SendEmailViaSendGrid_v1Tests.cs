@@ -139,7 +139,7 @@ namespace terminalSendGrid.Tests.Actions
                 control.ValueSource = "specific";
                 control.Value = (control.Name == "EmailAddress") ? "test@mail.com" : "test";
             }
-            var crate = Crate.CreateStandardConfigurationControlsCrate("Send Grid", standardControls.Controls.ToArray());
+            var crate = Crate.CreateStandardConfigurationControlsCrate("SendGrid", standardControls.Controls.ToArray());
 
             using (var updater = Crate.UpdateStorage(actionDO))
             {
