@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
@@ -17,7 +18,8 @@ namespace terminalDocuSign
     {
         public void Configuration(IAppBuilder app)
         {
-            StartHosting("terminal_docusign");
+            WebApiConfig.Register(new HttpConfiguration());
+            StartHosting("terminal_DocuSign");
         }
     }
 }

@@ -57,186 +57,95 @@
 		<!-- DOC: Remove dropdown-menu-hover and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
 		<div class="hor-menu">
 			<ul class="nav navbar-nav">
+
 				<li class="active">
 					<a href="#/myaccount">Home</a>
 				</li>
-				<li class="menu-dropdown mega-menu-dropdown ">
-					<a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#" class="dropdown-toggle">
-                        Containers <i class="fa fa-angle-down"></i>
-					</a>
-					<ul class="dropdown-menu" style="min-width: 410px">
-						<li>
-							<div class="mega-menu-content">
-								<div class="row">
-									<div class="col-md-6">
-										<ul class="mega-menu-submenu">
-                                            <li>
-                                                <a href="#/containers" class="iconify">
-                                                    <i class="icon-puzzle"></i>
-                                                    Show All
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
 
-                                </div>
-                            </div>
+                <li class="menu-dropdown classic-menu-dropdown">
+                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">Solutions <i class="fa fa-angle-down"></i></a>
+                    <ul class="dropdown-menu pull-left" ng-controller="SolutionListController">
+                        <li class="dropdown-submenu">
+                            <a href="javascript:;" class="dropdown-toggle">DocuSign</a>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="activity in (activityCategories | filter: {name: 'Solution'})[0].activities | filter: { terminal: { name: 'terminalDocuSign' } }">
+                                    <a ng-href="#/solution/{{activity.name}}">{{activity.label}}</a>
+                                </li>
+                            </ul>
                         </li>
-                    </ul>
+                        <li class="dropdown-submenu">
+                            <a href="javascript:;" class="dropdown-toggle">Other</a>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="activity in (activityCategories | filter: { name: 'Solution', $: 'Fr8Core' })[0].activities | filter: { terminal: { name: 'terminalFr8Core' } }">
+                                    <a ng-href="#/solution/{{activity.name}}">{{activity.label}}</a>
+                                </li>
+                            </ul>
+                        </li>
+					</ul>
                 </li>
-				<li class="menu-dropdown mega-menu-dropdown ">
-					<a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#" class="dropdown-toggle">
-					Routes <i class="fa fa-angle-down"></i>
-					</a>
-					<ul class="dropdown-menu" style="min-width: 410px">
-						<li>
-							<div class="mega-menu-content">
-								<div class="row">
-									<div class="col-md-6">
-										<ul class="mega-menu-submenu">
-											<!--<li>
-												<h3>Processes</h3>
-											</li>-->
-											<li>
-												<a href="#/routes" class="iconify">
-												<i class="icon-puzzle"></i>
-												Show All </a>
-											</li>
-											<li>
-												<a href="#/routes/add" class="iconify">
-												<i class="icon-paper-clip"></i>
-												Add </a>
-											</li>
-                                            <li>
-                                                <a href="#/solutions" class="iconify">
-                                                    <i class="icon-paper-clip"></i>
-                                                    Create Solution</a>
-                                            </li>
-                                            <li>
-                                                <a href="#/findObjects/create" class="iconify">
-                                                    <i class="icon-paper-clip"></i>
-                                                    Find Objects
-                                                </a>
-                                            </li>
-										</ul>
-									</div>
 								
-								</div>
-							</div>
+                <li class="menu-dropdown classic-menu-dropdown">
+                    <a data-toggle="dropdown" href="#" class="dropdown-toggle">Routes <i class="fa fa-angle-down"></i></a>
+                    <ul class="dropdown-menu">
+
+                        <li><a href="#/routes">Show All</a></li>
+                        <li><a href="#/routes/add">Add</a></li>
+                        <li><a href="#/findObjects/create">Find Objects</a></li>
+
+                    </ul>
 						</li>
+
+                <li class="menu-dropdown classic-menu-dropdown">
+                    <a data-toggle="dropdown" href="#" class="dropdown-toggle">Containers <i class="fa fa-angle-down"></i></a>
+                    <ul class="dropdown-menu">
+
+                        <li><a href="#/containers">Show All</a></li>
+
 					</ul>
 				</li>
                 
-                @if (User.IsInRole("Admin")) {
-				<li class="menu-dropdown mega-menu-dropdown mega-menu-full ">
-					<a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">
-					Admin <i class="fa fa-angle-down"></i>
-					</a>
-					<ul class="dropdown-menu" style="min-width: 410px">
-						<li>
-							<div class="mega-menu-content">
-								<div class="row">
-									<div class="col-md-9">
-										<ul class="mega-menu-submenu">
-											<!--<li>
-												<h3>jQuery Integration</h3>
-											</li>-->
-											<li>
-												<a href="#/form-tools">
-													<i class="icon-puzzle"></i> Create Accounts
-												</a>
-											</li>
-											@*<li>
-												<a href="#/pickers">
-													<i class="icon-calendar"></i> Find Object
-												</a>
-											</li>*@
-                                            <li>
-                                                <a href="#/accounts">
-                                                    <i class="icon-calendar"></i> Manage Dockyard Accounts
-                                                </a>
-                                            </li>											
-											<li>
-												<a href="#/webservices">
-													<i class="icon-calendar"></i> Show Web Services
-												</a>
-											</li>
-										</ul>
-									</div>
-									
-								</div>
-							</div>
-						</li>
-					</ul>
-				</li>
+                <li class="menu-dropdown classic-menu-dropdown">
+                    <a data-toggle="dropdown" href="#" class="dropdown-toggle">Reports <i class="fa fa-angle-down"></i></a>
+                    <ul class="dropdown-menu">
+
+                        <li><a href="#/showFacts">Show Facts</a></li>
+                        <li><a href="#/showIncidents">Show Incidents</a></li>
+
+                    </ul>
+                </li>
+
+                <li class="menu-dropdown classic-menu-dropdown">
+                    <a data-toggle="dropdown" href="#" class="dropdown-toggle">Tools <i class="fa fa-angle-down"></i></a>
+                    <ul class="dropdown-menu">
+
+                        <li><a href="#/managefiles">Manage Files</a></li>
+                        <li><a href="#/manageAuthTokens">Manage Auth Tokens</a></li>
+                        <li><a href="#/pickers">Find</a></li>
+
+                    </ul>
+                </li>
+
+                <li class="menu-dropdown classic-menu-dropdown">
+                    <a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">Developer <i class="fa fa-angle-down"></i></a>
+                    <ul class="dropdown-menu">
+
+                        <li><a href="#/terminals">Developer Home</a></li>
+                    </ul>
+                </li>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right:0;">
+                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu">
+
+                            <li><a href="#/form-tools">Create Accounts</a></li>
+                            <li><a href="#/accounts">Manage Dockyard Accounts</a></li>
+                            <li><a href="#/webservices">Show Web Services</a></li>
+
+                        </ul>
+                    </li>
                 }
-                <li class="menu-dropdown mega-menu-dropdown mega-menu-full ">
-                    <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">
-                        Reports <i class="fa fa-angle-down"></i>
-                    </a>
-                    <ul class="dropdown-menu" style="min-width: 410px">
-                        <li>
-                            <div class="mega-menu-content">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <ul class="mega-menu-submenu">
-                                            <!--<li>
-                                    <h3>jQuery Integration</h3>
-                                </li>-->
-                                            @*<li>
-                                                <a href="#/showUsageReport">
-                                                    <i class="icon-puzzle"></i> Show Usage
-                                                </a>
-                                            </li>*@
-                                            <li>
-                                                <a href="#/showFacts">
-                                                    <i class="icon-puzzle"></i> Show Facts
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#/showIncidents">
-                                                    <i class="icon-puzzle"></i> Show Incidents
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
-                <li class="menu-dropdown mega-menu-dropdown">
-                    <a data-hover="megamenu-dropdown" data-close-others="true" data-toggle="dropdown" href="#" class="dropdown-toggle">
-                        Tools <i class="fa fa-angle-down"></i>
-                    </a>
-                    <ul class="dropdown-menu" style="min-width: 410px">
-                        <li>
-                            <div class="mega-menu-content">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <ul class="mega-menu-submenu">
-                                            <!--<li>
-                                    <h3>jQuery Integration</h3>
-                                </li>-->
-                                            <li>
-                                                <a style="white-space: nowrap;" href="#/managefiles">
-                                                    <i class="icon-puzzle"></i> Manage Files
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#/pickers">
-                                                    <i class="icon-calendar"></i> Find
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </li>
 			</ul>
 		</div>
 		<!-- END MEGA MENU -->

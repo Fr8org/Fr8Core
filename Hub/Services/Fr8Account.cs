@@ -13,6 +13,7 @@ using Data.Interfaces;
 using Data.States;
 using Hub.Security;
 using Utilities;
+using System.Web;
 
 namespace Hub.Services
 {
@@ -321,6 +322,8 @@ namespace Hub.Services
                 }
 
                 var code = await userManager.GeneratePasswordResetTokenAsync(user.Id);
+                code = HttpUtility.HtmlEncode(code);
+
                 var callbackUrl = string.Format("{0}DockyardAccount/ResetPassword?UserId={1}&code={2}", Server.ServerUrl,
                     user.Id, code);
 
@@ -333,7 +336,8 @@ namespace Hub.Services
                 emailDO.AddEmailRecipient(EmailParticipantType.To,
                     uow.EmailAddressRepository.GetOrCreateEmailAddress(userEmail));
                 emailDO.Subject = "Password Recovery Request";
-                emailDO.HTMLText = "Please reset your password by clicking this link: <a href=\"" + callbackUrl + "\">link</a>";
+                string htmlText = string.Format("Please reset your password by clicking this <a href='{0}'>link:</a> <br> <b>Note: </b> Reset password link will be expired after 24 hours.", callbackUrl);
+                emailDO.HTMLText = htmlText;
 
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("ForgotPassword_template"),
                     new Dictionary<string, object>() {{"-callback_url-", callbackUrl}});

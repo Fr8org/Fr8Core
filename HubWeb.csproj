@@ -25,7 +25,9 @@
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
     <RestorePackages>true</RestorePackages>
-    <ApplicationInsightsResourceId />
+    <ApplicationInsightsResourceId>/subscriptions/1cbd9b53-df0a-4b58-a54c-567d986b5e4f/resourcegroups/Default-Web-WestUS/providers/microsoft.insights/components/HubWeb</ApplicationInsightsResourceId>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -128,6 +130,34 @@
       <HintPath>packages\logentries.log4net.2.4.2\lib\net40\LogentriesLog4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.0.1011, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.Agent.Intercept.1.2.0\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.DependencyCollector, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.DependencyCollector.1.2.3\lib\net45\Microsoft.AI.DependencyCollector.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.PerfCounterCollector, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.PerfCounterCollector.1.2.3\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.ServerTelemetryChannel, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.1.2.3\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.Web, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.Web.1.2.3\lib\net45\Microsoft.AI.Web.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AI.WindowsServer, Version=1.2.3.246, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.WindowsServer.1.2.3\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=1.2.3.490, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.Identity.Core.2.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
       <Private>True</Private>
@@ -141,49 +171,46 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    
-    <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>		     
-      <HintPath>packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-     
-    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>	
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    
     <Reference Include="Microsoft.Owin.Hosting">
-      <HintPath>packages\Microsoft.Owin.Hosting.2.0.2\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
+      <HintPath>packages\Microsoft.Owin.Hosting.3.0.1\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin.Security, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <HintPath>packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.Cookies, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Microsoft.Owin.Security.Cookies.2.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+      <HintPath>packages\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.Facebook, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Owin.Security.Facebook.2.1.0\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Security.Facebook, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.Security.Facebook.3.0.1\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.Google, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Owin.Security.Google.2.1.0\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Security.Google, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.Security.Google.3.0.1\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Owin.Security.MicrosoftAccount.2.1.0\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.Security.MicrosoftAccount.3.0.1\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.OAuth, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Owin.Security.OAuth.2.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.Twitter, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Owin.Security.Twitter.2.1.0\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Security.Twitter, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.Security.Twitter.3.0.1\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -244,10 +271,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.Helpers.dll</HintPath>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -258,8 +286,8 @@
       <HintPath>packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Web.Mvc, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.Mvc.5.1.2\lib\net45\System.Web.Mvc.dll</HintPath>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -267,19 +295,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.Razor.3.1.2\lib\net45\System.Web.Razor.dll</HintPath>
+      <HintPath>packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.dll</HintPath>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
@@ -296,6 +324,14 @@
       <HintPath>packages\WebActivator.1.5.3\lib\net40\WebActivator.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="WebApi.OutputCache.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Strathweb.CacheOutput.WebApi2.0.9.0\lib\net45\WebApi.OutputCache.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebApi.OutputCache.V2, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Strathweb.CacheOutput.WebApi2.0.9.0\lib\net45\WebApi.OutputCache.V2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
       <Private>True</Private>
@@ -309,45 +345,38 @@
     <Reference Include="Owin">
       <HintPath>packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin">
-      <HintPath>packages\Microsoft.Owin.2.0.0\lib\net45\Microsoft.Owin.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security">
-      <HintPath>packages\Microsoft.Owin.Security.2.0.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Cookies">
-      <HintPath>packages\Microsoft.Owin.Security.Cookies.2.0.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\AlarmController.cs" />
-    <Compile Include="Controllers\AuthenticationController.cs" />
+    <Compile Include="Controllers\Api\ActionsController.cs" />
+    <Compile Include="Controllers\Api\AlarmsController.cs" />
+    <Compile Include="Controllers\Api\AuthenticationController.cs" />
+    <Compile Include="Controllers\Api\ManageAuthTokenController.cs" />
+    <Compile Include="Controllers\Api\ConfigurationController.cs" />
+    <Compile Include="Controllers\Api\ManifestsController.cs" />
+    <Compile Include="Controllers\Api\RoutesController.cs" />
+    <Compile Include="Controllers\Api\TerminalsController.cs" />
     <Compile Include="Controllers\WelcomeController.cs" />
-    <Compile Include="Controllers\FieldController.cs" />
-    <Compile Include="Controllers\ActionListController.cs" />
-    <Compile Include="Controllers\ActionController.cs" />
-    <Compile Include="Controllers\CriteriaController.cs" />
-    <Compile Include="Controllers\Fr8EventController.cs" />
+    <Compile Include="Controllers\Api\FieldController.cs" />
+    <Compile Include="Controllers\Api\ActionListController.cs" />
+    <Compile Include="Controllers\Api\CriteriaController.cs" />
+    <Compile Include="Controllers\Api\Fr8EventController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\Helpers\RouteMappingHelper.cs" />
-    <Compile Include="Controllers\ManifestController.cs" />
-    <Compile Include="Controllers\RouteNodesController.cs" />
+    <Compile Include="Controllers\Api\RouteNodesController.cs" />
     <Compile Include="Controllers\AuthenticationCallbackController.cs" />
-    <Compile Include="Controllers\FilesController.cs" />
+    <Compile Include="Controllers\Api\FilesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
-    <Compile Include="Controllers\SubrouteController.cs" />
-    <Compile Include="Controllers\RouteController.cs" />
-    <Compile Include="Controllers\EventController.cs" />
+    <Compile Include="Controllers\Api\SubrouteController.cs" />
+    <Compile Include="Controllers\Api\EventController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
-    <Compile Include="Controllers\ContainerController.cs" />
+    <Compile Include="Controllers\Api\ContainerController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
-    <Compile Include="Controllers\ManageFileController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="Controllers\WebServicesController.cs" />
+    <Compile Include="Controllers\Api\ManageFileController.cs" />
+    <Compile Include="Controllers\Api\UserController.cs" />
+    <Compile Include="Controllers\Api\WebServicesController.cs" />
     <Compile Include="DependencyResolution\IoC.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
@@ -387,7 +416,7 @@
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
-    <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
@@ -458,14 +487,18 @@
     <Content Include="Content\icons\web_services\DocuSign-Logo.png" />
     <Content Include="Content\icons\web_services\dropbox-icon-64x64.png" />
     <Content Include="Content\icons\web_services\fr8-core-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\google-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\jira-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-azure-icon-64x64.png" />
     <Content Include="Content\icons\web_services\ms-excel-icon-64x64.png" />
     <Content Include="Content\icons\web_services\papertrail-icon-64x64.png" />
+    <Content Include="Content\icons\web_services\quickbooks-icon-64x64.png" />
     <Content Include="Content\icons\web_services\salesforce-icon-64x64.png" />
     <Content Include="Content\icons\web_services\sendgrid-icon-64x64.png" />
     <Content Include="Content\icons\web_services\slack-icon-64x64.png" />
     <Content Include="Content\icons\web_services\twilio-icon-64x64.png" />
     <Content Include="Content\icons\web_services\unknown-service.png" />
+    <Content Include="Content\icons\web_services\yammer-64x64.png" />
     <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\backgrounds\about-bg.jpg" />
     <Content Include="Content\img\backgrounds\bg-overlay.png" />
@@ -705,8 +738,41 @@
     <Content Include="Documentation\UploadBrandProfiles.html" />
     <Content Include="Documentation\UsingBulkSendintheRESTAPI.html" />
     <Content Include="Documentation\VoidEnvelope.html" />
-    <Content Include="Scripts\lib\jpattern.js" />
-    <Content Include="Scripts\tests\integration\ContainerControllerTests.js" />
+    <Content Include="Scripts\ai.0.15.0-build58334.js" />
+    <Content Include="Scripts\ai.0.15.0-build58334.min.js" />
+    <Content Include="_PowerShellScripts\RunIntegrationTests-DEV.ps1" />
+    <Content Include="_PowerShellScripts\DEV-HealthMonitor.exe.config" />
+    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-DEV.ps1" />
+    <Content Include="_PowerShellScripts\DEV-job-run.cmd" />
+    <Content Include="_PowerShellScripts\DEV-settings.job" />
+    <Content Include="_PowerShellScripts\MASTER-HealthMonitor.exe.config" />
+    <Content Include="_PowerShellScripts\RunIntegrationTests-MASTER.ps1" />
+    <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
+    <Content Include="_PowerShellScripts\MASTER-settings.job" />
+    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER.ps1" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
+    <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\AuthenticationDialogController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\TerminalListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IManageAuthToken.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\ITerminal.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ManageAuthToken.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\TerminalActionSetDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\TerminalDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ManageAuthTokenService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\TerminalService.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\RouteDetailsControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamDataChooser.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamDataChooser.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_UpstreamDataChooser.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\jpattern.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\ContainerControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\lib\jpattern.d.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\ContainerControllerTests.ts" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />
     <Content Include="Views\AngularTemplate\ConfigurationControl.cshtml" />
@@ -742,6 +808,26 @@
     <Content Include="Views\AuthenticationCallback\ProcessSuccessfulOAuthResponse.cshtml" />
     <Content Include="_PowerShellScripts\RunFrontEndTests-VSO.ps1" />
     <Content Include="Views\DockyardAccount\_HeaderPartial.cshtml" />
+    <Content Include="ApplicationInsights.config">
+      <TransformOnBuild>true</TransformOnBuild>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="ApplicationInsights.Debug.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ApplicationInsights.Dev.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ApplicationInsights.Release.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\PublishProfiles\dockyard - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\dockyard - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\fr8 - FTP.pubxml" />
@@ -752,9 +838,21 @@
     <Content Include="_PowerShellScripts\CheckWebSettings.ps1" />
     <Content Include="Service References\Application Insights\ConnectedService.json" />
     <Content Include="Views\Welcome\Index.cshtml" />
+    <Content Include="Views\AngularTemplate\RunRouteButton.cshtml" />
+    <Content Include="Views\AngularTemplate\ManageAuthTokens.cshtml" />
+    <None Include="Properties\PublishProfiles\fr8dev - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\fr8dev - Web Deploy.pubxml" />
+    <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
+    <Content Include="Views\AngularTemplate\TerminalForm.cshtml" />
+    <Content Include="Views\AngularTemplate\TerminalList.cshtml" />
+    <Content Include="Views\AngularTemplate\AuthenticationDialog.cshtml" />
+    <Content Include="Views\AngularTemplate\UpstreamDataChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\UpstreamFieldChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\UsersEmailList.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <Content Include="_PowerShellScripts\SetupStagingDatabase.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsResultsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
@@ -773,10 +871,10 @@
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\WebServiceListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\WebServiceFormController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\SolutionController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Counter.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Duration.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\RunRouteButton.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ManageRoute.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilder.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextSource.ts" />
@@ -792,6 +890,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\DesignerHeader\DesignerHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\layout.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\LongAjaxCursor.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ActionNameFormatter.ts" />
@@ -4087,7 +4186,6 @@
     <Content Include="Views\AngularTemplate\_RouteList.cshtml" />
     <Content Include="Views\AngularTemplate\SolutionList.cshtml" />
     <Content Include="Views\AngularTemplate\_DeleteRouteModal.cshtml" />
-    <Content Include="Views\AngularTemplate\Solution.cshtml" />
     <Content Include="Views\AuthenticationCallback\Error.cshtml" />
     <Content Include="Views\AngularTemplate\WebServiceList.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilder.cshtml" />
@@ -4139,6 +4237,7 @@
     <Folder Include="Views\Envelope\" />
     <Folder Include="Views\Portal\" />
     <Folder Include="Views\Process\" />
+    <Folder Include="Views\Settings\" />
     <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
@@ -4204,6 +4303,9 @@
     <TypeScriptMapRoot />
     <TypeScriptSourceRoot />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptModuleKind>amd</TypeScriptModuleKind>
+  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' == ''" />
@@ -4227,7 +4329,8 @@
   <Target Name="AfterBuild">
   </Target> -->
   <Target Name="EnsureNmpPackageBuildAndGulpBuild" BeforeTargets="BeforeBuild">
-    <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)" ContinueOnError="WarnAndContinue" />
+    <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)" />
+    <!-- <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)" ContinueOnError="WarnAndContinue" /> -->
   </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -4262,4 +4365,59 @@
   <PropertyGroup>
     <PostBuildEvent>if exist $(TargetDir)Web.dll del /Q $(TargetDir)Web.dll</PostBuildEvent>
   </PropertyGroup>
+  <PropertyGroup>
+    <CompileDependsOn>
+      $(CompileDependsOn);
+      GulpBuild;
+    </CompileDependsOn>
+  </PropertyGroup>
+  <Target Name="GulpBuild" DependsOnTargets="CompileTypeScript">
+    <Exec Command=".\node_modules\.bin\gulp compile_js" />
+  </Target>
+  <PropertyGroup>
+    <CopyAllFilesToSingleFolderForPackageDependsOn>
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+      CollectGulpOutput;
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
+    <CopyAllFilesToSingleFolderForMsdeployDependsOn>
+      $(CopyAllFilesToSingleFolderForMsdeployDependsOn);
+      CollectGulpOutput;
+    </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+  </PropertyGroup>
+  <PropertyGroup Label="SlowCheetah">
+    <SlowCheetahToolsPath>$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\.\packages\SlowCheetah.2.5.15\tools\))</SlowCheetahToolsPath>
+    <SlowCheetah_EnableImportFromNuGet Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='' ">true</SlowCheetah_EnableImportFromNuGet>
+    <SlowCheetah_NuGetImportPath Condition=" '$(SlowCheetah_NuGetImportPath)'=='' ">$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\Properties\SlowCheetah\SlowCheetah.Transforms.targets ))</SlowCheetah_NuGetImportPath>
+    <SlowCheetahTargets Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='true' and Exists('$(SlowCheetah_NuGetImportPath)') ">$(SlowCheetah_NuGetImportPath)</SlowCheetahTargets>
+  </PropertyGroup>
+  <Target Name="CollectGulpOutput">
+    <ItemGroup>
+      <_CustomGulpFiles Include="Scripts\app\_compiled.js" />
+      <FilesForPackagingFromProject Include="%(_CustomGulpFiles.Identity)">
+        <DestinationRelativePath>Scripts\app\%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+    <Message Text="CollectGulpOutput list: %(_CustomGulpFiles.Identity)" />
+  </Target>
+  <PropertyGroup>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      CleanBowerComponents;
+    </CleanDependsOn>
+    <CleanDependsOn>
+	  $(CleanDependsOn);
+	  RemoveCompiledJsFiles;
+    </CleanDependsOn>
+  </PropertyGroup>
+  <Target Name="CleanBowerComponents">
+    <RemoveDir Directories="bower_components" />
+  </Target>
+  <Target Name="RemoveCompiledJsFiles">
+    <ItemGroup>
+      <_CompiledJsFiles Include="Scripts\app\**\*.js" />
+    </ItemGroup>
+    <Delete Files="@(_CompiledJsFiles)" />
+  </Target>
+  <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
+  <Import Project="packages\Microsoft.ApplicationInsights.Agent.Intercept.0.17.0\build\Microsoft.ApplicationInsights.Agent.Intercept.targets" Condition="Exists('packages\Microsoft.ApplicationInsights.Agent.Intercept.0.17.0\build\Microsoft.ApplicationInsights.Agent.Intercept.targets')" />
 </Project>

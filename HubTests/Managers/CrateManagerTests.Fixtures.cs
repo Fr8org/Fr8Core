@@ -21,7 +21,7 @@ namespace HubTests.Managers
 
             return storage;
         }
-        
+
         private static CrateStorageDTO GetUnknownManifestsStorageDto()
         {
             var storage = new CrateStorageDTO
@@ -74,5 +74,127 @@ namespace HubTests.Managers
                 }
             };
         }
+
+
+        private static StandardTableDataCM GetTestTable()
+        {
+            string tableJson = @"{
+          'Table': [
+            {
+              'Row': [
+                {
+                  'Cell': {
+                    'key': 'SerbianWord',
+                    'value': 'Pouzdan',
+                    'tags': null,
+                    'availability': 0
+                  }
+                },
+                {
+                  'Cell': {
+                    'key': 'EnglishWord',
+                    'value': 'Reliable',
+                    'tags': null,
+                    'availability': 0
+                  }
+                }
+              ]
+            },
+            {
+              'Row': [
+                {
+                  'Cell': {
+                    'key': 'SerbianWord',
+                    'value': 'Zabolela mi je glava',
+                    'tags': null,
+                    'availability': 0
+                  }
+                },
+                {
+                  'Cell': {
+                    'key': 'EnglishWord',
+                    'value': 'I ve got headache',
+                    'tags': null,
+                    'availability': 0
+                  }
+                }
+              ]
+            }
+          ],
+          'FirstRowHeaders': false
+        }";
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<StandardTableDataCM>(tableJson);
+        }
+
+        private static StandardTableDataCM GetTestTableWithHeaders()
+        {
+            string tableJson = @"{
+          'Table': [
+            {
+              'Row': [
+                {
+                  'Cell': {
+                    'key': 'SerbianWord',
+                    'value': 'SerbianWord',
+                    'tags': null,
+                    'availability': 0
+                  }
+                },
+                {
+                  'Cell': {
+                    'key': 'EnglishWord',
+                    'value': 'EnglishWord',
+                    'tags': null,
+                    'availability': 0
+                  }
+                }
+              ]
+            },
+            {
+              'Row': [
+                {
+                  'Cell': {
+                    'key': 'Pouzdan',
+                    'value': 'Pouzdan',
+                    'tags': null,
+                    'availability': 0
+                  }
+                },
+                {
+                  'Cell': {
+                    'key': 'Reliable',
+                    'value': 'Reliable',
+                    'tags': null,
+                    'availability': 0
+                  }
+                }
+              ]
+            },
+            {
+              'Row': [
+                {
+                  'Cell': {
+                    'key': 'Zabolela mi je glava',
+                    'value': 'Zabolela mi je glava',
+                    'tags': null,
+                    'availability': 0
+                  }
+                },
+                {
+                  'Cell': {
+                    'key': 'I ve got headache',
+                    'value': 'I ve got headache',
+                    'tags': null,
+                    'availability': 0
+                  }
+                }
+              ]
+            }
+          ],
+          'FirstRowHeaders': true
+        }";
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<StandardTableDataCM>(tableJson);
+        }
+
     }
 }

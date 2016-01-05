@@ -40,9 +40,10 @@ namespace Data.Infrastructure.AutoMapper
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => ad.CrateStorage == null ? null : JsonConvert.DeserializeObject(ad.CrateStorage)))
                 .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
                 .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
-                .ForMember(a => a.ChildrenActions, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActionDO>()))
-                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate));
-                
+                .ForMember(a => a.ChildrenActions, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActionDO>().OrderBy(da => da.Ordering)))
+                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
+                .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData));
+
 
             Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
@@ -52,14 +53,17 @@ namespace Data.Infrastructure.AutoMapper
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
                 .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
                 .ForMember(a => a.ChildNodes, opts => opts.ResolveUsing(ad => MapActions(ad.ChildrenActions)))
-                .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId));
+                .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId))
+                .ForMember(a => a.ExplicitData, opts => opts.ResolveUsing(ad => ad.ExplicitData));
 
 
             Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
-                .ForMember(x => x.TerminalId, opts => opts.ResolveUsing(x => x.TerminalId));
+                .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description))
+                .ForMember(x => x.TerminalId, opts => opts.ResolveUsing(x => x.TerminalId))
+                .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication));
 
             Mapper.CreateMap<ActivityTemplateDTO, ActivityTemplateDO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
@@ -68,12 +72,14 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
                 .ForMember(x => x.TerminalId, opts => opts.ResolveUsing(x => x.TerminalId))
                 .ForMember(x => x.Terminal, opts => opts.ResolveUsing(x => x.Terminal))
-                .ForMember(x => x.AuthenticationType, opts => opts.ResolveUsing(x => x.AuthenticationType))
+                // .ForMember(x => x.AuthenticationType, opts => opts.ResolveUsing(x => x.AuthenticationType))
                 .ForMember(x => x.WebService, opts => opts.ResolveUsing(x => Mapper.Map<WebServiceDO>(x.WebService)))
-                .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
+                // .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
+                .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication))
                 .ForMember(x => x.ActivityTemplateStateTemplate,
                     opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
-                .ForMember(x => x.WebServiceId, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null));
+                .ForMember(x => x.WebServiceId, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null)) 
+                .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description));
 
 //
 //            Mapper.CreateMap<ActionListDO, ActionListDTO>()
@@ -114,7 +120,6 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>();
             Mapper.CreateMap<TerminalDO, TerminalDTO>();
             Mapper.CreateMap<TerminalDTO, TerminalDO>();
-
         }
 
         private static List<RouteNodeDO> MapActions(IEnumerable<ActionDTO> actions)

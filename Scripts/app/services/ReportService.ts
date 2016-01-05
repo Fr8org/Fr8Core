@@ -6,11 +6,11 @@
 
 
     app.factory('ReportFactService', ['$resource', ($resource: ng.resource.IResourceService): IReportFactService =>
-        <IReportFactService> $resource('api/report/getallfacts', {})
+        <IReportFactService> $resource('/api/report/getallfacts', {})
             
     ]);
 
     app.factory('ReportIncidentService', ['$resource', ($resource: ng.resource.IResourceService): IReportIncidentService =>
-        <IReportIncidentService> $resource('api/report/getallincidents', {})
+        <IReportIncidentService> $resource('/api/report/getallincidents', {})
     ]);
 } 

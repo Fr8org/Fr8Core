@@ -5,6 +5,7 @@ using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
 using terminalTwilio.Controllers;
+using TerminalBase.BaseClasses;
 
 namespace terminalTwilio
 {
@@ -28,8 +29,7 @@ namespace terminalTwilio
             {
                 var config = new HttpConfiguration();
 
-                // Web API routes
-                config.MapHttpAttributeRoutes();
+                WebApiConfig.Register(config);
 
                 config.Services.Replace(typeof(IHttpControllerTypeResolver), new TwilioControllerTypeResolver());
 

@@ -48,6 +48,10 @@
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.0.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
@@ -73,6 +77,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
@@ -96,6 +101,9 @@
     <Compile Include="Errors\TerminalErrorCode.cs" />
     <Compile Include="Infrastructure\BaseTerminalEvent.cs" />
     <Compile Include="Infrastructure\DefaultHubCommunicator.cs" />
+    <Compile Include="Infrastructure\DataHubCommunicatorBase.cs" />
+    <Compile Include="Infrastructure\ExplicitConfigurationHelper.cs" />
+    <Compile Include="Infrastructure\ExplicitDataHubCommunicator.cs" />
     <Compile Include="Infrastructure\IHubCommunicator.cs" />
     <Compile Include="Infrastructure\States\ConfigurationRequestType.cs" />
     <Compile Include="Infrastructure\JsonParser.cs" />

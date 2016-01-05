@@ -13,7 +13,7 @@ module dockyard.services {
 
     app.factory('UserService', [
         '$resource', ($resource: ng.resource.IResourceService): IUserService =>
-        <IUserService> $resource('api/user/:id', { id: '@id' }, {
+        <IUserService> $resource('/api/user?id=:id', { id: '@id' }, {
             getAll: {
                 method: 'GET',
                 isArray: true,

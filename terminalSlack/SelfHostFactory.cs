@@ -2,6 +2,7 @@
 using System.Web.Http;
 using Microsoft.Owin.Hosting;
 using Owin;
+using TerminalBase.BaseClasses;
 
 namespace terminalSlack
 {
@@ -13,16 +14,7 @@ namespace terminalSlack
             {
                 var config = new HttpConfiguration();
 
-                // Web API routes
-                config.MapHttpAttributeRoutes();
-
-                config.Routes.MapHttpRoute(
-                    name: "TerminalSlack",
-                    routeTemplate: "terminal_slack/{controller}/{id}",
-                    defaults: new { id = RouteParameter.Optional }
-                );
-
-                app.UseWebApi(config);
+                WebApiConfig.Register(config);
             }
         }
 

@@ -40,7 +40,7 @@
         selected: boolean;
         controls: Array<ControlDefinitionDTO>;
     }
-
+    
     export class RadioButtonGroup extends ControlDefinitionDTO {
         groupName: string;
         radios: Array<RadioButtonOption>;
@@ -60,15 +60,29 @@
     export class FieldDTO {
         public key: string;
         public value: string;
+        public availability: AvailabilityType;
+        public tags: string;
+        public sourceCrateLabel: string;
+        public sourceCrateManifest: {
+            Id: string;
+            Type: string;
+        }
+    }
+
+    export enum AvailabilityType {
+        Configuration = 1,
+        RunTime = 2,
+        Always = 3
     }
 
     export class DropDownListItem extends FieldDTO {
-        
+        selected: boolean;
     }
 
     export class FieldSource {
         public manifestType: string;
         public label: string;
+        public filterByTag: string;
     }
 
     export class DropDownList extends ControlDefinitionDTO {
@@ -80,6 +94,7 @@
     export class TextSource extends DropDownList {
         initialLabel: string;
         valueSource: string;
+        textValue: string;
     }
 
     export class TextBlockField extends ControlDefinitionDTO {
@@ -120,5 +135,11 @@
         days: number;
         hours: number;
         minutes: number;
+    }
+
+    export class UpstreamDataChooser extends ControlDefinitionDTO {
+        selectedManifest: string;
+        selectedLabel: string;
+        selectedFieldType: string;
     }
 }

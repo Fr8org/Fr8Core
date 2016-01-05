@@ -4,6 +4,7 @@ using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
+using TerminalBase.BaseClasses;
 
 namespace terminalExcel
 {
@@ -13,8 +14,9 @@ namespace terminalExcel
         {
             public void Configuration(IAppBuilder app)
             {
+                var config = new HttpConfiguration();
                 var startup = new StartupTerminalExcel();
-                startup.Configuration(app, selfHost: true);
+                BaseTerminalWebApiConfig.Register("Excel", config);
             }
         }
 

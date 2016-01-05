@@ -35,15 +35,15 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, int containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return  null;
+            return Success(await GetPayload(curActionDO, containerId));
         }
 
         /// <summary>
         /// Create configuration controls crate.
         /// </summary>
-        private async Task<Crate> CreateConfigurationControlsCrate()
+        private async Task<Crate> CreateConfigurationControlsCrate(ActionDO actionDO)
         {
             var controlList = new List<ControlDefinitionDTO>();
 
@@ -51,7 +51,7 @@ namespace terminalDocuSign.Actions
             {
                 Label = "1. Where is your Source Data?",
                 Name = "DataSource",
-                ListItems = await GetDataSourceListItems("Table Data Generator")
+                ListItems = await GetDataSourceListItems(actionDO, "Table Data Generator")
             });
 
             controlList.Add(DocuSignManager.CreateDocuSignTemplatePicker(false, "DocuSignTemplate", "2. Use which DocuSign Template?"));
@@ -64,24 +64,17 @@ namespace terminalDocuSign.Actions
             return PackControlsCrate(controlList.ToArray());
         }
 
-        private async Task<List<ListItem>> GetDataSourceListItems(string tag)
+        private async Task<List<ListItem>> GetDataSourceListItems(ActionDO actionDO, string tag)
         {
-            var httpClient = new HttpClient();
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-            + "route_nodes/available/?tag=" + tag;
-
-            using (var response = await httpClient.GetAsync(url).ConfigureAwait(false))
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                var activityTemplate = JsonConvert.DeserializeObject<List<ActivityTemplateDTO>>(content);
-                return activityTemplate.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
-            }
+            var curActivityTempaltes = await HubCommunicator.GetActivityTemplates(actionDO, tag);
+            return curActivityTempaltes.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
         }
 
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(
+            ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (curActionDO.Id != Guid.Empty)
             {
@@ -93,10 +86,10 @@ namespace terminalDocuSign.Actions
                     }
                     else
                     {
-                        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+                        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
                         //build a controls crate to render the pane
-                        var configurationControlsCrate = await CreateConfigurationControlsCrate();
+                        var configurationControlsCrate = await CreateConfigurationControlsCrate(curActionDO);
                         var templatesFieldCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
 
                         updater.CrateStorage = new CrateStorage(templatesFieldCrate, configurationControlsCrate);
@@ -124,7 +117,14 @@ namespace terminalDocuSign.Actions
         private T GetStdConfigurationControl<T>(CrateStorage storage, string name)
             where T : ControlDefinitionDTO
         {
-            return (T) storage.CrateContentsOfType<StandardConfigurationControlsCM>().First().FindByName(name);
+            var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            if (controls == null)
+            {
+                return null;
+            }
+
+            var control = (T)controls.FindByName(name);
+            return control;
         }
 
         /// <summary>
@@ -135,10 +135,11 @@ namespace terminalDocuSign.Actions
             // Do not tarsnfer to follow up when child actions are already present 
             if (curActionDO.ChildNodes.Count() > 0) return ConfigurationRequestType.Initial;
 
-
             var storage = Crate.GetStorage(curActionDO);
-            if (storage == null || storage.Count() == 0) return ConfigurationRequestType.Initial;
-
+            if (storage == null || storage.Count() == 0)
+            {
+                return ConfigurationRequestType.Initial;
+            }
 
             // "Follow up" phase is when Continue button is clicked 
             Button button = GetStdConfigurationControl<Button>(storage, "Continue");
@@ -158,61 +159,62 @@ namespace terminalDocuSign.Actions
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> FollowupConfigurationResponse(
+            ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
             _docuSignManager.ExtractFieldsAndAddToCrate(_docuSignTemplateValue, docuSignAuthDTO, curActionDO);
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(curActionDO, null))
+                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
+                .ToList();
 
             try
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                ActivityTemplateDO dataSourceActTempl = curActivityTemplates.FirstOrDefault(at => at.Name == _dataSourceValue);
+                if (dataSourceActTempl == null) return curActionDO;
+                curActionDO.ChildNodes.Add(new ActionDO()
                 {
-                    ActivityTemplateDO dataSourceActTempl = uow.ActivityTemplateRepository.GetAll().FirstOrDefault(at => at.Name == _dataSourceValue);
-                    if (dataSourceActTempl == null) return curActionDO;
-                    curActionDO.ChildNodes.Add(new ActionDO()
-                    {
-                        ActivityTemplate = dataSourceActTempl,
-                        IsTempId = true,
-                        Name = dataSourceActTempl.Name,
-                        Label = dataSourceActTempl.Label,
-                        CrateStorage = Crate.EmptyStorageAsStr(),
-                        ParentRouteNode = curActionDO,
-                        Ordering = 1
-                    });
+                    ActivityTemplateId = dataSourceActTempl.Id,
+                    IsTempId = true,
+                    Name = dataSourceActTempl.Name,
+                    Label = dataSourceActTempl.Label,
+                    CrateStorage = Crate.EmptyStorageAsStr(),
+                    ParentRouteNode = curActionDO,
+                    Ordering = 1
+                });
 
-                    ActivityTemplateDO mapFieldActTempl = uow.ActivityTemplateRepository.GetAll().FirstOrDefault(at => at.Name == "MapFields");
-                    if (mapFieldActTempl == null) return curActionDO;
+                ActivityTemplateDO mapFieldActTempl = curActivityTemplates.FirstOrDefault(at => at.Name == "MapFields");
+                if (mapFieldActTempl == null) return curActionDO;
 
-                    curActionDO.ChildNodes.Add(new ActionDO()
-                    {
-                        ActivityTemplate = mapFieldActTempl,
-                        IsTempId = true,
-                        Name = mapFieldActTempl.Name,
-                        Label = mapFieldActTempl.Label,
-                        CrateStorage = Crate.EmptyStorageAsStr(),
-                        ParentRouteNode = curActionDO,
-                        Ordering = 2
-                    });
+                curActionDO.ChildNodes.Add(new ActionDO()
+                {
+                    ActivityTemplateId = mapFieldActTempl.Id,
+                    IsTempId = true,
+                    Name = mapFieldActTempl.Name,
+                    Label = mapFieldActTempl.Label,
+                    CrateStorage = Crate.EmptyStorageAsStr(),
+                    ParentRouteNode = curActionDO,
+                    Ordering = 2
+                });
 
-                    ActivityTemplateDO sendDocuSignEnvActTempl = uow.ActivityTemplateRepository.GetAll().FirstOrDefault(at => at.Name == "Send_DocuSign_Envelope");
-                    if (mapFieldActTempl == null) return curActionDO;
-                    curActionDO.ChildNodes.Add(new ActionDO()
-                    {
-                        ActivityTemplate = sendDocuSignEnvActTempl,
-                        IsTempId = true,
-                        Name = sendDocuSignEnvActTempl.Name,
-                        CrateStorage = Crate.EmptyStorageAsStr(),
-                        Label = sendDocuSignEnvActTempl.Label,
-                        ParentRouteNode = curActionDO, 
-                        Ordering = 3
-                    });
+                ActivityTemplateDO sendDocuSignEnvActTempl = curActivityTemplates.FirstOrDefault(at => at.Name == "Send_DocuSign_Envelope");
+                if (sendDocuSignEnvActTempl == null) return curActionDO;
+                curActionDO.ChildNodes.Add(new ActionDO()
+                {
+                    ActivityTemplateId = sendDocuSignEnvActTempl.Id,
+                    IsTempId = true,
+                    Name = sendDocuSignEnvActTempl.Name,
+                    CrateStorage = Crate.EmptyStorageAsStr(),
+                    Label = sendDocuSignEnvActTempl.Label,
+                    ParentRouteNode = curActionDO,
+                    Ordering = 3
+                });
 
-                    //uow.ActionRepository.Add(curActionDO);
-                    //uow.Db.Entry<ActionDO>(curActionDO).State = System.Data.Entity.EntityState.Modified;
-                    //uow.SaveChanges();
-                }
+                //uow.ActionRepository.Add(curActionDO);
+                //uow.Db.Entry<ActionDO>(curActionDO).State = System.Data.Entity.EntityState.Modified;
+                //uow.SaveChanges();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }

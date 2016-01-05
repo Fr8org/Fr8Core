@@ -36,9 +36,9 @@ namespace terminalDocuSign.Tests.Fixtures
             };
         }
 
-        public static DocuSignAuthDTO TestDocuSignAuthDTO1()
+        public static DocuSignAuth TestDocuSignAuthDTO1()
         {
-            return new DocuSignAuthDTO() { Email = "freight.testing@gmail.com", ApiPassword = "SnByDvZJ/fp9Oesd/a9Z84VucjU=" };
+            return new DocuSignAuth() { Email = "freight.testing@gmail.com", ApiPassword = "SnByDvZJ/fp9Oesd/a9Z84VucjU=" };
         }
     }
 }

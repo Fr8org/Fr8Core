@@ -17,7 +17,7 @@ namespace Data.Interfaces.Manifests
 
         public EventReportCM()
             : base(MT.StandardEventReport)
-        {
+         {
             EventPayload = new CrateStorage();
             //EventPayload = new List<CrateDTO>();
         }

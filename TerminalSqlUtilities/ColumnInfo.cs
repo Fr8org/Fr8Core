@@ -41,6 +41,26 @@ namespace TerminalSqlUtilities
 
         public DbType DbType { get { return _dbType; } }
 
+        public override string ToString()
+        {
+            if (string.IsNullOrEmpty(TableInfo.SchemaName))
+            {
+                return string.Format(
+                    "{0}.{1}",
+                    TableInfo.TableName,
+                    ColumnName
+                );
+            }
+            else
+            {
+                return string.Format(
+                    "{0}.{1}.{2}",
+                    TableInfo.SchemaName,
+                    TableInfo.TableName,
+                    ColumnName
+                );
+            }
+        }
         
         private readonly TableInfo _tableInfo;
         private readonly string _columnName;

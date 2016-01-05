@@ -36,7 +36,7 @@ namespace Data.Interfaces
         //QuestionRepository QuestionRepository { get; }
         //AnswerRepository AnswerRepository { get; }
         //QuestionResponseRepository QuestionResponseRepository { get; }
-        AuthorizationTokenRepository AuthorizationTokenRepository { get; }
+        IAuthorizationTokenRepository AuthorizationTokenRepository { get; }
         LogRepository LogRepository { get; }
         ProfileNodeRepository ProfileNodeRepository { get; }
         ProfileItemRepository ProfileItemRepository { get; }
@@ -67,6 +67,7 @@ namespace Data.Interfaces
         MultiTenantObjectRepository MultiTenantObjectRepository { get; }
 
         ITerminalRepository TerminalRepository { get; }
+        ITerminalSubscriptionRepository TerminalSubscriptionRepository { get; }
 
         ISubscriptionRepository SubscriptionRepository { get; }
 		IWebServiceRepository WebServiceRepository { get; }

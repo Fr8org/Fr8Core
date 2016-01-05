@@ -10,8 +10,9 @@
 <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.js" type="text/javascript"></script>
 <script src="/bower_components/underscore/underscore.js" type="text/javascript"></script>
 @*<script src="//cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js" type="text/javascript"></script>*@
-<script src="~/bower_components/datatables/media/js/jquery.dataTables.min.js"></script>
+<script src="/bower_components/datatables/media/js/jquery.dataTables.min.js"></script>
 <script src="/bower_components/angular-datatables/dist/angular-datatables.js"></script>
+<script src="/bower_components/ng-table/dist/ng-table.min.js"></script>
 <script src="/bower_components/ng-file-upload/ng-file-upload-all.min.js" type="text/javascript"></script>
 <script src="/bower_components/pusher/dist/pusher.js"></script>
 <script src="/bower_components/pusher-angular/lib/pusher-angular.js" type="text/javascript"></script>
@@ -25,143 +26,27 @@
 <script src="/bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
 
 <script src="/bower_components/angular-ui-select/dist/select.min.js"></script>
-<link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.min.css" />
+
+<script src="/bower_components/angular-applicationinsights/dist/angular-applicationinsights.min.js"></script>
+
+<script src="~/bower_components/dndLists/angular-drag-and-drop-lists.min.js"></script>
 
 <!-- END CORE ANGULARJS PLUGINS -->
 <!-- BEGIN APP LEVEL ANGULARJS SCRIPTS -->
 <script src="~/Scripts/app/app.js" type="text/javascript"></script>
+@if (Request.Url.PathAndQuery.IndexOf("JsTests/") > 0)
+{
 <script src="~/Scripts/app/e2ehttpBackend.js" type="text/javascript"></script>
+}
 <!-- END APP LEVEL ANGULARJS SCRIPTS -->
 <!-- BEGIN APP LEVEL JQUERY SCRIPTS -->
 <script src="~/Content/templates/metronic/assets/global/scripts/metronic.js" type="text/javascript"></script>
 <script src="~/Content/templates/metronic/assets/admin/layout3/scripts/layout.js" type="text/javascript"></script>
 <script src="~/Content/templates/metronic/assets/admin/layout3/scripts/demo.js" type="text/javascript"></script>
 <!-- END APP LEVEL JQUERY SCRIPTS -->
-<!-- ENUMS -->
-<!-- MODELS -->
-<script src="~/Scripts/app/model/ActionDTO.js"></script>
-<script src="~/Scripts/app/model/ActivityTemplate.js"></script>
-<script src="~/Scripts/app/model/Condition.js"></script>
-<script src="~/Scripts/app/model/Criteria.js"></script>
-<script src="~/Scripts/app/model/Field.js"></script>
-<script src="~/Scripts/app/model/Subroute.js"></script>
-<script src="~/Scripts/app/model/ControlsList.js"></script>
-<script src="~/Scripts/app/model/CrateStorage.js"></script>
-<script src="~/Scripts/app/model/FieldMappingSettings.js"></script>
-<script src="~/Scripts/app/model/Route.js"></script>
-<script src="~/Scripts/app/model/RouteBuilderState.js"></script>
-<script src="~/Scripts/app/model/User.js"></script>
-<script src="~/Scripts/app/model/ContainerDTO.js"></script>
-<script src="~/Scripts/app/model/ActionGroup.js"></script>
-<script src="~/Scripts/app/model/WebServiceDTO.js"></script>
-<script src="~/Scripts/app/model/WebServiceActionSetDTO.js"></script>
 
-<!-- SERVICES -->
-<script src="~/Scripts/app/services/CrateHelper.js"></script>
-<script src="~/Scripts/app/services/RouteBuilderService.js"></script>
-<script src="~/Scripts/app/services/StringService.js"></script>
-<script src="~/Scripts/app/services/LocalIdentityGenerator.js"></script>
-<script src="~/Scripts/app/services/ReportService.js"></script>
-<script src="~/Scripts/app/services/ManageFileService.js"></script>
-<script src="~/Scripts/app/services/ContainerService.js"></script>
-<script src="~/Scripts/app/services/UIHelperService.js"></script>
-<script src="~/Scripts/app/services/LayoutService.js"></script>
+<script src="~/Scripts/app/_compiled.js" type="text/javascript"></script>
+
 <script>
     var appKey = "@Utilities.Configuration.Azure.CloudConfigurationManager.GetSetting("pusherAppKey")";
 </script>
-<script src="~/Scripts/app/services/PusherNotifierService.js"></script>
-
-<script src="~/Scripts/app/services/UserService.js"></script>
-<script src="~/Scripts/app/services/WebServiceService.js"></script>
-
-<!-- FILTERS -->
-<script src="~/Scripts/app/filters/RouteState.js"></script>
-<script src="~/Scripts/app/filters/ContainerState.js"></script>
-
-<!-- DIRECTIVES -->
-<script src="~/Scripts/app/directives/EventArgsBase.js"></script>
-<script type="text/javascript" src="~/Scripts/app/directives/directives.js"></script>
-<script src="~/Scripts/app/directives/indiClick.js"></script>
-<script src="~/Scripts/app/directives/layout.js"></script>
-
-<!-- pane-workflow-designer -->
-<script src="~/Scripts/app/directives/PaneWorkflowDesigner/Messages.js"></script>
-<script src="~/Scripts/app/directives/PaneWorkflowDesigner/PaneWorkflowDesigner.js"></script>
-
-<!-- pane-configure-action -->
-<script src="~/Scripts/app/directives/PaneConfigureAction/PaneConfigureAction.js"></script>
-<script src="~/Scripts/app/directives/PaneConfigureAction/ConfigurationControl.js"></script>
-@*Missing file: <script src="~/Scripts/app/directives/PaneConfigureAction/RoutingControl.js"></script>*@
-
-<!-- pane-select-action -->
-<script src="~/Scripts/app/directives/PaneSelectAction/PaneSelectAction.js"></script>
-
-<script src="~/Scripts/app/directives/DesignerHeader/DesignerHeader.js"></script>
-
-<!-- file-picker -->
-<script src="~/Scripts/app/directives/Controls/FilePicker.js"></script>
-
-<!-- radio-button-group -->
-<script src="~/Scripts/app/directives/Controls/RadioButtonGroup.js"></script>
-
-<!-- drop-down-list-box -->
-<script src="~/Scripts/app/directives/Controls/DropDownListBox.js"></script>
-
-<!-- textblock -->
-<script src="~/Scripts/app/directives/Controls/TextBlock.js"></script>
-
-<!-- textarea -->
-<script src="~/Scripts/app/directives/Controls/TextArea.js"></script>
-
-<!-- filter-pane -->
-<script src="~/Scripts/app/directives/Controls/FilterPane.js"></script>
-<script src="~/Scripts/app/directives/QueryBuilderWidget.js"></script>
-
-<!-- mapping-pane -->
-<script src="~/Scripts/app/directives/Controls/MappingPane.js"></script>
-
-<!-- manage-route -->
-<script src="~/Scripts/app/directives/Controls/ManageRoute.js"></script>
-
-<!-- field-list -->
-<script src="~/Scripts/app/directives/Controls/FieldList.js"></script>
-<script src="~/Scripts/app/directives/Controls/QueryBuilder.js"></script>
-
-<!-- text source -->
-<script src="~/Scripts/app/directives/Controls/TextSource.js"></script>
-
-<!-- input focus -->
-<script src="~/Scripts/app/directives/Controls/InputFocus.js"></script>
-
-<!-- duration -->
-<script src="~/Scripts/app/directives/Controls/Counter.js"></script>
-<script src="~/Scripts/app/directives/Controls/Duration.js"></script>
-
-<!-- ActionNameFormatter Filter -->
-<script src="~/Scripts/app/filters/ActionNameFormatter.js"></script>
-
-<!-- CONTROLLERS -->
-<script src="~/Scripts/app/controllers/RouteBuilderController.js"></script>
-<script src="~/Scripts/app/controllers/SandboxController.js"></script>
-<script src="~/Scripts/app/controllers/RouteFormController.js"></script>
-<script src="~/Scripts/app/controllers/RouteListController.js"></script>
-<script src="~/Scripts/app/controllers/ReportFactController.js"></script>
-<script src="~/Scripts/app/controllers/ReportIncidentController.js"></script>
-<script src="~/Scripts/app/controllers/RouteDetailsController.js"></script>
-
-<script src="~/Scripts/app/controllers/ManageFileListController.js"></script>
-<script src="~/Scripts/app/controllers/AccountListController.js"></script>
-<script src="~/Scripts/app/controllers/AccountDetailsController.js"></script>
-<script src="~/Scripts/app/controllers/InternalAuthenticationController.js"></script>
-<script src="~/Scripts/app/controllers/SelectActionController.js"></script>
-<script src="~/Scripts/app/controllers/ContainerListController.js"></script>
-<script src="~/Scripts/app/controllers/ContainerDetailsController.js"></script>
-<script src="~/Scripts/app/controllers/WebServiceListController.js"></script>
-<script src="~/Scripts/app/controllers/WebServiceFormController.js"></script>
-<script src="~/Scripts/app/controllers/SolutionController.js"></script>
-<script src="~/Scripts/app/controllers/SolutionListController.js"></script>
-<script src="~/Scripts/app/controllers/NotifierController.js"></script>
-<script src="~/Scripts/app/controllers/RouteActionsDialogController.js"></script>
-<script src="~/Scripts/app/controllers/FindObjectsController.js"></script>
-<script src="~/Scripts/app/controllers/FindObjectsResultsController.js"></script>
-<script src="~/Scripts/app/controllers/PayloadFormController.js"></script>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Constants;
 using Data.Crates;
 using Newtonsoft.Json;
 using StructureMap;
@@ -118,9 +119,43 @@ namespace Hub.Services
             return downstreamList;
         }
 
+        public RouteNodeDO GetParent(RouteNodeDO currentActivity)
+        {
+            return currentActivity.ParentRouteNode;
+        }
+
+        public RouteNodeDO GetNextSibling(RouteNodeDO currentActivity)
+        {
+            // Move to the next activity of the current activity's parent
+            if (currentActivity.ParentRouteNode == null)
+            {
+                // We are at the root of activity tree. Next activity can be only among children.
+                return null;
+            }
+
+            return currentActivity.ParentRouteNode.ChildNodes
+                .OrderBy(x => x.Ordering)
+                .FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
+        }
+
+        public RouteNodeDO GetFirstChild(RouteNodeDO currentActivity)
+        {
+            if (currentActivity.ChildNodes.Count != 0)
+            {
+                return currentActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault();
+            }
+
+            return null;
+        }
+
         public RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, RouteNodeDO root)
         {
             return GetNextActivity(currentActivity, true, root);
+        }
+
+        public bool HasChildren(RouteNodeDO currentActivity)
+        {
+            return currentActivity.ChildNodes.Count > 0;
         }
 
         private RouteNodeDO GetNextActivity(RouteNodeDO currentActivity, bool depthFirst, RouteNodeDO root)
@@ -207,10 +242,11 @@ namespace Hub.Services
 
 
 
-        public async Task Process(Guid curActivityId, ContainerDO containerDO)
+        public async Task Process(Guid curActivityId, ActionState curActionState, ContainerDO containerDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                //why do we get container from db again???
                 var curContainerDO = uow.ContainerRepository.GetByKey(containerDO.Id);
                 var curActivityDO = uow.RouteNodeRepository.GetByKey(curActivityId);
 
@@ -222,7 +258,10 @@ namespace Hub.Services
                 if (curActivityDO is ActionDO)
                 {
                     IAction _action = ObjectFactory.GetInstance<IAction>();
-                    await _action.PrepareToExecute((ActionDO)curActivityDO, curContainerDO, uow);
+                    await _action.PrepareToExecute((ActionDO)curActivityDO, curActionState, curContainerDO, uow);
+                    //TODO inspect this
+                    //why do we get container from db again???
+                    containerDO.CrateStorage = curContainerDO.CrateStorage;
                 }
             }
         }
@@ -320,7 +359,7 @@ namespace Hub.Services
                 : "downstream_actions/";
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "route_nodes/"
+                +"api/"+ CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
                 + directionSuffix
                 + "?id=" + activityId;
 
@@ -336,6 +375,37 @@ namespace Hub.Services
                     var storage = _crate.FromDto(curAction.CrateStorage);
 
                     curCrates.AddRange(storage.CratesOfType<TManifest>());
+                }
+
+                return curCrates;
+            }
+        }
+
+        public async Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction)
+        {
+            var httpClient = new HttpClient();
+
+            // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
+            var directionSuffix = (direction == CrateDirection.Upstream)
+                ? "upstream_actions/"
+                : "downstream_actions/";
+
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
+                + directionSuffix
+                + "?id=" + activityId;
+
+            using (var response = await httpClient.GetAsync(url))
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var curActions = JsonConvert.DeserializeObject<List<ActionDTO>>(content);
+
+                var curCrates = new List<Crate>();
+
+                foreach (var curAction in curActions)
+                {
+                    var storage = _crate.FromDto(curAction.CrateStorage);
+                    curCrates.AddRange(storage);
                 }
 
                 return curCrates;

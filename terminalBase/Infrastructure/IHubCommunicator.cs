@@ -10,14 +10,20 @@ namespace TerminalBase.Infrastructure
 {
     public interface IHubCommunicator
     {
-        Task<PayloadDTO> GetProcessPayload(ActionDO actionDO, Guid containerId);
+        Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId);
 
-        Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(
-            ActionDO actionDO, CrateDirection direction);
+        Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActionDO actionDO, CrateDirection direction);
+
+        Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction);
+
+        Task CreateAlarm(AlarmDTO alarmDTO);
 
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO);
 
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(
             ActionDO actionDO, ActivityCategory category);
+
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(
+            ActionDO actionDO, string tag);
     }
 }

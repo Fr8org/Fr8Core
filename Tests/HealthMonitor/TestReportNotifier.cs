@@ -44,12 +44,12 @@ namespace HealthMonitor
             return notifiers;
         }
 
-        public string CreateSubject()
+        public string CreateSubject(string appName)
         {
-            return string.Format("Test report {0:R}", DateTime.Now);
+            return string.Format("{0}, Test report {1:R}", appName, DateTime.Now);
         }
 
-        public async void Notify(string htmlReport)
+        public void Notify(string appName, string htmlReport)
         {
             var toEmails = GetToEmails();
             if (toEmails == null)
@@ -64,7 +64,7 @@ namespace HealthMonitor
                 To = toEmails.Select(x => new MailAddress(x)).ToArray()
             };
 
-            mailMessage.Subject = CreateSubject();
+            mailMessage.Subject = CreateSubject(appName);
             mailMessage.Html = htmlReport;
 
             var credentials = new NetworkCredential

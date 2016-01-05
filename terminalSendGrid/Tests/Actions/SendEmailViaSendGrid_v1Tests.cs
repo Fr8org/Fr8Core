@@ -60,6 +60,13 @@ namespace terminalSendGrid.Tests.Actions
             var payLoadDto = FixtureData.CratePayloadDTOForSendEmailViaSendGridConfiguration;
             payLoadDto.CrateStorage = actionDto.CrateStorage;
 
+            using (var updater = new CrateManager().UpdateStorage(payLoadDto))
+            {
+                var operationalStatus = new OperationalStateCM();
+                var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
+                updater.CrateStorage.Add(operationsCrate);
+            }
+
             var restfulServiceClient = new Mock<IRestfulServiceClient>();
             restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>()))
                 .Returns(Task.FromResult(payLoadDto));
@@ -90,20 +97,16 @@ namespace terminalSendGrid.Tests.Actions
             Assert.AreEqual(controlsCrate.Content.Controls.Count, 3);
         }
 
-        [TestCase(0)]
-        [TestCase(1)]
-        [TestCase(2)]
-        public void Configure_ReturnsEmailControls(int index)
+        [Test]
+        public void Configure_ReturnsEmailControls()
         {
             // Act && Assert
             var standardControls = _crate.FromDto(actionDto.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             Assert.IsNotNull(standardControls);
 
-            var specificValueTextField = ((RadioButtonGroup)standardControls.Controls[index]).Radios.SelectMany(c => c.Controls).Count(s => s.Name == "SpecificValue");
-            Assert.AreEqual(specificValueTextField, 1);
+            var controls = standardControls.Controls.Where(a => a.Type == "TextSource").Count();
 
-            var upstreamCrateField = ((RadioButtonGroup)standardControls.Controls[index]).Radios.SelectMany(c => c.Controls).Count(s => s.Name == "UpstreamCrate");
-            Assert.AreEqual(upstreamCrateField, 1);
+            Assert.AreEqual(3, controls);
         }
 
         private ActionDTO GetActionResult()
@@ -120,6 +123,7 @@ namespace terminalSendGrid.Tests.Actions
         public void Run_Returns_PayloadDTO()
         {
             // Arrange
+            ICrateManager Crate = ObjectFactory.GetInstance<ICrateManager>();
             _gridAction = new SendEmailViaSendGrid_v1();
             var curActionDO = FixtureData.ConfigureSendEmailViaSendGridAction();
 
@@ -127,6 +131,21 @@ namespace terminalSendGrid.Tests.Actions
             curActionDTO.CrateStorage = actionDto.CrateStorage;
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             var actionDO = Mapper.Map<ActionDO>(curActionDTO);
+
+            //updating controls
+            var standardControls = _crate.FromDto(actionDto.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            foreach (TextSource control in standardControls.Controls)
+            {
+                control.ValueSource = "specific";
+                control.Value = (control.Name == "EmailAddress") ? "test@mail.com" : "test";
+            }
+            var crate = Crate.CreateStandardConfigurationControlsCrate("SendGrid", standardControls.Controls.ToArray());
+
+            using (var updater = Crate.UpdateStorage(actionDO))
+            {
+                updater.CrateStorage.RemoveByManifestId(6);
+                updater.CrateStorage.Add(crate);
+            }
 
             // Act
             var payloadDTOResult = _gridAction.Run(actionDO, curActionDTO.ContainerId, curAuthTokenDO).Result;

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using Twilio;
 using Hub.ExternalServices;
+using Twilio;
 using Utilities.Configuration.Azure;
 
 namespace terminalTwilio.Services
@@ -73,7 +71,7 @@ namespace terminalTwilio.Services
 
         /**********************************************************************************/
 
-        public void SendSms(String number, String messageBody)
+        public Message SendSms(String number, String messageBody)
         {
             var result = SendMessage(_twilioFromNumber, number, messageBody);
      
@@ -81,6 +79,7 @@ namespace terminalTwilio.Services
             {
                throw new Exception(result.RestException.Message);
             }
+            return result;
         }
 
         /**********************************************************************************/

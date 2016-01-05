@@ -1,5 +1,5 @@
-﻿using StructureMap;
-using Hub.StructureMap;
+﻿using Hub.StructureMap;
+using StructureMap;
 using terminalTwilio.Services;
 
 namespace terminalTwilio

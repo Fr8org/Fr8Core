@@ -17,7 +17,7 @@ namespace terminalSlack
     {
         public void Configuration(IAppBuilder app)
         {
-            StartHosting("terminal_slack");
+            StartHosting("terminal_Slack");
         }
     }
 }

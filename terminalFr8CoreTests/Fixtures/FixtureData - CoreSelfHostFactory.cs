@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
+using System.Web.Http.Routing;
 using Microsoft.Owin.Hosting;
 using Owin;
+using Data.Interfaces.DataTransferObjects;
 
 namespace terminalFr8CoreTests.Fixtures
 {
@@ -19,7 +22,7 @@ namespace terminalFr8CoreTests.Fixtures
             public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
             {
                 return new Type[] {
-                    typeof(HubWeb.Controllers.ManifestController)
+                    typeof(HubWeb.Controllers.ManifestsController)
                 };
             }
         }
@@ -31,7 +34,36 @@ namespace terminalFr8CoreTests.Fixtures
                 var config = new HttpConfiguration();
 
                 // Web API routes
-                config.MapHttpAttributeRoutes();
+                //config.MapHttpAttributeRoutes();
+                config.Routes.MapHttpRoute(
+                    name: "DefaultApiWithAction",
+                    routeTemplate: "api/v1/{controller}/{action}/{id}",
+                    defaults: new { id = RouteParameter.Optional }
+                );
+                config.Routes.MapHttpRoute(
+                    name: "DefaultApiGet",
+                    routeTemplate: "api/v1/{controller}/{id}",
+                    defaults: new { id = RouteParameter.Optional, action = "Get" },
+                    constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Get) }
+                    );
+                config.Routes.MapHttpRoute(
+                    name: "DefaultApiPost",
+                    routeTemplate: "api/v1/{controller}",
+                    defaults: new { action = "Post" },
+                    constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Post) }
+                    );
+                config.Routes.MapHttpRoute(
+                    name: "DefaultApiPut",
+                    routeTemplate: "api/v1/{controller}",
+                    defaults: new { action = "Put" },
+                    constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Put) }
+                    );
+                config.Routes.MapHttpRoute(
+                    name: "DefaultApiDelete",
+                    routeTemplate: "api/v1/{controller}/{id}",
+                    defaults: new { id = RouteParameter.Optional, action = "Delete" },
+                    constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Delete) }
+                    );
 
                 config.Services.Replace(
                     typeof(IHttpControllerTypeResolver),
@@ -45,6 +77,54 @@ namespace terminalFr8CoreTests.Fixtures
         public static IDisposable CreateCoreServer_ActivitiesController()
         {
             return WebApp.Start<ActivitiesController_SelfHostStartup>(url: CoreEndPoint);
+        }
+
+        public static ActionDTO ConnectToSql_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = ConnectToSql_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "ConnectToSql_Fr8Core",
+                Label = "ConnectToSql Fr8Core",
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
+        public static ActivityTemplateDTO ConnectToSql_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 1,
+                Name = "ConnectToSql_TEST",
+                Version = "1"
+            };
+        }
+
+        public static ActionDTO ExecuteSql_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = ExecuteSql_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "ExecuteSql_Fr8Core",
+                Label = "ExecuteSql Fr8Core",
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
+        public static ActivityTemplateDTO ExecuteSql_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 2,
+                Name = "ExecuteSql_TEST",
+                Version = "1"
+            };
         }
     }
 }

@@ -82,13 +82,63 @@
     <Compile Include="TestReportNotifier.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\terminalDropboxTest\terminalDropboxTests.csproj">
+      <Project>{42f21ce5-c8d1-4083-937b-951b92c2f93c}</Project>
+      <Name>terminalDropboxTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalFr8CoreTests\terminalFr8CoreTests.csproj">
+      <Project>{6c3090fc-50d2-4a7e-9b29-eab9d8802f42}</Project>
+      <Name>terminalFr8CoreTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalGoogleTests\terminalGoogleTests.csproj">
+      <Project>{62219aa6-9276-4935-b934-f0f50ecef6fb}</Project>
+      <Name>terminalGoogleTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalSalesforceTests\terminalSalesforceTests.csproj">
+      <Project>{fda06158-a81e-46b4-9f25-5ab76dfd400a}</Project>
+      <Name>terminalSalesforceTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalSendGridTests\terminalSendGridTests.csproj">
+      <Project>{ee3e1e99-175f-4507-96da-421fcd0f6d9e}</Project>
+      <Name>terminalSendGridTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalSlackTests\terminalSlackTests.csproj">
+      <Project>{1246a6d6-fb9d-4564-8e86-a9f14a7ad177}</Project>
+      <Name>terminalSlackTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalTwilioTests\terminalTwilioTests.csproj">
+      <Project>{6b807ab1-f549-49cb-9f52-52bc33d23443}</Project>
+      <Name>terminalTwilioTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalYammerTests\terminalYammerTests.csproj">
+      <Project>{d2638cb3-33d6-443f-bc87-e20260d3c9ef}</Project>
+      <Name>terminalYammerTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalAzureTests\terminalAzureTests.csproj">
+      <Project>{36ed6f21-1a8f-4f07-a08a-a55639891e9b}</Project>
+      <Name>terminalAzureTests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\terminalDocuSignTests\terminalDocuSignTests.csproj">
       <Project>{a6e317fa-2eb0-4447-8ecd-6725f6b78435}</Project>
       <Name>terminalDocuSignTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalExcelTests\terminalExcelTests.csproj">
+      <Project>{a854eb96-b28a-42fc-8209-3e5e9d6b208c}</Project>
+      <Name>terminalExcelTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalPapertrailTests\terminalPapertrailTests.csproj">
+      <Project>{8f5be349-6d11-44ad-a1cc-b5bb5eb4b179}</Project>
+      <Name>terminalPapertrailTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalQuickBooksTests\terminalQuickBooksTests.csproj">
+      <Project>{6367b304-3e18-4da6-a7e7-0893da806953}</Project>
+      <Name>terminalQuickBooksTests</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

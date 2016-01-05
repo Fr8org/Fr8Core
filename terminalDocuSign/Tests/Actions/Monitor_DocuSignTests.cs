@@ -24,7 +24,7 @@ namespace terminalDocuSign.Tests.Actions
     [Category("terminalDocuSign")]
     public class Monitor_DocuSignTests : BaseTest
     {
-        Monitor_DocuSign_v1 _monitor_DocuSign;
+        Monitor_DocuSign_Envelope_Activity_v1 _monitor_DocuSign;
 
         public override void SetUp()
         {
@@ -35,7 +35,7 @@ namespace terminalDocuSign.Tests.Actions
             TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
             CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
 
-            _monitor_DocuSign = new Monitor_DocuSign_v1();
+            _monitor_DocuSign = new Monitor_DocuSign_Envelope_Activity_v1();
         }
 
         [Test]
@@ -103,7 +103,7 @@ namespace terminalDocuSign.Tests.Actions
             object[] parameters = new object[] { curPayloadDTO, "EnvelopeId" };
 
             //Act
-            var result = (string)ClassMethod.Invoke(typeof(Monitor_DocuSign_v1), "GetValueForKey", parameters);
+            var result = (string)ClassMethod.Invoke(typeof(Monitor_DocuSign_Envelope_Activity_v1), "GetValueForKey", parameters);
 
             //Assert
             Assert.AreEqual("EnvelopeIdValue", result);

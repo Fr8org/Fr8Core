@@ -24,10 +24,10 @@ namespace TerminalBase.Infrastructure
             _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
 
-        public Task<PayloadDTO> GetProcessPayload(ActionDO actionDO, Guid containerId)
+        public Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/containers/"
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/containers?id="
                 + containerId.ToString("D");
 
             var payloadDTOTask = _restfulServiceClient
@@ -42,9 +42,23 @@ namespace TerminalBase.Infrastructure
             return _routeNode.GetCratesByDirection<TManifest>(actionDO.Id, direction);
         }
 
+        public Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction)
+        {
+            return _routeNode.GetCratesByDirection(actionDO.Id, direction);
+        }
+
+        public async Task CreateAlarm(AlarmDTO alarmDTO)
+        {
+            var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/alarms";
+
+            await _restfulServiceClient.PostAsync(new Uri(hubAlarmsUrl), alarmDTO);
+        }
+
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO)
         {
-            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "route_nodes/available";
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") 
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/available";
 
             var allCategories = await _restfulServiceClient
                 .GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(new Uri(hubUrl));
@@ -60,6 +74,27 @@ namespace TerminalBase.Infrastructure
             var templates = allTemplates.Where(x => x.Category == category);
 
             return templates.ToList();
+        }
+
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(
+            ActionDO actionDO, string tag)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/available?tag=";
+
+            if (string.IsNullOrEmpty(tag))
+            {
+                hubUrl += "[all]";
+            }
+            else
+            {
+                hubUrl += tag;
+            }
+
+            var templates = await _restfulServiceClient
+                .GetAsync<List<ActivityTemplateDTO>>(new Uri(hubUrl));
+
+            return templates;
         }
     }
 }

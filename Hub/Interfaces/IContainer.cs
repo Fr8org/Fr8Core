@@ -5,12 +5,19 @@ using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 
 namespace Hub.Interfaces
 {
     public interface IContainer
     {
-        Task Execute(IUnitOfWork uow, ContainerDO curContainerDO);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uow"></param>
+        /// <param name="curContainerDO"></param>
+        /// <returns></returns>
+        Task Run(IUnitOfWork uow, ContainerDO curContainerDO);
         //void SetProcessNextActivity(ProcessDO curProcessDO);
 
         IList<ContainerDO> GetByFr8Account(IUnitOfWork unitOfWork,

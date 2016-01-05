@@ -49,30 +49,31 @@ namespace terminalFr8Core.Actions
             return ConfigurationRequestType.Followup;
         }
 
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActionDO> InitialConfigurationResponse(
+            ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 RemoveControl(updater.CrateStorage, "UpstreamError");
 
-            var columnDefinitions = await ExtractColumnDefinitions(curActionDO);
-            List<FieldDTO> tablesList = null;
+                var columnDefinitions = await ExtractColumnDefinitions(curActionDO);
+                List<FieldDTO> tablesList = null;
 
-            if (columnDefinitions != null)
-            {
-                tablesList = ExtractTableNames(columnDefinitions);
-            }
+                if (columnDefinitions != null)
+                {
+                    tablesList = ExtractTableNames(columnDefinitions);
+                }
 
-            if (tablesList == null || tablesList.Count == 0)
-            {
-                AddLabelControl(
-                        updater.CrateStorage,
-                    "UpstreamError",
-                    "Unexpected error",
-                    "No upstream crates found to extract table definitions."
-                );
-                return curActionDO;
-            }
+                if (tablesList == null || tablesList.Count == 0)
+                {
+                    AddLabelControl(
+                            updater.CrateStorage,
+                        "UpstreamError",
+                        "Unexpected error",
+                        "No upstream crates found to extract table definitions."
+                    );
+                    return curActionDO;
+                }
 
                 var controlsCrate = EnsureControlsCrate(updater.CrateStorage);
 
@@ -91,26 +92,28 @@ namespace terminalFr8Core.Actions
             {
                 RemoveControl(updater.CrateStorage, "SelectObjectError");
 
-                var selectedObject = ExtractSelectedObject(updater.CrateStorage);
-            if (string.IsNullOrEmpty(selectedObject))
-            {
+                var selectedObject = ExtractSelectedObjectFromControl(updater.CrateStorage);
+                if (string.IsNullOrEmpty(selectedObject))
+                {
                     AddLabelControl(updater.CrateStorage, "SelectObjectError",
                     "No object selected", "Please select object from the list above.");
 
-                return curActionDO;
-            }
-            else
-            {
-                    var prevSelectedObject = ExtractPreviousSelectedObject(updater.CrateStorage);
-                if (prevSelectedObject != selectedObject)
+                    return curActionDO;
+                }
+                else
                 {
+                    var prevSelectedObject = ExtractSelectedObjectFromCrate(updater.CrateStorage);
+                    if (prevSelectedObject != selectedObject)
+                    {
                         RemoveControl(updater.CrateStorage, "SelectedQuery");
                         AddQueryBuilder(updater.CrateStorage);
 
-                        UpdatePreviousSelectedObject(updater.CrateStorage, selectedObject);
                         await UpdateQueryableCriteria(updater.CrateStorage,  curActionDO, selectedObject);
+                    }
                 }
-            }
+
+                UpdateSelectedObjectCrate(updater.CrateStorage, selectedObject);
+                UpdateSelectedQueryCrate(updater.CrateStorage);
             }
 
             return curActionDO;
@@ -188,10 +191,7 @@ namespace terminalFr8Core.Actions
                     Label = "Select Object",
                     Name = "SelectObjectDdl",
                     Required = true,
-                    Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onChange", "requestConfig")
-                    },
+                    Events = new List<ControlEvent>(){ControlEvent.RequestConfig},
                     Source = new FieldSourceDTO
                     {
                         Label = "Available Tables",
@@ -204,7 +204,7 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Extract SelectedObject from Action crates.
         /// </summary>
-        private string ExtractSelectedObject(CrateStorage storage)
+        private string ExtractSelectedObjectFromControl(CrateStorage storage)
         {
             var controls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -219,9 +219,10 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Exract previously stored valued of selected object type.
         /// </summary>
-        private string ExtractPreviousSelectedObject(CrateStorage storage)
-            {
-            var fields = storage.CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == "Selected Object");
+        private string ExtractSelectedObjectFromCrate(CrateStorage storage)
+        {
+            var fields = storage.CratesOfType<StandardDesignTimeFieldsCM>()
+                .FirstOrDefault(x => x.Label == "Selected Object");
 
             if (fields == null || fields.Content.Fields.Count == 0)
             {
@@ -234,13 +235,83 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Update previously stored value of selected object type.
         /// </summary>
-        private void UpdatePreviousSelectedObject(CrateStorage storage, string selectedObject)
+        private void UpdateSelectedObjectCrate(CrateStorage storage, string selectedObject)
         {
             UpdateDesignTimeCrateValue(
                 storage,
                 "Selected Object",
                 new FieldDTO() { Key = selectedObject, Value = selectedObject }
             );
+        }
+
+        private StandardQueryCM ExtractSelectedQueryFromCrate(CrateStorage storage)
+        {
+            var queryCM = storage
+                .CrateContentsOfType<StandardQueryCM>(x => x.Label == "Selected Query")
+                .FirstOrDefault();
+
+            return queryCM;
+        }
+
+        /// <summary>
+        /// Update Selected Query crate.
+        /// </summary>
+        private void UpdateSelectedQueryCrate(CrateStorage storage)
+        {
+            var selectedObject = ExtractSelectedObjectFromCrate(storage);
+
+            var queryCrate = storage
+                .CratesOfType<StandardQueryCM>(x => x.Label == "Selected Query")
+                .FirstOrDefault();
+
+            var queryBuilder = FindControl(storage, "SelectedQuery");
+            if (queryBuilder == null)
+            {
+                if (queryCrate != null)
+                {
+                    storage.Remove(queryCrate);
+                }
+                return;
+            }
+
+            List<FilterConditionDTO> criteria;
+            if (queryBuilder.Value != null)
+            {
+                criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(queryBuilder.Value);
+            }
+            else
+            {
+                criteria = new List<FilterConditionDTO>();
+            }
+
+            if (queryCrate == null)
+            {
+                queryCrate = Crate<StandardQueryCM>.FromContent(
+                    "Selected Query",
+                    new StandardQueryCM()
+                    {
+                        Queries = new List<QueryDTO>()
+                        {
+                            new QueryDTO()
+                            {
+                                Name = selectedObject,
+                                Criteria = criteria
+                            }
+                        }
+                    }
+                );
+
+                storage.Add(queryCrate);
+            }
+
+            queryCrate.Content.Queries = new List<QueryDTO>()
+            {
+                new QueryDTO()
+                {
+                    Name = selectedObject,
+                    Criteria = criteria
+                }
+            };
         }
 
         private async Task<List<FieldDTO>> MatchColumnsForSelectedObject(
@@ -251,33 +322,8 @@ namespace terminalFr8Core.Actions
             var columnDefinitions = await ExtractColumnDefinitions(actionDO);
             var columnTypeMap = await findObjectHelper.ExtractColumnTypes(this, actionDO);
 
-            if (columnDefinitions == null || columnTypeMap == null)
-            {
-                columnDefinitions = new List<FieldDTO>();
-            }
-
-            var supportedColumnTypes = new HashSet<DbType>() { DbType.String, DbType.Int32, DbType.Boolean };
-
-            // Match columns and filter by supported column type.
-            List<FieldDTO> matchedColumns;
-            if (string.IsNullOrEmpty(selectedObject))
-            {
-                matchedColumns = new List<FieldDTO>();
-            }
-            else
-            {
-                matchedColumns = columnDefinitions
-                    .Where(x => x.Key.StartsWith(selectedObject))
-                    .Where(x => supportedColumnTypes.Contains(columnTypeMap[x.Key]))
-                    .Select(x =>
-                    {
-                        var tokens = x.Key.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-                        var columnName = tokens[tokens.Length - 1];
-
-                        return new FieldDTO() { Key = columnName, Value = columnName };
-                    })
-                    .ToList();
-            }
+            var matchedColumns = findObjectHelper.MatchColumnsForSelectedObject(
+                columnDefinitions, selectedObject, columnTypeMap);
 
             return matchedColumns;
         }
@@ -317,48 +363,24 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
-            var stroage = Crate.GetStorage(curActionDO);
-            var selectedObject = ExtractSelectedObject(stroage);
-            if (string.IsNullOrEmpty(selectedObject))
+            var payloadCrates = await GetPayload(curActionDO, containerId);
+
+            var actionCrateStorage = Crate.GetStorage(curActionDO);
+            
+            var sqlQueryCM = ExtractSelectedQueryFromCrate(actionCrateStorage);
+            if (sqlQueryCM == null)
             {
-                throw new ApplicationException("No query object was selected.");
+                return Error(payloadCrates, "Selected Query crate was not found in Action's CrateStorage");
             }
 
-            var queryBuilder = FindControl(stroage, "SelectedQuery");
-            if (queryBuilder == null)
-            {
-                throw new ApplicationException("No QueryBuilder control found.");
-            }
+            var sqlQueryCrate = Crate<StandardQueryCM>.FromContent("Sql Query", sqlQueryCM);
 
-            var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(queryBuilder.Value);
-
-            var sqlQueryCrate = CreateSqlQueryCrate(selectedObject, criteria);
-
-            using (var updater = Crate.UpdateStorage(processPayload))
+            using (var updater = Crate.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(sqlQueryCrate);
             }
 
-            return processPayload;
-        }
-
-        private Crate CreateSqlQueryCrate(
-            string selectedObject,
-            List<FilterConditionDTO> criteria)
-        {
-            var query = new QueryDTO()
-            {
-                Name = selectedObject,
-                Criteria = criteria
-            };
-
-            var standardQueryCM = new StandardQueryCM()
-            {
-                Queries = new List<QueryDTO>() { query }
-            };
-
-            return Data.Crates.Crate.FromContent("Sql Query", standardQueryCM);
+            return Success(payloadCrates);
         }
 
         #endregion Execution.

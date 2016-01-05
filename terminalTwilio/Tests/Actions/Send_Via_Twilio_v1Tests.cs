@@ -1,26 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
-using Data.Control;
-using Moq;
-using Newtonsoft.Json;
-using NUnit.Framework;
-using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.StructureMap;
-using terminalTwilio;
+using Moq;
+using NUnit.Framework;
+using StructureMap;
 using terminalTwilio.Actions;
 using terminalTwilio.Services;
 using terminalTwilio.Tests.Fixtures;
-using terminalTwilio.Tests;
+using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
 namespace terminalTwilio.Tests.Actions
@@ -46,7 +41,7 @@ namespace terminalTwilio.Tests.Actions
             var twilioService = new Mock<ITwilioService>();
             twilioService
                 .Setup(c => c.GetRegisteredSenderNumbers())
-                .Returns(new List<string>() { "+15005550006" });
+                .Returns(new List<string> { "+15005550006" });
             ObjectFactory.Configure(cfg => cfg.For<ITwilioService>().Use(twilioService.Object));
 
             var actionDO = FixtureData.ConfigureTwilioAction();
@@ -55,21 +50,25 @@ namespace terminalTwilio.Tests.Actions
                 .Setup(c => c.MapFromDTO(It.IsAny<ActionDTO>()))
                 .Returns(actionDO);
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(actionService.Object));
-
             var action = FixtureData.ConfigureTwilioAction();
+            var baseTerminalAction = new Mock<BaseTerminalAction>();
+            baseTerminalAction
+                .Setup(c => c.GetDesignTimeFields(It.IsAny<ActionDO>(), CrateDirection.Upstream))
+                .Returns(Task.FromResult(FixtureData.TestFields()));
+            ObjectFactory.Configure(cfg => cfg.For<BaseTerminalAction>().Use(baseTerminalAction.Object));
+
         }
 
         [Test]
         public void Configure_ReturnsCrateDTO()
         {
             _twilioAction = new Send_Via_Twilio_v1();
-            var curActionDO = FixtureData.ConfigureTwilioAction();;
+            var curActionDO = FixtureData.ConfigureTwilioAction(); ;
             AuthorizationTokenDO curAuthTokenDO = FixtureData.AuthTokenDOTest1();
             var actionResult = _twilioAction.Configure(curActionDO, curAuthTokenDO).Result;
-
             var controlsCrate = _crate.GetStorage(actionResult.CrateStorage).FirstOrDefault();
-
             Assert.IsNotNull(controlsCrate);
+
         }
 
         [Test]
@@ -77,7 +76,7 @@ namespace terminalTwilio.Tests.Actions
         {
             _twilioAction = new Send_Via_Twilio_v1();
             var curActionDO = FixtureData.ConfigureTwilioAction();
-           // ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
+            // ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
             var curAuthTokenD0 = FixtureData.AuthTokenDOTest1();
             var actionResult = _twilioAction.Configure(curActionDO, curAuthTokenD0).Result;
 
@@ -96,13 +95,12 @@ namespace terminalTwilio.Tests.Actions
             var actionResult = _twilioAction.Configure(curActionDO, null).Result;
 
             var standardControls = _crate.GetStorage(actionResult.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            var smsNumberTextField = ((RadioButtonGroup)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "SMS_Number").Count();
-            var smsNumberUpstreamField = ((RadioButtonGroup)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "upstream_crate").Count();
+            var smsNumberTextField = standardControls.Controls[0].Name;
+            var smsNumberUpstreamField = standardControls.Controls[1].Name;
             var smsBodyFields = standardControls.FindByName("SMS_Body");
 
-
-            Assert.Greater(smsNumberTextField, 0);
-            Assert.Greater(smsNumberUpstreamField, 0);
+            Assert.AreEqual(smsNumberTextField, "SMS_Number");
+            Assert.AreEqual(smsNumberUpstreamField, "SMS_Body");
             Assert.IsNotNull(smsBodyFields);
         }
 
@@ -112,10 +110,10 @@ namespace terminalTwilio.Tests.Actions
             _twilioAction = new Send_Via_Twilio_v1();
             var crateDTO = FixtureData.CrateDTOForTwilioConfiguration();
 
-            var smsINfo = _twilioAction.ParseSMSNumberAndMsg(crateDTO);
+            var smsINfo = _twilioAction.ParseSMSNumberAndMsg(crateDTO, null);
 
             Assert.AreEqual(smsINfo.Key, "+15005550006");
-            Assert.AreEqual(smsINfo.Value, "DocuSign Sent");
+            Assert.AreEqual(smsINfo.Value, "DO-1437 test");
         }
     }
 }

@@ -48,14 +48,19 @@ namespace terminalFr8Core.Actions
 
         private void AddRunNowButton(CrateStorage crateStorage)
         {
-            AddControl(
-                crateStorage,
+            AddControl(crateStorage,
+                new RunRouteButton()
+                {
+                    Name = "RunRoute",
+                    Label = "Run Route",
+                });
+
+            AddControl(crateStorage,
                 new ControlDefinitionDTO(ControlTypes.ManageRoute)
                 {
                     Name = "ManageRoute",
                     Label = "Manage Route"
-                }
-            );
+                });
         }
 
         #endregion Configuration.
@@ -63,10 +68,9 @@ namespace terminalFr8Core.Actions
 
         #region Execution.
 
-        public Task<PayloadDTO> Run(ActionDO curActionDTO, Guid containerId, AuthorizationTokenDO authTokenDO)
-
+        public async Task<PayloadDTO> Run(ActionDO curActionDTO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Task.FromResult<PayloadDTO>(null);
+            return Success(await GetPayload(curActionDTO, containerId));
         }
 
         #endregion Execution.

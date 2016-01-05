@@ -4,6 +4,7 @@ using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
+using TerminalBase.BaseClasses;
 
 namespace terminalAzure
 {
@@ -15,6 +16,7 @@ namespace terminalAzure
             public void Configuration(IAppBuilder app)
             {
                 var startup = new Startup();
+                
                 startup.Configuration(app, selfHost: true);
             }
         }

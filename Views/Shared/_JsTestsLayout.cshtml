@@ -12,11 +12,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.3.4/boot.js"></script>
     @*We should add templates here. to run these tests successfully one should run gulp template to refresh templates
         this operation is done automatically in continous integration*@
-    
-    
 
     @Scripts.Render("~/bundles/js/jquery")
-
     @Html.Partial("_AngularAppScripts")
     <script type="text/javascript" src="/Scripts/tests/templates/templateCache.js"></script>
 
@@ -24,5 +21,6 @@
 <body>
     <h2>@ViewBag.Title</h2>
     @RenderBody()
+
 </body>
 </html>

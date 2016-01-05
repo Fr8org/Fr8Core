@@ -7,12 +7,12 @@ using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 
-namespace terminalTests.Integration
+namespace terminalFr8CoreTests.Integration
 {
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
     {
-        private const int Fr8CoreActionCount = 9;
+        private const int Fr8CoreActionCount = 14;
 
         private const string FilterUsingRunTimeDataName = "FilterUsingRunTimeData";
         private const string MapFieldsName = "MapFields";
@@ -23,6 +23,12 @@ namespace terminalTests.Integration
         private const string BuildQueryName = "BuildQuery";
         private const string ExecuteSqlName = "ExecuteSql";
         private const string ManageRouteName = "ManageRoute";
+        private const string FindObjectsSolutionName = "FindObjects_Solution";
+        private const string LoopName = "Loop";
+        private const string SetDelayName = "SetDelay";
+        private const string ConvertCratesName = "ConvertCrates";
+        private const string ConvertRelatedFieldsIntoTableName = "ConvertRelatedFieldsIntoTable";
+
         public override string TerminalName
         {
             get { return "terminalFr8Core"; }
@@ -37,15 +43,20 @@ namespace terminalTests.Integration
 
             Assert.NotNull(terminalDiscoverResponse);
             Assert.AreEqual(Fr8CoreActionCount, terminalDiscoverResponse.Actions.Count);
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == FilterUsingRunTimeDataName), true);
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == MapFieldsName), true);
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == AddPayloadManuallyName), true);
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == StoreMTDataName), true);
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Select_Fr8_ObjectName), true);
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == ConnectToSqlName), true);
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == BuildQueryName), true);
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == ExecuteSqlName), true);
-            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == ManageRouteName), true);
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == FilterUsingRunTimeDataName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == MapFieldsName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == AddPayloadManuallyName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == StoreMTDataName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == Select_Fr8_ObjectName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ConnectToSqlName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == BuildQueryName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ExecuteSqlName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ManageRouteName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == FindObjectsSolutionName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == LoopName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == SetDelayName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ConvertCratesName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == ConvertRelatedFieldsIntoTableName));
         }
     }
 }

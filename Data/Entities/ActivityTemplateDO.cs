@@ -8,7 +8,6 @@ using Data.Interfaces;
 using Data.States;
 using Data.States.Templates;
 using StructureMap;
-using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -16,20 +15,22 @@ namespace Data.Entities
     {
         public ActivityTemplateDO()
         {
-            this.AuthenticationType = States.AuthenticationType.None;
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
+            this.Type = ActivityType.Standard;
+            this.NeedsAuthentication = false;
         }
 
-        public ActivityTemplateDO(string name, string label, string version, int terminalId) : this()
+        public ActivityTemplateDO(string name, string label, string version, string description, int terminalId, ActivityType type = ActivityType.Standard) : this()
         {
             this.Name = name;
             this.Label = label;
             this.Version = version;
+            this.Description = description;
             /* We don't need to validate terminalId because of EF chack ForeignKey and if terminalId doesn't exist in table Terminals then 
              * EF will throw 'System.Data.Entity.Infrastructure.DbUpdateException'  */
             this.TerminalId = terminalId;
             this.ActivityTemplateState = States.ActivityTemplateState.Active;
-
+            this.Type = type;
         }
 
         /// <summary>
@@ -42,12 +43,13 @@ namespace Data.Entities
         /*<param name="baseEndPoint">New TerminalDO base end point</param>*/
         /// <param name="Endpoint">New TerminalDO end point</param>
         public ActivityTemplateDO(string name, string version,
-            string terminalName, string endPoint, string label = "") : this()
+            string terminalName, string endPoint, string label = "", string description = "") : this()
         {
 
             this.Name = name;
             this.Label = label;
             this.Version = version;
+            this.Description = description;
 
             this.Terminal = new TerminalDO()
             {
@@ -69,11 +71,9 @@ namespace Data.Entities
 
         public string Version { get; set; }
 
-        [Required]
-        [ForeignKey("AuthenticationTypeTemplate")]
-        public int AuthenticationType { get; set; }
+        public string Description { get; set; }
 
-        public virtual _AuthenticationTypeTemplate AuthenticationTypeTemplate { get; set; }
+        public bool NeedsAuthentication { get; set; }
 
         public string ComponentActivities { get; set; }
 
@@ -90,6 +90,9 @@ namespace Data.Entities
 
         [Required]
         public ActivityCategory Category { get; set; }
+
+        [Required]
+        public ActivityType Type { get; set; }
 
         public int MinPaneWidth { get; set; }
 

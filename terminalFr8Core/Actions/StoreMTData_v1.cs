@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Control;
+using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
@@ -21,19 +22,7 @@ namespace terminalFr8Core.Actions
     {
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await ProcessConfigurationRequest(curActionDO, actionDO => ConfigurationRequestType.Initial, authTokenDO);
-        }
-
-        public Task<object> Activate(ActionDO curActionDO)
-        {
-            //No activation logic decided yet
-            return null;
-        }
-
-        public Task<object> Deactivate(ActionDO curDataPackage)
-        {
-            //No deactivation logic decided yet
-            return null;
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -41,7 +30,7 @@ namespace terminalFr8Core.Actions
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //get the process payload
-                var curProcessPayload = await GetProcessPayload(actionDO, containerId);
+                var curProcessPayload = await GetPayload(actionDO, containerId);
 
                 //get docu sign envelope crate from payload
                 var curDocuSignEnvelopeCrate = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<DocuSignEnvelopeCM>().Single(x => x.Label == "DocuSign Envelope Manifest");
@@ -50,10 +39,7 @@ namespace terminalFr8Core.Actions
                 if (curDocuSignEnvelopeCrate != null)
                 {
                     DocuSignEnvelopeCM docuSignEnvelope = curDocuSignEnvelopeCrate.Content;
-                    curFr8AccountId =
-                        uow.AuthorizationTokenRepository.GetQuery()
-                            .Single(auth => auth.ExternalAccountId.Equals(docuSignEnvelope.ExternalAccountId))
-                            .UserDO.Id;
+                    curFr8AccountId = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(docuSignEnvelope.ExternalAccountId).UserDO.Id;
 
                     //store envelope in MT database
                     uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEnvelopeCM>(uow, curFr8AccountId, docuSignEnvelope, e => e.EnvelopeId);
@@ -67,18 +53,41 @@ namespace terminalFr8Core.Actions
                 {
                     DocuSignEventCM docuSignEvent = curDocuSignEventCrate.Content;
 
-                    curFr8AccountId =
-                        uow.AuthorizationTokenRepository.GetQuery()
-                            .Single(auth => auth.ExternalAccountId.Equals(docuSignEvent.ExternalAccountId))
-                            .UserDO.Id;
+                    curFr8AccountId = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(docuSignEvent.ExternalAccountId).UserDO.Id;
 
                     //store event in MT database
                     uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEventCM>(uow, curFr8AccountId, docuSignEvent, e => e.EnvelopeId);
                     uow.SaveChanges();
                 }
 
-                return curProcessPayload;
+                return Success(curProcessPayload);
             }
+        }
+
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        {
+            if (Crate.IsStorageEmpty(curActionDO))
+            {
+                return ConfigurationRequestType.Initial;
+            }
+            var storage = Crate.GetStorage(curActionDO);
+
+            var hasAvailableRunTimeObjectsCrate = storage
+                .CratesOfType<StandardDesignTimeFieldsCM>(c => c.Label == "Available Run-Time Objects").FirstOrDefault() != null;
+
+            var hasSelectedObjectTypeCrate = storage
+                .CratesOfType<StandardDesignTimeFieldsCM>(c => c.Label == "SelectedObjectTypes").FirstOrDefault() != null;
+            
+            var hasConfigurationControlsCrate = storage
+                .CratesOfType<StandardConfigurationControlsCM>(c => c.Label == "Configuration_Controls").FirstOrDefault() != null;
+
+
+            if (hasAvailableRunTimeObjectsCrate && hasSelectedObjectTypeCrate && hasConfigurationControlsCrate)
+            {
+                return ConfigurationRequestType.Followup;
+            }
+
+            return ConfigurationRequestType.Initial;
         }
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -91,7 +100,6 @@ namespace terminalFr8Core.Actions
                 Label = "Save Which Data Types?",
                 Name = "Save Object Name",
                 Required = true,
-                Events = new List<ControlEvent>(),
                 Source = new FieldSourceDTO
                 {
                     Label = curMergedUpstreamRunTimeObjects.Label,

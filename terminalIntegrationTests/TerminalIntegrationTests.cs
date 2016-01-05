@@ -148,8 +148,8 @@ namespace terminalIntegrationTests
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var authToken = uow.AuthorizationTokenRepository.GetQuery()
-                    .SingleOrDefault(x => x.Id == _authToken.Id);
+                var authToken = uow.AuthorizationTokenRepository.FindTokenById(_authToken.Id.ToString());
+
                 if (authToken != null)
                 {
                     uow.AuthorizationTokenRepository.Remove(authToken);
@@ -272,7 +272,7 @@ namespace terminalIntegrationTests
 
             var storage = _crateManager.GetStorage(actionDTO.Content);
 
-            Assert.AreEqual(storage.Count, 4);
+            Assert.AreEqual(4,storage.Count);
             Assert.True((storage.CratesOfType<StandardConfigurationControlsCM>().Any()));
             Assert.True(storage.CratesOfType<StandardDesignTimeFieldsCM>().Any(x => x.Label == "Available Templates"));
 
@@ -530,9 +530,9 @@ namespace terminalIntegrationTests
         /// <summary>
         /// Create ActionController instance.
         /// </summary>
-        public ActionController CreateActionController()
+        public ActionsController CreateActionController()
         {
-            return CreateController<ActionController>(_testUserAccount.Id);
+            return CreateController<ActionsController>(_testUserAccount.Id);
         }
     }
 }

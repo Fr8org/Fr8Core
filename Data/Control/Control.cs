@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
@@ -39,6 +40,9 @@ namespace Data.Control
         public const string QueryBuilder = "QueryBuilder";
         public const string ManageRoute = "ManageRoute";
         public const string Duration = "Duration";
+        public const string RunRouteButton = "RunRouteButton";
+        public const string UpstreamDataChooser = "UpstreamDataChooser";
+        public const string UpstreamFieldChooser = "UpstreamFieldChooser";
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -48,6 +52,15 @@ namespace Data.Control
             Type = ControlTypes.CheckBox;
         }
     }
+
+    public class RunRouteButton : ControlDefinitionDTO
+    {
+        public RunRouteButton()
+        {
+            Type = ControlTypes.RunRouteButton;
+        }
+    }
+
     public class DropDownList : ControlDefinitionDTO
     {
         [JsonProperty("listItems")]
@@ -197,10 +210,16 @@ namespace Data.Control
         [JsonProperty("upstreamSourceLabel")]
         public string UpstreamSourceLabel;
 
+        [JsonProperty("textValue")]
+        public string TextValue;
+
         [JsonProperty("valueSource")]
         public string ValueSource;
 
-        public TextSource() { }
+        public TextSource() 
+        {
+            Type = ControlTypes.TextSource;
+        }
 
         public TextSource(string initialLabel, string upstreamSourceLabel, string name)
         {
@@ -212,6 +231,37 @@ namespace Data.Control
                 Label = upstreamSourceLabel,
                 ManifestType = CrateManifestTypes.StandardDesignTimeFields
             };
+        }
+
+        public string GetValue(CrateStorage payloadCrateStorage)
+        {
+            switch (ValueSource)
+            {
+                case "specific":
+                    return TextValue;
+
+                case "upstream":
+                    return ExtractPayloadFieldValue(payloadCrateStorage);
+
+                default:
+                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+            }
+        }
+
+        /// <summary>
+        /// Extracts crate with specified label and ManifestType = Standard Design Time,
+        /// then extracts field with specified fieldKey.
+        /// </summary>
+        private string ExtractPayloadFieldValue(CrateStorage payloadCrateStorage)
+        {
+            var fieldValues = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(selectedKey))
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToArray();
+
+            if (fieldValues.Length > 0)
+                return fieldValues[0];
+
+            throw new ApplicationException("No field found with specified key.");
         }
     }
 
@@ -270,6 +320,19 @@ namespace Data.Control
 
         [JsonProperty("label")]
         public string Label { get; set; }
+
+        [JsonProperty("filterByTag")]
+        public string FilterByTag { get; set; }
+
+        public FieldSourceDTO()
+        {
+        }
+
+        public FieldSourceDTO(string manifestType, string label)
+        {
+            ManifestType = manifestType;
+            Label = label;
+        }
     }
 
     public class ControlEvent
@@ -337,5 +400,45 @@ namespace Data.Control
 
         [JsonProperty("value")]
         public string Value { get; set; }
+    }
+
+    public class UpstreamDataChooser: ControlDefinitionDTO
+    {
+        public UpstreamDataChooser()
+        {
+            Type = ControlTypes.UpstreamDataChooser;
+        }
+
+        [JsonProperty("selectedManifest")]
+        public string SelectedManifest { get; set; }
+
+        [JsonProperty("selectedLabel")]
+        public string SelectedLabel { get; set; }
+
+        [JsonProperty("selectedFieldType")]
+        public string SelectedFieldType { get; set; }
+    }
+
+    public class UpstreamFieldChooser: ControlDefinitionDTO
+    {
+        public UpstreamFieldChooser()
+        {
+            Type = ControlTypes.UpstreamFieldChooser;
+        }
+    }
+
+    public class HelpControlDTO
+    {
+        public HelpControlDTO(string helpPath, string documentationSupport)
+        {
+            this.HelpPath = helpPath;
+            this.DocumentationSupport = documentationSupport;
+        }
+
+        [JsonProperty("helpPath")]
+        public string HelpPath { get; set; }
+
+        [JsonProperty("documentationSupport")]
+        public string DocumentationSupport { get; set; }
     }
 }

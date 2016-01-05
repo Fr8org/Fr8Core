@@ -3,21 +3,30 @@
     export class InternalAuthenticationController {
         public static $inject = [
             '$scope',
-            '$http',
-            'urlPrefix'
+            '$http'
         ];
 
         constructor(
             private $scope,
-            private $http: ng.IHttpService,
-            private urlPrefix: string) {
+            private $http: ng.IHttpService) {
+
+            var _loading = false;
 
             $scope.authError = false;
             $scope.authErrorText = null;
+            $scope.mode = $scope.mode;
+
+            // 3 - AuthenticationMode.InternalModeWithDomain
+            $scope.showDomain = $scope.mode == 3 ? 1 : 0;
 
             $scope.formData = {
                 username: 'docusign_developer@dockyard.company',
-                password: 'grolier34'
+                password: 'grolier34',
+                domain: "dockyard.company"
+            };
+
+            $scope.isLoading = function () {
+                return _loading;
             };
 
             $scope.submitForm = function () {
@@ -25,14 +34,16 @@
                     return;
                 }
 
-
                 var data = {
-                    ActivityTemplateId: $scope.activityTemplateId,
+                    TerminalId: $scope.terminalId,
                     Username: $scope.formData.username,
-                    Password: $scope.formData.password
+                    Password: $scope.formData.password,
+                    Domain: $scope.formData.domain
                 };
 
-                $http.post('/authentication/token', data)
+                _loading = true;
+
+                $http.post('/api/authentication/token', data)
                     .then(function (res: any) {
 
                         if (res.data.error) {
@@ -45,6 +56,9 @@
                     })
                     .catch(function () {
                         $scope.authError = true;
+                    })
+                    .finally(function () {
+                        _loading = false;
                     });
             };
         }

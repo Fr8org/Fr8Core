@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Owin;
+﻿using Microsoft.Owin;
 using Owin;
 using terminalTwilio;
 using TerminalBase.BaseClasses;
@@ -12,7 +11,7 @@ namespace terminalTwilio
     {
         public void Configuration(IAppBuilder app)
         {
-            StartHosting("terminal_twilio");
+            StartHosting("terminal_Twilio");
         }
     }
 }

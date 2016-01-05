@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Web.Http;
-using NUnit.Framework;
-using StructureMap;
 using Data.Infrastructure.AutoMapper;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Hub.Managers;
 using Hub.StructureMap;
+using NUnit.Framework;
+using StructureMap;
 
 namespace terminalTwilio.Tests
 {

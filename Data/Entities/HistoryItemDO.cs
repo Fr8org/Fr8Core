@@ -19,6 +19,7 @@ namespace Data.Entities
         public string CustomerId { get; set; }
         public string PrimaryCategory { get; set; }
         public string SecondaryCategory { get; set; }
+        public string Component { get; set; }
         public string Activity { get; set; }
         public string Data { get; set; }
         public string Status { get; set; }
@@ -28,19 +29,34 @@ namespace Data.Entities
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
-                string customerAddress;
+                string customerAddress = null;
 
                 Fr8AccountDO acct = uow.UserRepository.GetByKey(CustomerId);
                 if(acct != null && acct.EmailAddress != null)
                 {
                     customerAddress = acct.EmailAddress.Address;
                 }
+
+                string dataHeader;
+                if (!string.IsNullOrEmpty(customerAddress))
+                {
+                    dataHeader = string.Format(
+                        "{0} ID: {1}, EmailAddress: {2} ",
+                        PrimaryCategory,
+                        ObjectId,
+                        customerAddress
+                    );    
+                }
                 else
                 {
-                    customerAddress = "<unknown>";
+                    dataHeader = string.Format(
+                        "{0} ID: {1} ",
+                        PrimaryCategory,
+                        ObjectId
+                    );
                 }
-              
-                Data = string.Format("{0} ID :{1}, EmailAddress: {2} ", PrimaryCategory, ObjectId, (CustomerId == null ? "" : customerAddress)) + Data;
+
+                Data = dataHeader + "\r\n" + Data;
 
                 if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
                     Logger.GetLogger().Info(Data);

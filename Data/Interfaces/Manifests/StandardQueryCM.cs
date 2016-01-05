@@ -9,11 +9,23 @@ namespace Data.Interfaces.Manifests
 {
     public class StandardQueryCM : Manifest
     {
-        public List<QueryDTO> Queries { get; set; }
-
-         public StandardQueryCM()
+        public StandardQueryCM()
 			  :base(Constants.MT.StandardQueryCrate)
         {
+            Queries = new List<QueryDTO>();
         }
+
+        public StandardQueryCM(IEnumerable<QueryDTO> queries) : this()
+        {
+            Queries.AddRange(queries);
+        }
+
+        public StandardQueryCM(params QueryDTO[] queries) : this()
+        {
+            Queries.AddRange(queries);
+        }
+
+
+        public List<QueryDTO> Queries { get; set; }
     }
 }

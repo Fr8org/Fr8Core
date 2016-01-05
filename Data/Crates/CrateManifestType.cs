@@ -10,6 +10,7 @@ namespace Data.Crates
         /**********************************************************************************/
 
         public static readonly CrateManifestType Unknown = new CrateManifestType(null, 0);
+        public static readonly CrateManifestType Any = new CrateManifestType(null, Int32.MinValue);
 
         /**********************************************************************************/
 
@@ -64,7 +65,17 @@ namespace Data.Crates
 
         public bool Equals(CrateManifestType other)
         {
-            return /*string.Equals(Type, other.Type) &&*/ Id == other.Id;
+            if (Id == other.Id)
+            {
+                return true;
+            }
+
+            if (Id == Unknown.Id || other.Id == Unknown.Id)
+            {
+                return false;
+            }
+
+            return Id == Any.Id || other.Id == Any.Id;
         }
 
         /**********************************************************************************/

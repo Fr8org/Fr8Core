@@ -208,6 +208,10 @@
     max-width: 450px;
 }
 
+div.action {
+    border-radius: 10px!important;
+}
+
 .action-name {
     text-align: center;
 }
@@ -235,17 +239,61 @@
     position: relative;
 }
 
+div.action-header {
+    border-top-left-radius: 10px!important;
+    border-top-right-radius: 10px!important;
+}
+
     .action-header p {
         font-weight: 800;
         font-size: 22px;
         color: white;
+        margin-left: 60px;
     }
 
+.action-header-icon {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 6px;
+}
+
+.action-header-icon:before {
+    content: '';
+    height: 100%;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.action-header-icon img {
+    border-radius: 8px!important;
+    width: 48px;
+    height: 48px;
+    vertical-align: middle;
+    }
+
+.solution-action{
+        min-height:180px;
+}
+.solution-action .solution-action-header {
+        background-color: #3F48CC;
+}
+.solution-action .pane-configure-action {
+        min-height:180px;
+}
+
 .action-to-add {
+	display: inline-block;
+	background-color: white;
+	box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px 0px, rgba(0, 0, 0, 0.137255) 0px 1px 1px 0px, rgba(0, 0, 0, 0.117647) 0px 2px 1px -1px;
     cursor: pointer;
     opacity: 0.5;
-    margin-left: -3px;
-    height: 300px;
+    margin-bottom: 48px;
+    height: 150px;
+	width: 150px;
+	vertical-align: middle;
+	border-radius: 50% !important;
+	text-align: center;
+	line-height: 150px; 
 }
 
     .action-to-add:hover {
@@ -263,26 +311,60 @@
     width: 100%;
 }
 
+.solution-action .pane-configure-action {
+        min-height:180px;
+}
+
 .action-group {
     display: inline-block;
     position: absolute;
 }
 
 .pane-configure-action-returnToSolution {
-    height: 224px;
-    text-align: center;
+    height: 180px;
 }
 
 .pane-configure-action-returnToSolution:before {
-    content: '';
     height: 100%;
     display: inline-block;
     vertical-align: middle;
 }
 
-.pane-configure-action-returnToSolution .btn {
-    vertical-align: middle;
+.solution-parts{
+    max-height: 120px;
+    display: block;
+    overflow: auto;
+    width: 100%;
 }
+
+.return-to-solution-container{
+    display: block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+.return-to-solution-container a {
+    vertical-align: middle;		    
+    text-decoration:none;
+    margin-top:10px;
+}
+
+
+.return-to-solution {
+    color: #8ea3b6;
+    font-size: 14px;
+    bottom:1px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.pane-configure-action-returnToSolution > label:first-child {
+   margin-bottom:20px;
+}
+.pane-configure-action-returnToSolution label {
+   display:block;
+}		
 
 /* Select Action */
 .select-action-modal .modal-dialog {
@@ -409,7 +491,7 @@ input[type=radio]:checked ~ div.nested-controls {
     margin: 0;
 }
 
-.ui-select-match > span, .nested-controls input {
+.ui-select-match > span, .nested-controls input, .small-input {
     height: 26px;
     padding-top: 3px;
     padding-bottom: 3px;
@@ -469,6 +551,7 @@ input[type=radio]:checked ~ label .control-label-hidden {
 .drop-down-list-box-container { 
     height: 26px;
     width: 100%;
+    margin-bottom: 5px;
 }
 
 
@@ -486,6 +569,12 @@ input[type=radio]:checked ~ label .control-label-hidden {
     vertical-align: middle;
 }
 
+.run-pane-button {
+    display: block;
+    margin-left: auto;
+    margin-right: auto
+}
+
 .counter-control > * {
     display: block;
     text-align: center;
@@ -494,3 +583,57 @@ input[type=radio]:checked ~ label .control-label-hidden {
 .counter-input {
     width: 42px;
 }
+
+
+a.documentation-link {
+    color: #aaa;
+    margin-left: 5px;
+}
+
+
+/* Long ajax cursor */
+.long-ajax-cursor {
+    cursor: progress;
+}
+
+/* DRAG DROP RELATED CSS */
+
+/**
+ * For the correct positioning of the placeholder element, the dnd-list and
+ * it's children must have position: relative
+ */
+div[dnd-list] > div {
+	
+    display: inline-block;
+}
+
+/**
+ * The dndDraggingSource class will be applied to
+ * the source element of a drag operation. It makes
+ * sense to hide it to give the user the feeling
+ * that he's actually moving it.
+ */
+div[dnd-list] .dndDraggingSource {
+    display: none;
+}
+
+div[dnd-list].dndDragover {
+    border: 1px solid;
+}
+
+/**
+ * Handle positioning
+ */
+.handle {
+    cursor: move;
+}
+
+
+/*END OF DRAG DROP RELATED CSS */
+
+.upstreamFieldChooser {
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+[ng-table-pagination] { display: none; }

@@ -26,11 +26,11 @@ namespace terminalSlack.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        public void Process(string externalEventPayload)
+        public Crate Process(string externalEventPayload)
         {
             if (string.IsNullOrEmpty(externalEventPayload))
             {
-                return;
+                return null;
             }
 
             var payloadFields = ParseSlackPayloadData(externalEventPayload);
@@ -38,7 +38,7 @@ namespace terminalSlack.Services
             var slackToken = payloadFields.FirstOrDefault(x => x.Key == "user_id");
             if (slackToken == null || string.IsNullOrEmpty(slackToken.Value))
             {
-                return;
+                return null;
             }
 
             var eventReportContent = new EventReportCM
@@ -50,10 +50,8 @@ namespace terminalSlack.Services
             };
 
             var curEventReport = Data.Crates.Crate.FromContent("Standard Event Report", eventReportContent);
-            var curEventReportDTO = _crate.ToDto(curEventReport);
 
-            var url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/fr8_events";
-            new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), curEventReportDTO);
+            return curEventReport;
         }
 
         private List<FieldDTO> ParseSlackPayloadData(string message)

@@ -14,11 +14,21 @@ namespace Data.Infrastructure
     {
         private TransactionScope _transaction;
         private readonly IDBContext _context;
+        private readonly IContainer _container;
 
         internal UnitOfWork(IDBContext context)
         {
             _context = context;
             _context.UnitOfWork = this;
+            
+            // Create nested StructureMap container
+            _container = ObjectFactory.Container.GetNestedContainer();
+
+            // Register self in the nested container to allow constructor injection
+            _container.Configure(expression =>
+            {
+                expression.For<IUnitOfWork>().Use(this).Singleton();
+            });
         }
 
         private AttachmentRepository _attachmentRepository;
@@ -338,13 +348,13 @@ namespace Data.Infrastructure
         //    }
         //}
 
-        private AuthorizationTokenRepository _authorizationTokenRepository;
+        private IAuthorizationTokenRepository _authorizationTokenRepository;
 
-        public AuthorizationTokenRepository AuthorizationTokenRepository
+        public IAuthorizationTokenRepository AuthorizationTokenRepository
         {
             get
             {
-                return _authorizationTokenRepository ?? (_authorizationTokenRepository = new AuthorizationTokenRepository(this));
+                return _authorizationTokenRepository ?? (_authorizationTokenRepository = _container.GetInstance<IAuthorizationTokenRepository>());
             }
         }
 
@@ -536,6 +546,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private TerminalSubscriptionRepository _terminalSubscriptionRepository;
+
+        public ITerminalSubscriptionRepository TerminalSubscriptionRepository
+        {
+            get
+            {
+                return _terminalSubscriptionRepository ?? (_terminalSubscriptionRepository = new TerminalSubscriptionRepository(this));
+
+            }
+        }
 
         private SubscriptionRepository _subscriptionRepository;
 
@@ -549,7 +569,7 @@ namespace Data.Infrastructure
 
 	    private WebServiceRepository _webServiceRepository;
 
-	    public IWebServiceRepository WebServiceRepository
+        public IWebServiceRepository WebServiceRepository
 	    {
 		    get
 		    {
@@ -557,7 +577,7 @@ namespace Data.Infrastructure
 		    }
 	    }
 
-	    public void Save()
+        public void Save()
         {
             _context.SaveChanges();
         }
@@ -594,6 +614,8 @@ namespace Data.Infrastructure
             var modifiedEntities = _context.ModifiedEntities;
             var deletedEntities = _context.DeletedEntities;
 
+            UpateRepository(addedEntities, modifiedEntities, deletedEntities, AuthorizationTokenRepository);
+
             try
             {
                 _context.SaveChanges();
@@ -610,10 +632,26 @@ namespace Data.Infrastructure
                 }
                 throw new Exception(String.Join(Environment.NewLine + Environment.NewLine, errorList) + Environment.NewLine, e);
             }
-
+            
             OnEntitiesAdded(new EntitiesStateEventArgs(this, addedEntities));
             OnEntitiesModified(new EntitiesStateEventArgs(this, modifiedEntities));
             OnEntitiesDeleted(new EntitiesStateEventArgs(this, deletedEntities));
+        }
+
+        private void UpateRepository(Object[] addedEntities, Object[] modifiedEntities, Object[] deletedEntities,  object repository)
+        {
+            var trackingChanges = repository as ITrackingChangesRepository;
+
+            if (trackingChanges != null)
+            {
+                var entityType = trackingChanges.EntityType;
+
+                trackingChanges.TrackAdds(addedEntities.Where(x => entityType.IsInstanceOfType(x)));
+                trackingChanges.TrackDeletes(deletedEntities.Where(x => entityType.IsInstanceOfType(x)));
+                trackingChanges.TrackUpdates(modifiedEntities.Where(x => entityType.IsInstanceOfType(x)));
+                
+                trackingChanges.SaveChanges();
+            }
         }
 
         public bool IsEntityModified<TEntity>(TEntity entity) 

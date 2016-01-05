@@ -25,7 +25,7 @@ namespace terminalGoogle.Services
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        public async Task<object> Process(string externalEventPayload)
+        public Crate Process(string externalEventPayload)
         {
             if (string.IsNullOrEmpty(externalEventPayload))
             {
@@ -48,33 +48,10 @@ namespace terminalGoogle.Services
                 ExternalAccountId = externalAccountId.Value
             };
 
+            //prepare the event report
             var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
 
-            var url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";
-            var response = await new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), _crate.ToDto(curEventReport));
-
-            var content = await response.Content.ReadAsStringAsync();
-
-            if (!string.IsNullOrWhiteSpace(content))
-            {
-                try
-                {
-                    return JsonConvert.DeserializeObject(content);
-                }
-                catch
-                {
-                    return new
-                    {
-                        title = "Unexpected error while serving your request",
-                        exception = new
-                        {
-                            Message = "Unexpected response from hub"
-                        }
-                    };
-                }
-            }
-
-            return content;
+            return curEventReport;
         }
 
         private List<FieldDTO> ParseGoogleFormPayloadData(string message)

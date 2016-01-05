@@ -2,9 +2,7 @@
 using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Data.Control;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
@@ -20,52 +18,33 @@ namespace terminalSalesforce.Actions
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
+            CheckAuthentication(authTokenDO);
 
-            return await ProcessConfigurationRequest(curActionDO, x => ConfigurationEvaluator(x), authTokenDO);
-        }
-
-        public object Activate(ActionDO curActionDO)
-        {
-            //not implemented currently
-            return null;
-        }
-
-        public object Deactivate(ActionDO curActionDO)
-        {
-            //not implemented currentlys
-            return "Deactivated";
+            return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            PayloadDTO processPayload = null;
 
-            processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return NeedsAuthenticationError(payloadCrates);
             }
-
 
             var accountName = ExtractControlFieldValue(curActionDO, "accountName");
             if (string.IsNullOrEmpty(accountName))
             {
-                throw new ApplicationException("No account name found in action.");
+                return Error(payloadCrates, "No account name found in action.");
             }
-
 
             bool result = _salesforce.CreateAccount(curActionDO, authTokenDO);
 
-
-            return processPayload;
+            return Success(payloadCrates);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             return ConfigurationRequestType.Initial;
         }
@@ -75,24 +54,21 @@ namespace terminalSalesforce.Actions
             var accountName = new TextBox()
             {
                 Label = "Account Name",
-                Name = "accountName",
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Name = "accountName"
 
             };
             var accountNumber = new TextBox()
             {
                 Label = "Account Number",
                 Name = "accountNumber",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Required = true
             };
 
             var phone = new TextBox()
             {
                 Label = "Phone",
                 Name = "phone",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Required = true
             };
 
             var controls = PackControlsCrate(accountName, accountNumber, phone);

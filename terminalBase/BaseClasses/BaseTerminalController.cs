@@ -3,11 +3,22 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
+using Data.Constants;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
+using Newtonsoft.Json;
+using Data.Infrastructure;
+using Utilities.Logging;
+using Utilities;
+using System.Net.Http;
+using System.IO;
+using System.Web.Routing;
+using System.Net;
+using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
 
 namespace TerminalBase.BaseClasses
 {
@@ -28,8 +39,18 @@ namespace TerminalBase.BaseClasses
         [HttpGet]
         public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError)
         {
-            var exceptionMessage = terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
-            return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name));
+            var exceptionMessage = terminalError.GetFullExceptionMessage() + "      \r\n" + terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
+            try
+            {
+                return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name));
+            }
+            catch (Exception ex)
+            {
+                string errorMessage = "An error has occurred in terminal {0}.             \r\n{1}             \r\n";
+                errorMessage += "Additionally, an error has occurred while trying to post error details to the Hub.             \r\n{2}";
+                Logger.GetLogger().ErrorFormat(errorMessage, terminalName, exceptionMessage, ex.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -66,7 +87,19 @@ namespace TerminalBase.BaseClasses
 
             baseTerminalAction.HubCommunicator = new TestMonitoringHubCommunicator();
         }
-        
+
+        private void BindExplicitDataHubCommunicator(object curObject)
+        {
+            var baseTerminalAction = curObject as BaseTerminalAction;
+
+            if (baseTerminalAction == null)
+            {
+                return;
+            }
+
+            baseTerminalAction.HubCommunicator = new ExplicitDataHubCommunicator();
+        }
+
         /// <summary>
         /// Reports event when process an action
         /// </summary>
@@ -77,7 +110,7 @@ namespace TerminalBase.BaseClasses
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public object HandleFr8Request(string curTerminal, string curActionPath, ActionDTO curActionDTO)
+        public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, ActionDTO curActionDTO)
         {
             if (curActionDTO == null)
                 throw new ArgumentNullException("curActionDTO");
@@ -101,47 +134,143 @@ namespace TerminalBase.BaseClasses
                     curActionDTO.ActivityTemplate.Name,
                     curActionDTO.ActivityTemplate.Version,
                     curTerminal), "curActionDTO");
-            MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
+
+            MethodInfo curMethodInfo = calledType.GetMethod(curActionPath, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
             object curObject = Activator.CreateInstance(calledType);
 
             if (isTestActivityTemplate)
             {
                 BindTestHubCommunicator(curObject);
             }
+            else if (curActionDTO.IsExplicitData)
+            {
+                BindExplicitDataHubCommunicator(curObject);
+            }
 
             var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
             var curContainerId = curActionDTO.ContainerId;
-            object response;
-            switch (curActionPath)
+            Task<ActionDO> response;
+
+            try
             {
-                case "Configure":
-                    {
-                        Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                        return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
-                    }
-                case "Run":
-                    {
-                        response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
-                        return response;
-                    }
-                case "InitialConfigurationResponse":
-                    {
-                        Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                        return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
-                    }
-                case "FollowupConfigurationResponse":
-                    {
-                        Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
-                        return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
-                    }
-                default:
-                    response = (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDTO });
-                    return response;
+                switch (curActionPath.ToLower())
+                {
+                    case "configure":
+                        {
+                            Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                        }
+                    case "run":
+                    case "childrenexecuted":
+                        {
+                            OnStartAction(curTerminal, activityTemplateName, isTestActivityTemplate);
+                            var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
+                                .Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
+                            await OnCompletedAction(curTerminal, isTestActivityTemplate);
+
+                            return resultPayloadDTO;
+                        }
+                    case "initialconfigurationresponse":
+                        {
+                            Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                        }
+                    case "followupconfigurationresponse":
+                        {
+                            Task<ActionDO> resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                        }
+                    case "activate":
+                        {
+                            //activate is an optional method so it may be missing
+                            if (curMethodInfo == null) return Mapper.Map<ActionDTO>(curActionDO);
+
+                            Task<ActionDO>  resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                        }
+                    case "deactivate":
+                        {
+                            //deactivate is an optional method so it may be missing
+                            if (curMethodInfo == null) return Mapper.Map<ActionDTO>(curActionDO);
+
+                            Task<ActionDO> resutlActionDO;
+                            var param = curMethodInfo.GetParameters();
+                            if (param.Length == 2)
+                                resutlActionDO = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO, curAuthTokenDO });
+                            else
+                            {
+                                response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+                                return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
+                            }
+
+                            return resutlActionDO.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result));
+                        }
+                    default:
+                        response = (Task<ActionDO>)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+                        return await response.ContinueWith(x => Mapper.Map<ActionDTO>(x.Result)); ;
+                }
+            }
+            catch (Exception e)
+            {
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects
+                };
+
+                var endpoint = (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.Terminal != null && curActionDO.ActivityTemplate.Terminal.Endpoint != null) ? curActionDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
+                EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActionDO, settings), e, curActionDO.Id.ToString());
+                throw;
+            }
+        }
+        private void OnStartAction(string terminalName, string actionName, bool isTestActivityTemplate)
+        {
+            if (isTestActivityTemplate)
+                return;
+
+            _baseTerminalEvent.SendEventReport(
+                terminalName,
+                string.Format("{0} began processing this Container at {1}. Sending to Action {2}", terminalName, DateTime.Now.ToString("G"), actionName));
+        }
+
+        private Task OnCompletedAction(string terminalName, bool isTestActivityTemplate)
+        {
+            if (isTestActivityTemplate)
+                return Task.FromResult<object>(null);
+
+            return Task.Run(() =>
+             _baseTerminalEvent.SendEventReport(
+                 terminalName,
+                 string.Format("{0} completed processing this Container at {1}.", terminalName, DateTime.Now.ToString("G"))));
+        }
+
+        public HttpResponseMessage GetActionDocumentation(string helpPath)
+        {
+            string htmlContent = FindDocumentation(helpPath);
+
+            var response = new HttpResponseMessage();
+            response.Content = new StringContent(htmlContent);
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
+
+            return response;
+        }
+
+        private string FindDocumentation(string helppath)
+        {
+            string filename = System.Web.Hosting.HostingEnvironment.MapPath(string.Format("~\\Documentation\\{0}.html", helppath));
+            string content = "";
+
+            try
+            {
+                content = System.IO.File.ReadAllText(filename);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex.InnerException);
             }
 
-
+            return content;
         }
     }
 }

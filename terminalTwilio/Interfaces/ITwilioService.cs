@@ -1,12 +1,12 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Twilio;
 
 namespace terminalTwilio.Services
 {
     public interface ITwilioService
     {
-        void SendSms(String number, String messageBody);
+        Message SendSms(String number, String messageBody);
         IEnumerable<string> GetRegisteredSenderNumbers();
     }
 }

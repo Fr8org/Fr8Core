@@ -122,9 +122,9 @@ namespace DockyardTest.Controllers
             }
         }
 
-        private static ContainerController CreateContainerController()
+        private static ContainersController CreateContainerController()
         {
-            return new ContainerController();
+            return new ContainersController();
         }
 
     }

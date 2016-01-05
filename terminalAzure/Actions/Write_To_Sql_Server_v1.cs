@@ -29,7 +29,7 @@ namespace terminalAzure.Actions
         //General Methods (every Action class has these)
 
         //maybe want to return the full Action here
-        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             return await ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest, authTokenDO);
         }
@@ -104,27 +104,16 @@ namespace terminalAzure.Actions
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 
-        public object Activate(ActionDO curActionDO)
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            //not currently any requirements that need attention at Activation Time
-            return null;
-        }
+            var payloadCrates = await GetPayload(actionDO, containerId);
 
-        public object Deactivate(ActionDO curActionDO)
-        {
-            return "Deactivated";
-        }
-
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId)
-        {
-            var processPayload = await GetProcessPayload(actionDO, containerId);
-
-            var curCommandArgs = PrepareSQLWrite(actionDO, processPayload);
+            var curCommandArgs = PrepareSQLWrite(actionDO, payloadCrates);
 
             var dbService = new DbService();
             dbService.WriteCommand(curCommandArgs);
 
-            return processPayload;
+            return Success(payloadCrates);
         }
 
         //===============================================================================================
@@ -190,18 +179,18 @@ namespace terminalAzure.Actions
 
         //EXECUTION-Related Methods
         //-----------------------------------------
-        private WriteCommandArgs PrepareSQLWrite(ActionDO curActionDO, PayloadDTO processPayload)
+        private WriteCommandArgs PrepareSQLWrite(ActionDO curActionDO, PayloadDTO payloadCrates)
         {
             var parser = new DbServiceJsonParser();
             var curConnStringObject = parser.ExtractConnectionString(curActionDO);
-            var curSQLData = ConvertProcessPayloadToSqlInputs(processPayload);
+            var curSQLData = ConvertProcessPayloadToSqlInputs(payloadCrates);
 
             return new WriteCommandArgs(ProviderName, curConnStringObject, curSQLData);
         }
 
-        private IEnumerable<Table> ConvertProcessPayloadToSqlInputs(PayloadDTO processPayload)
+        private IEnumerable<Table> ConvertProcessPayloadToSqlInputs(PayloadDTO payloadCrates)
         {
-            var mappedFieldsCrate = Crate.GetStorage(processPayload).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "MappedFields");
+            var mappedFieldsCrate = Crate.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "MappedFields");
 
 //            var mappedFieldsCrate = processPayload.CrateStorageDTO()
 //                .CrateDTO
@@ -214,7 +203,7 @@ namespace terminalAzure.Actions
                 throw new ApplicationException("No payload crate found with Label == MappdFields.");
             }
 
-            var valuesCrate = Crate.GetStorage(processPayload).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "DocuSign Envelope Data");
+            var valuesCrate = Crate.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "DocuSign Envelope Data");
 //
 //            var valuesCrate = processPayload.CrateStorageDTO()
 //                .CrateDTO

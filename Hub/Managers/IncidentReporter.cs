@@ -18,7 +18,7 @@ namespace Hub.Managers
 
         public IncidentReporter()
         {
-           _eventReporter = new EventReporter();
+            _eventReporter = new EventReporter();
         }
         public void SubscribeToAlerts()
         {
@@ -27,6 +27,7 @@ namespace Hub.Managers
             EventManager.IncidentTerminalRunFailed += ProcessIncidentTerminalRunFailed;
             EventManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
             EventManager.IncidentTerminalActionActivationFailed += ProcessIncidentTerminalActionActivationFailed;
+            EventManager.IncidentTerminalInternalFailureOccurred += ProcessIncidentTerminalInternalFailureOccurred;
             //EventManager.IncidentPluginConfigureFailed += ProcessIncidentPluginConfigureFailed;
             //AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
             EventManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
@@ -37,16 +38,18 @@ namespace Hub.Managers
             EventManager.TerminalIncidentReported += LogTerminalIncident;
             EventManager.UnparseableNotificationReceived += LogUnparseableNotificationIncident;
             EventManager.IncidentDocuSignFieldMissing += IncidentDocuSignFieldMissing;
+            EventManager.IncidentOAuthAuthenticationFailed += OAuthAuthenticationFailed;
+            EventManager.IncidentMissingFieldInPayload += IncidentMissingFieldInPayload;
             EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
         }
 
-        private void ProcessIncidentTerminalActionActivationFailed(string terminalUrl, string curActionDTO)
+        private void ProcessIncidentTerminalActionActivationFailed(string terminalUrl, string curActionDTO, string objectId)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
                 Data = terminalUrl + "      " + curActionDTO,
-                ObjectId = "unknown",
+                ObjectId = objectId,
                 PrimaryCategory = "Action",
                 SecondaryCategory = "Activation",
                 Activity = "Completed"
@@ -56,15 +59,15 @@ namespace Hub.Managers
 
         /// <summary>
         /// Logs incident information using the standard log mechanisms.
-       
-      
+
+
         private void SaveAndLogIncident(IncidentDO curIncident)
         {
             SaveIncident(curIncident);
-            _eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity);
+            LogIncident(curIncident);
         }
 
-        private void SaveIncident (IncidentDO curIncident)
+        private void SaveIncident(IncidentDO curIncident)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -72,32 +75,74 @@ namespace Hub.Managers
                 uow.SaveChanges();
             }
         }
-        private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string curAction, string errorMessage)
+
+        private void LogIncident(IncidentDO curIncident)
+        {
+            _eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity, EventReporter.EventType.Error);
+        }
+
+        private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string curAction, string errorMessage, string objectId)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
                 Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
-                ObjectId = "unknown",
+                ObjectId = objectId,
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Configure",
+                Component = "Hub",
                 Activity = "Configuration Failed"
             };
             SaveAndLogIncident(incident);
         }
-        private void ProcessIncidentTerminalRunFailed(string curTerminalUrl, string curAction, string errorMessage)
+
+        private void ProcessIncidentTerminalInternalFailureOccurred(string curTerminalUrl, string curAction, Exception e, string objectId)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = curTerminalUrl + "      " + curAction + " " + e.Message + " \r\nStack trace: \r\n" + e.StackTrace,
+                ObjectId = objectId,
+                PrimaryCategory = "Terminal",
+                SecondaryCategory = "Configure",
+                Component = "Terminal",
+                Activity = "Configuration Failed"
+            };
+
+            // Database is not available from a terminal web application
+            // so only log incidents 
+            LogIncident(incident);
+        }
+
+        private void ProcessIncidentTerminalRunFailed(string curTerminalUrl, string curAction, string errorMessage, string objectId)
         {
             var incident = new IncidentDO
             {
                 CustomerId = "unknown",
                 Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
-                ObjectId = "unknown",
+                ObjectId = objectId,
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Configure",
+                Component = "Hub",
                 Activity = "Configuration Failed"
             };
             SaveAndLogIncident(incident);
         }
+
+        private void OAuthAuthenticationFailed(string curRequestQueryString, string errorMessage)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = "Query string: " + curRequestQueryString + "      \r\n" + errorMessage,
+                ObjectId = "unknown",
+                PrimaryCategory = "Terminal",
+                SecondaryCategory = "Authentication",
+                Activity = "OAuth Authentication Failed"
+            };
+            SaveAndLogIncident(incident);
+        }
+
         private void LogTerminalIncident(LoggingDataCm incidentItem)
         {
             var currentIncident = new IncidentDO
@@ -107,6 +152,7 @@ namespace Hub.Managers
                 Data = incidentItem.Data,
                 PrimaryCategory = incidentItem.PrimaryCategory,
                 SecondaryCategory = incidentItem.SecondaryCategory,
+                Component = "Terminal",
                 Activity = incidentItem.Activity
             };
 
@@ -192,7 +238,7 @@ namespace Hub.Managers
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "BookingRequest";
                 incidentDO.SecondaryCategory = "Response Received";
-                incidentDO.CustomerId = customerID;               
+                incidentDO.CustomerId = customerID;
                 incidentDO.ObjectId = bookingRequestId.ToString();
                 incidentDO.Activity = "Response Recieved";
                 _uow.IncidentRepository.Add(incidentDO);
@@ -249,11 +295,11 @@ namespace Hub.Managers
                 uow.SaveChanges();
             }
             Email _email = ObjectFactory.GetInstance<Email>();
-		//_email.SendAlertEmail("Alert! Kwasant Error Reported: EmailSendFailure",
-		//			    string.Format(
-		//				  "EmailID: {0}\r\n" +
-		//				  "Message: {1}",
-		//				  emailId, message));
+            //_email.SendAlertEmail("Alert! Kwasant Error Reported: EmailSendFailure",
+            //			    string.Format(
+            //				  "EmailID: {0}\r\n" +
+            //				  "Message: {1}",
+            //				  emailId, message));
         }
         //private void ProcessErrorSyncingCalendar(IRemoteCalendarAuthDataDO authData, IRemoteCalendarLinkDO calendarLink = null)
         //{
@@ -425,5 +471,23 @@ namespace Hub.Managers
                 _uow.SaveChanges();
             }
         }
+
+        public void IncidentMissingFieldInPayload(string fieldKey, ActionDO action, string curUserId)
+        {
+            using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "Process Execution";
+                incidentDO.SecondaryCategory = "Action";
+                incidentDO.ObjectId = action.Id.ToString();
+                incidentDO.Activity = "Occured";
+                incidentDO.CustomerId = curUserId;
+                incidentDO.Data = String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}", action.Name, fieldKey, action.Id);
+                _uow.IncidentRepository.Add(incidentDO);
+                Logger.GetLogger().Warn(incidentDO.Data);
+                _uow.SaveChanges();
+            }
+        }
+
     }
 }

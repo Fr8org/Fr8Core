@@ -1,0 +1,42 @@
+﻿<div ng-controller="TerminalListController">
+    <div class="row" style="margin-bottom: 24px;">
+        <div class="col-md-12 col-sm-12">
+            <div class="portlet light ">
+                <div class="portlet-title">
+                    <div class="caption caption-md">
+                        <i class="icon-bar-chart font-green-haze hide"></i>
+                        <span class="caption-subject font-green-haze bold uppercase">All Terminals</span>
+                        <span class="caption-helper hide">weekly stats...</span>
+                    </div>
+                    <div class="actions">
+                        <a class="btn green" ng-click="showAddTerminalModal()" href="#">Add Terminal</a>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <div ng-show="terminals.length == 0" class="ng-hide">There are no Terminals in this view</div>
+                    <div ng-show="terminals.length > 0">
+                        <table datatable="ng" class="row-border hover">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Url</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="terminal in terminals">
+                                    <td>{{terminal.id}}</td>
+                                    <td>{{terminal.name}}</td>
+                                    <td>{{terminal.endpoint}}</td>
+                                    <td>{{terminal.description}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.Partial("TerminalForm")
+</div>

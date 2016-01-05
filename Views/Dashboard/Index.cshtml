@@ -14,10 +14,10 @@
     <meta content="width=device-width, initial-scale=1" name="viewport" />
 
     <!-- BEGIN GLOBAL MANDATORY STYLES -->
-    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
-    <link href="~/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet" type="text/css"/>
-    <link href="~/bower_components/font-awesome-min/css/font-awesome.min.css" type="text/css" rel="stylesheet"/>
-    <link href="~/bower_components/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" type="text/css" rel="stylesheet"/>
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
+    <link href="~/bower_components/bootstrap/dist/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="~/bower_components/font-awesome-min/css/font-awesome.min.css" type="text/css" rel="stylesheet" />
+    <link href="~/bower_components/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css" type="text/css" rel="stylesheet" />
     <link href="~/bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" type="text/css" rel="stylesheet" />
     <!-- END GLOBAL MANDATORY STYLES -->
     <!-- BEGIN DYMANICLY LOADED CSS FILES(all plugin and page related styles must be loaded between GLOBAL and THEME css files ) -->
@@ -32,20 +32,20 @@
     <link href="/Content/templates/metronic/assets/admin/layout3/css/custom.css" rel="stylesheet" type="text/css" />
     <link href="/Content/css/dockyard.css" rel="stylesheet" />
     <!-- END THEME STYLES -->
-
     <!-- BEGIN Datatables STYLES -->
     <link href="~/bower_components/datatables/media/css/jquery.dataTables.css" rel="stylesheet" />
     <link href="~/bower_components/datatables/media/css/dataTables.bootstrap.min.css" rel="stylesheet" />
     <link href="~/bower_components/angular-datatables/dist/plugins/bootstrap/datatables.bootstrap.min.css" rel="stylesheet" />
     <!-- END Datatables STYLES -->
-    
     <!-- BEGIN TEXTANGULAR STYLES -->
     <link href="~/bower_components/textAngular/dist/textAngular.css" rel="stylesheet" />
     <!-- END TEXTANGULAR STYLES -->
     <!-- BEGIN TOAST STYLES-->
     <link href="/bower_components/ngToast/dist/ngToast.min.css" rel="stylesheet">
     <!-- END TOAST STYLES-->
+    <link href="~/bower_components/ng-table/dist/ng-table.min.css" rel="stylesheet" />
 
+    <link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.min.css" />
     <link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />
 </head>
 <!-- END HEAD -->
@@ -53,9 +53,9 @@
 <!-- DOC: Apply "page-header-menu-fixed" class to set the mega menu fixed  -->
 <!-- DOC: Apply "page-header-top-fixed" class to set the top menu fixed  -->
 <body ng-controller="AppController" class="page-on-load">
-        <div ng-controller="NotifierController">
-            <toast></toast>
-        </div>
+    <div ng-controller="NotifierController">
+        <toast></toast>
+    </div>
     <!-- BEGIN PAGE SPINNER -->
     <div ng-spinner-bar class="page-spinner-bar">
         <div class="bounce1"></div>
@@ -72,7 +72,7 @@
     </div>
 
     <!-- BEGIN CONTAINER -->
-    <div class="page-container">
+    <div class="page-container" long-ajax-cursor>
 
         <!-- BEGIN PAGE CONTENT -->
         <div class="page-content">
@@ -92,18 +92,17 @@
     </div>
     <!-- END FOOTER -->
     <!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
-<!-- BEGIN CORE JQUERY PLUGINS -->
-<!--[if lt IE 9]>
-<script src="/Content/templates/metronic/assets/global/plugins/respond.min.js"></script>
-<script src="/Content/templates/metronic/assets/global/plugins/excanvas.min.js"></script>
-<![endif]-->
+    <!-- BEGIN CORE JQUERY PLUGINS -->
+    <!--[if lt IE 9]>
+    <script src="/Content/templates/metronic/assets/global/plugins/respond.min.js"></script>
+    <script src="/Content/templates/metronic/assets/global/plugins/excanvas.min.js"></script>
+    <![endif]-->
     <script src="/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
     <script src="/bower_components/jquery-migrate/jquery-migrate.min.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-hover-dropdown/bootstrap-hover-dropdown.js" type="text/javascript"></script>
     <script src="~/bower_components/spin.js/spin.min.js"></script>
     <script src="~/bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
-   
 
     @Html.Partial("_AngularAppScripts")
     <script type="text/javascript">
@@ -114,11 +113,10 @@
         });
     </script>
     <script type="text/javascript">
-    window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), window.analytics.push(a), window.analytics } }; for (var i = 0; i < window.analytics.methods.length; i++) { var key = window.analytics.methods[i]; window.analytics[key] = window.analytics.factory(key) } window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, window.analytics.SNIPPET_VERSION = "2.0.9",
-    window.analytics.load("@(new ConfigRepository().Get("SegmentWriteKey"))");
-    window.analytics.page('Admin');
+        window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), window.analytics.push(a), window.analytics } }; for (var i = 0; i < window.analytics.methods.length; i++) { var key = window.analytics.methods[i]; window.analytics[key] = window.analytics.factory(key) } window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, window.analytics.SNIPPET_VERSION = "2.0.9",
+        window.analytics.load("@(new ConfigRepository().Get("SegmentWriteKey"))");
+        window.analytics.page('Admin');
     </script>
-
     <!-- END JAVASCRIPTS -->
 </body>
 <!-- END BODY -->

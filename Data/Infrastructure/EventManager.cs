@@ -23,13 +23,16 @@ namespace Data.Infrastructure
         public delegate void EntityStateChangedHandler(string entityName, object id, string stateName, string stateValue);
         public static event EntityStateChangedHandler AlertEntityStateChanged;
 
-        public delegate void IncidentTerminalConfigurePOSTFailureHandler(string terminalUrl, string curActionDTO, string errorMessage);
+        public delegate void IncidentTerminalConfigurePOSTFailureHandler(string terminalUrl, string curActionDTO, string errorMessage, string objectId);
         public static event IncidentTerminalConfigurePOSTFailureHandler IncidentTerminalConfigureFailed;
 
-        public delegate void IncidentTerminalRunPOSTFailureHandler(string terminalUrl, string curActionDTO, string errorMessage);
+        public delegate void IncidentTerminalRunPOSTFailureHandler(string terminalUrl, string curActionDTO, string errorMessage, string objectId);
         public static event IncidentTerminalRunPOSTFailureHandler IncidentTerminalRunFailed;
 
-        public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string curActionDTO);
+        public delegate void IncidentTerminalInternalFailureHandler(string terminalUrl, string curActionDTO, Exception e, string objectId);
+        public static event IncidentTerminalInternalFailureHandler IncidentTerminalInternalFailureOccurred;
+
+        public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string curActionDTO, string objectId);
         public static event IncidentTerminalActionActivationPOSTFailureHandler IncidentTerminalActionActivationFailed;
 
         public delegate void TerminalActionActivatedHandler(ActionDO action);
@@ -54,8 +57,14 @@ namespace Data.Infrastructure
         public delegate void EmailProcessingHandler(string dateReceived, string errorMessage);
         public static event EmailProcessingHandler AlertEmailProcessingFailure;
 
+        public delegate void IncidentOAuthAuthenticationFailedHandler(string requestQueryString, string errorMessage);
+        public static event IncidentOAuthAuthenticationFailedHandler IncidentOAuthAuthenticationFailed;
+
         public delegate void UserRegistrationHandler(Fr8AccountDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
+
+        public delegate void Fr8AccountTerminalRegistrationHandler(TerminalDO terminalDO);
+        public static event Fr8AccountTerminalRegistrationHandler AlertFr8AccountTerminalRegistration;
 
         public delegate void UserRegistrationErrorHandler(Exception ex);
         public static event UserRegistrationErrorHandler AlertUserRegistrationError;
@@ -129,6 +138,9 @@ namespace Data.Infrastructure
         public delegate void IncidentDocuSignFieldMissingHandler(string envelopeId, string fieldName);
         public static event IncidentDocuSignFieldMissingHandler IncidentDocuSignFieldMissing;
 
+        public delegate void IncidentMissingFieldInPayloadHandler(string fieldKey, ActionDO action, string curUserId);
+        public static event IncidentMissingFieldInPayloadHandler IncidentMissingFieldInPayload;
+
         public delegate void UnparseableNotificationReceivedHandler(string curNotificationUrl, string curNotificationPayload);
         public static event UnparseableNotificationReceivedHandler UnparseableNotificationReceived;
 
@@ -145,22 +157,28 @@ namespace Data.Infrastructure
         #region Method
 
 
-        public static void TerminalConfigureFailed(string terminalUrl, string actionDTO, string errorMessage)
+        public static void TerminalConfigureFailed(string terminalUrl, string actionDTO, string errorMessage, string objectId)
         {
             IncidentTerminalConfigurePOSTFailureHandler handler = IncidentTerminalConfigureFailed;
-            if (handler != null) handler(terminalUrl, actionDTO, errorMessage);
+            if (handler != null) handler(terminalUrl, actionDTO, errorMessage, objectId);
         }
 
-        public static void TerminalRunFailed(string terminalUrl, string actionDTO, string errorMessage)
+        public static void TerminalRunFailed(string terminalUrl, string actionDTO, string errorMessage, string objectId)
         {
             IncidentTerminalRunPOSTFailureHandler handler = IncidentTerminalRunFailed;
-            if (handler != null) handler(terminalUrl, actionDTO, errorMessage);
+            if (handler != null) handler(terminalUrl, actionDTO, errorMessage, objectId);
         }
 
-        public static void TerminalActionActivationFailed(string terminalUrl, string actionDTO)
+        public static void TerminalInternalFailureOccurred(string terminalUrl, string actionDTO, Exception e, string objectId)
+        {
+            IncidentTerminalInternalFailureHandler handler = IncidentTerminalInternalFailureOccurred;
+            if (handler != null) handler(terminalUrl, actionDTO, e, objectId);
+        }
+
+        public static void TerminalActionActivationFailed(string terminalUrl, string actionDTO, string objectId)
         {
             IncidentTerminalActionActivationPOSTFailureHandler handler = IncidentTerminalActionActivationFailed;
-            if (handler != null) handler(terminalUrl, actionDTO);
+            if (handler != null) handler(terminalUrl, actionDTO, objectId);
         }
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))
@@ -290,6 +308,12 @@ namespace Data.Infrastructure
         {
             UserRegistrationErrorHandler handler = AlertUserRegistrationError;
             if (handler != null) handler(ex);
+        }
+
+        public static void Fr8AccountTerminalRegistration(TerminalDO terminalDO)
+        {
+            if (AlertFr8AccountTerminalRegistration != null)
+                AlertFr8AccountTerminalRegistration(terminalDO);
         }
 
         //public static void BookingRequestCheckedOut(int bookingRequestId, string bookerId)
@@ -425,6 +449,18 @@ namespace Data.Infrastructure
             var handler = IncidentDocuSignFieldMissing;
             if (handler != null) handler(envelopeId, fieldName);
         }
+        public static void MissingFieldInPayload(string fieldKey, ActionDO action, string userId)
+        {
+            var handler = IncidentMissingFieldInPayload;
+            if (handler != null) handler(fieldKey, action, userId);
+        }
+
+        public static void OAuthAuthenticationFailed(string requestQueryString, string errorMessage)
+        {
+            var handler = IncidentOAuthAuthenticationFailed;
+            if (handler != null) handler(requestQueryString, errorMessage);
+        }
+
         public static void ActionActivated(ActionDO action)
         {
             var handler = TerminalActionActivated;
@@ -477,6 +513,7 @@ namespace Data.Infrastructure
             var handler = EventAuthenticationCompleted;
             if (handler != null) handler(userId, authenticatedTerminal);
         }
+
 
         #endregion
     }

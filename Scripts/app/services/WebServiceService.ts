@@ -5,11 +5,11 @@ module dockyard.services {
 	}
 
 	app.factory("WebServiceService", ["$resource", ($resource: ng.resource.IResourceService): IWebServiceService =>
-		<IWebServiceService> $resource("webservices/:id", { id: "@id" }, {
+        <IWebServiceService>$resource("/api/webservices?id=:id", { id: "@id" }, {
 			getActions: {
 				method: "POST",
 				isArray: true,
-				url: "webservices/actions"
+                url: "/api/webservices/actions"
 			}
 		})
 	]);

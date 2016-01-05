@@ -35,7 +35,7 @@ namespace terminalDocuSign.Services
             _docuSignRoute = ObjectFactory.GetInstance<IDocuSignRoute>();
         }
 
-        public async Task<object> Process(string curExternalEventPayload)
+        public Crate Process(string curExternalEventPayload)
         {
             //DO - 1449
             //if the event payload is Fr8 User ID, it is DocuSign Authentication Completed event
@@ -50,7 +50,7 @@ namespace terminalDocuSign.Services
                 }
 
                 //create MonitorAllDocuSignEvents route
-                await _docuSignRoute.CreateRoute_MonitorAllDocuSignEvents(curFr8UserId);
+                _docuSignRoute.CreateRoute_MonitorAllDocuSignEvents(curFr8UserId);
 
                 return null;
             } 
@@ -73,31 +73,7 @@ namespace terminalDocuSign.Services
             //prepare the event report
             var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
 
-            string url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/fr8_events";
-            var response = await new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), _crate.ToDto(curEventReport));
-
-            var content = await response.Content.ReadAsStringAsync();
-
-            if (!string.IsNullOrWhiteSpace(content))
-            {
-                try
-                {
-                    return JsonConvert.DeserializeObject(content);
-                }
-                catch 
-                {
-                    return new
-                    {
-                        title = "Unexpected error while serving your request",
-                        exception = new
-                        {
-                            Message = "Unexpected response from hub"
-                        }
-                    };
-                }
-            }
-
-            return content;
+            return curEventReport;
         }
 
         private void Parse(string xmlPayload, out List<DocuSignEventDTO> curEvents, out string curEnvelopeId)
@@ -121,8 +97,9 @@ namespace terminalDocuSign.Services
                     SentDate = docuSignEnvelopeInformation.EnvelopeStatus.SentDate,
                     DeliveredDate = docuSignEnvelopeInformation.EnvelopeStatus.DeliveredDate,
                     CompletedDate = docuSignEnvelopeInformation.EnvelopeStatus.CompletedDate,
-                    Email = docuSignEnvelopeInformation.EnvelopeStatus.ExternalAccountId,
-                    EventId = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status).ToString()
+                    HolderEmail = docuSignEnvelopeInformation.EnvelopeStatus.ExternalAccountId,
+                    EventId = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status).ToString(),
+                    Subject = docuSignEnvelopeInformation.EnvelopeStatus.Subject
                 });
             }
             catch (ArgumentException)
@@ -164,9 +141,9 @@ namespace terminalDocuSign.Services
 
             returnList.Add(new FieldDTO("DeliveredDate", curEvent.DeliveredDate));
             returnList.Add(new FieldDTO("CompletedDate", curEvent.CompletedDate));
-            returnList.Add(new FieldDTO("Email", curEvent.Email));
+            returnList.Add(new FieldDTO("HolderEmail", curEvent.HolderEmail));
             returnList.Add(new FieldDTO("EventId", curEvent.EventId));
-
+            returnList.Add(new FieldDTO("Subject", curEvent.Subject));
             return returnList;
             }
     }

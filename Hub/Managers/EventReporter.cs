@@ -788,6 +788,7 @@ namespace Hub.Managers
                 Data = eventDataCm.Data,
                 PrimaryCategory = eventDataCm.PrimaryCategory,
                 SecondaryCategory = eventDataCm.SecondaryCategory,
+                Component = "Terminal",
                 Activity = eventDataCm.Activity
             };
 
@@ -874,7 +875,9 @@ namespace Hub.Managers
         private static async Task PostToTerminalEventsEndPoint(string userId, TerminalDO authenticatedTerminal)
         {
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-            await restClient.PostAsync<object>(new Uri("http://" + authenticatedTerminal.Endpoint + "/events"), new {fr8_user_id = userId});
+            await
+                restClient.PostAsync<object>(
+                    new Uri("http://" + authenticatedTerminal.Endpoint + "/terminals/" + authenticatedTerminal.Name + "/events"), new {fr8_user_id = userId});
         }
 
     }

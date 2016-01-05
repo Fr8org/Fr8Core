@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using AutoMapper;
+using Hub.Exceptions;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using Data.Entities;
@@ -37,7 +38,7 @@ namespace Hub.Services
 
         public Route()
         {
-            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>(); 
+            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _subroute = ObjectFactory.GetInstance<ISubroute>();
             _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>();
             _action = ObjectFactory.GetInstance<IAction>();
@@ -172,6 +173,30 @@ namespace Hub.Services
             }
         }
 
+        /// <summary>
+        /// Iterates all RouteNode tree by traversing through children
+        /// </summary>
+        /// <typeparam name="TActivity"></typeparam>
+        /// <param name="rootNode"></param>
+        /// <returns></returns>
+        private IEnumerable<TActivity> EnumerateActivityTree<TActivity>(RouteNodeDO rootNode) where TActivity : RouteNodeDO
+        {
+            var routeNodeQueue = new Queue<RouteNodeDO>();
+            routeNodeQueue.Enqueue(rootNode);
+
+            while (routeNodeQueue.Count > 0)
+            {
+                var result = routeNodeQueue.Dequeue();
+                if (result is TActivity)
+                {
+                    yield return result as TActivity;
+                }
+
+                foreach (var activityDo in result.ChildNodes.OfType<TActivity>())
+                    routeNodeQueue.Enqueue(activityDo);
+            }
+        }
+
 
 
         public async Task<string> Activate(RouteDO curRoute)
@@ -185,22 +210,25 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var route = uow.RouteRepository.GetByKey(curRoute.Id);
-
-                foreach (var curActionDO in EnumerateActivities<ActionDO>(route))
-            {
-                try
+                foreach (SubrouteDO template in route.Subroutes)
                 {
-                        var resultActivate = await _action.Activate(curActionDO);
+                    var activities = EnumerateActivityTree<ActionDO>(template);
+                    foreach (var curActionDO in activities)
+                    {
+                        try
+                        {
+                            var resultActivate = await _action.Activate(curActionDO);
 
-                    result = "success";
+                            result = "success";
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new ApplicationException("Process template activation failed.", ex);
+                        }
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw new ApplicationException("Process template activation failed.", ex);
-                }
-            }
+                
 
-            
                 uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Active;
                 uow.SaveChanges();
             }
@@ -214,23 +242,28 @@ namespace Hub.Services
         {
             string result = "no action";
 
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-            foreach (var curActionDO in EnumerateActivities<ActionDO>(curRoute))
-            {
-                try
-                {
-                        var resultD = await _action.Deactivate(curActionDO);
+                var route = uow.RouteRepository.GetByKey(curRoute.Id);
 
-                    result = "success";
-                }
-                catch (Exception ex)
+                foreach (SubrouteDO template in route.Subroutes)
                 {
-                    throw new ApplicationException("Process template Deactivation failed.", ex);
-                }
-            }
+                    var activities = EnumerateActivityTree<ActionDO>(template);
+                    foreach (var curActionDO in activities)
+                    {
+                        try
+                        {
+                            var resultD = await _action.Deactivate(curActionDO);
 
+                            result = "success";
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new ApplicationException("Process template activation failed.", ex);
+                        }
+                    }
+                }
+                
                 uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Inactive;
                 uow.SaveChanges();
             }
@@ -313,11 +346,11 @@ namespace Hub.Services
         public List<RouteDO> MatchEvents(List<RouteDO> curRoutes, EventReportCM curEventReport)
         {
             List<RouteDO> subscribingRoutes = new List<RouteDO>();
-          
+
             foreach (var curRoute in curRoutes)
             {
                 //get the 1st activity
-                var actionDO = GetFirstActivity(curRoute.Id) as ActionDO;
+                var actionDO = GetFirstActionWithEventSubscriptions(curRoute.Id);
 
                 if (actionDO != null)
                 {
@@ -340,7 +373,42 @@ namespace Hub.Services
             return subscribingRoutes;
         }
 
+        private ActionDO GetFirstActionWithEventSubscriptions(Guid id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var root = uow.RouteNodeRepository.GetByKey(id);
 
+                
+                var queue = new Queue<RouteNodeDO>();
+                queue.Enqueue(root);
+
+                while (queue.Count > 0)
+                {
+                    var routeNode = queue.Dequeue();
+                    var action = routeNode as ActionDO;
+
+                    if (action != null)
+                    {
+                        var storage = _crate.GetStorage(action.CrateStorage);
+                        if (storage.CratesOfType<EventSubscriptionCM>().Count() > 0)
+                        {
+                            return action;
+                        }
+                    }
+
+                    if (routeNode.ChildNodes != null)
+                    {
+                        foreach (var childNode in routeNode.ChildNodes)
+                        {
+                            queue.Enqueue(childNode);
+                        }
+                    }
+                }
+
+                return null;
+            }
+        }
 
         public RouteNodeDO GetFirstActivity(Guid curRouteId)
         {
@@ -353,6 +421,12 @@ namespace Hub.Services
         public RouteNodeDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute)
         {
             return EnumerateActivities<RouteNodeDO>(curRoute, false).OrderBy(a => a.Ordering).FirstOrDefault();
+        }
+
+        public RouteNodeDO GetRootActivity(IUnitOfWork uow, RouteDO curRoute)
+        {
+            return curRoute.StartingSubroute as RouteNodeDO;
+            //return EnumerateActivities<RouteNodeDO>(curRoute, false).OrderBy(a => a.Ordering).FirstOrDefault();
         }
 
         public RouteDO GetRoute(ActionDO action)
@@ -374,7 +448,7 @@ namespace Hub.Services
 
         public RouteDO Copy(IUnitOfWork uow, RouteDO route, string name)
         {
-            var root = (RouteDO) route.Clone();
+            var root = (RouteDO)route.Clone();
             root.Id = Guid.NewGuid();
             root.Name = name;
             uow.RouteNodeRepository.Add(root);
@@ -417,8 +491,7 @@ namespace Hub.Services
         /// <returns></returns>
         public ContainerDO Create(IUnitOfWork uow, Guid routeId, Crate curEvent)
         {
-            var containerDO = new ContainerDO();
-            containerDO.Id = Guid.NewGuid();
+            var containerDO = new ContainerDO {Id = Guid.NewGuid()};
 
             var curRoute = uow.RouteRepository.GetByKey(routeId);
             if (curRoute == null)
@@ -436,7 +509,7 @@ namespace Hub.Services
                 }
             }
 
-            containerDO.CurrentRouteNode = GetInitialActivity(uow, curRoute);
+            containerDO.CurrentRouteNode = GetRootActivity(uow, curRoute);
 
             uow.ContainerRepository.Add(containerDO);
             uow.SaveChanges();
@@ -453,40 +526,55 @@ namespace Hub.Services
             return containerDO;
         }
 
+        private async Task<ContainerDO> Run(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            if (curContainerDO.ContainerState == ContainerState.Failed || curContainerDO.ContainerState == ContainerState.Completed)
+            {
+                throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
+            }
+
+            try
+            {
+                await _container.Run(uow, curContainerDO);
+                return curContainerDO;
+            }
+            catch
+            {
+                curContainerDO.ContainerState = ContainerState.Failed;
+                throw;
+            }
+            finally
+            {
+                //TODO is this necessary? let's leave it as it is
+                /*
+                curContainerDO.CurrentRouteNode = null;
+                curContainerDO.NextRouteNode = null;
+                 * */
+                uow.SaveChanges();
+            }
+        }
+
         public async Task<ContainerDO> Run(RouteDO curRoute, Crate curEvent)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curContainerDO = Create(uow, curRoute.Id, curEvent);
-
-                if (curContainerDO.ContainerState == ContainerState.Failed || curContainerDO.ContainerState == ContainerState.Completed)
-                {
-                    throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
-                }
-
-                curContainerDO.ContainerState = ContainerState.Executing;
-                uow.SaveChanges();
-
-                try
-                {
-                    await _container.Execute(uow, curContainerDO);
-                    curContainerDO.ContainerState = ContainerState.Completed;
-
-                    return curContainerDO;
-                }
-                catch
-                {
-                    curContainerDO.ContainerState = ContainerState.Failed;
-                    throw;
-                }
-                finally
-                {
-                    curContainerDO.CurrentRouteNode = null;
-                    curContainerDO.NextRouteNode = null;
-                    uow.SaveChanges();
-                }
+                return await Run(uow, curContainerDO);
             }
+        }
 
+        public async Task<ContainerDO> Continue(Guid containerId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curContainerDO = uow.ContainerRepository.GetByKey(containerId);
+                if (curContainerDO.ContainerState != ContainerState.Pending)
+                {
+                    throw new ApplicationException("Attempted to Continue a Process that wasn't pending");
+                }
+                //continue from where we left
+                return await Run(uow, curContainerDO);
+            }
         }
 
         /// <summary>

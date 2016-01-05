@@ -12,12 +12,7 @@ namespace terminalSendGrid
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register(config);
-
-            config.Routes.MapHttpRoute(
-                name: "TerminalSendGridServer",
-                routeTemplate: "terminalSendGrid/{controller}/{id}"
-            );
+            BaseTerminalWebApiConfig.Register("SendGrid", config);
         }
     }
 }

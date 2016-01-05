@@ -9,8 +9,8 @@ module dockyard.services {
         getFull: (id: Object) => interfaces.IRouteVM;
         getByAction: (id: { id: string }) => interfaces.IRouteVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
-        activate: (route: model.RouteDTO) => void;
-        deactivate: (route: model.RouteDTO) => void;
+        activate: (route: model.RouteDTO) => ng.resource.IResource<string>;
+        deactivate: (route: model.RouteDTO) => ng.resource.IResource<string>;
         update: (data: { id: string, name: string}) => interfaces.IRouteVM;
     }
 
@@ -18,10 +18,10 @@ module dockyard.services {
         configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IActionVM>;
         getByRoute: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
         create: (args: { actionTemplateId: number, name: string, label: string, parentNideId: number, createRoute: boolean }) => ng.resource.IResource<model.RouteDTO | model.ActionDTO>;
-        createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.RouteDTO>;
+        createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.RouteDTO>
         //TODO make resource class do this operation
-        deleteById: (id: { id: string; confirmed: boolean }) => ng.resource.IResource<string>;
-        
+        deleteById: (id: { id: string; confirmed: boolean }) => ng.resource.IResource < string >
+        batchSave: (actionList: interfaces.IActionDTO[]) => ng.resource.IResource < interfaces.IActionVM >
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
 
@@ -62,12 +62,16 @@ module dockyard.services {
     */
 
     app.factory('RouteService', ['$resource', ($resource: ng.resource.IResourceService): IRouteService =>
-        <IRouteService>$resource('/routes/:id', { id: '@id' },
+        <IRouteService>$resource('/api/routes?id=:id', { id: '@id' },
             {
+                'save': {
+                    method: 'POST',
+                    url: '/api/routes/post'
+                },
                 'getFull': {
                     method: 'GET',
                     isArray: false,
-                    url: '/routes/full/:id',
+                    url: '/api/routes/full/:id',
                     params: {
                         id: '@id'
                     }
@@ -75,7 +79,7 @@ module dockyard.services {
                 'getbystatus': {
                     method: 'GET',
                     isArray: true,
-                    url: '/routes/status?status=:status',
+                    url: '/api/routes/status?status=:status',
                     params: {
                         status: '@status'
                     }
@@ -83,7 +87,7 @@ module dockyard.services {
                 'getByAction': {
                     method: 'GET',
                     isArray: false,
-                    url: '/routes/getByAction/:id',
+                    url: '/api/routes/getByAction/:id',
                     params: {
                         id: '@id'
                     }
@@ -91,26 +95,28 @@ module dockyard.services {
                 'execute': {
                     method: 'POST',
                     isArray: false,
-                    url: '/routes/run?routeId=:id',
+                    url: '/api/routes/run?routeId=:id',
                     params: {
                         id: '@id'
                     }
                 },
                 'activate': {
                     method: 'POST',
-                    url: '/routes/activate/',
+                    isArray: false,
+                    url: '/api/routes/activate/',
                     params: {
                     }
                 },
                 'deactivate': {
                     method: 'POST',
-                    url: '/routes/deactivate/',
+                    isArray: false,
+                    url: '/api/routes/deactivate/',
                     params: {
                     }
                 },
                 'update': {
                     method: 'POST',
-                    url: '/routes/',
+                    url: '/api/routes/',
                     params: {
 
                     }
@@ -129,16 +135,16 @@ module dockyard.services {
         DocuSignExternalEventDTO CRUD service.
     */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
-        <IDocuSignTriggerService>$resource('/route/triggersettings')
+        <IDocuSignTriggerService>$resource('/api/route/triggersettings')
     ]);
 
     app.factory('ActionTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
-        <IActionService>$resource('/actiontemplates/', null,
+        <IActionService>$resource('/api/actiontemplates/', null,
             {
                 'available': {
                     method: 'GET',
                     isArray: true,
-                    url: '/route_nodes/available',
+                    url: '/api/routenodes/available',
                     params: {
                         tag: '@tag'
                     }
@@ -150,19 +156,18 @@ module dockyard.services {
         ActionDTO CRUD service.
     */
     app.factory('ActionService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
-        <IActionService>$resource('/actions/:id',
-            {
-                id: '@id'
-            },
+        <IActionService>$resource('/api/actions?id=:id',
+                {
+                    id: '@id'
+                },
             {
                 'save': {
                     method: 'POST',
                     isArray: false,
-                    url: '/actions/save',
+                    url: '/api/actions/save',
                     params: {
                         suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
                     }
-
                 },
                 //'get': {
                 //    transformResponse: function (data) {
@@ -174,27 +179,27 @@ module dockyard.services {
                 'delete': { method: 'DELETE' },
                 'configure': {
                     method: 'POST',
-                    url: '/actions/configure',
+                    url: '/api/actions/configure',
                     params: {
                         suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
                     }
                 },
                 'getByRoute': {
                     method: 'GET',
-                    url: '/actions/bypt',
+                    url: '/api/actions/bypt',
                     isArray: true
                 },
                 'deleteById': {
                     method: 'DELETE',
-                    url: '/actions/:id?confirmed=:confirmed'
+                    url: '/api/actions?id=:id&confirmed=:confirmed'
                 },
                 'create': {
                     method: 'POST',
-                    url: '/actions/create'
+                    url: '/api/actions/create'
                 },
                 'createSolution': {
                     method: 'POST',
-                    url: '/actions/create',
+                    url: '/api/actions/create',
                     params: {
                         solutionName: '@solutionName'
                     }
@@ -231,7 +236,7 @@ module dockyard.services {
         This service is not intended to be used by anything except CriteriaServiceWrapper,
         that's why its name starts with underscores. 
     */
-    app.factory('__SubrouteService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService): __ISubrouteService =>
+    app.factory('__SubrouteService', ['$resource', ($resource: ng.resource.IResourceService): __ISubrouteService =>
         <__ISubrouteService>$resource('/api/processnodetemplate', null,
             {
                 'add': {
@@ -248,7 +253,7 @@ module dockyard.services {
             {
                 'getAvailableActivities': {
                     method: 'GET',
-                    url: '/route_nodes/available/',
+                    url: '/api/routenodes/available/',
                     isArray: true
                 }
             })
