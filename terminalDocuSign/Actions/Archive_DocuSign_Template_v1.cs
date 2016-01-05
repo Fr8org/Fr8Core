@@ -103,7 +103,7 @@ namespace terminalDocuSign.Actions
             SetSelectedTemplate(getDocuSignTemplateAction, selectedTemplateField);
 
             var convertCratesAction = await CreateConvertCratesAction(actionDO, authTokenDO);
-            SetConversion(convertCratesAction);
+            SetFromConversion(convertCratesAction);
 
             var storeFileAction = await CreateStoreFileAction(actionDO, authTokenDO);
             SetFileDetails(storeFileAction, destinationFileNameField.Value);
@@ -131,17 +131,24 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private void SetConversion(ActionDO convertCratesAction)
+        private void SetFromConversion(ActionDO convertCratesAction)
         {
             using (var updater = Crate.UpdateStorage(convertCratesAction))
             {
                 var confControls = GetConfigurationControls(updater.CrateStorage);
                 var fromDropdown = (DropDownList)GetControl(confControls, "Available_From_Manifests", ControlTypes.DropDownList);
-                var toDropdown = (DropDownList)GetControl(confControls, "Available_To_Manifests", ControlTypes.DropDownList);
-
                 
-                fromDropdown.Value = MT.DocuSignTemplate.ToString();
-                toDropdown.Value = MT.StandardFileHandle.ToString();
+                fromDropdown.Value = ((int)MT.DocuSignTemplate).ToString();
+            }
+        }
+
+        private void SetToConversion(ActionDO convertCratesAction)
+        {
+            using (var updater = Crate.UpdateStorage(convertCratesAction))
+            {
+                var confControls = GetConfigurationControls(updater.CrateStorage);
+                var toDropdown = (DropDownList)GetControl(confControls, "Available_To_Manifests", ControlTypes.DropDownList);
+                toDropdown.Value = ((int)MT.StandardFileHandle).ToString();
             }
         }
 
@@ -164,12 +171,12 @@ namespace terminalDocuSign.Actions
 
         private async Task<ActionDO> CreateConvertCratesAction(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await CreateAction(actionDO, authTokenDO, "Convert_Crates", "Convert Crates", "Convert Crates", 2);
+            return await CreateAction(actionDO, authTokenDO, "ConvertCrates", "Convert Crates", "Convert Crates", 2);
         }
 
         private async Task<ActionDO> CreateStoreFileAction(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await CreateAction(actionDO, authTokenDO, "Store_File", "Store File", "Store File", 3);
+            return await CreateAction(actionDO, authTokenDO, "StoreFile", "Store File", "Store File", 3);
         }
 
         private async Task<ActionDO> CreateAction(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string activityTemplateName, string name, string label, int ordering)
