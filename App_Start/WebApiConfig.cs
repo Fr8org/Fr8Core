@@ -14,7 +14,7 @@ namespace HubWeb
 
 			// Web API routes
 
-            // NOTE :: API route is changed for ProcessEvents  
+            // NOTE :: API route is changed for ProcessEvents.  
             config.Routes.MapHttpRoute(
                 name: "DefaultApiEvents",
                 routeTemplate: "api/v1/events",
