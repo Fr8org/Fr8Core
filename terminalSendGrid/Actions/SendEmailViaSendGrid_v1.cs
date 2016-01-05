@@ -144,7 +144,7 @@ namespace terminalSendGrid.Actions
                 CreateEmailBodyTextSourceControl()
             };
 
-            return Crate.CreateStandardConfigurationControlsCrate("SendGrid", controls.ToArray());
+            return Crate.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel, controls.ToArray());
         }
 
         private async Task<Crate> GetAvailableDataFields(ActionDO curActionDO)
@@ -177,7 +177,15 @@ namespace terminalSendGrid.Actions
             var payloadCrates = await GetPayload(curActionDO, containerId);
 
             var payloadCrateStorage = Crate.GetStorage(payloadCrates);
-            var configurationControls = GetConfigurationControls(curActionDO);
+            StandardConfigurationControlsCM configurationControls = GetConfigurationControls(curActionDO);
+
+            // A fix to support an old (wrong) crate label (FR-1972). The following block can be savely removed in Feb 2016
+            if (configurationControls == null)
+            {
+                var storage = Crate.GetStorage(curActionDO);
+                configurationControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => String.Equals(c.Label, "SendGrid", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            }
+
             var emailAddressField = (TextSource)GetControl(configurationControls, "EmailAddress", ControlTypes.TextSource);
             var emailSubjectField = (TextSource)GetControl(configurationControls, "EmailSubject", ControlTypes.TextSource);
             var emailBodyField = (TextSource)GetControl(configurationControls, "EmailBody", ControlTypes.TextSource);
