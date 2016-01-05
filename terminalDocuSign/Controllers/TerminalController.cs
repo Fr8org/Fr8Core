@@ -143,6 +143,17 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 380
             };
 
+            var archiveDocusignTemplate = new ActivityTemplateDTO
+            {
+                Name = "Archive_DocuSign_Template",
+                Label = "Archive DocuSign Template",
+                Version = "1",
+                NeedsAuthentication = true,
+                Category = ActivityCategory.Solution,
+                Terminal = terminal,
+                MinPaneWidth = 500
+            };
+
 
             var actionList = new List<ActivityTemplateDTO>()
             {
@@ -155,7 +166,8 @@ namespace terminalDocuSign.Controllers
                 richDocumentNotificationsSolution,
                 queryDocusign,
                 searchDocusignHistory,
-                getDocuSignTemplateActionTemplate
+                getDocuSignTemplateActionTemplate,
+                archiveDocusignTemplate
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
