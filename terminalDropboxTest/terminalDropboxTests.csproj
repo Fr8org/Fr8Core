@@ -142,6 +142,8 @@
   <ItemGroup>
     <Compile Include="Actions\GetFileList_v1Tests.cs" />
     <Compile Include="Fixtures\FixtureData.cs" />
+    <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
+    <Compile Include="Integration\Get_File_List_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discovery_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -261,6 +261,8 @@ module dockyard.directives.paneConfigureAction {
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;
 
+
+
                     if ($scope.configurationWatchUnregisterer) {
                         $scope.configurationWatchUnregisterer();
                     }
@@ -353,7 +355,14 @@ module dockyard.directives.paneConfigureAction {
                         scope: modalScope
                     })
                     .result
-                    .then(() => loadConfiguration());
+                    .then(() => loadConfiguration())
+                    .catch((result) => {
+                        var errorText = 'Authentication unsuccessful. Click to try again.';
+                        var control = new model.TextBlock(errorText, 'well well-lg alert-danger');
+                        control.name = 'AuthUnsuccessfulLabel';
+                        $scope.currentAction.configurationControls = new model.ControlsList();
+                        $scope.currentAction.configurationControls.fields = [control];
+                    });
                 }
 
                 // TODO: remove this.

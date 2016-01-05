@@ -118,7 +118,7 @@ namespace terminalDocuSignTests.Integration
         /// <summary>
         /// Test run-time for action Run().
         /// </summary>
-        [Test, Ignore]
+        [Test]
         public async void Record_DocuSign_Envelope_Run()
         {
             var runUrl = GetTerminalRunUrl();

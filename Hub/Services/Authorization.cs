@@ -425,7 +425,7 @@ namespace Hub.Services
                     new TextBlock()
                     {
                         Name = "AuthAwaitLabel",
-                        Value = "Waiting for authentication window..."
+                        Value = "Please provide credentials to access your desired account"
                     });
             }
         }

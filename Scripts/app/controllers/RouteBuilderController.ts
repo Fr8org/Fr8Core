@@ -27,6 +27,7 @@ module dockyard.controllers {
 
         addAction(group: model.ActionGroup): void;
         deleteAction: (action: model.ActionDTO) => void;
+        chooseAuthToken: (action: model.ActionDTO) => void;
         selectAction(action): void;
         isBusy: () => boolean;
         onActionDrop: (group: model.ActionGroup, actionId: string, index: number) => void;
@@ -59,7 +60,7 @@ module dockyard.controllers {
             '$filter',
             'UIHelperService',
             'LayoutService',
-            '$state'
+            '$modal'
         ];
 
         private _longRunningActionsCounter: number;
@@ -76,7 +77,8 @@ module dockyard.controllers {
             private CrateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
             private uiHelperService: services.IUIHelperService,
-            private LayoutService: services.ILayoutService
+            private LayoutService: services.ILayoutService,
+            private $modal: any
             ) {
 
             this.$scope.current = new model.RouteBuilderState();
@@ -95,6 +97,9 @@ module dockyard.controllers {
             this._longRunningActionsCounter = 0;
 
             $scope.deleteAction = <() => void> angular.bind(this, this.deleteAction);
+            this.$scope.chooseAuthToken = (action: model.ActionDTO) => {
+                this.chooseAuthToken(action);
+            };
 
             this.$scope.selectAction = (action: model.ActionDTO) => {
                 if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
@@ -386,6 +391,29 @@ module dockyard.controllers {
             this.loadRoute();
         }
 
+        private chooseAuthToken(action: model.ActionDTO) {
+            debugger;
+
+            var self = this;
+
+            var modalScope = <any>self.$scope.$new(true);
+            modalScope.actionIds = [action.id];
+
+            self.$modal.open({
+                animation: true,
+                templateUrl: '/AngularTemplate/AuthenticationDialog',
+                controller: 'AuthenticationDialogController',
+                scope: modalScope
+            })
+            .result
+            .then(() => {
+                self.$scope.$broadcast(
+                    pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure],
+                    new pca.ActionReconfigureEventArgs(action)
+                );
+            });
+        }
+
         private deleteAction(action: model.ActionDTO) {
             var self = this;
             self.ActionService.deleteById({ id: action.id, confirmed: false }).$promise.then((response) => {
@@ -401,7 +429,6 @@ module dockyard.controllers {
                 });
             }); 
         }
-
 
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
 
