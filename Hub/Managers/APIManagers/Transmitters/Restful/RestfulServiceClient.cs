@@ -129,6 +129,14 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             }
         }
 
+        private async Task<HttpResponseMessage> PostInternalAsync(Uri requestUri, HttpContent content)
+        {
+            using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri) { Content = content })
+            {
+                return await SendInternalAsync(request);
+            }
+        }
+
         private async Task<HttpResponseMessage> PostInternalAsync<TContent>(Uri requestUri, TContent content)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri) { Content = new ObjectContent(typeof(TContent), content, _formatter) })
@@ -183,6 +191,14 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             using (var response = await PostInternalAsync(requestUri, content))
             {
                 return await response.Content.ReadAsStringAsync();
+            }
+        }
+
+        public async Task<TResponse> PostAsync<TResponse>(Uri requestUri, HttpContent content)
+        {
+            using (var response = await PostInternalAsync(requestUri, content))
+            {
+                return await DeserializeResponseAsync<TResponse>(response);
             }
         }
 

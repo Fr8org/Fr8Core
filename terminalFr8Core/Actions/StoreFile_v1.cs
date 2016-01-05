@@ -20,7 +20,6 @@ using Newtonsoft.Json.Linq;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalFr8Core.Services;
 using Utilities;
 using StructureMap;
 using Hub.Interfaces;
@@ -36,7 +35,6 @@ namespace terminalFr8Core.Actions
             {
                 return ConfigurationRequestType.Initial;
             }
-
             var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
@@ -69,23 +67,28 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
+            var curPayloadDTO = await GetPayload(curActionDO, containerId);
+            var payloadStorage = Crate.GetStorage(curPayloadDTO);
 
-            var designTimeStorage = Crate.GetStorage(curActionDO);
-            var designTimeControls = designTimeStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
-            var textSourceControl = designTimeControls.Controls.Single(c => c.Name == "File Crate label" && c.Type == ControlTypes.TextSource);
-
-            if (string.IsNullOrEmpty(textSourceControl.Value))
+            var configContrls = GetConfigurationControls(curActionDO);
+            var textSourceControl = (TextSource)GetControl(configContrls, "File Crate label", ControlTypes.TextSource);
+            var fileNameField = (TextBox)GetControl(configContrls, "File_Name", ControlTypes.TextBox);
+            var fileCrateLabel = textSourceControl.GetValue(payloadStorage);
+            if (string.IsNullOrEmpty(fileCrateLabel))
             {
                 return Error(curPayloadDTO, "No Label was selected on design time", ActionErrorCode.DESIGN_TIME_DATA_MISSING);
             }
+            if (string.IsNullOrEmpty(fileNameField.Value))
+            {
+                return Error(curPayloadDTO, "No file name was given on design time", ActionErrorCode.DESIGN_TIME_DATA_MISSING);
+            }
 
-            var payloadStorage = Crate.GetStorage(curPayloadDTO);
+
             //we should upload this file to our file storage
-            var userSelectedFileManifest = payloadStorage.CrateContentsOfType<StandardFileDescriptionCM>(f => f.Label == textSourceControl.Value).FirstOrDefault();
+            var userSelectedFileManifest = payloadStorage.CrateContentsOfType<StandardFileDescriptionCM>(f => f.Label == fileCrateLabel).FirstOrDefault();
             if (userSelectedFileManifest == null)
             {
-                return Error(curPayloadDTO, "No StandardFileDescriptionCM Crate was found with label "+textSourceControl.Value, ActionErrorCode.PAYLOAD_DATA_MISSING);
+                return Error(curPayloadDTO, "No StandardFileDescriptionCM Crate was found with label "+ fileCrateLabel, ActionErrorCode.PAYLOAD_DATA_MISSING);
             }
 
 
@@ -94,7 +97,7 @@ namespace terminalFr8Core.Actions
             using (var stream = GenerateStreamFromString(fileContents))
             {
                 //TODO what to do with this fileDO??
-                var fileDO = await HubCommunicator.SaveFile("testFile", stream);
+                var fileDO = await HubCommunicator.SaveFile(fileNameField.Value, stream);
             }
 
             
@@ -132,21 +135,13 @@ namespace terminalFr8Core.Actions
 
         private Crate CreateControlsCrate()
         {
-            var textSource = new TextSource("File Crate Label", "Upstream Terminal-Provided File Crates", "File Crate label");
-            /*var textSource = new TextSource
+            var fileNameTextBox = new TextBox
             {
-                Label = "Store data from which upstream Crate of Files having Label:",
-                Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") },
-                Source = new FieldSourceDTO
-                {
-                    Label = "Available File Manifest Labels",
-                    ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
-                },
-                Value = null,
-                UpstreamSourceLabel = null
-            };*/
-
-            return PackControlsCrate(textSource);
+                Label = "Name of file",
+                Name = "File_Name"
+            };
+            var textSource = new TextSource("File Crate Label", "Upstream Terminal-Provided File Crates", "File Crate label");
+            return PackControlsCrate(fileNameTextBox, textSource);
         }
     }
 }

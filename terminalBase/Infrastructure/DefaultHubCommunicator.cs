@@ -11,6 +11,7 @@ using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities.Configuration.Azure;
 using System.IO;
+using System.Net.Http;
 
 namespace TerminalBase.Infrastructure
 {
@@ -98,17 +99,28 @@ namespace TerminalBase.Infrastructure
             return templates;
         }
 
+        public static byte[] ReadFully(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
+        }
+
         public async Task<FileDO> SaveFile(string name, Stream stream)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files";
-
-            var allCategories = await _restfulServiceClient
-                .PostAsync(new Uri(hubUrl));
-
-            var templates = allCategories.SelectMany(x => x.Activities);
-            return null;
-            throw new NotImplementedException();
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files/files";
+            var multiPartData = new MultipartFormDataContent();
+            var byteData = ReadFully(stream);
+            multiPartData.Add(new ByteArrayContent(byteData), name, name);
+            return await _restfulServiceClient.PostAsync<FileDO>(new Uri(hubUrl), multiPartData);
         }
     }
 }

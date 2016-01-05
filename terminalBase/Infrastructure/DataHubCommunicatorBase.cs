@@ -10,6 +10,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
+using System.IO;
 
 namespace TerminalBase.Infrastructure
 {
@@ -93,6 +94,19 @@ namespace TerminalBase.Infrastructure
         public async Task CreateAlarm(AlarmDTO alarmDTO)
         {
             
+        }
+
+        public Task<FileDO> SaveFile(string name, Stream stream)
+        {
+            var fileDO = new FileDO
+            {
+                OriginalFileName = name,
+                CreateDate = DateTime.Now,
+                Id = 0,
+                LastUpdated = DateTime.Now
+            };
+
+            return Task.FromResult(fileDO);
         }
 
         public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO)

@@ -18,7 +18,7 @@ using Hub.Interfaces;
 
 namespace HubWeb.Controllers
 {
-    [Fr8ApiAuthorize]
+    //[Fr8ApiAuthorize]
     public class FilesController : ApiController
     {
         private readonly IFile _fileService;
@@ -40,7 +40,10 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var account = _security.GetCurrentAccount(uow);
+                //var account = _security.GetCurrentAccount(uow);
+                var account = new Fr8AccountDO {
+                    Id = "asdasd"
+                };
 
                 await Request.Content.ReadAsMultipartAsync<MultipartMemoryStreamProvider>(new MultipartMemoryStreamProvider()).ContinueWith((tsk) =>
                 {
