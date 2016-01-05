@@ -59,11 +59,6 @@ namespace terminalSendGrid.Actions
             return await AddDesignTimeFieldsSource(curActionDO);
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
-        {
-            return await AddDesignTimeFieldsSource(curActionDO);
-        }
-
         private async Task<ActionDO> AddDesignTimeFieldsSource(ActionDO curActionDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
@@ -72,15 +67,17 @@ namespace terminalSendGrid.Actions
                 updater.CrateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Subject");
                 updater.CrateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Body");
 
-                var upstreamFieldsAddress = await MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields Address");
+                var fieldsDTO = await GetCratesFieldsDTO<StandardDesignTimeFieldsCM>(curActionDO, CrateDirection.Upstream);
+
+                var upstreamFieldsAddress = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields Address", fieldsDTO);
                 if (upstreamFieldsAddress != null)
                     updater.CrateStorage.Add(upstreamFieldsAddress);
 
-                var upstreamFieldsSubject = await MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields Subject");
+                var upstreamFieldsSubject = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields Subject", fieldsDTO);
                 if (upstreamFieldsSubject != null)
                     updater.CrateStorage.Add(upstreamFieldsSubject);
 
-                var upstreamFieldsBody = await MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields Body");
+                var upstreamFieldsBody = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields Body", fieldsDTO);
                 if (upstreamFieldsBody != null)
                     updater.CrateStorage.Add(upstreamFieldsBody);
             }
