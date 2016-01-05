@@ -68,7 +68,7 @@ namespace terminalDocuSign.Services
         {
             var template = new DocuSignTemplate();
             var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
-            var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();
+            var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id, Availability = AvailabilityType.Configuration }).ToArray();
             var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
                 "Available Templates",
                 fields);
@@ -85,35 +85,12 @@ namespace terminalDocuSign.Services
                 docuSignAuthDTO.ApiPassword);
 
             var curEnvelopeData = docusignEnvelope.GetEnvelopeData(curEnvelopeId);
-            var fields = GetDocuSignTemplateUserDefinedFields(curActionDO);
-
-            if (fields == null || fields.Count == 0)
-            {
-                throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDO.Id);
-            }
-
-            var payload = docusignEnvelope.ExtractPayload(fields, curEnvelopeId, curEnvelopeData);
+            var templateFields = ExtractFieldsAndAddToCrate(curEnvelopeId, docuSignAuthDTO, curActionDO);
+            var payload = docusignEnvelope.ExtractPayload(templateFields.ToList(), curEnvelopeId, curEnvelopeData);
 
             return new StandardPayloadDataCM(payload.ToArray());
         }
 
-        public List<FieldDTO> GetDocuSignTemplateUserDefinedFields(ActionDO curActionDO)
-        {
-            var fieldsCrate = Crate.GetStorage(curActionDO).CratesOfType<StandardDesignTimeFieldsCM>().FirstOrDefault(x => x.Label == "DocuSignTemplateUserDefinedFields");
-
-            if (fieldsCrate == null) return null;
-
-            var manifestSchema = fieldsCrate.Content;
-
-            if (manifestSchema == null
-                || manifestSchema.Fields == null
-                || manifestSchema.Fields.Count == 0)
-            {
-                return null;
-            }
-
-            return manifestSchema.Fields;
-        }
 
         //Has to be retrofit after https://maginot.atlassian.net/browse/FR-1280 is done
         public string GetEnvelopeIdFromPayload(PayloadDTO curPayloadDTO)

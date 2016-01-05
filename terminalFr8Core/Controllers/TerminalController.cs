@@ -45,8 +45,6 @@ namespace terminalFr8Core.Controllers
                 Label = "Filter Using Runtime Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
-                AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 330,
 				WebService = webService
@@ -58,7 +56,6 @@ namespace terminalFr8Core.Controllers
                 Label = "Convert Crates",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.None,
                 Version = "1",
                 MinPaneWidth = 330,
                 WebService = webService
@@ -70,8 +67,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
-                AuthenticationType = AuthenticationType.None,
+                Tags = "AggressiveReload",
                 Version = "1",
 				MinPaneWidth = 380,
                 WebService = webService
@@ -83,8 +79,6 @@ namespace terminalFr8Core.Controllers
                 Label = "Add Payload Manually",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-
-                AuthenticationType = AuthenticationType.None,
                 Version = "1",
 				MinPaneWidth = 330,
                 WebService = webService
@@ -182,6 +176,17 @@ namespace terminalFr8Core.Controllers
                 WebService = webService,
                 Version = "1",
                 Type = ActivityType.Standard
+            });
+
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "ConvertRelatedFieldsIntoTable",
+                Label = "Convert Related Fields Into a Table",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                MinPaneWidth = 400
             });
 
             result.Add(new ActivityTemplateDTO()

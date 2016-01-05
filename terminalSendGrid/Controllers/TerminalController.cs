@@ -32,12 +32,11 @@ namespace terminalSendGrid.Controllers
             var action = new ActivityTemplateDTO()
             {
                 Name = "SendEmailViaSendGrid",
-                Label = "Send Email Via Send Grid",
+                Label = "Send Email using SendGrid",
                 Version = "1",
-                Description = "Send Email Via Send Grid: Description",
+                Description = "Send Email using SendGrid: Description",
                 Tags = "Notifier",
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.None,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
@@ -53,6 +52,7 @@ namespace terminalSendGrid.Controllers
                 Definition = terminal,
                 Actions = actionList
             };
+
             return Json(curStandardFr8TerminalCM);
         }
     }

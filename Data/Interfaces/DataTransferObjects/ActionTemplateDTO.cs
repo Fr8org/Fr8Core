@@ -1,4 +1,5 @@
-﻿using Data.States;
+﻿using Data.Control;
+using Data.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -17,8 +18,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("version")]
         public string Version { get; set; }
-        [JsonProperty("authenticationType")]
-        public int AuthenticationType { get; set; }
 
         [JsonProperty("webService")]
         public WebServiceDTO WebService { get; set; }
@@ -43,10 +42,14 @@ namespace Data.Interfaces.DataTransferObjects
 
         public ActivityTemplateDTO()
         {
-            AuthenticationType = States.AuthenticationType.None;
             Type = ActivityType.Standard;
         }
 
         public string Description { get; set; }
+
+        public bool NeedsAuthentication { get; set; }
+
+        [JsonProperty("help")]
+        public HelpControlDTO Help { get; set; }
     }
 }

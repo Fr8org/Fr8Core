@@ -20,7 +20,7 @@ using Utilities.Configuration.Azure;
 
 namespace terminalQuickBooks.Services
 {
-    public class QuickBooksIntegration : IQuickBooksIntegration
+    public class Connectivity : IConnectivity
     {
         private static readonly ConcurrentDictionary<string, string> TokenSecrets =
             new ConcurrentDictionary<string, string>();

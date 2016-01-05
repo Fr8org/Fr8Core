@@ -59,10 +59,7 @@ namespace terminalFr8Core.Actions
                 Label = "SQL Connection String",
                 Name = "ConnectionString",
                 Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                }
+                Events = new List<ControlEvent>(){ControlEvent.RequestConfig}
             };
 
             return PackControlsCrate(control);
@@ -140,7 +137,7 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetProcessPayload(curActionDO, containerId));
+            return Success(await GetPayload(curActionDO, containerId));
         }
 
         #endregion Execution.

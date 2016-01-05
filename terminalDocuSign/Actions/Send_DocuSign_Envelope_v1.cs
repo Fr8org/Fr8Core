@@ -26,11 +26,12 @@ namespace terminalDocuSign.Actions
 {
     public class Send_DocuSign_Envelope_v1 : BaseTerminalAction
     {
+        private DocuSignManager _docuSignManager = new DocuSignManager();
         public Send_DocuSign_Envelope_v1()
         {
         }
 
-        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
@@ -39,11 +40,11 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
-                return NeedsAuthenticationError(processPayload);
+                return NeedsAuthenticationError(payloadCrates);
             }
 
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
@@ -52,13 +53,13 @@ namespace terminalDocuSign.Actions
             curEnvelope.Login = new DocuSignPackager()
                 .Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
-            curEnvelope = AddTemplateData(curActionDO, processPayload, curEnvelope);
+            curEnvelope = AddTemplateData(curActionDO, payloadCrates, curEnvelope);
             curEnvelope.EmailSubject = "Test Message from Fr8";
             curEnvelope.Status = "sent";
 
             var result = curEnvelope.Create();
 
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
         private string ExtractTemplateId(ActionDO curActionDO)
@@ -76,14 +77,14 @@ namespace terminalDocuSign.Actions
             return result;
         }
 
-        private Envelope AddTemplateData(ActionDO actionDO, PayloadDTO processPayload, Envelope curEnvelope)
+        private Envelope AddTemplateData(ActionDO actionDO, PayloadDTO payloadCrates, Envelope curEnvelope)
         {
             var curTemplateId = ExtractTemplateId(actionDO);
-            var curRecipientAddress = ExtractSpecificOrUpstreamValue(
-                actionDO,
-                processPayload,
-                "Recipient"
-            );
+            var payloadCrateStorage = Crate.GetStorage(payloadCrates);
+            var configurationControls = GetConfigurationControls(actionDO);
+            var recipientField = (TextSource)GetControl(configurationControls, "Recipient", ControlTypes.TextSource);
+
+            var curRecipientAddress = recipientField.GetValue(payloadCrateStorage);
 
             curEnvelope.TemplateId = curTemplateId;
             curEnvelope.TemplateRoles = new TemplateRole[]
@@ -99,7 +100,7 @@ namespace terminalDocuSign.Actions
             return curEnvelope;
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             // Do we have any crate? If no, it means that it's Initial configuration
             if (Crate.IsStorageEmpty(curActionDO))
@@ -134,10 +135,6 @@ namespace terminalDocuSign.Actions
         {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
 
-            var template = new DocuSignTemplate();
-            template.Login = new DocuSignPackager().Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
-
-
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
@@ -147,13 +144,15 @@ namespace terminalDocuSign.Actions
                 {
                     var crateControlsDTO = CreateDocusignTemplateConfigurationControls(curActionDO);
                     // and one to hold the available templates, which need to be requested from docusign
-                    var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
+                    var crateDesignTimeFieldsDTO = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
 
                     updater.CrateStorage = new CrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
                 }
+
+                await UpdateUpstreamCrate(curActionDO, updater);
             }
 
-            await UpdateUpstreamCrate(curActionDO);
+
 
             return curActionDO;
         }
@@ -169,7 +168,7 @@ namespace terminalDocuSign.Actions
                     return curActionDO;
                 }
 
-                await UpdateUpstreamCrate(curActionDO);
+                await UpdateUpstreamCrate(curActionDO, updater);
 
                 // Try to find Configuration_Controls.
                 var stdCfgControlMS = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
@@ -213,13 +212,17 @@ namespace terminalDocuSign.Actions
                     standartFields.ToArray()
                 );
 
+                updater.CrateStorage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
+                updater.CrateStorage.RemoveByLabel("DocuSignTemplateStandardFields");
                 updater.CrateStorage.Add(crateUserDefinedDTO);
                 updater.CrateStorage.Add(crateStandardDTO);
-                
+
             }
 
             return await Task.FromResult(curActionDO);
         }
+
+
 
         private Crate CreateDocusignTemplateConfigurationControls(ActionDO curActionDO)
         {
@@ -253,37 +256,24 @@ namespace terminalDocuSign.Actions
             return Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
 
-        private Crate CreateDocusignTemplateNameCrate(IDocuSignTemplate template)
+        public async Task UpdateUpstreamCrate(ActionDO curActionDO, ICrateStorageUpdater updater)
         {
-            var templatesDTO = template.GetTemplates(null);
-            var fieldsDTO = templatesDTO.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToList();
-            var controls = new StandardDesignTimeFieldsCM()
+            // Build a crate with the list of available upstream fields
+            var curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.StandardDesignTimeFields
+                                                                                && c.Label == "Upstream Terminal-Provided Fields");
+
+            if (curUpstreamFieldsCrate != null)
             {
-                Fields = fieldsDTO,
-            };
-            return Crate.CreateDesignTimeFieldsCrate("Available Templates", fieldsDTO.ToArray());
-        }
-
-        public async Task UpdateUpstreamCrate(ActionDO curActionDO)
-        {
-            using (var updater = Crate.UpdateStorage(curActionDO))
-            {
-                // Build a crate with the list of available upstream fields
-                var curUpstreamFieldsCrate = updater.CrateStorage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.StandardDesignTimeFields
-                                                                                    && c.Label == "Upstream Terminal-Provided Fields");
-
-                if (curUpstreamFieldsCrate != null)
-                {
-                    updater.CrateStorage.Remove(curUpstreamFieldsCrate);
-                }
-
-                var curUpstreamFields = (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
-                    .Fields
-                    .ToArray();
-
-                curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
-                updater.CrateStorage.Add(curUpstreamFieldsCrate);
+                updater.CrateStorage.Remove(curUpstreamFieldsCrate);
             }
+
+            var curUpstreamFields = (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
+                .Fields.Where(a => a.Availability == AvailabilityType.RunTime)
+                .ToArray();
+
+            curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
+            updater.CrateStorage.Add(curUpstreamFieldsCrate);
         }
+
     }
 }

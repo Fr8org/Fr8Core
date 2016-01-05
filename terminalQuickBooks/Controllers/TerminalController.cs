@@ -27,12 +27,13 @@ namespace terminalQuickBooks.Controllers
                 Name = "terminalQuickBooks",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
-                Version = "1"
+                Version = "1",
+                AuthenticationType = AuthenticationType.External
             };
             var webService = new WebServiceDTO()
             {
                 Name = "QuickBooks",
-                IconPath = "/Content/icons/web_services/quick-books-icon-64x64.png"
+                IconPath = "/Content/icons/web_services/quickbooks-icon-64x64.png"
             };
             var createJournalEntryActionTemplate = new ActivityTemplateDTO()
             {
@@ -41,13 +42,25 @@ namespace terminalQuickBooks.Controllers
                 Label = "Create Journal Entry",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-                AuthenticationType = AuthenticationType.External,
+                NeedsAuthentication = true,
+                MinPaneWidth = 330,
+                WebService = webService
+            };
+            var convertTableDataToAccountingTransaction = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Convert_TableData_To_AccountingTransactions",
+                Label = "Convert Table Data To Accounting Transactions",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                NeedsAuthentication = true,
                 MinPaneWidth = 330,
                 WebService = webService
             };
             var actionList = new List<ActivityTemplateDTO>()
             {
-                createJournalEntryActionTemplate
+                createJournalEntryActionTemplate,
+                convertTableDataToAccountingTransaction
             };
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {

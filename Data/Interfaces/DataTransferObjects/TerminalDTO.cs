@@ -6,6 +6,11 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class TerminalDTO 
     {
+        public TerminalDTO()
+        {
+            AuthenticationType = States.AuthenticationType.None;
+        }
+
         [JsonProperty("id")]
         public int Id { get; set; }
         [JsonProperty("name")]
@@ -23,5 +28,7 @@ namespace Data.Interfaces.DataTransferObjects
         public virtual Fr8AccountDO UserDO { get; set; }
         [JsonProperty("description")]
         public string Description { get; set; }
+        [JsonProperty("authenticationType")]
+        public int AuthenticationType { get; set; }
     }
 }

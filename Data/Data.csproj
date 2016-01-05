@@ -290,6 +290,7 @@
     <Compile Include="Interfaces\DataTransferObjects\FilterConditionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FinancialLineDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\LogItemDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ManageAuthTokenDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\StandardAccountingTransactionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDiscoveryDTO.cs" />
@@ -327,6 +328,7 @@
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
+    <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
     <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignTemplateCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
@@ -517,6 +519,10 @@
     <Compile Include="Migrations\201512211641017_AddedComponentToHistoryItemDO.cs" />
     <Compile Include="Migrations\201512211641017_AddedComponentToHistoryItemDO.Designer.cs">
       <DependentUpon>201512211641017_AddedComponentToHistoryItemDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201512251516487_Authorization_V2_Migration.cs" />
+    <Compile Include="Migrations\201512251516487_Authorization_V2_Migration.Designer.cs">
+      <DependentUpon>201512251516487_Authorization_V2_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -862,6 +868,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512211641017_AddedComponentToHistoryItemDO.resx">
       <DependentUpon>201512211641017_AddedComponentToHistoryItemDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512251516487_Authorization_V2_Migration.resx">
+      <DependentUpon>201512251516487_Authorization_V2_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

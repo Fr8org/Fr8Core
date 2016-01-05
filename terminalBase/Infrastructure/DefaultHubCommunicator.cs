@@ -25,7 +25,7 @@ namespace TerminalBase.Infrastructure
             _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
 
-        public Task<PayloadDTO> GetProcessPayload(ActionDO actionDO, Guid containerId)
+        public Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/containers?id="

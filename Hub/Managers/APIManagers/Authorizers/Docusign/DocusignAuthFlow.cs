@@ -8,6 +8,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Hub.Interfaces;
 using Hub.Services;
 using Utilities;
 

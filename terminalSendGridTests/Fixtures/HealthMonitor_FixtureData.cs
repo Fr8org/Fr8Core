@@ -19,8 +19,7 @@ namespace terminalSendGridTests.Fixtures
             {
                 Id = 1,
                 Name = "SendEmailViaSendGrid_TEST",
-                Version = "1",
-                AuthenticationType = AuthenticationType.None
+                Version = "1"
             };
         }
 
@@ -32,7 +31,7 @@ namespace terminalSendGridTests.Fixtures
             {
                 Id = Guid.NewGuid(),
                 Name = "SendEmailViaSendGrid",
-                Label = "Send Email Via Send Grid",
+                Label = "Send Email using SendGrid",
                 AuthToken = null,
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id

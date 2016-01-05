@@ -42,8 +42,7 @@ namespace terminalGoogleTests.Integration
             requestActionDTO.AuthToken = HealthMonitor_FixtureData.Google_AuthToken1();
             var responseActionDTO =
                 await HttpPostAsync<ActionDTO, ActionDTO>(
-                    configureUrl,
-                    requestActionDTO
+                    configureUrl, requestActionDTO
                 );
 
             Assert.NotNull(responseActionDTO);
@@ -76,20 +75,6 @@ namespace terminalGoogleTests.Integration
                             " the selected spreadsheet. The rows should have a header row.", controls.Controls[1].Value);
         }
 
-        [Test, Category("Integration.terminalGoogle")]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
-        )]
-        public async void Extract_Spreadsheet_Data_v1_Configure_NoActionId()
-        {
-            var configureUrl = GetTerminalConfigureUrl();
-
-            var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-            requestActionDTO.Id = Guid.Empty;
-
-            await HttpPostAsync<ActionDTO, Action>(configureUrl, requestActionDTO);
-        }
         /////////////
         /// Initial Configuration Tests End
         /////////////
@@ -239,10 +224,6 @@ namespace terminalGoogleTests.Integration
         /// Run ActionType with no AuthToken provided throws exception.
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}"
-        )]
         public async void Extract_Spreadsheet_Data_v1_Run_No_Auth()
         {
             //Arrange
@@ -252,8 +233,11 @@ namespace terminalGoogleTests.Integration
             //prepare the action DTO with valid target URL
             var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
             actionDTO.AuthToken = null;
+
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
             //Act
-            await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            var payload = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
+            CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
         /// <summary>
         /// Zero Upstream Crates throws exception.
@@ -261,7 +245,8 @@ namespace terminalGoogleTests.Integration
         [Test, Category("Integration.terminalGoogle")]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No Standard File Handle crate found in upstream.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No Standard File Handle crate found in upstream.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Extract_Spreadsheet_Data_v1_Run_With_Zero_Upstream_Crates()
         {
@@ -270,7 +255,7 @@ namespace terminalGoogleTests.Integration
 
             //prepare the action DTO
             var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
-
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
             //Act
             await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
@@ -280,7 +265,8 @@ namespace terminalGoogleTests.Integration
         [Test, Category("Integration.terminalGoogle")]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""The method or operation is not implemented.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""The method or operation is not implemented.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Extract_Spreadsheet_Data_v1_Run_With_One_Upstream_Crates()
         {
@@ -291,7 +277,7 @@ namespace terminalGoogleTests.Integration
             //prepare the action DTO with valid target URL
             var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
             AddUpstreamCrate(actionDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
-
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
             //Act
             await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
@@ -301,7 +287,8 @@ namespace terminalGoogleTests.Integration
         [Test, Category("Integration.terminalGoogle")]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""More than one Standard File Handle crates found upstream.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""More than one Standard File Handle crates found upstream.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Extract_Spreadsheet_Data_v1_Run_With_Two_Upstream_Crates()
         {
@@ -313,6 +300,7 @@ namespace terminalGoogleTests.Integration
             var actionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
             AddUpstreamCrate(actionDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
             AddUpstreamCrate(actionDTO, fixture.GetUpstreamCrate(), "Upsteam Crate");
+            AddOperationalStateCrate(actionDTO, new OperationalStateCM());
             //Act
             await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, actionDTO);
         }
@@ -320,18 +308,15 @@ namespace terminalGoogleTests.Integration
         /// Test run-time without Auth-Token.
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No AuthToken provided.""}"
-        )]
         public async void Extract_Spreadsheet_Data_v1_Run_NoAuth()
         {
-            var configureUrl = GetTerminalRunUrl();
+            var runUrl = GetTerminalRunUrl();
 
             var requestActionDTO = HealthMonitor_FixtureData.Extract_Spreadsheet_Data_v1_InitialConfiguration_ActionDTO();
             requestActionDTO.AuthToken = null;
-
-            await HttpPostAsync<ActionDTO, ActionDTO>(configureUrl, requestActionDTO);
+            AddOperationalStateCrate(requestActionDTO, new OperationalStateCM());
+            var payload = await HttpPostAsync<ActionDTO, PayloadDTO>(runUrl, requestActionDTO);
+            CheckIfPayloadHasNeedsAuthenticationError(payload);
         }
         /////////////
         /// Run Tests End
