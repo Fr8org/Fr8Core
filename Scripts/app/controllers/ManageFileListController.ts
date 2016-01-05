@@ -65,6 +65,8 @@ module dockyard.controllers {
         }
 
         private GetDataTableColumns() {
+            var me = this;
+
             return [
                 this.DTColumnBuilder.newColumn('id').withTitle('Id').notVisible(),
                 this.DTColumnBuilder.newColumn(null)
@@ -76,7 +78,8 @@ module dockyard.controllers {
                 this.DTColumnBuilder.newColumn(null)
                     .withTitle('Tags')
                     .renderWith(function (data: interfaces.IFileVM, type, full, meta) {
-                        var fileNameRow = '<div ng-click="DetailFile(' + data.id + ')">' + data.tags + '</div>';
+                        var tags = data.tags == null ? "" : data.tags;
+                        var fileNameRow = '<div ng-click="DetailFile(' + data.id + ')">' + tags + '</div>';
                         return fileNameRow;
                     }),
                 this.DTColumnBuilder.newColumn(null)

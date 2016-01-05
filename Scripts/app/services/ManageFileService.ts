@@ -4,7 +4,7 @@
 */
 module dockyard.services{
     export interface IManageFileService extends ng.resource.IResourceClass<interfaces.IFileVM> {
-        deleteFile: (id: { id: string; }) => any;
+        deleteFile: (id: { id: string; }) => interfaces.IFileVM;
     }
 
     /*

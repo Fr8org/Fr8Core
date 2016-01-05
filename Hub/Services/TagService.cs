@@ -126,7 +126,7 @@ namespace Hub.Services
             }
         }
 
-        void RemoveFileTags(int fileDoId)
+        public void RemoveFileTags(int fileDoId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

@@ -234,6 +234,7 @@
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
+    <Compile Include="Interfaces\ITag.cs" />
     <Compile Include="Interfaces\ITime.cs" />
     <Compile Include="Managers\CrateManager.StorageUpdater.cs">
       <SubType>Code</SubType>
@@ -325,6 +326,7 @@
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Interfaces\ITerminal.cs" />
+    <Compile Include="Services\TagService.cs" />
     <Compile Include="Services\Terminal.cs" />
     <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />

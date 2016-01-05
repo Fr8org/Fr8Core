@@ -13,6 +13,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Services;
+using System.Web.Http.Description;
 
 namespace HubWeb.Controllers
 {
@@ -22,6 +23,7 @@ namespace HubWeb.Controllers
     {
         private readonly IFile _fileService;
         private readonly ISecurityServices _security;
+        private readonly ITag _tagService;
 
         public ManageFileController()
             : this(ObjectFactory.GetInstance<IFile>())
@@ -32,6 +34,7 @@ namespace HubWeb.Controllers
         {
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _fileService = fileService;
+            _tagService = ObjectFactory.GetInstance<ITag>();
         }
 
         public IHttpActionResult Get()
@@ -53,12 +56,25 @@ namespace HubWeb.Controllers
 
                 fileList = Mapper.Map<IList<FileDTO>>(_fileService.FilesList(userId));
             }
-
-            int i = 1;
+           
             foreach (var file in fileList)
             {
-                file.Tags = "tag" + i.ToString();
-                i++;
+                var result = String.Empty;
+                var tags = _tagService.GetTags(file.Id);
+                bool isFirstItem = true;
+                foreach (var tag in tags)
+                {
+                    if (isFirstItem)
+                    {
+                        isFirstItem = false;
+                    }
+                    else
+                    {
+                        result += ", ";
+                    }
+                    result += "{" + tag.Key + " : " + tag.Value + "}";
+                }
+                file.Tags = result; 
             }
 
             return Ok(fileList);

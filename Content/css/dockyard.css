@@ -637,3 +637,11 @@ div[dnd-list].dndDragover {
 }
 
 [ng-table-pagination] { display: none; }
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.glyphicon-remove-tag {
+    color:#cb5a5e;
+}
