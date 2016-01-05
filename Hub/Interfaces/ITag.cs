@@ -15,7 +15,7 @@ namespace Hub.Interfaces
     /// </summary>
     public interface ITag
     {
-        void Add(IUnitOfWork uow, IList<FileTags> fileTags, IList<Tag> tags);
+        void UpdateTags(int fileDoId, IList<Tag> tags);
 
         IList<Tag> GetAllTags();
 
@@ -28,5 +28,7 @@ namespace Hub.Interfaces
         IList<FileDO> GetFiles(Tag tag);
 
         IList<FileDO> GetFiles(int tagId);
+
+        void RemoveFileTags(int fileDoId);
     }
 }
