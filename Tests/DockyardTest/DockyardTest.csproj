@@ -239,7 +239,6 @@
     <Compile Include="Controllers\ActionControllerTest.cs" />
     <Compile Include="Controllers\AuthenticationControllerTest.cs" />
     <Compile Include="Controllers\ContainerControllerTests.cs" />
-    <Compile Include="Controllers\DockyardEventControllerTests.cs" />
     <Compile Include="Controllers\ManifestControllerTest.cs" />
     <Compile Include="Controllers\ReportControllerTest.cs" />
     <Compile Include="Controllers\CriteriaControllerTest.cs" />

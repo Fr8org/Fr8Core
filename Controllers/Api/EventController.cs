@@ -17,6 +17,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
 using Newtonsoft.Json;
 using System.Xml.Linq;
+using Data.Interfaces.Manifests;
 
 namespace HubWeb.Controllers
 {
@@ -54,7 +55,7 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult Post(CrateDTO submittedEventsCrate)
+        public IHttpActionResult ProcessGen1Event(CrateDTO submittedEventsCrate)
         {
             var eventCm = _crate.FromDto(submittedEventsCrate).Get<EventCM>();
 
@@ -91,6 +92,27 @@ namespace HubWeb.Controllers
 
             return Ok();
             
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> ProcessEvents(CrateDTO raw)
+        {
+            //check if its not null
+            if (raw == null)
+                throw new ArgumentNullException("Parameter Standard Event Report is null.");
+
+            var curCrateStandardEventReport = _crate.FromDto(raw);
+
+            //check if Standard Event Report inside CrateDTO
+            if (!curCrateStandardEventReport.IsOfType<EventReportCM>())
+                throw new ArgumentNullException("CrateDTO passed is not a Standard Event Report.");
+
+            if (curCrateStandardEventReport.Get() == null)
+                throw new ArgumentNullException("CrateDTO Content is empty.");
+
+            await _event.ProcessInboundEvents(curCrateStandardEventReport);
+
+            return Ok();
         }
     }
 }

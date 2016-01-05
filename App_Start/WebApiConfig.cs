@@ -14,10 +14,11 @@ namespace HubWeb
 
 			// Web API routes
 
+            // NOTE :: API route is changed for ProcessEvents  
             config.Routes.MapHttpRoute(
-                name: "DefaultApiFr8Events",
-                routeTemplate: "api/v1/fr8_events",
-                defaults: new { action = "ProcessDockyardEvents", controller = "Fr8Event" },
+                name: "DefaultApiEvents",
+                routeTemplate: "api/v1/events",
+                defaults: new { action = "ProcessEvents", controller = "Event" },
                 constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Post) }
                 );
 
