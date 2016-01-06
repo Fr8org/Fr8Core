@@ -98,6 +98,31 @@ namespace terminalSalesforce.Services
             }
         }
 
+        public async Task<object> GetObject(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string salesforceObjectName, string condition)
+        {
+            try
+            {
+                switch (salesforceObjectName)
+                {
+                    case "Account":
+                        return await _account.GetAccounts(actionDO, authTokenDO, condition);
+                    case "Lead":
+                        //return await _lead.GetLeadFields(actionDO, authTokenDO);
+                    case "Contact":
+                        //return await _contact.GetContactFields(actionDO, authTokenDO);
+                    default:
+                        throw new NotSupportedException(
+                            string.Format("Not Supported Salesforce object name {0} has been given for querying fields.",
+                                salesforceObjectName));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().Error(ex);
+                throw;
+            }
+        }
+
 
     }
 }

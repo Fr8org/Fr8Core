@@ -1,10 +1,13 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.UI;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
@@ -31,8 +34,16 @@ namespace terminalSalesforce.Actions
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            //if empty crate storage or no fields retieved for any Salesforce Object, proceed with initial config
-            if (Crate.IsStorageEmpty(curActionDO) || string.IsNullOrEmpty(fieldsReceivedFor))
+            //if empty crate storage, proceed with initial config
+            if (Crate.IsStorageEmpty(curActionDO))
+            {
+                return ConfigurationRequestType.Initial;
+            }
+
+            //if no salesforce object is selected, proceed with initial config
+            string selectedSalesForceObject =
+                ((DropDownList) GetControl(curActionDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
+            if (string.IsNullOrEmpty(selectedSalesForceObject))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -92,6 +103,43 @@ namespace terminalSalesforce.Actions
             return await Task.FromResult(curActionDO);
         }
 
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            var payloadCrates = await GetPayload(curActionDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(payloadCrates);
+            }
+
+            string curSelectedSalesForceObject =
+                ((DropDownList)GetControl(curActionDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
+
+            if (string.IsNullOrEmpty(curSelectedSalesForceObject))
+            {
+                return Error(payloadCrates, "No Salesforce object is selected by user");
+            }
+
+            var filterValue = GetControl(curActionDO, "SelectedFilter", ControlTypes.FilterPane).Value;
+            var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(filterValue);
+
+
+            if (filterDataDTO.ExecutionType == FilterExecutionType.WithoutFilter)
+            {
+                var ss = await _salesforce.GetObject(curActionDO, authTokenDO, curSelectedSalesForceObject, string.Empty);
+            }
+            else
+            {
+                EventManager.CriteriaEvaluationStarted(containerId);
+
+                string parsedCondition = ParseFilters(filterDataDTO);
+
+                var ss = await _salesforce.GetObject(curActionDO, authTokenDO, curSelectedSalesForceObject, parsedCondition);
+            }
+
+            return Success(payloadCrates);
+        }
+
         private Crate CreateControlsCrate()
         {
             //DDLB for What Salesforce Object to be considered
@@ -122,6 +170,47 @@ namespace terminalSalesforce.Actions
             };
 
             return PackControlsCrate(whatKindOfData, fieldFilterPane);
+        }
+
+        private string ParseFilters(FilterDataDTO filterData)
+        {
+            var parsedConditions = new List<string>();
+
+            filterData.Conditions.ForEach(condition =>
+            {
+                string parsedCondition = condition.Field;
+
+                switch (condition.Operator)
+                {
+                    case "eq":
+                        parsedCondition += " = ";
+                        break;
+                    case "neq":
+                        parsedCondition += " != ";
+                        break;
+                    case "gt":
+                        parsedCondition += " > ";
+                        break;
+                    case "gte":
+                        parsedCondition += " >= ";
+                        break;
+                    case "lt":
+                        parsedCondition += " < ";
+                        break;
+                    case "lte":
+                        parsedCondition += " <= ";
+                        break;
+                    default:
+                        throw new NotSupportedException(string.Format("Not supported operator: {0}", condition.Operator));
+                }
+
+                parsedCondition += string.Format("'{0}'", condition.Value);
+                parsedConditions.Add(parsedCondition);
+            });
+
+            var finalCondition = string.Join(" AND ", parsedConditions);
+
+            return finalCondition;
         }
     }
 }

@@ -68,6 +68,43 @@ namespace terminalSalesforce.Infrastructure
             return objectFields;
         }
 
+        public async Task<IList<AccountDTO>> GetAccounts(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string conditionQuery)
+        {
+            string instanceUrl, apiVersion;
+            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
+            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
+
+
+            if (string.IsNullOrEmpty(conditionQuery))
+            {
+                conditionQuery = "select Name, AccountNumber, Phone from Account";
+            }
+            else
+            {
+                conditionQuery = "select Name, AccountNumber, Phone from Account where " + conditionQuery;
+            }
+
+            var resultantAccounts = await client.QueryAsync<object>(conditionQuery);
+
+            var resultAccounts = new List<AccountDTO>();
+
+            if (resultantAccounts.Records.Count > 0)
+            {
+                resultAccounts.AddRange(resultantAccounts.Records.Select(record =>
+                {
+                    var account = (JObject) record;
+                    return new AccountDTO
+                    {
+                        AccountNumber = account.Value<string>("AccountNumber"),
+                        Name = account.Value<string>("Name"),
+                        Phone = account.Value<string>("Phone")
+                    };
+                }));
+            }
+
+            return resultAccounts;
+        }
+
         public void ParseAuthToken(string authonTokenAdditionalValues, out string instanceUrl, out string apiVersion)
         {
             int startIndexOfInstanceUrl = authonTokenAdditionalValues.IndexOf("instance_url");
