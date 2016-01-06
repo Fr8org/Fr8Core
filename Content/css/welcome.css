@@ -1,124 +1,191 @@
 ﻿html, body {
-    height:100%;
+    height: 100%;
 }
+
 .MainContent {
     min-height: 100%;
 }
-.btn{box-shadow:none!important}
-body{font-family:"Open Sans", Helvetica, Helvetica Nue, Arial, sans-serif;background:#f5f5f5}
 
-a:hover{cursor:pointer;text-decoration: none;}
+.btn {
+    box-shadow: none !important;
+}
+
+body {
+    font-family: "Open Sans", Helvetica, Helvetica Nue, Arial, sans-serif;
+    background: #f5f5f5;
+}
+
+a:hover {
+    cursor: pointer;
+    text-decoration: none;
+}
+
 .MainMenuDropdown .dropdown-toggle {
-    background: #fff;
-    height:64px;
-    line-height:64px;
-    font-size:36px;
-    display:block;
+    height: 100px;
+    line-height: 64px;
+    font-size: 36px;
+    display: block;
     text-align: center;
     font-family: "Open Sans", Helvetica, Helvetica Nue, Arial, sans-serif;
+    background-image: url("/Content/img/welcome/header_green.png");
+    background-repeat: repeat-x;
 }
-.MainMenuDropdown li a{text-align:left}@media (max-width:991px){.MainMenu{display:block}.MainMenu .ResponsiveMainMenu .dropdown-toggle{display:block;color:#ef6a20;width:36px;height:36px;line-height:36px;font-size:18px;text-align:center;padding:0;box-shadow:none}.MainMenu .ResponsiveMainMenu li a{text-align:left}.MainMenu .ResponsiveMainMenu.open .dropdown-toggle{background:#ef6a20;color:#fff}}
-.HomePage{position:relative}
-.HomePage .HomeLeftSide {
-    background:url(../img/welcome/left-side-bg.jpg)right top no-repeat #252830;
-    position:absolute;
-    left:0;
-    top:0;
-    bottom:0;
-    width:50%;
-    padding: 40px 0;
-    text-align: center;
+.MainMenuDropdown .dropdown-toggle img {
+    height: 100px;
 }
-.HomePage .HomeLeftSide:hover {
-    background:#252830;
-    cursor: pointer;
+
+.MainMenuDropdown li a {
+    text-align: left;
 }
-.HomePage .HomeLeftSide img {
-    margin:0 auto 0;
-    max-width:100%;
-    display:block
+
+@media (max-width:991px) {
+    .MainMenu {
+        display: block;
+    }
+
+        .MainMenu .ResponsiveMainMenu .dropdown-toggle {
+            display: block;
+            color: #ef6a20;
+            width: 36px;
+            height: 36px;
+            line-height: 36px;
+            font-size: 18px;
+            text-align: center;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        .MainMenu .ResponsiveMainMenu li a {
+            text-align: left;
+        }
+
+        .MainMenu .ResponsiveMainMenu.open .dropdown-toggle {
+            background: #ef6a20;
+            color: #fff;
+        }
 }
-.HomePage .HomeLeftSide .Login {
-    background:#ef6a20;
-    color:#fff;
-    border-color:#b5490d;
-    text-shadow:0 1px 1px rgba(0,0,0,.4);
-    border-radius:0;
-    position:absolute;
-    bottom:160px;
-    left:50%;
-    margin-left:-70px
+
+.HomePage {
+    position: relative;
 }
-.HomePage .HomeLeftSide .Login:hover{color:#fff;background:#f18041}
+
+    .HomePage .HomeLeftSide {
+        background: url(../img/welcome/left-side-bg.jpg)right top no-repeat #252830;
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        padding: 40px 0;
+        text-align: center;
+    }
+
+        .HomePage .HomeLeftSide:hover {
+            background: #252830;
+            cursor: pointer;
+        }
+
+        .HomePage .HomeLeftSide img {
+            margin: 0 auto 0;
+            max-width: 100%;
+            display: block;
+        }
+
+        .HomePage .HomeLeftSide .Login {
+            background: #ef6a20;
+            color: #fff;
+            border-color: #b5490d;
+            text-shadow: 0 1px 1px rgba(0,0,0,.4);
+            border-radius: 0;
+            position: absolute;
+            bottom: 160px;
+            left: 50%;
+            margin-left: -70px;
+        }
+
+            .HomePage .HomeLeftSide .Login:hover {
+                color: #fff;
+                background: #f18041;
+            }
+
 .docusing-pane {
-    display:block;
-    margin-bottom:40px;
+    display: block;
+    margin-bottom: 40px;
     margin-left: 140px;
     margin-right: 140px;
-    font-family:Arial;
+    font-family: Arial;
     color: white;
     margin-top: 30px;
 }
-.docusing-pane p {
-    margin-top: 10px;
-    color: rgb(178, 178, 178);
-    font-size: 20px;
-}
+
+    .docusing-pane p {
+        margin-top: 10px;
+        color: rgb(178, 178, 178);
+        font-size: 20px;
+    }
+
 .try-now {
     color: white;
     font-size: 21px;
     font-weight: 300;
 }
+
 .docusign-header {
     font-weight: 600;
-    font-size:40px;
-    line-height:36px;
+    font-size: 40px;
+    line-height: 36px;
 }
+
 .docusign-info {
-    display:block;
-    font-size:50px;
-    line-height:36px;
-    margin-bottom:20px;
+    display: block;
+    font-size: 50px;
+    line-height: 36px;
+    margin-bottom: 20px;
     font-family: Arial;
     color: white;
     margin-top: 20px;
 }
-.HomePage .HomeRightSide {
-    background:url(../img/welcome/right-side-bg.jpg)left top no-repeat #347ab6;
-    float:right;
-    width:50%;
-    padding:40px 0
-}
-.HomePage .HomeRightSide:hover {
-    background:#347ab6;
-    cursor: pointer;
-}
-.HomePage .HomeRightSide .HomeRightSideWrapper {
-    max-width:550px;
-    margin: auto;
-    text-align: center;
-}
-.HomePage .HomeRightSide .HomeRightSideWrapper .Logo {
-    padding:20px;
-    display:inline-block;
 
+.HomePage .HomeRightSide {
+    background: url(../img/welcome/right-side-bg.jpg)left top no-repeat #347ab6;
+    float: right;
+    width: 50%;
+    padding: 40px 0;
 }
-.HomePage .HomeRightSide .HomeRightSideWrapper p{
-    color: rgb(210, 210, 210);
-    font-size: 20px;
-    line-height: 28px;
-    font-family: Arial;
-    margin-top: -10px;
-    margin-right: 100px;
-    margin-left: 100px;
-    margin-bottom: 30px;
-}
-.HomePage .HomeRightSide .HomeRightSideWrapper p b {
-    display:block;
-    color: #fff;
-    font-size:28px;
-    line-height:36px;
-    margin-bottom:20px;
-    font-weight: 600;
-    font-family: Arial;
-}
+
+    .HomePage .HomeRightSide:hover {
+        background: #347ab6;
+        cursor: pointer;
+    }
+
+    .HomePage .HomeRightSide .HomeRightSideWrapper {
+        max-width: 550px;
+        margin: auto;
+        text-align: center;
+    }
+
+        .HomePage .HomeRightSide .HomeRightSideWrapper .Logo {
+            padding: 20px;
+            display: inline-block;
+        }
+
+        .HomePage .HomeRightSide .HomeRightSideWrapper p {
+            color: rgb(210, 210, 210);
+            font-size: 20px;
+            line-height: 28px;
+            font-family: Arial;
+            margin-top: -10px;
+            margin-right: 100px;
+            margin-left: 100px;
+            margin-bottom: 30px;
+        }
+
+            .HomePage .HomeRightSide .HomeRightSideWrapper p b {
+                display: block;
+                color: #fff;
+                font-size: 28px;
+                line-height: 36px;
+                margin-bottom: 20px;
+                font-weight: 600;
+                font-family: Arial;
+            }
