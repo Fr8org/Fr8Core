@@ -146,7 +146,7 @@ module dockyard.controllers {
 
             }).result.then(function () {
                 //Deletion confirmed
-                me.ManageFileService.deleteFile({ id: fileId}).$promise.then(function () {
+                me.ManageFileService.delete({ id: fileId}).$promise.then(function () {
                     me.$rootScope.lastResult = "success";
                     //now loop through our existing templates and remove from local memory
                     for (var i = 0; i < me._manageFiles.length; i++) {

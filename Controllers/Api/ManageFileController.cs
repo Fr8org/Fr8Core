@@ -80,12 +80,9 @@ namespace HubWeb.Controllers
             return Ok(fileList);
         }
 
-        [HttpGet]
-        public IHttpActionResult Delete(int id)
+        public void Delete(int id)
         {
             _fileService.Delete(id);
-
-            return Ok();
         }
     }
 }
