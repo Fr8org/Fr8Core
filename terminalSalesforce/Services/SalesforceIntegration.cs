@@ -71,6 +71,32 @@ namespace terminalSalesforce.Services
             return createFlag;
         }
 
+        public async Task<bool> GetFieldsList(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string salesforceObjectName)
+        {
+            bool createFlag = true;
+            try
+            {
+                var authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
+
+                //var ss = await _account.GetAccountFields(actionDO, authTokenResult);
+                switch (salesforceObjectName)
+                {
+                    case "Account":
+                        var ss = await _account.GetAccountFields(actionDO, authTokenDO);
+                        break;
+                    default:
+                        return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                createFlag = false;
+                Logger.GetLogger().Error(ex);
+                throw;
+            }
+            return createFlag;
+        }
+
 
     }
 }

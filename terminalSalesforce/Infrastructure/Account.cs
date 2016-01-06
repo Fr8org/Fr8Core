@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using System.Net.Http;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
@@ -39,6 +40,17 @@ namespace terminalSalesforce.Infrastructure
             {
                 var accountId = await client.CreateAsync("Account", account);
             }
+        }
+
+        public async Task<object> GetAccountFields(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        {
+            string instanceUrl, apiVersion;
+            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
+
+            //HttpClient c = new HttpClient();
+            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);//, c);
+            var accountFields = await client.DescribeAsync<object>("Account");
+            return Task.FromResult(accountFields);
         }
 
         public void ParseAuthToken(string authonTokenAdditionalValues, out string instanceUrl, out string apiVersion)

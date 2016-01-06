@@ -70,7 +70,16 @@ namespace terminalSalesforce.Actions
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO,
                                                                               AuthorizationTokenDO authTokenDO)
         {
+            string curSelectedObject =
+                ((DropDownList) GetControl(curActionDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
 
+            if (string.IsNullOrEmpty(curSelectedObject))
+            {
+                return await Task.FromResult(curActionDO);
+            }
+
+            //try something here
+            var r = await _salesforce.GetFieldsList(curActionDO, authTokenDO, curSelectedObject);
 
             return await Task.FromResult(curActionDO);
         }
