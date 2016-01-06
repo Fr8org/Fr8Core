@@ -123,38 +123,36 @@ namespace terminalDocuSign.Actions
             var curEventReport = Crate.GetStorage(curProcessPayload).CrateContentsOfType<EventReportCM>().First();
 
             if (curEventReport.EventNames.Contains("Envelope"))
-            {
-                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {   
+                var  docuSignFields = curEventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().First().AllValues().ToArray();
+
+                DocuSignEnvelopeCM envelope = new DocuSignEnvelopeCM
                 {
-                   var  docuSignFields = curEventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().First().AllValues().ToArray();
+                    CompletedDate = docuSignFields.First(field => field.Key.Equals("CompletedDate")).Value,
+                    CreateDate = docuSignFields.First(field => field.Key.Equals("CreateDate")).Value,
+                    DeliveredDate = docuSignFields.First(field => field.Key.Equals("DeliveredDate")).Value,
+                    EnvelopeId = docuSignFields.First(field => field.Key.Equals("EnvelopeId")).Value,
+                    ExternalAccountId = docuSignFields.First(field => field.Key.Equals("Email")).Value,
+                    SentDate = docuSignFields.First(field => field.Key.Equals("SentDate")).Value,
+                    Status = docuSignFields.First(field => field.Key.Equals("Status")).Value
+                };
 
-                    DocuSignEnvelopeCM envelope = new DocuSignEnvelopeCM
-                    {
-                        CompletedDate = docuSignFields.First(field => field.Key.Equals("CompletedDate")).Value,
-                        CreateDate = docuSignFields.First(field => field.Key.Equals("CreateDate")).Value,
-                        DeliveredDate = docuSignFields.First(field => field.Key.Equals("DeliveredDate")).Value,
-                        EnvelopeId = docuSignFields.First(field => field.Key.Equals("EnvelopeId")).Value,
-                        ExternalAccountId = docuSignFields.First(field => field.Key.Equals("Email")).Value,
-                        SentDate = docuSignFields.First(field => field.Key.Equals("SentDate")).Value,
-                        Status = docuSignFields.First(field => field.Key.Equals("Status")).Value
-                    };
+                DocuSignEventCM events = new DocuSignEventCM
+                {
+                    EnvelopeId = docuSignFields.First(field => field.Key.Equals("EnvelopeId")).Value,
+                    EventId = docuSignFields.First(field => field.Key.Equals("EventId")).Value,
+                    Object = docuSignFields.First(field => field.Key.Equals("Object")).Value,
+                    RecepientId = docuSignFields.First(field => field.Key.Equals("RecipientId")).Value,
+                    Status = docuSignFields.First(field => field.Key.Equals("Status")).Value,
+                    ExternalAccountId = docuSignFields.First(field => field.Key.Equals("Email")).Value
+                };
 
-                    DocuSignEventCM events = new DocuSignEventCM
-                    {
-                        EnvelopeId = docuSignFields.First(field => field.Key.Equals("EnvelopeId")).Value,
-                        EventId = docuSignFields.First(field => field.Key.Equals("EventId")).Value,
-                        Object = docuSignFields.First(field => field.Key.Equals("Object")).Value,
-                        RecepientId = docuSignFields.First(field => field.Key.Equals("RecipientId")).Value,
-                        Status = docuSignFields.First(field => field.Key.Equals("Status")).Value,
-                        ExternalAccountId = docuSignFields.First(field => field.Key.Equals("Email")).Value
-                    };
-
-                    using (var updater = Crate.UpdateStorage(curProcessPayload))
-                    {
-                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Manifest", envelope));
-                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event Manifest", events));
-                    }
+                using (var updater = Crate.UpdateStorage(curProcessPayload))
+                {
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Manifest", envelope));
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event Manifest", events));
                 }
+                
             }
 
             return Success(curProcessPayload);

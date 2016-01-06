@@ -53,7 +53,6 @@ namespace terminalPapertrail.Actions
                 Name = "TargetUrlTextBox",
                 Label = "Target Papertrail URL and Port (as URL:Port)",
                 Value = CloudConfigurationManager.GetSetting("PapertrailDefaultLogUrl"),
-                Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")},
                 Required = true
             };
 

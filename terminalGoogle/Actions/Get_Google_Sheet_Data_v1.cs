@@ -126,10 +126,7 @@ namespace terminalGoogle.Actions
                 Label = "Select a Google Spreadsheet",
                 Name = "select_spreadsheet",
                 Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
+                Events = new List<ControlEvent>() { ControlEvent.RequestConfig },
                 Source = new FieldSourceDTO
                 {
                     Label = "Select a Google Spreadsheet",
@@ -212,7 +209,7 @@ namespace terminalGoogle.Actions
 
             if (!string.IsNullOrEmpty(spreadsheetsFromUserSelection))
             {
-                return await TransformSpreadsheetDataToStandardTableDataCrate(curActionDO, authTokenDO, spreadsheetsFromUserSelection);
+                return TransformSpreadsheetDataToStandardTableDataCrate(curActionDO, authTokenDO, spreadsheetsFromUserSelection);
             }
             else
             {
@@ -220,7 +217,7 @@ namespace terminalGoogle.Actions
             }
         }
 
-        private async Task<ActionDO> TransformSpreadsheetDataToStandardTableDataCrate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, string spreadsheetUri)
+        private ActionDO TransformSpreadsheetDataToStandardTableDataCrate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, string spreadsheetUri)
         {
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             // Fetch column headers in Excel file and assign them to the action's crate storage as Design TIme Fields crate

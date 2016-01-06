@@ -120,6 +120,8 @@ namespace TerminalBase.BaseClasses
         /// returns error to hub
         /// </summary>
         /// <param name="payload"></param>
+        /// <param name="errorMessage"></param>
+        /// <param name="errorCode"></param>
         /// <returns></returns>
         protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActionErrorCode? errorCode = null)
         {
@@ -185,7 +187,8 @@ namespace TerminalBase.BaseClasses
 
         protected StandardConfigurationControlsCM GetConfigurationControls(CrateStorage storage)
         {
-            return storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == ConfigurationControlsLabel).Single();
+            var controlsCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == ConfigurationControlsLabel).FirstOrDefault();
+            return controlsCrate;
         }
 
 
@@ -532,10 +535,7 @@ namespace TerminalBase.BaseClasses
         /// <summary>
         /// Extract value from RadioButtonGroup or TextSource where specific value or upstream field was specified.
         /// </summary>
-        protected string ExtractSpecificOrUpstreamValue(
-           ActionDO actionDO,
-           PayloadDTO payloadCrates,
-           string controlName)
+        protected string ExtractSpecificOrUpstreamValue(ActionDO actionDO,PayloadDTO payloadCrates,string controlName)
         {
             var designTimeCrateStorage = Crate.GetStorage(actionDO.CrateStorage);
             var runTimeCrateStorage = Crate.FromDto(payloadCrates.CrateStorage);
@@ -555,7 +555,7 @@ namespace TerminalBase.BaseClasses
                 throw new ApplicationException("TextSource control was expected but not found.");
             }
 
-            TextSource textSourceControl = (TextSource)control;
+            var textSourceControl = (TextSource)control;
 
             switch (textSourceControl.ValueSource)
             {
@@ -731,6 +731,47 @@ namespace TerminalBase.BaseClasses
             }
 
             return await Task.FromResult<Crate>(null);
+        }
+
+        protected virtual async Task<FieldDTO[]> GetCratesFieldsDTO<TManifest>(ActionDO curActionDO, CrateDirection crateDirection)
+        {
+            List<Data.Crates.Crate<TManifest>> crates = null;
+
+            try
+            {
+                //throws exception from test classes when it cannot call webservice
+                crates = await GetCratesByDirection<TManifest>(curActionDO, crateDirection);
+            }
+            catch { }
+
+            if (crates != null)
+            {
+                FieldDTO[] upstreamFields = null;
+                if (crates is List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>)
+                {
+                    upstreamFields = (crates as List<Data.Crates.Crate<StandardDesignTimeFieldsCM>>).Where(w => w.Content.Fields.Where(x => x.Availability != AvailabilityType.Configuration).Count() == 1).SelectMany(x => x.Content.Fields).ToArray();
+                }
+
+                return await Task.FromResult(upstreamFields);
+            }
+
+            return await Task.FromResult<FieldDTO[]>(null);
+        } 
+
+        protected virtual Crate MergeUpstreamFields<TManifest>(ActionDO curActionDO, string label, FieldDTO[] upstreamFields)
+        {
+            if (upstreamFields != null)
+            {
+                var availableFieldsCrate =
+                        Crate.CreateDesignTimeFieldsCrate(
+                            label,
+                            upstreamFields
+                        );
+
+                return availableFieldsCrate;
+            }
+
+            return null;
         }
 
         /// <summary>

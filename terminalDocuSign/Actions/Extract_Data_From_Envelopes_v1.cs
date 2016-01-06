@@ -54,7 +54,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
@@ -67,11 +67,6 @@ namespace terminalDocuSign.Actions
             }
 
             return ConfigurationRequestType.Followup;
-        }
-
-        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            return Success(await GetPayload(actionDO, containerId));
         }
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -89,32 +84,38 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var controls = new ActionUi();
-            
+
             controls.ClonePropertiesFrom(Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
+
+            var actionsDdlb = (DropDownList) controls.Controls.Single(c => c.Name == "FinalActionsList");
+            //don't add child actions until a selection is made
+            if (string.IsNullOrEmpty(actionsDdlb.Value)) {
+                return curActionDO;
+            }
 
             curActionDO.ChildNodes = new List<RouteNodeDO>();
 
-			// Always use default template for solution
-			const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";
-			var firstActionTemplate = (await FindTemplates(curActionDO, x => x.Name == "Monitor_DocuSign_Envelope_Activity")).FirstOrDefault();
+            // Always use default template for solution
+            const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";
+            var firstActionTemplate = (await FindTemplates(curActionDO, x => x.Name == "Monitor_DocuSign_Envelope_Activity")).FirstOrDefault();
 
-			if (firstActionTemplate == null)
-			{
-				throw new Exception(string.Format("ActivityTemplate {0} was not found", firstTemplateName));
-			}
+            if (firstActionTemplate == null)
+            {
+                throw new Exception(string.Format("ActivityTemplate {0} was not found", firstTemplateName));
+            }
 
-			var firstAction = new ActionDO
-			{
-				IsTempId = true,
-				ActivityTemplateId = firstActionTemplate.Id,
-				CrateStorage = Crate.EmptyStorageAsStr(),
-				CreateDate = DateTime.UtcNow,
-				Ordering = 1,
-				Name = "First action",
+            var firstAction = new ActionDO
+            {
+                IsTempId = true,
+                ActivityTemplateId = firstActionTemplate.Id,
+                CrateStorage = Crate.EmptyStorageAsStr(),
+                CreateDate = DateTime.UtcNow,
+                Ordering = 1,
+                Name = "First action",
                 Label = firstActionTemplate.Label
-			};
+            };
 
-			curActionDO.ChildNodes.Add(firstAction);
+            curActionDO.ChildNodes.Add(firstAction);
 
             int finalActionTemplateId;
 
@@ -133,8 +134,13 @@ namespace terminalDocuSign.Actions
 
                 curActionDO.ChildNodes.Add(finalAction);
             }
-            
+
             return curActionDO;
+        }
+
+        public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            return Success(await GetPayload(actionDO, containerId));
         }
         
         private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActionDO actionDO, Predicate<ActivityTemplateDO> query)
