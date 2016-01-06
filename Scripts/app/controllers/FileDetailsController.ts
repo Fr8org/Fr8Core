@@ -23,8 +23,8 @@ module dockyard.controllers {
             private FileDetailsService: services.IFileDetailsService,
             private $state: ng.ui.IState) {
 
-            alert("consstructor id = " + $state.params.id);
             $scope.file = FileDetailsService.getDetails({ id: $state.params.id });
+
         }
     }
 

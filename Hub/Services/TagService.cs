@@ -33,17 +33,18 @@ namespace Hub.Services
         }
 
         public Tag GetTagByKey(string key)
-        {
-            Tag tag = null;
+        { 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                Tag tag = null;
                 var result = uow.TagRepository.FindOne(x => x.Key == key);
                 if (!object.Equals(result, default(Tag)))
                 {
                     tag = result;
                 }
+
+                return tag;
             }
-            return tag;
         }
 
         public IList<Tag> GetTags(int fileDoId)
@@ -83,7 +84,7 @@ namespace Hub.Services
             return files;
         }
 
-        public void UpdateTags(int fileDoId, IList<Tag> tags)
+        public void UpdateAllFileTags(int fileDoId, IList<Tag> tags)
         {   
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -105,7 +106,7 @@ namespace Hub.Services
                 uow.SaveChanges();
 
                 // remove all fileTags with fileDoId
-                RemoveFileTags(fileDoId);
+                RemoveAllFileTags(fileDoId);
 
                 // Add new fileTags to the fileDo
                 foreach (var tag in tags)
@@ -126,7 +127,7 @@ namespace Hub.Services
             }
         }
 
-        public void RemoveFileTags(int fileDoId)
+        public void RemoveAllFileTags(int fileDoId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -140,5 +141,57 @@ namespace Hub.Services
                 uow.SaveChanges();
             }
         }
+
+        public void RemoveFileTag(int fileDoId, int tagId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fileTagsRepository = uow.FileTagsRepository;
+                var fileTag = fileTagsRepository.FindOne(x => x.FileDoId == fileDoId && x.TagId == tagId);
+                if (!object.Equals(fileTag, default(FileTags)))
+                {
+                    fileTagsRepository.Remove(fileTag);
+                    uow.SaveChanges();
+                }
+            }
+        }
+
+        public void UpdateTagByKey(string key, string value)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var tag = GetTagByKey(key);
+                if (tag != null)
+                {
+                    tag.Value = value;
+                    uow.SaveChanges();
+                }
+            }
+        }
+
+        public void AddFileTag(int fileDoId, Tag tag)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var tagRepository = uow.TagRepository;
+                var fileTagRepository = uow.FileTagsRepository;
+                var fileTag = new FileTags() { FileDoId = fileDoId };
+
+                var dbTag = GetTagByKey(tag.Key);
+                if (dbTag == null)
+                {
+                    tagRepository.Add(tag);
+                    uow.SaveChanges();
+
+                    dbTag = tagRepository.GetByKey(tag.Key);
+                }
+
+                fileTag.TagId = dbTag.Id;
+
+                fileTagRepository.Add(fileTag);
+                uow.SaveChanges();
+            }
+        }
+         
     }
 }

@@ -72,7 +72,7 @@ namespace HubWeb.Controllers
                     {
                         result += ", ";
                     }
-                    result += "{" + tag.Key + " : " + tag.Value + "}";
+                    result += "{\"" + tag.Key + "\" : \"" + tag.Value + "\"}";
                 }
                 file.Tags = result; 
             }

@@ -23,6 +23,7 @@ namespace HubWeb.Controllers
     {
         private readonly IFile _fileService;
         private readonly ISecurityServices _security;
+        private readonly ITag _tagService;
 
         public FileDetailsController()
             : this(ObjectFactory.GetInstance<IFile>())
@@ -33,6 +34,7 @@ namespace HubWeb.Controllers
         {
             _fileService = fileService;
             _security = ObjectFactory.GetInstance<ISecurityServices>();
+            _tagService = ObjectFactory.GetInstance<ITag>();
         }
 
         [HttpGet]
