@@ -118,7 +118,7 @@ namespace TerminalBase.Infrastructure
         /// In all other scenarios it should be teated as private</returns>
         protected virtual IRestfulServiceClient PrepareRestClient()
         {
-            var restCall = new RestfulServiceClient();
+            var restCall = ObjectFactory.GetInstance<IRestfulServiceClient>();
             return restCall;
         }
 
