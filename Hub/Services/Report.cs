@@ -25,7 +25,7 @@ namespace Hub.Services
         /// <returns>List of Incident</returns>
         public List<FactDO> GetAllFacts(IUnitOfWork uow)
         {
-            var factDO = uow.FactRepository.GetAll().Take(200).OrderByDescending(i => i.CreateDate).ToList();
+            var factDO = uow.FactRepository.GetAll().OrderByDescending(i => i.CreateDate).Take(200).ToList();
             return factDO;
         }
 
@@ -36,7 +36,7 @@ namespace Hub.Services
         /// <returns>List of Incident</returns>
         public List<IncidentDO> GetAllIncidents(IUnitOfWork uow)
         {            
-            var incidentDO = uow.IncidentRepository.GetAll().Take(200).OrderByDescending(i => i.CreateDate).ToList();
+            var incidentDO = uow.IncidentRepository.GetAll().OrderByDescending(i => i.CreateDate).Take(200).ToList();
             return incidentDO;
         }
 
