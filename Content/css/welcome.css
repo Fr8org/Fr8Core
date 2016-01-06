@@ -9,7 +9,7 @@ body{font-family:"Open Sans", Helvetica, Helvetica Nue, Arial, sans-serif;backgr
 
 a:hover{cursor:pointer;text-decoration: none;}
 .MainMenuDropdown .dropdown-toggle {
-    
+    background: #fff;
     height:64px;
     line-height:64px;
     font-size:36px;
@@ -111,6 +111,7 @@ a:hover{cursor:pointer;text-decoration: none;}
     margin-top: -10px;
     margin-right: 100px;
     margin-left: 100px;
+    margin-bottom: 30px;
 }
 .HomePage .HomeRightSide .HomeRightSideWrapper p b {
     display:block;
