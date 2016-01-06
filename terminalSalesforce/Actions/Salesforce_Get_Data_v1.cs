@@ -19,6 +19,7 @@ namespace terminalSalesforce.Actions
 {
     public class Salesforce_Get_Data_v1 : BaseTerminalAction
     {
+        private string fieldsReceivedFor = string.Empty;
         ISalesforceIntegration _salesforce = new SalesforceIntegration();
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -30,15 +31,8 @@ namespace terminalSalesforce.Actions
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
-            //if empty crate storage, proceed with initial config
-            if (Crate.IsStorageEmpty(curActionDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            //if no salesforce object is selected, proceed with initial config
-            string selectedSalesForceObject = ((DropDownList) GetControl(curActionDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
-            if (string.IsNullOrEmpty(selectedSalesForceObject))
+            //if empty crate storage or no fields retieved for any Salesforce Object, proceed with initial config
+            if (Crate.IsStorageEmpty(curActionDO) || string.IsNullOrEmpty(fieldsReceivedFor))
             {
                 return ConfigurationRequestType.Initial;
             }
@@ -63,23 +57,37 @@ namespace terminalSalesforce.Actions
             {
                 updater.CrateStorage = AssembleCrateStorage(availableSalesforceObjects, emptyFieldsSource, configurationControlsCrate);
             }
-            
+
+            fieldsReceivedFor = string.Empty;
+
             return await Task.FromResult(curActionDO);
         }
 
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO,
                                                                               AuthorizationTokenDO authTokenDO)
         {
+            //get the current user selected salesforce object from the drop down list
             string curSelectedObject =
                 ((DropDownList) GetControl(curActionDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
 
-            if (string.IsNullOrEmpty(curSelectedObject))
+            //if it is empty OR if the selected object is already considered for fields retirval, do not do anything
+            if (string.IsNullOrEmpty(curSelectedObject) || fieldsReceivedFor.Equals(curSelectedObject))
             {
                 return await Task.FromResult(curActionDO);
             }
 
-            //try something here
-            var r = await _salesforce.GetFieldsList(curActionDO, authTokenDO, curSelectedObject);
+            //get fields of selected salesforce object
+            var objectFieldsList = await _salesforce.GetFieldsList(curActionDO, authTokenDO, curSelectedObject);
+
+            //update the crate storage
+            var queryableCriteriaFields = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", objectFieldsList.ToArray());
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                updater.CrateStorage.ReplaceByLabel(queryableCriteriaFields);
+            }
+
+            //set which object is considered for the field retirval
+            fieldsReceivedFor = curSelectedObject;
 
             return await Task.FromResult(curActionDO);
         }

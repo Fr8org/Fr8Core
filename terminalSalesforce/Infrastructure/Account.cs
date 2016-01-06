@@ -2,7 +2,9 @@
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Salesforce.Force;
 using System;
 using System.Collections.Generic;
@@ -42,15 +44,28 @@ namespace terminalSalesforce.Infrastructure
             }
         }
 
-        public async Task<object> GetAccountFields(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        public async Task<IList<FieldDTO>> GetAccountFields(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
             string instanceUrl, apiVersion;
             ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
 
-            //HttpClient c = new HttpClient();
-            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);//, c);
-            var accountFields = await client.DescribeAsync<object>("Account");
-            return Task.FromResult(accountFields);
+            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
+            var fieldsQueryResponse = (JObject)await client.DescribeAsync<object>("Account");
+
+            var objectFields = new List<FieldDTO>();
+
+            JToken accountFields = null;
+            if (fieldsQueryResponse.TryGetValue("fields", out accountFields) && accountFields is JArray)
+            {
+                objectFields.AddRange(
+                    accountFields.Select(
+                        a => new FieldDTO(a.Value<string>("name"), a.Value<string>("label"))
+                            {
+                                Availability = AvailabilityType.Configuration
+                            }));
+            }
+
+            return objectFields;
         }
 
         public void ParseAuthToken(string authonTokenAdditionalValues, out string instanceUrl, out string apiVersion)

@@ -1,7 +1,9 @@
 ﻿using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Salesforce.Force;
 using System;
 using System.Collections.Generic;
@@ -42,6 +44,30 @@ namespace terminalSalesforce.Infrastructure
             {
                 var contactId = await client.CreateAsync("Contact", contact);
             }
+        }
+
+        public async Task<IList<FieldDTO>> GetContactFields(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        {
+            string instanceUrl, apiVersion;
+            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
+
+            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
+            var fieldsQueryResponse = (JObject)await client.DescribeAsync<object>("Contact");
+
+            var objectFields = new List<FieldDTO>();
+
+            JToken contactFields = null;
+            if (fieldsQueryResponse.TryGetValue("fields", out contactFields) && contactFields is JArray)
+            {
+                objectFields.AddRange(
+                    contactFields.Select(
+                        a => new FieldDTO(a.Value<string>("name"), a.Value<string>("label"))
+                        {
+                            Availability = AvailabilityType.Configuration
+                        }));
+            }
+
+            return objectFields;
         }
 
         public void ParseAuthToken(string authonTokenAdditionalValues, out string instanceUrl, out string apiVersion)

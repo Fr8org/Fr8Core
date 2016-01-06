@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
 using terminalSalesforce.Infrastructure;
@@ -71,30 +73,29 @@ namespace terminalSalesforce.Services
             return createFlag;
         }
 
-        public async Task<bool> GetFieldsList(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string salesforceObjectName)
+        public async Task<IList<FieldDTO>> GetFieldsList(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string salesforceObjectName)
         {
-            bool createFlag = true;
             try
             {
-                var authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
-
-                //var ss = await _account.GetAccountFields(actionDO, authTokenResult);
                 switch (salesforceObjectName)
                 {
                     case "Account":
-                        var ss = await _account.GetAccountFields(actionDO, authTokenDO);
-                        break;
+                        return await _account.GetAccountFields(actionDO, authTokenDO);
+                    case "Lead":
+                        return await _lead.GetLeadFields(actionDO, authTokenDO);
+                    case "Contact":
+                        return await _contact.GetContactFields(actionDO, authTokenDO);
                     default:
-                        return false;
+                        throw new NotSupportedException(
+                            string.Format("Not Supported Salesforce object name {0} has been given for querying fields.",
+                                salesforceObjectName));
                 }
             }
             catch (Exception ex)
             {
-                createFlag = false;
                 Logger.GetLogger().Error(ex);
                 throw;
             }
-            return createFlag;
         }
 
 

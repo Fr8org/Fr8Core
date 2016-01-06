@@ -16,6 +16,6 @@ namespace terminalSalesforce.Infrastructure
 
         bool CreateAccount(ActionDO actionDTO, AuthorizationTokenDO authTokenDO);
 
-        Task<bool> GetFieldsList(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string salesforceObjectName);
+        Task<IList<FieldDTO>> GetFieldsList(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string salesforceObjectName);
     }
 }
