@@ -112,7 +112,6 @@ namespace terminalFr8Core.Actions
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                updater.CrateStorage.RemoveUsingPredicate(c => c.IsOfType<StandardDesignTimeFieldsCM>() && c.Label == "Available From Manifests");
                 updater.CrateStorage.RemoveUsingPredicate(c => c.IsOfType<StandardDesignTimeFieldsCM>() && c.Label == "Available To Manifests");
                 if (manifestTypeDropdown.Value != null)
                 {

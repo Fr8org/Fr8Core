@@ -99,14 +99,9 @@ namespace terminalDocuSign.Actions
 
             actionDO.ChildNodes = new List<RouteNodeDO>();
 
-            var getDocuSignTemplateAction = await CreateGetDocuSignTemplateAction(actionDO, authTokenDO);
-            SetSelectedTemplate(getDocuSignTemplateAction, selectedTemplateField);
-
+            var getDocuSignTemplateAction = await CreateGetDocuSignTemplateAction(actionDO, authTokenDO, selectedTemplateField);
             var convertCratesAction = await CreateConvertCratesAction(actionDO, authTokenDO);
-            SetFromConversion(convertCratesAction);
-
-            var storeFileAction = await CreateStoreFileAction(actionDO, authTokenDO);
-            SetFileDetails(storeFileAction, destinationFileNameField.Value);
+            var storeFileAction = await CreateStoreFileAction(actionDO, authTokenDO, destinationFileNameField.Value);
 
             //add child nodes here
             actionDO.ChildNodes.Add(getDocuSignTemplateAction);
@@ -139,6 +134,7 @@ namespace terminalDocuSign.Actions
                 var fromDropdown = (DropDownList)GetControl(confControls, "Available_From_Manifests", ControlTypes.DropDownList);
                 
                 fromDropdown.Value = ((int)MT.DocuSignTemplate).ToString();
+                fromDropdown.selectedKey = MT.DocuSignTemplate.GetEnumDisplayName();
             }
         }
 
@@ -149,6 +145,7 @@ namespace terminalDocuSign.Actions
                 var confControls = GetConfigurationControls(updater.CrateStorage);
                 var toDropdown = (DropDownList)GetControl(confControls, "Available_To_Manifests", ControlTypes.DropDownList);
                 toDropdown.Value = ((int)MT.StandardFileHandle).ToString();
+                toDropdown.selectedKey = MT.StandardFileHandle.GetEnumDisplayName();
             }
         }
 
@@ -164,31 +161,46 @@ namespace terminalDocuSign.Actions
         }
 
 
-        private async Task<ActionDO> CreateGetDocuSignTemplateAction(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        private async Task<ActionDO> CreateGetDocuSignTemplateAction(ActionDO actionDO, AuthorizationTokenDO authTokenDO, DropDownList selectedTemplateDd)
         {
-            return await CreateAction(actionDO, authTokenDO, "Get_DocuSign_Template", "Get DocuSign Template", "Get DocuSign Template", 1);
+            var getDocuSignTemplateAction = await CreateAction(actionDO, authTokenDO, "Get_DocuSign_Template", "Get DocuSign Template", "Get DocuSign Template", 1);
+            SetSelectedTemplate(getDocuSignTemplateAction, selectedTemplateDd);
+            return getDocuSignTemplateAction;
         }
 
         private async Task<ActionDO> CreateConvertCratesAction(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
-            return await CreateAction(actionDO, authTokenDO, "ConvertCrates", "Convert Crates", "Convert Crates", 2);
+            var activityTemplate = await GetActivityTemplate(actionDO, "ConvertCrates");
+            var convertCrateAction = await CreateAction(actionDO, authTokenDO, activityTemplate, "Convert Crates", "Convert Crates", 2);
+            SetFromConversion(convertCrateAction);
+            convertCrateAction = await ExplicitConfigurationHelper.Configure(
+                convertCrateAction,
+                activityTemplate,
+                authTokenDO
+            );
+            SetToConversion(convertCrateAction);
+            return convertCrateAction;
         }
 
-        private async Task<ActionDO> CreateStoreFileAction(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        private async Task<ActionDO> CreateStoreFileAction(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string fileName)
         {
-            return await CreateAction(actionDO, authTokenDO, "StoreFile", "Store File", "Store File", 3);
+            var storeFileAction = await CreateAction(actionDO, authTokenDO, "StoreFile", "Store File", "Store File", 3);
+            SetFileDetails(storeFileAction, fileName);
+            return storeFileAction;
         }
 
-        private async Task<ActionDO> CreateAction(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string activityTemplateName, string name, string label, int ordering)
+        private async Task<ActivityTemplateDTO> GetActivityTemplate(ActionDO actionDO, string activityTemplateName)
         {
-            
             var activityTemplate = (await HubCommunicator.GetActivityTemplates(actionDO)).FirstOrDefault(x => x.Name == activityTemplateName);
-
             if (activityTemplate == null)
             {
                 throw new Exception(string.Format("ActivityTemplate {0} was not found", activityTemplateName));
             }
+            return activityTemplate;
+        }
 
+        private async Task<ActionDO> CreateAction(ActionDO actionDO, AuthorizationTokenDO authTokenDO, ActivityTemplateDTO activityTemplate, string name, string label, int ordering)
+        {
             var action = new ActionDO
             {
                 IsTempId = true,
@@ -207,6 +219,12 @@ namespace terminalDocuSign.Actions
             );
 
             return action;
+        }
+
+        private async Task<ActionDO> CreateAction(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string activityTemplateName, string name, string label, int ordering)
+        {
+            var activityTemplate = await GetActivityTemplate(actionDO, activityTemplateName);
+            return await CreateAction(actionDO, authTokenDO, activityTemplate, name, label, ordering);
         }
 
 
