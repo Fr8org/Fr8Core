@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Data.Utility
 {
-    public class Tag : BaseDO
+    public class Tag : BaseObject
     {
         [Key]
         public int Id { get; set; }

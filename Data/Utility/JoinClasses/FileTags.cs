@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace Data.Utility.JoinClasses
 {
-    public class FileTags : BaseDO
+    public class FileTags : BaseObject
     {
         [Key]
         public int Id { get; set; }

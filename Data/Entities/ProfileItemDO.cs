@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-    public class ProfileItemDO : BaseDO
+    public class ProfileItemDO : BaseObject
     {
         [Key]
         public int Id { get; set; }
