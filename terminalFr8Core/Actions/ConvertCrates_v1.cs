@@ -110,7 +110,6 @@ namespace terminalFr8Core.Actions
             var controlsMS = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_From_Manifests");
 
-            
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.RemoveUsingPredicate(c => c.IsOfType<StandardDesignTimeFieldsCM>() && c.Label == "Available From Manifests");
@@ -157,7 +156,7 @@ namespace terminalFr8Core.Actions
                 Label = "Convert upstream data from which Crate",
                 Name = "Available_From_Manifests",
                 Value = null,
-                Events = new List<ControlEvent>{ new ControlEvent("onChange", "requestConfig") },
+                Events = new List<ControlEvent>{ ControlEvent.RequestConfig },
                 Source = new FieldSourceDTO
                 {
                     Label = "Available From Manifests",

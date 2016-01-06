@@ -40,6 +40,9 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("source")]
         public FieldSourceDTO Source { get; set; }
 
+        [JsonProperty("help")]
+        public HelpControlDTO Help { get; set; }
+
         public virtual void Reset(List<string> fieldNames)
         {
             //This is here to prevent development bugs

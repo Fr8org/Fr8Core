@@ -91,6 +91,50 @@ namespace terminalSlack.Services
             }
         }
 
+        public async Task<List<FieldDTO>> GetUserList(string oauthToken)
+        {
+            var url = PrepareTokenUrl("SlackUserListUrl", oauthToken);
+
+            var httpClient = new HttpClient();
+            using (var response = await httpClient.GetAsync(url))
+            {
+                var responseString = await response.Content.ReadAsStringAsync();
+                var jsonObj = JsonConvert.DeserializeObject<JObject>(responseString);
+
+                var usersArray = jsonObj.Value<JArray>("members");
+
+                var result = new List<FieldDTO>();
+                foreach (var userObj in usersArray)
+                {
+                    if (userObj.Value<bool>("deleted"))
+                        continue;
+                    var userId = userObj.Value<string>("id");
+                    var userName = userObj.Value<string>("name");
+
+                    result.Add(new FieldDTO()
+                    {
+                        Key = userName,
+                        Value = userId
+                    });
+                }
+
+                return result;
+            }
+        }
+
+        public async Task<List<FieldDTO>> GetAllChannelList(string oauthToken)
+        {
+            var channels = await GetChannelList(oauthToken);
+            var users = await GetUserList(oauthToken);
+
+            var result = new List<FieldDTO>();
+            result.AddRange(channels);
+            result.AddRange(users);
+            return result;
+        }
+
+
+
         public async Task<bool> PostMessageToChat(string oauthToken, string channelId, string message)
         {
             var url = CloudConfigurationManager.GetSetting("SlackChatPostMessageUrl");
