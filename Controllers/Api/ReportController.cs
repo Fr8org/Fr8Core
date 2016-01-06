@@ -9,6 +9,9 @@ using Hub.Managers;
 using Hub.Services;
 using Utilities;
 using Utilities.Logging;
+using Data.Interfaces.DataTransferObjects;
+using System.Linq;
+using AutoMapper;
 
 namespace HubWeb.Controllers
 {    
@@ -26,19 +29,19 @@ namespace HubWeb.Controllers
         //[Route("api/report/getallfacts")]
         public IHttpActionResult GetAllFacts()
         {
-            List<FactDO> factDOList = null;
+            IEnumerable<FactDTO> factDTOList = null;
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    factDOList = _report.GetAllFacts(uow);                                    
+                    factDTOList = _report.GetAllFacts(uow).Select(f => Mapper.Map<FactDTO>(f));
                 }
             }
             catch (Exception e)
             {
                 Logger.GetLogger().Error("Error checking for activity template ", e);
             }
-            return Ok(factDOList);
+            return Ok(factDTOList);
         }
 
         //[Route("api/report/getallincidents")]

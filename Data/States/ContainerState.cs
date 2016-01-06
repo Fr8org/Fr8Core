@@ -8,5 +8,6 @@
 		public const int Completed = 4;
 		public const int Failed = 5;
         public const int Pending = 6;
+        public const int Deleted = 7;
 	}
 }
