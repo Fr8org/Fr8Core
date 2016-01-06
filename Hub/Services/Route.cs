@@ -116,14 +116,26 @@ namespace Hub.Services
 
         public void Delete(IUnitOfWork uow, Guid id)
         {
-            var curRoute = uow.RouteRepository.GetQuery().SingleOrDefault(pt => pt.Id == id);
+            var curRoute = uow.RouteRepository.GetQuery().Include(c => c.ChildContainers).SingleOrDefault(pt => pt.Id == id);
 
             if (curRoute == null)
             {
                 throw new EntityNotFoundException<RouteDO>(id);
             }
 
-            _activity.Delete(uow, curRoute);
+            curRoute.RouteState = RouteState.Deleted;
+
+            //Route deletion will only update its RouteState = Deleted
+            //_activity.Delete(uow, curRoute);
+
+            var containers = curRoute.ChildContainers;
+            if (containers != null)
+            {
+                foreach (var container in containers)
+                {
+                    container.ContainerState = ContainerState.Deleted;
+                }
+            }
         }
 
         public IList<SubrouteDO> GetSubroutes(RouteDO curRouteDO)
