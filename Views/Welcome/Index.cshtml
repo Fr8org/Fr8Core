@@ -15,16 +15,18 @@
     <section class="MainContent">
         <div class="MainMenuDropdown">
             <span class="dropdown-toggle">
-                Welcome to Fr8
+                <img src="/Content/img/welcome/welcome_header.png" />
             </span>
-            
         </div>
         <div id="HomePage" class="HomePage">
             <div class="HomeLeftSide">
                 <a href="~/Home/DocuSign">
-                    <span class="docusign-header">Try our Docusign Solutions</span>
                     <img src="/Content/img/welcome/docusign.png">
-                    @*<span class="docusign-info">Some more information about docusign, some nice images maybe</span>*@
+                    <div class="docusing-pane">
+                        <span class="docusign-header">DocuSign Solutions</span>
+                        <p>Build personal notifiers using our preconfigured routes. <span class="btn btn-success btn-sm">Try Now</span></p>
+                    </div>
+                    <img src="/Content/img/welcome/DocuSign_Logo_Purple_Yellow.png">
                 </a>
             </div>
             <div class="HomeRightSide">
@@ -34,8 +36,9 @@
                             <img src="/Content/img/welcome/logo.png">
                         </div>
                         <p>
-                            <b>Go to Route Builder</b><span>With route builder you can create complex routes without any knowledge of programming.</span>
-                        </p><img src="/Content/img/welcome/routeBuilder.png" class="hidden-sm hidden-xs">
+                            <span>Use world best services without any knowledge of programming. Build complex routes. <span class="btn btn-success btn-sm">Try Now</span> </span>
+                        </p>
+                        <img src="/Content/img/welcome/routeBuilder.png" class="hidden-sm hidden-xs">
                     </div>
                 </a>
             </div>
@@ -51,12 +54,12 @@
             var resizePanes = function () {
                 var rightSideMinHeight = $(window).height() - 64;
                 var currentRightSideHeight = $('.HomeRightSide').height();
-                if (currentRightSideHeight < rightSideMinHeight){
+                if (currentRightSideHeight < rightSideMinHeight) {
                     $('.HomeRightSide').css({ 'min-height': ($(window).height() - 64) + 'px' });
                 }
             };
-            
-            $(window).resize(function() {
+
+            $(window).resize(function () {
                 resizePanes();
             });
             resizePanes();

@@ -9,7 +9,7 @@ body{font-family:"Open Sans", Helvetica, Helvetica Nue, Arial, sans-serif;backgr
 
 a:hover{cursor:pointer;text-decoration: none;}
 .MainMenuDropdown .dropdown-toggle {
-    
+    background: #fff;
     height:64px;
     line-height:64px;
     font-size:36px;
@@ -33,20 +33,55 @@ a:hover{cursor:pointer;text-decoration: none;}
     background:#252830;
     cursor: pointer;
 }
-.HomePage .HomeLeftSide img{margin:45px auto 0;max-width:100%;display:block}
-.HomePage .HomeLeftSide .Login{background:#ef6a20;color:#fff;border-color:#b5490d;text-shadow:0 1px 1px rgba(0,0,0,.4);border-radius:0;position:absolute;bottom:160px;left:50%;margin-left:-70px}
+.HomePage .HomeLeftSide img {
+    margin:0 auto 0;
+    max-width:100%;
+    display:block
+}
+.HomePage .HomeLeftSide .Login {
+    background:#ef6a20;
+    color:#fff;
+    border-color:#b5490d;
+    text-shadow:0 1px 1px rgba(0,0,0,.4);
+    border-radius:0;
+    position:absolute;
+    bottom:160px;
+    left:50%;
+    margin-left:-70px
+}
 .HomePage .HomeLeftSide .Login:hover{color:#fff;background:#f18041}
-.docusign-header {
-    display:block;font-size:24px;line-height:36px;margin-bottom:20px;font-weight: 600;
-    font-family: "Open Sans", Helvetica, Helvetica Nue, Arial, sans-serif;
+.docusing-pane {
+    display:block;
+    margin-bottom:40px;
+    margin-left: 140px;
+    margin-right: 140px;
+    font-family:Arial;
     color: white;
-    margin-top: 40px;
+    margin-top: 30px;
+}
+.docusing-pane p {
+    margin-top: 10px;
+    color: rgb(178, 178, 178);
+    font-size: 20px;
+}
+.try-now {
+    color: white;
+    font-size: 21px;
+    font-weight: 300;
+}
+.docusign-header {
+    font-weight: 600;
+    font-size:40px;
+    line-height:36px;
 }
 .docusign-info {
-    display:block;font-size:24px;line-height:36px;margin-bottom:20px;
-    font-family: "Open Sans", Helvetica, Helvetica Nue, Arial, sans-serif;
+    display:block;
+    font-size:50px;
+    line-height:36px;
+    margin-bottom:20px;
+    font-family: Arial;
     color: white;
-    margin-top: 40px;
+    margin-top: 20px;
 }
 .HomePage .HomeRightSide {
     background:url(../img/welcome/right-side-bg.jpg)left top no-repeat #347ab6;
@@ -63,11 +98,27 @@ a:hover{cursor:pointer;text-decoration: none;}
     margin: auto;
     text-align: center;
 }
-.HomePage .HomeRightSide .HomeRightSideWrapper .Logo{background:rgba(255,255,255,.4);padding:20px;display:inline-block;box-shadow:0 1px 4px rgba(0,0,0,.4);margin:0 0 45px}
-.HomePage .HomeRightSide .HomeRightSideWrapper p{color:#fff;font-size:16px;margin:0 0 40px;line-height: 28px;
-                                                     font-family: monospace;
+.HomePage .HomeRightSide .HomeRightSideWrapper .Logo {
+    padding:20px;
+    display:inline-block;
+
+}
+.HomePage .HomeRightSide .HomeRightSideWrapper p{
+    color: rgb(210, 210, 210);
+    font-size: 20px;
+    line-height: 28px;
+    font-family: Arial;
+    margin-top: -10px;
+    margin-right: 100px;
+    margin-left: 100px;
+    margin-bottom: 30px;
 }
 .HomePage .HomeRightSide .HomeRightSideWrapper p b {
-    display:block;font-size:24px;line-height:36px;margin-bottom:20px;font-weight: 600;
-    font-family: "Open Sans", Helvetica, Helvetica Nue, Arial, sans-serif;
+    display:block;
+    color: #fff;
+    font-size:28px;
+    line-height:36px;
+    margin-bottom:20px;
+    font-weight: 600;
+    font-family: Arial;
 }
