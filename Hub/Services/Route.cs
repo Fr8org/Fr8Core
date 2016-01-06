@@ -123,14 +123,17 @@ namespace Hub.Services
                 throw new EntityNotFoundException<RouteDO>(id);
             }
 
-            _activity.Delete(uow, curRoute);
+            curRoute.RouteState = RouteState.Deleted;
+
+            //Route deletion will only update its RouteState = Deleted
+            //_activity.Delete(uow, curRoute);
 
             var containers = curRoute.ChildContainers;
             if (containers != null)
             {
                 foreach (var container in containers)
                 {
-                    uow.ContainerRepository.Remove(container);
+                    container.ContainerState = ContainerState.Deleted;
                 }
             }
         }
