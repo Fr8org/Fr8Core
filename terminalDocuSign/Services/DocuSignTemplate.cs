@@ -19,6 +19,7 @@ namespace terminalDocuSign.Services
     public class DocuSignTemplate : Template, IDocuSignTemplate
     {
         private DocuSignEnvelope _docusignEnvelope;
+        private DocuSignPackager _docusignPackager;
 
         public TemplateInfo Create(TemplateInfo submissionData)
         {
@@ -30,30 +31,20 @@ namespace terminalDocuSign.Services
 
         public IEnumerable<TemplateInfo> GetTemplates(Fr8AccountDO curDockyardAccount)
         {
-            var docuSignPackager = new DocuSignPackager();
-            Login = docuSignPackager.Login();
-            return GeTemplatesInternally();
+            Login = _docusignPackager.Login();
+            return GetTemplates();
         }
 
         public IEnumerable<TemplateInfo> GetTemplates(string email, string apiPassword)
         {
-            var docuSignPackager = new DocuSignPackager();
-            Login = docuSignPackager.Login(email, apiPassword);
-            return GeTemplatesInternally();
+            Login = _docusignPackager.Login(email, apiPassword);
+            return GetTemplates();
         }
 
-        private IEnumerable<TemplateInfo> GeTemplatesInternally()
-        {
-            var sw = Stopwatch.StartNew();
-            _docusignEnvelope = new DocuSignEnvelope();
-            var templateInfos = GetTemplates();
-            return templateInfos;
-        }
 
         public DocuSignTemplateDTO GetTemplateById(string email, string apiPassword, string templateId)
         {
-            var docuSignPackager = new DocuSignPackager();
-            Login = docuSignPackager.Login(email, apiPassword);
+            Login = _docusignPackager.Login(email, apiPassword);
             return GetTemplateByIdInternally(templateId);
         }
 
