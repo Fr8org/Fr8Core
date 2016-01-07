@@ -11,6 +11,7 @@ using Data.Interfaces;
 using Hub.Interfaces;
 using Hub.Services;
 using Utilities;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace Hub.Managers.APIManagers.Authorizers.Docusign
 {
@@ -18,6 +19,7 @@ namespace Hub.Managers.APIManagers.Authorizers.Docusign
     {
         private readonly string _userId;
         private readonly Authorization _authorizationToken;
+        private readonly IRestfulServiceClient _client;
 
         public string Endpoint { get; set; }
         public string IntegratorKey { get; set; }
@@ -26,27 +28,34 @@ namespace Hub.Managers.APIManagers.Authorizers.Docusign
         {
             _userId = userId;
             _authorizationToken = new Authorization();
+            _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
 
-        private HttpClient CreateClient(string accessToken = null)
+        private Uri BuildAbsoluteUrl(string relativeUrl)
         {
-            var httpClient = new HttpClient() {BaseAddress = new Uri(Endpoint)};
-            if (!string.IsNullOrEmpty(accessToken))
+            return new Uri(new Uri(Endpoint), relativeUrl);
+        }
+
+        private Dictionary<string, string> GetAuthenticationHeader(string accessToken)
+        {
+            return new Dictionary<string, string>
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
-            }
-            return httpClient;
+                { System.Net.HttpRequestHeader.Authorization.ToString(), string.Format("bearer {0}", accessToken) }
+            };
         }
 
         private async Task<bool> LoginAsync(string accessToken)
         {
-            using (var httpClient = CreateClient(accessToken))
+            try
             {
-                var response = await httpClient.GetAsync(
-                    "login_information",
-                    HttpCompletionOption.ResponseHeadersRead);
-                return response.IsSuccessStatusCode;
+                await _client.GetAsync<string>(BuildAbsoluteUrl("login_information"), null, GetAuthenticationHeader(accessToken));
             }
+            catch {
+                return false;
+            }
+
+            return true;
+
         }
 
         public async Task<IOAuthAuthorizationResult> AuthorizeAsync(string callbackUrl, string currentUrl)
@@ -65,37 +74,26 @@ namespace Hub.Managers.APIManagers.Authorizers.Docusign
 
         public async Task ObtainTokenAsync(string userName, string password)
         {
-            using (var httpClient = CreateClient())
+            string response;
+            try
             {
-                var response = await httpClient.PostAsync(
-                    "oauth2/token",
-                    new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("grant_type", "password"), 
-                        new KeyValuePair<string, string>("client_id", IntegratorKey), 
-                        new KeyValuePair<string, string>("username", userName), 
-                        new KeyValuePair<string, string>("password", password), 
-                        new KeyValuePair<string, string>("scope", "api"), 
-                    }));
-                try
+                response = await _client.PostAsync(BuildAbsoluteUrl("oauth2/token"),
+                (HttpContent)new FormUrlEncodedContent(new[]
                 {
-                    try
-                    {
-                        response.EnsureSuccessStatusCode();
-                    }
-                    catch (HttpRequestException ex)
-                    {
-                        throw new OAuthException("Failed to obtain an access token. Credentials must have been incorrect.", ex);
-                    }
-                    var responseAsString = await response.Content.ReadAsStringAsync();
-                    var responseObject = JsonConvert.DeserializeAnonymousType(responseAsString, new { access_token = "" });
-                    _authorizationToken.AddOrUpdateToken(_userId, responseObject.access_token);
-                }
-                finally
-                {
-                    response.Dispose();
-                }
+                    new KeyValuePair<string, string>("grant_type", "password"),
+                    new KeyValuePair<string, string>("client_id", IntegratorKey),
+                    new KeyValuePair<string, string>("username", userName),
+                    new KeyValuePair<string, string>("password", password),
+                    new KeyValuePair<string, string>("scope", "api"),
+                }));
             }
+            catch (RestfulServiceException ex)
+            {
+                throw new OAuthException("Failed to obtain an access token. Credentials must have been incorrect.", ex);
+            }
+                
+            var responseObject = JsonConvert.DeserializeAnonymousType(response, new { access_token = "" });
+            _authorizationToken.AddOrUpdateToken(_userId, responseObject.access_token);
         }
 
         public async Task RevokeTokenAsync()
@@ -103,28 +101,21 @@ namespace Hub.Managers.APIManagers.Authorizers.Docusign
             var accessToken = await GetTokenAsync();
             if (string.IsNullOrEmpty(accessToken))
                 return;
-            using (var httpClient = CreateClient())
+ 
+            try
             {
-                var response = await httpClient.PostAsync(
-                    "oauth2/revoke",
-                    new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("token", accessToken), 
-                    }));
-                try
+                var response = await _client.PostAsync(BuildAbsoluteUrl("oauth2/revoke"),
+                (HttpContent)new FormUrlEncodedContent(new[]
                 {
-                    response.EnsureSuccessStatusCode();
-                }
-                catch (HttpRequestException ex)
-                {
-                    throw new OAuthException("Failed to revoke an access token.", ex);
-                }
-                finally
-                {
-                    response.Dispose();
-                }
-                _authorizationToken.RemoveToken(_userId);
+                    new KeyValuePair<string, string>("token", accessToken),
+                }));
             }
+            catch (RestfulServiceException ex)
+            {
+                throw new OAuthException("Failed to revoke an access token.", ex);
+            }
+            _authorizationToken.RemoveToken(_userId);
+            
         }
 
         public Task<string> GetTokenAsync()

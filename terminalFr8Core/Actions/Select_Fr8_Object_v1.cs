@@ -14,6 +14,8 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 using Data.Entities;
+using StructureMap;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace terminalFr8Core.Actions
 {
@@ -99,7 +101,7 @@ namespace terminalFr8Core.Actions
             return await Task.FromResult(curActionDO);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (Crate.IsStorageEmpty(curActionDO))
             {
@@ -131,17 +133,12 @@ namespace terminalFr8Core.Actions
         // Get the Design time fields crate.
         private async Task<Crate> GetDesignTimeFieldsCrateOfSelectedFr8Object(string fr8Object)
         {
-            var httpClient = new HttpClient();
-
+            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/manifests?id="
                 + Int32.Parse(fr8Object);
-            using (var response = await httpClient.GetAsync(url))
-            {
-                var content = await response.Content.ReadAsAsync<CrateDTO>();
-
-                return Crate.FromDto(content);
-            }
+            var response = await client.GetAsync<CrateDTO>(new Uri(url));
+            return Crate.FromDto(response);
 		}
 
 		#region Execution

@@ -268,7 +268,7 @@ namespace DockyardTest.Security
                 new Uri("http://" + activityTemplateDO.Terminal.Endpoint + "/authentication/internal"),
                 It.Is < CredentialsDTO >(it=> it.Username ==  credentialsDTO.Username && 
                                               it.Password == credentialsDTO.Password &&
-                                              it.Domain == credentialsDTO.Domain)), Times.Exactly(1));
+                                              it.Domain == credentialsDTO.Domain), It.IsAny<string>()), Times.Exactly(1));
                        
 
             restClientMock.VerifyAll();
@@ -300,7 +300,7 @@ namespace DockyardTest.Security
             //verify that the post call is made 
             restClientMock.Verify(
                 client => client.PostAsync<ExternalAuthenticationDTO>(new Uri("http://" + terminalDO.Endpoint + "/authentication/token"),
-                externalAuthenticationDTO), Times.Exactly(1));
+                externalAuthenticationDTO, It.IsAny<string>()), Times.Exactly(1));
 
             restClientMock.VerifyAll();
 
@@ -336,7 +336,7 @@ namespace DockyardTest.Security
             //verify that the post call is made 
             restClientMock.Verify(
                 client => client.PostAsync(
-                    new Uri("http://" + tokenDO.Terminal.Endpoint + "/authentication/initial_url")
+                    new Uri("http://" + tokenDO.Terminal.Endpoint + "/authentication/initial_url"), It.IsAny<string>()
                 ), 
                 Times.Exactly(1)
             );
