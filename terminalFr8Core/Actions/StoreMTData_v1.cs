@@ -35,14 +35,16 @@ namespace terminalFr8Core.Actions
                 //get docu sign envelope crate from payload
                 var curDocuSignEnvelopeCrate = Crate.FromDto(curProcessPayload.CrateStorage).CratesOfType<DocuSignEnvelopeCM>().Single(x => x.Label == "DocuSign Envelope Manifest");
 
+                
+
                 string curFr8AccountId = string.Empty;
                 if (curDocuSignEnvelopeCrate != null)
                 {
                     DocuSignEnvelopeCM docuSignEnvelope = curDocuSignEnvelopeCrate.Content;
-                    curFr8AccountId = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(docuSignEnvelope.ExternalAccountId).UserDO.Id;
+                    curFr8AccountId = uow.AuthorizationTokenRepository.GetPublicDataQuery().First(x => x.ExternalAccountId == docuSignEnvelope.ExternalAccountId).UserDO.Id;    
 
                     //store envelope in MT database
-                    uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEnvelopeCM>(uow, curFr8AccountId, docuSignEnvelope, e => e.EnvelopeId);
+                    uow.MultiTenantObjectRepository.AddOrUpdate(uow, curFr8AccountId, docuSignEnvelope, e => e.EnvelopeId);
                     uow.SaveChanges();
                 }
 
@@ -53,10 +55,10 @@ namespace terminalFr8Core.Actions
                 {
                     DocuSignEventCM docuSignEvent = curDocuSignEventCrate.Content;
 
-                    curFr8AccountId = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(docuSignEvent.ExternalAccountId).UserDO.Id;
+                    curFr8AccountId = uow.AuthorizationTokenRepository.GetPublicDataQuery().First(x => x.ExternalAccountId == docuSignEvent.ExternalAccountId).UserDO.Id;
 
                     //store event in MT database
-                    uow.MultiTenantObjectRepository.AddOrUpdate<DocuSignEventCM>(uow, curFr8AccountId, docuSignEvent, e => e.EnvelopeId);
+                    uow.MultiTenantObjectRepository.AddOrUpdate(uow, curFr8AccountId, docuSignEvent, e => e.EnvelopeId);
                     uow.SaveChanges();
                 }
 

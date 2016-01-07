@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using AutoMapper;
@@ -16,17 +17,53 @@ using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
 using Data.Entities;
 using Newtonsoft.Json;
+using terminalDocuSign.Actions;
 using terminalDocuSign.Infrastructure;
+using terminalDocuSign.Interfaces;
 
 namespace terminalDocuSign.Services
 {
+    public class DocusignQuery
+    {
+        public static readonly FieldDTO[] Statuses = 
+        {
+            new FieldDTO("Any status", "<any>"),
+            new FieldDTO("Sent", "sent"),
+            new FieldDTO("Delivered", "delivered"),
+            new FieldDTO("Signed", "signed"),
+            new FieldDTO("Completed", "completed"),
+            new FieldDTO("Declined", "declined"),
+            new FieldDTO("Voided", "voided"),
+            new FieldDTO("Timed Out", "timedout"),
+            new FieldDTO("Authoritative Copy", "authoritativecopy"),
+            new FieldDTO("Transfer Completed", "transfercompleted"),
+            new FieldDTO("Template", "template"),
+            new FieldDTO("Correct", "correct"),
+            new FieldDTO("Created", "created"),
+            new FieldDTO("Delivered", "delivered"),
+            new FieldDTO("Signed", "signed"),
+            new FieldDTO("Declined", "declined"),
+            new FieldDTO("Completed", "completed"),
+            new FieldDTO("Fax Pending", "faxpending"),
+            new FieldDTO("Auto Responded", "autoresponded"),
+        };
+
+        public string SearchText;
+        public DateTime? FromDate;
+        public DateTime? ToDate;
+        public string Status;
+        public string Folder;
+    }
+
     public class DocuSignManager
     {
         protected ICrateManager Crate;
+        private readonly IDocuSignFolder _docuSignFolder;
 
         public DocuSignManager()
         {
             Crate = ObjectFactory.GetInstance<ICrateManager>();
+            _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
         }
 
         public static DropDownList CreateDocuSignTemplatePicker(
@@ -68,7 +105,7 @@ namespace terminalDocuSign.Services
         {
             var template = new DocuSignTemplate();
             var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
-            var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id, Availability = AvailabilityType.Configuration }).ToArray();
+            var fields = templates.Select(x => new FieldDTO() {Key = x.Name, Value = x.Id, Availability = AvailabilityType.Configuration}).ToArray();
             var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
                 "Available Templates",
                 fields);
@@ -194,6 +231,30 @@ namespace terminalDocuSign.Services
                 return Crate.CreateDesignTimeFieldsCrate(crateLabel, fieldCollection.ToArray());
             }
             return null;
+        }
+        
+        public List<FolderItem> SearchDocusign(DocuSignAuth auth, DocusignQuery query)
+        {
+            var envelopes = new List<FolderItem>();
+
+            if (string.IsNullOrWhiteSpace(query.Folder) || query.Folder == "<any>")
+            {
+                foreach (var folder in _docuSignFolder.GetFolders(auth.Email, auth.ApiPassword))
+                {
+                    SearchFolder(auth, query, folder.FolderId, envelopes);
+                }
+            }
+            else
+            {
+                SearchFolder(auth, query,  query.Folder, envelopes);
+            }
+
+            return envelopes;
+        }
+
+        private void SearchFolder(DocuSignAuth auth, DocusignQuery query, string folder, List<FolderItem> envelopes)
+        {
+            envelopes.AddRange(_docuSignFolder.Search(auth.Email, auth.ApiPassword, query.SearchText, folder, query.Status == "<any>" ? null : query.Status, query.FromDate, query.ToDate));
         }
     }
 }
