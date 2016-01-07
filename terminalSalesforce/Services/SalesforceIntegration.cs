@@ -79,14 +79,15 @@ namespace terminalSalesforce.Services
         {
             try
             {
+                var authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
                 switch (salesforceObjectName)
                 {
                     case "Account":
-                        return await _account.GetFields(actionDO, authTokenDO);
+                        return await _account.GetFields(actionDO, authTokenResult);
                     case "Lead":
-                        return await _lead.GetFields(actionDO, authTokenDO);
+                        return await _lead.GetFields(actionDO, authTokenResult);
                     case "Contact":
-                        return await _contact.GetFields(actionDO, authTokenDO);
+                        return await _contact.GetFields(actionDO, authTokenResult);
                     default:
                         throw new NotSupportedException(
                             string.Format("Not Supported Salesforce object name {0} has been given for querying fields.",
@@ -105,12 +106,14 @@ namespace terminalSalesforce.Services
             try
             {
                 var payloadObjectDTO = new StandardPayloadDataCM();
+
+                var authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
                         
                 switch (salesforceObjectName)
                 {
                     case "Account":
                         payloadObjectDTO.ObjectType = "Salesforce Accounts";
-                        var resultAccounts = await _account.GetByQuery(actionDO, authTokenDO, condition);
+                        var resultAccounts = await _account.GetByQuery(actionDO, authTokenResult, condition);
 
                         payloadObjectDTO.PayloadObjects.AddRange(
                             resultAccounts.ToList().Select(account => new PayloadObjectDTO
@@ -126,7 +129,7 @@ namespace terminalSalesforce.Services
                         return payloadObjectDTO;
                     case "Lead":
                         payloadObjectDTO.ObjectType = "Salesforce Leads";
-                        var resultLeads = await _lead.GetByQuery(actionDO, authTokenDO, condition);
+                        var resultLeads = await _lead.GetByQuery(actionDO, authTokenResult, condition);
 
                         payloadObjectDTO.PayloadObjects.AddRange(
                             resultLeads.ToList().Select(lead => new PayloadObjectDTO
@@ -144,7 +147,7 @@ namespace terminalSalesforce.Services
                         return payloadObjectDTO;
                     case "Contact":
                         payloadObjectDTO.ObjectType = "Salesforce Contacts";
-                        var resultContacts = await _contact.GetByQuery(actionDO, authTokenDO, condition);
+                        var resultContacts = await _contact.GetByQuery(actionDO, authTokenResult, condition);
 
                         payloadObjectDTO.PayloadObjects.AddRange(
                             resultContacts.ToList().Select(contact => new PayloadObjectDTO
@@ -171,7 +174,5 @@ namespace terminalSalesforce.Services
                 throw;
             }
         }
-
-
     }
 }

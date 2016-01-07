@@ -75,8 +75,8 @@ namespace terminalSalesforce.Controllers
             var getDataAction = new ActivityTemplateDTO()
             {
                 Version = "1",
-                Name = "Salesforce_Get_Data",
-                Label = "Salesforce Get Data",
+                Name = "Get_Data",
+                Label = "Get Data",
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 Category = ActivityCategory.Processors,

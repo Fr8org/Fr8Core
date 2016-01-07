@@ -20,7 +20,7 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace terminalSalesforce.Actions
 {
-    public class Salesforce_Get_Data_v1 : BaseTerminalAction
+    public class Get_Data_v1 : BaseTerminalAction
     {
         ISalesforceIntegration _salesforce = new SalesforceIntegration();
 
