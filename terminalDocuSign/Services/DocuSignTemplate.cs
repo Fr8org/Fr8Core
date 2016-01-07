@@ -12,6 +12,7 @@ using terminalDocuSign.Interfaces;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using System.Configuration;
+using System.Diagnostics;
 
 namespace terminalDocuSign.Services
 {
@@ -27,69 +28,53 @@ namespace terminalDocuSign.Services
             return submissionData;
         }
 
-        public IEnumerable<DocuSignTemplateDTO> GetTemplates(Fr8AccountDO curDockyardAccount)
+        public IEnumerable<TemplateInfo> GetTemplates(Fr8AccountDO curDockyardAccount)
         {
             var docuSignPackager = new DocuSignPackager();
             Login = docuSignPackager.Login();
-            _docusignEnvelope = new DocuSignEnvelope();
-
-            List<DocuSignTemplateDTO> docuSignTemplateListDTO = new List<DocuSignTemplateDTO>();
-            var templateInfos = GetTemplates();
-            foreach (var templateInfo in templateInfos)
-            {
-                docuSignTemplateListDTO.Add(GetTemplateById(templateInfo.Id));
-            }
-
-            return docuSignTemplateListDTO;
+            return GeTemplatesInternally();
         }
 
-        public IEnumerable<DocuSignTemplateDTO> GetTemplates(string email, string apiPassword)
+        public IEnumerable<TemplateInfo> GetTemplates(string email, string apiPassword)
         {
             var docuSignPackager = new DocuSignPackager();
             Login = docuSignPackager.Login(email, apiPassword);
+            return GeTemplatesInternally();
+        }
+
+        private IEnumerable<TemplateInfo> GeTemplatesInternally()
+        {
+            var sw = Stopwatch.StartNew();
             _docusignEnvelope = new DocuSignEnvelope();
-
-            List<DocuSignTemplateDTO> docuSignTemplateListDTO = new List<DocuSignTemplateDTO>();
             var templateInfos = GetTemplates();
-            foreach (var templateInfo in templateInfos.Where(a => !String.IsNullOrEmpty(a.Name)))
-            {
-                docuSignTemplateListDTO.Add(GetTemplateById(templateInfo.Id));
-            }
-
-            return docuSignTemplateListDTO;
+            return templateInfos;
         }
 
         public DocuSignTemplateDTO GetTemplateById(string email, string apiPassword, string templateId)
+        {
+            var docuSignPackager = new DocuSignPackager();
+            Login = docuSignPackager.Login(email, apiPassword);
+            return GetTemplateByIdInternally(templateId);
+        }
+
+        private DocuSignTemplateDTO GetTemplateByIdInternally(string templateId)
         {
             if (templateId == null)
                 throw new ArgumentNullException("templateId");
             if (templateId == string.Empty)
                 throw new ArgumentException("templateId is empty", "templateId");
-
-            var docuSignPackager = new DocuSignPackager();
-            Login = docuSignPackager.Login(email, apiPassword);
-
             // Get template
             var jObjTemplate = GetTemplate(templateId);
             // Checking is it ok?
             DocuSignUtils.ThrowInvalidOperationExceptionIfError(jObjTemplate);
-
             return Mapper.Map<DocuSignTemplateDTO>(jObjTemplate);
         }
 
         public DocuSignTemplateDTO GetTemplateById(string templateId)
         {
-            if (templateId == null)
-                throw new ArgumentNullException("templateId");
-            if (templateId == string.Empty)
-                throw new ArgumentException("templateId is empty", "templateId");
-            // Get template
-            var jObjTemplate = GetTemplate(templateId);
-            // Checking is it ok?
-            DocuSignUtils.ThrowInvalidOperationExceptionIfError(jObjTemplate);
-
-            return Mapper.Map<DocuSignTemplateDTO>(jObjTemplate);
+            return GetTemplateByIdInternally(templateId);
         }
+
         //TODO: merge these
         public IEnumerable<string> GetMappableSourceFields(string templateId)
         {
