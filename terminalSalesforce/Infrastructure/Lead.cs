@@ -74,6 +74,35 @@ namespace terminalSalesforce.Infrastructure
             return objectFields;
         }
 
+        public async Task<IList<LeadDTO>> GetLeads(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string conditionQuery)
+        {
+            string instanceUrl, apiVersion;
+            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
+            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
+
+
+            if (string.IsNullOrEmpty(conditionQuery))
+            {
+                conditionQuery = "select Id, FirstName, LastName, Company, Title from Lead";
+            }
+            else
+            {
+                conditionQuery = "select Id, FirstName, LastName, Company, Title from Lead where " + conditionQuery;
+            }
+
+            var response = await client.QueryAsync<object>(conditionQuery);
+
+            var resultLeads = new List<LeadDTO>();
+
+            if (response.Records.Count > 0)
+            {
+                resultLeads.AddRange(
+                    response.Records.Select(record => ((JObject)record).ToObject<LeadDTO>()));
+            }
+
+            return resultLeads;
+        }
+
         public void ParseAuthToken(string authonTokenAdditionalValues,out string instanceUrl,out string apiVersion)
         {
             int startIndexOfInstanceUrl = authonTokenAdditionalValues.IndexOf("instance_url");

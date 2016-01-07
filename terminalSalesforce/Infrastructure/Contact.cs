@@ -70,6 +70,35 @@ namespace terminalSalesforce.Infrastructure
             return objectFields;
         }
 
+        public async Task<IList<ContactDTO>> GetContacts(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string conditionQuery)
+        {
+            string instanceUrl, apiVersion;
+            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
+            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
+
+
+            if (string.IsNullOrEmpty(conditionQuery))
+            {
+                conditionQuery = "select FirstName, LastName, MobilePhone, Email from Contact";
+            }
+            else
+            {
+                conditionQuery = "select FirstName, LastName, MobilePhone, Email from Contact where " + conditionQuery;
+            }
+
+            var response = await client.QueryAsync<object>(conditionQuery);
+
+            var resultContacts = new List<ContactDTO>();
+
+            if (response.Records.Count > 0)
+            {
+                resultContacts.AddRange(
+                    response.Records.Select(record => ((JObject)record).ToObject<ContactDTO>()));
+            }
+
+            return resultContacts;
+        }
+
         public void ParseAuthToken(string authonTokenAdditionalValues, out string instanceUrl, out string apiVersion)
         {
             int startIndexOfInstanceUrl = authonTokenAdditionalValues.IndexOf("instance_url");

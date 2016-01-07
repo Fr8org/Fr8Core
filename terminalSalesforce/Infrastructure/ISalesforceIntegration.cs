@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Data.Interfaces.Manifests;
 
 namespace terminalSalesforce.Infrastructure
 {
@@ -18,6 +19,6 @@ namespace terminalSalesforce.Infrastructure
 
         Task<IList<FieldDTO>> GetFieldsList(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string salesforceObjectName);
 
-        Task<object> GetObject(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string salesforceObjectName, string condition);
+        Task<StandardPayloadDataCM> GetObject(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string salesforceObjectName, string condition);
     }
 }

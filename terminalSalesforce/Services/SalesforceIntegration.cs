@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using terminalSalesforce.Infrastructure;
 using Utilities.Logging;
 using Data.Entities;
@@ -98,18 +100,65 @@ namespace terminalSalesforce.Services
             }
         }
 
-        public async Task<object> GetObject(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string salesforceObjectName, string condition)
+        public async Task<StandardPayloadDataCM> GetObject(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string salesforceObjectName, string condition)
         {
             try
             {
+                var payloadObjectDTO = new StandardPayloadDataCM();
+                        
                 switch (salesforceObjectName)
                 {
                     case "Account":
-                        return await _account.GetAccounts(actionDO, authTokenDO, condition);
+                        payloadObjectDTO.ObjectType = "Salesforce Accounts";
+                        var resultAccounts = await _account.GetAccounts(actionDO, authTokenDO, condition);
+
+                        payloadObjectDTO.PayloadObjects.AddRange(
+                            resultAccounts.ToList().Select(account => new PayloadObjectDTO
+                            {
+                                PayloadObject = new List<FieldDTO>
+                                {
+                                    new FieldDTO {Key = "AccountNumber", Value = account.AccountNumber},
+                                    new FieldDTO {Key = "Name", Value = account.Name},
+                                    new FieldDTO {Key = "Phone", Value = account.Phone}
+                                }
+                            }));
+
+                        return payloadObjectDTO;
                     case "Lead":
-                        //return await _lead.GetLeadFields(actionDO, authTokenDO);
+                        payloadObjectDTO.ObjectType = "Salesforce Leads";
+                        var resultLeads = await _lead.GetLeads(actionDO, authTokenDO, condition);
+
+                        payloadObjectDTO.PayloadObjects.AddRange(
+                            resultLeads.ToList().Select(lead => new PayloadObjectDTO
+                            {
+                                PayloadObject = new List<FieldDTO>
+                                {
+                                    new FieldDTO {Key = "Id", Value = lead.Id},
+                                    new FieldDTO {Key = "FirstName", Value = lead.FirstName},
+                                    new FieldDTO {Key = "LastName", Value = lead.LastName},
+                                    new FieldDTO {Key = "Company", Value = lead.Company},
+                                    new FieldDTO {Key = "Title", Value = lead.Title}
+                                }
+                            }));
+
+                        return payloadObjectDTO;
                     case "Contact":
-                        //return await _contact.GetContactFields(actionDO, authTokenDO);
+                        payloadObjectDTO.ObjectType = "Salesforce Contacts";
+                        var resultContacts = await _contact.GetContacts(actionDO, authTokenDO, condition);
+
+                        payloadObjectDTO.PayloadObjects.AddRange(
+                            resultContacts.ToList().Select(contact => new PayloadObjectDTO
+                            {
+                                PayloadObject = new List<FieldDTO>
+                                {
+                                    new FieldDTO {Key = "FirstName", Value = contact.FirstName},
+                                    new FieldDTO {Key = "LastName", Value = contact.LastName},
+                                    new FieldDTO {Key = "MobilePhone", Value = contact.MobilePhone},
+                                    new FieldDTO {Key = "Email", Value = contact.Email}
+                                }
+                            }));
+
+                        return payloadObjectDTO;
                     default:
                         throw new NotSupportedException(
                             string.Format("Not Supported Salesforce object name {0} has been given for querying fields.",

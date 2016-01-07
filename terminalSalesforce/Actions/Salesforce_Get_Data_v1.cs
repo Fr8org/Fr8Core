@@ -123,10 +123,10 @@ namespace terminalSalesforce.Actions
             var filterValue = GetControl(curActionDO, "SelectedFilter", ControlTypes.FilterPane).Value;
             var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(filterValue);
 
-
+            var resultObjects = new StandardPayloadDataCM();
             if (filterDataDTO.ExecutionType == FilterExecutionType.WithoutFilter)
             {
-                var ss = await _salesforce.GetObject(curActionDO, authTokenDO, curSelectedSalesForceObject, string.Empty);
+                resultObjects = await _salesforce.GetObject(curActionDO, authTokenDO, curSelectedSalesForceObject, string.Empty);
             }
             else
             {
@@ -134,7 +134,12 @@ namespace terminalSalesforce.Actions
 
                 string parsedCondition = ParseFilters(filterDataDTO);
 
-                var ss = await _salesforce.GetObject(curActionDO, authTokenDO, curSelectedSalesForceObject, parsedCondition);
+                resultObjects = await _salesforce.GetObject(curActionDO, authTokenDO, curSelectedSalesForceObject, parsedCondition);
+            }
+
+            using (var updater = Crate.UpdateStorage(payloadCrates))
+            {
+                updater.CrateStorage.ReplaceByLabel(Data.Crates.Crate.FromContent("Salesforce Objects", resultObjects));
             }
 
             return Success(payloadCrates);

@@ -84,22 +84,14 @@ namespace terminalSalesforce.Infrastructure
                 conditionQuery = "select Name, AccountNumber, Phone from Account where " + conditionQuery;
             }
 
-            var resultantAccounts = await client.QueryAsync<object>(conditionQuery);
+            var response = await client.QueryAsync<object>(conditionQuery);
 
             var resultAccounts = new List<AccountDTO>();
 
-            if (resultantAccounts.Records.Count > 0)
+            if (response.Records.Count > 0)
             {
-                resultAccounts.AddRange(resultantAccounts.Records.Select(record =>
-                {
-                    var account = (JObject) record;
-                    return new AccountDTO
-                    {
-                        AccountNumber = account.Value<string>("AccountNumber"),
-                        Name = account.Value<string>("Name"),
-                        Phone = account.Value<string>("Phone")
-                    };
-                }));
+                resultAccounts.AddRange(
+                    response.Records.Select(record => ((JObject) record).ToObject<AccountDTO>()));
             }
 
             return resultAccounts;
