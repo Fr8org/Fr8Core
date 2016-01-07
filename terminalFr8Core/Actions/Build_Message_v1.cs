@@ -61,7 +61,8 @@ namespace terminalFr8Core.Actions
                     {
                         Label = "Build Message",
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                    }
+                    },
+                    Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
                 },
                 new TextArea()
                 {
