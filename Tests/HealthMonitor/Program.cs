@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Linq;
 using NUnit.Core;
 
@@ -10,6 +11,7 @@ namespace HealthMonitor
         {
             var sendEmailReport = false;
             var appName = "Unspecified App";
+            var ensureTerminalsStartup = false;
 
             if (args != null)
             {
@@ -19,6 +21,10 @@ namespace HealthMonitor
                     {
                         sendEmailReport = true;
                     }
+                    else if (args[i] == "--ensure-startup")
+                    {
+                        ensureTerminalsStartup = true;
+                    }
                     else if (i > 0 && args[i - 1] == "--app-name" && args[i] != null)
                     {
                         appName = args[i];
@@ -26,34 +32,30 @@ namespace HealthMonitor
                 }
             }
 
-            new Program().Run(sendEmailReport, appName);
+            new Program().Run(ensureTerminalsStartup, sendEmailReport, appName);
         }
 
-        private void Run(bool sendEmailReport, string appName)
+        private void EnsureTerminalsStartUp()
         {
-            CoreExtensions.Host.InitializeService();
+            var awaiter = new TerminalStartUpAwaiter();
+            var failedToStart = awaiter.AwaitStartUp();
 
-            // var testPackageFactory = new NUnitTestPackageFactory();
-            // var package = testPackageFactory.CreateTestPackage();
-
-            var testRunner = new NUnitTestRunner();
-            // var report = testRunner.Run(package);
-            var report = testRunner.Run();
-
-            // System.IO.File.WriteAllText("c:\\temp\\fr8-report.html", htmlReport);
-
-            if (sendEmailReport)
+            if (failedToStart.Count > 0)
             {
-                if (report.Tests.Any(x => !x.Success))
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Following terminals have failed to start:");
+
+                foreach (var terminalName in failedToStart)
                 {
-                    var reportBuilder = new HtmlReportBuilder();
-                    var htmlReport = reportBuilder.BuildReport(appName, report);
-
-                    var reportNotifier = new TestReportNotifier();
-                    reportNotifier.Notify(appName, htmlReport);
+                    Console.WriteLine(terminalName);
                 }
-            }
 
+                Environment.Exit(failedToStart.Count);
+            }
+        }
+
+        private void ReportToConsole(string appName, TestReport report)
+        {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Application: {0}", appName);
             Console.WriteLine("Integration tests result: {0} / {1} passed", report.Tests.Count(x => x.Success), report.Tests.Count());
@@ -72,6 +74,33 @@ namespace HealthMonitor
                 Console.WriteLine("Message: {0}", test.Message);
                 Console.WriteLine("StackTrace: {0}", test.StackTrace);
             }
+        }
+
+        private void Run(bool ensureTerminalsStartup, bool sendEmailReport, string appName)
+        {
+            CoreExtensions.Host.InitializeService();
+
+            if (ensureTerminalsStartup)
+            {
+                EnsureTerminalsStartUp();
+            }
+
+            var testRunner = new NUnitTestRunner();
+            var report = testRunner.Run();
+
+            if (sendEmailReport)
+            {
+                if (report.Tests.Any(x => !x.Success))
+                {
+                    var reportBuilder = new HtmlReportBuilder();
+                    var htmlReport = reportBuilder.BuildReport(appName, report);
+
+                    var reportNotifier = new TestReportNotifier();
+                    reportNotifier.Notify(appName, htmlReport);
+                }
+            }
+
+            ReportToConsole(appName, report);
 
             var errorCount = report.Tests.Count(x => !x.Success);
             Environment.Exit(errorCount);
