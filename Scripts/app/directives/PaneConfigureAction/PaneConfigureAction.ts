@@ -223,7 +223,9 @@ module dockyard.directives.paneConfigureAction {
                     if (field.events === null) return;
                     // Find the onChange event object
                     var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onChange' }, true);
-                    if (eventHandlerList.length == 0) return;
+                    if (typeof eventHandlerList === 'undefined' || eventHandlerList === null || eventHandlerList.length === 0) {
+                        return;
+                    }
                     var fieldEvent = eventHandlerList[0];
 
                     if (fieldEvent.handler === 'requestConfig') {
