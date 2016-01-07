@@ -50,7 +50,7 @@ namespace terminalSalesforce.Infrastructure
             }
         }
 
-        public async Task<IList<FieldDTO>> GetLeadFields(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        public async Task<IList<FieldDTO>> GetFields(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
             string instanceUrl, apiVersion;
             ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
@@ -74,7 +74,7 @@ namespace terminalSalesforce.Infrastructure
             return objectFields;
         }
 
-        public async Task<IList<LeadDTO>> GetLeads(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string conditionQuery)
+        public async Task<IList<LeadDTO>> GetByQuery(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string conditionQuery)
         {
             string instanceUrl, apiVersion;
             ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);

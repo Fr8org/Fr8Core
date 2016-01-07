@@ -22,7 +22,6 @@ namespace terminalSalesforce.Actions
 {
     public class Salesforce_Get_Data_v1 : BaseTerminalAction
     {
-        private string fieldsReceivedFor = string.Empty;
         ISalesforceIntegration _salesforce = new SalesforceIntegration();
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -64,12 +63,11 @@ namespace terminalSalesforce.Actions
             //create required controls
             var configurationControlsCrate = CreateControlsCrate();
 
+            //update the storage
             using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
             {
                 updater.CrateStorage = AssembleCrateStorage(availableSalesforceObjects, emptyFieldsSource, configurationControlsCrate);
             }
-
-            fieldsReceivedFor = string.Empty;
 
             return await Task.FromResult(curActionDO);
         }
@@ -81,14 +79,14 @@ namespace terminalSalesforce.Actions
             string curSelectedObject =
                 ((DropDownList) GetControl(curActionDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
 
-            //if it is empty OR if the selected object is already considered for fields retirval, do not do anything
-            if (string.IsNullOrEmpty(curSelectedObject) || fieldsReceivedFor.Equals(curSelectedObject))
+            //if current selected object is empty , do not do anything
+            if (string.IsNullOrEmpty(curSelectedObject))
             {
                 return await Task.FromResult(curActionDO);
             }
 
             //get fields of selected salesforce object
-            var objectFieldsList = await _salesforce.GetFieldsList(curActionDO, authTokenDO, curSelectedObject);
+            var objectFieldsList = await _salesforce.GetFields(curActionDO, authTokenDO, curSelectedObject);
 
             //update the crate storage
             var queryableCriteriaFields = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", objectFieldsList.ToArray());
@@ -97,14 +95,12 @@ namespace terminalSalesforce.Actions
                 updater.CrateStorage.ReplaceByLabel(queryableCriteriaFields);
             }
 
-            //set which object is considered for the field retirval
-            fieldsReceivedFor = curSelectedObject;
-
             return await Task.FromResult(curActionDO);
         }
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            //get payload data
             var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
@@ -112,6 +108,7 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
+            //get currect selected Salesforce object
             string curSelectedSalesForceObject =
                 ((DropDownList)GetControl(curActionDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
 
@@ -120,10 +117,13 @@ namespace terminalSalesforce.Actions
                 return Error(payloadCrates, "No Salesforce object is selected by user");
             }
 
+            //get filters
             var filterValue = GetControl(curActionDO, "SelectedFilter", ControlTypes.FilterPane).Value;
             var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(filterValue);
 
-            var resultObjects = new StandardPayloadDataCM();
+            //if without filter, just get all selected objects
+            //else prepare SOQL query to filter the objects based on the filter conditions
+            StandardPayloadDataCM resultObjects;
             if (filterDataDTO.ExecutionType == FilterExecutionType.WithoutFilter)
             {
                 resultObjects = await _salesforce.GetObject(curActionDO, authTokenDO, curSelectedSalesForceObject, string.Empty);
@@ -137,6 +137,7 @@ namespace terminalSalesforce.Actions
                 resultObjects = await _salesforce.GetObject(curActionDO, authTokenDO, curSelectedSalesForceObject, parsedCondition);
             }
 
+            //update the payload with result objects
             using (var updater = Crate.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.ReplaceByLabel(Data.Crates.Crate.FromContent("Salesforce Objects", resultObjects));
