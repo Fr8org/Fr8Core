@@ -10,7 +10,7 @@ namespace TerminalBase.Infrastructure
 {
     public interface IHubCommunicator
     {
-        Task<PayloadDTO> GetProcessPayload(ActionDO actionDO, Guid containerId);
+        Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId);
 
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActionDO actionDO, CrateDirection direction);
 

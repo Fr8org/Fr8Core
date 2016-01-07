@@ -7,49 +7,49 @@ using Newtonsoft.Json;
 
 namespace Hub.Managers
 {
-    public static class CrateMangerExtensions
+    public static class CrateManagerExtensions
     {
-        public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManger, ActionDO action)
+        public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManager, ActionDO action)
         {
             if (action == null) throw new ArgumentNullException("action");
-            return crateManger.UpdateStorage(() => action.CrateStorage);
+            return crateManager.UpdateStorage(() => action.CrateStorage);
         }
 
-        public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManger, ActionDTO action)
+        public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManager, ActionDTO action)
         {
             if (action == null) throw new ArgumentNullException("action");
-            return crateManger.UpdateStorage(() => action.CrateStorage);
+            return crateManager.UpdateStorage(() => action.CrateStorage);
         }
 
-        public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManger, PayloadDTO payload)
+        public static ICrateStorageUpdater UpdateStorage(this ICrateManager crateManager, PayloadDTO payload)
         {
             if (payload == null) throw new ArgumentNullException("payload");
-            return crateManger.UpdateStorage(() => payload.CrateStorage);
+            return crateManager.UpdateStorage(() => payload.CrateStorage);
         }
 
-        public static CrateStorage GetStorage(this ICrateManager crateManger, ActionDO action)
+        public static CrateStorage GetStorage(this ICrateManager crateManager, ActionDO action)
         {
-           return GetStorage(crateManger, action.CrateStorage);
+           return GetStorage(crateManager, action.CrateStorage);
         }
 
-        public static CrateStorage GetStorage(this ICrateManager crateManger, string crateStorageRaw)
+        public static CrateStorage GetStorage(this ICrateManager crateManager, string crateStorageRaw)
         {
             if (string.IsNullOrWhiteSpace(crateStorageRaw))
             {
                 return new CrateStorage();
             }
 
-            return crateManger.FromDto(CrateStorageFromStringConverter.Convert(crateStorageRaw));
+            return crateManager.FromDto(CrateStorageFromStringConverter.Convert(crateStorageRaw));
         }
 
-        public static CrateStorage GetStorage(this ICrateManager crateManger, ActionDTO action)
+        public static CrateStorage GetStorage(this ICrateManager crateManager, ActionDTO action)
         {
-            return crateManger.FromDto(action.CrateStorage);
+            return crateManager.FromDto(action.CrateStorage);
         }
 
-        public static CrateStorage GetStorage(this ICrateManager crateManger, PayloadDTO payload)
+        public static CrateStorage GetStorage(this ICrateManager crateManager, PayloadDTO payload)
         {
-            return crateManger.FromDto(payload.CrateStorage);
+            return crateManager.FromDto(payload.CrateStorage);
         }
 
         public static bool IsStorageEmpty(this ICrateManager crateManager, ActionDTO action)

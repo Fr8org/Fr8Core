@@ -90,7 +90,7 @@ module dockyard.tests.controller {
             it('should replace the Controls of "Standard UI Controls" type crate in storage by the given control list', () => {
                 ch.mergeControlListCrate(controlList, crateStorage);
                 var targetCrate = ch.findByManifestType(crateStorage, 'Standard UI Controls');
-                expect(targetCrate.contents.Controls).toBe(controlList.fields);
+                expect(targetCrate.contents.Controls).toEqual(controlList.fields);
             });
 
             it('should not change other crates', () => {

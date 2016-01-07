@@ -28,7 +28,7 @@ namespace TerminalBase.Infrastructure
 
         public BaseTerminalEvent()
         {
-            eventWebServerUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/event";
+            eventWebServerUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/event/gen1_event";
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
             _crateManager = ObjectFactory.GetInstance<CrateManager>();
@@ -123,18 +123,32 @@ namespace TerminalBase.Infrastructure
         }
 
         /// <summary>
-        /// Processsing the external event pay load received
+        /// Processing the external event pay load received
         /// </summary>
         /// <param name="curExternalEventPayload">event pay load received</param>
         /// <param name="parser">delegate method</param>
         public async Task Process(string curExternalEventPayload,EventParser parser)
         {
-            var fr8EventUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/fr8event/processdockyardevents";
+            var fr8EventUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/event/processevents";
             var eventReportCrateDTO = _crateManager.ToDto(parser.Invoke(curExternalEventPayload));
             
             if (eventReportCrateDTO != null)
             {
-                await new HttpClient().PostAsJsonAsync(new Uri(fr8EventUrl, UriKind.Absolute), eventReportCrateDTO);
+                Uri url = new Uri(fr8EventUrl, UriKind.Absolute);
+                try
+                {
+                    HttpClient client = new HttpClient();
+                    client.Timeout = new TimeSpan(0, 10, 0); //10 minutes
+                    await client.PostAsJsonAsync(url, eventReportCrateDTO);
+                }
+                catch (TaskCanceledException)
+                {
+                    //Timeout
+                    throw new TimeoutException(
+                        String.Format("Timeout while making HTTP request.  \r\nURL: {0},   \r\nMethod: {1}",
+                        url.ToString(),
+                        HttpMethod.Post.Method));
+                }
             }
         }
     }

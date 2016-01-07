@@ -190,7 +190,8 @@ namespace terminalPapertrailTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Sequence contains no elements""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Sequence contains no elements""}",
+            MatchType = MessageMatch.Contains
             )]
         public async void Write_To_Log_Run_WithoutLogMessageInUpstreamAction_ShouldThrowException()
         {
@@ -222,9 +223,10 @@ namespace terminalPapertrailTests.Integration
             // and event: onChange => requestConfig.
             Assert.IsTrue(controls.Controls[0] is TextBox, "The target Papertrail URL text box is missing.");
             Assert.AreEqual("TargetUrlTextBox", controls.Controls[0].Name, "The name of the target URL text box is wrong.");
-            Assert.AreEqual(1, controls.Controls[0].Events.Count, "Event subscription is missing.");
-            Assert.AreEqual("onChange", controls.Controls[0].Events[0].Name, "onChange event is not subscribed");
-            Assert.AreEqual("requestConfig", controls.Controls[0].Events[0].Handler, "requestConfig is not configured when onChange event.");
+            //@AlexAvrutin: Commented this since this textbox does not require requestConfig event. 
+            //Assert.AreEqual(1, controls.Controls[0].Events.Count, "Event subscription is missing.");
+            //Assert.AreEqual("onChange", controls.Controls[0].Events[0].Name, "onChange event is not subscribed");
+            //Assert.AreEqual("requestConfig", controls.Controls[0].Events[0].Handler, "requestConfig is not configured when onChange event.");
         }
 
         private async Task<ActionDTO> GetActionDTO_LogToPapertrailIntegrationTest()
@@ -248,6 +250,48 @@ namespace terminalPapertrailTests.Integration
             }
 
             return responseActionDTO;
+        }
+
+        [Test, Category("Integration.terminalPapertrail")]
+        public async void Write_To_Log_Activate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalActivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
+        [Test, Category("Integration.terminalPapertrail")]
+        public async void Write_To_Log_Deactivate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalDeactivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Write_To_Log_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
         }
     }
 }

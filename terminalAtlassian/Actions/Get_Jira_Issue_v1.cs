@@ -34,41 +34,6 @@ namespace terminalAtlassian.Actions
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            CheckAuthentication(authTokenDO);
-
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
-
-            string jiraKey = ExtractJiraKey(curActionDO);
-            var jiraIssue = _atlassianService.GetJiraIssue(jiraKey, authTokenDO);
-
-            using (var updater = _crateManager.UpdateStorage(processPayload))
-            {
-                updater.CrateStorage.Add(PackCrate_JiraIssueDetails(jiraIssue));
-            }
-
-            return Success(processPayload);
-        }
-
-        private string ExtractJiraKey(ActionDO curActionDO)
-        {
-            var controls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
-            var templateTextBox = controls.SingleOrDefault(x => x.Name == "jira_key");
-
-            if (templateTextBox == null)
-            {
-                throw new ApplicationException("Could not find jira_key TextBox control.");
-            }
-
-            return templateTextBox.Value;
-        }
-
-        private Crate PackCrate_JiraIssueDetails(List<FieldDTO> curJiraIssue)
-        {
-            return Data.Crates.Crate.FromContent("Jira Issue Details", new StandardPayloadDataCM(curJiraIssue));
-        }
-
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (Crate.IsStorageEmpty(curActionDO))
@@ -90,14 +55,48 @@ namespace terminalAtlassian.Actions
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            CheckAuthentication(authTokenDO);
+
+            var payloadCrates = await GetPayload(curActionDO, containerId);
+
+            string jiraKey = ExtractJiraKey(curActionDO);
+            var jiraIssue = _atlassianService.GetJiraIssue(jiraKey, authTokenDO);
+
+            using (var updater = _crateManager.UpdateStorage(payloadCrates))
+            {
+                updater.CrateStorage.Add(PackCrate_JiraIssueDetails(jiraIssue));
+            }
+
+            return Success(payloadCrates);
+        }
+
+        private string ExtractJiraKey(ActionDO curActionDO)
+        {
+            var controls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
+            var templateTextBox = controls.SingleOrDefault(x => x.Name == "jira_key");
+
+            if (templateTextBox == null)
+            {
+                throw new ApplicationException("Could not find jira_key TextBox control.");
+            }
+
+            return templateTextBox.Value;
+        }
+
+        private Crate PackCrate_JiraIssueDetails(List<FieldDTO> curJiraIssue)
+        {
+            return Data.Crates.Crate.FromContent("Jira Issue Details", new StandardPayloadDataCM(curJiraIssue));
+        }
+
         private Crate CreateControlsCrate()
         {
             var control = new TextBox()
             {
                 Label = "Jira Key",
                 Name = "jira_key",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Required = true
             };
 
             return PackControlsCrate(control);

@@ -84,7 +84,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Record_DocuSign_Events_Initial_Configuration_NoAuth()
         {
@@ -164,6 +165,48 @@ namespace terminalDocuSignTests.Integration
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
             Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEnvelopeCM>(x => x.Label == "DocuSign Envelope Manifest").Count());
             Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEventCM>(x => x.Label == "DocuSign Event Manifest").Count());
+        }
+
+        [Test]
+        public async void Record_DocuSign_Events_Activate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalActivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Record_Docusign_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
+        [Test]
+        public async void Record_DocuSign_Events_Deactivate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalDeactivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Record_Docusign_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
         }
     }
 }

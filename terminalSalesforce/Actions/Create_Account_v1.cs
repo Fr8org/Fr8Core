@@ -26,25 +26,25 @@ namespace terminalSalesforce.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
 
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
-                return NeedsAuthenticationError(processPayload);
+                return NeedsAuthenticationError(payloadCrates);
             }
 
             var accountName = ExtractControlFieldValue(curActionDO, "accountName");
             if (string.IsNullOrEmpty(accountName))
             {
-                return Error(processPayload, "No account name found in action.");
+                return Error(payloadCrates, "No account name found in action.");
             }
 
             bool result = _salesforce.CreateAccount(curActionDO, authTokenDO);
 
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             return ConfigurationRequestType.Initial;
         }
@@ -54,24 +54,21 @@ namespace terminalSalesforce.Actions
             var accountName = new TextBox()
             {
                 Label = "Account Name",
-                Name = "accountName",
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Name = "accountName"
 
             };
             var accountNumber = new TextBox()
             {
                 Label = "Account Number",
                 Name = "accountNumber",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Required = true
             };
 
             var phone = new TextBox()
             {
                 Label = "Phone",
                 Name = "phone",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Required = true
             };
 
             var controls = PackControlsCrate(accountName, accountNumber, phone);

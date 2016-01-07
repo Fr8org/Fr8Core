@@ -31,7 +31,7 @@ namespace terminalSendGridTests.Fixtures
             {
                 Id = Guid.NewGuid(),
                 Name = "SendEmailViaSendGrid",
-                Label = "Send Email Via Send Grid",
+                Label = "Send Email using SendGrid",
                 AuthToken = null,
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id

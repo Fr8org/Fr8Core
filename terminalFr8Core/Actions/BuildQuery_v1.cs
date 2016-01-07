@@ -191,10 +191,7 @@ namespace terminalFr8Core.Actions
                     Label = "Select Object",
                     Name = "SelectObjectDdl",
                     Required = true,
-                    Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onChange", "requestConfig")
-                    },
+                    Events = new List<ControlEvent>(){ControlEvent.RequestConfig},
                     Source = new FieldSourceDTO
                     {
                         Label = "Available Tables",
@@ -366,24 +363,24 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             var actionCrateStorage = Crate.GetStorage(curActionDO);
             
             var sqlQueryCM = ExtractSelectedQueryFromCrate(actionCrateStorage);
             if (sqlQueryCM == null)
             {
-                return Error(processPayload, "Selected Query crate was not found in Action's CrateStorage");
+                return Error(payloadCrates, "Selected Query crate was not found in Action's CrateStorage");
             }
 
             var sqlQueryCrate = Crate<StandardQueryCM>.FromContent("Sql Query", sqlQueryCM);
 
-            using (var updater = Crate.UpdateStorage(processPayload))
+            using (var updater = Crate.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(sqlQueryCrate);
             }
 
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
         #endregion Execution.

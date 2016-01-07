@@ -52,6 +52,17 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
+                Name = "ConvertCrates",
+                Label = "Convert Crates",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                Version = "1",
+                MinPaneWidth = 330,
+                WebService = webService
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
                 Name = "MapFields",
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
@@ -165,6 +176,17 @@ namespace terminalFr8Core.Controllers
                 WebService = webService,
                 Version = "1",
                 Type = ActivityType.Standard
+            });
+
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "ConvertRelatedFieldsIntoTable",
+                Label = "Convert Related Fields Into a Table",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                MinPaneWidth = 400
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

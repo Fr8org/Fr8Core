@@ -277,6 +277,7 @@
     <Compile Include="Infrastructure\MultiTenant\MT_Object.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FactDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
@@ -332,6 +333,7 @@
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
+    <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
     <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignTemplateCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />

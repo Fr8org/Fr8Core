@@ -35,10 +35,7 @@ namespace terminalFr8Core.Actions
                     Name = "Selected_Fr8_Object",
                     Value = "",
                     Required = true,
-                    Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onChange", "requestConfig")
-                    },
+                    Events = new List<ControlEvent>(){ ControlEvent.RequestConfig },
                     Source = new FieldSourceDTO
                     {
                         Label = "Select Fr8 Object",
@@ -150,7 +147,7 @@ namespace terminalFr8Core.Actions
 		#region Execution
 		public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
 	    {
-			return Success(await GetProcessPayload(actionDO, containerId));
+			return Success(await GetPayload(actionDO, containerId));
 	    }
 		#endregion
 	}
