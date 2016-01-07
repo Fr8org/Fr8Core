@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Crates;
-using Hub.Services;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -21,6 +18,45 @@ namespace terminalFr8Core.Actions
 {
     public class QueryMTDatabase_v1 : BaseTerminalAction
     {
+        public class ActionUi : StandardConfigurationControlsCM
+        {
+            [JsonIgnore]
+            public DropDownList AvailableObjects { get; set; }
+
+            [JsonIgnore]
+            public FilterPane Filter { get; set; }
+
+            public ActionUi()
+            {
+                Controls = new List<ControlDefinitionDTO>();
+
+                Controls.Add(AvailableObjects = new DropDownList
+                {
+                    Label = "Object List",
+                    Name = "AvailableObjects",
+                    Value = null,
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
+                    Source = new FieldSourceDTO
+                    {
+                        Label = "Queryable Objects",
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                    }
+                });
+
+                Controls.Add(Filter = new FilterPane
+                {
+                    Label = "Find all Fields where:",
+                    Name = "Filter",
+                    Required = true,
+                    Source = new FieldSourceDTO
+                    {
+                        Label = "Queryable Criteria",
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                    }
+                });
+            }
+        }
+
         public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
@@ -38,15 +74,12 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            //build a controls crate to render the pane
-            var configurationControlsCrate = CreateControlsCrate();
-
             var objectList = GetObjects();
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Available_Objects", objectList.ToArray()));
+                updater.CrateStorage.Add(PackControls(new ActionUi()));
+                updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Queryable Objects", objectList.ToArray()));
             }
 
             return Task.FromResult(curActionDO);
@@ -54,8 +87,26 @@ namespace terminalFr8Core.Actions
 
         protected override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                var ui = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
+                if (ui == null)
+                {
+                    throw new InvalidOperationException("Action was not configured correctly");
+                }
+
+                var config = new ActionUi();
+                config.ClonePropertiesFrom(ui);
+                int selectedObjectId;
+
+                updater.CrateStorage.RemoveByLabel("Queryable Criteria");
+
+                if (int.TryParse(config.AvailableObjects.Value, out selectedObjectId))
+                {
+                    updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByObjectId(selectedObjectId).ToArray()));
+                }
+            }
             return Task.FromResult(curActionDO);
         }
 
@@ -65,61 +116,40 @@ namespace terminalFr8Core.Actions
             return Success(payloadCrates);
         }
 
-        private IEnumerable<FieldDTO> GetFieldsByObjectId(string objectId)
+        private IEnumerable<FieldDTO> GetFieldsByObjectId(int objectId)
         {
+            var fields = new Dictionary<string, string>();
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.MTObjectRepository.GetAll().Select(c => new FieldDTO(c.Name, c.Id.ToString(CultureInfo.InvariantCulture)));
-            }
-        }
+                foreach (var field in uow.MTFieldRepository.GetQuery().Where(x => x.MT_ObjectId == objectId))
+                {
+                    var alias = "Value" + field.FieldColumnOffset;
+                    string existingAlias;
 
-        private Guid GetCurrentFr8UserId(ActionDO curActionDO)
-        {
-            return Guid.NewGuid();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                
-                //return uow.ActionRepository.GetQuery().Where(a => a.Id == curActionDO.Id).Select(a => a.);
+                    if (fields.TryGetValue(field.Name, out existingAlias))
+                    {
+                        if (existingAlias != alias)
+                        {
+                            throw new InvalidOperationException(string.Format("Duplicate field definition. MT object type: {0}. Field {1} is mapped to {2} and {3}", objectId, field.Name, existingAlias, alias));
+                        }
+                    }
+                    else
+                    {
+                        fields[field.Name] = alias;
+                    }
+                }
             }
-        }
 
+            return fields.OrderBy(x => x.Key).Select(x => new FieldDTO(x.Key, x.Key));
+        }
+        
         private IEnumerable<FieldDTO> GetObjects()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return uow.MTObjectRepository.GetAll().Select(c => new FieldDTO(c.Name, c.Id.ToString(CultureInfo.InvariantCulture)));
             }
-        }
-
-        private Crate CreateControlsCrate()
-        {
-            var objectListDropdown = new DropDownList
-            {
-                Label = "Object List",
-                Name = "Available_Objects",
-                Value = null,
-                Events = new List<ControlEvent>{ ControlEvent.RequestConfig },
-                Source = new FieldSourceDTO
-                {
-                    Label = "Queryable Objects",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                }
-                
-            };
-
-            var fieldFilterPane = new FilterPane()
-            {
-                Label = "Find all Fields where:",
-                Name = "Selected_Filter",
-                Required = true,
-                Source = new FieldSourceDTO
-                {
-                    Label = "Queryable Fields",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                }
-            };
-
-            return PackControlsCrate(objectListDropdown, fieldFilterPane);
         }
     }
 }
