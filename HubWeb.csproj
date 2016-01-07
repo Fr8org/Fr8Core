@@ -360,7 +360,6 @@
     <Compile Include="Controllers\Api\FieldController.cs" />
     <Compile Include="Controllers\Api\ActionListController.cs" />
     <Compile Include="Controllers\Api\CriteriaController.cs" />
-    <Compile Include="Controllers\Api\Fr8EventController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\Helpers\RouteMappingHelper.cs" />
     <Compile Include="Controllers\Api\RouteNodesController.cs" />
