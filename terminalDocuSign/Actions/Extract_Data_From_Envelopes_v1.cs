@@ -87,6 +87,12 @@ namespace terminalDocuSign.Actions
 
             controls.ClonePropertiesFrom(Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
 
+            var actionsDdlb = (DropDownList) controls.Controls.Single(c => c.Name == "FinalActionsList");
+            //don't add child actions until a selection is made
+            if (string.IsNullOrEmpty(actionsDdlb.Value)) {
+                return curActionDO;
+            }
+
             curActionDO.ChildNodes = new List<RouteNodeDO>();
 
             // Always use default template for solution
