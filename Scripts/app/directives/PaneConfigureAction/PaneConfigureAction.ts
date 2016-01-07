@@ -72,6 +72,7 @@ module dockyard.directives.paneConfigureAction {
         onControlChange: (event: ng.IAngularEvent, eventArgs: ChangeEventArgs) => void;
         processConfiguration: () => void;
         loadConfiguration: () => void;
+        reloadConfiguration: () => void;
         currentAction: interfaces.IActionVM;
         configurationControls: ng.resource.IResource<model.ControlsList> | model.ControlsList;
         mapFields: (scope: IPaneConfigureActionScope) => void;
@@ -133,12 +134,15 @@ module dockyard.directives.paneConfigureAction {
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) {
 
+                var configLoadingError: boolean = false;
+
                 $scope.$on("onChange", onControlChange);
                 $scope.$on("onClick", onClickEvent);
 
                 // These are exposed for unit testing.
                 $scope.onControlChange = onControlChange;
                 $scope.loadConfiguration = loadConfiguration;
+                $scope.reloadConfiguration = reloadConfiguration;
                 $scope.onConfigurationChanged = onConfigurationChanged;
                 $scope.processConfiguration = processConfiguration;
                 $scope.setSolutionMode = setSolutionMode;
@@ -219,7 +223,9 @@ module dockyard.directives.paneConfigureAction {
                     if (field.events === null) return;
                     // Find the onChange event object
                     var eventHandlerList = <Array<model.ControlEvent>>$filter('filter')(field.events, { name: 'onChange' }, true);
-                    if (eventHandlerList.length == 0) return;
+                    if (typeof eventHandlerList === 'undefined' || eventHandlerList === null || eventHandlerList.length === 0) {
+                        return;
+                    }
                     var fieldEvent = eventHandlerList[0];
 
                     if (fieldEvent.handler === 'requestConfig') {
@@ -253,7 +259,14 @@ module dockyard.directives.paneConfigureAction {
                             loadConfiguration();
                         }
                     }
-                } 
+                }
+
+                //only load configuration if there has been a configuration loading error
+                function reloadConfiguration() {
+                    if (configLoadingError) {
+                        loadConfiguration();
+                    }
+                }
 
                 // Here we look for Crate with ManifestType == 'Standard UI Controls'.
                 // We parse its contents and put it into currentAction.configurationControls structure.
@@ -289,6 +302,7 @@ module dockyard.directives.paneConfigureAction {
                             $scope.currentAction.childrenActions = res.childrenActions;
 
                             $scope.processConfiguration();
+                            configLoadingError = false;
                         })
                         .catch((result) => {
                             var errorText = 'Something went wrong. Click to retry.';
@@ -302,6 +316,7 @@ module dockyard.directives.paneConfigureAction {
                             var control = new model.TextBlock(errorText, 'well well-lg alert-danger');
                             $scope.currentAction.configurationControls = new model.ControlsList();
                             $scope.currentAction.configurationControls.fields = [control];
+                            configLoadingError = true;
                         })
                         .finally(() => {
                             // Unblock pane

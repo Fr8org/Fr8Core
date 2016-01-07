@@ -136,8 +136,9 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("phone")),
                 "Create Account does not have Phone control");
 
-            Assert.IsFalse(configurationControls.Content.Controls.Any(ctrl => ctrl.Events.Count != 1),
-                "Create Account controls are not subscribed to on Change events");
+            //@AlexAvrutin: Commented this since these textboxes do not require requestConfig event. 
+            //Assert.IsFalse(configurationControls.Content.Controls.Any(ctrl => ctrl.Events.Count != 1),
+            //    "Create Account controls are not subscribed to on Change events");
         }
 
         private ActionDTO SetAccountName(ActionDTO curActionDto)

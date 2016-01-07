@@ -57,9 +57,10 @@ namespace terminalSlackTests.Integration
             //DDLB test
             Assert.IsTrue(controls.Controls[0] is DropDownList);
             Assert.AreEqual("Selected_Slack_Channel", controls.Controls[0].Name);
-            Assert.AreEqual(1, controls.Controls[0].Events.Count);
-            Assert.AreEqual("onChange", controls.Controls[0].Events[0].Name);
-            Assert.AreEqual("requestConfig", controls.Controls[0].Events[0].Handler);
+            //@AlexAvrutin: Commented this since the 'Select Channel' list does not require requestConfig event. 
+            //Assert.AreEqual(1, controls.Controls[0].Events.Count);
+            //Assert.AreEqual("onChange", controls.Controls[0].Events[0].Name);
+            //Assert.AreEqual("requestConfig", controls.Controls[0].Events[0].Handler);
 
             Assert.IsTrue(controls.Controls[1] is TextBlock);
             Assert.AreEqual("Info_Label", controls.Controls[1].Name);

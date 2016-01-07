@@ -14,6 +14,8 @@ using HubWeb.Controllers;
 using Utilities.Serializers.Json;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using System.Threading.Tasks;
+using System;
 
 namespace DockyardTest.Controllers
 {
@@ -49,7 +51,7 @@ namespace DockyardTest.Controllers
 
             //Act
 
-            var result = _eventController.Post(_crate.ToDto(_eventReportCrateFactoryHelper.Create(eventDto)));
+            var result = _eventController.ProcessGen1Event(_crate.ToDto(_eventReportCrateFactoryHelper.Create(eventDto)));
 
             //Assert
             Assert.IsTrue(result is OkResult);
@@ -72,7 +74,7 @@ namespace DockyardTest.Controllers
                 var curEventDTO = FixtureData.TestTerminalEventDto();
 
                 //Act
-                var result = _eventController.Post(_crate.ToDto(_eventReportCrateFactoryHelper.Create(curEventDTO)));
+                var result = _eventController.ProcessGen1Event(_crate.ToDto(_eventReportCrateFactoryHelper.Create(curEventDTO)));
 
                 //Assert
                 Assert.IsTrue(result is OkResult);
@@ -97,7 +99,33 @@ namespace DockyardTest.Controllers
 
         //    _eventController.ProcessIncomingEvents(mockEvent);
         //}
+        [Test]
+        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        public async Task Events_NullCrateDTO_ThrowsException()
+        {
+            await _eventController.ProcessEvents(null);
+        }
 
+        [Test]
+        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        public async Task Events_NotStandardEventReport_ThrowsException()
+        {
+            var crateDTO = new CrateDTO();
+            await _eventController.ProcessEvents(crateDTO);
+        }
+
+        //[Test]
+        //public void fr8_events_CorrectStandardEventReport_ReturnsOK()
+        //{
+        //    Mock<IDockyardEvent> dockyardEventMock = new Mock<IDockyardEvent>();
+        //    dockyardEventMock.Setup(a => a.ProcessInbound("1", It.IsAny<EventReportMS>()));
+        //    ObjectFactory.Configure(cfg => cfg.For<IDockyardEvent>().Use(dockyardEventMock.Object));
+        //    var dockyardEventController = new DockyardEventController();
+
+        //    var actionResult = dockyardEventController.ProcessDockyardEvents(FixtureData.RawStandardEventReportFormat());
+
+        //    Assert.IsNotNull(actionResult);
+        //}
 
         
     }
