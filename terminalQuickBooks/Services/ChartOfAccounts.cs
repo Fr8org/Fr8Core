@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Data.Entities;
+using Data.Interfaces.Manifests;
 using terminalQuickBooks.Infrastructure;
 using terminalQuickBooks.Interfaces;
 
@@ -27,22 +28,25 @@ namespace terminalQuickBooks.Services
         /// </summary>
         /// <param name="authTokenDO"></param>
         /// <returns></returns>
-        public List<QuickBooksAccount> GetChartOfAccounts(AuthorizationTokenDO authTokenDO)
+        public ChartOfAccountsCM GetChartOfAccounts(AuthorizationTokenDO authTokenDO)
         {
             var listOfAccounts = GetAccountList(authTokenDO);
             if (listOfAccounts.Count == 0)
             {
                 throw new Exception("No Accounts found in the QuickBooks account");
             }
-            var listOfQuickBooksAccounts = new List<QuickBooksAccount>();
+            var listOfQBAccounts = new List<AccountDTO>();
             foreach (var curAccount in listOfAccounts)
             {
-                var curQuickBooksAccount = new QuickBooksAccount();
+                var curQuickBooksAccount = new AccountDTO();
                 curQuickBooksAccount.Id = curAccount.Id;
                 curQuickBooksAccount.Name = curAccount.Name;
-                listOfQuickBooksAccounts.Add(curQuickBooksAccount);
+                listOfQBAccounts.Add(curQuickBooksAccount);
             }
-            return listOfQuickBooksAccounts;
+            return new ChartOfAccountsCM()
+            {
+                Accounts = listOfQBAccounts
+            };
         }
     }
 }

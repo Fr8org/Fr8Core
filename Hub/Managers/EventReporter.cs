@@ -854,7 +854,7 @@ namespace Hub.Managers
             {
                 var curFact = new FactDO
                 {
-                    CustomerId = containerDO.Route.Fr8Account.Id,
+                    CustomerId = containerDO.Route.Fr8Account != null ? containerDO.Route.Fr8Account.Id : "",
                     ObjectId = containerDO.Id.ToStr(),
                     PrimaryCategory = "Containers",
                     SecondaryCategory = "Operations",

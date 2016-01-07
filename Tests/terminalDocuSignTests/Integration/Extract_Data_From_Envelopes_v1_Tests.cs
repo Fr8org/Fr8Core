@@ -152,5 +152,49 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Monitor DocuSign Envelope Activity"));
             Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Send DocuSign Envelope"));
         }
+
+        [Test]
+        public async void Extract_Data_From_Envelopes_Activate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalActivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_ActionDTO();
+            AddHubActivityTemplate(requestActionDTO);
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
+        [Test]
+        public async void Extract_Data_From_Envelopes_Deactivate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalDeactivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Extract_Data_From_Envelopes_v1_InitialConfiguration_ActionDTO();
+            AddHubActivityTemplate(requestActionDTO);
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
     }
 }

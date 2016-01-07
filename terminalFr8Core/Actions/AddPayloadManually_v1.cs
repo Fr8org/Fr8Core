@@ -21,13 +21,13 @@ namespace terminalFr8Core.Actions
     {
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             var controlsMS = Crate.GetStorage(curActionDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             if (controlsMS == null)
             {
-                return Error(processPayload, "Could not find ControlsConfiguration crate.");
+                return Error(payloadCrates, "Could not find ControlsConfiguration crate.");
             }
 
             var fieldListControl = controlsMS.Controls
@@ -35,12 +35,12 @@ namespace terminalFr8Core.Actions
 
             if (fieldListControl == null)
             {
-                return Error(processPayload, "Could not find FieldListControl.");
+                return Error(payloadCrates, "Could not find FieldListControl.");
             }
 
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
 
-            using (var updater = Crate.UpdateStorage(() => processPayload.CrateStorage))
+            using (var updater = Crate.UpdateStorage(() => payloadCrates.CrateStorage))
             {
                 updater.CrateStorage.Add(Data.Crates.Crate.FromContent("ManuallyAddedPayload", new StandardPayloadDataCM(userDefinedPayload)));
             }
@@ -54,7 +54,7 @@ namespace terminalFr8Core.Actions
             //
             //            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { cratePayload });
 
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
         public override async Task<ActionDO> Configure(ActionDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
@@ -113,16 +113,13 @@ namespace terminalFr8Core.Actions
                 Label = "Fill the values for other actions",
                 Name = "Selected_Fields",
                 Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                }
+                Events = new List<ControlEvent>(){ControlEvent.RequestConfig}
             };
 
             return PackControlsCrate(fieldFilterPane);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (Crate.IsStorageEmpty(curActionDO))
             {

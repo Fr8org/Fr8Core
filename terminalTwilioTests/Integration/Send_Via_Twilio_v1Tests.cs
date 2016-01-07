@@ -78,7 +78,7 @@ namespace terminalTwilioTests.Integration
         /// Test Twilio Service. Preconfigure Crates with testing number.
         /// Expect that the status of the message is not fail or undelivered.
         /// </summary>
-        [Test, Category("Integration.terminalTwilio"), Ignore]
+        [Test, Category("Integration.terminalTwilio")]
         public async void Send_Via_Twilio_Run_Send_SMS_With_Correct_Number()
         {
             //Arrange
@@ -94,8 +94,7 @@ namespace terminalTwilioTests.Integration
                     (TextSource)
                         updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
                 curTextSource.ValueSource = "specific";
-                updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0].Value =
-                    "+15005550006";
+                curTextSource.TextValue = "+15005550006";
                 updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[1].Value =
                     "That is the body of the message";
             }
@@ -121,6 +120,48 @@ namespace terminalTwilioTests.Integration
             Assert.AreEqual("Status", payload.PayloadObjects[0].PayloadObject[0].Key);
             Assert.AreNotEqual("failed", payload.PayloadObjects[0].PayloadObject[0].Value);
             Assert.AreNotEqual("undelivered", payload.PayloadObjects[0].PayloadObject[0].Value);
+        }
+
+        [Test, Category("Integration.terminalTwilio")]
+        public async void Send_Via_Twilio_Activate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalActivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
+        [Test, Category("Integration.terminalTwilio")]
+        public async void Send_Via_Twilio_Deactivate_Returns_ActionDTO()
+        {
+            //Arrange
+            var configureUrl = GetTerminalDeactivateUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = HealthMonitor_FixtureData.Send_Via_Twilio_v1_InitialConfiguration_ActionDTO();
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
         }
     }
 }

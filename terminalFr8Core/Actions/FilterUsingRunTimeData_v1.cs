@@ -35,7 +35,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var curPayloadDTO = await GetProcessPayload(curActionDO, containerId);
+            var curPayloadDTO = await GetPayload(curActionDO, containerId);
 
             var controlsMS = Action.GetControlsManifest(curActionDO);
 
@@ -250,7 +250,7 @@ namespace terminalFr8Core.Actions
             return curActionDO;
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDataPackageDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDataPackageDO)
         {
             if (Crate.IsStorageEmpty(curActionDataPackageDO))
             {

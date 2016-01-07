@@ -49,6 +49,29 @@ namespace terminalQuickBooksTests.Fixtures
                 ActivityTemplateId = activityTemplate.Id
             };
         }
+        public static ActivityTemplateDTO Convert_TableData_To_AccountingTransactions_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 2,
+                Name = "Convert_TableData_To_AccountingTransactions_TEST",
+                Version = "1"
+            };
+        }
+        public static ActionDTO Convert_TableData_To_AccountingTransactions_v1_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = Convert_TableData_To_AccountingTransactions_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Convert_TableData_To_AccountingTransactions",
+                Label = "Convert TableData To AccountingTransactions",
+                AuthToken = QuickBooks_AuthTokenDTO(),
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
         public static StandardAccountingTransactionCM GetAccountingTransactionCM()
         {
             var curFinLineDTOList = new List<FinancialLineDTO>();
@@ -87,6 +110,84 @@ namespace terminalQuickBooksTests.Fixtures
                 }
             };
             return curCrate;
+        }
+
+        public static StandardTableDataCM StandardTableData_Test1()
+        {
+            var headerRow = new TableRowDTO()
+            {
+                Row = new List<TableCellDTO>()
+                {
+                    new TableCellDTO()
+                    {
+                        Cell = new FieldDTO("1", "Date")
+                    },
+                    new TableCellDTO()
+                    {
+                        Cell = new FieldDTO("2", "Description")
+                    },
+                    new TableCellDTO()
+                    {
+                        Cell = new FieldDTO("3", "Phone")
+                    },
+                    new TableCellDTO()
+                    {
+                        Cell = new FieldDTO("4", "Travelling")
+                    }
+                }
+            };
+            var dataRow1 = new TableRowDTO()
+            {
+                Row = new List<TableCellDTO>()
+                {
+                    new TableCellDTO()
+                    {
+                        Cell = new FieldDTO("5", "30/12/2015")
+                    },
+                    new TableCellDTO()
+                    {
+                        Cell = new FieldDTO("6", "Trip to Samarkand")
+                    },
+                    new TableCellDTO()
+                    {
+                        Cell = new FieldDTO("7", "70")
+                    },
+                    new TableCellDTO()
+                    {
+                        Cell = new FieldDTO("8", "90")
+                    }
+                }
+            };
+            return new StandardTableDataCM
+            {
+                FirstRowHeaders = true,
+                Table = new List<TableRowDTO> {headerRow, dataRow1}
+            };
+        }
+
+        public static ChartOfAccountsCM ChartOfAccounts_Test1()
+        {
+            return new ChartOfAccountsCM
+            {
+                Accounts = new List<AccountDTO>
+                {
+                    new AccountDTO
+                    {
+                        Id = "1",
+                        Name = "Phone"
+                    },
+                    new AccountDTO
+                    {
+                        Id = "2",
+                        Name = "Travelling"
+                    },
+                    new AccountDTO
+                    {
+                        Id = "3",
+                        Name = "Accounts Payable"
+                    },
+                }
+            };
         }
     }
 }

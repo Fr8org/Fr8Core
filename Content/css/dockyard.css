@@ -596,6 +596,10 @@ a.documentation-link {
     cursor: progress;
 }
 
+.disabled-control {
+    background-color: #EBEBE4;
+}
+
 /* DRAG DROP RELATED CSS */
 
 /**
@@ -630,3 +634,10 @@ div[dnd-list].dndDragover {
 
 
 /*END OF DRAG DROP RELATED CSS */
+
+.upstreamFieldChooser {
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+[ng-table-pagination] { display: none; }

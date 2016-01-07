@@ -27,32 +27,32 @@ namespace terminalSalesforce.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
-                return NeedsAuthenticationError(processPayload);
+                return NeedsAuthenticationError(payloadCrates);
             }
 
             var lastName = ExtractControlFieldValue(curActionDO, "lastName");
 
             if (string.IsNullOrEmpty(lastName))
             {
-                return Error(processPayload, "No last name found in action.");
+                return Error(payloadCrates, "No last name found in action.");
             }
 
             var company = ExtractControlFieldValue(curActionDO, "companyName");
             if (string.IsNullOrEmpty(company))
             {
-                return Error(processPayload, "No company name found in action.");
+                return Error(payloadCrates, "No company name found in action.");
             }
 
             bool result = _salesforce.CreateLead(curActionDO, authTokenDO);
           
-            return Success(processPayload);
+            return Success(payloadCrates);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (Crate.IsStorageEmpty(curActionDO))
             {
@@ -77,23 +77,20 @@ namespace terminalSalesforce.Actions
             var firstNameCrate = new TextBox()
             {
                 Label = "First Name",
-                Name = "firstName",
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Name = "firstName"
 
             };
             var lastNAme = new TextBox()
             {
                 Label = "Last Name",
                 Name = "lastName",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Required = true
             };
             var company = new TextBox()
             {
                 Label = "Company ",
                 Name = "companyName",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Required = true
             };
 
             using (var updater = Crate.UpdateStorage(curActionDO))

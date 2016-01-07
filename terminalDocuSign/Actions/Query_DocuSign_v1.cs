@@ -55,14 +55,12 @@ namespace terminalDocuSign.Actions
                 Controls.Add((SearchText = new TextBox
                 {
                     Name = "SearchText",
-                    Events = new List<ControlEvent> {ControlEvent.RequestConfig},
                 }));
 
                 Controls.Add((Folder = new DropDownList
                 {
                     Label = "Envelope is in folder:",
                     Name = "Folder",
-                    Events = new List<ControlEvent> {ControlEvent.RequestConfig},
                     Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "Folders")
                 }));
 
@@ -70,7 +68,6 @@ namespace terminalDocuSign.Actions
                 {
                     Label = "Envelope has status:",
                     Name = "Status",
-                    Events = new List<ControlEvent> {ControlEvent.RequestConfig},
                     Source = new FieldSourceDTO(CrateManifestTypes.StandardDesignTimeFields, "Statuses")
                 }));
             }
@@ -85,7 +82,7 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payload = await GetProcessPayload(curActionDO, containerId);
+            var payload = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {

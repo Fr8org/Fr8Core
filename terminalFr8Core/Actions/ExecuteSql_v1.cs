@@ -159,7 +159,7 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var findObjectHelper = new FindObjectHelper();
-            var payload = await GetProcessPayload(curActionDO, containerId);
+            var payload = await GetPayload(curActionDO, containerId);
 
             var columnTypes = await findObjectHelper.ExtractColumnTypes(this, curActionDO);
             if (columnTypes == null)

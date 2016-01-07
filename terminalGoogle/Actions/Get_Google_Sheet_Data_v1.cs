@@ -29,7 +29,7 @@ namespace terminalGoogle.Actions
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             if (authTokenDO == null) return true;
-            if (!base.NeedsAuthentication(authTokenDO)) 
+            if (!base.NeedsAuthentication(authTokenDO))
                 return false;
             var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             // we may also post token to google api to check its validity
@@ -50,17 +50,17 @@ namespace terminalGoogle.Actions
         /// </summary>
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var processPayload = await GetProcessPayload(curActionDO, containerId);
+            var payloadCrates = await GetPayload(curActionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {
-                return NeedsAuthenticationError(processPayload);
+                return NeedsAuthenticationError(payloadCrates);
             }
 
-            return await CreateStandardPayloadDataFromStandardTableData(curActionDO, containerId, processPayload);
+            return await CreateStandardPayloadDataFromStandardTableData(curActionDO, containerId, payloadCrates);
         }
 
-        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, Guid containerId, PayloadDTO processPayload)
+        private async Task<PayloadDTO> CreateStandardPayloadDataFromStandardTableData(ActionDO curActionDO, Guid containerId, PayloadDTO payloadCrates)
         {
             var tableDataMS = await GetTargetTableData(curActionDO);
 
@@ -68,12 +68,13 @@ namespace terminalGoogle.Actions
             // Add a crate of PayloadData to action's crate storage
             var payloadDataCrate = Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
 
-            using (var updater = Crate.UpdateStorage(processPayload))
+            using (var updater = Crate.UpdateStorage(payloadCrates))
             {
                 updater.CrateStorage.Add(payloadDataCrate);
             }
+
             
-            return Success(processPayload);            
+            return Success(payloadCrates);            
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(ActionDO curActionDO)
@@ -125,10 +126,7 @@ namespace terminalGoogle.Actions
                 Label = "Select a Google Spreadsheet",
                 Name = "select_spreadsheet",
                 Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
+                Events = new List<ControlEvent>() { ControlEvent.RequestConfig },
                 Source = new FieldSourceDTO
                 {
                     Label = "Select a Google Spreadsheet",
@@ -142,7 +140,7 @@ namespace terminalGoogle.Actions
                         Selected = string.Equals(pair.Key, selectedSpreadsheet, StringComparison.OrdinalIgnoreCase)
                     })
                     .ToList(),
-                selectedKey = spreadsheets.Where(a => a.Key == selectedSpreadsheet).FirstOrDefault().Value,
+                selectedKey = spreadsheets.FirstOrDefault(a => a.Key == selectedSpreadsheet).Value,
                 Value = selectedSpreadsheet
             };
             controlList.Add(spreadsheetControl);
@@ -159,22 +157,15 @@ namespace terminalGoogle.Actions
         /// </summary>
         protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.Id != Guid.Empty)
-            {
-                //build a controls crate to render the pane
-                var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-                var spreadsheets = _google.EnumerateSpreadsheetsUris(authDTO);
-                var configurationControlsCrate = CreateConfigurationControlsCrate(spreadsheets);
 
-                using (var updater = Crate.UpdateStorage(curActionDO))
-                {
-                    updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
-                }
-            }
-            else
+            //build a controls crate to render the pane
+            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+            var spreadsheets = _google.EnumerateSpreadsheetsUris(authDTO);
+            var configurationControlsCrate = CreateConfigurationControlsCrate(spreadsheets);
+
+            using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                throw new ArgumentException(
-                    "Configuration requires the submission of an Action that has a real ActionId.");
+                updater.CrateStorage = AssembleCrateStorage(configurationControlsCrate);
             }
 
             return Task.FromResult(curActionDO);
@@ -218,7 +209,7 @@ namespace terminalGoogle.Actions
 
             if (!string.IsNullOrEmpty(spreadsheetsFromUserSelection))
             {
-                return await TransformSpreadsheetDataToStandardTableDataCrate(curActionDO, authTokenDO, spreadsheetsFromUserSelection);
+                return TransformSpreadsheetDataToStandardTableDataCrate(curActionDO, authTokenDO, spreadsheetsFromUserSelection);
             }
             else
             {
@@ -226,7 +217,7 @@ namespace terminalGoogle.Actions
             }
         }
 
-        private async Task<ActionDO> TransformSpreadsheetDataToStandardTableDataCrate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, string spreadsheetUri)
+        private ActionDO TransformSpreadsheetDataToStandardTableDataCrate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, string spreadsheetUri)
         {
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             // Fetch column headers in Excel file and assign them to the action's crate storage as Design TIme Fields crate
@@ -239,7 +230,7 @@ namespace terminalGoogle.Actions
                     updater.CrateStorage.RemoveByLabel(label);
                     var curCrateDTO = Crate.CreateDesignTimeFieldsCrate(
                                 label,
-                                headers.Select(col => new FieldDTO() { Key = col.Key, Value = col.Key }).ToArray()
+                                headers.Select(col => new FieldDTO() { Key = col.Key, Value = col.Key, Availability = Data.States.AvailabilityType.RunTime }).ToArray()
                             );
                     updater.CrateStorage.Add(curCrateDTO);
                 }
