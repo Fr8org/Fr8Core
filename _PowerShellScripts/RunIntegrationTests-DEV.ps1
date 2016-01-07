@@ -8,5 +8,5 @@ Copy-Item $SrcConfigFile -Destination $DstConfigFile -Force
 
 Write-Host $HealthMonitorCmd
 
-Start-Sleep -s 120
+Start-Sleep -s 240
 Invoke-Expression $HealthMonitorCmd
