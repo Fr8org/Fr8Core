@@ -51,7 +51,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             _innerClient.Timeout = new TimeSpan(0, 1, 0); //1 minute
         }
 
-        private async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request)
+        private async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request, string CorrelationId)
         {
             HttpResponseMessage response;
             string responseContent = "";
@@ -113,35 +113,35 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             return responseContent;
         }
 
-        private async Task<HttpResponseMessage> GetInternalAsync(Uri requestUri)
+        private async Task<HttpResponseMessage> GetInternalAsync(Uri requestUri, string CorrelationId)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Get, requestUri))
             {
-                return await SendInternalAsync(request);
+                return await SendInternalAsync(request, CorrelationId);
             }
         }
 
-        private async Task<HttpResponseMessage> PostInternalAsync(Uri requestUri)
+        private async Task<HttpResponseMessage> PostInternalAsync(Uri requestUri, string CorrelationId)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri))
             {
-                return await SendInternalAsync(request);
+                return await SendInternalAsync(request, CorrelationId);
             }
         }
 
-        private async Task<HttpResponseMessage> PostInternalAsync<TContent>(Uri requestUri, TContent content)
+        private async Task<HttpResponseMessage> PostInternalAsync<TContent>(Uri requestUri, TContent content, string CorrelationId)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri) { Content = new ObjectContent(typeof(TContent), content, _formatter) })
             {
-                return await SendInternalAsync(request);
+                return await SendInternalAsync(request, CorrelationId);
             }
         }
 
-        private async Task<HttpResponseMessage> PutInternalAsync<TContent>(Uri requestUri, TContent content)
+        private async Task<HttpResponseMessage> PutInternalAsync<TContent>(Uri requestUri, TContent content, string CorrelationId)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Put, requestUri) { Content = new ObjectContent(typeof(TContent), content, _formatter) })
             {
-                return await SendInternalAsync(request);
+                return await SendInternalAsync(request, CorrelationId);
             }
         }
 
@@ -162,49 +162,62 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             set { _innerClient.BaseAddress = value; }
         }
 
-        public async Task<TResponse> GetAsync<TResponse>(Uri requestUri)
+        public async Task<TResponse> GetAsync<TResponse>(Uri requestUri, AuthenticationHeaderValue authHeader, string CorrelationId = null)
         {
-            using (var response = await GetInternalAsync(requestUri))
+            using (var response = await GetInternalAsync(requestUri, CorrelationId))
             {
                 return await DeserializeResponseAsync<TResponse>(response);
             }
         }
 
-        public async Task<string> PostAsync(Uri requestUri)
+        public async Task<TResponse> GetAsync<TResponse>(Uri requestUri, string CorrelationId = null)
         {
-            using (var response = await PostInternalAsync(requestUri))
+            return await GetAsync<TResponse>(requestUri, null, CorrelationId);
+        }
+
+        public async Task<TResponse> PostAsync<TResponse>(Uri requestUri, AuthenticationHeaderValue authHeader, string CorrelationId = null)
+        {
+            using (var response = await GetInternalAsync(requestUri, CorrelationId))
+            {
+                return await DeserializeResponseAsync<TResponse>(response);
+            }
+        }
+
+        public async Task<string> PostAsync(Uri requestUri, string CorrelationId = null)
+        {
+            using (var response = await PostInternalAsync(requestUri, CorrelationId))
             {
                 return await response.Content.ReadAsStringAsync();
             }
         }
 
-        public async Task<string> PostAsync<TContent>(Uri requestUri, TContent content)
+        public async Task<string> PostAsync<TContent>(Uri requestUri, TContent content, string CorrelationId = null)
         {
-            using (var response = await PostInternalAsync(requestUri, content))
+            using (var response = await PostInternalAsync(requestUri, content, CorrelationId))
             {
                 return await response.Content.ReadAsStringAsync();
             }
         }
 
-        public async Task<TResponse> PostAsync<TContent, TResponse>(Uri requestUri, TContent content)
+        public async Task<TResponse> PostAsync<TContent, TResponse>(Uri requestUri, TContent content, string CorrelationId = null)
         {
-            using (var response = await PostInternalAsync(requestUri, content))
+            using (var response = await PostInternalAsync(requestUri, content, CorrelationId))
             {
                 return await DeserializeResponseAsync<TResponse>(response);
             }
         }
 
-        public async Task<TResponse> PutAsync<TContent, TResponse>(Uri requestUri, TContent content)
+        public async Task<TResponse> PutAsync<TContent, TResponse>(Uri requestUri, TContent content, string CorrelationId = null)
         {
-            using (var response = await PutInternalAsync(requestUri, content))
+            using (var response = await PutInternalAsync(requestUri, content, CorrelationId))
             {
                 return await DeserializeResponseAsync<TResponse>(response);
             }
         }
 
-        public async Task<string> PutAsync<TContent>(Uri requestUri, TContent content)
+        public async Task<string> PutAsync<TContent>(Uri requestUri, TContent content, string CorrelationId = null)
         {
-            using (var response = await PutInternalAsync(requestUri, content))
+            using (var response = await PutInternalAsync(requestUri, content, CorrelationId))
             {
                 return await response.Content.ReadAsStringAsync();
             }
