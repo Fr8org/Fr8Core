@@ -15,26 +15,26 @@ namespace Hub.Interfaces
     /// </summary>
     public interface ITag
     {
-        IList<Tag> GetAllTags();
+        IList<TagDO> GetAll();
 
-        Tag GetTag(int id);
+        TagDO GetById(int id);
 
-        Tag GetTagByKey(string key);
+        TagDO GetByKey(string key);
 
-        IList<Tag> GetTags(int fileDoId);
+        IList<TagDO> GetList(int fileDoId);
 
-        IList<FileDO> GetFiles(Tag tag);
+        IList<FileDO> GetFiles(TagDO tag);
 
         IList<FileDO> GetFiles(int tagId);
 
-        void UpdateTagByKey(string key, string value);
+        void UpdateByKey(string key, string value);
 
-        void UpdateAllFileTags(int fileDoId, IList<Tag> tags);
+        void UpdateAll(int fileDoId, IList<TagDO> tags);
 
-        void RemoveAllFileTags(int fileDoId);
+        void RemoveAll(int fileDoId);
 
-        void RemoveFileTag(int fileDoId, int tagId);
+        void Remove(int fileDoId, int tagId);
 
-        void AddFileTag(int fileDoId, Tag tag);
+        void Add(int fileDoId, TagDO tag);
     }
 }

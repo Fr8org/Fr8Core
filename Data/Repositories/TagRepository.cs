@@ -4,7 +4,7 @@ using Data.Utility;
 
 namespace Data.Repositories
 {
-    public class TagRepository : GenericRepository<Tag>, ITagRepository
+    public class TagRepository : GenericRepository<TagDO>, ITagRepository
     {
         internal TagRepository(IUnitOfWork uow)
             : base(uow)
@@ -13,7 +13,7 @@ namespace Data.Repositories
         }
     }
 
-    public interface ITagRepository : IGenericRepository<Tag>
+    public interface ITagRepository : IGenericRepository<TagDO>
     {
 
     }

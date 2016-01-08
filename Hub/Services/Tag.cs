@@ -12,19 +12,19 @@ using System.Threading.Tasks;
 
 namespace Hub.Services
 {
-    public class TagService : ITag
+    public class Tag : ITag
     {
-        public IList<Tag> GetAllTags()
+        public IList<TagDO> GetAll()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var tags = new List<Tag>();
+                var tags = new List<TagDO>();
                 tags = uow.TagRepository.GetAll().ToList();
                 return tags;
             }
         }
 
-        public Tag GetTag(int id)
+        public TagDO GetById(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -32,13 +32,13 @@ namespace Hub.Services
             }
         }
 
-        public Tag GetTagByKey(string key)
+        public TagDO GetByKey(string key)
         { 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Tag tag = null;
+                TagDO tag = null;
                 var result = uow.TagRepository.FindOne(x => x.Key == key);
-                if (!object.Equals(result, default(Tag)))
+                if (!object.Equals(result, default(TagDO)))
                 {
                     tag = result;
                 }
@@ -47,9 +47,9 @@ namespace Hub.Services
             }
         }
 
-        public IList<Tag> GetTags(int fileDoId)
+        public IList<TagDO> GetList(int fileDoId)
         {
-            var tags = new List<Tag>();
+            var tags = new List<TagDO>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var fileTags = uow.FileTagsRepository.FindList(x => x.FileDoId == fileDoId);
@@ -61,7 +61,7 @@ namespace Hub.Services
             return tags;
         }
 
-        public IList<FileDO> GetFiles(Tag tag)
+        public IList<FileDO> GetFiles(TagDO tag)
         {
             return GetFiles(tag.Id);
         }
@@ -77,14 +77,15 @@ namespace Hub.Services
                     var fileTags = uow.FileTagsRepository.FindList(x => x.TagId == tag.Id);
                     foreach (var fileTag in fileTags)
                     {
-                        files.Add(fileTag.File);
+                        var file = uow.FileRepository.FindOne(x => x.Id == fileTag.FileDoId);
+                        files.Add(file);
                     }
                 }
             }
             return files;
         }
 
-        public void UpdateAllFileTags(int fileDoId, IList<Tag> tags)
+        public void UpdateAll(int fileDoId, IList<TagDO> tags)
         {   
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -94,7 +95,7 @@ namespace Hub.Services
                 foreach (var tag in tags)
                 {   
                     var dbTag = tagRepository.FindOne(x => x.Key == tag.Key);
-                    if (!object.Equals(dbTag, default(Tag)))
+                    if (!object.Equals(dbTag, default(TagDO)))
                     {
                         dbTag.Value = tag.Value;
                     }
@@ -106,13 +107,13 @@ namespace Hub.Services
                 uow.SaveChanges();
 
                 // remove all fileTags with fileDoId
-                RemoveAllFileTags(fileDoId);
+                RemoveAll(fileDoId);
 
                 // Add new fileTags to the fileDo
                 foreach (var tag in tags)
                 {
                     var dbTag = tagRepository.FindOne(x => x.Key == tag.Key);
-                    if (!object.Equals(dbTag, default(Tag)))
+                    if (!object.Equals(dbTag, default(TagDO)))
                     {
                         var fileTag = new FileTags()
                         {
@@ -127,7 +128,7 @@ namespace Hub.Services
             }
         }
 
-        public void RemoveAllFileTags(int fileDoId)
+        public void RemoveAll(int fileDoId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -142,7 +143,7 @@ namespace Hub.Services
             }
         }
 
-        public void RemoveFileTag(int fileDoId, int tagId)
+        public void Remove(int fileDoId, int tagId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -156,11 +157,11 @@ namespace Hub.Services
             }
         }
 
-        public void UpdateTagByKey(string key, string value)
+        public void UpdateByKey(string key, string value)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var tag = GetTagByKey(key);
+                var tag = GetByKey(key);
                 if (tag != null)
                 {
                     tag.Value = value;
@@ -169,7 +170,7 @@ namespace Hub.Services
             }
         }
 
-        public void AddFileTag(int fileDoId, Tag tag)
+        public void Add(int fileDoId, TagDO tag)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -177,7 +178,7 @@ namespace Hub.Services
                 var fileTagRepository = uow.FileTagsRepository;
                 var fileTag = new FileTags() { FileDoId = fileDoId };
 
-                var dbTag = GetTagByKey(tag.Key);
+                var dbTag = GetByKey(tag.Key);
                 if (dbTag == null)
                 {
                     tagRepository.Add(tag);

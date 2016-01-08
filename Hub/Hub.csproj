@@ -326,7 +326,7 @@
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Interfaces\ITerminal.cs" />
-    <Compile Include="Services\TagService.cs" />
+    <Compile Include="Services\Tag.cs" />
     <Compile Include="Services\Terminal.cs" />
     <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />

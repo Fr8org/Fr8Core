@@ -10,7 +10,7 @@ namespace Data.Utility.JoinClasses
 
         [ForeignKey("Tag")]
         public int TagId { get; set; }
-        public virtual Tag Tag { get; set; }
+        public virtual TagDO Tag { get; set; }
 
         [ForeignKey("File")]
         public int FileDoId { get; set; }

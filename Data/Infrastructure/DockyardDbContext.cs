@@ -277,7 +277,7 @@ namespace Data.Infrastructure
 	        modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");
 	        modelBuilder.Entity<TerminalSubscriptionDO>().ToTable("TerminalSubscription");
             modelBuilder.Entity<EncryptedAuthorizationData>().ToTable("EncryptedAuthorizationData");
-            modelBuilder.Entity<Tag>().ToTable("Tags");
+            modelBuilder.Entity<TagDO>().ToTable("Tags");
             modelBuilder.Entity<FileTags>().ToTable("FileTags");
 
             modelBuilder.Entity<EmailDO>()

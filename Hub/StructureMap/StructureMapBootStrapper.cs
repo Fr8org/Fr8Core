@@ -127,7 +127,7 @@ namespace Hub.StructureMap
 	            For<ITime>().Use<Time>();
 	            For<IPusherNotifier>().Use<PusherNotifier>();
                 For<IAuthorization>().Use<Authorization>();
-                For<ITag>().Use<TagService>();
+                For<ITag>().Use<Tag>();
             }
         }
 
@@ -195,7 +195,7 @@ namespace Hub.StructureMap
 				var pusherNotifierMock = new Mock<IPusherNotifier>();
 	            For<IPusherNotifier>().Use(pusherNotifierMock.Object).Singleton();
 
-                For<ITag>().Use<TagService>();
+                For<ITag>().Use<Tag>();
             }
         }
 

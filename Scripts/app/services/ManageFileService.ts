@@ -9,6 +9,6 @@ module dockyard.services {
         FilesDTO CRUD service.
     */
     app.factory('ManageFileService', ['$resource', ($resource: ng.resource.IResourceService): IManageFileService =>
-        <IManageFileService> $resource('/api/manageFile/:id', { id: '@id' })
+        <IManageFileService> $resource('/api/files/:id', { id: '@id' })
     ]);
 }

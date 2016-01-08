@@ -12,10 +12,10 @@ module dockyard.services{
     */
     app.factory('FileDetailsService',
         ['$resource', ($resource: ng.resource.IResourceService): IFileDetailsService =>
-            <IFileDetailsService> $resource('/api/fileDetails', { }, {
+            <IFileDetailsService> $resource('/api/files', { }, {
                 getDetails: {
                     method: 'GET',
-                    url: '/api/fileDetails/getDetails/:id',
+                    url: '/api/files/details/:id',
                     params: {
                         id: '@id'
                     }
