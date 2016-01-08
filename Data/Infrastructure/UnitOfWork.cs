@@ -585,8 +585,12 @@ namespace Data.Infrastructure
         protected virtual void Dispose(bool disposing)
         {
             if (_transaction != null)
+            {
                 _transaction.Dispose();
+            }
+
             _context.Dispose();
+            _container.Dispose();
         }
 
         public void StartTransaction()
