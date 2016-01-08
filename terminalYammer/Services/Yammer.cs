@@ -10,11 +10,17 @@ using Data.Interfaces.DataTransferObjects;
 using terminalYammer.Interfaces;
 using Utilities.Configuration.Azure;
 using terminalYammer.Model;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace terminalYammer.Services
 {
     public class Yammer : IYammer
     {
+        private readonly IRestfulServiceClient _client;
+        public Yammer()
+        {
+            _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+        }
         /// <summary>
         /// Build external Yammer OAuth url.
         /// </summary>
@@ -30,14 +36,8 @@ namespace terminalYammer.Services
         {
             var template = CloudConfigurationManager.GetSetting("YammerOAuthAccessUrl");
             var url = template.Replace("%CODE%", code);
-
-            var httpClient = new HttpClient();
-            using (var response = await httpClient.GetAsync(url))
-            {
-                var responseString = await response.Content.ReadAsStringAsync();
-                var authEnvelope = JsonConvert.DeserializeObject<YammerAccessToken>(responseString);
-                return authEnvelope.TokenResponse.Token;    
-            }
+            var authEnvelope = await _client.GetAsync<YammerAccessToken>(new Uri(url));
+            return authEnvelope.TokenResponse.Token;    
         }
 
         private string PrepareTokenUrl(string urlKey, string oauthToken)
@@ -46,6 +46,14 @@ namespace terminalYammer.Services
             var url = template.Replace("%TOKEN%", oauthToken);
 
             return url;
+        }
+
+        private Dictionary<string, string> GetAuthenticationHeader(string oauthToken)
+        {
+            return new Dictionary<string, string>
+            {
+                //{ System.Net.Http.Aut }
+            };
         }
 
         public async Task<string> GetUserId(string oauthToken)
