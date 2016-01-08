@@ -26,6 +26,21 @@ namespace terminalAtlassian.Services
         }
         public bool IsValidUser(CredentialsDTO curCredential)
         {
+            var base64Credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Format("{0}:{1}", curCredential.Username, curCredential.Password)));
+            var headers = new Dictionary<string, string>()
+            {
+                { System.Net.HttpRequestHeader.Authorization.ToString(), string.Format("Basic {0}", base64Credentials) },
+                { System.Net.HttpRequestHeader.Accept.ToString(), "application/json" }
+            };
+            try {
+                var response = _client.GetAsync(new Uri(curCredential.Domain), null, headers).Result;
+            }
+            catch {
+                return false;
+            }
+
+            return true;
+            /*
 
             using (HttpClient client = new HttpClient())
             {
@@ -43,6 +58,7 @@ namespace terminalAtlassian.Services
                     return response.StatusCode == HttpStatusCode.OK;
                 }
             }
+            */
         }
 
         public void SetBasicAuthHeader(WebRequest request, String userName, String userPassword)

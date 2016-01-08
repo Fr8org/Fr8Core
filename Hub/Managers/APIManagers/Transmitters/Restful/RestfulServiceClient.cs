@@ -190,6 +190,14 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             }
         }
 
+        public async Task<string> GetAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
+        {
+            using (var response = await GetInternalAsync(requestUri, CorrelationId, headers))
+            {
+                return await response.Content.ReadAsStringAsync();
+            }
+        }
+
         public async Task<TResponse> PostAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
             using (var response = await PostInternalAsync(requestUri, CorrelationId, headers))

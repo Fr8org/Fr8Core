@@ -52,49 +52,34 @@ namespace terminalYammer.Services
         {
             return new Dictionary<string, string>
             {
-                //{ System.Net.Http.Aut }
+                { System.Net.HttpRequestHeader.Authorization.ToString(), string.Format("Bearer {0}", oauthToken) }
             };
         }
 
         public async Task<string> GetUserId(string oauthToken)
         {
             var url = PrepareTokenUrl("YammerOAuthCurrentUserUrl", oauthToken);
-
-            var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + oauthToken);
-
-            using (var response = await httpClient.GetAsync(url))
-            {
-                var responseString = await response.Content.ReadAsStringAsync();
-                var jsonObj = JsonConvert.DeserializeObject<JObject>(responseString);
-
-                return jsonObj.Value<string>("email");
-            }
+            var jsonObj = await _client.GetAsync<JObject>(new Uri(url), null, GetAuthenticationHeader(oauthToken));
+            return jsonObj.Value<string>("email");
         }
 
         public async Task<List<FieldDTO>> GetGroupsList(string oauthToken)
         {
             var url = PrepareTokenUrl("YammerGroupListUrl", oauthToken);
 
-            var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + oauthToken);
-            using (var response = await httpClient.GetAsync(url))
+            var groupsDTO = await _client.GetAsync<List<YammerGroup>>(new Uri(url), null, GetAuthenticationHeader(oauthToken));
+            var result = new List<FieldDTO>();
+            foreach (var group in groupsDTO)
             {
-                var responseString = await response.Content.ReadAsStringAsync();
-                var groupsDTO = JsonConvert.DeserializeObject<List<YammerGroup>>(responseString);
-
-                var result = new List<FieldDTO>();
-                foreach (var group in groupsDTO)
+                result.Add(new FieldDTO()
                 {
-                    result.Add(new FieldDTO()
-                    {
-                        Key = group.Name,
-                        Value = group.GroupID
-                    });
-                }
-
-                return result;
+                    Key = group.Name,
+                    Value = group.GroupID
+                });
             }
+
+            return result;
+            
         }
 
         public async Task<bool> PostMessageToGroup(string oauthToken, string groupId, string message)

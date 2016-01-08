@@ -54,7 +54,7 @@ namespace HubWeb.Controllers
                     var terminalUrl = terminal.ParseTerminalUrlFor(alarmDTO.TerminalName, alarmDTO.TerminalVersion, "action/run");
                     var content = new ObjectContent<ActionDTO>(alarmDTO.ActionDTO, new JsonMediaTypeFormatter());
 
-                    result = await new HttpClient().PostAsync(new Uri(terminalUrl, UriKind.Absolute), content);
+                    
                 }
                  * */
             }
