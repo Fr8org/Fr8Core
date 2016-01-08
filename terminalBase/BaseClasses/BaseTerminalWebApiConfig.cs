@@ -31,22 +31,5 @@ namespace TerminalBase.BaseClasses
             //add Web API Exception Filter
             curTerminalConfiguration.Filters.Add(new WebApiExceptionFilterAttribute());
         }
-        public static void RegisterRoutes(string curTerminalName, RouteCollection curTerminalRoutes)
-        {
-
-            curTerminalRoutes.MapHttpRoute(
-                name: string.Format("Terminal{0}Route", curTerminalName),
-                routeTemplate: string.Format("terminal_{0}", curTerminalName) + "/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
-            curTerminalRoutes.MapHttpRoute(
-                name: string.Format("Terminal{0}RouteDocumentation", curTerminalName),
-                routeTemplate: "actions/documentation/{*helpPath}",
-                defaults: new { controller = "Action", action = "Documentation", helpPath = RouteParameter.Optional });
-            curTerminalRoutes.MapHttpRoute(
-                name: string.Format("Terminal{0}RouteActionCatchAll", curTerminalName),
-                routeTemplate: "actions/{*actionType}",
-                defaults: new { controller = "Action", action = "Execute" }); //It calls ActionController#Execute in an MVC style
-        }
     }
 }

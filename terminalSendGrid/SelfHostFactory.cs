@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Http;
+using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
 using TerminalBase.BaseClasses;
 
-namespace terminalYammer
+namespace terminalSendGrid
 {
     public class SelfHostFactory
     {
@@ -12,14 +14,15 @@ namespace terminalYammer
         {
             public void Configuration(IAppBuilder app)
             {
-                var startup = new Startup();
-                startup.Configuration(app, selfHost: true);
+                var config = new HttpConfiguration();
+                BaseTerminalWebApiConfig.Register("SendGrid", config);
+                app.UseWebApi(config);
             }
         }
 
         public static IDisposable CreateServer(string url)
         {
-            return WebApp.Start<SelfHostFactory.SelfHostStartup>(url: url);
+            return WebApp.Start<SelfHostStartup>(url: url);
         }
     }
 }

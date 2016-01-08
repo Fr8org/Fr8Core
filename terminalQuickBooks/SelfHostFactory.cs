@@ -28,13 +28,12 @@ namespace terminalQuickBooks
                 var config = new HttpConfiguration();
 
                 // Web API routes
-                config.MapHttpAttributeRoutes();
                 WebApiConfig.Register(config);
                 config.Services.Replace(
                     typeof(IHttpControllerTypeResolver),
                     new QuickBooksControllerTypeResolver()
                 );
-                app.Use(config);
+                app.UseWebApi(config);
             }
         }
         public static IDisposable CreateServer(string url)

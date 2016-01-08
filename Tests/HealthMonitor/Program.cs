@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using NUnit.Core;
+using HealthMonitor.Configuration;
+using System.Configuration;
 
 namespace HealthMonitor
 {
@@ -10,6 +12,7 @@ namespace HealthMonitor
         {
             var sendEmailReport = false;
             var appName = "Unspecified App";
+            var selfHosting = true;
 
             if (args != null)
             {
@@ -23,10 +26,30 @@ namespace HealthMonitor
                     {
                         appName = args[i];
                     }
+                    if (args[i] == "--self-hosting")
+                    {
+                        selfHosting = true;
+                    }
                 }
             }
 
-            new Program().Run(sendEmailReport, appName);
+            var selfHostInitializer = new SelfHostInitializer();
+            if (selfHosting)
+            {
+                selfHostInitializer.Initialize();
+            }
+
+            try
+            {
+                new Program().Run(sendEmailReport, appName);
+            }
+            finally
+            {
+                if (selfHosting)
+                {
+                    selfHostInitializer.Dispose();
+                }
+            }
         }
 
         private void Run(bool sendEmailReport, string appName)

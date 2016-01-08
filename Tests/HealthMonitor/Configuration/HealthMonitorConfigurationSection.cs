@@ -14,6 +14,16 @@ namespace HealthMonitor.Configuration
             }
         }
 
+        [ConfigurationProperty("selfHostedTerminals", IsDefaultCollection = false)]
+        public SelfHostedTerminalsCollection SelfHostedTerminals
+        {
+            get
+            {
+                var collection = (SelfHostedTerminalsCollection)base["selfHostedTerminals"];
+                return collection;
+            }
+        }
+
         [ConfigurationProperty("notifiers", IsDefaultCollection = false)]
         public NotifiersConfigurationCollection Notifiers
         {
