@@ -74,11 +74,11 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             }
             catch (HttpRequestException ex)
             {
+                raisedException = ex;
                 string errorMessage = String.Format("An error has ocurred while sending a {0} request to {1}. Response message: {2}",
                     request.RequestUri,
                     request.Method.Method,
                     ExtractErrorMessage(responseContent));
-                raisedException = ex;
                 throw new RestfulServiceException(statusCode, errorMessage, ex);
             }
             catch (TaskCanceledException ex)
