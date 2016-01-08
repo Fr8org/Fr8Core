@@ -16,6 +16,9 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using TerminalBase.Infrastructure;
 using terminalFr8Core.Actions;
+using Moq;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using System.Threading.Tasks;
 
 namespace terminalFr8CoreTests.Unit
 {
@@ -34,6 +37,15 @@ namespace terminalFr8CoreTests.Unit
 
             _coreServer = Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             select_Fr8_Object_v1 = new Select_Fr8_Object_v1();
+
+            Mock<IRestfulServiceClient> restClientMock = new Mock<IRestfulServiceClient>(MockBehavior.Default);
+            restClientMock.Setup(restClient => restClient.GetAsync<CrateDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+                .Returns(Task.FromResult(new CrateDTO {
+                    Label = "Test",
+                    CreateTime = DateTime.Now,
+                    Id = "123"
+                }));
+            ObjectFactory.Container.Inject(typeof(IRestfulServiceClient), restClientMock.Object);
         }
 
         [TearDown]
@@ -73,6 +85,7 @@ namespace terminalFr8CoreTests.Unit
         [Test]
         public async void Evaluate_IsValidJSONResponse_For_FollowupRequest_ContainerSelected()
         {
+            
             ActionDTO curActionDTO = FixtureData.TestActionDTOSelectFr8ObjectFollowup("21");
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
             AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
