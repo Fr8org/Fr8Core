@@ -241,7 +241,6 @@
     <Compile Include="Managers\CrateMangerExtensions.cs" />
     <Compile Include="Managers\ICrateManager.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
-    <Compile Include="Interfaces\IFr8Event.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
     <Compile Include="Interfaces\IFile.cs" />
@@ -320,7 +319,6 @@
     <Compile Include="Managers\CrateManager.cs" />
     <Compile Include="Services\Criteria.cs" />
     <Compile Include="Services\Fr8Account.cs" />
-    <Compile Include="Services\Fr8Event.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Event.cs" />

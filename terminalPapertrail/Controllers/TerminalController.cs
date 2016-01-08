@@ -36,7 +36,7 @@ namespace terminalPapertrail.Controllers
                 Version = "1",
                 Name = "Write_To_Log",
                 Label = "Write To Log",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
                 MinPaneWidth = 330,
                 WebService = webService
