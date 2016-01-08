@@ -118,8 +118,7 @@ namespace TerminalBase.Infrastructure
         /// In all other scenarios it should be teated as private</returns>
         protected virtual IRestfulServiceClient PrepareRestClient()
         {
-            var restCall = new RestfulServiceClient();
-            return restCall;
+            return ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
 
         /// <summary>
@@ -127,8 +126,10 @@ namespace TerminalBase.Infrastructure
         /// </summary>
         /// <param name="curExternalEventPayload">event pay load received</param>
         /// <param name="parser">delegate method</param>
-        public async Task Process(string curExternalEventPayload,EventParser parser)
+        public async Task Process(string curExternalEventPayload, EventParser parser)
         {
+            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
             var fr8EventUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/event/processevents";
             var eventReportCrateDTO = _crateManager.ToDto(parser.Invoke(curExternalEventPayload));
             
@@ -137,9 +138,8 @@ namespace TerminalBase.Infrastructure
                 Uri url = new Uri(fr8EventUrl, UriKind.Absolute);
                 try
                 {
-                    HttpClient client = new HttpClient();
-                    client.Timeout = new TimeSpan(0, 10, 0); //10 minutes
-                    await client.PostAsJsonAsync(url, eventReportCrateDTO);
+                    //TODO are we expecting a timeout??
+                    await client.PostAsync(url, eventReportCrateDTO);
                 }
                 catch (TaskCanceledException)
                 {

@@ -217,30 +217,24 @@ namespace TerminalBase.BaseClasses
 
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
         {
-            var httpClient = new HttpClient();
+            var result = await HubCommunicator.ValidateFields(requiredFieldList);
 
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/field/exists";
-            using (var response = await httpClient.PostAsJsonAsync(url, requiredFieldList))
+            var validationErrorList = new List<FieldDTO>();
+            //lets create necessary validationError crates
+            for (var i = 0; i < result.Count; i++)
             {
-                var content = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<List<FieldValidationResult>>(content);
-                var validationErrorList = new List<FieldDTO>();
-                //lets create necessary validationError crates
-                for (var i = 0; i < result.Count; i++)
+                var fieldCheckResult = result[i];
+                if (fieldCheckResult == FieldValidationResult.NotExists)
                 {
-                    var fieldCheckResult = result[i];
-                    if (fieldCheckResult == FieldValidationResult.NotExists)
-                    {
-                        validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required" });
-                    }
-                }
-
-                if (validationErrorList.Any())
-                {
-                    return Crate.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
+                    validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required" });
                 }
             }
+
+            if (validationErrorList.Any())
+            {
+                return Crate.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
+            }
+            
 
             return null;
         }
