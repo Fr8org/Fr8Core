@@ -18,6 +18,7 @@ using TerminalBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using System.Collections.Generic;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace terminalBaseTests.BaseClasses
 {
@@ -35,10 +36,11 @@ namespace terminalBaseTests.BaseClasses
         {
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
-
+            ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>());
             _baseTerminalAction = new BaseTerminalAction();
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            
         }
 
         [TearDown]
@@ -182,6 +184,9 @@ namespace terminalBaseTests.BaseClasses
         [Test]
         public async void BuildUpstreamCrateLabelList_ReturnsListOfUpstreamCrateLabels()
         {
+            ObjectFactory.Configure(x => x.Forward<IRestfulServiceClient, RestfulServiceClient>());
+            ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>());
+            var test = ObjectFactory.GetInstance<IRestfulServiceClient>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.RouteNodeRepository.Add(FixtureData.TestActionTree());

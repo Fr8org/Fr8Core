@@ -80,7 +80,6 @@ namespace terminalFr8CoreTests.Unit
         [Test]
         public async void Evaluate_IsValidJSONResponse_For_FollowupRequest_ContainerSelected()
         {
-            
             ActionDTO curActionDTO = FixtureData.TestActionDTOSelectFr8ObjectFollowup("21");
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
             AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
