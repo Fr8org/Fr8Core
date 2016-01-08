@@ -60,11 +60,7 @@ namespace terminalSalesforce.Infrastructure
             if (fieldsQueryResponse.TryGetValue("fields", out contactFields) && contactFields is JArray)
             {
                 objectFields.AddRange(
-                    contactFields.Select(
-                        a => new FieldDTO(a.Value<string>("name"), a.Value<string>("label"))
-                        {
-                            Availability = AvailabilityType.Configuration
-                        }));
+                    contactFields.Select(a => new FieldDTO(a.Value<string>("name"), a.Value<string>("label"))));
             }
 
             return objectFields;

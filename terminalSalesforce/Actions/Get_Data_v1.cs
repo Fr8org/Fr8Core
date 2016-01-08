@@ -61,7 +61,12 @@ namespace terminalSalesforce.Actions
         {
             //create hard coded salesforce object names as design time fields.
             var availableSalesforceObjects = Crate.CreateDesignTimeFieldsCrate("AvailableSalesforceObjects",
-                new FieldDTO[] { new FieldDTO("Account"), new FieldDTO("Contact"), new FieldDTO("Lead") });
+                new FieldDTO[]
+                {
+                    new FieldDTO("Account") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Contact") {Availability = AvailabilityType.Configuration},
+                    new FieldDTO("Lead") {Availability = AvailabilityType.Configuration}
+                });
 
             //Note: This design time fields are used to populate the Fileter Pane controls. It has to be labelled as Queryable Criteria
             var emptyFieldsSource = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] {});
