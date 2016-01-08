@@ -57,7 +57,7 @@ namespace HubWeb.ExceptionHandling
             errorDto.Message = "Sorry, an unexpected error has occurred while serving your request. Please try again in a few minutes.";
            
             // if debugging enabled send back the details of exception as well
-            if (HttpContext.Current.IsDebuggingEnabled)
+            // if (HttpContext.Current.IsDebuggingEnabled)
             {
                 if (ex is TerminalCodedException) 
                 {
