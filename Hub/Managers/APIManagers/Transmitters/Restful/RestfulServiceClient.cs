@@ -9,12 +9,16 @@ using System.Threading.Tasks;
 using log4net;
 using Hub.Managers.APIManagers.Packagers.Json;
 using Utilities.Logging;
+using System.Diagnostics;
+using System.Net;
+using System.Globalization;
 
 namespace Hub.Managers.APIManagers.Transmitters.Restful
 {
     public class RestfulServiceClient : IRestfulServiceClient
     {
         private static readonly ILog Log = Logger.GetLogger();
+        private const string HttpLogFormat = "--New Request--\nIsSuccess: {0}\nFinished: {1}\nTotal Elapsed: {2}\nCorrelation ID: {3}\nHttp Status: {4}({5})\n";
         class FormatterLogger : IFormatterLogger
         {
             public void LogError(string message, Exception ex)
@@ -57,10 +61,14 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             string responseContent = "";
             int statusCode = -1;
 
+            var stopWatch = Stopwatch.StartNew();
+            Exception raisedException = null;
+            string prettyStatusCode = null;
             try
             {
                 response = await _innerClient.SendAsync(request);
                 responseContent = await response.Content.ReadAsStringAsync();
+                prettyStatusCode = response.StatusCode.ToString();
                 statusCode = (int)response.StatusCode;
                 response.EnsureSuccessStatusCode();
             }
@@ -70,10 +78,12 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
                     request.RequestUri,
                     request.Method.Method,
                     ExtractErrorMessage(responseContent));
+                raisedException = ex;
                 throw new RestfulServiceException(statusCode, errorMessage, ex);
             }
-            catch (TaskCanceledException)
+            catch (TaskCanceledException ex)
             {
+                raisedException = ex;
                 //Timeout
                 throw new TimeoutException(
                     String.Format("Timeout while making HTTP request.  \r\nURL: {0},   \r\nMethod: {1}",
@@ -82,10 +92,30 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             }
             catch (Exception ex)
             {
+                raisedException = ex;
                 string errorMessage = String.Format("An error has ocurred while sending a {0} request to {1}.",
                     request.RequestUri,
                     request.Method.Method);
                 throw new ApplicationException(errorMessage);
+            }
+            finally
+            {
+                stopWatch.Stop();
+                var isSuccess = raisedException == null;
+                //log details
+                var logDetails = string.Format(HttpLogFormat, isSuccess ? "YES" : "NO", 
+                    DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
+                    stopWatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture),
+                    CorrelationId, statusCode, prettyStatusCode);
+
+                if (isSuccess)
+                {
+                    Log.Info(logDetails);
+                }
+                else
+                {
+                    Log.Error(logDetails, raisedException);
+                }
             }
             return response;
         }
