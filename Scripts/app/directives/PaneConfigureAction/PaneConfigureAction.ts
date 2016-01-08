@@ -282,12 +282,16 @@ module dockyard.directives.paneConfigureAction {
 
                     ActionService.configure($scope.currentAction).$promise
                         .then((res: interfaces.IActionVM) => {
+                            var childActionsDetected = false;
+
                             if (res.childrenActions && res.childrenActions.length > 0) {
                                 // If the directive is used for configuring solutions,
                                 // the SolutionController would listen to this event 
                                 // and redirect user to the RouteBuilder once if is received.
                                 // It means that solution configuration is complete. 
                                 $scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
+
+                                childActionsDetected = true;
                             }
 
                             $scope.reconfigureChildrenActions = false;
@@ -303,6 +307,11 @@ module dockyard.directives.paneConfigureAction {
 
                             $scope.processConfiguration();
                             configLoadingError = false;
+
+                            // Unblock pane.
+                            if (!childActionsDetected) {
+                                $scope.processing = false;
+                            }
                         })
                         .catch((result) => {
                             var errorText = 'Something went wrong. Click to retry.';
@@ -317,9 +326,8 @@ module dockyard.directives.paneConfigureAction {
                             $scope.currentAction.configurationControls = new model.ControlsList();
                             $scope.currentAction.configurationControls.fields = [control];
                             configLoadingError = true;
-                        })
-                        .finally(() => {
-                            // Unblock pane
+
+                            // Unblock pane.
                             $scope.processing = false;
                         });
                 };
