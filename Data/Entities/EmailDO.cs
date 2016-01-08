@@ -11,7 +11,7 @@ using Utilities;
 
 namespace Data.Entities
 {
-    public class EmailDO : BaseDO, IEmailDO
+    public class EmailDO : BaseObject, IEmailDO
     {
         public EmailDO()
         {

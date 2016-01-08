@@ -16,6 +16,7 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Utilities.Configuration.Azure;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace Hub.Services
 {
@@ -24,12 +25,14 @@ namespace Hub.Services
         #region Fields
 
         private readonly ICrateManager _crate;
+        private readonly IRestfulServiceClient _restfulServiceClient;
 
         #endregion
 
         public RouteNode()
         {
             _crate = ObjectFactory.GetInstance<ICrateManager>();
+            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
 
         //This builds a list of an activity and all of its descendants, over multiple levels
@@ -351,8 +354,6 @@ namespace Hub.Services
         public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(
             Guid activityId, CrateDirection direction)
         { 
-            var httpClient = new HttpClient();
-
             // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
             var directionSuffix = (direction == CrateDirection.Upstream)
                 ? "upstream_actions/"
@@ -363,28 +364,21 @@ namespace Hub.Services
                 + directionSuffix
                 + "?id=" + activityId;
 
-            using (var response = await httpClient.GetAsync(url))
+            var curActions = await _restfulServiceClient.GetAsync<List<ActionDTO>>(new Uri(url, UriKind.Absolute));
+            var curCrates = new List<Crate<TManifest>>();
+
+            foreach (var curAction in curActions)
             {
-                var content = await response.Content.ReadAsStringAsync();
-                var curActions = JsonConvert.DeserializeObject<List<ActionDTO>>(content);
+                var storage = _crate.FromDto(curAction.CrateStorage);
 
-                var curCrates = new List<Crate<TManifest>>();
-
-                foreach (var curAction in curActions)
-                {
-                    var storage = _crate.FromDto(curAction.CrateStorage);
-
-                    curCrates.AddRange(storage.CratesOfType<TManifest>());
-                }
-
-                return curCrates;
+                curCrates.AddRange(storage.CratesOfType<TManifest>());
             }
+
+            return curCrates;
         }
 
         public async Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction)
         {
-            var httpClient = new HttpClient();
-
             // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
             var directionSuffix = (direction == CrateDirection.Upstream)
                 ? "upstream_actions/"
@@ -395,21 +389,16 @@ namespace Hub.Services
                 + directionSuffix
                 + "?id=" + activityId;
 
-            using (var response = await httpClient.GetAsync(url))
+            var curActions = await _restfulServiceClient.GetAsync<List<ActionDTO>>(new Uri(url, UriKind.Absolute));
+            var curCrates = new List<Crate>();
+
+            foreach (var curAction in curActions)
             {
-                var content = await response.Content.ReadAsStringAsync();
-                var curActions = JsonConvert.DeserializeObject<List<ActionDTO>>(content);
-
-                var curCrates = new List<Crate>();
-
-                foreach (var curAction in curActions)
-                {
-                    var storage = _crate.FromDto(curAction.CrateStorage);
-                    curCrates.AddRange(storage);
-                }
-
-                return curCrates;
+                var storage = _crate.FromDto(curAction.CrateStorage);
+                curCrates.AddRange(storage);
             }
+
+            return curCrates;
         }
     }
 }

@@ -5,7 +5,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class ProcessNodeDO : BaseDO
+    public class ProcessNodeDO : BaseObject
     {
         [Key]
         public int Id { get; set; }
