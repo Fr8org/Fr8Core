@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Http;
 using Microsoft.Owin.Hosting;
+using Moq;
 using Owin;
 using StructureMap;
 using StructureMap.Configuration.DSL;
@@ -30,7 +31,7 @@ namespace terminalSalesforce
              switch (type)
              {
                  case DependencyType.TEST:
-                     ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>()); // No test mode yet
+                     ObjectFactory.Initialize(x => x.AddRegistry<TestMode>()); 
                      break;
                  case DependencyType.LIVE:
                      ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
@@ -44,6 +45,17 @@ namespace terminalSalesforce
              {
                  For<terminalSalesforce.Infrastructure.IEvent>().Use<terminalSalesforce.Services.Event>();
                  For<ISalesforceIntegration>().Use<terminalSalesforce.Services.SalesforceIntegration>();                  
+             }
+         }
+
+         public class TestMode : StructureMapBootStrapper.TestMode
+         {
+             public TestMode()
+             {
+                 For<terminalSalesforce.Infrastructure.IEvent>().Use<terminalSalesforce.Services.Event>();
+
+                 Mock<ISalesforceIntegration> salesforceIntegrationMock = new Mock<ISalesforceIntegration>(MockBehavior.Default);
+                 For<ISalesforceIntegration>().Use(salesforceIntegrationMock.Object);
              }
          }       
     }

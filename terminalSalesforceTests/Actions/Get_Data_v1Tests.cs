@@ -1,13 +1,22 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.WebSockets;
 using Data.Control;
+using Data.Crates;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
+using Moq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using TerminalBase.Infrastructure;
 using terminalSalesforce;
 using terminalSalesforce.Actions;
+using terminalSalesforce.Infrastructure;
 using terminalSalesforceTests.Fixtures;
 using UtilitiesTesting;
 
@@ -25,7 +34,27 @@ namespace terminalSalesforceTests.Actions
             TerminalBootstrapper.ConfigureTest();
             TerminalSalesforceStructureMapBootstrapper.ConfigureDependencies(TerminalSalesforceStructureMapBootstrapper.DependencyType.TEST);
 
-            ObjectFactory.Configure(cfg => cfg.For<IHubCommunicator>().Use<DefaultHubCommunicator>());
+            PayloadDTO testPayloadDTO = new PayloadDTO(new Guid());
+
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(testPayloadDTO))
+            {
+                updater.CrateStorage.Add(Crate.FromContent("Operational Status", new OperationalStateCM()));
+            }
+
+            Mock<IHubCommunicator> hubCommunicatorMock = new Mock<IHubCommunicator>(MockBehavior.Default);
+            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<ActionDO>(), It.IsAny<Guid>()))
+                .Returns(() => Task.FromResult(testPayloadDTO));
+            ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
+
+            Mock<ISalesforceIntegration> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceIntegration>());
+            FieldDTO testField = new FieldDTO("Account", "TestAccount");
+            salesforceIntegrationMock.Setup(
+                s => s.GetFields(It.IsAny<ActionDO>(), It.IsAny<AuthorizationTokenDO>(), "Account"))
+                .Returns(() => Task.FromResult((IList<FieldDTO>)new List<FieldDTO> { testField }));
+
+            salesforceIntegrationMock.Setup(
+                s => s.GetObject(It.IsAny<ActionDO>(), It.IsAny<AuthorizationTokenDO>(), "Account", It.IsAny<string>()))
+                .Returns(() => Task.FromResult(new StandardPayloadDataCM()));
 
             _getData_v1 = new Get_Data_v1();
         }
@@ -64,6 +93,8 @@ namespace terminalSalesforceTests.Actions
             actionDO = await _getData_v1.Configure(actionDO, FixtureData.Salesforce_AuthToken());
             actionDO = SelectSalesforceAccount(actionDO);
 
+            Mock<ISalesforceIntegration> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceIntegration>());
+
             //Act
             actionDO = await _getData_v1.Configure(actionDO, FixtureData.Salesforce_AuthToken());
 
@@ -71,9 +102,42 @@ namespace terminalSalesforceTests.Actions
             var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(actionDO);
             Assert.AreEqual(3, stroage.Count, "Number of configuration crates not populated correctly");
 
-            Assert.Greater(stroage.CratesOfType<StandardDesignTimeFieldsCM>()
+            Assert.AreEqual(stroage.CratesOfType<StandardDesignTimeFieldsCM>()
                     .Single(c => c.Label.Equals("Queryable Criteria"))
-                    .Content.Fields.Count, 0, "Queryable Criteria is NOT filled with invalid data");
+                    .Content.Fields.Count, 1, "Queryable Criteria is NOT filled with invalid data");
+
+            salesforceIntegrationMock.Verify(s => s.GetFields(It.IsAny<ActionDO>(), It.IsAny<AuthorizationTokenDO>(), "Account"), Times.Exactly(1));
+        }
+
+        [Test, Category("terminalSalesforceTests.Get_Data.Run")]
+        public async void Run_Check_PayloadDTO_ForObjectData()
+        {
+            //Arrange
+            var actionDO = FixtureData.GetFileListTestActionDO1();
+
+            //perform initial configuration
+            actionDO = await _getData_v1.Configure(actionDO, FixtureData.Salesforce_AuthToken());
+            actionDO = SelectSalesforceAccount(actionDO);
+            //perform follow up configuration
+            actionDO = await _getData_v1.Configure(actionDO, FixtureData.Salesforce_AuthToken());
+
+            using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(actionDO))
+            {
+                updater.CrateStorage.CratesOfType<StandardConfigurationControlsCM>()
+                    .Single()
+                    .Content.Controls.Single(control => control.Type == ControlTypes.FilterPane)
+                    .Value = JsonConvert.SerializeObject(new FilterDataDTO() {Conditions = new List<FilterConditionDTO>()});
+            }
+
+            //Act
+            var resultPayload = await _getData_v1.Run(actionDO, new Guid(), FixtureData.Salesforce_AuthToken());
+
+            //Assert
+            var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(resultPayload);
+            Assert.AreEqual(2, stroage.Count, "Number of Payload crates not populated correctly");
+
+            Assert.IsNotNull(stroage.CratesOfType<StandardPayloadDataCM>()
+                    .Single(c => c.Label.Equals("Salesforce Objects")), "Not able to get the required salesforce object");
         }
 
         private ActionDO SelectSalesforceAccount(ActionDO curActionDO)

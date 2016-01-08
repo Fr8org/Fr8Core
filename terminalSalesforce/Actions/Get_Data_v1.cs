@@ -12,6 +12,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
+using StructureMap;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
@@ -22,7 +23,12 @@ namespace terminalSalesforce.Actions
 {
     public class Get_Data_v1 : BaseTerminalAction
     {
-        ISalesforceIntegration _salesforce = new SalesforceIntegration();
+        private ISalesforceIntegration _salesforce;
+
+        public Get_Data_v1()
+        {
+            _salesforce = ObjectFactory.GetInstance<ISalesforceIntegration>();
+        }
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
