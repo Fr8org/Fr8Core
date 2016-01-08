@@ -467,7 +467,7 @@ namespace DockyardTest.Services
             }
 
             ActionDTO actionDto = Mapper.Map<ActionDTO>(actionDo);
-            TerminalTransmitterMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>(), It.IsAny<string>()))
+            TerminalTransmitterMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
                 .Returns(() => Task.FromResult<string>(JsonConvert.SerializeObject(actionDto)));
 
             ContainerDO containerDO = FixtureData.TestContainer1();

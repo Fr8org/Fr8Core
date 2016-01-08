@@ -134,7 +134,7 @@ namespace DockyardTest.Controllers
                     new Uri("http://" + activityTemplateDO.Terminal.Endpoint + "/authentication/internal"),
                     It.Is<CredentialsDTO>(it => it.Username == credentialsDTO.Username
                         && it.Password == credentialsDTO.Password
-                        && it.Domain == credentialsDTO.Domain), It.IsAny<string>()
+                        && it.Domain == credentialsDTO.Domain), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()
                 ),
                 Times.Exactly(1)
             );

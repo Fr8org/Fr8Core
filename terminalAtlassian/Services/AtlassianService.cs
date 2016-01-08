@@ -1,7 +1,9 @@
 ﻿using Atlassian.Jira;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json;
+using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -15,8 +17,16 @@ namespace terminalAtlassian.Services
 {
     public class AtlassianService : IAtlassianService
     {
+        private readonly IRestfulServiceClient _client;
+
+
+        public AtlassianService()
+        {
+            _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+        }
         public bool IsValidUser(CredentialsDTO curCredential)
         {
+
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Add(
