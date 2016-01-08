@@ -32,7 +32,7 @@ namespace TerminalBase.Infrastructure
                 + containerId.ToString("D");
 
             var payloadDTOTask = _restfulServiceClient
-                .GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute));
+                .GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute), containerId.ToString());
 
             return payloadDTOTask;
         }
