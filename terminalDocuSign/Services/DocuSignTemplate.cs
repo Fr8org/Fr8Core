@@ -21,6 +21,11 @@ namespace terminalDocuSign.Services
         private DocuSignEnvelope _docusignEnvelope;
         private DocuSignPackager _docusignPackager;
 
+        public DocuSignTemplate()
+        {
+            _docusignPackager = new DocuSignPackager();
+        }
+
         public TemplateInfo Create(TemplateInfo submissionData)
         {
             //replace with a real implementation that calls POST /accounts/{accountId}/templates
