@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -75,7 +74,7 @@ namespace terminalSalesforce.Services
             return createFlag;
         }
 
-        public async Task<IList<FieldDTO>> GetFields(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string salesforceObjectName)
+        public async Task<IList<FieldDTO>> GetFields(AuthorizationTokenDO authTokenDO, string salesforceObjectName)
         {
             try
             {
@@ -83,11 +82,11 @@ namespace terminalSalesforce.Services
                 switch (salesforceObjectName)
                 {
                     case "Account":
-                        return await _account.GetFields(actionDO, authTokenResult);
+                        return await _account.GetFields(authTokenResult);
                     case "Lead":
-                        return await _lead.GetFields(actionDO, authTokenResult);
+                        return await _lead.GetFields(authTokenResult);
                     case "Contact":
-                        return await _contact.GetFields(actionDO, authTokenResult);
+                        return await _contact.GetFields(authTokenResult);
                     default:
                         throw new NotSupportedException(
                             string.Format("Not Supported Salesforce object name {0} has been given for querying fields.",
@@ -101,7 +100,7 @@ namespace terminalSalesforce.Services
             }
         }
 
-        public async Task<StandardPayloadDataCM> GetObject(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string salesforceObjectName, string condition)
+        public async Task<StandardPayloadDataCM> GetObject(AuthorizationTokenDO authTokenDO, string salesforceObjectName, string condition)
         {
             try
             {
@@ -113,7 +112,7 @@ namespace terminalSalesforce.Services
                 {
                     case "Account":
                         payloadObjectDTO.ObjectType = "Salesforce Accounts";
-                        var resultAccounts = await _account.GetByQuery(actionDO, authTokenResult, condition);
+                        var resultAccounts = await _account.GetByQuery(authTokenResult, condition);
 
                         payloadObjectDTO.PayloadObjects.AddRange(
                             resultAccounts.ToList().Select(account => new PayloadObjectDTO
@@ -127,9 +126,10 @@ namespace terminalSalesforce.Services
                             }));
 
                         return payloadObjectDTO;
+
                     case "Lead":
                         payloadObjectDTO.ObjectType = "Salesforce Leads";
-                        var resultLeads = await _lead.GetByQuery(actionDO, authTokenResult, condition);
+                        var resultLeads = await _lead.GetByQuery(authTokenResult, condition);
 
                         payloadObjectDTO.PayloadObjects.AddRange(
                             resultLeads.ToList().Select(lead => new PayloadObjectDTO
@@ -145,9 +145,10 @@ namespace terminalSalesforce.Services
                             }));
 
                         return payloadObjectDTO;
+
                     case "Contact":
                         payloadObjectDTO.ObjectType = "Salesforce Contacts";
-                        var resultContacts = await _contact.GetByQuery(actionDO, authTokenResult, condition);
+                        var resultContacts = await _contact.GetByQuery(authTokenResult, condition);
 
                         payloadObjectDTO.PayloadObjects.AddRange(
                             resultContacts.ToList().Select(contact => new PayloadObjectDTO
@@ -162,9 +163,10 @@ namespace terminalSalesforce.Services
                             }));
 
                         return payloadObjectDTO;
+
                     default:
                         throw new NotSupportedException(
-                            string.Format("Not Supported Salesforce object name {0} has been given for querying fields.",
+                            string.Format("Not Supported Salesforce object name {0} has been given for getting objects.",
                                 salesforceObjectName));
                 }
             }

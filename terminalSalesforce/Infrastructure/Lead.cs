@@ -50,12 +50,12 @@ namespace terminalSalesforce.Infrastructure
             }
         }
 
-        public async Task<IList<FieldDTO>> GetFields(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        public async Task<IList<FieldDTO>> GetFields(AuthorizationTokenDO curAuthTokenDO)
         {
             string instanceUrl, apiVersion;
-            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
+            ParseAuthToken(curAuthTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
 
-            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
+            client = new ForceClient(instanceUrl, curAuthTokenDO.Token, apiVersion);
             var fieldsQueryResponse = (JObject)await client.DescribeAsync<object>("Lead");
 
             var objectFields = new List<FieldDTO>();
@@ -70,13 +70,14 @@ namespace terminalSalesforce.Infrastructure
             return objectFields;
         }
 
-        public async Task<IList<LeadDTO>> GetByQuery(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string conditionQuery)
+        public async Task<IList<LeadDTO>> GetByQuery(AuthorizationTokenDO curAuthTokenDO, string conditionQuery)
         {
             string instanceUrl, apiVersion;
-            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
-            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
+            ParseAuthToken(curAuthTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
+            client = new ForceClient(instanceUrl, curAuthTokenDO.Token, apiVersion);
 
-
+            //if condition string is empty, query all Leads
+            //else query Leads with the given condition query
             if (string.IsNullOrEmpty(conditionQuery))
             {
                 conditionQuery = "select Id, FirstName, LastName, Company, Title from Lead";

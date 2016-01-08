@@ -49,11 +49,11 @@ namespace terminalSalesforceTests.Actions
             Mock<ISalesforceIntegration> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceIntegration>());
             FieldDTO testField = new FieldDTO("Account", "TestAccount");
             salesforceIntegrationMock.Setup(
-                s => s.GetFields(It.IsAny<ActionDO>(), It.IsAny<AuthorizationTokenDO>(), "Account"))
+                s => s.GetFields(It.IsAny<AuthorizationTokenDO>(), "Account"))
                 .Returns(() => Task.FromResult((IList<FieldDTO>)new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
-                s => s.GetObject(It.IsAny<ActionDO>(), It.IsAny<AuthorizationTokenDO>(), "Account", It.IsAny<string>()))
+                s => s.GetObject(It.IsAny<AuthorizationTokenDO>(), "Account", It.IsAny<string>()))
                 .Returns(() => Task.FromResult(new StandardPayloadDataCM()));
 
             _getData_v1 = new Get_Data_v1();
@@ -106,7 +106,7 @@ namespace terminalSalesforceTests.Actions
                     .Single(c => c.Label.Equals("Queryable Criteria"))
                     .Content.Fields.Count, 1, "Queryable Criteria is NOT filled with invalid data");
 
-            salesforceIntegrationMock.Verify(s => s.GetFields(It.IsAny<ActionDO>(), It.IsAny<AuthorizationTokenDO>(), "Account"), Times.Exactly(1));
+            salesforceIntegrationMock.Verify(s => s.GetFields(It.IsAny<AuthorizationTokenDO>(), "Account"), Times.Exactly(1));
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Run")]

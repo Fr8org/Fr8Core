@@ -1,9 +1,7 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.UI;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
@@ -16,7 +14,6 @@ using StructureMap;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
-using terminalSalesforce.Services;
 using Data.Interfaces.DataTransferObjects;
 
 namespace terminalSalesforce.Actions
@@ -97,7 +94,7 @@ namespace terminalSalesforce.Actions
             }
 
             //get fields of selected salesforce object
-            var objectFieldsList = await _salesforce.GetFields(curActionDO, authTokenDO, curSelectedObject);
+            var objectFieldsList = await _salesforce.GetFields(authTokenDO, curSelectedObject);
 
             //update the crate storage
             var queryableCriteriaFields = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", objectFieldsList.ToArray());
@@ -137,7 +134,7 @@ namespace terminalSalesforce.Actions
             StandardPayloadDataCM resultObjects;
             if (filterDataDTO.ExecutionType == FilterExecutionType.WithoutFilter)
             {
-                resultObjects = await _salesforce.GetObject(curActionDO, authTokenDO, curSelectedSalesForceObject, string.Empty);
+                resultObjects = await _salesforce.GetObject(authTokenDO, curSelectedSalesForceObject, string.Empty);
             }
             else
             {
@@ -145,7 +142,7 @@ namespace terminalSalesforce.Actions
 
                 string parsedCondition = ParseFilters(filterDataDTO);
 
-                resultObjects = await _salesforce.GetObject(curActionDO, authTokenDO, curSelectedSalesForceObject, parsedCondition);
+                resultObjects = await _salesforce.GetObject(authTokenDO, curSelectedSalesForceObject, parsedCondition);
             }
 
             //update the payload with result objects

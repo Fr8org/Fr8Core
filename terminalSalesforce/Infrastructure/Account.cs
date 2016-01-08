@@ -44,17 +44,17 @@ namespace terminalSalesforce.Infrastructure
             }
         }
 
-        public async Task<IList<FieldDTO>> GetFields(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        public async Task<IList<FieldDTO>> GetFields(AuthorizationTokenDO curAuthTokenDO)
         {
             string instanceUrl, apiVersion;
-            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
+            ParseAuthToken(curAuthTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
 
-            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
+            client = new ForceClient(instanceUrl, curAuthTokenDO.Token, apiVersion);
             var fieldsQueryResponse = (JObject)await client.DescribeAsync<object>("Account");
 
             var objectFields = new List<FieldDTO>();
 
-            JToken accountFields = null;
+            JToken accountFields;
             if (fieldsQueryResponse.TryGetValue("fields", out accountFields) && accountFields is JArray)
             {
                 objectFields.AddRange(
@@ -64,13 +64,14 @@ namespace terminalSalesforce.Infrastructure
             return objectFields;
         }
 
-        public async Task<IList<AccountDTO>> GetByQuery(ActionDO actionDO, AuthorizationTokenDO authTokenDO, string conditionQuery)
+        public async Task<IList<AccountDTO>> GetByQuery(AuthorizationTokenDO curAuthTokenDO, string conditionQuery)
         {
             string instanceUrl, apiVersion;
-            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
-            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
+            ParseAuthToken(curAuthTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
+            client = new ForceClient(instanceUrl, curAuthTokenDO.Token, apiVersion);
 
-
+            //if condition is empty, Query for all Accounts
+            //else query Accounts with the given query
             if (string.IsNullOrEmpty(conditionQuery))
             {
                 conditionQuery = "select Name, AccountNumber, Phone from Account";
