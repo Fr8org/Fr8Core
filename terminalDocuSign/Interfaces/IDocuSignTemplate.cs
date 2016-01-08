@@ -15,8 +15,8 @@ namespace terminalDocuSign.Interfaces
 	{
 		List<string> GetMappableSourceFields(DocuSignEnvelope envelope);
 		IEnumerable<string> GetMappableSourceFields(string templateId);
-		IEnumerable<DocuSignTemplateDTO> GetTemplates(Fr8AccountDO curDockyardAccount);
-        IEnumerable<DocuSignTemplateDTO> GetTemplates(string email, string apiPassword);
+		IEnumerable<TemplateInfo> GetTemplates(Fr8AccountDO curDockyardAccount);
+        IEnumerable<TemplateInfo> GetTemplates(string email, string apiPassword);
 		List<string> GetUserFields(DocuSignTemplateDTO curDocuSignTemplateDTO);
 		DocuSignTemplateDTO GetTemplateById(string templateId);
 	}

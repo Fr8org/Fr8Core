@@ -360,7 +360,6 @@
     <Compile Include="Controllers\Api\FieldController.cs" />
     <Compile Include="Controllers\Api\ActionListController.cs" />
     <Compile Include="Controllers\Api\CriteriaController.cs" />
-    <Compile Include="Controllers\Api\Fr8EventController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\Helpers\RouteMappingHelper.cs" />
     <Compile Include="Controllers\Api\RouteNodesController.cs" />
@@ -562,6 +561,9 @@
     <Content Include="Content\img\welcome\logo.png" />
     <Content Include="Content\img\welcome\right-side-bg.jpg" />
     <Content Include="Content\img\welcome\routeBuilder.png" />
+<Content Include="Content\img\welcome\DocuSign_Logo_Purple_Yellow.png" />
+<Content Include="Content\img\welcome\header_green.png" />
+<Content Include="Content\img\welcome\welcome_header.png" />
     <Content Include="fr8terminals.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />
