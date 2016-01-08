@@ -282,13 +282,21 @@ namespace HubWeb.Controllers
 
                 try
                 {
-                    var containerDO = await _route.Run(routeDO, curCrate);
+                    if (routeDO != null)
+                    {
+                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, 
+                            string.Format("Launching a new Container for Route \"{0}\"", routeDO.Name));
 
-                    string message = String.Format("Route \"{0}\" executed", routeDO.Name);
+                        var containerDO = await _route.Run(routeDO, curCrate);
 
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
+                        string message = String.Format("Complete processing for Route \"{0}\"", routeDO.Name);
 
-                    return Ok(Mapper.Map<ContainerDTO>(containerDO));
+                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
+
+                        return Ok(Mapper.Map<ContainerDTO>(containerDO));
+                    }
+
+                    return BadRequest();
                 }
                 catch
                 {
