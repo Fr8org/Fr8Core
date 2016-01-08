@@ -175,8 +175,23 @@ namespace Hub.Services
                     {
                         actionDTO.AuthToken = new AuthorizationTokenDTO()
                         {
+                            UserId = authToken.UserDO != null ? authToken.UserDO.Id : authToken.UserID,
                             Token = authToken.Token,
                             AdditionalAttributes = authToken.AdditionalAttributes
+                        };
+                    }
+                }
+
+                if (actionDTO.AuthToken == null)
+                {
+                    var route = ObjectFactory.GetInstance<IRoute>().GetRoute(action);
+                    var dockyardAccount = route != null ? route.Fr8Account : null;
+
+                    if (dockyardAccount != null)
+                    {
+                        actionDTO.AuthToken = new AuthorizationTokenDTO
+                        {
+                            UserId = dockyardAccount.Id,
                         };
                     }
                 }

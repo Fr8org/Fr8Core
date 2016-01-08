@@ -211,6 +211,10 @@
     </Compile>
     <Compile Include="Actions\MapFields_v1.cs" />
     <Compile Include="Infrastructure\FindObjectHelper.cs" />
+    <Compile Include="Infrastructure\MTSearchHelper.cs" />
+    <Compile Include="Infrastructure\MTSearchHelper.MtQueryProviderT.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Interfaces\FilterDataDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfHostFactory.cs" />
@@ -262,6 +266,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
+    <Compile Include="Infrastructure\MTSearchHelper.IMtQueryProvider.cs" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

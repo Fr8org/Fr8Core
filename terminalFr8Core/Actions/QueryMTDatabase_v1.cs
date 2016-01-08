@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using AutoMapper;
+using AutoMapper.Internal;
 using Newtonsoft.Json;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -13,6 +16,9 @@ using Data.Entities;
 using StructureMap;
 using Hub.Managers;
 using Data.Control;
+using Data.Crates;
+using terminalFr8Core.Infrastructure;
+using terminalFr8Core.Interfaces;
 
 namespace terminalFr8Core.Actions
 {
@@ -54,6 +60,8 @@ namespace terminalFr8Core.Actions
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 });
+
+                Controls.Add(new RunRouteButton());
             }
         }
 
@@ -112,8 +120,97 @@ namespace terminalFr8Core.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActionDO, containerId);
-            return Success(payloadCrates);
+            var payload = await GetPayload(curActionDO, containerId);
+
+            var ui = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+
+            if (ui == null)
+            {
+                return Error(payload, "Action was not configured correctly");
+            }
+
+            var config = new ActionUi();
+
+            config.ClonePropertiesFrom(ui);
+
+            var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(config.Filter.Value);
+            int selectedObjectId;
+
+            if (!int.TryParse(config.AvailableObjects.Value, out selectedObjectId))
+            {
+                return Error(payload, "Invalid object selected");
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var obj = uow.MTObjectRepository.GetQuery().FirstOrDefault(x => x.Id == selectedObjectId);
+                if (obj == null)
+                {
+                    return Error(payload, "Invalid object selected");
+                }
+
+                Type manifestType;
+                if (!ManifestDiscovery.Default.TryResolveType(new CrateManifestType(null, obj.ManifestId), out manifestType))
+                {
+                    return Error(payload, string.Format("Unknown manifest id: {0}", obj.ManifestId));
+                }
+
+                var queryBuilder = MTSearchHelper.CreateQueryProvider(manifestType);
+                var converter = CrateManifestToRowConverter(manifestType);
+                var foundObjects = queryBuilder.Query(uow, authTokenDO.UserID, 
+                    criteria.ExecutionType == FilterExecutionType.WithoutFilter ? new List<FilterConditionDTO>() : criteria.Conditions).ToArray();
+
+                var searchResult = new StandardPayloadDataCM();
+
+                foreach (var foundObject in foundObjects)
+                {
+                    searchResult.PayloadObjects.Add(converter(foundObject));
+                }
+
+                using (var updater = Crate.UpdateStorage(payload))
+                {
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", searchResult));
+                }
+            }
+
+            return Success(payload);
+        }
+
+        private Func<object, PayloadObjectDTO> CrateManifestToRowConverter(Type manifestType)
+        {
+            var accessors = new List<KeyValuePair<string, IMemberAccessor>>();
+
+            foreach (var member in manifestType.GetMembers(BindingFlags.Instance | BindingFlags.Public).OrderBy(x => x.Name))
+            {
+                IMemberAccessor accessor;
+
+                if (member is FieldInfo)
+                {
+                    accessor = ((FieldInfo) member).ToMemberAccessor();
+                }
+                else if (member is PropertyInfo && !((PropertyInfo)member).IsSpecialName)
+                {
+                    accessor = ((PropertyInfo)member).ToMemberAccessor();
+                }
+                else
+                {
+                    continue;
+                }
+
+                accessors.Add(new KeyValuePair<string, IMemberAccessor>(member.Name, accessor));    
+            }
+
+            return x =>
+            {
+                var row = new PayloadObjectDTO();
+
+                foreach (var accessor in accessors)
+                {
+                    row.PayloadObject.Add(new FieldDTO(accessor.Key, string.Format(CultureInfo.InvariantCulture, "{0}", accessor.Value.GetValue(x))));
+                }
+
+                return row;
+            };
         }
 
         private IEnumerable<FieldDTO> GetFieldsByObjectId(int objectId)
