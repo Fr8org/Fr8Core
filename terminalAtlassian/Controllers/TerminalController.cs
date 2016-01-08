@@ -39,7 +39,7 @@ namespace terminalAtlassian.Controllers
                 Label = "Get Jira Issue",
                 Terminal = terminal,
                 NeedsAuthentication = true,
-                Category = ActivityCategory.Forwarders,
+                Category = ActivityCategory.Receivers,
                 MinPaneWidth = 330,
                 WebService = webService
             };

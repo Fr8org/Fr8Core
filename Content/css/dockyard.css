@@ -596,6 +596,10 @@ a.documentation-link {
     cursor: progress;
 }
 
+.disabled-control {
+    background-color: #EBEBE4;
+}
+
 /* DRAG DROP RELATED CSS */
 
 /**

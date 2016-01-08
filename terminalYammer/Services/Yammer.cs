@@ -50,7 +50,7 @@ namespace terminalYammer.Services
 
         public async Task<string> GetUserId(string oauthToken)
         {
-            var url = PrepareTokenUrl("YammmerOAuthCurrentUserUrl", oauthToken);
+            var url = PrepareTokenUrl("YammerOAuthCurrentUserUrl", oauthToken);
 
             var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + oauthToken);

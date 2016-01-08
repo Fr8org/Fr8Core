@@ -28,7 +28,7 @@ namespace TerminalBase.Infrastructure
 
         public BaseTerminalEvent()
         {
-            eventWebServerUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/event";
+            eventWebServerUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/event/gen1_event";
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
             _crateManager = ObjectFactory.GetInstance<CrateManager>();
@@ -129,7 +129,7 @@ namespace TerminalBase.Infrastructure
         /// <param name="parser">delegate method</param>
         public async Task Process(string curExternalEventPayload,EventParser parser)
         {
-            var fr8EventUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/fr8event/processdockyardevents";
+            var fr8EventUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/event/processevents";
             var eventReportCrateDTO = _crateManager.ToDto(parser.Invoke(curExternalEventPayload));
             
             if (eventReportCrateDTO != null)
