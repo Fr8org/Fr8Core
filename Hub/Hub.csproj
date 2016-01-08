@@ -234,6 +234,7 @@
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
+    <Compile Include="Interfaces\ITag.cs" />
     <Compile Include="Interfaces\ITime.cs" />
     <Compile Include="Managers\CrateManager.StorageUpdater.cs">
       <SubType>Code</SubType>
@@ -241,7 +242,6 @@
     <Compile Include="Managers\CrateMangerExtensions.cs" />
     <Compile Include="Managers\ICrateManager.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
-    <Compile Include="Interfaces\IFr8Event.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
     <Compile Include="Interfaces\IFile.cs" />
@@ -320,11 +320,11 @@
     <Compile Include="Managers\CrateManager.cs" />
     <Compile Include="Services\Criteria.cs" />
     <Compile Include="Services\Fr8Account.cs" />
-    <Compile Include="Services\Fr8Event.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Interfaces\ITerminal.cs" />
+    <Compile Include="Services\Tag.cs" />
     <Compile Include="Services\Terminal.cs" />
     <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />

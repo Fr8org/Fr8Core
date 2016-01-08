@@ -47,17 +47,6 @@ namespace terminalDocuSign.Actions
                 : ConfigurationRequestType.Followup;
         }
 
-        protected Crate PackCrate_DocuSignTemplateNames(DocuSignAuth authDTO)
-        {
-            var template = new DocuSignTemplate();
-
-            var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
-            var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id, Availability = AvailabilityType.Configuration }).ToArray();
-            var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
-                "Available Templates",
-                fields);
-            return createDesignTimeFields;
-        }
 
         private void GetTemplateRecipientPickerValue(ActionDO curActionDO, out string selectedOption,
                                                      out string selectedValue)
@@ -115,7 +104,7 @@ namespace terminalDocuSign.Actions
             var docuSignAccount = new DocuSignAccount();
             var publishUrl = GetDocusignPublishUrl();
 
-            bool youSent,someoneReceived, recipientSigned;
+            bool youSent, someoneReceived, recipientSigned;
             GetUserSelectedEnvelopeEvents(curActionDO, out youSent, out someoneReceived, out recipientSigned);
 
             //create or update the DocuSign connect profile configuration
@@ -236,7 +225,7 @@ namespace terminalDocuSign.Actions
             string curSelectedOption, curSelectedValue;
             GetTemplateRecipientPickerValue(curActionDO, out curSelectedOption, out curSelectedValue);
 
-            
+
             string envelopeId = string.Empty;
 
             //retrieve envelope ID based on the selected option and its value
@@ -273,7 +262,7 @@ namespace terminalDocuSign.Actions
             {
                 return Error(payloadCrates, "EnvelopeId", ActionErrorCode.PAYLOAD_DATA_MISSING);
             }
-            
+
 
             //Create run-time fields
             var fields = CreateDocuSignEventFields();
@@ -303,7 +292,7 @@ namespace terminalDocuSign.Actions
                 {
                     var userDefinedFieldsPayload = _docuSignManager.CreateActionPayload(curActionDO, authTokenDO, curSelectedValue);
                     updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
-            }
+                }
             }
 
             return Success(payloadCrates);
@@ -528,16 +517,6 @@ namespace terminalDocuSign.Actions
             return templateRecipientPicker;
         }
 
-        private Crate PackCrate_TemplateNames(DocuSignAuth authDTO)
-        {
-            var template = new DocuSignTemplate();
-            var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
-            var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();
-            var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
-                "Available Templates",
-                fields);
-            return createDesignTimeFields;
-        }
 
         private List<FieldDTO> CreateDocuSignEventFields()
         {

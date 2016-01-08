@@ -8,7 +8,7 @@ namespace Data.Entities
     /// This entity contains information about access to remote service providers granted by customer.
     /// The key field is AuthData that is JSON-string field with authorization data such as OAuth access and refresh token.
     /// </summary>
-    public class RemoteOAuthDataDo : BaseDO, IRemoteOAuthDataDO
+    public class RemoteOAuthDataDo : BaseObject, IRemoteOAuthDataDO
     {
         [NotMapped]
         IRemoteServiceProviderDO IRemoteOAuthDataDO.Provider

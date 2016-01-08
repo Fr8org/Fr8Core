@@ -5,16 +5,28 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Hub.Managers.APIManagers.Authorizers;
+using System.Collections.Generic;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace Hub.Managers.APIManagers.Transmitters.Http
 {
     public class OAuthHttpChannel : IAuthorizingHttpChannel
     {
         private readonly IOAuthAuthorizer _authorizer;
+        //private readonly IRestfulServiceClient _client;
 
         public OAuthHttpChannel(IOAuthAuthorizer authorizer)
         {
             _authorizer = authorizer;
+            //_client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+        }
+
+        private Dictionary<string, string> GetAuthenticationHeader(string accessToken)
+        {
+            return new Dictionary<string, string>
+            {
+                { System.Net.HttpRequestHeader.Authorization.ToString(), string.Format("bearer {0}", accessToken) }
+            };
         }
 
         /// <summary>

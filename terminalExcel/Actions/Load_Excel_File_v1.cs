@@ -138,7 +138,7 @@ namespace terminalExcel.Actions
 
         //private async Task<FileDO> ProcessFile(string dockyardStorageUrl, string fileName)
         //{
-        //    using (var client = new HttpClient())
+        //    using (var client = new HttpxcsClient())
         //    {
         //        var values = new Dictionary<string, string>
         //                {

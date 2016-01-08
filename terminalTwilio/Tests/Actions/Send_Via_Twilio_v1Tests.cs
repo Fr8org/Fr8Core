@@ -112,8 +112,8 @@ namespace terminalTwilio.Tests.Actions
 
             var smsINfo = _twilioAction.ParseSMSNumberAndMsg(crateDTO, null);
 
-            Assert.AreEqual(smsINfo.Key, "+15005550006");
-            Assert.AreEqual(smsINfo.Value, "DO-1437 test");
+            Assert.AreEqual("+15005550006", smsINfo.Key);
+            Assert.AreEqual("DO-1437 test", smsINfo.Value);
         }
     }
 }

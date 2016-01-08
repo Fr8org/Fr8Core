@@ -72,6 +72,10 @@ namespace Data.Interfaces
         ISubscriptionRepository SubscriptionRepository { get; }
 		IWebServiceRepository WebServiceRepository { get; }
 
+        ITagRepository TagRepository { get; }
+        IFileTagsRepository FileTagsRepository { get; }
+        
+
 	    /// <summary>
         /// Call this to commit the unit of work
         /// </summary>

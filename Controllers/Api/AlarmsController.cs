@@ -34,14 +34,11 @@ namespace HubWeb.Controllers
         [HttpPost]
         public async void ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
         {
-            HttpResponseMessage result = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var _route = ObjectFactory.GetInstance<IRoute>();
                 await _route.Continue(alarmDTO.ContainerId);
                 //TODO report output to somewhere to pusher service maybe
-
-
 
                 /*
                 var container = uow.ContainerRepository.GetByKey(alarmDTO.ContainerId);
@@ -57,7 +54,7 @@ namespace HubWeb.Controllers
                     var terminalUrl = terminal.ParseTerminalUrlFor(alarmDTO.TerminalName, alarmDTO.TerminalVersion, "action/run");
                     var content = new ObjectContent<ActionDTO>(alarmDTO.ActionDTO, new JsonMediaTypeFormatter());
 
-                    result = await new HttpClient().PostAsync(new Uri(terminalUrl, UriKind.Absolute), content);
+                    
                 }
                  * */
             }
