@@ -11,7 +11,7 @@ using Utilities;
 
 namespace Data.Entities
 {
-    public class HistoryItemDO : BaseDO, IHistoryItemDO
+    public class HistoryItemDO : BaseObject, IHistoryItemDO
     {
         [Key]
         public int Id { get; set; }

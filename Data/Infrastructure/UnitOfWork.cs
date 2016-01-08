@@ -577,6 +577,26 @@ namespace Data.Infrastructure
 		    }
 	    }
 
+        private TagRepository _tagRepository;
+
+        public ITagRepository TagRepository
+        {
+            get
+            {
+                return _tagRepository ?? (_tagRepository = new TagRepository(this));
+            }
+        }
+
+        private FileTagsRepository _fileTagsRepository;
+
+        public IFileTagsRepository FileTagsRepository
+        {
+            get
+            {
+                return _fileTagsRepository ?? (_fileTagsRepository = new FileTagsRepository(this));
+            }
+        }
+
         public void Save()
         {
             _context.SaveChanges();

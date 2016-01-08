@@ -3,32 +3,30 @@
 module dockyard.controllers {
     'use strict';
 
-    export interface IAccountDetailsScope extends ng.IScope {
-        user: interfaces.IUserDTO;
+    export interface IFileDetailsScope extends ng.IScope {
+        file: model.FileDTO;
     }
 
-    class AccountDetailsController {
+    class FileDetailsController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
         // See http://docs.angularjs.org/guide/di
         public static $inject = [
             '$scope',
-            'UserService',
+            'FileDetailsService',
             '$state'
         ];
 
         constructor(
-            private $scope: IAccountDetailsScope,
-            private UserService: services.IUserService,
+            private $scope: IFileDetailsScope,
+            private FileDetailsService: services.IFileDetailsService,
             private $state: ng.ui.IState) {
 
-            alert("constructor");
-            UserService.get({ id: $state.params.id }).$promise.then(function (data) {
-                $scope.user = data;
-            });
+            $scope.file = FileDetailsService.getDetails({ id: $state.params.id });
+
         }
     }
 
-    app.controller('AccountDetailsController', AccountDetailsController);
+    app.controller('FileDetailsController', FileDetailsController);
 }

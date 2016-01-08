@@ -6,6 +6,7 @@ module dockyard.controllers {
     export interface ManageFileListScope extends ng.IScope {
         UploadFile: (file: interfaces.IFileVM) => void;
         DeleteFile: (file: interfaces.IFileVM) => void;
+        DetailFile: (file: interfaces.IFileVM) => void;
         AddFile: (file: interfaces.IFileVM) => void;
         dtOptionsBuilder: any;
         dtColumnBuilder: any;
@@ -48,7 +49,8 @@ module dockyard.controllers {
 
             $scope.dtInstance = {};
             $scope.UploadFile = <(file: interfaces.IFileVM) => void> angular.bind(this, this.UploadFile);
-            $scope.DeleteFile = <(file: interfaces.IFileVM) => void> angular.bind(this, this.DeleteFile);
+            $scope.DeleteFile = <(file: interfaces.IFileVM) => void>angular.bind(this, this.DeleteFile);
+            $scope.DetailFile = <(file: interfaces.IFileVM) => void>angular.bind(this, this.DetailFile);
             $scope.AddFile = <(file: interfaces.IFileVM) => void> angular.bind(this, this.AddFile);
 
             $scope.$on("fp-success", function (event, fileDTO) {
@@ -63,15 +65,29 @@ module dockyard.controllers {
         }
 
         private GetDataTableColumns() {
+            var me = this;
+
             return [
                 this.DTColumnBuilder.newColumn('id').withTitle('Id').notVisible(),
-                this.DTColumnBuilder.newColumn('originalFileName').withTitle('Original File Name'),
+                this.DTColumnBuilder.newColumn(null)
+                    .withTitle('Original File Name')
+                    .renderWith(function (data: interfaces.IFileVM, type, full, meta) {
+                        var fileNameRow = '<div ng-click="DetailFile(' + data.id + ')">' + data.originalFileName + '</div>';
+                        return fileNameRow;
+                    }),
+                this.DTColumnBuilder.newColumn(null)
+                    .withTitle('Tags')
+                    .renderWith(function (data: interfaces.IFileVM, type, full, meta) {
+                        var tags = data.tags == null ? "" : data.tags;
+                        var fileNameRow = '<div ng-click="DetailFile(' + data.id + ')">' + tags + '</div>';
+                        return fileNameRow;
+                    }),
                 this.DTColumnBuilder.newColumn(null)
                     .withTitle('Actions')
                     .notSortable()
                     .renderWith(function (data: interfaces.IFileVM, type, full, meta) {
-                    var deleteButton = '<button type="button" class="btn btn-sm red" ng-click="DeleteFile(' + data.id + ', $event)">Delete</button>';
-                        return deleteButton;
+                        var actionButtons = '<button type="button" class="btn btn-sm red" ng-click="DeleteFile(' + data.id + ', $event)">Delete</button>';
+                        return actionButtons;
                     })
             ];
         }
@@ -104,6 +120,10 @@ module dockyard.controllers {
             /*angular.element(row).bind('click', function () {
                 ctrl.$state.go('processTemplateDetails', { id: data.id });
             });*/
+        }
+
+        private DetailFile(fileId) {
+            this.$state.go('fileDetail', { id: fileId });
         }
 
         private UploadFile($event) {

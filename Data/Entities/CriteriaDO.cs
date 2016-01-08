@@ -9,7 +9,7 @@ namespace Data.Entities
     /// <summary>
     /// Criteria object for Subroute.
     /// </summary>
-    public class CriteriaDO : BaseDO
+    public class CriteriaDO : BaseObject
     {
         [Key]
         public int Id { get; set; }

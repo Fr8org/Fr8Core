@@ -5,7 +5,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class CommunicationConfigurationDO : BaseDO
+    public class CommunicationConfigurationDO : BaseObject
     {
         [Key]
         public int Id { get; set; }
