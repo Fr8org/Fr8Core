@@ -91,5 +91,13 @@ namespace Hub.Services
             var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
             return Mapper.Map<IList<ActivityTemplateDO>>(standardFr8TerminalCM.Actions);
         }
+
+        public Task<TerminalDO> GetTerminalById(Guid Id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return Task.FromResult(uow.TerminalRepository.GetByKey(Id));
+            }
+        }
     }
 }

@@ -1,8 +1,10 @@
-﻿namespace Data.Interfaces
+﻿using System;
+
+namespace Data.Interfaces
 {
     public interface ITerminalDO : IBaseDO
     {
-        int Id { get; set; }
+        Guid Id { get; set; }
         string Name { get; set; }
         int TerminalStatus { get; set; }
         string Endpoint { get; set; }
