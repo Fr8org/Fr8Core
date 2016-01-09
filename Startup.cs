@@ -18,6 +18,7 @@ using Utilities.Configuration.Azure;
 using Utilities.Logging;
 using Hub.Interfaces;
 using Hangfire;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -46,18 +47,15 @@ namespace HubWeb
 
                     if (notificationPortForwards.Any())
                     {
-                        using (var forwarder = new HttpClient())
-                        {
+
+                            var forwarder = ObjectFactory.GetInstance<IRestfulServiceClient>();
                             Uri url = null;
                             foreach (var notificationPortForward in notificationPortForwards)
                             {
                                 try
                                 {
                                     url = new Uri(string.Concat("http://", notificationPortForward, context.Request.Uri.PathAndQuery));
-                                    var response = await
-                                        forwarder.PostAsync(
-                                            url,
-                                            new StreamContent(context.Request.Body));
+                                    var response = await forwarder.PostAsync(url, new StreamContent(context.Request.Body));
                                     Logger.GetLogger().DebugFormat("Forwarding request {0} to {1}: {2}", context.Request.Uri.PathAndQuery, notificationPortForward, response);
                                 }
                                 catch (TaskCanceledException)
@@ -69,7 +67,7 @@ namespace HubWeb
                                         HttpMethod.Post.Method));
                                 }
                             }
-                        }
+                        
                     }
                 }
 

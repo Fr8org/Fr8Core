@@ -13,7 +13,7 @@ using System.Data.Entity.Infrastructure;
 
 namespace Data.Entities
 {
-    public class ContainerDO : BaseDO
+    public class ContainerDO : BaseObject
     {
         public ContainerDO()
         {

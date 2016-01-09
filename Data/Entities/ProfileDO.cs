@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-    public class ProfileDO : BaseDO
+    public class ProfileDO : BaseObject
     {
         public ProfileDO()
         {

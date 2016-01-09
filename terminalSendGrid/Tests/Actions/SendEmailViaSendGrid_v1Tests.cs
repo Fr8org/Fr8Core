@@ -67,7 +67,7 @@ namespace terminalSendGrid.Tests.Actions
             }
 
             var restfulServiceClient = new Mock<IRestfulServiceClient>();
-            restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>()))
+            restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
                 .Returns(Task.FromResult(payLoadDto));
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
         }

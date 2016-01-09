@@ -35,7 +35,7 @@ namespace HealthMonitor
                 foreach (var terminalUrlKey in terminalUrlKeys)
                 {
                     var url = ConfigurationManager.AppSettings[terminalUrlKey];
-
+                    
                     try
                     {
                         using (var httpClient = new HttpClient())

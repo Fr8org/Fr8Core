@@ -8,7 +8,7 @@ namespace Data.Entities
     /// <summary>
     /// Presents a remote service provider 
     /// </summary>
-    public class RemoteServiceProviderDO : BaseDO, IRemoteServiceProviderDO
+    public class RemoteServiceProviderDO : BaseObject, IRemoteServiceProviderDO
     {
         [Key]
         public int Id { get; set; }

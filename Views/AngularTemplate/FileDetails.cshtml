@@ -1,0 +1,43 @@
+﻿<div ng-controller="FileDetailsController">
+    <h1>{{file.originalFileName}}</h1>
+    <div><strong>Id :</strong> {{file.id}}</div>
+    <div><strong>Cloud Storage Url :</strong> {{file.cloudStorageUrl}}</div>
+    <div>
+        <div><strong>Tags :</strong></div>
+        <br/>
+        <div class="col-md-6">
+            <table class="table table-striped" style="font-size: 12px;">
+                <tr>
+                    <th>#</th>
+                    <th>Key</th>
+                    <th>Value</th>
+                    <th>Actions</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>DocusignTemplateId</td>
+                    <td>My_Docusign_Template.ds</td>
+                    <td>
+                        <span class="glyphicon glyphicon-pencil cursor-pointer" aria-hidden="true" ng-click="editTag()"></span>
+                    </td>
+                    <td>
+                        <span class="glyphicon glyphicon-remove cursor-pointer glyphicon-remove-tag" aria-hidden="true" ng-click="deletTag()"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>EnvelopeTemplateId</td>
+                    <td>My_Envelope_Template.ds</td>
+                    <td>
+                        <span class="glyphicon glyphicon-pencil cursor-pointer" aria-hidden="true" ng-click="editTag()"></span>
+                    </td>
+                    <td>
+                        <span class="glyphicon glyphicon-remove cursor-pointer glyphicon-remove-tag" aria-hidden="true" ng-click="deletTag()"></span>
+                    </td>
+                </tr>
+            </table>
+            <button type="button" class="btn btn-sm green pull-right" ng-click="">Add tag</button>
+        </div>    
+    </div>
+</div>
