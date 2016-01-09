@@ -27,73 +27,25 @@ namespace terminalDocuSign.Actions
 {
     public class Generate_DocuSign_Report_v1 : BaseTerminalAction
     {
-        private class FieldSetter
+        // Here in this action we have query builder control to build queries against docusign API and out mt database.
+        // Docusign and MT DB have different set of fileds and we want to provide ability to search by any field.
+        // Our action should "route" queries on the particular fields to the corresponding backend.
+        // For example, we want to search by Status = Sent and Recipient = chucknorris@gmail.com
+        // Both MT DB and Docusign can search by Status, but only MT DB can search by Recipient
+        // We have to make two queries with the following criterias and union the results:
+        // Docusign -> find all envelopes where Status = Sent
+        // MT DB -> find all envelopes where Status = Sent and Recipient = chucknorris@gmail.com
+        //
+        // This little class is storing information about how certian field displayed in Query Builder controls is routed to the backed
+        class FieldBackedRoutingInfo
         {
-            public readonly string Type;
-            public readonly string Name;
+            public readonly string DocusignQueryName;
+            public readonly string MtDbPropertyName;
 
-            private FieldSetter(string type, string name)
+            public FieldBackedRoutingInfo(string docusignQueryName, string mtDbPropertyName)
             {
-                Type = type;
-                Name = name;
-            }
-
-            public static IEnumerable<FieldSetter> Parse(string setter)
-            {
-                var fields = setter.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                
-                foreach (var field in fields)
-                {
-                    var info = field.Split(new[] { '#' }, StringSplitOptions.RemoveEmptyEntries);
-                    
-                    if (info.Length != 2)
-                    {
-                        continue;
-                    }
-
-                    yield return new FieldSetter(info[0].Trim(), info[1].Trim());
-                }
-            }
-
-            public void SetValue(object instance, string value)
-            {
-                if (instance == null) throw new ArgumentNullException("instance");
-
-                var type = instance.GetType();
-                var field = type.GetField(Name);
-                object convertedValue;
-
-                if (field != null && TryConvert (field.FieldType, value, out convertedValue))
-                {
-                    field.SetValue(instance, convertedValue);
-                    return;
-                }
-
-                var prop = type.GetProperty(Name);
-                if (prop != null && prop.CanWrite && TryConvert(prop.PropertyType, value, out convertedValue))
-                {
-                    prop.SetValue(instance, convertedValue);
-                }
-            }
-
-            public bool TryConvert(Type targetType, string value, out object convertedValue)
-            {
-                if (targetType == typeof (string))
-                {
-                    convertedValue = value;
-                    return true;
-                }
-
-                try
-                {
-                    convertedValue = Convert.ChangeType(value, targetType);
-                    return true;
-                }
-                catch (Exception)
-                {
-                    convertedValue = null;
-                    return false;
-                }
+                DocusignQueryName = docusignQueryName;
+                MtDbPropertyName = mtDbPropertyName;
             }
         }
         
@@ -113,7 +65,7 @@ namespace terminalDocuSign.Actions
                     Value = "<p>Search for DocuSign Envelopes where the following are true:</p>"
                 });
                 
-                var queryFields = GetQueryFields();
+                var queryFields = GetFieldListForQueryBuilder();
                 var filterConditions = new[]
                 {
                     new FilterConditionDTO {Field = queryFields[0].Key, Operator = "eq"},
@@ -137,6 +89,14 @@ namespace terminalDocuSign.Actions
             }
         }
 
+        // Mapping between quiery builder control field names and information about how this field is routed to the backed 
+        private static readonly Dictionary<string, FieldBackedRoutingInfo> QueryBuilderFields = new Dictionary<string, FieldBackedRoutingInfo>
+        {
+            {"Envelope Text", new FieldBackedRoutingInfo("SearchText", null)},
+            {"Folder", new FieldBackedRoutingInfo("Folder", null)},
+            {"Status", new FieldBackedRoutingInfo("Status", "Status")}
+        };
+
         private readonly DocuSignManager _docuSignManager;
         private readonly IDocuSignFolder _docuSignFolder;
         
@@ -145,83 +105,31 @@ namespace terminalDocuSign.Actions
             _docuSignManager = ObjectFactory.GetInstance<DocuSignManager>();
             _docuSignFolder = ObjectFactory.GetInstance<IDocuSignFolder>();
         }
-
+        
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payload = await GetPayload(curActionDO, containerId);
 
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payload);
-            }
+            CheckAuthentication(authTokenDO);
 
-            var ui = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var configurationControls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
-            if (ui == null)
+            if (configurationControls == null)
             {
                 return Error(payload, "Action was not configured correctly");
             }
 
-            var config = new ActionUi();
+            var actionUi = new ActionUi();
 
-            config.ClonePropertiesFrom(ui);
+            actionUi.ClonePropertiesFrom(configurationControls);
 
-            var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(config.QueryBuilder.Value);
-            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
-            var docusignQuery = CriteriaToDocusignQuery(docuSignAuthDto, criteria);
-            var envelopes = _docuSignManager.SearchDocusign(docuSignAuthDto, docusignQuery);
+            var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(actionUi.QueryBuilder.Value);
             var existingEnvelopes = new HashSet<string>();
             var searchResult = new StandardPayloadDataCM();
+            var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
-            foreach (var envelope in envelopes)
-            {
-                if (string.IsNullOrWhiteSpace(envelope.EnvelopeId))
-                {
-                    continue;
-                }
-
-                var row = new PayloadObjectDTO();
-
-                row.PayloadObject.Add(new FieldDTO("Id", envelope.EnvelopeId));
-                row.PayloadObject.Add(new FieldDTO("Name", envelope.Name));
-                row.PayloadObject.Add(new FieldDTO("Subject", envelope.Subject));
-                row.PayloadObject.Add(new FieldDTO("Status", envelope.Status));
-                row.PayloadObject.Add(new FieldDTO("OwnerName", envelope.OwnerName));
-                row.PayloadObject.Add(new FieldDTO("SenderName", envelope.SenderName));
-                row.PayloadObject.Add(new FieldDTO("SenderEmail", envelope.SenderEmail));
-                row.PayloadObject.Add(new FieldDTO("Shared", envelope.Shared));
-                row.PayloadObject.Add(new FieldDTO("CompletedDate", envelope.CompletedDateTime.ToString(CultureInfo.InvariantCulture)));
-                row.PayloadObject.Add(new FieldDTO("CreatedDateTime", envelope.CreatedDateTime.ToString(CultureInfo.InvariantCulture)));
-                
-                searchResult.PayloadObjects.Add(row);
-                existingEnvelopes.Add(envelope.EnvelopeId);
-            }
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var mtQuery = CriteriaToMtQuery(criteria, uow.MultiTenantObjectRepository.AsQueryable<DocuSignEnvelopeCM>(uow, authTokenDO.UserID));
-                
-                foreach (var envelope in mtQuery)
-                {
-                    if (!existingEnvelopes.Contains(envelope.EnvelopeId))
-                    {
-                        var row = new PayloadObjectDTO();
-
-                        row.PayloadObject.Add(new FieldDTO("Id", envelope.EnvelopeId));
-                        row.PayloadObject.Add(new FieldDTO("Name", string.Empty));
-                        row.PayloadObject.Add(new FieldDTO("Subject", string.Empty));
-                        row.PayloadObject.Add(new FieldDTO("Status", envelope.Status));
-                        row.PayloadObject.Add(new FieldDTO("OwnerName", string.Empty));
-                        row.PayloadObject.Add(new FieldDTO("SenderName", string.Empty));
-                        row.PayloadObject.Add(new FieldDTO("SenderEmail", string.Empty));
-                        row.PayloadObject.Add(new FieldDTO("Shared", string.Empty));
-                        row.PayloadObject.Add(new FieldDTO("CompletedDate", envelope.CompletedDate));
-                        row.PayloadObject.Add(new FieldDTO("CreatedDateTime", envelope.CreateDate));
-
-                        searchResult.PayloadObjects.Add(row);
-                    }
-                }
-            }
+            SearchDocusignInRealTime(docuSignAuthToken, criteria, searchResult, existingEnvelopes);
+            SearchMtDataBase(authTokenDO, criteria, existingEnvelopes, searchResult);
             
             using (var updater = Crate.UpdateStorage(payload))
             {
@@ -231,124 +139,213 @@ namespace terminalDocuSign.Actions
             return Success(payload);
         }
 
-        public static IMtQueryable<DocuSignEnvelopeCM> CriteriaToMtQuery(List<FilterConditionDTO> conditions, IMtQueryable<DocuSignEnvelopeCM> queryable)
+        private static void SearchMtDataBase(AuthorizationTokenDO authTokenDO, List<FilterConditionDTO> criteria, HashSet<string> existingEnvelopes, StandardPayloadDataCM searchResult)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var mtQuery = BuildMtDbQuery(criteria, uow.MultiTenantObjectRepository.AsQueryable<DocuSignEnvelopeCM>(uow, authTokenDO.UserID));
+
+                foreach (var envelope in mtQuery)
+                {
+                    if (!existingEnvelopes.Contains(envelope.EnvelopeId))
+                    {
+                        searchResult.PayloadObjects.Add(CreatePayloadObjectFromEnvelope(envelope));
+                    }
+                }
+            }
+        }
+
+        private void SearchDocusignInRealTime(DocuSignAuthTokenDTO docuSignAuthToken, List<FilterConditionDTO> criteria, StandardPayloadDataCM searchResult, HashSet<string> existingEnvelopes)
+        {
+            var docusignQuery = BuildDocusignQuery(docuSignAuthToken, criteria);
+            var envelopes = _docuSignManager.SearchDocusign(docuSignAuthToken, docusignQuery);
+
+            foreach (var envelope in envelopes)
+            {
+                if (string.IsNullOrWhiteSpace(envelope.EnvelopeId))
+                {
+                    continue;
+                }
+
+                searchResult.PayloadObjects.Add(CreatePayloadObjectFromDocusignFolderItem(envelope));
+
+                existingEnvelopes.Add(envelope.EnvelopeId);
+            }
+        }
+
+        // FolderItem is something that was put into the Docusing filder and it is not strictly envelope in terms of Docusign API. 
+        // In current case we use it as envelope
+        private static PayloadObjectDTO CreatePayloadObjectFromDocusignFolderItem(FolderItem envelope)
+        {
+            var row = new PayloadObjectDTO();
+
+            row.PayloadObject.Add(new FieldDTO("Id", envelope.EnvelopeId));
+            row.PayloadObject.Add(new FieldDTO("Name", envelope.Name));
+            row.PayloadObject.Add(new FieldDTO("Subject", envelope.Subject));
+            row.PayloadObject.Add(new FieldDTO("Status", envelope.Status));
+            row.PayloadObject.Add(new FieldDTO("OwnerName", envelope.OwnerName));
+            row.PayloadObject.Add(new FieldDTO("SenderName", envelope.SenderName));
+            row.PayloadObject.Add(new FieldDTO("SenderEmail", envelope.SenderEmail));
+            row.PayloadObject.Add(new FieldDTO("Shared", envelope.Shared));
+            row.PayloadObject.Add(new FieldDTO("CompletedDate", envelope.CompletedDateTime.ToString(CultureInfo.InvariantCulture)));
+            row.PayloadObject.Add(new FieldDTO("CreatedDateTime", envelope.CreatedDateTime.ToString(CultureInfo.InvariantCulture)));
+
+            return row;
+        }
+
+        private static PayloadObjectDTO CreatePayloadObjectFromEnvelope(DocuSignEnvelopeCM envelope)
+        {
+            var row = new PayloadObjectDTO();
+
+            row.PayloadObject.Add(new FieldDTO("Id", envelope.EnvelopeId));
+            row.PayloadObject.Add(new FieldDTO("Name", string.Empty));
+            row.PayloadObject.Add(new FieldDTO("Subject", string.Empty));
+            row.PayloadObject.Add(new FieldDTO("Status", envelope.Status));
+            row.PayloadObject.Add(new FieldDTO("OwnerName", string.Empty));
+            row.PayloadObject.Add(new FieldDTO("SenderName", string.Empty));
+            row.PayloadObject.Add(new FieldDTO("SenderEmail", string.Empty));
+            row.PayloadObject.Add(new FieldDTO("Shared", string.Empty));
+            row.PayloadObject.Add(new FieldDTO("CompletedDate", envelope.CompletedDate));
+            row.PayloadObject.Add(new FieldDTO("CreatedDateTime", envelope.CreateDate));
+
+            return row;
+        }
+       
+
+        public static IMtQueryable<DocuSignEnvelopeCM> BuildMtDbQuery(List<FilterConditionDTO> conditions, IMtQueryable<DocuSignEnvelopeCM> queryable)
         {
             var type = typeof (DocuSignEnvelopeCM);
-            var fields = GetQueryFields();
 
             ParameterExpression param = Expression.Parameter(type, "x");
 
             foreach (var condition in conditions)
             {
-                var fieldName = condition.Field;
-                var queryField = fields.FirstOrDefault(x => x.Key == fieldName);
+                FieldBackedRoutingInfo fieldBackedRoutingInfo;
 
-                if (queryField == null)
+                if (!QueryBuilderFields.TryGetValue(condition.Field, out fieldBackedRoutingInfo) || fieldBackedRoutingInfo.MtDbPropertyName == null)
                 {
                     continue;
                 }
-
-                foreach (var setter in FieldSetter.Parse(queryField.Value).Where(x => x.Type == "mt"))
+                Expression queryExpression = null;
+                var field = type.GetField(fieldBackedRoutingInfo.MtDbPropertyName);
+                object convertedValue;
+                Expression accessor;
+                
+                if (field != null && TryConvertValue(field.FieldType, condition.Value, out convertedValue))
                 {
-                    Expression queryExpression = null;
-                    var field = type.GetField(setter.Name);
-                    object convertedValue;
-                    Expression accessor;
-                    
-
-                    if (field != null && setter.TryConvert(field.FieldType, condition.Value, out convertedValue))
+                    accessor = Expression.MakeMemberAccess(param, field);
+                }
+                else
+                {
+                    var prop = type.GetProperty(fieldBackedRoutingInfo.MtDbPropertyName);
+                    if (prop != null && prop.CanWrite && TryConvertValue(prop.PropertyType, condition.Value, out convertedValue))
                     {
-                        accessor = Expression.MakeMemberAccess(param, field);
+                        accessor = Expression.MakeMemberAccess(param, prop);
                     }
                     else
                     {
-                        var prop = type.GetProperty(setter.Name);
-                        if (prop != null && prop.CanWrite && setter.TryConvert(prop.PropertyType, condition.Value, out convertedValue))
-                        {
-                            accessor = Expression.MakeMemberAccess(param, prop);
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
-
-                    var operand = Expression.Constant(convertedValue);
-                    
-                    switch (condition.Operator)
-                    {
-                        case "eq":
-                            queryExpression = Expression.Equal(accessor, operand);
-                            break;
-
-                        case "neq":
-                            queryExpression = Expression.NotEqual(accessor, operand);
-                            break;
-
-                        case "gt":
-                            queryExpression = Expression.GreaterThan(accessor, operand);
-                            break;
-
-                        case "gte":
-                            queryExpression = Expression.GreaterThanOrEqual(accessor, operand);
-                            break;
-
-                        case "lte":
-                            queryExpression = Expression.LessThanOrEqual(accessor, operand);
-                            break;
-
-                        case "lt":
-                            queryExpression = Expression.LessThan(accessor, operand);
-                            break;
-                    }
-
-                    if (queryExpression == null)
-                    {
                         continue;
                     }
-
-                    queryable = queryable.Where(Expression.Lambda<Func<DocuSignEnvelopeCM, bool>>(queryExpression, param));
                 }
-            }
 
-            return queryable;
-        }
+                var operand = Expression.Constant(convertedValue);
 
-        public DocusignQuery CriteriaToDocusignQuery(DocuSignAuth auth, List<FilterConditionDTO> conditions)
-        {
-            var query = new DocusignQuery();
-            var fields = GetQueryFields();
-            List<DocusignFolderInfo> folders = null;
+                switch (condition.Operator)
+                {
+                    case "eq":
+                        queryExpression = Expression.Equal(accessor, operand);
+                        break;
 
-            foreach (var condition in conditions.Where(x => x.Operator == "eq"))
-            {
-                var fieldName = condition.Field;
-                var queryField = fields.FirstOrDefault(x => x.Key == fieldName);
+                    case "neq":
+                        queryExpression = Expression.NotEqual(accessor, operand);
+                        break;
 
-                if (queryField == null)
+                    case "gt":
+                        queryExpression = Expression.GreaterThan(accessor, operand);
+                        break;
+
+                    case "gte":
+                        queryExpression = Expression.GreaterThanOrEqual(accessor, operand);
+                        break;
+
+                    case "lte":
+                        queryExpression = Expression.LessThanOrEqual(accessor, operand);
+                        break;
+
+                    case "lt":
+                        queryExpression = Expression.LessThan(accessor, operand);
+                        break;
+                }
+
+                if (queryExpression == null)
                 {
                     continue;
                 }
 
-                foreach (var setter in FieldSetter.Parse(queryField.Value).Where(x => x.Type == "docusign"))
+                queryable = queryable.Where(Expression.Lambda<Func<DocuSignEnvelopeCM, bool>>(queryExpression, param));
+            }
+            
+            return queryable;
+        }
+
+        private static bool TryConvertValue(Type targetType, string value, out object convertedValue)
+        {
+            if (targetType == typeof(string))
+            {
+                convertedValue = value;
+                return true;
+            }
+
+            try
+            {
+                convertedValue = Convert.ChangeType(value, targetType);
+                return true;
+            }
+            catch (Exception)
+            {
+                convertedValue = null;
+                return false;
+            }
+        }
+        
+        public DocusignQuery BuildDocusignQuery(DocuSignAuthTokenDTO authToken, List<FilterConditionDTO> conditions)
+        {
+            var query = new DocusignQuery();
+            List<DocusignFolderInfo> folders = null;
+
+            //Currently we can support only equality operation
+            foreach (var condition in conditions.Where(x => x.Operator == "eq"))
+            {
+                FieldBackedRoutingInfo fieldBackedRoutingInfo;
+                
+                if (!QueryBuilderFields.TryGetValue(condition.Field, out fieldBackedRoutingInfo) || fieldBackedRoutingInfo.DocusignQueryName == null)
+                {
+                    continue;
+                }
+
+                switch (fieldBackedRoutingInfo.DocusignQueryName)
                 {
                     // criteria contains folder name, but to search we need folder id
-                    if (setter.Name == "Folder")
-                    {
+                    case "Folder":
+                        // cache list of folders
                         if (folders == null)
                         {
-                             folders = _docuSignFolder.GetFolders(auth.Email, auth.ApiPassword);
+                             folders = _docuSignFolder.GetFolders(authToken.Email, authToken.ApiPassword);
                         }
 
                         var value = condition.Value;
                         var folder = folders.FirstOrDefault(x => x.Name == value);
 
                         query.Folder = folder != null ? folder.FolderId : value;
-                    }
-                    else
-                    {
-                        setter.SetValue(query, condition.Value);
-                    }
+                        break;
+
+                    case "Status":
+                        query.Status = condition.Value;
+                        break;
+                    
+                    case "SearchText":
+                        query.SearchText = condition.Value;
+                        break;
                 }
             }
 
@@ -376,19 +373,14 @@ namespace terminalDocuSign.Actions
             return curActionDO;
         }
 
-        public static FieldDTO[] GetQueryFields()
+        public static FieldDTO[] GetFieldListForQueryBuilder()
         {
-            return new [] 
-            {
-                new FieldDTO("Envelope text", "docusign#SearchText"), 
-                new FieldDTO("Folder", "docusign#Folder"), 
-                new FieldDTO("Status", "docusign#Status, mt#Status"), 
-            };
+            return QueryBuilderFields.Keys.Select(x => new FieldDTO(x, x)).ToArray();
         }
 
         private IEnumerable<Crate> PackDesignTimeData()
         {
-            yield return Data.Crates.Crate.FromContent("Queryable Criteria", new StandardDesignTimeFieldsCM(GetQueryFields()));
+            yield return Data.Crates.Crate.FromContent("Queryable Criteria", new StandardDesignTimeFieldsCM(GetFieldListForQueryBuilder()));
             yield return Data.Crates.Crate.FromContent("DocuSign Envelope Report", new StandardDesignTimeFieldsCM(new FieldDTO
             {
                 Key = "DocuSign Envelope Report",

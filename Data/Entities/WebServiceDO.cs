@@ -2,7 +2,7 @@
 
 namespace Data.Entities
 {
-	public class WebServiceDO : BaseDO
+	public class WebServiceDO : BaseObject
 	{
 		[Key]
 		public int Id { get; set; }

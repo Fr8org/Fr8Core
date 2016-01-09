@@ -12,6 +12,8 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
 using Data.Interfaces;
 using Utilities;
+using Data.Utility;
+using Data.Utility.JoinClasses;
 
 namespace Data.Infrastructure
 {
@@ -275,6 +277,8 @@ namespace Data.Infrastructure
 	        modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");
 	        modelBuilder.Entity<TerminalSubscriptionDO>().ToTable("TerminalSubscription");
             modelBuilder.Entity<EncryptedAuthorizationData>().ToTable("EncryptedAuthorizationData");
+            modelBuilder.Entity<TagDO>().ToTable("Tags");
+            modelBuilder.Entity<FileTags>().ToTable("FileTags");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)

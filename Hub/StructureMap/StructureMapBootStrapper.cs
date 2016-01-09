@@ -103,7 +103,7 @@ namespace Hub.StructureMap
                 For<IImapClient>().Use<ImapClientWrapper>();
                 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
-                For<IRestfulServiceClient>().Use<RestfulServiceClient>();
+                For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>();
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
                 For<IRoute>().Use<Route>();
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
@@ -126,6 +126,7 @@ namespace Hub.StructureMap
 	            For<ITime>().Use<Time>();
 	            For<IPusherNotifier>().Use<PusherNotifier>();
                 For<IAuthorization>().Use<Authorization>();
+                For<ITag>().Use<Tag>();
             }
         }
 
@@ -191,6 +192,8 @@ namespace Hub.StructureMap
 
 				var pusherNotifierMock = new Mock<IPusherNotifier>();
 	            For<IPusherNotifier>().Use(pusherNotifierMock.Object).Singleton();
+
+                For<ITag>().Use<Tag>();
             }
         }
 

@@ -77,22 +77,22 @@ namespace terminalDocuSign.Actions
         {
             var payload = await GetPayload(curActionDO, containerId);
 
-            var ui = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var configurationControls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
-            if (ui == null)
+            if (configurationControls == null)
             {
                 return Error(payload, "Action was not configured correctly");
             }
 
-            var config = new ActionUi();
+            var actionUi = new ActionUi();
 
-            config.ClonePropertiesFrom(ui);
+            actionUi.ClonePropertiesFrom(configurationControls);
 
-            if (!string.IsNullOrWhiteSpace(config.ReportSelector.SelectedLabel))
+            if (!string.IsNullOrWhiteSpace(actionUi.ReportSelector.SelectedLabel))
             {
                 using (var updater = Crate.UpdateStorage(payload))
                 {
-                    var reportTable = updater.CrateStorage.CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == config.ReportSelector.SelectedLabel);
+                    var reportTable = updater.CrateStorage.CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == actionUi.ReportSelector.SelectedLabel);
 
                     if (reportTable != null)
                     {

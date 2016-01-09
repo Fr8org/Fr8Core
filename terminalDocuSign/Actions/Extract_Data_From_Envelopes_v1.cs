@@ -83,13 +83,13 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var controls = new ActionUi();
+            var actionUi = new ActionUi();
 
-            controls.ClonePropertiesFrom(Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
-
-            var actionsDdlb = (DropDownList) controls.Controls.Single(c => c.Name == "FinalActionsList");
+            actionUi.ClonePropertiesFrom(Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
+            
             //don't add child actions until a selection is made
-            if (string.IsNullOrEmpty(actionsDdlb.Value)) {
+            if (string.IsNullOrEmpty(actionUi.FinalActionsList.Value)) 
+            {
                 return curActionDO;
             }
 
@@ -119,7 +119,7 @@ namespace terminalDocuSign.Actions
 
             int finalActionTemplateId;
 
-            if (int.TryParse(controls.FinalActionsList.Value, out finalActionTemplateId))
+            if (int.TryParse(actionUi.FinalActionsList.Value, out finalActionTemplateId))
             {
                 var finalAction = new ActionDO
                 {
@@ -129,7 +129,7 @@ namespace terminalDocuSign.Actions
                     CreateDate = DateTime.UtcNow,
                     Ordering = 2,
                     Name = "Final action",
-                    Label = controls.FinalActionsList.selectedKey
+                    Label = actionUi.FinalActionsList.selectedKey
                 };
 
                 curActionDO.ChildNodes.Add(finalAction);

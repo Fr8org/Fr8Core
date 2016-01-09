@@ -4,6 +4,8 @@ namespace Data.Expressions
 {
     partial class ExpressionTransformation<TSource, TTarget>
     {
+        // Information about the property from the expression
+        // This class has overriden equality members and can be used in HashSet to get list of unique properties
         public class PropertyInfo
         {
             /**********************************************************************************/

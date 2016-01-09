@@ -10,6 +10,7 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities.Configuration.Azure;
+using Data.Constants;
 
 namespace TerminalBase.Infrastructure
 {
@@ -31,7 +32,7 @@ namespace TerminalBase.Infrastructure
                 + containerId.ToString("D");
 
             var payloadDTOTask = _restfulServiceClient
-                .GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute));
+                .GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute), containerId.ToString());
 
             return payloadDTOTask;
         }
@@ -95,6 +96,14 @@ namespace TerminalBase.Infrastructure
                 .GetAsync<List<ActivityTemplateDTO>>(new Uri(hubUrl));
 
             return templates;
+        }
+
+        public Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/field/exists";
+
+            return _restfulServiceClient.PostAsync<List<FieldValidationDTO> , List<FieldValidationResult>>(new Uri(url), fields);
         }
     }
 }

@@ -126,7 +126,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Query_DocuSign",
                 Label = "Query DocuSign",
                 Version = "1",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Receivers,
                 NeedsAuthentication = true,
                 Terminal = terminal,
                 MinPaneWidth = 380
@@ -148,7 +148,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Find_DocuSign_Envelopes",
                 Label = "Find DocuSign Envelopes",
                 Version = "1",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Receivers,
                 NeedsAuthentication = true,
                 Terminal = terminal,
                 MinPaneWidth = 380

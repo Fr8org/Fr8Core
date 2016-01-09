@@ -288,6 +288,7 @@
     <Compile Include="Services\StartupTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />
     <Compile Include="Services\ContainerExecuteTests.cs" />
+    <Compile Include="Services\TagTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
     <Compile Include="Validations\ValidationsTest.cs" />

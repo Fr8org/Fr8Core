@@ -83,17 +83,17 @@ namespace terminalDocuSign.Actions
                 return NeedsAuthenticationError(payload);
             }
 
-            var ui = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var configurationControls = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
-            if (ui == null)
+            if (configurationControls == null)
             {
                 return Error(payload, "Action was not configured correctly");
             }
 
 
-            var settings = GetDocusignQuery(ui);
+            var settings = GetDocusignQuery(configurationControls);
             
-            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var payloadCm = new StandardPayloadDataCM();
             var envelopes = _docuSignManager.SearchDocusign(docuSignAuthDto, settings);
 
@@ -130,7 +130,7 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
@@ -142,17 +142,17 @@ namespace terminalDocuSign.Actions
         }
 
 
-        private static DocusignQuery GetDocusignQuery(StandardConfigurationControlsCM ui)
+        private static DocusignQuery GetDocusignQuery(StandardConfigurationControlsCM configurationControls)
         {
-            var controls = new ActionUi();
+            var actionUi = new ActionUi();
 
-            controls.ClonePropertiesFrom(ui);
+            actionUi.ClonePropertiesFrom(configurationControls);
 
             var settings = new DocusignQuery();
 
-            settings.Folder = controls.Folder.Value;
-            settings.Status = controls.Status.Value;
-            settings.SearchText = controls.SearchText.Value;
+            settings.Folder = actionUi.Folder.Value;
+            settings.Status = actionUi.Status.Value;
+            settings.SearchText = actionUi.SearchText.Value;
 
             return settings;
         }
@@ -167,9 +167,9 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuth authDTO)
+        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthTokenDTO authToken)
         {
-            var folders = _docuSignFolder.GetFolders(authDTO.Email, authDTO.ApiPassword);
+            var folders = _docuSignFolder.GetFolders(authToken.Email, authToken.ApiPassword);
             var fields = new List<FieldDTO>();
             
             foreach (var folder in folders)

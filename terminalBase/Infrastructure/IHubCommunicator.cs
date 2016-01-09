@@ -5,6 +5,7 @@ using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Data.Constants;
 
 namespace TerminalBase.Infrastructure
 {
@@ -23,7 +24,7 @@ namespace TerminalBase.Infrastructure
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(
             ActionDO actionDO, ActivityCategory category);
 
-        Task<List<ActivityTemplateDTO>> GetActivityTemplates(
-            ActionDO actionDO, string tag);
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO, string tag);
+        Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields);
     }
 }

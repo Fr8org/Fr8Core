@@ -10,7 +10,7 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Entities
 {
-    public class RouteNodeDO : BaseDO
+    public class RouteNodeDO : BaseObject
     {
         [Key]
         public Guid Id { get; set; }
