@@ -14,7 +14,7 @@ namespace HealthMonitor
             var sendEmailReport = false;
             var appName = "Unspecified App";
             var ensureTerminalsStartup = false;
-            var selfHosting = true;
+            var selfHosting = false;
 
             if (args != null)
             {

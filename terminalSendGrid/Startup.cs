@@ -30,7 +30,7 @@ namespace terminalSendGrid
 
             if (!selfHost)
             {
-                StartHosting("terminalSalesforce");
+                StartHosting("terminalSendGrid");
             }
         }
 

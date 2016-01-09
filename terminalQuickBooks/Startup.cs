@@ -31,7 +31,7 @@ namespace terminalQuickBooks
 
             if (!selfHost)
             {
-                StartHosting("terminalAzure");
+                StartHosting("terminalQuickBooks");
             }
         }
 

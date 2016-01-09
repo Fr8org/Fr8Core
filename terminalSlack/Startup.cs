@@ -22,7 +22,7 @@ namespace terminalSlack
             ConfigureProject(selfHost, null);
             WebApiConfig.Register(_configuration);
             app.UseWebApi(_configuration);
-            StartHosting("terminalYammer");
+            StartHosting("terminalSlack");
         }
 
         public void Configuration(IAppBuilder app)
