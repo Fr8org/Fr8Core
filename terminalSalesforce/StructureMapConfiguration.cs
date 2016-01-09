@@ -46,7 +46,7 @@ namespace terminalSalesforce
                  For<terminalSalesforce.Infrastructure.IEvent>().Use<terminalSalesforce.Services.Event>();
                  For<ISalesforceIntegration>().Use<terminalSalesforce.Services.SalesforceIntegration>();                  
              }
-         }
+         }       
 
          public class TestMode : StructureMapBootStrapper.TestMode
          {
@@ -58,5 +58,10 @@ namespace terminalSalesforce
                  For<ISalesforceIntegration>().Use(salesforceIntegrationMock.Object);
              }
          }       
+
+        public static void LiveConfiguration(ConfigurationExpression configuration)
+        {
+            configuration.AddRegistry<LiveMode>();
+        }
     }
 }

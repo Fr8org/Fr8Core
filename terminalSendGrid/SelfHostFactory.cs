@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Http;
+using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
 using TerminalBase.BaseClasses;
 
-namespace terminalYammer
+namespace terminalSendGrid
 {
     public class SelfHostFactory
     {

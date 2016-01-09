@@ -10,7 +10,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ChildActionsDetected,
         PaneConfigureAction_ChildActionsReconfiguration,
         PaneConfigureAction_ReloadAction,
-        PaneConfigureAction_SetSolutionMode
+        PaneConfigureAction_SetSolutionMode,
+        PaneConfigureAction_ConfigureCallResponse
     }
 
     export class ActionReconfigureEventArgs {
@@ -97,6 +98,13 @@ module dockyard.directives.paneConfigureAction {
         public actions: Array<interfaces.IActionDTO>;
         constructor(actions: Array<interfaces.IActionDTO>) {
             this.actions = actions;
+        }
+    }
+
+    export class CallConfigureResponseEventArgs {
+        public action: interfaces.IActionDTO;
+        constructor(action:interfaces.IActionDTO) {
+            this.action = action;
         }
     }
 
@@ -282,6 +290,10 @@ module dockyard.directives.paneConfigureAction {
 
                     ActionService.configure($scope.currentAction).$promise
                         .then((res: interfaces.IActionVM) => {
+
+                            // emit ConfigureCallResponse for RouteBuilderController be able to reload actions with AgressiveReloadTag
+                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_ConfigureCallResponse], new CallConfigureResponseEventArgs($scope.currentAction));
+
                             var childActionsDetected = false;
 
                             if (res.childrenActions && res.childrenActions.length > 0) {

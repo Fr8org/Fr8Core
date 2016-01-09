@@ -2,6 +2,8 @@
 using System.Configuration;
 using System.Linq;
 using NUnit.Core;
+using HealthMonitor.Configuration;
+using System.Configuration;
 
 namespace HealthMonitor
 {
@@ -12,6 +14,7 @@ namespace HealthMonitor
             var sendEmailReport = false;
             var appName = "Unspecified App";
             var ensureTerminalsStartup = false;
+            var selfHosting = false;
 
             if (args != null)
             {
@@ -29,10 +32,30 @@ namespace HealthMonitor
                     {
                         appName = args[i];
                     }
+                    if (args[i] == "--self-hosting")
+                    {
+                        selfHosting = true;
+                    }
                 }
             }
 
-            new Program().Run(ensureTerminalsStartup, sendEmailReport, appName);
+            var selfHostInitializer = new SelfHostInitializer();
+            if (selfHosting)
+            {
+                selfHostInitializer.Initialize();
+            }
+
+            try
+            {
+                new Program().Run(ensureTerminalsStartup, sendEmailReport, appName);
+        }
+            finally
+            {
+                if (selfHosting)
+                {
+                    selfHostInitializer.Dispose();
+                }
+            }
         }
 
         private void EnsureTerminalsStartUp()
@@ -46,13 +69,13 @@ namespace HealthMonitor
                 Console.WriteLine("Following terminals have failed to start:");
 
                 foreach (var terminalName in failedToStart)
-                {
+            {
                     Console.WriteLine(terminalName);
                 }
 
                 Environment.Exit(failedToStart.Count);
+                }
             }
-        }
 
         private void ReportToConsole(string appName, TestReport report)
         {

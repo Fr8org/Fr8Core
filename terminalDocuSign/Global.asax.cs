@@ -16,7 +16,7 @@ namespace terminalDocuSign
             var formatters = GlobalConfiguration.Configuration.Formatters;
             formatters.Remove(formatters.XmlFormatter);
 
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+            GlobalConfiguration.Configure(RoutesConfig.Register);
 			DataAutoMapperBootStrapper.ConfigureAutoMapper();
 			TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
             // StructureMap Dependencies configuration
