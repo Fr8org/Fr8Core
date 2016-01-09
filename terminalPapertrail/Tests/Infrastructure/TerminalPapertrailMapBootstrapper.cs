@@ -43,5 +43,9 @@ namespace terminalPapertrail.Tests.Infrastructure
             }
         }
 
+        public static void LiveConfiguration(ConfigurationExpression configuration)
+        {
+            configuration.AddRegistry<LiveMode>();
+        }
     }
 }

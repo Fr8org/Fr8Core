@@ -10,6 +10,7 @@ using Owin;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using System.Web.Http.Dispatcher;
 
 [assembly: OwinStartup(typeof(terminalDropbox.Startup))]
 
@@ -19,10 +20,42 @@ namespace terminalDropbox
     {
         public void Configuration(IAppBuilder app)
         {
-            TerminalDropboxStructureMapBootstrapper.ConfigureDependencies(TerminalDropboxStructureMapBootstrapper.DependencyType.LIVE);
-            WebApiConfig.Register(new HttpConfiguration());
-            TerminalBootstrapper.ConfigureLive();
-            StartHosting("terminal_DropBox");
+            Configuration(app, false);
+        }
+
+        public void Configuration(IAppBuilder app, bool selfHost)
+        {
+            ConfigureProject(selfHost, TerminalDropboxStructureMapBootstrapper.LiveConfiguration);
+
+            RoutesConfig.Register(_configuration);
+            //if (selfHost)
+            //{
+            //    // Web API routes
+            //    configuration.Services.Replace(
+            //        typeof(IHttpControllerTypeResolver),
+            //        new PluginControllerTypeResolver()
+            //    );
+            //}
+
+            //DataAutoMapperBootStrapper.ConfigureAutoMapper();
+
+            ConfigureFormatters();
+
+            app.UseWebApi(_configuration);
+
+            if (!selfHost)
+            {
+                StartHosting("terminalAzure");
+            }
+        }
+
+        public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
+        {
+            return new Type[] {
+                    typeof(Controllers.ActionController),
+                    typeof(Controllers.AuthenticationController),
+                    typeof(Controllers.TerminalController)
+                };
         }
     }
 }
