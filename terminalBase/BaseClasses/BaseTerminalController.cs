@@ -28,6 +28,14 @@ namespace TerminalBase.BaseClasses
     public class BaseTerminalController : ApiController
     {
         private readonly BaseTerminalEvent _baseTerminalEvent;
+        private bool _integrationTestMode;
+
+        public bool IntegrationTestMode {
+            get {
+                return _integrationTestMode;
+            }
+        }
+
         public BaseTerminalController()
         {
             _baseTerminalEvent = new BaseTerminalEvent();
@@ -39,6 +47,9 @@ namespace TerminalBase.BaseClasses
         [HttpGet]
         public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError)
         {
+            if (_integrationTestMode)
+                return Ok();
+
             var exceptionMessage = terminalError.GetFullExceptionMessage() + "      \r\n" + terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
             try
             {
@@ -72,6 +83,9 @@ namespace TerminalBase.BaseClasses
         /// <param name="terminalName"></param>
         private Task<string> ReportStartUp(string terminalName)
         {
+            if (_integrationTestMode)
+                return Task.FromResult<string>(String.Empty);
+
             return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Incident");
         }
 
@@ -106,6 +120,9 @@ namespace TerminalBase.BaseClasses
         /// <param name="terminalName"></param>
         private Task<string> ReportEvent(string terminalName)
         {
+            if (_integrationTestMode)
+                return Task.FromResult<string>(String.Empty);
+
             return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Event");
         }
 
@@ -117,11 +134,12 @@ namespace TerminalBase.BaseClasses
             if (curActionDTO.ActivityTemplate == null)
                 throw new ArgumentException("ActivityTemplate is null", "curActionDTO");
 
-            var isTestActivityTemplate = false;
+            _integrationTestMode = false;
+
             var activityTemplateName = curActionDTO.ActivityTemplate.Name;
             if (activityTemplateName.EndsWith("_TEST"))
             {
-                isTestActivityTemplate = true;
+                _integrationTestMode = true;
                 activityTemplateName = activityTemplateName
                     .Substring(0, activityTemplateName.Length - "_TEST".Length);
             }
@@ -138,7 +156,7 @@ namespace TerminalBase.BaseClasses
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
             object curObject = Activator.CreateInstance(calledType);
 
-            if (isTestActivityTemplate)
+            if (_integrationTestMode)
             {
                 BindTestHubCommunicator(curObject);
             }
@@ -165,10 +183,10 @@ namespace TerminalBase.BaseClasses
                     case "run":
                     case "childrenexecuted":
                         {
-                            OnStartAction(curTerminal, activityTemplateName, isTestActivityTemplate);
+                            OnStartAction(curTerminal, activityTemplateName, IntegrationTestMode);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
                                 .Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
-                            await OnCompletedAction(curTerminal, isTestActivityTemplate);
+                            await OnCompletedAction(curTerminal, IntegrationTestMode);
 
                             return resultPayloadDTO;
                         }

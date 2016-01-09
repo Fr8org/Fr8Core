@@ -6,6 +6,9 @@ using TerminalBase.BaseClasses;
 using terminalGoogle;
 using TerminalBase.Infrastructure;
 using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
+using System;
+using System.Web.Http.Dispatcher;
+using System.Collections.Generic;
 
 [assembly: OwinStartup(typeof(terminalGoogle.Startup))]
 
@@ -15,11 +18,30 @@ namespace terminalGoogle
     {
         public void Configuration(IAppBuilder app)
         {
-            
-            DataAutoMapperBootStrapper.ConfigureAutoMapper();
-            StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE).ConfigureGoogleDependencies(DependencyType.LIVE);
-            TerminalBootstrapper.ConfigureLive();
-            StartHosting("terminal_Google");
+            Configuration(app, false);
+        }
+
+        public void Configuration(IAppBuilder app, bool selfHost)
+        {
+            ConfigureProject(selfHost, TerminalGoogleBootstrapper.ConfigureLive);
+            RoutesConfig.Register(_configuration);
+            ConfigureFormatters();
+            app.UseWebApi(_configuration);
+
+            if (!selfHost)
+            {
+                StartHosting("terminalGoogle");
+            }
+        }
+
+        public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
+        {
+            return new Type[] {
+                    typeof(Controllers.ActionController),
+                    typeof(Controllers.EventController),
+                    typeof(Controllers.AuthenticationController),
+                    typeof(Controllers.TerminalController)
+                };
         }
     }
 }

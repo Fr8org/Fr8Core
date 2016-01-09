@@ -10,13 +10,12 @@ namespace terminalSendGrid
     {
         protected void Application_Start()
         {
-            const StructureMapBootStrapper.DependencyType dependencyType = StructureMapBootStrapper.DependencyType.LIVE;
-
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+            GlobalConfiguration.Configure(RoutesConfig.Register);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
 
             // StructureMap Dependencies configuration
-            StructureMapBootStrapper.ConfigureDependencies(dependencyType).SendGridConfigureDependencies(dependencyType);
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+            TerminalSendGridStructureMapBootstrapper.ConfigureDependencies(TerminalSendGridStructureMapBootstrapper.DependencyType.LIVE);
             TerminalBootstrapper.ConfigureLive();
         }
     }
