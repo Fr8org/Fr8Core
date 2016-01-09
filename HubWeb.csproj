@@ -418,6 +418,7 @@
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
     <Compile Include="Infrastructure\fr8ApiHMACAuthorizeAttribute.cs" />
+    <Compile Include="Infrastructure\TerminalPrinciple.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />

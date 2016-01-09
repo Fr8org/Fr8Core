@@ -15,6 +15,7 @@ using System.Runtime.Caching;
 using System.Web;
 using StructureMap;
 using Hub.Interfaces;
+using HubWeb.Infrastructure;
 
 namespace HubWeb
 {
@@ -52,15 +53,16 @@ namespace HubWeb
             string[] authenticationParameters = tokenString.Split(new char[] { ':' });
             
 
-            if (authenticationParameters.Length != 4)
+            if (authenticationParameters.Length != 5)
             {
                 return false;
             }
-
+            
             var terminalId = new Guid(authenticationParameters[0]);
             var authToken = authenticationParameters[1];
             var nonce = authenticationParameters[2];
             var requestTime = authenticationParameters[3];
+            var userId = new Guid(authenticationParameters[4]);
 
             var terminalService = ObjectFactory.GetInstance<ITerminal>();
             var terminal = await terminalService.GetTerminalById(terminalId);
@@ -82,16 +84,17 @@ namespace HubWeb
                 return false;
             }
 
+            //TODO check if user allowed this terminal to modify it's data
+
             //Add the nonce to the cache
             MemoryCache.Default.Add(nonce, requestTime, DateTimeOffset.UtcNow.AddSeconds(MaxAllowedLatency));
             
             //Check for ReplayRequests ends here
-            string reformedAuthenticationToken = String.Format("{0}{1}{2}{3}{4}{5}", terminalId, request.Method.Method,
+            string reformedAuthenticationToken = String.Format("{0}{1}{2}{3}{4}{5}{6}", terminalId, request.Method.Method,
                HttpUtility.UrlEncode(request.RequestUri.ToString().ToLowerInvariant()),
-                  nonce, requestTime, await GetContentBase64String(request.Content));
+                  nonce, requestTime, await GetContentBase64String(request.Content), userId);
 
-            //Each AppId should have be configured with a unique shared key on
-            //the server!!! Hard coded in the example for simplicity.
+            //Each terminal should have be configured with a unique shared key on Hub
             var secretKeyBytes = Convert.FromBase64String(terminal.Secret);
             var authenticationTokenBytes = Encoding.UTF8.GetBytes(reformedAuthenticationToken);
 
@@ -106,6 +109,8 @@ namespace HubWeb
                     return false;
                 }
             }
+
+            HttpContext.Current.User = new TerminalPrinciple(terminalId, userId, null);
 
             return true;
         }
