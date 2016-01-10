@@ -222,7 +222,14 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult(curActionDO);
         }
 
+        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            //create DocuSign account if there is no existing connect profile
+            var docuSignAccount = new DocuSignAccount();
+            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(docuSignAccount, null);
 
+            return Task.FromResult<ActionDO>(curActionDO);
+        }
 
         private Crate CreateDocusignTemplateConfigurationControls(ActionDO curActionDO)
         {

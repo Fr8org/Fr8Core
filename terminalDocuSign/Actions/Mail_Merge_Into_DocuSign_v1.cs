@@ -18,6 +18,7 @@ using TerminalBase.Infrastructure;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using Utilities.Configuration.Azure;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
@@ -225,6 +226,15 @@ namespace terminalDocuSign.Actions
 
 
             return await Task.FromResult(curActionDO);
+        }
+
+        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            //create DocuSign account if there is no existing connect profile
+            var docuSignAccount = new DocuSignAccount();
+            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(docuSignAccount, null);
+
+            return Task.FromResult<ActionDO>(curActionDO);
         }
     }
 }

@@ -15,6 +15,7 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
@@ -187,6 +188,15 @@ namespace terminalDocuSign.Actions
                 
                 return curActionDO;
             }
+        }
+
+        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            //create DocuSign account if there is no existing connect profile
+            var docuSignAccount = new DocuSignAccount();
+            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(docuSignAccount, null);
+
+            return Task.FromResult<ActionDO>(curActionDO);
         }
 
         private IEnumerable<Crate> PackDesignTimeData(DocuSignAuth authDTO)

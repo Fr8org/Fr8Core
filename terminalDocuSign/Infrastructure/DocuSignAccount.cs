@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System.Configuration;
 using Utilities.Configuration.Azure;
-
+using System.Linq;
 namespace terminalDocuSign.Infrastructure
 {
     public class DocuSignAccount : Account
@@ -40,6 +40,63 @@ namespace terminalDocuSign.Infrastructure
         {
             DocuSignLogin();
             _docuSignConnect.Delete(connectId);
+        }
+
+        public static void CreateOrUpdateDefaultDocuSignConnectConfiguration(DocuSignAccount account, string envelopeEvents = "Sent, Delivered, Completed")
+        {
+            var publishUrl = "http://" + CloudConfigurationManager.GetSetting("TerminalEndpoint") + "/terminals/terminalDocuSign/events";
+
+            //get existing connect configuration
+            var existingDocuSignConnectConfiguration = GetDocuSignConnectConfiguration(account);
+
+            if (existingDocuSignConnectConfiguration == null)
+            {
+                //if existing configuration is not present, create one
+                account.CreateDocuSignConnectProfile(new DocuSign.Integrations.Client.Configuration
+                {
+                    name = "fr8DocuSignConnectConfiguration",
+                    allUsers = "true",
+                    configurationType = "custom",
+                    allowEnvelopePublish = "true",
+                    envelopeEvents = envelopeEvents,
+                    urlToPublishTo = publishUrl,
+                    enableLog = "true",
+                    includeDocuments = "false",
+                    requiresAcknowledgement = "false",
+                    includeCertSoapHeader = "false",
+                    includeCertificateOfCompletion = "false",
+                    includeTimeZoneInformation = "false",
+                    includeDocumentFields = "false",
+                    includeEnvelopeVoidReason = "true",
+                    includeSenderAccountasCustomField = "false",
+                    recipientEvents = "",
+                    useSoapInterface = "false",
+                    signMessageWithX509Certificate = "false"
+                });
+            }
+            else
+            {
+                //update existing configuration with new envelope events and publish URL
+                if(envelopeEvents != null)
+                    existingDocuSignConnectConfiguration.envelopeEvents = envelopeEvents;
+                existingDocuSignConnectConfiguration.urlToPublishTo = publishUrl;
+                account.UpdateDocuSignConnectProfile(existingDocuSignConnectConfiguration);
+            }
+        }
+
+        private static DocuSign.Integrations.Client.Configuration GetDocuSignConnectConfiguration(DocuSignAccount account)
+        {
+            //get all connect profiles from DocuSign for the given account
+            var connectProfile = account.GetDocuSignConnectProfiles();
+
+            //if DocuSignConnectName is already present, return the config
+            if (connectProfile.configurations.Any(config => config.name == "fr8DocuSignConnectConfiguration"))
+            {
+                return connectProfile.configurations.First(config => config.name == "fr8DocuSignConnectConfiguration");
+            }
+
+            //if nothing found, return NULL
+            return null;
         }
     }
 }
