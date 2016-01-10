@@ -22,6 +22,7 @@ using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using TerminalBase.Services;
 
 namespace terminalDocuSign.Actions
 {
@@ -143,9 +144,9 @@ namespace terminalDocuSign.Actions
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var mtQuery = BuildMtDbQuery(criteria, uow.MultiTenantObjectRepository.AsQueryable<DocuSignEnvelopeCM>(uow, authTokenDO.UserID));
-
-                foreach (var envelope in mtQuery)
+                var envelopes = MTSearchHelper.CreateQueryProvider(typeof (DocuSignEnvelopeCM)).Query(uow, authTokenDO.UserID, criteria);
+                
+                foreach (DocuSignEnvelopeCM envelope in envelopes)
                 {
                     if (!existingEnvelopes.Contains(envelope.EnvelopeId))
                     {
@@ -209,103 +210,6 @@ namespace terminalDocuSign.Actions
             row.PayloadObject.Add(new FieldDTO("CreatedDateTime", envelope.CreateDate));
 
             return row;
-        }
-       
-
-        public static IMtQueryable<DocuSignEnvelopeCM> BuildMtDbQuery(List<FilterConditionDTO> conditions, IMtQueryable<DocuSignEnvelopeCM> queryable)
-        {
-            var type = typeof (DocuSignEnvelopeCM);
-
-            ParameterExpression param = Expression.Parameter(type, "x");
-
-            foreach (var condition in conditions)
-            {
-                FieldBackedRoutingInfo fieldBackedRoutingInfo;
-
-                if (!QueryBuilderFields.TryGetValue(condition.Field, out fieldBackedRoutingInfo) || fieldBackedRoutingInfo.MtDbPropertyName == null)
-                {
-                    continue;
-                }
-                Expression queryExpression = null;
-                var field = type.GetField(fieldBackedRoutingInfo.MtDbPropertyName);
-                object convertedValue;
-                Expression accessor;
-                
-                if (field != null && TryConvertValue(field.FieldType, condition.Value, out convertedValue))
-                {
-                    accessor = Expression.MakeMemberAccess(param, field);
-                }
-                else
-                {
-                    var prop = type.GetProperty(fieldBackedRoutingInfo.MtDbPropertyName);
-                    if (prop != null && prop.CanWrite && TryConvertValue(prop.PropertyType, condition.Value, out convertedValue))
-                    {
-                        accessor = Expression.MakeMemberAccess(param, prop);
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-
-                var operand = Expression.Constant(convertedValue);
-
-                switch (condition.Operator)
-                {
-                    case "eq":
-                        queryExpression = Expression.Equal(accessor, operand);
-                        break;
-
-                    case "neq":
-                        queryExpression = Expression.NotEqual(accessor, operand);
-                        break;
-
-                    case "gt":
-                        queryExpression = Expression.GreaterThan(accessor, operand);
-                        break;
-
-                    case "gte":
-                        queryExpression = Expression.GreaterThanOrEqual(accessor, operand);
-                        break;
-
-                    case "lte":
-                        queryExpression = Expression.LessThanOrEqual(accessor, operand);
-                        break;
-
-                    case "lt":
-                        queryExpression = Expression.LessThan(accessor, operand);
-                        break;
-                }
-
-                if (queryExpression == null)
-                {
-                    continue;
-                }
-
-                queryable = queryable.Where(Expression.Lambda<Func<DocuSignEnvelopeCM, bool>>(queryExpression, param));
-            }
-            
-            return queryable;
-        }
-
-        private static bool TryConvertValue(Type targetType, string value, out object convertedValue)
-        {
-            if (targetType == typeof(string))
-            {
-                convertedValue = value;
-                return true;
-            }
-
-            try
-            {
-                convertedValue = Convert.ChangeType(value, targetType);
-                return true;
-            }
-            catch (Exception)
-            {
-                convertedValue = null;
-                return false;
-            }
         }
         
         public DocusignQuery BuildDocusignQuery(DocuSignAuthTokenDTO authToken, List<FilterConditionDTO> conditions)
