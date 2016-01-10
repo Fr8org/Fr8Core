@@ -15,6 +15,8 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using terminalSlackTests.Fixtures;
 using UtilitiesTesting;
 using Newtonsoft.Json;
+using StructureMap;
+using Hub.StructureMap;
 
 namespace terminalSlackTests.Integration
 {
@@ -128,7 +130,7 @@ namespace terminalSlackTests.Integration
         }
 
         private async Task<ActionDTO> GetConfiguredActionWithDDLBSelected(string selectedChannel)
-        {
+        { 
             var configureUrl = GetTerminalConfigureUrl();
             var requestActionDTO = HealthMonitor_FixtureData.Monitor_Channel_v1_InitialConfiguration_ActionDTO();
             var actionDTO =
