@@ -1,9 +1,10 @@
 using System.Linq;
 using Data.Entities;
+using Data.Interfaces;
 
 namespace Data.Repositories
 {
-    public interface IAuthorizationTokenRepository
+    public interface IAuthorizationTokenRepository : IGenericRepository<AuthorizationTokenDO>
     {
         IQueryable<AuthorizationTokenDO> GetPublicDataQuery();
         void Add(AuthorizationTokenDO newToken);

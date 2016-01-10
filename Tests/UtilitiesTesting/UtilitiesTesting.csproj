@@ -159,6 +159,7 @@
   <ItemGroup>
     <Compile Include="BaseTest.cs" />
     <Compile Include="ClassMethod.cs" />
+    <Compile Include="Fixtures\FixtureData - AuthorizationToken.cs" />
     <Compile Include="Fixtures\FixtureData - Action.cs" />
     <Compile Include="Fixtures\FixtureData - ActionDTO.cs" />
     <Compile Include="Fixtures\FixtureData - ActionList.cs" />
