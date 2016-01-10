@@ -1,13 +1,14 @@
 ﻿using System.Web.Http;
 using TerminalBase.BaseClasses;
 
-namespace terminalGoogle
+namespace terminalTwilio
 {
-    public static class WebApiConfig
+    public static class RoutesConfig
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register("Google", config);
+            BaseTerminalWebApiConfig.Register("Twilio", config);
+
         }
     }
 }

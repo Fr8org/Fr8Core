@@ -40,7 +40,7 @@ namespace terminalQuickBooks.Controllers
                 Version = "1",
                 Name = "Create_Journal_Entry",
                 Label = "Create Journal Entry",
-                Category = ActivityCategory.Processors,
+                Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 MinPaneWidth = 330,

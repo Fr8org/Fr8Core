@@ -173,13 +173,13 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StructureMap, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.dll</HintPath>
     </Reference>
-    <Reference Include="StructureMap.Net4, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.Net4.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="StructureMap.Net4, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -525,6 +525,14 @@
     <Compile Include="Migrations\201512251516487_Authorization_V2_Migration.Designer.cs">
       <DependentUpon>201512251516487_Authorization_V2_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201512311353389_Removed_From_FileDO.cs" />
+    <Compile Include="Migrations\201512311353389_Removed_From_FileDO.Designer.cs">
+      <DependentUpon>201512311353389_Removed_From_FileDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601031440042_Added_Tag_And_FileTags.cs" />
+    <Compile Include="Migrations\201601031440042_Added_Tag_And_FileTags.Designer.cs">
+      <DependentUpon>201601031440042_Added_Tag_And_FileTags.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -533,6 +541,7 @@
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryStub.cs" />
     <Compile Include="Repositories\Authorization\IAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\FileTagsRepository.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -540,6 +549,7 @@
     <Compile Include="Repositories\MTFieldTypeRepository.cs" />
     <Compile Include="Repositories\MTObjectRepository.cs" />
     <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
+    <Compile Include="Repositories\TagRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
@@ -715,6 +725,8 @@
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="States\UserState.cs" />
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
+    <Compile Include="Utility\JoinClasses\FileTags.cs" />
+    <Compile Include="Utility\TagDO.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ContainerValidator.cs" />
     <Compile Include="Validations\SubrouteValidator.cs" />
@@ -872,6 +884,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512251516487_Authorization_V2_Migration.resx">
       <DependentUpon>201512251516487_Authorization_V2_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512311353389_Removed_From_FileDO.resx">
+      <DependentUpon>201512311353389_Removed_From_FileDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601031440042_Added_Tag_And_FileTags.resx">
+      <DependentUpon>201601031440042_Added_Tag_And_FileTags.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

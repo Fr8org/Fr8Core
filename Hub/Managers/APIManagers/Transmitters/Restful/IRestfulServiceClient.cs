@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Hub.Managers.APIManagers.Transmitters.Restful
@@ -6,11 +8,19 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
     public interface IRestfulServiceClient
     {
         Uri BaseUri { get; set; }
-        Task<TResponse> GetAsync<TResponse>(Uri requestUri);
-        Task<string> PostAsync(Uri requestUri);
-        Task<string> PostAsync<TContent>(Uri requestUri, TContent content);
-        Task<TResponse> PostAsync<TContent, TResponse>(Uri requestUri, TContent content);
-        Task<string> PutAsync<TContent>(Uri requestUri, TContent content);
-        Task<TResponse> PutAsync<TContent, TResponse>(Uri requestUri, TContent content);
+
+        Task<TResponse> GetAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);
+        Task<string> GetAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);
+        Task<TResponse> PostAsync<TResponse>(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);
+        Task<string> PostAsync(Uri requestUri, string CorrelationId = null, Dictionary<string, string> headers = null);
+        Task<string> PostAsync<TContent>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
+        Task<TResponse> PostAsync<TContent, TResponse>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
+        Task<TResponse> PutAsync<TContent, TResponse>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
+        Task<string> PutAsync<TContent>(Uri requestUri, TContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
+
+        Task<string> PostAsync(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
+        Task<TResponse> PostAsync<TResponse>(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
+        Task<TResponse> PutAsync<TResponse>(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
+        Task<string> PutAsync(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null);
     }
 }

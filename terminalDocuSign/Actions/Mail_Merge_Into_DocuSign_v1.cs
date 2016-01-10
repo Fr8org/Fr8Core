@@ -58,7 +58,11 @@ namespace terminalDocuSign.Actions
             controlList.Add(new Button()
             {
                 Label = "Continue",
-                Name = "Continue"
+                Name = "Continue",
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onClick", "requestConfig")
+                }
             });
 
             return PackControlsCrate(controlList.ToArray());

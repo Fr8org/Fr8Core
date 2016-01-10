@@ -11,7 +11,7 @@ using StructureMap;
 
 namespace Data.Entities
 {
-    public class ActivityTemplateDO : BaseDO
+    public class ActivityTemplateDO : BaseObject
     {
         public ActivityTemplateDO()
         {

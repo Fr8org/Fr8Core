@@ -14,9 +14,8 @@ namespace terminalExcel
         {
             public void Configuration(IAppBuilder app)
             {
-                var config = new HttpConfiguration();
-                var startup = new StartupTerminalExcel();
-                BaseTerminalWebApiConfig.Register("Excel", config);
+                var startup = new Startup();
+                startup.Configuration(app, selfHost: true);
             }
         }
 

@@ -11,15 +11,14 @@ using AutoMapper;
 namespace terminalExcel.Controllers
 {
     [RoutePrefix("actions")]
-    public class ActionController : ApiController
+    public class ActionController : BaseTerminalController
     {
         private const string curTerminal = "terminalExcel";
-        private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
         [HttpPost]
         public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
-            return _baseTerminalController.HandleFr8Request(curTerminal, actionType, curActionDTO);
+            return HandleFr8Request(curTerminal, actionType, curActionDTO);
         }
     }
 }

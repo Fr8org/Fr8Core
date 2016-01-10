@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using StructureMap;
-using Hub.StructureMap;
 using TerminalBase.BaseClasses;
 
-namespace terminalSalesforce
+namespace terminalDropbox
 {
-    public static class WebApiConfig
+    public static class RoutesConfig
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register("Salesforce", config);
+            BaseTerminalWebApiConfig.Register("DropBox", config);
         }
     }
 }

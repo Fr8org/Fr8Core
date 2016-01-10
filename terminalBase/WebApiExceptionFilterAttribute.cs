@@ -28,7 +28,14 @@ namespace TerminalBase
 
             //get the terminal error details
             var curTerminalError = actionExecutedContext.Exception;
-            var terminalName = GetTerminalName(actionExecutedContext.ActionContext.ControllerContext.Controller);
+            var curController = actionExecutedContext.ActionContext.ControllerContext.Controller;
+            var terminalName = GetTerminalName(curController);
+            bool integrationTestMode = false;
+
+            if (curController as BaseTerminalController != null)
+            {
+                integrationTestMode = ((BaseTerminalController)curController).IntegrationTestMode;
+            }
 
             HttpStatusCode statusCode = HttpStatusCode.InternalServerError;
 
@@ -47,8 +54,11 @@ namespace TerminalBase
                 }
             }
 
-            //POST event to fr8 about this terminal error
-            new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError);
+            if (!integrationTestMode)
+            {
+                //POST event to fr8 about this terminal error
+                new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError);
+            }
 
             //prepare the response JSON based on the exception type
             actionExecutedContext.Response = new HttpResponseMessage(statusCode);
