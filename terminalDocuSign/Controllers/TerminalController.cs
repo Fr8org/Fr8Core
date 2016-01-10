@@ -145,8 +145,8 @@ namespace terminalDocuSign.Controllers
 
             var searchDocusignHistory = new ActivityTemplateDTO
             {
-                Name = "Find_DocuSign_Envelopes",
-                Label = "Find DocuSign Envelopes",
+                Name = "Search_DocuSign_History",
+                Label = "Search DocuSign History",
                 Version = "1",
                 Category = ActivityCategory.Receivers,
                 NeedsAuthentication = true,
