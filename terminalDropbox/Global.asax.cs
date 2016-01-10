@@ -16,7 +16,7 @@ namespace terminalDropbox
     {
         void Application_Start(object sender, EventArgs e)
         {
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+            GlobalConfiguration.Configure(RoutesConfig.Register);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             // StructureMap Dependencies configuration
             Hub.StructureMap.StructureMapBootStrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.LIVE);

@@ -9,6 +9,7 @@
         componentActivities: string;
         category: string;
         type: string;
+        tags: string;
         minPaneWidth: number;
         terminal: TerminalDTO;
 

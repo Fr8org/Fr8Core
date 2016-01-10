@@ -14,6 +14,7 @@ using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
 using TerminalBase.BaseClasses;
 using Data.Entities;
+using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Actions
 {
@@ -70,27 +71,31 @@ namespace terminalDocuSign.Actions
         {
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
-
-            if (curConnectProfile.configurations != null &&
-                !curConnectProfile.configurations.Any(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")))
-            {
-                var monitorConnectConfiguration = new DocuSign.Integrations.Client.Configuration
+            try {
+                if (curConnectProfile.configurations != null &&
+                    !curConnectProfile.configurations.Any(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")))
                 {
-                    allowEnvelopePublish = "true",
-                    allUsers = "true",
-                    enableLog = "true",
-                    requiresAcknowledgement = "true",
-                    envelopeEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Envelope")),
-                    recipientEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Recipient")),
-                    name = "MonitorAllDocuSignEvents",
-                    urlToPublishTo =
-                        Regex.Match(ConfigurationManager.AppSettings["TerminalEndpoint"], @"(\w+://\w+:\d+)").Value +
-                        "/terminals/terminalDocuSign/events"
-                };
+                    var monitorConnectConfiguration = new DocuSign.Integrations.Client.Configuration
+                    {
+                        allowEnvelopePublish = "true",
+                        allUsers = "true",
+                        enableLog = "true",
+                        requiresAcknowledgement = "true",
+                        envelopeEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Envelope")),
+                        recipientEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Recipient")),
+                        name = "MonitorAllDocuSignEvents",
+                        urlToPublishTo =
+                            Regex.Match(CloudConfigurationManager.GetSetting("TerminalEndpoint"), @"(\w+://\w+:\d+)").Value +
+                            "/terminals/terminalDocuSign/events"
+                    };
 
-                curDocuSignAccount.CreateDocuSignConnectProfile(monitorConnectConfiguration);
+                    curDocuSignAccount.CreateDocuSignConnectProfile(monitorConnectConfiguration);
+                }
             }
+            catch(Exception ex)
+            {
 
+            }
             return Task.FromResult<ActionDO>(curActionDO);
         }
 

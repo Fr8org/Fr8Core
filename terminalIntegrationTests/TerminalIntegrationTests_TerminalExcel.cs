@@ -23,7 +23,7 @@ namespace terminalIntegrationTests
 {
     public partial class TerminalIntegrationTests
     {
-        [Test]
+        [Test, Ignore]
         public async void TerminalExcel_CallExtractData_Execute()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

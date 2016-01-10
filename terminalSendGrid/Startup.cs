@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Owin;
 using TerminalBase;
 using TerminalBase.BaseClasses;
+using System.Web.Http.Dispatcher;
 
 [assembly: OwinStartup("SendGridStartup", typeof(terminalSendGrid.Startup))]
 namespace terminalSendGrid
@@ -16,7 +17,29 @@ namespace terminalSendGrid
     {
         public void Configuration(IAppBuilder app)
         {
-            StartHosting("terminal_SendGrid");
+            Configuration(app, false);
+        }
+
+        public void Configuration(IAppBuilder app, bool selfHost)
+        {
+            ConfigureProject(selfHost, TerminalSendGridStructureMapBootstrapper.LiveConfiguration);
+            RoutesConfig.Register(_configuration);
+            ConfigureFormatters();
+
+            app.UseWebApi(_configuration);
+
+            if (!selfHost)
+            {
+                StartHosting("terminalSendGrid");
+            }
+        }
+
+        public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
+        {
+            return new Type[] {
+                    typeof(Controllers.ActionController),
+                    typeof(Controllers.TerminalController)
+                };
         }
     }
 }

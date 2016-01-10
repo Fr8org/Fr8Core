@@ -30,7 +30,7 @@ namespace Hub.Services
 
         public Event()
         {
- 
+
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             _route = ObjectFactory.GetInstance<IRoute>();
         }
@@ -80,22 +80,25 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //find the corresponding DockyardAccount
-                var authToken = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(eventReportMS.ExternalAccountId);
-                if (authToken == null)
+                var authTokenList = uow.AuthorizationTokenRepository.FindList(x => x.ExternalAccountId == eventReportMS.ExternalAccountId);
+                if (authTokenList == null)
                 {
                     return;
                 }
 
-                var curDockyardAccount = authToken.UserDO;
+                foreach (var authToken in authTokenList)
+                {
+                    var curDockyardAccount = authToken.UserDO;
 
-                //find this Account's Routes
-                var initialRoutesList = uow.RouteRepository
-                    .FindList(pt => pt.Fr8Account.Id == curDockyardAccount.Id)
-                    .Where(x => x.RouteState == RouteState.Active);
+                    //find this Account's Routes
+                    var initialRoutesList = uow.RouteRepository
+                        .FindList(pt => pt.Fr8Account.Id == curDockyardAccount.Id)
+                        .Where(x => x.RouteState == RouteState.Active);
 
-                var subscribingRoutes = _route.MatchEvents(initialRoutesList.ToList(), eventReportMS);
+                    var subscribingRoutes = _route.MatchEvents(initialRoutesList.ToList(), eventReportMS);
 
-                await LaunchProcesses(subscribingRoutes, curCrateStandardEventReport);
+                    await LaunchProcesses(subscribingRoutes, curCrateStandardEventReport);
+                }
             }
         }
 

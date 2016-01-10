@@ -30,7 +30,7 @@ namespace terminalQuickBooks
     {
         protected void Application_Start()
         {
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+            GlobalConfiguration.Configure(RoutesConfig.Register);
 			DataAutoMapperBootStrapper.ConfigureAutoMapper();
             // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE);

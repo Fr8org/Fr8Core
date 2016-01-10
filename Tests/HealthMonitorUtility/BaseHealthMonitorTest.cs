@@ -10,6 +10,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Linq;
 using NUnit.Framework;
 using Data.Constants;
+using StructureMap;
 
 namespace HealthMonitor.Utility
 {
@@ -20,6 +21,9 @@ namespace HealthMonitor.Utility
 
         public BaseHealthMonitorTest()
         {
+            ObjectFactory.Initialize();
+            ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+
             RestfulServiceClient = new RestfulServiceClient();
             Crate = new CrateManager();
         }
