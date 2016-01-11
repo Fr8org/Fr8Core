@@ -15,7 +15,7 @@ namespace HubWeb.App_Start
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ConfigRepository configRepository = new ConfigRepository();
+                var configRepository  = ObjectFactory.GetInstance<IConfigRepository>();
                 string userEmail = configRepository.Get("SystemUserEmail");
                 string curPassword = configRepository.Get("SystemUserPassword");
 
