@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
+using Data.Interfaces;
 using Newtonsoft.Json;
 using Data.Control;
 using Data.Crates;
@@ -9,10 +13,12 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
+using StructureMap;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalFr8Core.Interfaces;
 
 namespace terminalDocuSign.Actions
 {
@@ -92,20 +98,12 @@ namespace terminalDocuSign.Actions
                         new RadioButtonOption
                         {
                             Name = "NotificationMode",
-                            Value = "If a recipient hasn't taken the following action",
+                            Value = "If a recipient hasn't taken an action",
                             Controls = new ControlDefinitionDTO[]
                             {
-                                new DropDownList
-                                {
-                                    Name = "FollowUpEvent",
-                                    Source = new FieldSourceDTO
-                                    {
-                                        Label = "AvailableFollowUpEvents",
-                                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                    }
-                                },
                                 new Duration
                                 {
+                                    Name = "TimePeriod",
                                     Label = "Within this amount of time"
                                 }
                             }
@@ -146,7 +144,6 @@ namespace terminalDocuSign.Actions
 
             return ConfigurationRequestType.Followup;
         }
-
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(actionDO))
@@ -176,7 +173,7 @@ namespace terminalDocuSign.Actions
             var notifyWhenEventDoesntHappenRadio = whenToBeNotifiedRadioGrp.Radios[1];
             var howToBeNotifiedDdl = (DropDownList) controls.FindByName("NotificationHandler");
 
-            //let's add child actions to solution until how to be notified option is selected
+            //let's don't add child actions to solution until how to be notified option is selected
             //FR-1873
             if (string.IsNullOrEmpty(howToBeNotifiedDdl.Value))
             {
@@ -185,62 +182,144 @@ namespace terminalDocuSign.Actions
 
             actionDO.ChildNodes = new List<RouteNodeDO>();
 
-            
+            int ordering = 0;
 
-            await CreateEmptyMonitorDocuSignAction(actionDO, authTokenDO);
+            var activityList = await HubCommunicator.GetActivityTemplates(actionDO);
+
+            var monitorDocuSignAction = await CreateEmptyMonitorDocuSignAction(activityList, actionDO, authTokenDO, ++ordering);
+
+            actionDO.ChildNodes.Add(monitorDocuSignAction);
 
             if (specificRecipientOption.Selected)
             {
-                ApplyMonitorDocuSignSpecificRecipient((ActionDO)actionDO.ChildNodes[0], specificRecipientOption);
+                ConfigureMonitorDocuSignSpecificRecipient(monitorDocuSignAction, specificRecipientOption);
             }
             else if (specificTemplateOption.Selected)
             {
-                ApplyMonitorDocuSignSpecificTemplate((ActionDO)actionDO.ChildNodes[0], specificTemplateOption);
+                ConfigureMonitorDocuSignSpecificTemplate(monitorDocuSignAction, specificTemplateOption);
             }
 
-            ApplyMonitorDocuSignSpecificEvent((ActionDO)actionDO.ChildNodes[0], specificEventDdl);
+            ConfigureMonitorDocuSignSpecificEvent(monitorDocuSignAction, specificEventDdl);
 
             if (notifyWhenEventDoesntHappenRadio.Selected)
             {
-                var durationControl = (Duration)notifyWhenEventDoesntHappenRadio.Controls.First();
-                await CreateSetDelayAction(actionDO, durationControl);
+                var durationControl = (Duration)notifyWhenEventDoesntHappenRadio.Controls.First(c => c.Name == "TimePeriod");
+                var setDelayAction = await CreateSetDelayAction(activityList, actionDO, durationControl, ++ordering);
+                actionDO.ChildNodes.Add(setDelayAction);
+
+                var queryMTDatabaseAction = await CreateQueryMTDatabaseAction(activityList, actionDO, ++ordering);
+                await ConfigureQueryMTDatabaseAction(queryMTDatabaseAction);
+                actionDO.ChildNodes.Add(queryMTDatabaseAction);
             }
 
 
-            await ApplyNotifierAction(actionDO, howToBeNotifiedDdl);
+            var notifierAction = await CreateNotifierAction(activityList, actionDO, howToBeNotifiedDdl, ++ordering);
+            if (notifierAction != null)
+            {
+                actionDO.ChildNodes.Add(notifierAction);
+            }
 
             return actionDO;
         }
 
-
-        private async Task CreateSetDelayAction(ActionDO actionDO, Duration externalDurationControl)
+        private async Task ConfigureQueryMTDatabaseAction(ActionDO queryMTDatabase)
         {
-            const string setDelayTemplateName = "SetDelay";
-            var setDelayTemplate = (await HubCommunicator.GetActivityTemplates(actionDO))
-                .FirstOrDefault(x => x.Name == setDelayTemplateName);
-
-            if (setDelayTemplate == null)
+            //update action's duration value
+            using (var updater = Crate.UpdateStorage(queryMTDatabase))
             {
-                throw new Exception(string.Format("ActivityTemplate {0} was not found", setDelayTemplateName));
+                var configControlCM = updater.CrateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
+                    .First();
+
+                var objectList = (DropDownList)configControlCM.Controls.First(c => c.Name == "AvailableObjects");
+                var docuSignEventObject = await GetDocuSignEventObject();
+                objectList.Value = docuSignEventObject.Id.ToString(CultureInfo.InvariantCulture);
+                objectList.selectedKey = docuSignEventObject.Name;
+
+                var filterPane = (FilterPane)configControlCM.Controls.First(c => c.Name == "Filter");
+                var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
+                criteria.ExecutionType = FilterExecutionType.WithFilter;
+                filterPane.Value = JsonConvert.SerializeObject(criteria);
+            }
+        }
+
+        private async Task<MT_Object> GetDocuSignEventObject()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return await uow.MTObjectRepository.GetQuery().FirstOrDefaultAsync(o => o.ManifestId == (int)MT.DocuSignEvent);
+            }
+        }
+
+        /*
+        private async Task<IEnumerable<FieldDTO>> GetDocuSignEventFields()
+        {
+            var docuSignEventObject = await GetDocuSignEventObject();
+            var fields = new Dictionary<string, string>();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                foreach (var field in uow.MTFieldRepository.GetQuery().Where(x => x.MT_ObjectId == docuSignEventObject.Id))
+                {
+                    var alias = "Value" + field.FieldColumnOffset;
+                    string existingAlias;
+
+                    if (fields.TryGetValue(field.Name, out existingAlias))
+                    {
+                        if (existingAlias != alias)
+                        {
+                            throw new InvalidOperationException(string.Format("Duplicate field definition. MT object type: {0}. Field {1} is mapped to {2} and {3}", docuSignEventObject.Id, field.Name, existingAlias, alias));
+                        }
+                    }
+                    else
+                    {
+                        fields[field.Name] = alias;
+                    }
+                }
             }
 
-            var setDelayAction = new ActionDO
+            return fields.OrderBy(x => x.Key).Select(x => new FieldDTO(x.Key, x.Key));
+        }
+        */
+
+        private async Task<ActionDO> CreateAction(IEnumerable<ActivityTemplateDTO> activityList, ActionDO actionDO, string templateName, string actionName, string actionLabel, int ordering, AuthorizationTokenDO authToken = null)
+        {
+            var template = activityList.FirstOrDefault(x => x.Name == templateName);
+
+            if (template == null)
+            {
+                throw new Exception(string.Format("ActivityTemplate {0} was not found", templateName));
+            }
+
+            var action = new ActionDO
             {
                 IsTempId = true,
-                ActivityTemplateId = setDelayTemplate.Id,
+                ActivityTemplateId = template.Id,
                 CrateStorage = Crate.EmptyStorageAsStr(),
                 CreateDate = DateTime.Now,
-                Ordering = 1,
-                Name = "Set Delay",
-                Label = "Set Delay"
+                Ordering = ordering,
+                Name = actionName,
+                Label = actionLabel
             };
 
-            setDelayAction = await ExplicitConfigurationHelper.Configure(
-                setDelayAction,
-                setDelayTemplate,
-                null
+            action = await ExplicitConfigurationHelper.Configure(
+                action,
+                template,
+                authToken
             );
 
+            return action;
+        }
+
+        private async Task<ActionDO> CreateQueryMTDatabaseAction(IEnumerable<ActivityTemplateDTO> activityList, ActionDO actionDO, int ordering)
+        {
+            return await CreateAction(activityList, actionDO, "QueryMTDatabase", "Query MT Database", "Query MT Database", ordering);
+        }
+
+
+        private async Task<ActionDO> CreateSetDelayAction(IEnumerable<ActivityTemplateDTO> activityList, ActionDO actionDO, Duration externalDurationControl, int ordering)
+        {
+            var setDelayAction = await CreateAction(activityList, actionDO, "SetDelay", "Set Delay", "Set Delay", ordering);
             //update action's duration value
             using (var updater = Crate.UpdateStorage(setDelayAction))
             {
@@ -254,45 +333,18 @@ namespace terminalDocuSign.Actions
                 duration.Minutes = externalDurationControl.Minutes;
             }
 
-            actionDO.ChildNodes.Add(setDelayAction);
+            return setDelayAction;
         }
 
         #region Monitor_DocuSign routines.
 
-        private async Task CreateEmptyMonitorDocuSignAction(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
+        private async Task<ActionDO> CreateEmptyMonitorDocuSignAction(IEnumerable<ActivityTemplateDTO> activityList, ActionDO actionDO, AuthorizationTokenDO authTokenDO, int ordering)
         {
-            
 
-            const string monitorDocuSignTemplateName = "Monitor_DocuSign_Envelope_Activity";
-            var monitorDocuSignTemplate = (await HubCommunicator.GetActivityTemplates(actionDO))
-                .FirstOrDefault(x => x.Name == monitorDocuSignTemplateName);
-
-            if (monitorDocuSignTemplate == null)
-            {
-                throw new Exception(string.Format("ActivityTemplate {0} was not found", monitorDocuSignTemplateName));
-            }
-
-            var monitorDocuSignAction = new ActionDO
-            {
-                IsTempId = true,
-                ActivityTemplateId = monitorDocuSignTemplate.Id,
-                CrateStorage = Crate.EmptyStorageAsStr(),
-                CreateDate = DateTime.Now,
-                Ordering = 1,
-                Name = "Monitor DocuSign",
-                Label = "Monitor DocuSign"
-            };
-
-            monitorDocuSignAction = await ExplicitConfigurationHelper.Configure(
-                monitorDocuSignAction,
-                monitorDocuSignTemplate,
-                authTokenDO
-            );
-
-            actionDO.ChildNodes.Add(monitorDocuSignAction);
+            return await CreateAction(activityList, actionDO, "Monitor_DocuSign_Envelope_Activity", "Monitor DocuSign", "Monitor DocuSign", ordering, authTokenDO);
         }
 
-        private void ApplyMonitorDocuSignSpecificRecipient(ActionDO monitorAction, RadioButtonOption source)
+        private void ConfigureMonitorDocuSignSpecificRecipient(ActionDO monitorAction, RadioButtonOption source)
         {
             using (var updater = Crate.UpdateStorage(monitorAction))
             {
@@ -309,8 +361,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private void ApplyMonitorDocuSignSpecificTemplate(
-            ActionDO monitorAction, RadioButtonOption option)
+        private void ConfigureMonitorDocuSignSpecificTemplate(ActionDO monitorAction, RadioButtonOption option)
         {
             using (var updater = Crate.UpdateStorage(monitorAction))
             {
@@ -328,8 +379,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private void ApplyMonitorDocuSignSpecificEvent(
-            ActionDO monitorAction, DropDownList ddl)
+        private void ConfigureMonitorDocuSignSpecificEvent(ActionDO monitorAction, DropDownList ddl)
         {
             using (var updater = Crate.UpdateStorage(monitorAction))
             {
@@ -356,13 +406,9 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private async Task ApplyNotifierAction(ActionDO solutionAction, DropDownList ddl)
+        private async Task<ActionDO> CreateNotifierAction(IEnumerable<ActivityTemplateDTO> activityList, ActionDO solutionAction, DropDownList ddl, int ordering)
         {
-            if (solutionAction.ChildNodes == null)
-            {
-                return;
-            }
-
+            
             var notifierAction = (ActionDO)solutionAction.ChildNodes.FirstOrDefault(c => ((ActionDO)c).ActivityTemplate.Tags != null && ((ActionDO)c).ActivityTemplate.Tags.Contains("Notifier"));
             // Remove action if action types do not match.
             if (notifierAction != null)
@@ -378,13 +424,10 @@ namespace terminalDocuSign.Actions
                 }
             }
                 
-            
-
             // Add action if no notifier action exist.
             if (!string.IsNullOrEmpty(ddl.Value) && notifierAction == null)
             {
-                var templates = await HubCommunicator.GetActivityTemplates(solutionAction);
-                var selectedTemplate = templates.FirstOrDefault(x => x.Id.ToString() == ddl.Value);
+                var selectedTemplate = activityList.FirstOrDefault(x => x.Id.ToString() == ddl.Value);
 
                 if (selectedTemplate != null)
                 {
@@ -394,14 +437,15 @@ namespace terminalDocuSign.Actions
                         ActivityTemplateId = selectedTemplate.Id,
                         CrateStorage = Crate.EmptyStorageAsStr(),
                         CreateDate = DateTime.Now,
-                        Ordering = 1,
+                        Ordering = ordering,
                         Name = selectedTemplate.Label,
                         Label = selectedTemplate.Label
                     };
-
-                    solutionAction.ChildNodes.Add(handlerAction);
+                    return handlerAction;
                 }
             }
+
+            return null;
         }
 
         #endregion Monitor_DocuSign routines.
