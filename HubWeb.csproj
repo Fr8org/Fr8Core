@@ -347,6 +347,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\StartupMigration.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Api\ActionsController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
