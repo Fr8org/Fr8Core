@@ -68,9 +68,12 @@ namespace Hub.Services
         public async Task ProcessInboundEvents(Crate curCrateStandardEventReport)
         {
             var eventReportMS = curCrateStandardEventReport.Get<EventReportCM>();
-            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            string systemUserEmail = configRepository.Get("SystemUserEmail");
 
+            // Fetching values from Config file is not working on CI.
+            //var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+            //string systemUserEmail = configRepository.Get("SystemUserEmail");
+
+            string systemUserEmail = "system1@fr8.co";
             if (eventReportMS.EventPayload == null)
             {
                 throw new ArgumentException("EventReport can't have a null payload");
