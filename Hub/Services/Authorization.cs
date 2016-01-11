@@ -176,9 +176,22 @@ namespace Hub.Services
                         actionDTO.AuthToken = new AuthorizationTokenDTO()
                         {
                             UserId = authToken.UserDO != null ? authToken.UserDO.Id : authToken.UserID,
-                            ExternalAccountId = authToken.ExternalAccountId,
                             Token = authToken.Token,
                             AdditionalAttributes = authToken.AdditionalAttributes
+                        };
+                    }
+                }
+
+                if (actionDTO.AuthToken == null)
+                {
+                    var route = ObjectFactory.GetInstance<IRoute>().GetRoute(action);
+                    var dockyardAccount = route != null ? route.Fr8Account : null;
+
+                    if (dockyardAccount != null)
+                    {
+                        actionDTO.AuthToken = new AuthorizationTokenDTO
+                        {
+                            UserId = dockyardAccount.Id,
                         };
                     }
                 }
@@ -642,21 +655,21 @@ namespace Hub.Services
 
         private void RemoveToken(IUnitOfWork uow, AuthorizationTokenDO authToken)
         {
-            var actions = uow.ActionRepository
-                .GetQuery()
-                .Where(x => x.AuthorizationToken.Id == authToken.Id)
-                .ToList();
+                    var actions = uow.ActionRepository
+                        .GetQuery()
+                        .Where(x => x.AuthorizationToken.Id == authToken.Id)
+                        .ToList();
 
-            foreach (var action in actions)
-            {
-                action.AuthorizationToken = null;
-            }
+                    foreach (var action in actions)
+                    {
+                        action.AuthorizationToken = null;
+                    }
 
-            uow.SaveChanges();
+                    uow.SaveChanges();
 
-            uow.AuthorizationTokenRepository.Remove(authToken);
-            uow.SaveChanges();
-        }
+                    uow.AuthorizationTokenRepository.Remove(authToken);
+                    uow.SaveChanges();
+                }
 
         public void SetMainToken(string userId, Guid authTokenId)
         {
