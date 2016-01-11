@@ -27,6 +27,12 @@
                                     <i class="fa fa-gear fa-5x"></i>
                                 </a>
                                 <ul class="dropdown-menu pull-right" role="menu" stop-click-propagation>
+                                    <li role="menuitem" ng-if="action.activityTemplate.terminal.authenticationType != 1 && action.activityTemplate.needsAuthentication">
+                                        <a ng-click="chooseAuthToken(action);">
+                                            <i class="fa fa-user"></i>
+                                            Choose authentication
+                                        </a>
+                                    </li>
                                     <li role="menuitem">
                                         <a ng-click="deleteAction(action);">
                                             <i class="fa fa-trash-o"></i>
@@ -36,7 +42,7 @@
                                 </ul>
                             </div>
                             <div dnd-nodrag>
-                                    <pane-configure-action id="paneConfigureAction" current-action="action" mode="mode"></pane-configure-action>
+                                <pane-configure-action id="paneConfigureAction" current-action="action" mode="mode"></pane-configure-action>
                             </div>
                         </div>
                         <div class="action-arrow-right"></div>

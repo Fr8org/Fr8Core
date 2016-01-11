@@ -10,7 +10,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class SubscriptionDO : BaseDO, ISubscriptionDO
+    public class SubscriptionDO : BaseObject, ISubscriptionDO
     {
         [Key]
         public int Id { get; set; }

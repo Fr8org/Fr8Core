@@ -34,7 +34,7 @@ namespace terminalDocuSign.Actions
             _docuSignManager = new DocuSignManager();
         }
 
-        public async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
             {
@@ -58,11 +58,10 @@ namespace terminalDocuSign.Actions
             string selectedDocusignTemplateId = control.Value;
             if (selectedDocusignTemplateId == null)
             {
-                //TODO change this after 1882 merge
                 return Error(payloadCrates, "No Template was selected at design time", ActionErrorCode.DESIGN_TIME_DATA_MISSING);
             }
 
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             //lets download specified template from user's docusign account
             var downloadedTemplate = _docuSignManager.DownloadDocuSignTemplate(docuSignAuthDTO, selectedDocusignTemplateId);
             //and add it to payload
@@ -99,11 +98,9 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var docuSignTemplatesCrate = _docuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
-
             var controls = CreateControlsCrate();
-            
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
@@ -124,7 +121,6 @@ namespace terminalDocuSign.Actions
                 Label = "Get which template",
                 Name = "Available_Templates",
                 Value = null,
-                Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") },
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Templates",

@@ -3,5 +3,6 @@
         id: number;
         originalFileName: string;
         cloudStorageUrl: string;
+        tags: string;
     }
 } 

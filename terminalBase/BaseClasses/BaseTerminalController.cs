@@ -13,6 +13,12 @@ using Newtonsoft.Json;
 using Data.Infrastructure;
 using Utilities.Logging;
 using Utilities;
+using System.Net.Http;
+using System.IO;
+using System.Web.Routing;
+using System.Net;
+using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
 
 namespace TerminalBase.BaseClasses
 {
@@ -22,6 +28,14 @@ namespace TerminalBase.BaseClasses
     public class BaseTerminalController : ApiController
     {
         private readonly BaseTerminalEvent _baseTerminalEvent;
+        private bool _integrationTestMode;
+
+        public bool IntegrationTestMode {
+            get {
+                return _integrationTestMode;
+            }
+        }
+
         public BaseTerminalController()
         {
             _baseTerminalEvent = new BaseTerminalEvent();
@@ -33,6 +47,9 @@ namespace TerminalBase.BaseClasses
         [HttpGet]
         public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError)
         {
+            if (_integrationTestMode)
+                return Ok();
+
             var exceptionMessage = terminalError.GetFullExceptionMessage() + "      \r\n" + terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
             try
             {
@@ -66,6 +83,9 @@ namespace TerminalBase.BaseClasses
         /// <param name="terminalName"></param>
         private Task<string> ReportStartUp(string terminalName)
         {
+            if (_integrationTestMode)
+                return Task.FromResult<string>(String.Empty);
+
             return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Incident");
         }
 
@@ -100,6 +120,9 @@ namespace TerminalBase.BaseClasses
         /// <param name="terminalName"></param>
         private Task<string> ReportEvent(string terminalName)
         {
+            if (_integrationTestMode)
+                return Task.FromResult<string>(String.Empty);
+
             return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Event");
         }
 
@@ -111,11 +134,12 @@ namespace TerminalBase.BaseClasses
             if (curActionDTO.ActivityTemplate == null)
                 throw new ArgumentException("ActivityTemplate is null", "curActionDTO");
 
-            var isTestActivityTemplate = false;
+            _integrationTestMode = false;
+
             var activityTemplateName = curActionDTO.ActivityTemplate.Name;
             if (activityTemplateName.EndsWith("_TEST"))
             {
-                isTestActivityTemplate = true;
+                _integrationTestMode = true;
                 activityTemplateName = activityTemplateName
                     .Substring(0, activityTemplateName.Length - "_TEST".Length);
             }
@@ -132,7 +156,7 @@ namespace TerminalBase.BaseClasses
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
             object curObject = Activator.CreateInstance(calledType);
 
-            if (isTestActivityTemplate)
+            if (_integrationTestMode)
             {
                 BindTestHubCommunicator(curObject);
             }
@@ -159,10 +183,10 @@ namespace TerminalBase.BaseClasses
                     case "run":
                     case "childrenexecuted":
                         {
-                            OnStartAction(curTerminal, activityTemplateName, isTestActivityTemplate);
+                            OnStartAction(curTerminal, activityTemplateName, IntegrationTestMode);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
                                 .Invoke(curObject, new Object[] { curActionDO, curContainerId, curAuthTokenDO });
-                            await OnCompletedAction(curTerminal, isTestActivityTemplate);
+                            await OnCompletedAction(curTerminal, IntegrationTestMode);
 
                             return resultPayloadDTO;
                         }
@@ -237,6 +261,34 @@ namespace TerminalBase.BaseClasses
              _baseTerminalEvent.SendEventReport(
                  terminalName,
                  string.Format("{0} completed processing this Container at {1}.", terminalName, DateTime.Now.ToString("G"))));
+        }
+
+        public HttpResponseMessage GetActionDocumentation(string helpPath)
+        {
+            string htmlContent = FindDocumentation(helpPath);
+
+            var response = new HttpResponseMessage();
+            response.Content = new StringContent(htmlContent);
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
+
+            return response;
+        }
+
+        private string FindDocumentation(string helppath)
+        {
+            string filename = System.Web.Hosting.HostingEnvironment.MapPath(string.Format("~\\Documentation\\{0}.html", helppath));
+            string content = "";
+
+            try
+            {
+                content = System.IO.File.ReadAllText(filename);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex.InnerException);
+            }
+
+            return content;
         }
     }
 }

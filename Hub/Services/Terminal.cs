@@ -87,7 +87,7 @@ namespace Hub.Services
 
         public async Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
         {
-            var restClient = new RestfulServiceClient();
+            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
             return Mapper.Map<IList<ActivityTemplateDO>>(standardFr8TerminalCM.Actions);
         }

@@ -5,7 +5,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class ExpectedResponseDO : BaseDO
+    public class ExpectedResponseDO : BaseObject
     {
         [Key]
         public int Id { get; set; }

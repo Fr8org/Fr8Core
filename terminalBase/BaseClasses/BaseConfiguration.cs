@@ -20,13 +20,14 @@ namespace TerminalBase.BaseClasses
 
         protected virtual void ConfigureProject(bool selfHost, Action<ConfigurationExpression> terminalStructureMapRegistryConfigExpression)
         {
-            if (!selfHost)
-            {
-                ObjectFactory.Initialize();
-                ObjectFactory.Configure(StructureMapBootStrapper.LiveConfiguration);
-            }
+            ObjectFactory.Initialize();
+            ObjectFactory.Configure(StructureMapBootStrapper.LiveConfiguration);
             TerminalBootstrapper.ConfigureLive();
-            ObjectFactory.Configure(terminalStructureMapRegistryConfigExpression);
+
+            if (terminalStructureMapRegistryConfigExpression != null)
+            {
+                ObjectFactory.Configure(terminalStructureMapRegistryConfigExpression);
+            }
 
             if (selfHost)
             {

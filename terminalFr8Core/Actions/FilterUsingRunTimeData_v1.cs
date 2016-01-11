@@ -250,7 +250,7 @@ namespace terminalFr8Core.Actions
             return curActionDO;
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDataPackageDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDataPackageDO)
         {
             if (Crate.IsStorageEmpty(curActionDataPackageDO))
             {

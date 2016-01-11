@@ -25,10 +25,23 @@ namespace TerminalBase.Infrastructure
         public delegate Crate EventParser(string externalEventPayload);
         
         private string eventWebServerUrl = string.Empty;
+        private bool eventsDisabled = false;
 
         public BaseTerminalEvent()
         {
-            eventWebServerUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/event";
+            //Missing CoreWebServerUrl most likely means that terminal is running in an integration test environment. 
+            //Disable event distribution in such case since we don't need it (nor do we have a Hub instance 
+            //to send events too).
+            eventWebServerUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl");
+            if (string.IsNullOrEmpty(eventWebServerUrl))
+            {
+                eventsDisabled = true;
+            }
+            else
+            {
+                eventWebServerUrl += "api/v1/event/gen1_event";
+            }
+
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
             _crateManager = ObjectFactory.GetInstance<CrateManager>();
@@ -37,6 +50,8 @@ namespace TerminalBase.Infrastructure
 
         public Task<string> SendEventOrIncidentReport(string terminalName, string eventType)
         {
+            if (eventsDisabled) return Task.FromResult(string.Empty);
+
             //SF DEBUG -- Skip this event call for local testing
             //return;
 
@@ -64,6 +79,7 @@ namespace TerminalBase.Infrastructure
             //SF DEBUG -- Skip this event call for local testing
             //return;
 
+            if (eventsDisabled) return Task.FromResult(string.Empty);
 
             //make Post call
             var restClient = PrepareRestClient();
@@ -92,6 +108,8 @@ namespace TerminalBase.Infrastructure
         /// <returns>Response from the fr8 Event Controller</returns>
         public Task<string> SendTerminalErrorIncident(string terminalName, string exceptionMessage, string exceptionName)
         {
+            if (eventsDisabled) return Task.FromResult(string.Empty);
+
             //prepare the REST client to make the POST to fr8's Event Controller
             var restClient = PrepareRestClient();
 
@@ -118,8 +136,7 @@ namespace TerminalBase.Infrastructure
         /// In all other scenarios it should be teated as private</returns>
         protected virtual IRestfulServiceClient PrepareRestClient()
         {
-            var restCall = new RestfulServiceClient();
-            return restCall;
+            return ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
 
         /// <summary>
@@ -127,9 +144,11 @@ namespace TerminalBase.Infrastructure
         /// </summary>
         /// <param name="curExternalEventPayload">event pay load received</param>
         /// <param name="parser">delegate method</param>
-        public async Task Process(string curExternalEventPayload,EventParser parser)
+        public async Task Process(string curExternalEventPayload, EventParser parser)
         {
-            var fr8EventUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/fr8event/processdockyardevents";
+            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var fr8EventUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/event/processevents";
             var eventReportCrateDTO = _crateManager.ToDto(parser.Invoke(curExternalEventPayload));
             
             if (eventReportCrateDTO != null)
@@ -137,9 +156,8 @@ namespace TerminalBase.Infrastructure
                 Uri url = new Uri(fr8EventUrl, UriKind.Absolute);
                 try
                 {
-                    HttpClient client = new HttpClient();
-                    client.Timeout = new TimeSpan(0, 10, 0); //10 minutes
-                    await client.PostAsJsonAsync(url, eventReportCrateDTO);
+                    //TODO are we expecting a timeout??
+                    await client.PostAsync(url, eventReportCrateDTO);
                 }
                 catch (TaskCanceledException)
                 {

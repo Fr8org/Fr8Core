@@ -12,6 +12,7 @@ using TerminalBase.Infrastructure;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Moq;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace terminalDropboxTests.Actions
 {
@@ -26,7 +27,7 @@ namespace terminalDropboxTests.Actions
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
             var restfulServiceClient = new Mock<IRestfulServiceClient>();
-            restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>()))
+            restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
                 .Returns(Task.FromResult(FixtureData.FakePayloadDTO));
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
 

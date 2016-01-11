@@ -10,17 +10,6 @@ namespace terminalAtlassian
 {
     public class SelfHostFactory
     {
-        public class DropboxControllerTypeResolver : IHttpControllerTypeResolver
-        {
-            public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-            {
-                return new Type[] {
-                    typeof(Controllers.ActionController),
-                    typeof(Controllers.TerminalController)
-                };
-            }
-        }
-
         public class SelfHostStartup
         {
             public void Configuration(IAppBuilder app)
@@ -31,9 +20,21 @@ namespace terminalAtlassian
             }
         }
 
+        public class DropboxControllerTypeResolver : IHttpControllerTypeResolver
+        {
+            public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
+            {
+                return new Type[] {
+                    typeof(Controllers.ActionController),
+                    typeof(Controllers.TerminalController),
+                    typeof(Controllers.AuthenticationController)
+                };
+            }
+        }
+
         public static IDisposable CreateServer(string url)
         {
-            return WebApp.Start<SelfHostFactory.SelfHostStartup>(url: url);
+            return WebApp.Start<SelfHostStartup>(url: url);
         }
     }
 }

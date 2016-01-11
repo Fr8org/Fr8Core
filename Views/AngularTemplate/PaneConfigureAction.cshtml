@@ -1,4 +1,4 @@
-﻿<div class="pane-configure-action" block-if="processing === true" ng-click="loadConfiguration()">
+﻿<div class="pane-configure-action" block-if="processing === true" ng-click="reloadConfiguration()">
     <div ng-if="!(currentAction.activityTemplate.category==='Solution' && mode !== 'solution')">
         <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
             <configuration-control current-action="currentAction" field="field" />

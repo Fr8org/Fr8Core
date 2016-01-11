@@ -14,17 +14,14 @@ using Salesforce.Common;
 namespace terminalSalesforce.Controllers
 {
     [RoutePrefix("actions")]
-    public class ActionController:ApiController
+    public class ActionController: BaseTerminalController
     {
         private const string curTerminal = "terminalSalesforce";
-        private BaseTerminalController _baseTerminalController = new BaseTerminalController();
-        private ISalesforceIntegration _salesforceIntegration = new SalesforceIntegration();
-
 
         [HttpPost]
         public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
-            return _baseTerminalController.HandleFr8Request(curTerminal, actionType, curActionDTO);
+            return HandleFr8Request(curTerminal, actionType, curActionDTO);
         }
     }
 }

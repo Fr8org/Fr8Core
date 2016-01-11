@@ -93,7 +93,7 @@ namespace terminalSlack.Actions
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator,authTokenDO);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (Crate.IsStorageEmpty(curActionDO))
             {
@@ -134,10 +134,6 @@ namespace terminalSlack.Actions
                     Label = "Select Slack Channel",
                     Name = "Selected_Slack_Channel",
                     Required = true,
-                    Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onChange", "requestConfig")
-                    },
                     Source = new FieldSourceDTO
                     {
                         Label = "Available Channels",

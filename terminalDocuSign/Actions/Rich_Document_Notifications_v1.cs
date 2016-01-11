@@ -27,7 +27,7 @@ namespace terminalDocuSign.Actions
                 Controls.Add(new RadioButtonGroup()
                 {
                     Label = "Receive notification when something happens involving",
-                    Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") },
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                     Radios = new List<RadioButtonOption>
                     {
                         new RadioButtonOption
@@ -57,8 +57,7 @@ namespace terminalDocuSign.Actions
                                     {
                                         Label = "AvailableTemplates",
                                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                    },
-                                    Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
+                                    }
                                 }
                             }
                         }
@@ -69,19 +68,19 @@ namespace terminalDocuSign.Actions
                 {
                     Name = "SpecificEvent",
                     Label = "What event do you want to be notified about?",
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                     Source = new FieldSourceDTO
                     {
                         Label = "AvailableEvents",
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                    },
-                    Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
+                    }
                 });
 
                 Controls.Add(new RadioButtonGroup()
                 {
                     Name = "WhenToBeNotified",
                     Label = "When do you want to be notified?",
-                    Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") },
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                     Radios = new List<RadioButtonOption>
                     {
                         new RadioButtonOption
@@ -93,10 +92,22 @@ namespace terminalDocuSign.Actions
                         new RadioButtonOption
                         {
                             Name = "NotificationMode",
-                            Value = "When the event doesn't happen in specified time",
+                            Value = "If a recipient hasn't taken the following action",
                             Controls = new ControlDefinitionDTO[]
                             {
-                                new Duration()
+                                new DropDownList
+                                {
+                                    Name = "FollowUpEvent",
+                                    Source = new FieldSourceDTO
+                                    {
+                                        Label = "AvailableFollowUpEvents",
+                                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                                    }
+                                },
+                                new Duration
+                                {
+                                    Label = "Within this amount of time"
+                                }
                             }
                         }
                     }
@@ -111,7 +122,7 @@ namespace terminalDocuSign.Actions
                         Label = "AvailableHandlers",
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     },
-                    Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 });
             }
         }
@@ -398,7 +409,7 @@ namespace terminalDocuSign.Actions
         private Crate PackAvailableTemplates(AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert
-                .DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+                .DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             var crate = DocuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             crate.Label = "AvailableTemplates";

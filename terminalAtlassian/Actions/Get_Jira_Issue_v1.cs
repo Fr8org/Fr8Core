@@ -34,6 +34,27 @@ namespace terminalAtlassian.Actions
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
         }
 
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        {
+            if (Crate.IsStorageEmpty(curActionDO))
+            {
+                return ConfigurationRequestType.Initial;
+            }
+
+            return ConfigurationRequestType.Followup;
+        }
+
+        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                updater.CrateStorage.Clear();
+                updater.CrateStorage.Add(CreateControlsCrate());
+            }
+
+            return await Task.FromResult<ActionDO>(curActionDO);
+        }
+
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
@@ -69,35 +90,13 @@ namespace terminalAtlassian.Actions
             return Data.Crates.Crate.FromContent("Jira Issue Details", new StandardPayloadDataCM(curJiraIssue));
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
-        {
-            if (Crate.IsStorageEmpty(curActionDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
-        }
-
-        protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
-        {
-            using (var updater = Crate.UpdateStorage(curActionDO))
-            {
-                updater.CrateStorage.Clear();
-                updater.CrateStorage.Add(CreateControlsCrate());
-            }
-
-            return await Task.FromResult<ActionDO>(curActionDO);
-        }
-
         private Crate CreateControlsCrate()
         {
             var control = new TextBox()
             {
                 Label = "Jira Key",
                 Name = "jira_key",
-                Required = true,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                Required = true
             };
 
             return PackControlsCrate(control);

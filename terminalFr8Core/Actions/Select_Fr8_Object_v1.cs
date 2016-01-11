@@ -14,6 +14,8 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 using Data.Entities;
+using StructureMap;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace terminalFr8Core.Actions
 {
@@ -35,10 +37,7 @@ namespace terminalFr8Core.Actions
                     Name = "Selected_Fr8_Object",
                     Value = "",
                     Required = true,
-                    Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onChange", "requestConfig")
-                    },
+                    Events = new List<ControlEvent>(){ ControlEvent.RequestConfig },
                     Source = new FieldSourceDTO
                     {
                         Label = "Select Fr8 Object",
@@ -74,24 +73,24 @@ namespace terminalFr8Core.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                var confControls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+                var configurationControls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
-                if (confControls != null)
+                if (configurationControls != null)
                 {
-                    var ui = new ActionUi();
+                    var actionUi = new ActionUi();
 
                     // Clone properties of StandardConfigurationControlsCM to handy ActionUi
-                    ui.ClonePropertiesFrom(confControls);
+                    actionUi.ClonePropertiesFrom(configurationControls);
 
-                    if (!string.IsNullOrWhiteSpace(ui.Selected_Fr8_Object.Value))
+                    if (!string.IsNullOrWhiteSpace(actionUi.Selected_Fr8_Object.Value))
                     {
-                        var fr8ObjectCrateDTO = await GetDesignTimeFieldsCrateOfSelectedFr8Object(ui.Selected_Fr8_Object.Value);
+                        var fr8ObjectCrateDTO = await GetDesignTimeFieldsCrateOfSelectedFr8Object(actionUi.Selected_Fr8_Object.Value);
 
                         const string designTimeControlName = "Select Fr8 Object Properties";
-                        ui.Selected_Fr8_Object.Label = designTimeControlName;
+                        actionUi.Selected_Fr8_Object.Label = designTimeControlName;
 
                         // Sync changes from ActionUi to StandardConfigurationControlsCM
-                        confControls.ClonePropertiesFrom(ui);
+                        configurationControls.ClonePropertiesFrom(actionUi);
 
                         updater.CrateStorage.RemoveByLabel(designTimeControlName);
                         updater.CrateStorage.Add(fr8ObjectCrateDTO);
@@ -102,7 +101,7 @@ namespace terminalFr8Core.Actions
             return await Task.FromResult(curActionDO);
         }
 
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
         {
             if (Crate.IsStorageEmpty(curActionDO))
             {
@@ -134,17 +133,12 @@ namespace terminalFr8Core.Actions
         // Get the Design time fields crate.
         private async Task<Crate> GetDesignTimeFieldsCrateOfSelectedFr8Object(string fr8Object)
         {
-            var httpClient = new HttpClient();
-
+            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/manifests?id="
                 + Int32.Parse(fr8Object);
-            using (var response = await httpClient.GetAsync(url))
-            {
-                var content = await response.Content.ReadAsAsync<CrateDTO>();
-
-                return Crate.FromDto(content);
-            }
+            var response = await client.GetAsync<CrateDTO>(new Uri(url));
+            return Crate.FromDto(response);
 		}
 
 		#region Execution

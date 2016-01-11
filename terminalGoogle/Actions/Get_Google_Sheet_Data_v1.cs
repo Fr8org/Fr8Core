@@ -29,7 +29,7 @@ namespace terminalGoogle.Actions
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             if (authTokenDO == null) return true;
-            if (!base.NeedsAuthentication(authTokenDO)) 
+            if (!base.NeedsAuthentication(authTokenDO))
                 return false;
             var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             // we may also post token to google api to check its validity
@@ -72,6 +72,7 @@ namespace terminalGoogle.Actions
             {
                 updater.CrateStorage.Add(payloadDataCrate);
             }
+
             
             return Success(payloadCrates);            
         }
@@ -125,10 +126,7 @@ namespace terminalGoogle.Actions
                 Label = "Select a Google Spreadsheet",
                 Name = "select_spreadsheet",
                 Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
+                Events = new List<ControlEvent>() { ControlEvent.RequestConfig },
                 Source = new FieldSourceDTO
                 {
                     Label = "Select a Google Spreadsheet",
@@ -211,7 +209,7 @@ namespace terminalGoogle.Actions
 
             if (!string.IsNullOrEmpty(spreadsheetsFromUserSelection))
             {
-                return await TransformSpreadsheetDataToStandardTableDataCrate(curActionDO, authTokenDO, spreadsheetsFromUserSelection);
+                return TransformSpreadsheetDataToStandardTableDataCrate(curActionDO, authTokenDO, spreadsheetsFromUserSelection);
             }
             else
             {
@@ -219,7 +217,7 @@ namespace terminalGoogle.Actions
             }
         }
 
-        private async Task<ActionDO> TransformSpreadsheetDataToStandardTableDataCrate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, string spreadsheetUri)
+        private ActionDO TransformSpreadsheetDataToStandardTableDataCrate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO, string spreadsheetUri)
         {
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
             // Fetch column headers in Excel file and assign them to the action's crate storage as Design TIme Fields crate
@@ -232,7 +230,7 @@ namespace terminalGoogle.Actions
                     updater.CrateStorage.RemoveByLabel(label);
                     var curCrateDTO = Crate.CreateDesignTimeFieldsCrate(
                                 label,
-                                headers.Select(col => new FieldDTO() { Key = col.Key, Value = col.Key }).ToArray()
+                                headers.Select(col => new FieldDTO() { Key = col.Key, Value = col.Key, Availability = Data.States.AvailabilityType.RunTime }).ToArray()
                             );
                     updater.CrateStorage.Add(curCrateDTO);
                 }

@@ -169,6 +169,16 @@
                     }
 
                     $scope.terminals = terminals;
+
+                    angular.forEach(terminals, function (term) {
+                        var i;
+                        for (i = 0; i < term.authTokens.length; ++i) {
+                            if (term.authTokens[i].isSelected) {
+                                term.selectedAuthTokenId = term.authTokens[i].id;
+                                break;
+                            }
+                        }
+                    });
                 })
                 .finally(function () {
                     _loading = false;
