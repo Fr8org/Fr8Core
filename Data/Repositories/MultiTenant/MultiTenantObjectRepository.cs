@@ -1,38 +1,35 @@
-﻿using Data.Entities;
-using Data.Infrastructure.StructureMap;
-using Data.Interfaces;
-using Data.Interfaces.Manifests;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using Data.Expressions;
+using Data.Infrastructure.MultiTenant;
+using Data.Interfaces;
+using Data.Interfaces.Manifests;
 
 namespace Data.Repositories
 {
-    public class MultiTenantObjectRepository
+    public class MultiTenantObjectRepository : IMultiTenantObjectRepository
     {
-        private Infrastructure.MultiTenant.MT_Field _mtField;
-        private Infrastructure.MultiTenant.MT_Data _mtData;
-        private Infrastructure.MultiTenant.MT_Object _mtObject;
-        private Infrastructure.MultiTenant.MT_FieldType _mtFieldType;
+        private MT_Field _mtField;
+        private MT_Data _mtData;
+        private MT_Object _mtObject;
+        private MT_FieldType _mtFieldType;
 
         public MultiTenantObjectRepository()
         {
-            this._mtField = new Infrastructure.MultiTenant.MT_Field();
-            this._mtData = new Infrastructure.MultiTenant.MT_Data();
-            this._mtObject = new Infrastructure.MultiTenant.MT_Object();
-            this._mtFieldType = new Infrastructure.MultiTenant.MT_FieldType();
+            this._mtField = new MT_Field();
+            this._mtData = new MT_Data();
+            this._mtObject = new MT_Object();
+            this._mtFieldType = new MT_FieldType();
         }
 
         public void Add(IUnitOfWork _uow, Manifest curManifest, string curFr8AccountId)
         {
             var curDataType = curManifest.GetType();
-            var curDataProperties = curDataType.GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();
+            var curDataProperties = curDataType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).ToList();
             //get or create MTObject
             var correspondingMTObject = _mtObject.GetOrCreateMT_Object(_uow, curManifest, curDataType);
             if (correspondingMTObject.Fields == null)
@@ -61,15 +58,15 @@ namespace Data.Repositories
             {
                 var correspondingDTFields = _uow.MTFieldRepository.FindList(a => a.MT_ObjectId == currentMTObject.Id);
                 var keyPropertyInfo = GetPropertyInfo(keyProperty);
-                MT_Data correspondingMTData = FindMT_DataByKeyField(_uow, curFr8AccountId, curManifest, currentMTObject,
+                Entities.MT_Data correspondingMTData = FindMT_DataByKeyField(_uow, curFr8AccountId, curManifest, currentMTObject,
                     correspondingDTFields, keyPropertyInfo);
                 if (correspondingMTData != null)
                 {
 					correspondingMTData.UpdatedAt = DateTime.UtcNow;
                     var curDataProperties =
-                        curManifestType.GetProperties(System.Reflection.BindingFlags.DeclaredOnly |
-                                                      System.Reflection.BindingFlags.Instance |
-                                                      System.Reflection.BindingFlags.Public).ToList();
+                        curManifestType.GetProperties(BindingFlags.DeclaredOnly |
+                                                      BindingFlags.Instance |
+                                                      BindingFlags.Public).ToList();
                     MapManifestToMTData(curFr8AccountId, curManifest, curDataProperties, correspondingMTData, currentMTObject);
                     return;
                 }
@@ -88,11 +85,11 @@ namespace Data.Repositories
             var correspondingDTObject = _uow.MTObjectRepository.FindOne(a => a.ManifestId == curManifest.ManifestType.Id && a.MT_FieldType == curDTOObjectFieldType);
             var correspondingDTFields = _uow.MTFieldRepository.FindList(a => a.MT_ObjectId == correspondingDTObject.Id);
 
-            MT_Data correspondingMTData = FindMT_DataByKeyField(_uow, curFr8AccountId, curManifest, correspondingDTObject, correspondingDTFields, keyPropertyInfo);
+            Entities.MT_Data correspondingMTData = FindMT_DataByKeyField(_uow, curFr8AccountId, curManifest, correspondingDTObject, correspondingDTFields, keyPropertyInfo);
             if (correspondingMTData == null) throw new Exception(String.Format("MT_Data wasn't found for {0} with {1} == {2}", curManifest.ManifestType.Type, keyPropertyInfo.Name));
 
 			correspondingMTData.UpdatedAt = DateTime.UtcNow;
-            var curDataProperties = curManifestType.GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();
+            var curDataProperties = curManifestType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).ToList();
             MapManifestToMTData(curFr8AccountId, curManifest, curDataProperties, correspondingMTData, correspondingDTObject);
         }
 
@@ -101,8 +98,8 @@ namespace Data.Repositories
             PropertyInfo leftOperand;
             object rightOperand;
             MethodInfo equalMethod;
-            MT_Object curMTObject = FindMT_ObjectByExpression(_uow, conditionOnKeyProperty, ManifestId, out leftOperand, out rightOperand, out equalMethod);
-            MT_Data curMTData = FindMT_DataByExpression(_uow, curFr8AccountId, leftOperand, rightOperand, equalMethod, curMTObject);
+            Entities.MT_Object curMTObject = FindMT_ObjectByExpression(_uow, conditionOnKeyProperty, ManifestId, out leftOperand, out rightOperand, out equalMethod);
+            Entities.MT_Data curMTData = FindMT_DataByExpression(_uow, curFr8AccountId, leftOperand, rightOperand, equalMethod, curMTObject);
             if (curMTData != null)
                 curMTData.IsDeleted = true;
         }
@@ -112,19 +109,85 @@ namespace Data.Repositories
             PropertyInfo leftOperand;
             object rightOperand;
             MethodInfo equalMethod;
-            MT_Object curMTObject = FindMT_ObjectByExpression(_uow, conditionOnKeyProperty, ManifestId, out leftOperand, out rightOperand, out equalMethod);
-            MT_Data curMTData = FindMT_DataByExpression(_uow, curFr8AccountId, leftOperand, rightOperand, equalMethod, curMTObject);
+            Entities.MT_Object curMTObject = FindMT_ObjectByExpression(_uow, conditionOnKeyProperty, ManifestId, out leftOperand, out rightOperand, out equalMethod);
+            Entities.MT_Data curMTData = FindMT_DataByExpression(_uow, curFr8AccountId, leftOperand, rightOperand, equalMethod, curMTObject);
             return (curMTData == null) ? null : MapMTDataToManifest<T>(curMTData, curMTObject);
         }
 
-        private MT_Data FindMT_DataByExpression(IUnitOfWork _uow, string curFr8AccountId, PropertyInfo leftOperand, object rightOperand, MethodInfo equalMethod, MT_Object curMTObject)
+        public IMtQueryable<T> AsQueryable<T>(IUnitOfWork uow, string curFr8AccountId)
+            where T : Manifest
         {
-            MT_Data curMTData = null;
+            return new MtQueryAll<T>(new MtQueryExecutor<T>(this, uow, curFr8AccountId));
+        }
+
+        public List<T> Query<T>(IUnitOfWork uow, string curFr8AccountId, Expression<Func<T, bool>> query)
+            where T : Manifest
+        {
+            var curMTObjectTypeField = _mtFieldType.GetOrCreateMT_FieldType(uow, typeof(T));
+            var mtObjectType = uow.MTObjectRepository.GetQuery().SingleOrDefault(a => a.MT_FieldType.Id == curMTObjectTypeField.Id);
+            var results = new List<T>();
+
+            if (mtObjectType == null)
+            {
+                return results;
+            }
+
+            var fieldList = new List<Entities.MT_Field>();
+            var fieldMapping = GetFieldMappingForObject(uow, mtObjectType.Id, fieldList);
+            var exprTransformation = new ExpressionTransformation<T, Entities.MT_Data>(x => fieldMapping[x]);
+
+            mtObjectType.Fields = fieldList;
+
+            exprTransformation.Parse(query);
+
+            // we should try to do queries on the DB side in future
+            foreach (var dataRow in uow.MTDataRepository.GetQuery().Where(x => x.MT_ObjectId == mtObjectType.Id))
+            {
+                if (!exprTransformation.CompiledTargetExpression(dataRow))
+                {
+                    continue;
+                }
+
+                results.Add(MapMTDataToManifest<T>(dataRow, mtObjectType));
+            }
+
+            return results;
+        }
+        
+        private static Dictionary<string, string> GetFieldMappingForObject(IUnitOfWork uow, int mtObjectId, List<Entities.MT_Field> fieldList)
+        {
+            var fields = new Dictionary<string, string>();
+
+            foreach (var field in uow.MTFieldRepository.GetQuery().Where(x => x.MT_ObjectId == mtObjectId))
+            {
+                var alias = "Value" + field.FieldColumnOffset;
+                string existingAlias;
+
+                if (fields.TryGetValue(field.Name, out existingAlias))
+                {
+                    if (existingAlias != alias)
+                    {
+                        throw new InvalidOperationException(string.Format("Duplicate field definition. MT object type: {0}. Field {1} is mapped to {2} and {3}", mtObjectId, field.Name, existingAlias, alias));
+                    }
+                }
+                else
+                {
+                    fields[field.Name] = alias;
+                    fieldList.Add(field);
+                }
+            }
+            
+            return fields;
+        }
+
+        private Entities.MT_Data FindMT_DataByExpression(IUnitOfWork _uow, string curFr8AccountId, PropertyInfo leftOperand, object rightOperand, MethodInfo equalMethod, Entities.MT_Object curMTObject)
+        {
+            Entities.MT_Data curMTData = null;
             if (curMTObject != null)
             {
                 var correspondingDTFields = _uow.MTFieldRepository.FindList(a => a.MT_ObjectId == curMTObject.Id);
                 var keyMTField = correspondingDTFields.Where(a => a.Name == leftOperand.Name).FirstOrDefault();
-                var corrMTDataProperty = typeof(MT_Data).GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
+                var corrMTDataProperty = typeof(Entities.MT_Data).GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
                     .Where(a => a.Name == "Value" + keyMTField.FieldColumnOffset).FirstOrDefault();
 
                 var possibleDatas = _uow.MTDataRepository.FindList(a => a.MT_ObjectId == curMTObject.Id && a.fr8AccountId == curFr8AccountId);
@@ -140,14 +203,14 @@ namespace Data.Repositories
             return curMTData;
         }
 
-        private MT_Data FindMT_DataByKeyField<T>(IUnitOfWork _uow, string curFr8AccountId, T curManifest, MT_Object correspondingDTObject, IEnumerable<MT_Field> correspondingDTFields, PropertyInfo keyPropertyInfo) where T : Manifest
+        private Entities.MT_Data FindMT_DataByKeyField<T>(IUnitOfWork _uow, string curFr8AccountId, T curManifest, Entities.MT_Object correspondingDTObject, IEnumerable<Entities.MT_Field> correspondingDTFields, PropertyInfo keyPropertyInfo) where T : Manifest
         {
-            MT_Data correspondingMTData = null;
+            Entities.MT_Data correspondingMTData = null;
             var keyValue = keyPropertyInfo.GetValue(curManifest);
             var possibleDatas = _uow.MTDataRepository.FindList(a => a.MT_ObjectId == correspondingDTObject.Id && a.fr8AccountId == curFr8AccountId);
             var keyMTField = correspondingDTFields.Where(a => a.Name == keyPropertyInfo.Name).FirstOrDefault();
             correspondingMTData = null;
-            var corrMTDataProperty = typeof(MT_Data).GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
+            var corrMTDataProperty = typeof(Entities.MT_Data).GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
                     .Where(a => a.Name == "Value" + keyMTField.FieldColumnOffset).FirstOrDefault();
 
             if (corrMTDataProperty == null) return null;
@@ -164,7 +227,7 @@ namespace Data.Repositories
             return correspondingMTData;
         }
 
-        private MT_Object FindMT_ObjectByExpression<T>(IUnitOfWork _uow, Expression<Func<T, object>> conditionOnKeyProperty, int ManifestId, out PropertyInfo leftOperand, out object rightOperand, out MethodInfo equalMethod) where T : Manifest
+        private Entities.MT_Object FindMT_ObjectByExpression<T>(IUnitOfWork _uow, Expression<Func<T, object>> conditionOnKeyProperty, int ManifestId, out PropertyInfo leftOperand, out object rightOperand, out MethodInfo equalMethod) where T : Manifest
         {
             Expression expr = conditionOnKeyProperty;
             leftOperand = null;
@@ -181,7 +244,7 @@ namespace Data.Repositories
             catch { throw new Exception("Incorrect lambda expression"); }
 
             var curMTObjectTypeField = _mtFieldType.GetOrCreateMT_FieldType(_uow, typeof(T));
-            MT_Object curMTObject = null;
+            Entities.MT_Object curMTObject = null;
             if (ManifestId == -1)
             {
                 //We assume that there must be a single MTObject                
@@ -200,13 +263,13 @@ namespace Data.Repositories
         }
 
         //maps BaseMTO to MTData
-        private void MapManifestToMTData(string curFr8AccountId, Manifest curManifest, List<PropertyInfo> curDataProperties, MT_Data data, MT_Object correspondingDTObject)
+        private void MapManifestToMTData(string curFr8AccountId, Manifest curManifest, List<PropertyInfo> curDataProperties, Entities.MT_Data data, Entities.MT_Object correspondingDTObject)
         {
             var correspondingDTFields = correspondingDTObject.Fields;
             data.fr8AccountId = curFr8AccountId;
             data.GUID = Guid.Empty;
             data.MT_ObjectId = correspondingDTObject.Id;
-            var dataValueCells = data.GetType().GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();
+            var dataValueCells = data.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).ToList();
             foreach (var field in correspondingDTFields)
             {
                 var property = curDataProperties.Where(a => a.Name == field.Name).FirstOrDefault();
@@ -217,14 +280,14 @@ namespace Data.Repositories
         }
 
         //instantiate object from MTData
-        private T MapMTDataToManifest<T>(MT_Data data, MT_Object correspondingDTObject)
+        private T MapMTDataToManifest<T>(Entities.MT_Data data, Entities.MT_Object correspondingDTObject)
         {
 
             var correspondingDTFields = correspondingDTObject.Fields;
             var objMTType = correspondingDTObject.MT_FieldType;
             object obj = Activator.CreateInstance(objMTType.AssemblyName, objMTType.TypeName).Unwrap();
-            var properties = obj.GetType().GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();
-            var dataValueCells = data.GetType().GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();
+            var properties = obj.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).ToList();
+            var dataValueCells = data.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).ToList();
 
             if (correspondingDTFields != null)
             {
@@ -244,6 +307,7 @@ namespace Data.Repositories
                     correspondingProperty.SetValue(obj, val);
                 }
             }
+
             return (T)obj;
         }
 

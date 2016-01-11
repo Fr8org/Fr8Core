@@ -12,6 +12,8 @@ using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
+using System.Linq;
+using System.Data.Entity;
 
 namespace Hub.Services
 {
@@ -92,12 +94,22 @@ namespace Hub.Services
             return Mapper.Map<IList<ActivityTemplateDO>>(standardFr8TerminalCM.Actions);
         }
 
-        public Task<TerminalDO> GetTerminalById(Guid Id)
+        public Task<TerminalDO> GetTerminalById(int Id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return Task.FromResult(uow.TerminalRepository.GetByKey(Id));
             }
+        }
+
+        public async Task<bool> IsUserSubscribedToTerminal(int terminalId, string userId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var subscription = await uow.TerminalSubscriptionRepository.GetQuery().FirstOrDefaultAsync(s => s.TerminalId == terminalId && s.UserDO.Id == userId);
+                return subscription != null;
+            }
+            
         }
     }
 }
