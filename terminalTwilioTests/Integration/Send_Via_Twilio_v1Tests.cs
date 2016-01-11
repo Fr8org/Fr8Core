@@ -94,8 +94,7 @@ namespace terminalTwilioTests.Integration
                     (TextSource)
                         updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
                 curTextSource.ValueSource = "specific";
-                updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0].Value =
-                    "+15005550006";
+                curTextSource.TextValue = "+15005550006";
                 updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[1].Value =
                     "That is the body of the message";
             }

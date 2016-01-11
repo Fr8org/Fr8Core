@@ -128,7 +128,7 @@ namespace terminalExcel.Actions
                 throw new Exception("More than one Standard File Handle crates found upstream.");
 
             // Deserialize the Standard File Handle crate to StandardFileHandleMS object
-            StandardFileHandleMS fileHandleMS = upstreamFileHandleCrates.First().Get<StandardFileHandleMS>();
+            StandardFileDescriptionCM fileHandleMS = upstreamFileHandleCrates.First().Get<StandardFileDescriptionCM>();
 
             // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
             StandardTableDataCM tableDataMS = ExcelUtils.GetTableData(fileHandleMS.DockyardStorageUrl);
@@ -138,7 +138,7 @@ namespace terminalExcel.Actions
 
         //private async Task<FileDO> ProcessFile(string dockyardStorageUrl, string fileName)
         //{
-        //    using (var client = new HttpClient())
+        //    using (var client = new HttpxcsClient())
         //    {
         //        var values = new Dictionary<string, string>
         //                {
@@ -203,9 +203,9 @@ namespace terminalExcel.Actions
             var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
                 .Select(x =>
                 {
-                    var ui = new ActionUi();
-                    ui.ClonePropertiesFrom(x);
-                    return ui;
+                    var actionUi = new ActionUi();
+                    actionUi.ClonePropertiesFrom(x);
+                    return actionUi;
                 })
                  .Where(x => !string.IsNullOrEmpty(x.select_file.Value)).ToArray();
 
@@ -246,7 +246,7 @@ namespace terminalExcel.Actions
 
                 if (!string.IsNullOrEmpty(uploadFilePath))
                 {
-                    TransformExcelFileDataToStandardTableDataCrate(storage, uploadFilePath);
+                    TransformExcelFileDataToStandardTableDataCrate(updater.CrateStorage, uploadFilePath);
                 }
             }
 

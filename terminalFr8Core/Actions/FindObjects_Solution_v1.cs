@@ -176,7 +176,7 @@ namespace terminalFr8Core.Actions
                         Label = "AvailableObjects",
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     },
-                    Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 }
             );
         }

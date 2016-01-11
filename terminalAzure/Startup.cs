@@ -48,7 +48,7 @@ namespace terminalAzure
 
             if (!selfHost)
             {
-                StartHosting("terminal_Azure");
+                StartHosting("terminalAzure");
             }
         }
 
@@ -60,18 +60,5 @@ namespace terminalAzure
                     typeof(Controllers.TerminalController)
                 };
         }
-
-        //public class PluginControllerTypeResolver : IHttpControllerTypeResolver
-        //{
-        //    public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-        //    {
-        //        return new Type[] {
-        //            typeof(Controllers.ActionController),
-        //            typeof(Controllers.EventController),
-        //            typeof(Controllers.PluginController)
-        //        };
-        //    }
-        //}
-
     }
 }

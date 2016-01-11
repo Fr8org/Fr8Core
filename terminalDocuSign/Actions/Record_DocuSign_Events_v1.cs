@@ -14,6 +14,7 @@ using TerminalBase.Infrastructure;
 using terminalDocuSign.Infrastructure;
 using TerminalBase.BaseClasses;
 using Data.Entities;
+using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Actions
 {
@@ -70,27 +71,31 @@ namespace terminalDocuSign.Actions
         {
             DocuSignAccount curDocuSignAccount = new DocuSignAccount();
             var curConnectProfile = curDocuSignAccount.GetDocuSignConnectProfiles();
-
-            if (curConnectProfile.configurations != null &&
-                !curConnectProfile.configurations.Any(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")))
-            {
-                var monitorConnectConfiguration = new DocuSign.Integrations.Client.Configuration
+            try {
+                if (curConnectProfile.configurations != null &&
+                    !curConnectProfile.configurations.Any(config => !string.IsNullOrEmpty(config.name) && config.name.Equals("MonitorAllDocuSignEvents")))
                 {
-                    allowEnvelopePublish = "true",
-                    allUsers = "true",
-                    enableLog = "true",
-                    requiresAcknowledgement = "true",
-                    envelopeEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Envelope")),
-                    recipientEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Recipient")),
-                    name = "MonitorAllDocuSignEvents",
-                    urlToPublishTo =
-                        Regex.Match(ConfigurationManager.AppSettings["TerminalEndpoint"], @"(\w+://\w+:\d+)").Value +
-                        "/terminals/terminalDocuSign/events"
-                };
+                    var monitorConnectConfiguration = new DocuSign.Integrations.Client.Configuration
+                    {
+                        allowEnvelopePublish = "true",
+                        allUsers = "true",
+                        enableLog = "true",
+                        requiresAcknowledgement = "true",
+                        envelopeEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Envelope")),
+                        recipientEvents = string.Join(",", DocuSignEventNames.GetEventsFor("Recipient")),
+                        name = "MonitorAllDocuSignEvents",
+                        urlToPublishTo =
+                            Regex.Match(CloudConfigurationManager.GetSetting("TerminalEndpoint"), @"(\w+://\w+:\d+)").Value +
+                            "/terminals/terminalDocuSign/events"
+                    };
 
-                curDocuSignAccount.CreateDocuSignConnectProfile(monitorConnectConfiguration);
+                    curDocuSignAccount.CreateDocuSignConnectProfile(monitorConnectConfiguration);
+                }
             }
+            catch(Exception ex)
+            {
 
+            }
             return Task.FromResult<ActionDO>(curActionDO);
         }
 
@@ -124,29 +129,27 @@ namespace terminalDocuSign.Actions
 
             if (curEventReport.EventNames.Contains("Envelope"))
             {
-                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                   var  docuSignFields = curEventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().First().AllValues().ToArray();
+                var docuSignFields = curEventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().First();
 
                     DocuSignEnvelopeCM envelope = new DocuSignEnvelopeCM
                     {
-                        CompletedDate = docuSignFields.First(field => field.Key.Equals("CompletedDate")).Value,
-                        CreateDate = docuSignFields.First(field => field.Key.Equals("CreateDate")).Value,
-                        DeliveredDate = docuSignFields.First(field => field.Key.Equals("DeliveredDate")).Value,
-                        EnvelopeId = docuSignFields.First(field => field.Key.Equals("EnvelopeId")).Value,
-                        ExternalAccountId = docuSignFields.First(field => field.Key.Equals("Email")).Value,
-                        SentDate = docuSignFields.First(field => field.Key.Equals("SentDate")).Value,
-                        Status = docuSignFields.First(field => field.Key.Equals("Status")).Value
+                    CompletedDate = docuSignFields.GetValueOrDefault("CompletedDate"), //.First(field => field.Key.Equals("CompletedDate")).Value,
+                    CreateDate = docuSignFields.GetValueOrDefault("CreateDate"),//.First(field => field.Key.Equals("CreateDate")).Value,
+                    DeliveredDate = docuSignFields.GetValueOrDefault("DeliveredDate"),//First(field => field.Key.Equals("DeliveredDate")).Value,
+                    EnvelopeId = docuSignFields.GetValueOrDefault("EnvelopeId"),//First(field => field.Key.Equals("EnvelopeId")).Value,
+                    ExternalAccountId = docuSignFields.GetValueOrDefault("HolderEmail"),//First(field => field.Key.Equals("Email")).Value,
+                    SentDate = docuSignFields.GetValueOrDefault("SentDate"),//First(field => field.Key.Equals("SentDate")).Value,
+                    Status = docuSignFields.GetValueOrDefault("Status"),//First(field => field.Key.Equals("Status")).Value
                     };
 
                     DocuSignEventCM events = new DocuSignEventCM
                     {
-                        EnvelopeId = docuSignFields.First(field => field.Key.Equals("EnvelopeId")).Value,
-                        EventId = docuSignFields.First(field => field.Key.Equals("EventId")).Value,
-                        Object = docuSignFields.First(field => field.Key.Equals("Object")).Value,
-                        RecepientId = docuSignFields.First(field => field.Key.Equals("RecipientId")).Value,
-                        Status = docuSignFields.First(field => field.Key.Equals("Status")).Value,
-                        ExternalAccountId = docuSignFields.First(field => field.Key.Equals("Email")).Value
+                    EnvelopeId = docuSignFields.GetValueOrDefault("EnvelopeId"),//First(field => field.Key.Equals("EnvelopeId")).Value,
+                    EventId = docuSignFields.GetValueOrDefault("EventId"),//First(field => field.Key.Equals("EventId")).Value,
+                    Object = docuSignFields.GetValueOrDefault("Object"),//First(field => field.Key.Equals("Object")).Value,
+                    RecepientId = docuSignFields.GetValueOrDefault("RecipientId"),//First(field => field.Key.Equals("RecipientId")).Value,
+                    Status = docuSignFields.GetValueOrDefault("Status"),//First(field => field.Key.Equals("Status")).Value,
+                    ExternalAccountId = docuSignFields.GetValueOrDefault("HolderEmail"),//First(field => field.Key.Equals("Email")).Value
                     };
 
                     using (var updater = Crate.UpdateStorage(curProcessPayload))
@@ -154,7 +157,6 @@ namespace terminalDocuSign.Actions
                         updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Manifest", envelope));
                         updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event Manifest", events));
                     }
-                }
             }
 
             return Success(curProcessPayload);

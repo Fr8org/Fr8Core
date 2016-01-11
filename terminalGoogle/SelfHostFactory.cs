@@ -11,25 +11,12 @@ namespace terminalGoogle
 {
     public class SelfHostFactory
     {
-        public class DocuSignControllerTypeResolver : IHttpControllerTypeResolver
-        {
-            public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-            {
-                return new[] {
-                    typeof(ActionController),
-                    typeof(TerminalController),
-                    typeof(EventController)
-                };
-            }
-        }
-
         public class SelfHostStartup
         {
             public void Configuration(IAppBuilder app)
             {
-                var config = new HttpConfiguration();
-                BaseTerminalWebApiConfig.Register("Google", config);
-                app.UseWebApi(config);
+                var startup = new Startup();
+                startup.Configuration(app, selfHost: true);
             }
         }
 

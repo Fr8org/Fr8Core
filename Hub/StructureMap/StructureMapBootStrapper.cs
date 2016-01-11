@@ -103,7 +103,7 @@ namespace Hub.StructureMap
                 For<IImapClient>().Use<ImapClientWrapper>();
                 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
-                For<IRestfulServiceClient>().Use<RestfulServiceClient>();
+                For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>();
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
                 For<IRoute>().Use<Route>();
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
@@ -120,13 +120,13 @@ namespace Hub.StructureMap
                 For<IFile>().Use<File>();
                 For<ITerminal>().Use<Terminal>();
                 For<ICrateManager>().Use<CrateManager>();
-                For<IFr8Event>().Use<Fr8Event>();
                 For<IReport>().Use<Report>();
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsRoute>().Use<FindObjectsRoute>();
 	            For<ITime>().Use<Time>();
 	            For<IPusherNotifier>().Use<PusherNotifier>();
                 For<IAuthorization>().Use<Authorization>();
+                For<ITag>().Use<Tag>();
             }
         }
 
@@ -183,7 +183,6 @@ namespace Hub.StructureMap
                 For<IFile>().Use<File>();
                 For<ITerminal>().Use<Terminal>();
                 For<ICrateManager>().Use<CrateManager>();
-                For<IFr8Event>().Use<Fr8Event>();
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsRoute>().Use<FindObjectsRoute>();
                 For<IAuthorization>().Use<Authorization>();
@@ -193,6 +192,8 @@ namespace Hub.StructureMap
 
 				var pusherNotifierMock = new Mock<IPusherNotifier>();
 	            For<IPusherNotifier>().Use(pusherNotifierMock.Object).Singleton();
+
+                For<ITag>().Use<Tag>();
             }
         }
 

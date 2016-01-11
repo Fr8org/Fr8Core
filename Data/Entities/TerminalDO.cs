@@ -10,7 +10,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class TerminalDO : BaseDO, ITerminalDO
+    public class TerminalDO : BaseObject, ITerminalDO
     {
         public TerminalDO()
         {

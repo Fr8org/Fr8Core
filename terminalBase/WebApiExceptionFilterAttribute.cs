@@ -10,6 +10,7 @@ using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Errors;
 using Utilities;
+using System.Threading.Tasks;
 
 namespace TerminalBase
 {
@@ -17,9 +18,24 @@ namespace TerminalBase
     {
         public override void OnException(HttpActionExecutedContext actionExecutedContext)
         {
+            //if (actionExecutedContext.Exception is TaskCanceledException)
+            //{
+            //    // TaskCanceledException is an exception representing a successful task cancellation 
+            //    // Don't need to log it
+            //    // Ref: https://msdn.microsoft.com/en-us/library/dd997396(v=vs.110).aspx
+            //    return;
+            //}
+
             //get the terminal error details
             var curTerminalError = actionExecutedContext.Exception;
-            var terminalName = GetTerminalName(actionExecutedContext.ActionContext.ControllerContext.Controller);
+            var curController = actionExecutedContext.ActionContext.ControllerContext.Controller;
+            var terminalName = GetTerminalName(curController);
+            bool integrationTestMode = false;
+
+            if (curController as BaseTerminalController != null)
+            {
+                integrationTestMode = ((BaseTerminalController)curController).IntegrationTestMode;
+            }
 
             HttpStatusCode statusCode = HttpStatusCode.InternalServerError;
 
@@ -38,8 +54,11 @@ namespace TerminalBase
                 }
             }
 
-            //POST event to fr8 about this terminal error
-            new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError);
+            if (!integrationTestMode)
+            {
+                //POST event to fr8 about this terminal error
+                new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError);
+            }
 
             //prepare the response JSON based on the exception type
             actionExecutedContext.Response = new HttpResponseMessage(statusCode);
@@ -50,10 +69,10 @@ namespace TerminalBase
                 var terminalError =
                     JsonConvert.SerializeObject(new {status = "terminal_error", message = terminalEx.ErrorCode.GetEnumDescription()});
                 actionExecutedContext.Response.Content = new StringContent(terminalError, Encoding.UTF8, "application/json");
-            }
+            }   
             else
             {
-                //if terminal error is general exception, place expcetion message
+                //if terminal error is general exception, place exception message
                 var detailedMessage =
                     JsonConvert.SerializeObject(new { status = "terminal_error", message = curTerminalError.Message });
                 actionExecutedContext.Response.Content = new StringContent(detailedMessage, Encoding.UTF8, "application/json");

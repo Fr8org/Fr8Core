@@ -2,6 +2,9 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
+using Data.Crates;
+using Data.Entities;
+using System.Collections.Generic;
 
 namespace Hub.Interfaces
 {
@@ -19,5 +22,9 @@ namespace Hub.Interfaces
         /// Handles Terminal Event 
         /// </summary>
         void HandleTerminalEvent(LoggingDataCm eventDataCm);
+
+        Task ProcessInboundEvents(Crate curCrateStandardEventReport);
+        Task LaunchProcess(RouteDO curRoute, Crate curEventData = null);
+        Task LaunchProcesses(List<RouteDO> curRoutes, Crate curEventReport);
     }
 }

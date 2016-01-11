@@ -30,6 +30,7 @@ namespace terminalSlack.Actions
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(actionDO, containerId);
+            string message; 
 
             if (NeedsAuthentication(authTokenDO))
             {
@@ -42,22 +43,21 @@ namespace terminalSlack.Actions
                 return Error(payloadCrates, "No selected channelId found in action.");
             }
 
-            var actionFieldName = ExtractControlFieldValue(actionDO, "Select_Message_Field");
-            if (string.IsNullOrEmpty(actionFieldName))
+            var payloadCrateStorage = Crate.GetStorage(payloadCrates);
+            var configurationControls = GetConfigurationControls(actionDO);
+            var messageField = (TextSource)GetControl(configurationControls, "Select_Message_Field", ControlTypes.TextSource);
+            try
             {
-                return Error(payloadCrates, "No selected field found in action.");
+                message = messageField.GetValue(payloadCrateStorage);
+            }
+            catch (ApplicationException ex)
+            {
+                return Error(payloadCrates, "Cannot get selected filed value from TextSource control in action. Detailed information: " + ex.Message);
             }
 
-            var payloadFields = ExtractPayloadFields(payloadCrates);
-
-            var payloadMessageField = payloadFields.FirstOrDefault(x => x.Key == actionFieldName);
-            if (payloadMessageField == null)
-            {
-                return Error(payloadCrates, "No specified field found in action.");
-            }
 
             await _slackIntegration.PostMessageToChat(authTokenDO.Token,
-                actionChannelId, payloadMessageField.Value);
+                actionChannelId, message);
 
             return Success(payloadCrates);
         }
@@ -90,7 +90,7 @@ namespace terminalSlack.Actions
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var oauthToken = authTokenDO.Token;
-            var channels = await _slackIntegration.GetChannelList(oauthToken);
+            var channels = await _slackIntegration.GetAllChannelList(oauthToken);
 
             var crateControls = PackCrate_ConfigurationControls();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
@@ -124,10 +124,6 @@ namespace terminalSlack.Actions
                 Label = "Select Slack Channel",
                 Name = "Selected_Slack_Channel",
                 Required = true,
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onChange", "requestConfig")
-                },
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Channels",

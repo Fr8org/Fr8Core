@@ -38,5 +38,11 @@ namespace terminalDropbox
                 For<IDropboxService>().Use<DropboxService>();
             }
         }
+
+        public static void LiveConfiguration(ConfigurationExpression configuration)
+        {
+            configuration.AddRegistry<LiveMode>();
+        }
+
     }
 }

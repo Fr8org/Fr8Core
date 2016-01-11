@@ -116,14 +116,26 @@ namespace Hub.Services
 
         public void Delete(IUnitOfWork uow, Guid id)
         {
-            var curRoute = uow.RouteRepository.GetQuery().SingleOrDefault(pt => pt.Id == id);
+            var curRoute = uow.RouteRepository.GetQuery().Include(c => c.ChildContainers).SingleOrDefault(pt => pt.Id == id);
 
             if (curRoute == null)
             {
                 throw new EntityNotFoundException<RouteDO>(id);
             }
 
-            _activity.Delete(uow, curRoute);
+            curRoute.RouteState = RouteState.Deleted;
+
+            //Route deletion will only update its RouteState = Deleted
+            //_activity.Delete(uow, curRoute);
+
+            var containers = curRoute.ChildContainers;
+            if (containers != null)
+            {
+                foreach (var container in containers)
+                {
+                    container.ContainerState = ContainerState.Deleted;
+                }
+            }
         }
 
         public IList<SubrouteDO> GetSubroutes(RouteDO curRouteDO)
@@ -173,6 +185,30 @@ namespace Hub.Services
             }
         }
 
+        /// <summary>
+        /// Iterates all RouteNode tree by traversing through children
+        /// </summary>
+        /// <typeparam name="TActivity"></typeparam>
+        /// <param name="rootNode"></param>
+        /// <returns></returns>
+        private IEnumerable<TActivity> EnumerateActivityTree<TActivity>(RouteNodeDO rootNode) where TActivity : RouteNodeDO
+        {
+            var routeNodeQueue = new Queue<RouteNodeDO>();
+            routeNodeQueue.Enqueue(rootNode);
+
+            while (routeNodeQueue.Count > 0)
+            {
+                var result = routeNodeQueue.Dequeue();
+                if (result is TActivity)
+                {
+                    yield return result as TActivity;
+                }
+
+                foreach (var activityDo in result.ChildNodes.OfType<TActivity>())
+                    routeNodeQueue.Enqueue(activityDo);
+            }
+        }
+
 
 
         public async Task<string> Activate(RouteDO curRoute)
@@ -186,20 +222,24 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var route = uow.RouteRepository.GetByKey(curRoute.Id);
-                var activities = EnumerateActivities<ActionDO>(route);
-                foreach (var curActionDO in activities)
+                foreach (SubrouteDO template in route.Subroutes)
                 {
-                    try
+                    var activities = EnumerateActivityTree<ActionDO>(template);
+                    foreach (var curActionDO in activities)
                     {
-                        var resultActivate = await _action.Activate(curActionDO);
+                        try
+                        {
+                            var resultActivate = await _action.Activate(curActionDO);
 
-                        result = "success";
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ApplicationException("Process template activation failed.", ex);
+                            result = "success";
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new ApplicationException("Process template activation failed.", ex);
+                        }
                     }
                 }
+                
 
                 uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Active;
                 uow.SaveChanges();
@@ -214,23 +254,28 @@ namespace Hub.Services
         {
             string result = "no action";
 
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                foreach (var curActionDO in EnumerateActivities<ActionDO>(curRoute))
-                {
-                    try
-                    {
-                        var resultD = await _action.Deactivate(curActionDO);
+                var route = uow.RouteRepository.GetByKey(curRoute.Id);
 
-                        result = "success";
-                    }
-                    catch (Exception ex)
+                foreach (SubrouteDO template in route.Subroutes)
+                {
+                    var activities = EnumerateActivityTree<ActionDO>(template);
+                    foreach (var curActionDO in activities)
                     {
-                        throw new ApplicationException("Process template Deactivation failed.", ex);
+                        try
+                        {
+                            var resultD = await _action.Deactivate(curActionDO);
+
+                            result = "success";
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new ApplicationException("Process template activation failed.", ex);
+                        }
                     }
                 }
-
+                
                 uow.RouteRepository.GetByKey(curRoute.Id).RouteState = RouteState.Inactive;
                 uow.SaveChanges();
             }

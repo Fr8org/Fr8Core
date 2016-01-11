@@ -1,4 +1,5 @@
-﻿using Data.States;
+﻿using Data.Control;
+using Data.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -47,5 +48,8 @@ namespace Data.Interfaces.DataTransferObjects
         public string Description { get; set; }
 
         public bool NeedsAuthentication { get; set; }
+
+        [JsonProperty("help")]
+        public HelpControlDTO Help { get; set; }
     }
 }

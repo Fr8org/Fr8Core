@@ -116,13 +116,13 @@
     <Reference Include="Owin">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
-    <Reference Include="StructureMap, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
+      <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.dll</HintPath>
     </Reference>
-    <Reference Include="StructureMap.Net4, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="StructureMap.Net4, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.Net4.dll</HintPath>
+      <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -191,14 +191,16 @@
     <Compile Include="Actions\AddPayloadManually_v1.cs" />
     <Compile Include="Actions\BuildQuery_v1.cs" />
     <Compile Include="Actions\ConnectToSql_v1.cs" />
+    <Compile Include="Actions\ConvertCrates_v1.cs" />
     <Compile Include="Actions\SetDelay_v1.cs" />
+    <Compile Include="Actions\ConvertRelatedFieldsIntoTable_v1.cs" />
     <Compile Include="Actions\ExecuteSql_v1.cs" />
     <Compile Include="Actions\FindObjects_Solution_v1.cs" />
     <Compile Include="Actions\Loop_v1.cs" />
     <Compile Include="Actions\ManageRoute_v1.cs" />
     <Compile Include="Actions\Select_Fr8_Object_v1.cs" />
     <Compile Include="Actions\StoreMTData_v1.cs" />
-    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Actions\FilterUsingRunTimeData_v1.cs" />
     <Compile Include="Controllers\EventController.cs" />
@@ -211,6 +213,8 @@
     <Compile Include="Interfaces\FilterDataDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfHostFactory.cs" />
+    <Compile Include="Converters\DocuSignTemplateToStandardFileDescriptionConversion.cs" />
+    <Compile Include="Converters\ICrateConversion.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>

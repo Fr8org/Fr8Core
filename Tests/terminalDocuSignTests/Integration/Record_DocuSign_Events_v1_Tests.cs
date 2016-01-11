@@ -84,7 +84,8 @@ namespace terminalDocuSignTests.Integration
         [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async void Record_DocuSign_Events_Initial_Configuration_NoAuth()
         {
@@ -117,7 +118,7 @@ namespace terminalDocuSignTests.Integration
         /// <summary>
         /// Test run-time for action Run().
         /// </summary>
-        [Test, Ignore]
+        [Test]
         public async void Record_DocuSign_Envelope_Run()
         {
             var runUrl = GetTerminalRunUrl();

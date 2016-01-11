@@ -13,7 +13,8 @@ using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
 using Utilities;
 using terminalSendGrid.Infrastructure;
-
+using Data.Interfaces.Manifests;
+using System.Linq;
 namespace terminalSendGrid.Actions
 {
     public class SendEmailViaSendGrid_v1 : BaseTerminalAction
@@ -53,18 +54,32 @@ namespace terminalSendGrid.Actions
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
-                updater.CrateStorage.Add(await GetAvailableDataFields(curActionDO));
             }
 
-            return curActionDO;
+            return await AddDesignTimeFieldsSource(curActionDO);
         }
 
-        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        private async Task<ActionDO> AddDesignTimeFieldsSource(ActionDO curActionDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                updater.CrateStorage.RemoveByLabel("Upstream Terminal-Provided Fields");
-                updater.CrateStorage.Add(await GetAvailableDataFields(curActionDO));
+                updater.CrateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Address");
+                updater.CrateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Subject");
+                updater.CrateStorage.RemoveByLabel("Upstream Terminal-Provided Fields Body");
+
+                var fieldsDTO = await GetCratesFieldsDTO<StandardDesignTimeFieldsCM>(curActionDO, CrateDirection.Upstream);
+
+                var upstreamFieldsAddress = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields Address", fieldsDTO);
+                if (upstreamFieldsAddress != null)
+                    updater.CrateStorage.Add(upstreamFieldsAddress);
+
+                var upstreamFieldsSubject = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields Subject", fieldsDTO);
+                if (upstreamFieldsSubject != null)
+                    updater.CrateStorage.Add(upstreamFieldsSubject);
+
+                var upstreamFieldsBody = MergeUpstreamFields<StandardDesignTimeFieldsCM>(curActionDO, "Upstream Terminal-Provided Fields Body", fieldsDTO);
+                if (upstreamFieldsBody != null)
+                    updater.CrateStorage.Add(upstreamFieldsBody);
             }
 
             return curActionDO;
@@ -76,12 +91,13 @@ namespace terminalSendGrid.Actions
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailAddressTextSourceControl()
         {
-            var control = CreateSpecificOrUpstreamValueChooser(
-                "Email Address",
-                "EmailAddress",
-                "Upstream Terminal-Provided Fields",
-                "EmailAddress"
-            );
+            var control = new TextSource("Email Address", "Upstream Terminal-Provided Fields Address", "EmailAddress");
+            //CreateSpecificOrUpstreamValueChooser(
+            //    "Email Address",
+            //    "EmailAddress",
+            //    "Upstream Terminal-Provided Fields Address",
+            //    "EmailAddress"
+            //);
 
             return control;
         }
@@ -95,7 +111,7 @@ namespace terminalSendGrid.Actions
             var control = CreateSpecificOrUpstreamValueChooser(
                 "Email Subject",
                 "EmailSubject",
-                "Upstream Terminal-Provided Fields"
+                "Upstream Terminal-Provided Fields Subject"
             );
 
             return control;
@@ -110,7 +126,7 @@ namespace terminalSendGrid.Actions
             var control = CreateSpecificOrUpstreamValueChooser(
                 "Email Body",
                 "EmailBody",
-                "Upstream Terminal-Provided Fields"
+                "Upstream Terminal-Provided Fields Body"
             );
 
             return control;
@@ -118,14 +134,14 @@ namespace terminalSendGrid.Actions
 
         private Crate CreateControlsCrate()
         {
-            var controls = new[]
+            var controls = new List<ControlDefinitionDTO>()
             {
                 CreateEmailAddressTextSourceControl(),
                 CreateEmailSubjectTextSourceControl(),
                 CreateEmailBodyTextSourceControl()
             };
 
-            return Crate.CreateStandardConfigurationControlsCrate("Send Grid", controls);
+            return Crate.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel, controls.ToArray());
         }
 
         private async Task<Crate> GetAvailableDataFields(ActionDO curActionDO)
@@ -157,21 +173,23 @@ namespace terminalSendGrid.Actions
 
             var payloadCrates = await GetPayload(curActionDO, containerId);
 
-            var emailAddress = ExtractSpecificOrUpstreamValue(
-                curActionDO,
-                payloadCrates,
-                "EmailAddress"
-            );
-            var emailSubject = ExtractSpecificOrUpstreamValue(
-                curActionDO,
-                payloadCrates,
-                "EmailSubject"
-            );
-            var emailBody = ExtractSpecificOrUpstreamValue(
-                curActionDO,
-                payloadCrates,
-                "EmailBody"
-            );
+            var payloadCrateStorage = Crate.GetStorage(payloadCrates);
+            StandardConfigurationControlsCM configurationControls = GetConfigurationControls(curActionDO);
+
+            // A fix to support an old (wrong) crate label (FR-1972). The following block can be savely removed in Feb 2016
+            if (configurationControls == null)
+            {
+                var storage = Crate.GetStorage(curActionDO);
+                configurationControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => String.Equals(c.Label, "SendGrid", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+            }
+
+            var emailAddressField = (TextSource)GetControl(configurationControls, "EmailAddress", ControlTypes.TextSource);
+            var emailSubjectField = (TextSource)GetControl(configurationControls, "EmailSubject", ControlTypes.TextSource);
+            var emailBodyField = (TextSource)GetControl(configurationControls, "EmailBody", ControlTypes.TextSource);
+
+            var emailAddress = emailAddressField.GetValue(payloadCrateStorage);
+            var emailSubject = emailSubjectField.GetValue(payloadCrateStorage);
+            var emailBody = emailBodyField.GetValue(payloadCrateStorage);
 
             var mailerDO = new TerminalMailerDO()
             {

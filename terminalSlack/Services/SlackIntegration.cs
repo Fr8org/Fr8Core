@@ -9,11 +9,18 @@ using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using terminalSlack.Interfaces;
 using Utilities.Configuration.Azure;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace terminalSlack.Services
 {
     public class SlackIntegration : ISlackIntegration
     {
+        private readonly IRestfulServiceClient _client;
+        public SlackIntegration()
+        {
+            _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+        }
+
         /// <summary>
         /// Build external Slack OAuth url.
         /// </summary>
@@ -29,15 +36,8 @@ namespace terminalSlack.Services
         {
             var template = CloudConfigurationManager.GetSetting("SlackOAuthAccessUrl");
             var url = template.Replace("%CODE%", code);
-
-            var httpClient = new HttpClient();
-            using (var response = await httpClient.GetAsync(url))
-            {
-                var responseString = await response.Content.ReadAsStringAsync();
-                var jsonObj = JsonConvert.DeserializeObject<JObject>(responseString);
-
-                return jsonObj.Value<string>("access_token");
-            }
+            var jsonObj = await _client.GetAsync<JObject>(new Uri(url));
+            return jsonObj.Value<string>("access_token");
         }
 
         private string PrepareTokenUrl(string urlKey, string oauthToken)
@@ -51,51 +51,79 @@ namespace terminalSlack.Services
         public async Task<string> GetUserId(string oauthToken)
         {
             var url = PrepareTokenUrl("SlackAuthTestUrl", oauthToken);
-
-            var httpClient = new HttpClient();
-            using (var response = await httpClient.GetAsync(url))
-            {
-                var responseString = await response.Content.ReadAsStringAsync();
-                var jsonObj = JsonConvert.DeserializeObject<JObject>(responseString);
-
-                return jsonObj.Value<string>("user_id");
-            }
+            var jsonObj = await _client.GetAsync<JObject>(new Uri(url));
+            return jsonObj.Value<string>("user_id");
         }
 
         public async Task<List<FieldDTO>> GetChannelList(string oauthToken)
         {
             var url = PrepareTokenUrl("SlackChannelsListUrl", oauthToken);
 
-            var httpClient = new HttpClient();
-            using (var response = await httpClient.GetAsync(url))
+            var jsonObj = await _client.GetAsync<JObject>(new Uri(url));
+
+            var channelsArray = jsonObj.Value<JArray>("channels");
+
+            var result = new List<FieldDTO>();
+            foreach (var channelObj in channelsArray)
             {
-                var responseString = await response.Content.ReadAsStringAsync();
-                var jsonObj = JsonConvert.DeserializeObject<JObject>(responseString);
+                var channelId = channelObj.Value<string>("id");
+                var channelName = channelObj.Value<string>("name");
 
-                var channelsArray = jsonObj.Value<JArray>("channels");
-
-                var result = new List<FieldDTO>();
-                foreach (var channelObj in channelsArray)
+                result.Add(new FieldDTO()
                 {
-                    var channelId = channelObj.Value<string>("id");
-                    var channelName = channelObj.Value<string>("name");
-
-                    result.Add(new FieldDTO()
-                    {
-                        Key = channelName,
-                        Value = channelId
-                    });
-                }
-
-                return result;
+                    Key = channelName,
+                    Value = channelId
+                });
             }
+
+            return result;
+            
         }
+
+        public async Task<List<FieldDTO>> GetUserList(string oauthToken)
+        {
+            var url = PrepareTokenUrl("SlackUserListUrl", oauthToken);
+            var jsonObj = await _client.GetAsync<JObject>(new Uri(url));
+
+            var usersArray = jsonObj.Value<JArray>("members");
+            var result = new List<FieldDTO>();
+            foreach (var userObj in usersArray)
+            {
+                if (userObj.Value<bool>("deleted"))
+                    continue;
+                var userId = userObj.Value<string>("id");
+                var userName = userObj.Value<string>("name");
+
+                result.Add(new FieldDTO()
+                {
+                    Key = userName,
+                    Value = userId
+                });
+            }
+
+            return result;
+        }
+
+        public async Task<List<FieldDTO>> GetAllChannelList(string oauthToken)
+        {
+            var channels = await GetChannelList(oauthToken);
+            var users = await GetUserList(oauthToken);
+
+            var result = new List<FieldDTO>();
+            result.AddRange(channels);
+            result.AddRange(users);
+            return result;
+        }
+
+
 
         public async Task<bool> PostMessageToChat(string oauthToken, string channelId, string message)
         {
             var url = CloudConfigurationManager.GetSetting("SlackChatPostMessageUrl");
 
-            var httpClient = new HttpClient();
+            
+
+            
             var content = new FormUrlEncodedContent(
                 new[] { 
                     new KeyValuePair<string, string>("token", oauthToken),
@@ -104,20 +132,16 @@ namespace terminalSlack.Services
                 }
             );
 
-            using (var response = await httpClient.PostAsync(url, content))
+            var responseJson = await _client.PostAsync<JObject>(new Uri(url), (HttpContent)content);
+            try
             {
-                var responseString = await response.Content.ReadAsStringAsync();
-                var responseJson = JsonConvert.DeserializeObject<JObject>(responseString);
-
-                try
-                {
-                    return responseJson.Value<bool>("ok");
-                }
-                catch
-                {
-                    return false;
-                }
+                return responseJson.Value<bool>("ok");
             }
+            catch
+            {
+                return false;
+            }
+            
         }
     }
 }

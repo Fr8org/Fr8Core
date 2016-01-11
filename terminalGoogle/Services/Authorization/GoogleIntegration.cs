@@ -1,7 +1,9 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Google.GData.Client;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +18,14 @@ namespace terminalGoogle.Services
 {
     public class GoogleIntegration : IGoogleIntegration
     {
+
+        private readonly IRestfulServiceClient _client;
+
+        public GoogleIntegration()
+        {
+            _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+        }
+
         public OAuth2Parameters CreateOAuth2Parameters(
            string accessCode = null,
            string accessToken = null,
@@ -67,14 +77,8 @@ namespace terminalGoogle.Services
             var url = CloudConfigurationManager.GetSetting("GoogleUserProfileUrl");
             url = url.Replace("%TOKEN%", authDTO.AccessToken);
 
-            var httpClient = new HttpClient();
-            using (var response = await httpClient.GetAsync(url))
-            {
-                var responseString = await response.Content.ReadAsStringAsync();
-                var jsonObj = JsonConvert.DeserializeObject<JObject>(responseString);
-
-                return jsonObj.Value<string>("email");
-            }
+            var jsonObj = await _client.GetAsync<JObject>(new Uri(url));
+            return jsonObj.Value<string>("email");
         }
     }
 }

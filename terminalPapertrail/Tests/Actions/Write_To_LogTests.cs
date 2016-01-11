@@ -38,7 +38,7 @@ namespace terminalPapertrail.Tests.Actions
 
             //setup the rest client
             Mock<IRestfulServiceClient> restClientMock = new Mock<IRestfulServiceClient>(MockBehavior.Default);
-            restClientMock.Setup(restClient => restClient.GetAsync<PayloadDTO>(It.IsAny<Uri>()))
+            restClientMock.Setup(restClient => restClient.GetAsync<PayloadDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
                 .Returns(Task.FromResult(PreparePayloadDTOWithLogMessages()));
             ObjectFactory.Container.Inject(typeof(IRestfulServiceClient), restClientMock.Object);
             
