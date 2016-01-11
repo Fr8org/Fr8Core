@@ -183,6 +183,7 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="index.html" />
+    <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -227,7 +228,6 @@
       <IsTransformFile>True</IsTransformFile>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
