@@ -239,7 +239,6 @@
     <Compile Include="Actions\Rich_Document_Notifications_v1.cs" />
     <Compile Include="Actions\Send_DocuSign_Envelope_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
-    <Compile Include="Actions\Show_Report_v1.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\ActionController.cs" />

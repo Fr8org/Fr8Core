@@ -199,6 +199,17 @@ namespace terminalFr8Core.Controllers
                 Version = "1"
             });
 
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "Show_Report_Onscreen",
+                Label = "Show Report Onscreen",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                MinPaneWidth = 380
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,

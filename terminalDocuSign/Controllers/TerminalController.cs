@@ -154,17 +154,6 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 380
             };
 
-            var showReport = new ActivityTemplateDTO
-            {
-                Name = "Show_Report",
-                Label = "Show Report Onscreen",
-                Version = "1",
-                Category = ActivityCategory.Processors,
-                NeedsAuthentication = false,
-                Terminal = terminal,
-                MinPaneWidth = 380
-            };
-
             var actionList = new List<ActivityTemplateDTO>()
             {
                 waitForDocusignEventActionTemplate,
@@ -178,7 +167,6 @@ namespace terminalDocuSign.Controllers
                 generateDocusignReport,
                 searchDocusignHistory,
                 getDocuSignTemplateActionTemplate,
-                showReport
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

@@ -12,9 +12,9 @@ using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalDocuSign.Actions
+namespace terminalFr8Core.Actions
 {
-    public class Show_Report_v1 : BaseTerminalAction
+    public class Show_Report_Onscreen_v1 : BaseTerminalAction
     {
         public class ActionUi : StandardConfigurationControlsCM
         {
