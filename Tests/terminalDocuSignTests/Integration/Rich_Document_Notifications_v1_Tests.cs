@@ -263,7 +263,7 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalConfigureUrl();
             var actionDTO = await GetActionDTO_WithEventsValue();
             actionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
-
+            AddHubActivityTemplate(actionDTO);
             var responseActionDTO =
               await HttpPostAsync<ActionDTO, ActionDTO>(
                   configureUrl,
@@ -283,7 +283,7 @@ namespace terminalDocuSignTests.Integration
             var configureUrl = GetTerminalConfigureUrl();
             var actionDTO = await GetActionDTO_WithEventsAndDelayValue();
             actionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
-
+            AddHubActivityTemplate(actionDTO);
             var responseActionDTO =
               await HttpPostAsync<ActionDTO, ActionDTO>(
                   configureUrl,
