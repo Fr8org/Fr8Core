@@ -18,7 +18,6 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalFr8Core.Interfaces;
 
 namespace terminalDocuSign.Actions
 {

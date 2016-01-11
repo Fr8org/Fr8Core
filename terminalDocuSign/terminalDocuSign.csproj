@@ -360,10 +360,6 @@
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalFr8Core\terminalFr8Core.csproj">
-      <Project>{AD226A7F-0641-4589-93EB-06E5EE7E767B}</Project>
-      <Name>terminalFr8Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
       <Name>UtilitiesTesting</Name>

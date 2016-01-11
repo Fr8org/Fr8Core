@@ -19,7 +19,6 @@ using Data.Control;
 using Data.Crates;
 using Data.States;
 using terminalFr8Core.Infrastructure;
-using terminalFr8Core.Interfaces;
 using TerminalBase.Services;
 
 namespace terminalFr8Core.Actions

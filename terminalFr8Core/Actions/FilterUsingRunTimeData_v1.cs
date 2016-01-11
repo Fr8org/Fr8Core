@@ -18,7 +18,6 @@ using Data.States;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalFr8Core.Interfaces;
 using Hub.Managers;
 
 namespace terminalFr8Core.Actions

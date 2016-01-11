@@ -293,6 +293,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ExternalAuthUrlDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FilterConditionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FilterDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FinancialLineDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\LogItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManageAuthTokenDTO.cs" />
