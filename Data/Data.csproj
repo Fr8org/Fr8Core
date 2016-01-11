@@ -173,13 +173,13 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StructureMap, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.dll</HintPath>
     </Reference>
-    <Reference Include="StructureMap.Net4, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.Net4.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="StructureMap.Net4, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -257,6 +257,10 @@
     <Compile Include="Entities\MT_Object.cs" />
     <Compile Include="Entities\TerminalSubscriptionDO.cs" />
     <Compile Include="Entities\WebServiceDO.cs" />
+    <Compile Include="Expressions\ConversionMethods.cs" />
+    <Compile Include="Expressions\ExpressionTransformation.cs" />
+    <Compile Include="Expressions\ExpressionTransformation.PropertyInfo.cs" />
+    <Compile Include="Expressions\ExpressionTransformation.TransformationVisitor.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\RouteDOFullConverter.cs" />
@@ -542,13 +546,22 @@
     <Compile Include="Repositories\Authorization\IAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\FileTagsRepository.cs" />
+    <Compile Include="Interfaces\IMultiTenantObjectRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\Queryable\IMtQueryable.cs" />
+    <Compile Include="Repositories\MultiTenant\Queryable\IMtQueryExecutor.cs" />
+    <Compile Include="Repositories\MultiTenant\Queryable\MtQueryable.cs" />
+    <Compile Include="Repositories\MultiTenant\Queryable\MtQueryableExtensions.cs" />
+    <Compile Include="Repositories\MultiTenant\Queryable\MtQueryAll.cs" />
+    <Compile Include="Repositories\MultiTenant\Queryable\MtQueryExecutor.cs" />
+    <Compile Include="Expressions\ReplaceParameterVisitor.cs" />
+    <Compile Include="Repositories\MultiTenant\Queryable\MtWhere.cs" />
     <Compile Include="Repositories\RouteNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
-    <Compile Include="Repositories\MTDataRepository.cs" />
-    <Compile Include="Repositories\MTFieldRepository.cs" />
-    <Compile Include="Repositories\MTFieldTypeRepository.cs" />
-    <Compile Include="Repositories\MTObjectRepository.cs" />
-    <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\MTDataRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\MTFieldRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\MTFieldTypeRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\MTObjectRepository.cs" />
+    <Compile Include="Repositories\MultiTenant\MultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
