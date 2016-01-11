@@ -99,7 +99,8 @@ namespace HubWeb.Controllers.Api
                                     {
                                          Id = x.Id,
                                          ExternalAccountName = x.ExternalAccountId,
-                                         IsMain = x.IsMain
+                                         IsMain = x.IsMain,
+                                         IsSelected = (x.Id == action.AuthorizationTokenId)
                                     })
                                     .ToList()
                             }
