@@ -21,8 +21,7 @@ namespace HubWeb
 {
     public class fr8ApiHMACAuthorizeAttribute : Attribute, IAuthenticationFilter
     {
-        private string _secretKey = "MYSECRETKEY1";
-        private const int MaxAllowedLatency = 600;
+        private const int MaxAllowedLatency = 60;
 
         public bool AllowMultiple
         {
@@ -62,7 +61,20 @@ namespace HubWeb
             var authToken = authenticationParameters[1];
             var nonce = authenticationParameters[2];
             var requestTime = authenticationParameters[3];
-            var userId = new Guid(authenticationParameters[4]);
+            var userId = authenticationParameters[4];
+
+            //Check for ReplayRequests starts here
+            //Check if the nonce is already used
+            if (MemoryCache.Default.Contains(nonce))
+            {
+                return false;
+            }
+
+            //Check if the maximum allowed request time gap is exceeded,
+            if ((DateTime.UtcNow - Convert.ToDateTime(requestTime)).Seconds > MaxAllowedLatency)
+            {
+                return false;
+            }
 
             var terminalService = ObjectFactory.GetInstance<ITerminal>();
             var terminal = await terminalService.GetTerminalById(terminalId);
@@ -71,20 +83,11 @@ namespace HubWeb
                 return false;
             }
 
-            //Check for ReplayRequests starts here
-            //Check if the nonce is already used
-            if (MemoryCache.Default.Contains(nonce))
-            { 
+            //let's check if user allowed this terminal to modify it's data
+            if (! await terminalService.IsUserSubscribedToTerminal(terminalId, userId))
+            {
                 return false;
             }
-
-            //Check if the maximum allowed request time gap is exceeded,
-            if ((DateTime.UtcNow - Convert.ToDateTime(requestTime)).Seconds > MaxAllowedLatency)
-            { 
-                return false;
-            }
-
-            //TODO check if user allowed this terminal to modify it's data
 
             //Add the nonce to the cache
             MemoryCache.Default.Add(nonce, requestTime, DateTimeOffset.UtcNow.AddSeconds(MaxAllowedLatency));
