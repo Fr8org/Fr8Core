@@ -10,13 +10,11 @@ namespace terminalAzure
 {
     public class SelfHostFactory
     {
-
         public class SelfHostStartup
         {
             public void Configuration(IAppBuilder app)
             {
                 var startup = new Startup();
-                
                 startup.Configuration(app, selfHost: true);
             }
         }

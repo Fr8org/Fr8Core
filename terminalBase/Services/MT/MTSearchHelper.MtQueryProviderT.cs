@@ -7,10 +7,14 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.Repositories;
 
-namespace terminalFr8Core.Infrastructure
+namespace TerminalBase.Services
 {
     static partial class MTSearchHelper
     {
+        // This class can be used to query MT DB using criterias from Query Builder control.
+        // We need a way to query MT DB using manifest type that is unknown at the run-time. 
+        // We want to use reflection as little as possible. So we create generic class for converting Query Builder filters and will create instance if this class using reflection. To access members of this class we will use non-generic interface.
+        // Se creating new instance will be the only place reflection is used.
         private class MtQueryProvider<T> : IMtQueryProvider
             where  T : Manifest
         {

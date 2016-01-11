@@ -334,6 +334,10 @@ module dockyard.controllers {
 
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_SetSolutionMode], () => this.PaneConfigureAction_SetSolutionMode());
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsDetected], () => this.PaneConfigureAction_ChildActionsDetected());
+
+            // Handles Response from Configure call from PaneConfiguration
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponse],
+                (event: ng.IAngularEvent, callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) => this.PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs));
         }
 
         private renderRoute(curRoute: interfaces.IRouteVM) {
@@ -392,7 +396,6 @@ module dockyard.controllers {
         }
 
         private chooseAuthToken(action: model.ActionDTO) {
-            debugger;
 
             var self = this;
 
@@ -601,6 +604,27 @@ module dockyard.controllers {
 
         private PaneConfigureAction_ChildActionsDetected() {
             this.loadRoute();
+        }
+
+        // This should handle everything that should be done when a configure call response arrives from server.
+        private PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) {
+            // scann all actions to find actions with tag AgressiveReload in ActivityTemplate
+
+            this.reConfigure(this.getReloadAgressiveActions(this.$scope.actionGroups, callConfigureResponseEventArgs.action));
+        }
+
+        private getReloadAgressiveActions(actionGroups: Array<model.ActionGroup>, currentAction: interfaces.IActionDTO) {
+            var results: Array<model.ActionDTO> = [];
+            actionGroups.forEach(function (group) {
+                group.actions.filter(function (action) {
+                    return action.activityTemplate.tags !== null && action.activityTemplate.tags.indexOf('AggressiveReload') !== -1
+                }).forEach(function (action) {
+                    if (action !== currentAction) {
+                        results.push(action);
+                    }
+                })
+            })
+            return results;
         }
     }
     app.controller('RouteBuilderController', RouteBuilderController);

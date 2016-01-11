@@ -17,8 +17,10 @@ using StructureMap;
 using Hub.Managers;
 using Data.Control;
 using Data.Crates;
+using Data.States;
 using terminalFr8Core.Infrastructure;
 using terminalFr8Core.Interfaces;
+using TerminalBase.Services;
 
 namespace terminalFr8Core.Actions
 {
@@ -60,8 +62,6 @@ namespace terminalFr8Core.Actions
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 });
-
-                Controls.Add(new RunRouteButton());
             }
         }
 
@@ -88,6 +88,12 @@ namespace terminalFr8Core.Actions
             {
                 updater.CrateStorage.Add(PackControls(new ActionUi()));
                 updater.CrateStorage.Add(Crate.CreateDesignTimeFieldsCrate("Queryable Objects", objectList.ToArray()));
+                updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Found MT Objects", new StandardDesignTimeFieldsCM(new FieldDTO
+                {
+                    Key = "Found MT Objects",
+                    Value = "Table",
+                    Availability = AvailabilityType.RunTime
+                })));
             }
 
             return Task.FromResult(curActionDO);
@@ -166,10 +172,10 @@ namespace terminalFr8Core.Actions
                 {
                     searchResult.PayloadObjects.Add(converter(foundObject));
                 }
-
+                
                 using (var updater = Crate.UpdateStorage(payload))
                 {
-                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", searchResult));
+                    updater.CrateStorage.Add(Data.Crates.Crate.FromContent("Found MT Objects", searchResult));
                 }
             }
 

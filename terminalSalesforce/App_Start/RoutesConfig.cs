@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Http;
-using TerminalBase;
+using StructureMap;
+using Hub.StructureMap;
 using TerminalBase.BaseClasses;
 
-namespace terminalFr8Core
+namespace terminalSalesforce
 {
-    public static class WebApiConfig
+    public static class RoutesConfig
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register("Fr8Core", config);
+            BaseTerminalWebApiConfig.Register("Salesforce", config);
         }
     }
 }

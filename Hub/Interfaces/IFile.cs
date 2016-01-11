@@ -41,5 +41,19 @@ namespace Hub.Interfaces
         /// </summary>
         /// <returns></returns>
         IList<FileDO> AllFilesList();
+
+        /// <summary>
+        /// Retreive file details by admin
+        /// </summary>
+        /// <returns></returns>
+        FileDO GetFileByAdmin(int fileId);
+
+        /// <summary>
+        /// Retreive file details
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <param name="dockyardAccountId"></param>
+        /// <returns></returns>
+        FileDO GetFile(int fileId, string dockyardAccountId);
     }
 }

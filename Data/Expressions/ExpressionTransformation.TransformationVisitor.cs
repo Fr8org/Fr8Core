@@ -9,7 +9,7 @@ namespace Data.Expressions
     partial class ExpressionTransformation<TSource, TTarget>
     {
         // Replaces TSource property acessors with TTarget property expressions with the corresponding type conversions
-        private class TransfromationVisitor : ExpressionVisitor
+        private class TransformationVisitor : ExpressionVisitor
         {
             /**********************************************************************************/
             //  Declarations
@@ -23,7 +23,7 @@ namespace Data.Expressions
             // Functions
             /**********************************************************************************/
 
-            public TransfromationVisitor(ParameterExpression paramExpr, Func<string, string> propNamesMapper, HashSet<PropertyInfo> discoveredProperties)
+            public TransformationVisitor(ParameterExpression paramExpr, Func<string, string> propNamesMapper, HashSet<PropertyInfo> discoveredProperties)
             {
                 _discoveredProperties = discoveredProperties;
                 _paramExpr = paramExpr;

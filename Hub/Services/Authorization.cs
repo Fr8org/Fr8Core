@@ -531,7 +531,14 @@ namespace Hub.Services
                         }
                     }
 
-                    if (authToken == null || string.IsNullOrEmpty(authToken.Token))
+                    // FR-1958: remove token if could not extract secure data.
+                    if (authToken != null && string.IsNullOrEmpty(authToken.Token))
+                    {
+                        RemoveToken(uow, authToken);
+                        authToken = null;
+                    }
+
+                    if (authToken == null)
                     {
                         AddAuthenticationCrate(curActionDTO, activityTemplate.Terminal.AuthenticationType);
                         AddAuthenticationLabel(curActionDTO);
@@ -641,6 +648,13 @@ namespace Hub.Services
 
                 if (authToken != null)
                 {
+                    RemoveToken(uow, authToken);
+                }
+            }
+        }
+
+        private void RemoveToken(IUnitOfWork uow, AuthorizationTokenDO authToken)
+        {
                     var actions = uow.ActionRepository
                         .GetQuery()
                         .Where(x => x.AuthorizationToken.Id == authToken.Id)
@@ -656,8 +670,6 @@ namespace Hub.Services
                     uow.AuthorizationTokenRepository.Remove(authToken);
                     uow.SaveChanges();
                 }
-            }
-        }
 
         public void SetMainToken(string userId, Guid authTokenId)
         {

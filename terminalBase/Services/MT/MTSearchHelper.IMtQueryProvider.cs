@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 
-namespace terminalFr8Core.Infrastructure
+namespace TerminalBase.Services
 {
 	static partial class MTSearchHelper
 	{
