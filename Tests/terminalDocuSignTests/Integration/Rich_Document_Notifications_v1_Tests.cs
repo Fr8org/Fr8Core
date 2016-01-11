@@ -64,6 +64,38 @@ namespace terminalDocuSignTests.Integration
                 MinPaneWidth = 330
             };
 
+            var setDelayActionTemplate = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "SetDelay",
+                Label = "Delay Action Processing",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                NeedsAuthentication = false,
+                MinPaneWidth = 330
+            };
+
+            AddActivityTemplate(
+               actionDTO,
+              setDelayActionTemplate
+            );
+
+            var queryMTDatabaseActionTemplate = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "QueryMTDatabase",
+                Label = "Query MT Database",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                NeedsAuthentication = false,
+                MinPaneWidth = 330
+            };
+
+            AddActivityTemplate(
+               actionDTO,
+              queryMTDatabaseActionTemplate
+            );
+
             AddActivityTemplate(
                actionDTO,
               docusignEventActionTemplate
@@ -107,6 +139,56 @@ namespace terminalDocuSignTests.Integration
             AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
         }
 
+        private async Task<ActionDTO> GetActionDTO_WithEventsAndDelayValue()
+        {
+            var configureUrl = GetTerminalConfigureUrl();
+            var requestActionDTO = HealthMonitor_FixtureData.Rich_Document_Notifications_v1_InitialConfiguration_ActionDTO();
+            AddHubActivityTemplate(requestActionDTO);
+
+            var responseActionDTO =
+                await HttpPostAsync<ActionDTO, ActionDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
+
+            using (var updater = Crate.UpdateStorage(responseActionDTO))
+            {
+                var controls = updater.CrateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
+                    .Single();
+
+                var templateDdl = (DropDownList)controls.Controls[1];
+
+                var radioGroup = (RadioButtonGroup)controls.Controls[0];
+                radioGroup.Radios[0].Selected = true;
+
+                var availableEventCM = updater.CrateStorage
+                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableEvents")
+                    .Single();
+
+                var availableHandlers = updater.CrateStorage
+                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableHandlers")
+                    .Single();
+
+                Assert.IsTrue(availableEventCM.Fields.Count > 0);
+
+                templateDdl.Value = availableEventCM.Fields[0].Value;
+                var howToBeNotifiedDdl = (DropDownList)controls.FindByName("NotificationHandler");
+                howToBeNotifiedDdl.Value = availableHandlers.Fields[0].Value;
+
+                var whenToBeNotifiedRadioGrp = (RadioButtonGroup)controls.FindByName("WhenToBeNotified");
+                whenToBeNotifiedRadioGrp.Radios[0].Selected = false;
+                whenToBeNotifiedRadioGrp.Radios[1].Selected = true;
+
+                var durationControl = (Duration)whenToBeNotifiedRadioGrp.Radios[1].Controls.First(c => c.Name == "TimePeriod");
+                durationControl.Days = 0;
+                durationControl.Hours = 0;
+                durationControl.Minutes = 2;
+            }
+
+            return responseActionDTO;
+        }
+
         private async Task<ActionDTO> GetActionDTO_WithEventsValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -134,9 +216,16 @@ namespace terminalDocuSignTests.Integration
                     .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableEvents")
                     .Single();
 
+                var availableHandlers = updater.CrateStorage
+                    .CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "AvailableHandlers")
+                    .Single();
+
                 Assert.IsTrue(availableEventCM.Fields.Count > 0);
 
                 templateDdl.Value = availableEventCM.Fields[0].Value;
+                var howToBeNotifiedDdl = (DropDownList)controls.FindByName("NotificationHandler");
+                howToBeNotifiedDdl.Value = availableHandlers.Fields[0].Value;
+
             }
 
             return responseActionDTO;
@@ -169,7 +258,7 @@ namespace terminalDocuSignTests.Integration
 
         // check for child actions.
         [Test]
-        public async void Rich_Document_Notifications_FollowUp_Configuration_Check_ChildAction()
+        public async void Rich_Document_Notifications_FollowUp_Configuration_Check_ChildAction_WithoutDelay()
         {
             var configureUrl = GetTerminalConfigureUrl();
             var actionDTO = await GetActionDTO_WithEventsValue();
@@ -184,8 +273,30 @@ namespace terminalDocuSignTests.Integration
              Assert.NotNull(responseActionDTO);
              Assert.NotNull(responseActionDTO.CrateStorage);
              Assert.NotNull(responseActionDTO.CrateStorage.Crates);
-             Assert.AreEqual(1, responseActionDTO.ChildrenActions.Length);
+             Assert.AreEqual(2, responseActionDTO.ChildrenActions.Length);
              Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Monitor DocuSign"));
+        }
+
+        [Test]
+        public async void Rich_Document_Notifications_FollowUp_Configuration_Check_ChildAction_WithDelay()
+        {
+            var configureUrl = GetTerminalConfigureUrl();
+            var actionDTO = await GetActionDTO_WithEventsAndDelayValue();
+            actionDTO.AuthToken = HealthMonitor_FixtureData.DocuSign_AuthToken();
+
+            var responseActionDTO =
+              await HttpPostAsync<ActionDTO, ActionDTO>(
+                  configureUrl,
+                  actionDTO
+              );
+
+            Assert.NotNull(responseActionDTO);
+            Assert.NotNull(responseActionDTO.CrateStorage);
+            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+            Assert.AreEqual(4, responseActionDTO.ChildrenActions.Length);
+            Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Monitor DocuSign"));
+            Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Query MT Database"));
+            Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Set Delay"));
         }
 
         [Test]
