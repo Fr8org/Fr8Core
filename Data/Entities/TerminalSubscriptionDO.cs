@@ -20,7 +20,7 @@ namespace Data.Entities
         public int Id { get; set; }
 
         [ForeignKey("Terminal")]
-        public Guid TerminalId { get; set; }
+        public int TerminalId { get; set; }
         public virtual TerminalDO Terminal { get; set; }
 
         [Required]

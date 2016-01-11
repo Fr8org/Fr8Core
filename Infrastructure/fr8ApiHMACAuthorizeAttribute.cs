@@ -57,7 +57,7 @@ namespace HubWeb
                 return false;
             }
             
-            var terminalId = new Guid(authenticationParameters[0]);
+            var terminalId = int.Parse(authenticationParameters[0]);
             var authToken = authenticationParameters[1];
             var nonce = authenticationParameters[2];
             var requestTime = authenticationParameters[3];
@@ -81,6 +81,13 @@ namespace HubWeb
             if (terminal == null)
             {
                 return false;
+            }
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                //hmm think about this
+                //TODO with a empty userId a terminal can only call single Controller
+                //which is OpsController
             }
 
             //let's check if user allowed this terminal to modify it's data

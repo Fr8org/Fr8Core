@@ -19,7 +19,7 @@ namespace Data.Entities
         }
 
         [Key]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public string Secret { get; set; }

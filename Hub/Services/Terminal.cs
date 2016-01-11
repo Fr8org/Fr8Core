@@ -94,7 +94,7 @@ namespace Hub.Services
             return Mapper.Map<IList<ActivityTemplateDO>>(standardFr8TerminalCM.Actions);
         }
 
-        public Task<TerminalDO> GetTerminalById(Guid Id)
+        public Task<TerminalDO> GetTerminalById(int Id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -102,7 +102,7 @@ namespace Hub.Services
             }
         }
 
-        public async Task<bool> IsUserSubscribedToTerminal(Guid terminalId, string userId)
+        public async Task<bool> IsUserSubscribedToTerminal(int terminalId, string userId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
