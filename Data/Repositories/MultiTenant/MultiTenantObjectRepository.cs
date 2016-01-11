@@ -186,9 +186,9 @@ namespace Data.Repositories
             if (curMTObject != null)
             {
                 var correspondingDTFields = _uow.MTFieldRepository.FindList(a => a.MT_ObjectId == curMTObject.Id);
-                var keyMTField = correspondingDTFields.Where(a => a.Name == leftOperand.Name).FirstOrDefault();
+                var keyMTField = correspondingDTFields.FirstOrDefault(a => a.Name == leftOperand.Name);
                 var corrMTDataProperty = typeof(Entities.MT_Data).GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
-                    .Where(a => a.Name == "Value" + keyMTField.FieldColumnOffset).FirstOrDefault();
+                    .FirstOrDefault(a => a.Name == "Value" + keyMTField.FieldColumnOffset);
 
                 var possibleDatas = _uow.MTDataRepository.FindList(a => a.MT_ObjectId == curMTObject.Id && a.fr8AccountId == curFr8AccountId);
 
@@ -208,10 +208,10 @@ namespace Data.Repositories
             Entities.MT_Data correspondingMTData = null;
             var keyValue = keyPropertyInfo.GetValue(curManifest);
             var possibleDatas = _uow.MTDataRepository.FindList(a => a.MT_ObjectId == correspondingDTObject.Id && a.fr8AccountId == curFr8AccountId);
-            var keyMTField = correspondingDTFields.Where(a => a.Name == keyPropertyInfo.Name).FirstOrDefault();
+            var keyMTField = correspondingDTFields.FirstOrDefault(a => a.Name == keyPropertyInfo.Name);
             correspondingMTData = null;
             var corrMTDataProperty = typeof(Entities.MT_Data).GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
-                    .Where(a => a.Name == "Value" + keyMTField.FieldColumnOffset).FirstOrDefault();
+                    .FirstOrDefault(a => a.Name == "Value" + keyMTField.FieldColumnOffset);
 
             if (corrMTDataProperty == null) return null;
 
@@ -248,13 +248,13 @@ namespace Data.Repositories
             if (ManifestId == -1)
             {
                 //We assume that there must be a single MTObject                
-                curMTObject = _uow.MTObjectRepository.GetQuery().Where(a => a.MT_FieldType.Id == curMTObjectTypeField.Id).SingleOrDefault();
+                curMTObject = _uow.MTObjectRepository.GetQuery().SingleOrDefault(a => a.MT_FieldType.Id == curMTObjectTypeField.Id);
                 if (curMTObject != null)
                     curMTObject.Fields = _uow.MTFieldRepository.GetQuery().Where(a => a.MT_ObjectId == curMTObject.Id).ToList();
             }
             else
             {
-                curMTObject = _uow.MTObjectRepository.GetQuery().Where(a => a.MT_FieldType.TypeName == curMTObjectTypeField.TypeName && a.ManifestId == ManifestId).SingleOrDefault();
+                curMTObject = _uow.MTObjectRepository.GetQuery().SingleOrDefault(a => a.MT_FieldType.TypeName == curMTObjectTypeField.TypeName && a.ManifestId == ManifestId);
                 if (curMTObject != null)
                     curMTObject.Fields = _uow.MTFieldRepository.GetQuery().Where(a => a.MT_ObjectId == curMTObject.Id).ToList();
             }
@@ -272,8 +272,8 @@ namespace Data.Repositories
             var dataValueCells = data.GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).ToList();
             foreach (var field in correspondingDTFields)
             {
-                var property = curDataProperties.Where(a => a.Name == field.Name).FirstOrDefault();
-                var corrDataCell = dataValueCells.Where(a => a.Name == "Value" + field.FieldColumnOffset).FirstOrDefault();
+                var property = curDataProperties.FirstOrDefault(a => a.Name == field.Name);
+                var corrDataCell = dataValueCells.FirstOrDefault(a => a.Name == "Value" + field.FieldColumnOffset);
                 var val = property.GetValue(curManifest);
                 corrDataCell.SetValue(data, val);
             }
@@ -293,8 +293,8 @@ namespace Data.Repositories
             {
                 foreach (var DTField in correspondingDTFields)
                 {
-                    var correspondingProperty = properties.Where(a => a.Name == DTField.Name).FirstOrDefault();
-                    var valueCell = dataValueCells.Where(a => a.Name == "Value" + DTField.FieldColumnOffset).FirstOrDefault();
+                    var correspondingProperty = properties.FirstOrDefault(a => a.Name == DTField.Name);
+                    var valueCell = dataValueCells.FirstOrDefault(a => a.Name == "Value" + DTField.FieldColumnOffset);
 
                     object val = null;
                     if (!correspondingProperty.PropertyType.IsValueType)
@@ -315,13 +315,13 @@ namespace Data.Repositories
         {
             Type type = typeof(TSource);
 
-            MemberExpression member = propertyLambda.Body as MemberExpression;
+            var member = propertyLambda.Body as MemberExpression;
             if (member == null)
                 throw new ArgumentException(string.Format(
                     "Expression '{0}' refers to a method, not a property.",
                     propertyLambda.ToString()));
 
-            PropertyInfo propInfo = member.Member as PropertyInfo;
+            var propInfo = member.Member as PropertyInfo;
             if (propInfo == null)
                 throw new ArgumentException(string.Format(
                     "Expression '{0}' refers to a field, not a property.",
