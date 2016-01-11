@@ -16,6 +16,7 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using System.Threading.Tasks;
 using System;
+using Data.Constants;
 
 namespace DockyardTest.Controllers
 {
@@ -127,6 +128,31 @@ namespace DockyardTest.Controllers
         //    Assert.IsNotNull(actionResult);
         //}
 
+        [Test]
+        public async Task Events_Multiplefr8AccountsAssociatedWithSameExternalAccountId_ShouldCheckRoutesForAllUsers()
+        {
+            //Arrange 
+            var externalAccountId = "docusign_developer@dockyard.company";
+            var curRoute = FixtureData.TestRouteWithSubscribeEvent(FixtureData.TestDockyardAccount1());
+            FixtureData.TestRouteWithSubscribeEvent(FixtureData.TestDeveloperAccount());
+            FixtureData.AddAuthorizationToken(FixtureData.TestDockyardAccount1(), externalAccountId);
+            FixtureData.AddAuthorizationToken(FixtureData.TestDeveloperAccount(), externalAccountId);
+
+            //Create activity mock to process the actions
+            Mock<IRouteNode> activityMock = new Mock<IRouteNode>(MockBehavior.Default);
+            activityMock.Setup(a => a.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActionState>(), It.IsAny<ContainerDO>())).Returns(Task.Delay(1));
+            activityMock.Setup(a => a.HasChildren(It.Is<RouteNodeDO>(r => r.Id == curRoute.StartingSubroute.Id))).Returns(true);
+            activityMock.Setup(a => a.HasChildren(It.Is<RouteNodeDO>(r => r.Id != curRoute.StartingSubroute.Id))).Returns(false);
+            activityMock.Setup(a => a.GetFirstChild(It.IsAny<RouteNodeDO>())).Returns(curRoute.ChildNodes.First().ChildNodes.First());
+            ObjectFactory.Container.Inject(typeof(IRouteNode), activityMock.Object);
+
+            //Act
+            EventController eventController = new EventController();
+            await eventController.ProcessEvents(FixtureData.CrateDTOForEvents(externalAccountId));
+
+            //Assert
+            activityMock.Verify(activity => activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActionState>(), It.IsAny<ContainerDO>()), Times.Exactly(2));
+        }
         
     }
 }
