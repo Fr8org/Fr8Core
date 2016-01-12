@@ -17,10 +17,11 @@ namespace terminalSalesforceTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseHealthMonitorTest
     {
-        private const int ActionCount = 3;
+        private const int ActionCount = 4;
         private const string Create_Account_Action_Name = "Create_Account";
         private const string Create_Contact_Action_Name = "Create_Contact";
         private const string Create_Lead_Action_Name = "Create_Lead";
+        private const string Get_Data_Action_Name = "Get_Data";
 
 
         public override string TerminalName
@@ -48,6 +49,8 @@ namespace terminalSalesforceTests.Integration
                 "Action " + Create_Contact_Action_Name + " was not loaded");
             Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Create_Lead_Action_Name), true,
                 "Action " + Create_Lead_Action_Name + " was not loaded");
+            Assert.AreEqual(terminalDiscoverResponse.Actions.Any(a => a.Name == Get_Data_Action_Name), true,
+                "Action " + Get_Data_Action_Name + " was not loaded");
         }
     }
 }

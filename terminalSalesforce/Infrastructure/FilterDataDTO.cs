@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 
 namespace terminalSalesforce.Infrastructure
 {
+
+    //TODO: Vas, Created a task FR-2038. For now, I kept it as it is.
+
     /// <summary>
     /// Filter execution type.
     /// </summary>
