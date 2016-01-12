@@ -312,6 +312,11 @@ namespace terminalDocuSign.Actions
         }
 
         #region Action_Creation
+        private async Task<ActionDO> StopExecutionIfAction(ActivityTemplateDTO template, int ordering)
+        {
+            return await CreateAction(template, "Stop Execution If", "Stop Execution If", ordering);
+        }
+
         private async Task<ActionDO> CreateQueryMTDatabaseAction(ActivityTemplateDTO template, int ordering)
         {
             return await CreateAction(template, "Query MT Database", "Query MT Database", ordering);

@@ -210,6 +210,16 @@ namespace terminalFr8Core.Controllers
                 MinPaneWidth = 380
             });
 
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "StopExecutionIf",
+                Label = "Stop Container Execution",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,

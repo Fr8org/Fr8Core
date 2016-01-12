@@ -52,14 +52,20 @@ namespace terminalFr8Core.Actions
 
         private Crate CreateControlsCrate()
         {
-            var duration = new Duration
+            var info = new TextBlock
             {
-                Label = "Please enter delay duration",
-                Name = "Delay_Duration"
+                Name = "This action stops container execution if it can't find shown fields in a StandardPayloadDataCM"
+            };
+
+            var fieldFilterPane = new FieldList
+            {
+                Label = "Fill the values for other actions",
+                Name = "Selected_Fields",
+                Required = true
             };
 
 
-            return PackControlsCrate(duration);
+            return PackControlsCrate(info, fieldFilterPane);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
@@ -76,9 +82,9 @@ namespace terminalFr8Core.Actions
                 return ConfigurationRequestType.Initial;
             }
 
-            var durationControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.Duration && x.Name == "Delay_Duration");
+            var upstreamChooser = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.UpstreamDataChooser && x.Name == "Upstream_data_chooser");
 
-            if (durationControl == null)
+            if (upstreamChooser == null)
             {
                 return ConfigurationRequestType.Initial;
             }
