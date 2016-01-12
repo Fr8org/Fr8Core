@@ -280,8 +280,7 @@ namespace terminalFr8Core.Actions
 
         private async Task<ActivityTemplateDTO> ExtractActivityTemplate(ActionDO actionDO, string name)
         {
-            var activityTemplate =
-                (await HubCommunicator.GetActivityTemplates(actionDO))
+            var activityTemplate = (await HubCommunicator.GetActivityTemplates(actionDO, CurrentFr8UserId))
                 .FirstOrDefault(x => x.Name == name);
 
             return activityTemplate;

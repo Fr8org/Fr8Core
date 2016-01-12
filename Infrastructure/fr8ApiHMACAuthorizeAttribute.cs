@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Principal;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using Data.Interfaces.DataTransferObjects;
@@ -107,6 +109,8 @@ namespace HubWeb
                 //hmm think about this
                 //TODO with a empty userId a terminal can only call single Controller
                 //which is OpsController
+                //until we figure out exceptions, we won't allow this
+                return false;
             }
 
             //let's check if user allowed this terminal to modify it's data
@@ -139,7 +143,8 @@ namespace HubWeb
                 }
             }
 
-            HttpContext.Current.User = new TerminalPrinciple(terminalId, userId, null);
+            //TODO inspect and modify these if required
+            HttpContext.Current.User = new TerminalPrinciple(terminalId, userId, new GenericIdentity(terminal.Id.ToString(CultureInfo.InvariantCulture)));
 
             return true;
         }

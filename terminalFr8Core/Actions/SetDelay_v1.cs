@@ -46,7 +46,7 @@ namespace terminalFr8Core.Actions
             var delayDuration = GetUserDefinedDelayDuration(curActionDO);
             var alarmDTO = CreateAlarm(curActionDO, containerId, delayDuration);
             //post to hub to create an alarm
-            await HubCommunicator.CreateAlarm(alarmDTO);
+            await HubCommunicator.CreateAlarm(alarmDTO, CurrentFr8UserId);
 
             return SuspendHubExecution(curPayloadDTO);
             

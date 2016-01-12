@@ -26,7 +26,7 @@ namespace terminalSlack.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(actionDO, containerId, authTokenDO.UserID);
+            var payloadCrates = await GetPayload(actionDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
             {

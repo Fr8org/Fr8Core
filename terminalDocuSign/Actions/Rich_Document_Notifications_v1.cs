@@ -181,7 +181,7 @@ namespace terminalDocuSign.Actions
             actionDO.ChildNodes = new List<RouteNodeDO>();
 
             const string monitorDocuSignTemplateName = "Monitor_DocuSign_Envelope_Activity";
-            var monitorDocuSignTemplate = (await HubCommunicator.GetActivityTemplates(actionDO))
+            var monitorDocuSignTemplate = (await HubCommunicator.GetActivityTemplates(actionDO, CurrentFr8UserId))
                 .FirstOrDefault(x => x.Name == monitorDocuSignTemplateName);
 
             if (monitorDocuSignTemplate == null)
@@ -296,7 +296,7 @@ namespace terminalDocuSign.Actions
                 && solutionAction.ChildNodes.Count == 1
                 && !string.IsNullOrEmpty(ddl.Value))
             {
-                var templates = await HubCommunicator.GetActivityTemplates(solutionAction);
+                var templates = await HubCommunicator.GetActivityTemplates(solutionAction, CurrentFr8UserId);
                 var selectedTemplate = templates.FirstOrDefault(x => x.Id.ToString() == ddl.Value);
 
                 if (selectedTemplate != null)
@@ -345,7 +345,7 @@ namespace terminalDocuSign.Actions
 
         private async Task<Crate> PackAvailableHandlers(ActionDO actionDO)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(actionDO);
+            var templates = await HubCommunicator.GetActivityTemplates(actionDO, CurrentFr8UserId);
             var taggedTemplates = templates.Where(x => x.Tags != null && x.Tags.Contains("Notifier"));
 
             var availableHandlersCrate =
