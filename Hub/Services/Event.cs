@@ -16,6 +16,7 @@ using Data.Entities;
 using System.Linq;
 using System.Collections.Generic;
 using Data.Exceptions;
+using Utilities;
 
 namespace Hub.Services
 {
@@ -68,6 +69,11 @@ namespace Hub.Services
         {
             var eventReportMS = curCrateStandardEventReport.Get<EventReportCM>();
 
+            // Fetching values from Config file is not working on CI.
+            //var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+            //string systemUserEmail = configRepository.Get("SystemUserEmail");
+
+            string systemUserEmail = "system1@fr8.co";
             if (eventReportMS.EventPayload == null)
             {
                 throw new ArgumentException("EventReport can't have a null payload");
@@ -79,27 +85,42 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //find the corresponding DockyardAccount
-                var authTokenList = uow.AuthorizationTokenRepository.FindList(x => x.ExternalAccountId == eventReportMS.ExternalAccountId);
-                if (authTokenList == null)
+                if (eventReportMS.ExternalAccountId == systemUserEmail)
                 {
-                    return;
+                    Fr8AccountDO systemUser = uow.UserRepository.FindOne(u => u.Email == systemUserEmail);
+                    await FindAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, systemUser);
+                }
+                else
+                {
+                    //find the corresponding DockyardAccount
+                    var authTokenList = uow.AuthorizationTokenRepository.FindList(x => x.ExternalAccountId == eventReportMS.ExternalAccountId);
+                    if (authTokenList == null)
+                    {
+                        return;
+                    }
+
+                    foreach (var authToken in authTokenList)
+                    {
+                        var curDockyardAccount = authToken.UserDO;
+
+                        await FindAccountRoutes(uow, eventReportMS, curCrateStandardEventReport, curDockyardAccount);
+                    }
                 }
 
-                foreach (var authToken in authTokenList)
-                {
-                    var curDockyardAccount = authToken.UserDO;
-
-                    //find this Account's Routes
-                    var initialRoutesList = uow.RouteRepository
-                        .FindList(pt => pt.Fr8Account.Id == curDockyardAccount.Id)
-                        .Where(x => x.RouteState == RouteState.Active);
-
-                    var subscribingRoutes = _route.MatchEvents(initialRoutesList.ToList(), eventReportMS);
-
-                    await LaunchProcesses(subscribingRoutes, curCrateStandardEventReport);
-                }
             }
+        }
+
+        private async Task FindAccountRoutes(IUnitOfWork uow, EventReportCM eventReportMS,
+               Crate curCrateStandardEventReport, Fr8AccountDO curDockyardAccount = null)
+        {
+            //find this Account's Routes
+            var initialRoutesList = uow.RouteRepository
+                .FindList(pt => pt.Fr8Account.Id == curDockyardAccount.Id)
+                .Where(x => x.RouteState == RouteState.Active);
+
+            var subscribingRoutes = _route.MatchEvents(initialRoutesList.ToList(), eventReportMS);
+
+            await LaunchProcesses(subscribingRoutes, curCrateStandardEventReport);
         }
 
         public Task LaunchProcesses(List<RouteDO> curRoutes, Crate curEventReport)
