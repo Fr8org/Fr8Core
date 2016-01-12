@@ -22,6 +22,7 @@ namespace HubWeb
     public class fr8ApiHMACAuthorizeAttribute : Attribute, IAuthenticationFilter
     {
         private const int MaxAllowedLatency = 60;
+        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public bool AllowMultiple
         {
@@ -40,6 +41,11 @@ namespace HubWeb
             }
         }
 
+        private static DateTime DateTimeFromUnixTimestampSeconds(long seconds)
+        {
+            return UnixEpoch.AddSeconds(seconds);
+        }
+
         private async Task<bool> IsValidRequest(HttpRequestMessage request)
         {
             if (request.Headers.Authorization == null || !request.Headers.Authorization.Scheme.Equals("hmac", StringComparison.OrdinalIgnoreCase)
@@ -52,7 +58,7 @@ namespace HubWeb
             string[] authenticationParameters = tokenString.Split(new char[] { ':' });
             
 
-            if (authenticationParameters.Length != 5)
+            if (authenticationParameters.Length != 4)
             {
                 return false;
             }
@@ -60,8 +66,8 @@ namespace HubWeb
             var terminalId = int.Parse(authenticationParameters[0]);
             var authToken = authenticationParameters[1];
             var nonce = authenticationParameters[2];
-            var requestTime = authenticationParameters[3];
-            var userId = authenticationParameters[4];
+            var requestTime = long.Parse(authenticationParameters[3]);
+            //var userId = authenticationParameters[4];
 
             //Check for ReplayRequests starts here
             //Check if the nonce is already used
@@ -71,7 +77,7 @@ namespace HubWeb
             }
 
             //Check if the maximum allowed request time gap is exceeded,
-            if ((DateTime.UtcNow - Convert.ToDateTime(requestTime)).Seconds > MaxAllowedLatency)
+            if ((DateTime.UtcNow - DateTimeFromUnixTimestampSeconds(requestTime)).Seconds > MaxAllowedLatency)
             {
                 return false;
             }
@@ -83,6 +89,7 @@ namespace HubWeb
                 return false;
             }
 
+            /*
             if (string.IsNullOrEmpty(userId))
             {
                 //hmm think about this
@@ -95,32 +102,32 @@ namespace HubWeb
             {
                 return false;
             }
-
+            */
             //Add the nonce to the cache
             MemoryCache.Default.Add(nonce, requestTime, DateTimeOffset.UtcNow.AddSeconds(MaxAllowedLatency));
-            
+
             //Check for ReplayRequests ends here
-            string reformedAuthenticationToken = String.Format("{0}{1}{2}{3}{4}{5}{6}", terminalId, request.Method.Method,
-               HttpUtility.UrlEncode(request.RequestUri.ToString().ToLowerInvariant()),
-                  nonce, requestTime, await GetContentBase64String(request.Content), userId);
+            string reformedAuthenticationToken = String.Format("{0}{1}{2}{3}{4}{5}", terminalId,
+               HttpUtility.UrlEncode(request.RequestUri.ToString().ToLowerInvariant()), request.Method.Method,
+                  requestTime,nonce, await GetContentBase64String(request.Content)/*, userId*/);
 
             //Each terminal should have be configured with a unique shared key on Hub
             var secretKeyBytes = Convert.FromBase64String(terminal.Secret);
             var authenticationTokenBytes = Encoding.UTF8.GetBytes(reformedAuthenticationToken);
 
             //Check for data integrity and tampering
-            using (HMACSHA512 hmac = new HMACSHA512(secretKeyBytes))
+            using (var hmac = new HMACSHA512(secretKeyBytes))
             {
                 var hashedBytes = hmac.ComputeHash(authenticationTokenBytes);
                 string reformedTokenBase64String = Convert.ToBase64String(hashedBytes);
 
-                if (!authToken.Equals(reformedAuthenticationToken, StringComparison.OrdinalIgnoreCase))
+                if (!authToken.Equals(reformedTokenBase64String, StringComparison.OrdinalIgnoreCase))
                 { 
                     return false;
                 }
             }
 
-            HttpContext.Current.User = new TerminalPrinciple(terminalId, userId, null);
+            //HttpContext.Current.User = new TerminalPrinciple(terminalId, userId, null);
 
             return true;
         }
@@ -129,7 +136,16 @@ namespace HubWeb
         {
             using (MD5 md5 = MD5.Create())
             {
-                var bytes = await content.ReadAsByteArrayAsync();
+                byte[] bytes;
+                if (content != null)
+                {
+                    bytes = await content.ReadAsByteArrayAsync();
+                }
+                else
+                {
+                    bytes = new byte[]{};
+                }
+
                 var md5Hash = md5.ComputeHash(bytes);
                 return Convert.ToBase64String(md5Hash);
             }

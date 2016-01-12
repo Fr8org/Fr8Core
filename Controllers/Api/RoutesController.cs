@@ -25,7 +25,6 @@ namespace HubWeb.Controllers
 {
     //[RoutePrefix("routes")]
     [Fr8ApiAuthorize]
-    [fr8ApiHMACAuthorize]
     public class RoutesController : ApiController
     {
 	    private const string PUSHER_EVENT_GENERIC_SUCCESS = "fr8pusher_generic_success";
@@ -47,7 +46,6 @@ namespace HubWeb.Controllers
         }
 
         [Fr8ApiAuthorize]
-        [fr8ApiHMACAuthorize]
         //[Route("full/{id:guid}")]
         [ActionName("full")]
         [ResponseType(typeof(RouteFullDTO))]

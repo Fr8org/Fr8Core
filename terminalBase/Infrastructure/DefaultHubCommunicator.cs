@@ -22,7 +22,7 @@ namespace TerminalBase.Infrastructure
         public DefaultHubCommunicator()
         {
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
-            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            _restfulServiceClient = ObjectFactory.GetNamedInstance<IRestfulServiceClient>("HMACRestfulServiceClient");
         }
 
         public Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId)

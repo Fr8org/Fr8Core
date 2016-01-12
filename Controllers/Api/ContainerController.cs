@@ -47,6 +47,7 @@ namespace HubWeb.Controllers
         }
 
         [HttpGet]
+        [fr8ApiHMACAuthorize]
         public IHttpActionResult Get(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

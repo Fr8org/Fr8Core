@@ -1,5 +1,7 @@
-﻿using StructureMap;
+﻿using Hub.Managers.APIManagers.Transmitters.Restful;
+using StructureMap;
 using StructureMap.Configuration.DSL;
+using TerminalBase.BaseClasses;
 
 namespace TerminalBase.Infrastructure
 {
@@ -23,6 +25,7 @@ namespace TerminalBase.Infrastructure
             public LiveMode()
             {                
                 For<IHubCommunicator>().Use<DefaultHubCommunicator>();
+                For<IRestfulServiceClient>().Add<HMACRestfulServiceClient>().Named("HMACRestfulServiceClient").Singleton();
             }            
         }
     }
