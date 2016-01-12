@@ -54,7 +54,8 @@ namespace terminalFr8Core.Actions
         {
             var info = new TextBlock
             {
-                Name = "This action stops container execution if it can't find shown fields in a StandardPayloadDataCM"
+                Label = "This action stops container execution if it can't find shown fields in a StandardPayloadDataCM",
+                Name = "InfoText"
             };
 
             var fieldFilterPane = new FieldList
