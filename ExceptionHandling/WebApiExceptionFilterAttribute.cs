@@ -47,6 +47,7 @@ namespace HubWeb.ExceptionHandling
             {
                 properties.Add(arg.Key, JsonConvert.SerializeObject(arg.Value));
             }
+            new TelemetryClient().TrackException(ex, properties);
 
             alertManager.UnhandledErrorCaught(
                 String.Format("Unhandled exception has occurred.\r\nError message: {0}\r\nCall stack:\r\n{1}",

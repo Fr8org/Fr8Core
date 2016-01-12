@@ -64,8 +64,6 @@ namespace TerminalBase
             {
                 properties.Add(arg.Key, JsonConvert.SerializeObject(arg.Value));
             }
-
-            //Post exception information to Application Insights
             new TelemetryClient().TrackException(curTerminalError, properties);
 
             if (!integrationTestMode)
