@@ -18,6 +18,7 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using AutoMapper;
 
 namespace terminalDocuSign.Actions
 {
@@ -204,6 +205,8 @@ namespace terminalDocuSign.Actions
             monitorDocuSignAction = await ConfigureAction(monitorDocuSignTemplate, monitorDocuSignAction, authTokenDO);
             monitorDocuSignAction.AuthorizationToken = authTokenDO;
             monitorDocuSignAction.AuthorizationTokenId = authTokenDO.Id;
+
+            var test = Mapper.Map<ActionDTO>(monitorDocuSignAction);
             actionDO.ChildNodes.Add(monitorDocuSignAction);
 
             if (notifyWhenEventDoesntHappenRadio.Selected)
