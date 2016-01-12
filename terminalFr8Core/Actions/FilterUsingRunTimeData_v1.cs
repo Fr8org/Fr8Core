@@ -99,7 +99,7 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        private Expression ParseCriteriaExpression(
+        public Expression ParseCriteriaExpression(
             IEnumerable<FilterConditionDTO> conditions,
             IQueryable<FieldDTO> queryableData)
         {

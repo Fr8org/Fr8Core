@@ -44,7 +44,7 @@ namespace terminalSalesforce
              public LiveMode()
              {
                  For<terminalSalesforce.Infrastructure.IEvent>().Use<terminalSalesforce.Services.Event>();
-                 For<ISalesforceIntegration>().Use<terminalSalesforce.Services.SalesforceIntegration>();                  
+                 For<ISalesforceManager>().Use<terminalSalesforce.Services.SalesforceManager>();                  
              }
          }       
 
@@ -54,8 +54,8 @@ namespace terminalSalesforce
              {
                  For<terminalSalesforce.Infrastructure.IEvent>().Use<terminalSalesforce.Services.Event>();
 
-                 Mock<ISalesforceIntegration> salesforceIntegrationMock = new Mock<ISalesforceIntegration>(MockBehavior.Default);
-                 For<ISalesforceIntegration>().Use(salesforceIntegrationMock.Object);
+                 Mock<ISalesforceManager> salesforceIntegrationMock = new Mock<ISalesforceManager>(MockBehavior.Default);
+                 For<ISalesforceManager>().Use(salesforceIntegrationMock.Object);
              }
          }       
 

@@ -20,11 +20,11 @@ namespace terminalSalesforce.Actions
 {
     public class Get_Data_v1 : BaseTerminalAction
     {
-        private ISalesforceIntegration _salesforce;
+        private ISalesforceManager _salesforce;
 
         public Get_Data_v1()
         {
-            _salesforce = ObjectFactory.GetInstance<ISalesforceIntegration>();
+            _salesforce = ObjectFactory.GetInstance<ISalesforceManager>();
         }
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -68,10 +68,8 @@ namespace terminalSalesforce.Actions
             //Note: This design time fields are used to populate the Fileter Pane controls. It has to be labelled as Queryable Criteria
             var emptyFieldsSource = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] {});
 
-            //create required controls
             var configurationControlsCrate = CreateControlsCrate();
 
-            //update the storage
             using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
             {
                 updater.CrateStorage = AssembleCrateStorage(availableSalesforceObjects, emptyFieldsSource, configurationControlsCrate);
@@ -94,9 +92,9 @@ namespace terminalSalesforce.Actions
             }
 
             //get fields of selected salesforce object
-            var objectFieldsList = await _salesforce.GetFields(authTokenDO, curSelectedObject);
+            var objectFieldsList = await _salesforce.GetFields(curSelectedObject, _salesforce.CreateForceClient(authTokenDO));
 
-            //update the crate storage
+            //replace the object fields for the newly selected object name
             var queryableCriteriaFields = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", objectFieldsList.ToArray());
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
@@ -108,13 +106,10 @@ namespace terminalSalesforce.Actions
 
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            CheckAuthentication(authTokenDO);
+
             //get payload data
             var payloadCrates = await GetPayload(curActionDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
 
             //get currect selected Salesforce object
             string curSelectedSalesForceObject =
@@ -126,7 +121,7 @@ namespace terminalSalesforce.Actions
             }
 
             //get filters
-            var filterValue = GetControl(curActionDO, "SelectedFilter", ControlTypes.FilterPane).Value;
+            var filterValue = ExtractControlFieldValue(curActionDO, "SelectedFilter");
             var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(filterValue);
 
             //if without filter, just get all selected objects
@@ -134,7 +129,7 @@ namespace terminalSalesforce.Actions
             StandardPayloadDataCM resultObjects;
             if (filterDataDTO.ExecutionType == FilterExecutionType.WithoutFilter)
             {
-                resultObjects = await _salesforce.GetObject(authTokenDO, curSelectedSalesForceObject, string.Empty);
+                resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, string.Empty, _salesforce.CreateForceClient(authTokenDO));
             }
             else
             {
@@ -142,7 +137,7 @@ namespace terminalSalesforce.Actions
 
                 string parsedCondition = ParseFilters(filterDataDTO);
 
-                resultObjects = await _salesforce.GetObject(authTokenDO, curSelectedSalesForceObject, parsedCondition);
+                resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, parsedCondition, _salesforce.CreateForceClient(authTokenDO));
             }
 
             //update the payload with result objects

@@ -12,6 +12,7 @@ using Hub.Managers;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Salesforce.Force;
 using StructureMap;
 using TerminalBase.Infrastructure;
 using terminalSalesforce;
@@ -46,14 +47,14 @@ namespace terminalSalesforceTests.Actions
                 .Returns(() => Task.FromResult(testPayloadDTO));
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
-            Mock<ISalesforceIntegration> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceIntegration>());
+            Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
             FieldDTO testField = new FieldDTO("Account", "TestAccount");
             salesforceIntegrationMock.Setup(
-                s => s.GetFields(It.IsAny<AuthorizationTokenDO>(), "Account"))
+                s => s.GetFields("Account", It.IsAny<ForceClient>()))
                 .Returns(() => Task.FromResult((IList<FieldDTO>)new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
-                s => s.GetObject(It.IsAny<AuthorizationTokenDO>(), "Account", It.IsAny<string>()))
+                s => s.GetObjectByQuery("Account", It.IsAny<string>(), It.IsAny<ForceClient>()))
                 .Returns(() => Task.FromResult(new StandardPayloadDataCM()));
 
             _getData_v1 = new Get_Data_v1();
@@ -93,7 +94,7 @@ namespace terminalSalesforceTests.Actions
             actionDO = await _getData_v1.Configure(actionDO, FixtureData.Salesforce_AuthToken());
             actionDO = SelectSalesforceAccount(actionDO);
 
-            Mock<ISalesforceIntegration> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceIntegration>());
+            Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
 
             //Act
             actionDO = await _getData_v1.Configure(actionDO, FixtureData.Salesforce_AuthToken());
@@ -106,7 +107,7 @@ namespace terminalSalesforceTests.Actions
                     .Single(c => c.Label.Equals("Queryable Criteria"))
                     .Content.Fields.Count, 1, "Queryable Criteria is NOT filled with invalid data");
 
-            salesforceIntegrationMock.Verify(s => s.GetFields(It.IsAny<AuthorizationTokenDO>(), "Account"), Times.Exactly(1));
+            salesforceIntegrationMock.Verify(s => s.GetFields("Account", It.IsAny<ForceClient>()), Times.Exactly(1));
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Run")]
