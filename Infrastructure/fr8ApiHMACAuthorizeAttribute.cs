@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -46,6 +47,17 @@ namespace HubWeb
             return UnixEpoch.AddSeconds(seconds);
         }
 
+        private string GetHeaderValue(HttpRequestHeaders headers, string key)
+        {
+            var valueList = headers.FirstOrDefault(h => h.Key == key).Value;
+            if (valueList != null)
+            {
+                return valueList.FirstOrDefault();
+            }
+
+            return null;
+        }
+
         private async Task<bool> IsValidRequest(HttpRequestMessage request)
         {
             if (request.Headers.Authorization == null || !request.Headers.Authorization.Scheme.Equals("hmac", StringComparison.OrdinalIgnoreCase)
@@ -67,7 +79,7 @@ namespace HubWeb
             var authToken = authenticationParameters[1];
             var nonce = authenticationParameters[2];
             var requestTime = long.Parse(authenticationParameters[3]);
-            //var userId = authenticationParameters[4];
+            var userId = GetHeaderValue(request.Headers, "fr8UserId") ?? "null";
 
             //Check for ReplayRequests starts here
             //Check if the nonce is already used
@@ -89,7 +101,7 @@ namespace HubWeb
                 return false;
             }
 
-            /*
+            
             if (string.IsNullOrEmpty(userId))
             {
                 //hmm think about this
@@ -102,14 +114,14 @@ namespace HubWeb
             {
                 return false;
             }
-            */
+            
             //Add the nonce to the cache
             MemoryCache.Default.Add(nonce, requestTime, DateTimeOffset.UtcNow.AddSeconds(MaxAllowedLatency));
 
             //Check for ReplayRequests ends here
-            string reformedAuthenticationToken = String.Format("{0}{1}{2}{3}{4}{5}", terminalId,
+            string reformedAuthenticationToken = String.Format("{0}{1}{2}{3}{4}{5}{6}", terminalId,
                HttpUtility.UrlEncode(request.RequestUri.ToString().ToLowerInvariant()), request.Method.Method,
-                  requestTime,nonce, await GetContentBase64String(request.Content)/*, userId*/);
+                  requestTime,nonce, await GetContentBase64String(request.Content), userId);
 
             //Each terminal should have be configured with a unique shared key on Hub
             var secretKeyBytes = Convert.FromBase64String(terminal.Secret);
@@ -127,28 +139,29 @@ namespace HubWeb
                 }
             }
 
-            //HttpContext.Current.User = new TerminalPrinciple(terminalId, userId, null);
+            HttpContext.Current.User = new TerminalPrinciple(terminalId, userId, null);
 
             return true;
         }
 
-        private async Task<string> GetContentBase64String(HttpContent content)
+        private async Task<string> GetContentBase64String(HttpContent httpContent)
         {
-            using (MD5 md5 = MD5.Create())
+            byte[] content;
+            if (httpContent != null)
             {
-                byte[] bytes;
-                if (content != null)
-                {
-                    bytes = await content.ReadAsByteArrayAsync();
-                }
-                else
-                {
-                    bytes = new byte[]{};
-                }
-
-                var md5Hash = md5.ComputeHash(bytes);
-                return Convert.ToBase64String(md5Hash);
+                content = await httpContent.ReadAsByteArrayAsync();
             }
+            else
+            {
+                content = new byte[] { };
+            }
+
+            byte[] contentMd5Hash;
+            using (var md5 = MD5.Create())
+            {
+                contentMd5Hash = md5.ComputeHash(content);
+            }
+            return Convert.ToBase64String(contentMd5Hash);
         }
 
         public Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)

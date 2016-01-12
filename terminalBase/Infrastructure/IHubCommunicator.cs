@@ -11,20 +11,19 @@ namespace TerminalBase.Infrastructure
 {
     public interface IHubCommunicator
     {
-        Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId);
+        Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId, string userId);
 
-        Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActionDO actionDO, CrateDirection direction);
+        Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActionDO actionDO, CrateDirection direction, string userId);
 
-        Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction);
+        Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction, string userId);
 
-        Task CreateAlarm(AlarmDTO alarmDTO);
+        Task CreateAlarm(AlarmDTO alarmDTO, string userId);
 
-        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO);
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO, string userId);
 
-        Task<List<ActivityTemplateDTO>> GetActivityTemplates(
-            ActionDO actionDO, ActivityCategory category);
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO, ActivityCategory category, string userId);
 
-        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO, string tag);
-        Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields);
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO, string tag, string userId);
+        Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId);
     }
 }

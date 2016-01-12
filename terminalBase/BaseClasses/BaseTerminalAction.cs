@@ -194,7 +194,7 @@ namespace TerminalBase.BaseClasses
 
         public virtual async Task<PayloadDTO> ChildrenExecuted(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            return Success(await GetPayload(curActionDO, containerId));
+            return Success(await GetPayload(curActionDO, containerId, authTokenDO.UserID));
         }
 
         protected void CheckAuthentication(AuthorizationTokenDO authTokenDO)
@@ -210,14 +210,14 @@ namespace TerminalBase.BaseClasses
             return authTokenDO == null || string.IsNullOrEmpty(authTokenDO.Token);
         }
 
-        protected async Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId)
+        protected async Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId, string userId)
         {
-            return await HubCommunicator.GetPayload(actionDO, containerId);
+            return await HubCommunicator.GetPayload(actionDO, containerId, userId);
         }
 
-        protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
+        protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList, string userId)
         {
-            var result = await HubCommunicator.ValidateFields(requiredFieldList);
+            var result = await HubCommunicator.ValidateFields(requiredFieldList, userId);
 
             var validationErrorList = new List<FieldDTO>();
             //lets create necessary validationError crates
@@ -239,11 +239,11 @@ namespace TerminalBase.BaseClasses
             return null;
         }
 
-        protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(ActionDO curActionDO, StandardDesignTimeFieldsCM designTimeFields)
+        protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(ActionDO curActionDO, StandardDesignTimeFieldsCM designTimeFields, string userId)
         {
             var fields = designTimeFields.Fields;
             var validationList = fields.Select(f => new FieldValidationDTO(curActionDO.Id, f.Key)).ToList();
-            return Crate.ToDto(await ValidateFields(validationList));
+            return Crate.ToDto(await ValidateFields(validationList, userId));
         }
 
         //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
@@ -319,26 +319,24 @@ namespace TerminalBase.BaseClasses
         }
 
         //wrapper for support test method
-        public async virtual Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(
-            ActionDO actionDO, CrateDirection direction)
+        public async virtual Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActionDO actionDO, CrateDirection direction, string userId)
         {
-            return await HubCommunicator.GetCratesByDirection<TManifest>(actionDO, direction);
+            return await HubCommunicator.GetCratesByDirection<TManifest>(actionDO, direction, userId);
             // return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
         }
 
         //wrapper for support test method
-        public async virtual Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction)
+        public async virtual Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction, string userId)
         {
-            return await HubCommunicator.GetCratesByDirection(actionDO, direction);
+            return await HubCommunicator.GetCratesByDirection(actionDO, direction, userId);
         }
 
-        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActionDO actionDO, CrateDirection direction)
+        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActionDO actionDO, CrateDirection direction, string userId)
         {
             //1) Build a merged list of the upstream design fields to go into our drop down list boxes
             StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
 
-            var curCrates = await HubCommunicator
-                .GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, direction);
+            var curCrates = await HubCommunicator.GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, direction, userId);
 
 
             mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);
@@ -346,29 +344,29 @@ namespace TerminalBase.BaseClasses
             return mergedFields;
         }
 
-        public async virtual Task<List<CrateManifestType>> BuildUpstreamManifestList(ActionDO actionDO)
+        public async virtual Task<List<CrateManifestType>> BuildUpstreamManifestList(ActionDO actionDO, string userId)
         {
-            var upstreamCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream);
+            var upstreamCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream, userId);
             return upstreamCrates.Where(x => !ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.ManifestType).Distinct().ToList();
         }
 
-        public async virtual Task<List<String>> BuildUpstreamCrateLabelList(ActionDO actionDO)
+        public async virtual Task<List<String>> BuildUpstreamCrateLabelList(ActionDO actionDO, string userId)
         {
-            var curCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream);
+            var curCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(actionDO, CrateDirection.Upstream, userId);
             return curCrates.Where(x => !ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.Label).Distinct().ToList();
         }
 
-        public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamManifestListCrate(ActionDO actionDO)
+        public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamManifestListCrate(ActionDO actionDO, string userId)
         {
-            var manifestList = (await BuildUpstreamManifestList(actionDO));
+            var manifestList = (await BuildUpstreamManifestList(actionDO, userId));
             var fields = manifestList.Select(f => new FieldDTO(f.Id.ToString(), f.Type)).ToArray();
 
             return Crate.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", fields);
         }
 
-        public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamCrateLabelListCrate(ActionDO actionDO)
+        public async virtual Task<Crate<StandardDesignTimeFieldsCM>> GetUpstreamCrateLabelListCrate(ActionDO actionDO, string userId)
         {
-            var labelList = (await BuildUpstreamCrateLabelList(actionDO));
+            var labelList = (await BuildUpstreamCrateLabelList(actionDO, userId));
             var fields = labelList.Select(f => new FieldDTO(null, f)).ToArray();
 
             return Crate.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
@@ -442,19 +440,14 @@ namespace TerminalBase.BaseClasses
             return field.Value;
         }
 
-        protected async virtual Task<List<Crate<StandardFileDescriptionCM>>>
-            GetUpstreamFileHandleCrates(ActionDO actionDO)
+        protected async virtual Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates(ActionDO actionDO, string userId)
         {
-            return await HubCommunicator
-                .GetCratesByDirection<StandardFileDescriptionCM>(
-                    actionDO, CrateDirection.Upstream
-                );
+            return await HubCommunicator.GetCratesByDirection<StandardFileDescriptionCM>(actionDO, CrateDirection.Upstream, userId);
         }
 
-        protected async Task<Crate<StandardDesignTimeFieldsCM>>
-            MergeUpstreamFields(ActionDO actionDO, string label)
+        protected async Task<Crate<StandardDesignTimeFieldsCM>> MergeUpstreamFields(ActionDO actionDO, string label, string userId)
         {
-            var curUpstreamFields = (await GetDesignTimeFields(actionDO, CrateDirection.Upstream)).Fields.ToArray();
+            var curUpstreamFields = (await GetDesignTimeFields(actionDO, CrateDirection.Upstream, userId)).Fields.ToArray();
             var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
 
             return upstreamFieldsCrate;
@@ -695,14 +688,14 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        protected virtual async Task<Crate> MergeUpstreamFields<TManifest>(ActionDO curActionDO, string label)
+        protected virtual async Task<Crate> MergeUpstreamFields<TManifest>(ActionDO curActionDO, string label, string userId)
         {
             List<Data.Crates.Crate<TManifest>> crates = null;
 
             try
             {
                 //throws exception from test classes when it cannot call webservice
-                crates = await GetCratesByDirection<TManifest>(curActionDO, CrateDirection.Upstream);
+                crates = await GetCratesByDirection<TManifest>(curActionDO, CrateDirection.Upstream, userId);
             }
             catch { }
 
@@ -727,14 +720,14 @@ namespace TerminalBase.BaseClasses
             return await Task.FromResult<Crate>(null);
         }
 
-        protected virtual async Task<FieldDTO[]> GetCratesFieldsDTO<TManifest>(ActionDO curActionDO, CrateDirection crateDirection)
+        protected virtual async Task<FieldDTO[]> GetCratesFieldsDTO<TManifest>(ActionDO curActionDO, CrateDirection crateDirection, string userId)
         {
             List<Data.Crates.Crate<TManifest>> crates = null;
 
             try
             {
                 //throws exception from test classes when it cannot call webservice
-                crates = await GetCratesByDirection<TManifest>(curActionDO, crateDirection);
+                crates = await GetCratesByDirection<TManifest>(curActionDO, crateDirection, userId);
             }
             catch { }
 

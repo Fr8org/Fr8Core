@@ -29,7 +29,7 @@ namespace terminalSlack.Actions
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(actionDO, containerId);
+            var payloadCrates = await GetPayload(actionDO, containerId, authTokenDO.UserID);
             string message; 
 
             if (NeedsAuthentication(authTokenDO))
@@ -94,7 +94,7 @@ namespace terminalSlack.Actions
 
             var crateControls = PackCrate_ConfigurationControls();
             var crateAvailableChannels = CreateAvailableChannelsCrate(channels);
-            var crateAvailableFields = await CreateAvailableFieldsCrate(curActionDO);
+            var crateAvailableFields = await CreateAvailableFieldsCrate(curActionDO, authTokenDO.UserID);
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
@@ -111,7 +111,7 @@ namespace terminalSlack.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActionDO));
+                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActionDO, authTokenDO.UserID));
             }
 
             return curActionDO;
@@ -151,10 +151,9 @@ namespace terminalSlack.Actions
             return crate;
         }
 
-        private async Task<Crate> CreateAvailableFieldsCrate(ActionDO actionDO)
+        private async Task<Crate> CreateAvailableFieldsCrate(ActionDO actionDO, string userId)
         {
-            var curUpstreamFields =
-                (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream))
+            var curUpstreamFields = (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream, userId))
                 .Where(x => x.Label != "Available Channels")
                 .SelectMany(x => x.Content.Fields)
                 .ToArray();
