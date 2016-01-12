@@ -1,61 +1,63 @@
-﻿using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
+﻿using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Newtonsoft.Json;
-using Salesforce.Force;
-using System;
+using Newtonsoft.Json.Linq;
+using Salesforce.Common.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using Hub.Managers;
-using StructureMap;
-using terminalSalesforce.Services;
 
 namespace terminalSalesforce.Infrastructure
 {
-    public class Lead
+    public class Lead : SalesforceObject
     {
-        ForceClient client;       
-        private ICrateManager _crateManager;
-
-
-        public Lead()
+        protected override bool ValidateObject(object salesforceObject)
         {
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-        }
+            //Lead object related validation
+            var leadObject = (LeadDTO) salesforceObject;
 
-
-        public async Task CreateLead(ActionDO currentActionDO, AuthorizationTokenDO authTokenDO)
-        {
-            
-            string instanceUrl, apiVersion;
-            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
-            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
-            LeadDTO lead = new LeadDTO();
-
-
-            var storage = _crateManager.GetStorage(currentActionDO);
-
-            var curFieldList = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
-
-            lead.FirstName = curFieldList.Controls.First(x => x.Name == "firstName").Value;
-            lead.LastName = curFieldList.Controls.First(x => x.Name == "lastName").Value;
-            lead.Company = curFieldList.Controls.First(x => x.Name == "companyName").Value;
-            if (!String.IsNullOrEmpty(lead.LastName) && !String.IsNullOrEmpty(lead.Company))
+            if (leadObject == null || string.IsNullOrEmpty(leadObject.LastName) ||
+                string.IsNullOrEmpty(leadObject.Company))
             {
-                var newLeadId = await client.CreateAsync("Lead", lead);
+                return false;
             }
+
+            return true;
         }
 
-        public void ParseAuthToken(string authonTokenAdditionalValues,out string instanceUrl,out string apiVersion)
+        protected override string GetSelectAllQuery()
         {
-            int startIndexOfInstanceUrl = authonTokenAdditionalValues.IndexOf("instance_url");
-            int startIndexOfApiVersion = authonTokenAdditionalValues.IndexOf("api_version");
-            instanceUrl = authonTokenAdditionalValues.Substring(startIndexOfInstanceUrl, (startIndexOfApiVersion - 1 - startIndexOfInstanceUrl));
-            apiVersion = authonTokenAdditionalValues.Substring(startIndexOfApiVersion, authonTokenAdditionalValues.Length - startIndexOfApiVersion);
-            instanceUrl = instanceUrl.Replace("instance_url=", "");
-            apiVersion = apiVersion.Replace("api_version=", "");
+            //return the query to select all leads
+            return "select Id, FirstName, LastName, Company, Title from Lead";
+        }
+
+        protected override IList<PayloadObjectDTO> ParseQueryResult(QueryResult<object> queryResult)
+        {
+            var resultLeads = new List<LeadDTO>();
+
+            if (queryResult.Records.Count > 0)
+            {
+                resultLeads.AddRange(
+                    queryResult.Records.Select(record => ((JObject) record).ToObject<LeadDTO>()));
+            }
+
+            var payloads = new List<PayloadObjectDTO>();
+
+            payloads.AddRange(
+                resultLeads.Select(
+                    lead =>
+                        new PayloadObjectDTO
+                        {
+                            PayloadObject =
+                                new List<FieldDTO>
+                                {
+                                    new FieldDTO {Key = "Id", Value = lead.Id},
+                                    new FieldDTO {Key = "FirstName", Value = lead.FirstName},
+                                    new FieldDTO {Key = "LastName", Value = lead.LastName},
+                                    new FieldDTO {Key = "Company", Value = lead.Company},
+                                    new FieldDTO {Key = "Title", Value = lead.Title}
+                                }
+                        }));
+
+            return payloads;
         }
     }
 }
