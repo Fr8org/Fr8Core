@@ -11,6 +11,7 @@ namespace terminalSalesforce.Infrastructure
     {
         protected override bool ValidateObject(object salesforceObject)
         {
+            //Contact object related validation
             var contactObject = (ContactDTO) salesforceObject;
 
             if (contactObject == null || string.IsNullOrEmpty(contactObject.LastName))
@@ -23,6 +24,7 @@ namespace terminalSalesforce.Infrastructure
 
         protected override string GetSelectAllQuery()
         {
+            //return the query to select all contacts
             return "select FirstName, LastName, MobilePhone, Email from Contact";
         }
 

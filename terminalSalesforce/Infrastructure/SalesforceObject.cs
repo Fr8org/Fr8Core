@@ -15,23 +15,33 @@ namespace terminalSalesforce.Infrastructure
 {
     public abstract class SalesforceObject
     {
+        /// <summary>
+        /// Creates a Salesforce object
+        /// </summary>
         public async Task<SuccessResponse> Create<T>(T salesforceObject, string salesforceObjectName, ForceClient forceClient)
         {
             SuccessResponse successResponse = null;
+
+            //if the given object is valid, create. Validation is delegated to the derived classes.
             if (ValidateObject(salesforceObject))
             {
                 successResponse = await forceClient.CreateAsync(salesforceObjectName, salesforceObject);
             }
 
-            return successResponse ?? new SuccessResponse(); //TODO: Vas, check the response for the error, success and id param and change this.
+            return successResponse ?? new SuccessResponse(); 
         }
 
+        /// <summary>
+        /// Gets fields of the given Salesforce object name
+        /// </summary>
         public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, ForceClient forceClient)
         {
+            //Get the fields of the salesforce object name by calling Describe API
             var fieldsQueryResponse = (JObject)await forceClient.DescribeAsync<object>(salesforceObjectName);
 
             var objectFields = new List<FieldDTO>();
 
+            //parse them into the list of FieldDTO
             JToken leadFields;
             if (fieldsQueryResponse.TryGetValue("fields", out leadFields) && leadFields is JArray)
             {
@@ -42,10 +52,15 @@ namespace terminalSalesforce.Infrastructure
             return objectFields;
         }
 
+        /// <summary>
+        /// Gets Salesforce objects based on query
+        /// </summary>
         public async Task<IList<PayloadObjectDTO>> GetByQuery(string conditionQuery, ForceClient forceClient)
         {
+            //get select all query for the object. Delegated to derived classes
             var selectQuery = GetSelectAllQuery();
 
+            //if condition query is not empty, add it to where clause
             if (!string.IsNullOrEmpty(conditionQuery))
             {
                 selectQuery += " where " + conditionQuery;
@@ -53,6 +68,7 @@ namespace terminalSalesforce.Infrastructure
 
             var response = await forceClient.QueryAsync<object>(selectQuery);
 
+            //parsing the query resonse is delegated to the derived classes.
             return ParseQueryResult(response);
         }
 

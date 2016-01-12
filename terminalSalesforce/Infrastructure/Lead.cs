@@ -11,6 +11,7 @@ namespace terminalSalesforce.Infrastructure
     {
         protected override bool ValidateObject(object salesforceObject)
         {
+            //Lead object related validation
             var leadObject = (LeadDTO) salesforceObject;
 
             if (leadObject == null || string.IsNullOrEmpty(leadObject.LastName) ||
@@ -24,6 +25,7 @@ namespace terminalSalesforce.Infrastructure
 
         protected override string GetSelectAllQuery()
         {
+            //return the query to select all leads
             return "select Id, FirstName, LastName, Company, Title from Lead";
         }
 

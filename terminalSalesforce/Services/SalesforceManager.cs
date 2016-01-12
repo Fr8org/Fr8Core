@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Salesforce.Force;
 using terminalSalesforce.Infrastructure;
-using Utilities.Logging;
 using Data.Entities;
 
 namespace terminalSalesforce.Services

@@ -11,6 +11,7 @@ namespace terminalSalesforce.Infrastructure
     {
         protected override bool ValidateObject(object salesforceObject)
         {
+            //Account object related validation
             var accountObject = (AccountDTO) salesforceObject;
             if (accountObject == null || string.IsNullOrEmpty(accountObject.Name))
             {
@@ -22,6 +23,7 @@ namespace terminalSalesforce.Infrastructure
 
         protected override string GetSelectAllQuery()
         {
+            //return the query to select all accounts
             return "select Name, AccountNumber, Phone from Account";
         }
 

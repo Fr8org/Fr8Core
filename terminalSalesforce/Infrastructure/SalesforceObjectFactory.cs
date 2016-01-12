@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace terminalSalesforce.Infrastructure
 {
+    /// <summary>
+    /// Factory to create Salesforce object types
+    /// </summary>
     public class SalesforceObjectFactory
     {
         private IList<string> SupportedSalesforceObjects
