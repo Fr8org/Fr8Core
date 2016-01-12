@@ -8,11 +8,11 @@ namespace HubWeb.Infrastructure
 {
     public class TerminalPrinciple : IPrincipal
     {
-        private int _terminalId { get; set; }
+        private string _terminalId { get; set; }
         private string _userId { get; set; }
         private IIdentity _identity { get; set; }
 
-        public TerminalPrinciple(int terminalId, string userId, IIdentity identity)
+        public TerminalPrinciple(string terminalId, string userId, IIdentity identity)
         {
             _userId = userId;
             _terminalId = terminalId;
@@ -27,7 +27,7 @@ namespace HubWeb.Infrastructure
             }
         }
 
-        public int GetTerminalId()
+        public string GetTerminalId()
         {
             return _terminalId;
         }

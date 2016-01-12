@@ -1,11 +1,6 @@
-﻿using System.Globalization;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Security.Principal;
 using System.Web.Http;
-using System.Web.Http.Controllers;
-using Data.Interfaces.DataTransferObjects;
 using System.Web.Http.Filters;
 using System;
 using System.Threading;
@@ -16,13 +11,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Runtime.Caching;
 using System.Web;
-using StructureMap;
-using Hub.Interfaces;
-using HubWeb.Infrastructure;
 
-namespace HubWeb
+namespace Hub.Infrastructure
 {
-    public class fr8ApiHMACAuthorizeAttribute : Attribute, IAuthenticationFilter
+    public abstract class fr8HMACAuthorizeAttribute : Attribute, IAuthenticationFilter
     {
         private const int MaxAllowedLatency = 60;
         private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -33,6 +25,15 @@ namespace HubWeb
             {
                 return false;
             }
+        }
+
+        protected abstract Task<string> GetTerminalSecret(string terminalId);
+
+        protected abstract Task<bool> CheckAuthentication(string terminalId, string userId);
+
+        protected virtual void Success(string terminalId, string userId)
+        {
+            return;
         }
 
         public async Task AuthenticateAsync(HttpAuthenticationContext context, CancellationToken cancellationToken)
@@ -49,17 +50,6 @@ namespace HubWeb
             return UnixEpoch.AddSeconds(seconds);
         }
 
-        private string GetHeaderValue(HttpRequestHeaders headers, string key)
-        {
-            var valueList = headers.FirstOrDefault(h => h.Key == key).Value;
-            if (valueList != null)
-            {
-                return valueList.FirstOrDefault();
-            }
-
-            return null;
-        }
-
         private async Task<bool> IsValidRequest(HttpRequestMessage request)
         {
             if (request.Headers.Authorization == null || !request.Headers.Authorization.Scheme.Equals("hmac", StringComparison.OrdinalIgnoreCase)
@@ -69,19 +59,19 @@ namespace HubWeb
             }
 
             string tokenString = request.Headers.Authorization.Parameter;
-            string[] authenticationParameters = tokenString.Split(new char[] { ':' });
+            string[] authenticationParameters = tokenString.Split(new [] { ':' });
             
 
-            if (authenticationParameters.Length != 4)
+            if (authenticationParameters.Length != 5)
             {
                 return false;
             }
             
-            var terminalId = int.Parse(authenticationParameters[0]);
+            var terminalId = authenticationParameters[0];
             var authToken = authenticationParameters[1];
             var nonce = authenticationParameters[2];
             var requestTime = long.Parse(authenticationParameters[3]);
-            var userId = GetHeaderValue(request.Headers, "fr8UserId") ?? "null";
+            var userId = authenticationParameters[4];
 
             //Check for ReplayRequests starts here
             //Check if the nonce is already used
@@ -96,28 +86,6 @@ namespace HubWeb
                 return false;
             }
 
-            var terminalService = ObjectFactory.GetInstance<ITerminal>();
-            var terminal = await terminalService.GetTerminalById(terminalId);
-            if (terminal == null)
-            {
-                return false;
-            }
-
-            
-            if (string.IsNullOrEmpty(userId))
-            {
-                //hmm think about this
-                //TODO with a empty userId a terminal can only call single Controller
-                //which is OpsController
-                //until we figure out exceptions, we won't allow this
-                return false;
-            }
-
-            //let's check if user allowed this terminal to modify it's data
-            if (! await terminalService.IsUserSubscribedToTerminal(terminalId, userId))
-            {
-                return false;
-            }
             
             //Add the nonce to the cache
             MemoryCache.Default.Add(nonce, requestTime, DateTimeOffset.UtcNow.AddSeconds(MaxAllowedLatency));
@@ -127,8 +95,13 @@ namespace HubWeb
                HttpUtility.UrlEncode(request.RequestUri.ToString().ToLowerInvariant()), request.Method.Method,
                   requestTime,nonce, await GetContentBase64String(request.Content), userId);
 
-            //Each terminal should have be configured with a unique shared key on Hub
-            var secretKeyBytes = Convert.FromBase64String(terminal.Secret);
+            var terminalSecret = await GetTerminalSecret(terminalId);
+            if (terminalSecret == null)
+            {
+                return false;
+            }
+
+            var secretKeyBytes = Convert.FromBase64String(terminalSecret);
             var authenticationTokenBytes = Encoding.UTF8.GetBytes(reformedAuthenticationToken);
 
             //Check for data integrity and tampering
@@ -143,10 +116,13 @@ namespace HubWeb
                 }
             }
 
-            //TODO inspect and modify these if required
-            HttpContext.Current.User = new TerminalPrinciple(terminalId, userId, new GenericIdentity(terminal.Id.ToString(CultureInfo.InvariantCulture)));
+            var status = await CheckAuthentication(terminalId, userId);
+            if (status)
+            {
+                Success(terminalId, userId);
+            }
 
-            return true;
+            return status;
         }
 
         private async Task<string> GetContentBase64String(HttpContent httpContent)

@@ -52,11 +52,17 @@ namespace TerminalBase.Infrastructure
             return Convert.ToBase64String(contentMd5Hash);
         }
 
-        private string GetHeaderValue(HttpRequestHeaders headers, string key)
+        /// <summary>
+        /// TODO: Think of a better way to pass userId to here
+        /// </summary>
+        /// <param name="headers"></param>
+        /// <returns></returns>
+        private string GetFr8UserHeaderValue(HttpRequestHeaders headers)
         {
-            var valueList = headers.FirstOrDefault(h => h.Key == key).Value;
+            var valueList = headers.FirstOrDefault(h => h.Key == "fr8UserId").Value;
             if (valueList != null)
             {
+                headers.Remove("fr8UserId");
                 return valueList.FirstOrDefault();
             }
 
@@ -70,8 +76,7 @@ namespace TerminalBase.Infrastructure
             string timeStamp = GetCurrentUnixTimestampSeconds().ToString(CultureInfo.InvariantCulture);
             string nonce = Guid.NewGuid().ToString();
             string contentBase64String = await GetContentBase64String(request.Content);
-            //hmm think of a better way to pass userId?
-            string userId = GetHeaderValue(request.Headers, "fr8UserId") ?? "null";
+            string userId = GetFr8UserHeaderValue(request.Headers) ?? "null";
 
             //Formulate the keys used in plain format as a concatenated string.
             string authenticationKeyString = string.Format("{0}{1}{2}{3}{4}{5}{6}", _terminalId, url, methodName, timeStamp, nonce, contentBase64String, userId);
@@ -83,8 +88,7 @@ namespace TerminalBase.Infrastructure
                 byte[] authenticationKeyBytes = Encoding.UTF8.GetBytes(authenticationKeyString);
                 byte[] authenticationHash = hmac.ComputeHash(authenticationKeyBytes);
                 string hashedBase64String = Convert.ToBase64String(authenticationHash);
-                request.Headers.Authorization = new AuthenticationHeaderValue("hmac", string.Format("{0}:{1}:{2}:{3}", _terminalId,
-                   hashedBase64String, nonce, timeStamp));
+                request.Headers.Authorization = new AuthenticationHeaderValue("hmac", string.Format("{0}:{1}:{2}:{3}:{4}", _terminalId, hashedBase64String, nonce, timeStamp, userId));
             }
         }
 
