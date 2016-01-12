@@ -12,6 +12,9 @@ using Hub.Managers;
 using TerminalBase;
 using Utilities;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace HubWeb.ExceptionHandling
 {
@@ -37,6 +40,13 @@ namespace HubWeb.ExceptionHandling
 
             var alertManager = ObjectFactory.GetInstance<EventReporter>();
             var ex = context.Exception;
+
+            //Post exception information to AppInsights
+            Dictionary<string, string> properties = new Dictionary<string, string>();
+            foreach (KeyValuePair<string, object> arg in context.ActionContext.ActionArguments)
+            {
+                properties.Add(arg.Key, JsonConvert.SerializeObject(arg.Value));
+            }
 
             alertManager.UnhandledErrorCaught(
                 String.Format("Unhandled exception has occurred.\r\nError message: {0}\r\nCall stack:\r\n{1}",

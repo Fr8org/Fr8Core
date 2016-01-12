@@ -11,6 +11,10 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Errors;
 using Utilities;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
+using System.Collections.Generic;
+using Data.Interfaces.DataTransferObjects;
+using System.Linq;
 
 namespace TerminalBase
 {
@@ -50,9 +54,19 @@ namespace TerminalBase
                     if (innerEx is AuthorizationTokenExpiredException)
                     {
                         statusCode = (HttpStatusCode)419;
-                    }       
+                    }
                 }
             }
+
+            //Post exception information to AppInsights
+            Dictionary<string, string> properties = new Dictionary<string, string>();
+            foreach (KeyValuePair<string, object>arg in actionExecutedContext.ActionContext.ActionArguments)
+            {
+                properties.Add(arg.Key, JsonConvert.SerializeObject(arg.Value));
+            }
+
+            //Post exception information to Application Insights
+            new TelemetryClient().TrackException(curTerminalError, properties);
 
             if (!integrationTestMode)
             {
@@ -67,9 +81,9 @@ namespace TerminalBase
                 //if terminal error is terminal Coded Exception, place the error code description in message
                 var terminalEx = (TerminalCodedException)curTerminalError;
                 var terminalError =
-                    JsonConvert.SerializeObject(new {status = "terminal_error", message = terminalEx.ErrorCode.GetEnumDescription()});
+                    JsonConvert.SerializeObject(new { status = "terminal_error", message = terminalEx.ErrorCode.GetEnumDescription() });
                 actionExecutedContext.Response.Content = new StringContent(terminalError, Encoding.UTF8, "application/json");
-            }   
+            }
             else
             {
                 //if terminal error is general exception, place exception message
@@ -81,7 +95,7 @@ namespace TerminalBase
 
         private string GetTerminalName(IHttpController curController)
         {
-            string assemblyName = curController.GetType().Assembly.FullName.Split(new char[] {','})[0];
+            string assemblyName = curController.GetType().Assembly.FullName.Split(new char[] { ',' })[0];
             return assemblyName;
         }
     }
