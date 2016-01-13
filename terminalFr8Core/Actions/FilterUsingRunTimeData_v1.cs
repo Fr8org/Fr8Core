@@ -57,6 +57,11 @@ namespace terminalFr8Core.Actions
             // Evaluate criteria using Contents json body of found Crate.
             var result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curValues);
 
+            if (!result)
+            {
+                return TerminateHubExecution(curPayloadDTO);
+            }
+
             return Success(curPayloadDTO);
         }
 
