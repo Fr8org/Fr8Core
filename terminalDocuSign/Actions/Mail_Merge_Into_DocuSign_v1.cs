@@ -104,6 +104,15 @@ namespace terminalDocuSign.Actions
             {
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
             }
+
+            //validate if any DocuSignTemplates has been linked to the Account
+            var validationError = await ValidateDocuSignAtLeastOneTemplate(curActionDO);
+            if (validationError == null) return curActionDO;
+
+            var crateStorageTemp = Crate.GetStorage(curActionDO);
+            crateStorageTemp.Add(Crate.FromDto(validationError));
+            curActionDO.CrateStorage = Crate.CrateStorageAsStr(crateStorageTemp);
+
             return curActionDO;
         }
 
@@ -129,6 +138,56 @@ namespace terminalDocuSign.Actions
 
             var control = (T)controls.FindByName(name);
             return control;
+        }
+
+        /// <summary>
+        /// All validation scenarios for Mail_Merge_Into_DocuSign action
+        /// </summary>
+        /// <param name="curActionDO"></param>
+        /// <returns></returns>
+        protected override async Task<CrateStorage> ValidateAction(ActionDO curActionDO)
+        {
+            //first validate if any DocuSign Template has been linked to the account
+            var result = await ValidateDocuSignAtLeastOneTemplate(curActionDO);
+            if (result != null)
+            {
+                var crateStorageTemp = Crate.GetStorage(curActionDO);
+                crateStorageTemp.Add(Crate.FromDto(result));
+                return await Task.FromResult(crateStorageTemp);
+            }
+             
+            //Validate if the current user selected any template to his account DocuSign account
+            var validateTemplatesResult = await ValidateDocuSignTemplateSelectValue(curActionDO);
+            if (validateTemplatesResult != null)
+            {
+                var crateStorageTemp = Crate.GetStorage(curActionDO);
+                crateStorageTemp.Add(Crate.FromDto(validateTemplatesResult));
+                return await Task.FromResult(crateStorageTemp);
+            }
+
+            return await Task.FromResult<CrateStorage>(null);
+        }
+
+        private async Task<CrateDTO> ValidateDocuSignTemplateSelectValue(ActionDO curActionDO)
+        {
+            //validate DocuSignTemplate for present selected template 
+            DropDownList docuSignTemplate = GetStdConfigurationControl<DropDownList>(Crate.GetStorage(curActionDO), "DocuSignTemplate");
+            if (docuSignTemplate.Value != null) return await Task.FromResult<CrateDTO>(null);
+
+            var validationErrorCrate = Crate.CreateValidationErrorOverviewCrate("validation_error_summary", "Please select some DocuSign template from the dropdown list.", "Mail Merge Into DocuSign");
+            return await Task.FromResult(Crate.ToDto(validationErrorCrate));
+        }
+
+        private async Task<CrateDTO> ValidateDocuSignAtLeastOneTemplate(ActionDO curActionDO)
+        {
+            //validate DocuSignTemplate for present selected template 
+            var crateStorage = Crate.GetStorage(curActionDO);
+            var docuSignTemplate = crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x=>x.Label == "Available Templates").FirstOrDefault();
+
+            if (docuSignTemplate != null && docuSignTemplate.Fields != null && docuSignTemplate.Fields.Count != 0) return  await Task.FromResult<CrateDTO>(null);
+
+            var validationErrorCrate = Crate.CreateValidationErrorOverviewCrate("validation_error_summary", "Please link some templates to your DocuSign account.", "Mail Merge Into DocuSign");
+            return await Task.FromResult(Crate.ToDto(validationErrorCrate));
         }
 
         /// <summary>
