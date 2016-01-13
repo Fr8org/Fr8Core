@@ -183,8 +183,9 @@ namespace TerminalBase.BaseClasses
             var curContainerId = curActionDTO.ContainerId;
             Task<ActionDO> response;
 
+            var currentUserId = curAuthTokenDO != null ? curAuthTokenDO.UserID : null;
             //Set Current user of action
-            SetCurrentUser(curObject, curAuthTokenDO.UserID);
+            SetCurrentUser(curObject, currentUserId);
 
             try
             {
