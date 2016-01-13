@@ -50,6 +50,17 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
+        public static ActivityTemplateDTO Get_Data_v1_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Get_Data_TEST",
+                Label = "Get Data",
+                NeedsAuthentication = true
+            };
+        }
+
         public static ActionDTO Create_Account_v1_InitialConfiguration_ActionDTO()
         {
             var activityTemplate = Create_Account_v1_ActivityTemplate();
@@ -89,6 +100,21 @@ namespace terminalSalesforceTests.Fixtures
                 Id = Guid.NewGuid(),
                 Name = "Create_Lead",
                 Label = "Create Lead",
+                AuthToken = Salesforce_AuthToken(),
+                ActivityTemplate = activityTemplate,
+                ActivityTemplateId = activityTemplate.Id
+            };
+        }
+
+        public static ActionDTO Get_Data_v1_InitialConfiguration_ActionDTO()
+        {
+            var activityTemplate = Get_Data_v1_ActivityTemplate();
+
+            return new ActionDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Get_Data",
+                Label = "Get Data",
                 AuthToken = Salesforce_AuthToken(),
                 ActivityTemplate = activityTemplate,
                 ActivityTemplateId = activityTemplate.Id

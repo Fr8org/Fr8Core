@@ -58,18 +58,18 @@ namespace HubWeb.Controllers
                 RequestQueryString = requestQueryString
             };
 
-            var error = await _authorization.GetOAuthToken(terminal, externalAuthenticationDTO);
+            var response = await _authorization.GetOAuthToken(terminal, externalAuthenticationDTO);
 
-            if (string.IsNullOrEmpty(error))
+            if (string.IsNullOrEmpty(response.Error))
             {
-                return View();
+                return View(response);
             }
             else
             {
-                EventManager.OAuthAuthenticationFailed(requestQueryString, error);
+                EventManager.OAuthAuthenticationFailed(requestQueryString, response.Error);
                 return View("Error", new AuthenticationErrorVM()
                 {
-                    Error = error
+                    Error = response.Error
                 });
             }
         }

@@ -1,55 +1,59 @@
-﻿using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
+﻿using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Newtonsoft.Json;
-using Salesforce.Force;
-using System;
+using Newtonsoft.Json.Linq;
+using Salesforce.Common.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using Hub.Managers;
-using StructureMap;
-using terminalSalesforce.Services;
 
 namespace terminalSalesforce.Infrastructure
 {
-    public class Account
+    public class Account : SalesforceObject
     {
-        ForceClient client;     
-        private ICrateManager _crateManager;
-
-        public Account()
+        protected override bool ValidateObject(object salesforceObject)
         {
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-        }
-
-        public async Task CreateAccount(ActionDO actionDO, AuthorizationTokenDO authTokenDO)
-        {
-            
-            string instanceUrl, apiVersion;
-            ParseAuthToken(authTokenDO.AdditionalAttributes, out instanceUrl, out apiVersion);
-            client = new ForceClient(instanceUrl, authTokenDO.Token, apiVersion);
-            AccountDTO account = new AccountDTO();
-            var curFieldList = _crateManager.GetStorage(actionDO).CrateContentsOfType<StandardConfigurationControlsCM>().First();
-            account.Name = curFieldList.Controls.First(x => x.Name == "accountName").Value;           
-            account.AccountNumber = curFieldList.Controls.First(x => x.Name == "accountNumber").Value;
-            account.Phone = curFieldList.Controls.First(x => x.Name == "phone").Value;
-            if (!String.IsNullOrEmpty(account.Name))
+            //Account object related validation
+            var accountObject = (AccountDTO) salesforceObject;
+            if (accountObject == null || string.IsNullOrEmpty(accountObject.Name))
             {
-                var accountId = await client.CreateAsync("Account", account);
+                return false;
             }
+
+            return true;
         }
 
-        public void ParseAuthToken(string authonTokenAdditionalValues, out string instanceUrl, out string apiVersion)
+        protected override string GetSelectAllQuery()
         {
-            int startIndexOfInstanceUrl = authonTokenAdditionalValues.IndexOf("instance_url");
-            int startIndexOfApiVersion = authonTokenAdditionalValues.IndexOf("api_version");
-            instanceUrl = authonTokenAdditionalValues.Substring(startIndexOfInstanceUrl, (startIndexOfApiVersion - 1 - startIndexOfInstanceUrl));
-            apiVersion = authonTokenAdditionalValues.Substring(startIndexOfApiVersion, authonTokenAdditionalValues.Length - startIndexOfApiVersion);
-            instanceUrl = instanceUrl.Replace("instance_url=", "");
-            apiVersion = apiVersion.Replace("api_version=", "");
+            //return the query to select all accounts
+            return "select Name, AccountNumber, Phone from Account";
         }
-       
+
+        protected override IList<PayloadObjectDTO> ParseQueryResult(QueryResult<object> queryResult)
+        {
+            var resultAccounts = new List<AccountDTO>();
+
+            if (queryResult.Records.Count > 0)
+            {
+                resultAccounts.AddRange(
+                    queryResult.Records.Select(record => ((JObject)record).ToObject<AccountDTO>()));
+            }
+
+            var payloads = new List<PayloadObjectDTO>();
+
+            payloads.AddRange(
+                resultAccounts.Select(
+                    account =>
+                        new PayloadObjectDTO
+                        {
+                            PayloadObject =
+                                new List<FieldDTO>
+                                {
+                                    new FieldDTO {Key = "AccountNumber", Value = account.AccountNumber},
+                                    new FieldDTO {Key = "Name", Value = account.Name},
+                                    new FieldDTO {Key = "Phone", Value = account.Phone}
+                                }
+                        }));
+
+            return payloads;
+        }
     }
 }
