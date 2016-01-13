@@ -122,6 +122,8 @@ module dockyard.directives.paneConfigureAction {
 
         constructor(
             private ActionService: services.IActionService,
+            private AuthService: services.AuthService,
+            private ConfigureTrackerService: services.ConfigureTrackerService,
             private crateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
             private $timeout: ng.ITimeoutService,
@@ -288,6 +290,8 @@ module dockyard.directives.paneConfigureAction {
                         $scope.configurationWatchUnregisterer();
                     }
 
+                    ConfigureTrackerService.configureCallStarted($scope.currentAction.id);
+
                     ActionService.configure($scope.currentAction).$promise
                         .then((res: interfaces.IActionVM) => {
 
@@ -341,6 +345,9 @@ module dockyard.directives.paneConfigureAction {
 
                             // Unblock pane.
                             $scope.processing = false;
+                        })
+                        .finally(() => {
+                            ConfigureTrackerService.configureCallFinished($scope.currentAction.id);
                         });
                 };
 
@@ -350,22 +357,8 @@ module dockyard.directives.paneConfigureAction {
                         var authCrate = crateHelper
                             .findByManifestType($scope.currentAction.crateStorage, 'Standard Authentication');
 
-                        startAuthentication($scope.currentAction.id);
-
-                        // TODO: remove this.
-                        // var authMS = <any>authCrate.contents;
-
-                        // TODO: remove this.
-                        // // Dockyard auth mode.
-                        // if (authMS.Mode == 1 || authMS.Mode == 3) {
-                        //     startInternalAuthentication($scope.currentAction.id, authMS.Mode);
-                        // }
-                        // 
-                        // // External auth mode.                           
-                        // else {
-                        //     // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                        //     startExternalAuthentication($scope.currentAction.id);
-                        // }
+                        // startAuthentication($scope.currentAction.id);
+                        AuthService.enqueue($scope.currentAction.id);
                     }
 
                     $scope.currentAction.configurationControls =
@@ -400,60 +393,8 @@ module dockyard.directives.paneConfigureAction {
                     });
                 }
 
-                // TODO: remove this.
-                // function startInternalAuthentication(actionId: string, mode: number) {
-                //     var self = this;
-                // 
-                //     var modalScope = <any>$scope.$new(true);
-                //     modalScope.actionId = actionId;
-                //     modalScope.mode = mode;
-                //     
-                //     $modal.open({
-                //         animation: true,
-                //         templateUrl: '/AngularTemplate/InternalAuthentication',
-                //         controller: 'InternalAuthenticationController',
-                //         scope: modalScope
-                //     })
-                //     .result
-                //     .then(() => loadConfiguration());
-                // }
-
-                // TODO: remove this.
-                // function startExternalAuthentication(actionId: string) {
-                //     var self = this;
-                //     var childWindow;
-                // 
-                //     var messageListener = function (event) {
-                //         if (!event.data || event.data != 'external-auth-success') {
-                //             return;
-                //         }
-                // 
-                //         childWindow.close();
-                //         loadConfiguration();
-                //     };
-                // 
-                //     $http
-                //         .get('/api/authentication/initial_url?id=' + actionId)
-                //         .then(res => {
-                //             var url = (<any>res.data).url;
-                //             childWindow = $window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
-                //             window.addEventListener('message', messageListener);
-                // 
-                //             var isClosedHandler = function () {
-                //                 if (childWindow.closed) {
-                //                     window.removeEventListener('message', messageListener);
-                //                 }
-                //                 else {
-                //                     setTimeout(isClosedHandler, 500);
-                //                 }
-                //             };
-                //             setTimeout(isClosedHandler, 500);
-                //         });
-                // }
-
                 function setSolutionMode() {
                     $scope.$emit(MessageType[MessageType.PaneConfigureAction_SetSolutionMode]);
-
                 }
             }
         }    
@@ -462,6 +403,8 @@ module dockyard.directives.paneConfigureAction {
         public static Factory() {
             var directive = (
                 ActionService,
+                AuthService,
+                ConfigureTrackerService,
                 crateHelper: services.CrateHelper,
                 $filter: ng.IFilterService,
                 $timeout: ng.ITimeoutService,
@@ -470,10 +413,30 @@ module dockyard.directives.paneConfigureAction {
                 $http: ng.IHttpService
             ) => {
 
-                return new PaneConfigureAction(ActionService, crateHelper, $filter, $timeout, $modal, $window, $http);
+                return new PaneConfigureAction(
+                    ActionService,
+                    AuthService,
+                    ConfigureTrackerService,
+                    crateHelper,
+                    $filter,
+                    $timeout,
+                    $modal,
+                    $window,
+                    $http
+                );
             };
 
-            directive['$inject'] = ['ActionService', 'CrateHelper', '$filter', '$timeout', '$modal', '$window', '$http'];
+            directive['$inject'] = [
+                'ActionService',
+                'AuthService',
+                'ConfigureTrackerService',
+                'CrateHelper',
+                '$filter',
+                '$timeout',
+                '$modal',
+                '$window',
+                '$http'
+            ];
             return directive;
         }
     }

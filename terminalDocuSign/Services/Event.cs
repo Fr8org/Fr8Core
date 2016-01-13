@@ -91,7 +91,6 @@ namespace terminalDocuSign.Services
                     TemplateName = docuSignEnvelopeInformation.EnvelopeStatus.DocumentStatuses.Statuses[0].TemplateName,
                     RecipientId = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Id,
                     RecipientEmail = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Email,
-                    DocuSignObject = "Envelope",
                     Status = docuSignEnvelopeInformation.EnvelopeStatus.Status,
                     CreateDate = docuSignEnvelopeInformation.EnvelopeStatus.CreatedDate,
                     SentDate = docuSignEnvelopeInformation.EnvelopeStatus.SentDate,

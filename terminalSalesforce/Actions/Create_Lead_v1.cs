@@ -16,40 +16,13 @@ namespace terminalSalesforce.Actions
 {
     public class Create_Lead_v1 : BaseTerminalAction
     {
-        ISalesforceIntegration _salesforce = new SalesforceIntegration();
+        ISalesforceManager _salesforce = new SalesforceManager();
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
-        }
-
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var payloadCrates = await GetPayload(curActionDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-
-            var lastName = ExtractControlFieldValue(curActionDO, "lastName");
-
-            if (string.IsNullOrEmpty(lastName))
-            {
-                return Error(payloadCrates, "No last name found in action.");
-            }
-
-            var company = ExtractControlFieldValue(curActionDO, "companyName");
-            if (string.IsNullOrEmpty(company))
-            {
-                return Error(payloadCrates, "No company name found in action.");
-            }
-
-            bool result = _salesforce.CreateLead(curActionDO, authTokenDO);
-          
-            return Success(payloadCrates);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
@@ -63,7 +36,7 @@ namespace terminalSalesforce.Actions
 
             var hasConfigurationControlsCrate = storage
                 .CratesOfType<StandardConfigurationControlsCM>(c => c.Label == "Configuration_Controls").FirstOrDefault() != null;
-            
+
             if (hasConfigurationControlsCrate)
             {
                 return ConfigurationRequestType.Followup;
@@ -100,6 +73,40 @@ namespace terminalSalesforce.Actions
             }
 
             return await Task.FromResult(curActionDO);
+        }
+
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            var payloadCrates = await GetPayload(curActionDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(payloadCrates);
+            }
+
+            var firstName = ExtractControlFieldValue(curActionDO, "firstName");
+            var lastName = ExtractControlFieldValue(curActionDO, "lastName");
+            var company = ExtractControlFieldValue(curActionDO, "companyName");
+            if (string.IsNullOrEmpty(lastName))
+            {
+                return Error(payloadCrates, "No last name found in action.");
+            }
+            
+            if (string.IsNullOrEmpty(company))
+            {
+                return Error(payloadCrates, "No company name found in action.");
+            }
+
+            var lead = new LeadDTO {FirstName = firstName, LastName = lastName, Company = company};
+
+            bool result = await _salesforce.CreateObject(lead, "Lead", _salesforce.CreateForceClient(authTokenDO));
+
+            if (result)
+            {
+                return Success(payloadCrates);
+            }
+
+            return Error(payloadCrates, "Lead creation is failed");
         }
     }
 }

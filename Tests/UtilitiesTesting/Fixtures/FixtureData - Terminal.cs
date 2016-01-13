@@ -65,5 +65,18 @@ namespace UtilitiesTesting.Fixtures
                 Version = "1"
             };
         }
+
+        public static TerminalDO TerminalSix()
+        {
+            return new TerminalDO
+            {
+                Id = 1,
+                Name = "DocuSign",
+                Endpoint = "localhost",
+                TerminalStatus = TerminalStatus.Active,
+                Version = "1",
+                AuthenticationType = AuthenticationType.External
+            };
+        }
     }
 }

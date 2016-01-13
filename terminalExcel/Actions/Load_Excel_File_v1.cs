@@ -203,9 +203,9 @@ namespace terminalExcel.Actions
             var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
                 .Select(x =>
                 {
-                    var ui = new ActionUi();
-                    ui.ClonePropertiesFrom(x);
-                    return ui;
+                    var actionUi = new ActionUi();
+                    actionUi.ClonePropertiesFrom(x);
+                    return actionUi;
                 })
                  .Where(x => !string.IsNullOrEmpty(x.select_file.Value)).ToArray();
 

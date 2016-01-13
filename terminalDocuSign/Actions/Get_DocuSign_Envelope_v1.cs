@@ -47,7 +47,7 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var control = CreateSpecificOrUpstreamValueChooser(
                "EnvelopeId",
                "EnvelopeIdSelector",
