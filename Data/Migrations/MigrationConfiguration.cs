@@ -453,6 +453,8 @@ namespace Data.Migrations
                     TerminalStatus = TerminalStatus.Active,
                     Endpoint = endPoint,
                     Version = version,
+                    // TODO: create a mechanism for those secrets
+                    Secret = Guid.NewGuid().ToString()
                     // TODO: remove this, DO-1397
                     // RequiresAuthentication = requiresAuthentication
                 };

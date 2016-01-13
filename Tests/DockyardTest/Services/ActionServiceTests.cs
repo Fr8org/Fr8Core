@@ -306,6 +306,7 @@ namespace DockyardTest.Services
                     Endpoint = "ep",
                     Version = "1",
                     Name = "Terminal",
+                    Secret = Guid.NewGuid().ToString()
                 };
 
                 uow.TerminalRepository.Add(terminal);

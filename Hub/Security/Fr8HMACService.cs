@@ -9,25 +9,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Hub.Interfaces;
+using StructureMap;
 
 namespace Hub.Security
 {
     public class Fr8HMACService : IHMACService
     {
-
         private readonly MediaTypeFormatter _formatter;
 
         public Fr8HMACService()
-            : this(new JsonMediaTypeFormatter())
         {
-        }
-
-        /// <summary>
-        /// Creates an instance with specified formatter for requests and responses
-        /// </summary>
-        public Fr8HMACService(MediaTypeFormatter formatter)
-        {
-            _formatter = formatter;
+            _formatter = ObjectFactory.GetInstance<MediaTypeFormatter>();
         }
 
         private async Task<string> GetHMACHash(Uri requestUri, string userId, string terminalId, string terminalSecret, string timeStamp, string nonce, string contentBase64String)

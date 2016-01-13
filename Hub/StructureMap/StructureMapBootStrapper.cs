@@ -154,7 +154,7 @@ namespace Hub.StructureMap
 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
 
-                Mock<RestfulServiceClient> restfulServiceClientMock = new Mock<RestfulServiceClient>(MockBehavior.Default);
+                var restfulServiceClientMock = new Mock<RestfulServiceClient>(MockBehavior.Default);
                 For<IRestfulServiceClient>().Use(restfulServiceClientMock.Object).Singleton();
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
@@ -196,7 +196,8 @@ namespace Hub.StructureMap
 	            For<IPusherNotifier>().Use(pusherNotifierMock.Object).Singleton();
 
                 For<ITag>().Use<Tag>();
-                For<IHMACService>().Use<Fr8HMACService>();
+                var fr8HMACService = new Mock<IHMACService>();
+                For<IHMACService>().Use(fr8HMACService.Object);
             }
         }
 
