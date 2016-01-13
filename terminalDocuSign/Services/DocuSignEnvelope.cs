@@ -185,7 +185,7 @@ namespace terminalDocuSign.Services
                     }
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "textTabs", "value");
                     envelopeData = AddEnvelopeData(envelopeData, tabs, "numberTabs", "value");
-                    envelopeData = AddEnvelopeData(envelopeData, tabs, "formularTabs", "value");
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "formulaTabs", "value");
                     if (tabs["checkboxTabs"] == null)
                     {
                         continue;
