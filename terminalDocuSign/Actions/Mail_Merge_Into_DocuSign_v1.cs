@@ -22,7 +22,7 @@ using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Mail_Merge_Into_DocuSign_v1 : BaseTerminalAction
+    public class Mail_Merge_Into_DocuSign_v1 : BaseDocuSignAction
     {
         readonly DocuSignManager _docuSignManager;
         string _dataSourceValue;
@@ -226,15 +226,6 @@ namespace terminalDocuSign.Actions
 
 
             return await Task.FromResult(curActionDO);
-        }
-
-        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
-        {
-            //create DocuSign account if there is no existing connect profile
-            var docuSignAccount = new DocuSignAccount();
-            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(docuSignAccount, null);
-
-            return Task.FromResult<ActionDO>(curActionDO);
         }
     }
 }

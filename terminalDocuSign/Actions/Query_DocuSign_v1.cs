@@ -20,7 +20,7 @@ using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Query_DocuSign_v1  : BaseTerminalAction
+    public class Query_DocuSign_v1  : BaseDocuSignAction
     {
         public class ActionUi : StandardConfigurationControlsCM
         {
@@ -166,15 +166,6 @@ namespace terminalDocuSign.Actions
                 
                 return curActionDO;
             }
-        }
-
-        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
-        {
-            //create DocuSign account if there is no existing connect profile
-            var docuSignAccount = new DocuSignAccount();
-            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(docuSignAccount, null);
-
-            return Task.FromResult<ActionDO>(curActionDO);
         }
 
         private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthTokenDTO authToken)

@@ -17,7 +17,7 @@ using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Get_DocuSign_Envelope_v1 : BaseTerminalAction
+    public class Get_DocuSign_Envelope_v1 : BaseDocuSignAction
     {
         private readonly DocuSignManager _docuSignManager;
 
@@ -80,15 +80,6 @@ namespace terminalDocuSign.Actions
                 int fieldsCount = _docuSignManager.UpdateUserDefinedFields(curActionDO, authTokenDO, updater, envelopeId);
             }
             return await Task.FromResult(curActionDO);
-        }
-
-        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
-        {
-            //create DocuSign account if there is no existing connect profile
-            var docuSignAccount = new DocuSignAccount();
-            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(docuSignAccount, null);
-
-            return Task.FromResult<ActionDO>(curActionDO);
         }
 
         public async Task<PayloadDTO> Run(ActionDO actionDO, Guid containerId, AuthorizationTokenDO authTokenDO)

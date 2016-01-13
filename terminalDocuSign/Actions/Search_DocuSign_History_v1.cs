@@ -19,7 +19,7 @@ using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Search_DocuSign_History_v1  : BaseTerminalAction
+    public class Search_DocuSign_History_v1  : BaseDocuSignAction
     {
         internal class ActionUi : StandardConfigurationControlsCM
         {
@@ -129,15 +129,6 @@ namespace terminalDocuSign.Actions
                 
                 return curActionDO;
             }
-        }
-
-        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
-        {
-            //create DocuSign account if there is no existing connect profile
-            var docuSignAccount = new DocuSignAccount();
-            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(docuSignAccount, null);
-
-            return Task.FromResult<ActionDO>(curActionDO);
         }
 
         private async Task ConfigureNestedActions(ActionDO curActionDO, ActionUi actionUi)

@@ -42,8 +42,9 @@ namespace terminalDocuSign.Infrastructure
             _docuSignConnect.Delete(connectId);
         }
 
-        public static void CreateOrUpdateDefaultDocuSignConnectConfiguration(DocuSignAccount account, string envelopeEvents = "Sent, Delivered, Completed")
+        public static void CreateOrUpdateDefaultDocuSignConnectConfiguration(string envelopeEvents = "Sent, Delivered, Completed")
         {
+            var account = new DocuSignAccount();
             var publishUrl = "http://" + CloudConfigurationManager.GetSetting("TerminalEndpoint") + "/terminals/terminalDocuSign/events";
 
             //get existing connect configuration

@@ -17,7 +17,7 @@ using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Rich_Document_Notifications_v1 : BaseTerminalAction
+    public class Rich_Document_Notifications_v1 : BaseDocuSignAction
     {
         private class ActionUi : StandardConfigurationControlsCM
         {
@@ -173,15 +173,6 @@ namespace terminalDocuSign.Actions
             await ApplyHandlerAction(actionDO, specificHandlerDdl);
 
             return actionDO;
-        }
-
-        public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
-        {
-            //create DocuSign account if there is no existing connect profile
-            var docuSignAccount = new DocuSignAccount();
-            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(docuSignAccount, null);
-
-            return Task.FromResult<ActionDO>(curActionDO);
         }
 
         #region Monitor_DocuSign routines.
