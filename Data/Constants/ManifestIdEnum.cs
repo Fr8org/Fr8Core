@@ -96,7 +96,7 @@ namespace Data.Constants
         [Display(Name = "Chart Of Accounts")]
         ChartOfAccounts = 29,
 
-        [Display(Name = "Error Message")]
+        [Display(Name = "Validation Error Overview")]
         ErrorMessage = 30
     }
 }

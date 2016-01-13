@@ -129,7 +129,8 @@ module dockyard.directives.paneConfigureAction {
             private $timeout: ng.ITimeoutService,
             private $modal,
             private $window: ng.IWindowService,
-            private $http: ng.IHttpService
+            private $http: ng.IHttpService,
+            private ngToast : any
         ) {
             PaneConfigureAction.prototype.link = (
                 scope: IPaneConfigureActionScope,
@@ -364,6 +365,12 @@ module dockyard.directives.paneConfigureAction {
                     $scope.currentAction.configurationControls =
                         crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
 
+                    //check for some validation errors
+                    if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, "Validation Error Overview")) {
+                        var toastMessage = crateHelper.getValidationErrorMessagesFromCrate($scope.currentAction.crateStorage, "Validation Error Overview");
+                        ngToast.danger(toastMessage);
+                    }
+
                     $timeout(() => { // let the control list create, we don't want false change notification during creation process
                         $scope.configurationWatchUnregisterer = $scope.$watch<model.ControlsList>(
                             (scope: IPaneConfigureActionScope) => $scope.currentAction.configurationControls,
@@ -410,7 +417,9 @@ module dockyard.directives.paneConfigureAction {
                 $timeout: ng.ITimeoutService,
                 $modal,
                 $window: ng.IWindowService,
-                $http: ng.IHttpService
+                $http: ng.IHttpService,
+                ngToast: any
+
             ) => {
 
                 return new PaneConfigureAction(
@@ -422,7 +431,8 @@ module dockyard.directives.paneConfigureAction {
                     $timeout,
                     $modal,
                     $window,
-                    $http
+                    $http,
+                    ngToast
                 );
             };
 
@@ -435,7 +445,8 @@ module dockyard.directives.paneConfigureAction {
                 '$timeout',
                 '$modal',
                 '$window',
-                '$http'
+                '$http',
+                "ngToast"
             ];
             return directive;
         }

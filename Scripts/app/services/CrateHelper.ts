@@ -2,8 +2,10 @@
 
     export class CrateHelper {
         private filterByTag: (list: model.DropDownListItem[], filterByTag: string) => model.DropDownListItem[]
+        private $filter: ng.IFilterService;
 
         constructor($filter) {
+            this.$filter = $filter;
             this.filterByTag = $filter('FilterByTag');
         }
 
@@ -206,6 +208,37 @@
             <string[]>(<any>fieldsCrate.contents).Fields.forEach((field) => {
                 if (field.tags && result.indexOf(field.tags) === -1) result.push(field.tags);
             });
+
+            return result;
+        }
+
+        //get all validation messages that are inside the Error Message Response Crate
+        public getValidationErrorMessagesFromCrate(crateStorage: model.CrateStorage, label: string): string {
+            "use strict"; // Check that CrateStorage is not empty.
+            if (!crateStorage || !crateStorage.crates || crateStorage.crates.length === 0) {
+                this.throwError('CrateStorage is empty.');
+                return '';
+            }
+
+            var result = '';
+            var errorCrate = this.findByManifestType(crateStorage, label);
+            if (errorCrate != null) {
+                let content: any = errorCrate.contents;
+
+                if (Object.prototype.toString.call(content) === '[object Array]') {
+                    content.forEach((field) => {
+                        //result = 'Problem with action: ' + field.CurrentAction + ' <br/>';
+                        result += field.Message + ' <br/>';
+                    });
+                } else {
+                    result += content.Message;
+                }
+        
+                //remove from the crate storage the error overview crate
+                for (var i = crateStorage.crates .length - 1; i >= 0; i--) {
+                    if (crateStorage.crates[i].id === errorCrate.id) crateStorage.crates.splice(i, 1);
+                }
+            }
 
             return result;
         }
