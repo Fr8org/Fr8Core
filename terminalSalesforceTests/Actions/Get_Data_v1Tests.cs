@@ -43,7 +43,7 @@ namespace terminalSalesforceTests.Actions
             }
 
             Mock<IHubCommunicator> hubCommunicatorMock = new Mock<IHubCommunicator>(MockBehavior.Default);
-            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<ActionDO>(), It.IsAny<Guid>()))
+            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<ActionDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
                 .Returns(() => Task.FromResult(testPayloadDTO));
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
