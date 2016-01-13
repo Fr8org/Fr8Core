@@ -232,6 +232,7 @@
     <Compile Include="Infrastructure\fr8HMACAuthorizeAttribute.cs" />
     <Compile Include="Interfaces\IAuthorization.cs" />
     <Compile Include="Interfaces\IFindObjectsRoute.cs" />
+    <Compile Include="Interfaces\IHMACService.cs" />
     <Compile Include="Interfaces\IManifest.cs" />
     <Compile Include="Interfaces\IField.cs" />
     <Compile Include="Interfaces\IRouteNode.cs" />
@@ -312,6 +313,7 @@
     </Compile>
     <Compile Include="Security\DockyardIdentityManager.cs" />
     <Compile Include="Security\DockyardUserStore.cs" />
+    <Compile Include="Security\Fr8HMACService.cs" />
     <Compile Include="Security\SecurityServices.cs" />
     <Compile Include="Services\Field.cs" />
     <Compile Include="Services\FindObjectsRoute.cs" />

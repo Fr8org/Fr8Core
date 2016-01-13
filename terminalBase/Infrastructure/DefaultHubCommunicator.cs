@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Formatting;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using StructureMap;
 using Data.Crates;
 using Data.Entities;
@@ -18,28 +24,63 @@ namespace TerminalBase.Infrastructure
     {
         private readonly IRouteNode _routeNode;
         private readonly IRestfulServiceClient _restfulServiceClient;
+        protected string TerminalSecret { get; set; }
+        protected string TerminalId { get; set; }
+
+        private readonly IHMACService _hmacService;
+
+        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public DefaultHubCommunicator()
         {
             _routeNode = ObjectFactory.GetInstance<IRouteNode>();
-            _restfulServiceClient = ObjectFactory.GetNamedInstance<IRestfulServiceClient>("HMACRestfulServiceClient");
+            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            TerminalSecret = CloudConfigurationManager.GetSetting("TerminalSecret");
+            TerminalId = CloudConfigurationManager.GetSetting("TerminalId");
+
+            _hmacService = ObjectFactory.GetInstance<IHMACService>();
         }
 
-        public Dictionary<string, string> GetUserIdHeader(string userId)
+        #region HMAC
+        private async Task<Dictionary<string, string>> GetHMACHeader(string hash, string userId, string timeStamp, string nonce)
         {
+            var mergedData = string.Format("{0}:{1}:{2}:{3}:{4}", TerminalId, hash, nonce, timeStamp, userId);
             return new Dictionary<string, string>()
             {
-                { "fr8UserId" , userId}
-            };
+                {System.Net.HttpRequestHeader.Authorization.ToString(), string.Format("hmac {0}", mergedData)}
+            };   
         }
 
-        public Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId, string userId)
+        public static long GetCurrentUnixTimestampSeconds()
+        {
+            return (long)(DateTime.UtcNow - UnixEpoch).TotalSeconds;
+        }
+
+        private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId)
+        {
+            var timeStamp = GetCurrentUnixTimestampSeconds().ToString(CultureInfo.InvariantCulture);
+            var nonce = Guid.NewGuid().ToString();
+            var hash = await _hmacService.CalculateHMACHash(requestUri, userId, TerminalId, TerminalSecret, timeStamp, nonce);
+            return await GetHMACHeader(hash, userId, timeStamp, nonce);
+        }
+
+        private async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
+        {
+            var timeStamp = GetCurrentUnixTimestampSeconds().ToString(CultureInfo.InvariantCulture);
+            var nonce = Guid.NewGuid().ToString();
+            var hash = await _hmacService.CalculateHMACHash(requestUri, userId, TerminalId, TerminalSecret, timeStamp, nonce, content);
+            return await GetHMACHeader(hash, userId, timeStamp, nonce);
+        }
+
+        #endregion
+
+        public async Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/containers?id="
                 + containerId.ToString("D");
-
-            var payloadDTOTask = _restfulServiceClient.GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute), containerId.ToString(), GetUserIdHeader(userId));
+            var uri = new Uri(url, UriKind.Absolute);
+            var payloadDTOTask = await _restfulServiceClient.GetAsync<PayloadDTO>(new Uri(url, UriKind.Absolute), containerId.ToString(), await GetHMACHeader(uri ,userId));
 
             return payloadDTOTask;
         }
@@ -58,8 +99,8 @@ namespace TerminalBase.Infrastructure
         {
             var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/alarms";
-
-            await _restfulServiceClient.PostAsync(new Uri(hubAlarmsUrl), alarmDTO, null, GetUserIdHeader(userId));
+            var uri = new Uri(hubAlarmsUrl);
+            await _restfulServiceClient.PostAsync(uri, alarmDTO, null, await GetHMACHeader(uri, userId));
         }
 
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO, string userId)
@@ -67,7 +108,8 @@ namespace TerminalBase.Infrastructure
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") 
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/available";
 
-            var allCategories = await _restfulServiceClient.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(new Uri(hubUrl), null, GetUserIdHeader(userId));
+            var uri = new Uri(hubUrl);
+            var allCategories = await _restfulServiceClient.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(uri, null, await GetHMACHeader(uri, userId));
 
             var templates = allCategories.SelectMany(x => x.Activities);
             return templates.ToList();
@@ -95,17 +137,18 @@ namespace TerminalBase.Infrastructure
                 hubUrl += tag;
             }
 
-            var templates = await _restfulServiceClient.GetAsync<List<ActivityTemplateDTO>>(new Uri(hubUrl), null, GetUserIdHeader(userId));
+            var uri = new Uri(hubUrl);
+            var templates = await _restfulServiceClient.GetAsync<List<ActivityTemplateDTO>>(uri, null, await GetHMACHeader(uri, userId));
 
             return templates;
         }
 
-        public Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId)
+        public async Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/field/exists";
-
-            return _restfulServiceClient.PostAsync<List<FieldValidationDTO>, List<FieldValidationResult>>(new Uri(url), fields, null, GetUserIdHeader(userId));
+            var uri = new Uri(url);
+            return await _restfulServiceClient.PostAsync<List<FieldValidationDTO>, List<FieldValidationResult>>(uri, fields, null, await GetHMACHeader(uri, userId, fields));
         }
     }
 }

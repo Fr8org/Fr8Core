@@ -127,6 +127,8 @@ namespace Hub.StructureMap
 	            For<IPusherNotifier>().Use<PusherNotifier>();
                 For<IAuthorization>().Use<Authorization>();
                 For<ITag>().Use<Tag>();
+
+                For<IHMACService>().Use<Fr8HMACService>();
             }
         }
 
@@ -194,6 +196,7 @@ namespace Hub.StructureMap
 	            For<IPusherNotifier>().Use(pusherNotifierMock.Object).Singleton();
 
                 For<ITag>().Use<Tag>();
+                For<IHMACService>().Use<Fr8HMACService>();
             }
         }
 

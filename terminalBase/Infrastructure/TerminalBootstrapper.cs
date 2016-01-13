@@ -25,7 +25,6 @@ namespace TerminalBase.Infrastructure
             public LiveMode()
             {                
                 For<IHubCommunicator>().Use<DefaultHubCommunicator>();
-                For<IRestfulServiceClient>().Add<HMACRestfulServiceClient>().Named("HMACRestfulServiceClient").Singleton();
             }            
         }
     }
