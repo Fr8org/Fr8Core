@@ -49,5 +49,6 @@ namespace Hub.Managers
         OperationalStateCM GetOperationalState(PayloadDTO payloadDTO);
         IEnumerable<FieldDTO> GetFields(IEnumerable<Crate> crates);
         IEnumerable<string> GetLabelsByManifestType(IEnumerable<Crate> crates, string manifestType);
+        Crate CreateValidationErrorOverviewCrate(string label, string message, string action);
     }
 }

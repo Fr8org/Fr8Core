@@ -337,6 +337,7 @@
     <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignTemplateCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
+    <Compile Include="Interfaces\Manifests\ErrorMessageCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8RoutesCM .cs" />
