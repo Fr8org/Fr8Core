@@ -14,34 +14,13 @@ namespace terminalSalesforce.Actions
 {
     public class Create_Account_v1 : BaseTerminalAction
     {
-        ISalesforceIntegration _salesforce = new SalesforceIntegration();
+        ISalesforceManager _salesforce = new SalesforceManager();
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             CheckAuthentication(authTokenDO);
 
             return await ProcessConfigurationRequest(curActionDO, ConfigurationEvaluator, authTokenDO);
-        }
-
-        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-
-            var payloadCrates = await GetPayload(curActionDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-
-            var accountName = ExtractControlFieldValue(curActionDO, "accountName");
-            if (string.IsNullOrEmpty(accountName))
-            {
-                return Error(payloadCrates, "No account name found in action.");
-            }
-
-            bool result = _salesforce.CreateAccount(curActionDO, authTokenDO);
-
-            return Success(payloadCrates);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
@@ -80,6 +59,35 @@ namespace terminalSalesforce.Actions
             }
 
             return await Task.FromResult(curActionDO);
+        }
+
+        public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+
+            var payloadCrates = await GetPayload(curActionDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(payloadCrates);
+            }
+
+            var accountName = ExtractControlFieldValue(curActionDO, "accountName");
+            var accountNumber = ExtractControlFieldValue(curActionDO, "accountNumber");
+            var phone = ExtractControlFieldValue(curActionDO, "phone");
+            if (string.IsNullOrEmpty(accountName))
+            {
+                return Error(payloadCrates, "No account name found in action.");
+            }
+            var account = new AccountDTO {AccountNumber = accountNumber, Name = accountName, Phone = phone};
+
+            bool result = await _salesforce.CreateObject(account, "Account", _salesforce.CreateForceClient(authTokenDO));
+
+            if (result)
+            {
+                return Success(payloadCrates);
+            }
+
+            return Error(payloadCrates, "Account creation is failed");
         }
     }
 }

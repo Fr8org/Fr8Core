@@ -47,6 +47,10 @@ namespace Data.Infrastructure
             : base("name=DockyardDB")
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>());
+    
+            //Logging to ApplicationInsights
+            //var telemetry = new Microsoft.ApplicationInsights.TelemetryClient();
+            //this.Database.Log = (trace) => telemetry.TrackEvent("Database Access", new Dictionary<string, string> { { "SQL trace", trace }});
         }
 
 
