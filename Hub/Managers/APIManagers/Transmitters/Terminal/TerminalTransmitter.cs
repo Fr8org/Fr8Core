@@ -79,24 +79,16 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
 
             var terminal = ObjectFactory.GetInstance<ITerminal>().GetAll().FirstOrDefault(x => x.Id == terminalId);
 
-
-            if (terminal == null || string.IsNullOrEmpty(terminal.Endpoint))
-            {
-                BaseUri = null;
-            }
-            else
-            {
-                BaseUri = new Uri(terminal.Endpoint.StartsWith("http") ? terminal.Endpoint : "http://" + terminal.Endpoint);
-            }
-
+            
             var actionName = Regex.Replace(curActionType, @"[^-_\w\d]", "_");
             var requestUri = new Uri(string.Format("actions/{0}", actionName), UriKind.Relative);
-
-            Dictionary<string, string> hmacHeader;
-            if (terminal != null) { 
-                hmacHeader = await GetHMACHeader(requestUri, actionDTO.AuthToken.UserId, terminal.Id.ToString(CultureInfo.InvariantCulture), terminal.Secret, actionDTO);
+            if (terminal == null || string.IsNullOrEmpty(terminal.Endpoint))
+            {
+                throw new Exception("Unknown terminal or terminal endpoint");
             }
-
+            //let's calculate absolute url, since our hmac mechanism needs it
+            requestUri = new Uri(new Uri(terminal.Endpoint.StartsWith("http") ? terminal.Endpoint : "http://" + terminal.Endpoint), requestUri);
+            var hmacHeader = await GetHMACHeader(requestUri, actionDTO.AuthToken.UserId, terminal.Id.ToString(CultureInfo.InvariantCulture), terminal.Secret, actionDTO);
             return await PostAsync<ActionDTO, TResponse>(requestUri, actionDTO, correlationId, hmacHeader);
         }
     }
