@@ -332,7 +332,7 @@ namespace terminalDocuSign.Actions
         private Crate PackAvailableTemplates(AuthorizationTokenDO authTokenDO)
         {
             var docuSignAuthDTO = JsonConvert
-                .DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+                .DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             var crate = DocuSignManager.PackCrate_DocuSignTemplateNames(docuSignAuthDTO);
             crate.Label = "AvailableTemplates";

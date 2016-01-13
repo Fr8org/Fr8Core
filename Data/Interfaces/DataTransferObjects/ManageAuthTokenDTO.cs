@@ -29,6 +29,9 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("isMain")]
         public bool IsMain { get; set; }
+
+        [JsonProperty("isSelected")]
+        public bool IsSelected { get; set; }
     }
 
     public class ManageAuthToken_Terminal_Action

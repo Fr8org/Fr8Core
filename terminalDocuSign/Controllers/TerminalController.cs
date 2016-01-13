@@ -132,6 +132,17 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 380
             };
 
+            var generateDocusignReport = new ActivityTemplateDTO
+            {
+                Name = "Generate_DocuSign_Report",
+                Label = "Generate a DocuSign Report",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = true,
+                Terminal = terminal,
+                MinPaneWidth = 380
+            };
+
             var searchDocusignHistory = new ActivityTemplateDTO
             {
                 Name = "Search_DocuSign_History",
@@ -143,7 +154,6 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 380
             };
 
-
             var actionList = new List<ActivityTemplateDTO>()
             {
                 waitForDocusignEventActionTemplate,
@@ -154,8 +164,9 @@ namespace terminalDocuSign.Controllers
                 collectFormDataSolution,
                 richDocumentNotificationsSolution,
                 queryDocusign,
+                generateDocusignReport,
                 searchDocusignHistory,
-                getDocuSignTemplateActionTemplate
+                getDocuSignTemplateActionTemplate,
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

@@ -89,17 +89,17 @@ namespace terminalDocuSign.Actions
                 throw new ApplicationException("No AuthToken provided.");
             }
 
-            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
-            var controls = new ActionUi();
+            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+            var actionUi = new ActionUi();
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 
-                updater.CrateStorage.Add(PackControls(controls));
+                updater.CrateStorage.Add(PackControls(actionUi));
                 updater.CrateStorage.AddRange(PackDesignTimeData(docuSignAuthDto));
             }
 
-            await ConfigureNestedActions(curActionDO, controls);
+            await ConfigureNestedActions(curActionDO, actionUi);
             
             return curActionDO;
         }
@@ -113,19 +113,19 @@ namespace terminalDocuSign.Actions
 
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                var ui = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+                var configurationControls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
-                if (ui == null)
+                if (configurationControls == null)
                 {
                     updater.DiscardChanges();
                     return curActionDO;
                 }
 
-                var controls = new ActionUi();
+                var actionUi = new ActionUi();
                
-                controls.ClonePropertiesFrom(ui);
+                actionUi.ClonePropertiesFrom(configurationControls);
 
-                await ConfigureNestedActions(curActionDO, controls);
+                await ConfigureNestedActions(curActionDO, actionUi);
                 
                 return curActionDO;
             }
@@ -140,13 +140,13 @@ namespace terminalDocuSign.Actions
             return Task.FromResult<ActionDO>(curActionDO);
         }
 
-        private async Task ConfigureNestedActions(ActionDO curActionDO, ActionUi ui)
+        private async Task ConfigureNestedActions(ActionDO curActionDO, ActionUi actionUi)
         {
             var config = new Query_DocuSign_v1.ActionUi
             {
-                Folder = {Value = ui.Folder.Value}, 
-                Status = {Value = ui.Status.Value}, 
-                SearchText = {Value = ui.SearchText.Value}
+                Folder = {Value = actionUi.Folder.Value}, 
+                Status = {Value = actionUi.Status.Value}, 
+                SearchText = {Value = actionUi.SearchText.Value}
             };
             
             var template = (await FindTemplates(curActionDO, x => x.Name == "Query_DocuSign")).FirstOrDefault();
@@ -192,9 +192,9 @@ namespace terminalDocuSign.Actions
             return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
         }
 
-        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuth authDTO)
+        private IEnumerable<Crate> PackDesignTimeData(DocuSignAuthTokenDTO authToken)
         {
-            var folders = _docuSignFolder.GetFolders(authDTO.Email, authDTO.ApiPassword);
+            var folders = _docuSignFolder.GetFolders(authToken.Email, authToken.ApiPassword);
             var fields = new List<FieldDTO>();
             
             foreach (var folder in folders)

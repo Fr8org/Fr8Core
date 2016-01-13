@@ -60,7 +60,8 @@ module dockyard.controllers {
             '$filter',
             'UIHelperService',
             'LayoutService',
-            '$modal'
+            '$modal',
+            'AuthService'
         ];
 
         private _longRunningActionsCounter: number;
@@ -78,7 +79,8 @@ module dockyard.controllers {
             private $filter: ng.IFilterService,
             private uiHelperService: services.IUIHelperService,
             private LayoutService: services.ILayoutService,
-            private $modal: any
+            private $modal: any,
+            private AuthService: services.AuthService
             ) {
 
             this.$scope.current = new model.RouteBuilderState();
@@ -168,7 +170,6 @@ module dockyard.controllers {
 
         private reConfigure(actions: model.ActionDTO[]) {
             for (var i = 0; i < actions.length; i++) {
-                
                 this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure], new pca.ActionReconfigureEventArgs(actions[i]));
                 if (actions[i].childrenActions.length > 0) {
                     this.reConfigure(<model.ActionDTO[]>actions[i].childrenActions);
@@ -297,6 +298,8 @@ module dockyard.controllers {
         }
 
         private onRouteLoad(mode: string, curRoute: interfaces.IRouteVM) {
+            this.AuthService.clear();
+
             this.$scope.mode = mode;
             this.$scope.current.route = curRoute;
             this.$scope.currentSubroute = curRoute.subroutes[0];
@@ -578,8 +581,8 @@ module dockyard.controllers {
         }
 
         private updateChildActionsRecursive(curAction: interfaces.IActionVM) {
-            this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);
-            
+            this.AuthService.clear();
+            this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure]);           
         }
 
         
@@ -609,7 +612,6 @@ module dockyard.controllers {
         // This should handle everything that should be done when a configure call response arrives from server.
         private PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) {
             // scann all actions to find actions with tag AgressiveReload in ActivityTemplate
-
             this.reConfigure(this.getReloadAgressiveActions(this.$scope.actionGroups, callConfigureResponseEventArgs.action));
         }
 

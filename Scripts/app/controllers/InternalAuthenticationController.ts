@@ -51,7 +51,10 @@
                         }
                         else {
                             $scope.authErrorText = null;
-                            $scope.$close();
+                            $scope.$close({
+                                terminalId: res.data.terminalId,
+                                authTokenId: res.data.authTokenId
+                            });
                         }
                     })
                     .catch(function () {

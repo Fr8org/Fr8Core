@@ -18,13 +18,19 @@
                     <span>{{authToken.externalAccountName}}</span>
                 </label>
             </div>
+            <div ng-if="terminal.authTokens.length" style="font-style: italic; margin: 5px 0 5px 0;">
+                Please select previously added user account on the external service for use by &laquo;{{terminal.name}}&raquo;. To add a user account not in the list, click on the <strong>Link a New User Account</strong> button.
+            </div>
+            <div ng-if="!terminal.authTokens.length" style="font-style: italic; margin: 5px 0 5px 0;">
+                Please click on the <strong>Link a New User Account</strong> button to enable &laquo;{{terminal.name}}&raquo; to access the external service.
+            </div>
             <div>
-                <button class="btn btn-default" ng-click="linkAccount(terminal)">Link an account for {{terminal.name}}</button>
+                <button class="btn btn-default" ng-click="linkAccount(terminal)">Link a New User Account</button>
             </div>
             <div style="margin-top: 10px;">
                 <label>
                     <input type="checkbox" ng-model="terminal.isMain" />
-                    <span>Always use this account without asking.</span>
+                    <span>Remember my selection for {{terminal.name}}</span>
                 </label>
             </div>
         </div>
