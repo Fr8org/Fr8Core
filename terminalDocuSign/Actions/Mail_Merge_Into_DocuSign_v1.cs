@@ -147,22 +147,21 @@ namespace terminalDocuSign.Actions
         /// <returns></returns>
         protected override async Task<CrateStorage> ValidateAction(ActionDO curActionDO)
         {
+            var tempCrateStorage = new CrateStorage();
             //first validate if any DocuSign Template has been linked to the account
             var result = await ValidateDocuSignAtLeastOneTemplate(curActionDO);
             if (result != null)
             {
-                var crateStorageTemp = Crate.GetStorage(curActionDO);
-                crateStorageTemp.Add(Crate.FromDto(result));
-                return await Task.FromResult(crateStorageTemp);
+                tempCrateStorage.Add(Crate.FromDto(result));
+                return await Task.FromResult(tempCrateStorage);
             }
              
             //Validate if the current user selected any template to his account DocuSign account
             var validateTemplatesResult = await ValidateDocuSignTemplateSelectValue(curActionDO);
             if (validateTemplatesResult != null)
             {
-                var crateStorageTemp = Crate.GetStorage(curActionDO);
-                crateStorageTemp.Add(Crate.FromDto(validateTemplatesResult));
-                return await Task.FromResult(crateStorageTemp);
+                tempCrateStorage.Add(Crate.FromDto(validateTemplatesResult));
+                return await Task.FromResult(tempCrateStorage);
             }
 
             return await Task.FromResult<CrateStorage>(null);
