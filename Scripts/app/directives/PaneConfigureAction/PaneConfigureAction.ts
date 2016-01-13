@@ -368,7 +368,7 @@ module dockyard.directives.paneConfigureAction {
                     //check for some validation errors
                     if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, "Validation Error Overview")) {
                         var toastMessage = crateHelper.getValidationErrorMessagesFromCrate($scope.currentAction.crateStorage, "Validation Error Overview");
-                        ngToast.danger(toastMessage);
+                        if (toastMessage !== '') ngToast.danger(toastMessage);
                     }
 
                     $timeout(() => { // let the control list create, we don't want false change notification during creation process
