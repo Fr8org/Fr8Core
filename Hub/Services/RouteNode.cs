@@ -350,55 +350,5 @@ namespace Hub.Services
 
             return curActivityTemplates;
         }
-        
-        public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(
-            Guid activityId, CrateDirection direction)
-        { 
-            // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
-            var directionSuffix = (direction == CrateDirection.Upstream)
-                ? "upstream_actions/"
-                : "downstream_actions/";
-
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                +"api/"+ CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
-                + directionSuffix
-                + "?id=" + activityId;
-
-            var curActions = await _restfulServiceClient.GetAsync<List<ActionDTO>>(new Uri(url, UriKind.Absolute));
-            var curCrates = new List<Crate<TManifest>>();
-
-            foreach (var curAction in curActions)
-            {
-                var storage = _crate.FromDto(curAction.CrateStorage);
-
-                curCrates.AddRange(storage.CratesOfType<TManifest>());
-            }
-
-            return curCrates;
-        }
-
-        public async Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction)
-        {
-            // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
-            var directionSuffix = (direction == CrateDirection.Upstream)
-                ? "upstream_actions/"
-                : "downstream_actions/";
-
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
-                + directionSuffix
-                + "?id=" + activityId;
-
-            var curActions = await _restfulServiceClient.GetAsync<List<ActionDTO>>(new Uri(url, UriKind.Absolute));
-            var curCrates = new List<Crate>();
-
-            foreach (var curAction in curActions)
-            {
-                var storage = _crate.FromDto(curAction.CrateStorage);
-                curCrates.AddRange(storage);
-            }
-
-            return curCrates;
-        }
     }
 }

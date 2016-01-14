@@ -15,6 +15,7 @@ using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Controllers
 {
@@ -24,6 +25,7 @@ namespace terminalFr8Core.Controllers
         private const string curTerminal = "terminalFr8Core";
 
         [HttpPost]
+        [fr8TerminalHMACAuthorize]
         public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
             return HandleFr8Request(curTerminal, actionType, curActionDTO);

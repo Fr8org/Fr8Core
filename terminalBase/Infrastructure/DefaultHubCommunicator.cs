@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Hub.Managers;
 using StructureMap;
 using Data.Crates;
 using Data.Entities;
@@ -28,6 +29,7 @@ namespace TerminalBase.Infrastructure
         protected string TerminalId { get; set; }
 
         private readonly IHMACService _hmacService;
+        private readonly ICrateManager _crate;
 
         private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -37,7 +39,7 @@ namespace TerminalBase.Infrastructure
             _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             TerminalSecret = CloudConfigurationManager.GetSetting("TerminalSecret");
             TerminalId = CloudConfigurationManager.GetSetting("TerminalId");
-
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
             _hmacService = ObjectFactory.GetInstance<IHMACService>();
         }
 
@@ -85,14 +87,53 @@ namespace TerminalBase.Infrastructure
             return payloadDTOTask;
         }
 
-        public Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActionDO actionDO, CrateDirection direction, string userId)
+        public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActionDO actionDO, CrateDirection direction, string userId)
         {
-            return _routeNode.GetCratesByDirection<TManifest>(actionDO.Id, direction);
+            var directionSuffix = (direction == CrateDirection.Upstream)
+                ? "upstream_actions/"
+                : "downstream_actions/";
+
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                +"api/"+ CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
+                + directionSuffix
+                + "?id=" + actionDO.Id;
+            var uri = new Uri(url, UriKind.Absolute);
+            
+            var curActions = await _restfulServiceClient.GetAsync<List<ActionDTO>>(uri, null, await GetHMACHeader(uri, userId));
+            var curCrates = new List<Crate<TManifest>>();
+
+            foreach (var curAction in curActions)
+            {
+                var storage = _crate.FromDto(curAction.CrateStorage);
+
+                curCrates.AddRange(storage.CratesOfType<TManifest>());
+            }
+
+            return curCrates;
         }
 
-        public Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction, string userId)
+        public async Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction, string userId)
         {
-            return _routeNode.GetCratesByDirection(actionDO.Id, direction);
+            var directionSuffix = (direction == CrateDirection.Upstream)
+                ? "upstream_actions/"
+                : "downstream_actions/";
+
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
+                + directionSuffix
+                + "?id=" + actionDO.Id;
+
+            var uri = new Uri(url, UriKind.Absolute);
+            var curActions = await _restfulServiceClient.GetAsync<List<ActionDTO>>(uri, null, await GetHMACHeader(uri, userId));
+            var curCrates = new List<Crate>();
+
+            foreach (var curAction in curActions)
+            {
+                var storage = _crate.FromDto(curAction.CrateStorage);
+                curCrates.AddRange(storage);
+            }
+
+            return curCrates;
         }
 
         public async Task CreateAlarm(AlarmDTO alarmDTO, string userId)

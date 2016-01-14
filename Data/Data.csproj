@@ -546,6 +546,10 @@
     <Compile Include="Migrations\201601111038337_AddedSecretFieldToTerminalDO.Designer.cs">
       <DependentUpon>201601111038337_AddedSecretFieldToTerminalDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201601141644454_AddedPublicIdentifierToTerminalDO.cs" />
+    <Compile Include="Migrations\201601141644454_AddedPublicIdentifierToTerminalDO.Designer.cs">
+      <DependentUpon>201601141644454_AddedPublicIdentifierToTerminalDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
@@ -915,6 +919,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201601111038337_AddedSecretFieldToTerminalDO.resx">
       <DependentUpon>201601111038337_AddedSecretFieldToTerminalDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601141644454_AddedPublicIdentifierToTerminalDO.resx">
+      <DependentUpon>201601141644454_AddedPublicIdentifierToTerminalDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -3,6 +3,7 @@ using Data.Interfaces.DataTransferObjects;
 using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
 using System;
+using TerminalBase.Infrastructure;
 
 namespace terminalAtlassian.Controllers
 {
@@ -12,6 +13,7 @@ namespace terminalAtlassian.Controllers
         private const string curTerminal = "terminalAtlassian";
 
         [HttpPost]
+        [fr8TerminalHMACAuthorize]
         public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
             return HandleFr8Request(curTerminal, actionType, curActionDTO);

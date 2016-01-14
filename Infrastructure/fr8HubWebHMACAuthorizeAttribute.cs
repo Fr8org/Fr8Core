@@ -61,11 +61,14 @@ namespace HubWeb.Infrastructure
                 return false;
             }
 
+            //TODO discuss and enable this
+            /*
             //let's check if user allowed this terminal to modify it's data
             if (!await _terminalService.IsUserSubscribedToTerminal(intTerminalId, userId))
             {
                 return false;
             }
+             * */
             
             return true;
         }

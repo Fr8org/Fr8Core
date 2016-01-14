@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using HubWeb.Infrastructure;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Infrastructure.StructureMap;
@@ -70,7 +71,7 @@ namespace HubWeb.Controllers
         // TODO: after DO-1214 is completed, this method must be removed.
         [ActionName("upstream_actions")]
         [ResponseType(typeof (List<ActionDTO>))]
-        [AllowAnonymous]
+        [fr8HubWebHMACAuthorize]
         public IHttpActionResult GetUpstreamActions(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -89,7 +90,7 @@ namespace HubWeb.Controllers
         // TODO: after DO-1214 is completed, this method must be removed.
         [ActionName("downstream_actions")]
         [ResponseType(typeof (List<ActionDTO>))]
-        [AllowAnonymous]
+        [fr8HubWebHMACAuthorize]
         public IHttpActionResult GetDownstreamActions(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -107,7 +108,7 @@ namespace HubWeb.Controllers
 
         [ActionName("available")]
         [ResponseType(typeof (IEnumerable<ActivityTemplateCategoryDTO>))]
-        [AllowAnonymous]
+        [fr8HubWebHMACAuthorize]
         [HttpGet]
         public IHttpActionResult GetAvailableActivities()
         {
@@ -118,7 +119,7 @@ namespace HubWeb.Controllers
 
         [ActionName("available")]
         [ResponseType(typeof (IEnumerable<ActivityTemplateDTO>))]
-        [AllowAnonymous]
+        [fr8HubWebHMACAuthorize]
         [HttpGet]
         public IHttpActionResult GetAvailableActivities(string tag)
         {

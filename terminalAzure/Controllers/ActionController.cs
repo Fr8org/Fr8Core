@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.States;
 using TerminalBase.BaseClasses;
 using AutoMapper;
+using TerminalBase.Infrastructure;
 
 namespace terminalAzure.Controllers
 {    
@@ -16,6 +17,7 @@ namespace terminalAzure.Controllers
         private const string curTerminal = "terminalAzure";
 
         [HttpPost]
+        [fr8TerminalHMACAuthorize]
         public Task<object> Execute([FromUri] String actionType, [FromBody] ActionDTO curActionDTO)
         {
             return HandleFr8Request(curTerminal, actionType, curActionDTO);

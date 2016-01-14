@@ -4,6 +4,7 @@ using Data.States;
 using Hangfire;
 using Hub.Interfaces;
 using Hub.Managers;
+using HubWeb.Infrastructure;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace HubWeb.Controllers
     public class AlarmsController : ApiController
     {
         [HttpPost]
+        [fr8HubWebHMACAuthorize]
         public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {
             //TODO what happens to AlarmsController? does it stay in memory all this time?
@@ -31,6 +33,7 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
+        //TODO is this method called from somewhere else?
         [HttpPost]
         public async void ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
         {
