@@ -188,7 +188,6 @@ namespace terminalPapertrailTests.Integration
         /// Should throw expcetion
         /// </summary>
         [Test]
-        [Ignore]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Sequence contains no elements""}",
