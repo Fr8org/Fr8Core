@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Configuration;
 using System.Linq;
+using System.Threading;
 using NUnit.Core;
 using HealthMonitor.Configuration;
-using System.Configuration;
 
 namespace HealthMonitor
 {
@@ -48,7 +48,7 @@ namespace HealthMonitor
             try
             {
                 new Program().Run(ensureTerminalsStartup, sendEmailReport, appName);
-        }
+            }
             finally
             {
                 if (selfHosting)
@@ -69,13 +69,13 @@ namespace HealthMonitor
                 Console.WriteLine("Following terminals have failed to start:");
 
                 foreach (var terminalName in failedToStart)
-            {
+                {
                     Console.WriteLine(terminalName);
                 }
 
                 Environment.Exit(failedToStart.Count);
-                }
             }
+        }
 
         private void ReportToConsole(string appName, TestReport report)
         {
