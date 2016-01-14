@@ -6,5 +6,5 @@ foreach ($config in $configs)
 {
     [string]$TargetDir = $config.Directory
     $TargetDir = $TargetDir.Remove(($TargetDir.Length-3),3)
-    Copy-Item -Path $config.FullName -Destination $TargetDir -Force
+    Copy-Item -Path $config.FullName -Destination $TargetDir -Force -Verbose
 }
