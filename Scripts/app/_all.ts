@@ -38,6 +38,7 @@
 /// <reference path="directives/eventargsbase.ts" />
 
 /// <reference path="filters/routestate.ts" />
+/// <reference path="filters/datetimeformatter.ts" />
 
 /// <reference path="directives/paneconfigureaction/paneconfigureaction.ts" />
 /// <reference path="directives/paneconfigureaction/configurationcontrol.ts" />
