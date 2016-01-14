@@ -9,20 +9,27 @@ using System.Threading.Tasks;
 
 namespace HealthMonitor
 {
-    public class SelfHostInitializer: IDisposable
+    public class SelfHostInitializer : IDisposable
     {
         IList<IDisposable> _selfHostedTerminals = new List<IDisposable>();
 
         public void Initialize()
         {
             var selfHostedTerminals = GetSelfHostedTerminals();
-            try {
+            try
+            {
                 foreach (SelfHostedTerminalsElement terminal in selfHostedTerminals)
                 {
                     Type calledType = Type.GetType(terminal.Type);
                     if (calledType == null)
-                        throw new ArgumentException(string.Format("Unable to instantiate the terminal type {0}.",
-                            terminal.Type));
+                    {
+                        throw new ArgumentException(
+                            string.Format(
+                                "Unable to instantiate the terminal type {0}.",
+                                terminal.Type
+                            )
+                        );
+                    }
 
                     MethodInfo curMethodInfo = calledType.GetMethod("CreateServer", BindingFlags.Static | BindingFlags.Public);
                     _selfHostedTerminals.Add((IDisposable)curMethodInfo.Invoke(null, new string[] { terminal.Url }));
@@ -45,7 +52,7 @@ namespace HealthMonitor
                 return null;
             }
 
-            return  healthMonitorCS.SelfHostedTerminals;
+            return healthMonitorCS.SelfHostedTerminals;
         }
 
         public void Dispose()
