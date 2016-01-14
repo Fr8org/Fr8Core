@@ -13,6 +13,7 @@ namespace Data.Interfaces.Manifests
         public string SentDate { get; set; }
         public string DeliveredDate { get; set; }
         public string CompletedDate { get; set; }
+        [MtPrimaryKey]
         public string EnvelopeId { get; set; }
         public string ExternalAccountId { get; set; }
 
