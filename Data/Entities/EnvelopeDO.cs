@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Data.Entities
 {
-    public class EnvelopeDO : BaseDO, IMailerDO
+    public class EnvelopeDO : BaseObject, IMailerDO
     {
         public const string MailHandler = "Gmail";
 

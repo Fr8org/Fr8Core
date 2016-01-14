@@ -187,6 +187,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             data: { pageTitle: 'Manage Files', pageSubTitle: '' }
         })
 
+        .state('fileDetail', {
+            url: "/managefiles/{id}",
+            templateUrl: "/AngularTemplate/FileDetails",
+            data: { pageTitle: 'File details', pageSubTitle: '' }
+        })
+
         .state('accounts', {
             url: '/accounts',
             templateUrl: '/AngularTemplate/AccountList',

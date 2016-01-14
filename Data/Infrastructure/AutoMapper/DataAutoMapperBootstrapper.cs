@@ -24,6 +24,7 @@ namespace Data.Infrastructure.AutoMapper
 
 
             Mapper.CreateMap<ActionDO, ActionDTO>();
+            Mapper.CreateMap<FactDO, FactDTO>();
 
             Mapper.CreateMap<Fr8AccountDO, UserDTO>()
                 .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))
@@ -117,7 +118,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<FileDO, FileDTO>();
 
             Mapper.CreateMap<ContainerDO, ContainerDTO>();
-            Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>();
+            Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>().ForMember(x => x.UserID, x => x.ResolveUsing(y => y.UserId));
             Mapper.CreateMap<TerminalDO, TerminalDTO>();
             Mapper.CreateMap<TerminalDTO, TerminalDO>();
         }

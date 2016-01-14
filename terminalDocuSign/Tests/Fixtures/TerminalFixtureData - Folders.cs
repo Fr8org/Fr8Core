@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using Data.Interfaces.Manifests;
 using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Tests.Fixtures
@@ -22,6 +24,31 @@ namespace terminalDocuSign.Tests.Fixtures
                     Name = "Folder 2",
                 },
             };
+        }
+        
+        public static List<FolderItem> GetFolderItems(string folderName, int seed, int count, string status)
+        {
+            var items = new List<FolderItem>(count);
+            var prefix = "[" + folderName + "]";
+
+            for (int j = 0, i = seed; j < count; j++, i++)
+            {
+                items.Add( new FolderItem
+                {
+                    Name =  prefix + "Envelope "+i,
+                    EnvelopeId = prefix +"Envelope "+i,
+                    OwnerName = prefix +"Owner "+(i%5),
+                    PageCount = 1,
+                    SenderName = prefix + "Sender " + (i % 10),
+                    SenderEmail = prefix + "Sender" + (i % 10)+ "@mail" ,
+                    Status = status,
+                    Subject = prefix + "Sender " + (i % 10),
+                    CompletedDateTime = new DateTime(2015, 10, 2, 1, 1 ,1),
+                    CreatedDateTime =  new DateTime(2015, 10, 1, 1, 1 ,1),
+                });
+            }
+
+            return items;
         }
 
 

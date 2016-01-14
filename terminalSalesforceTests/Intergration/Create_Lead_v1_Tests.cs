@@ -156,8 +156,9 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("companyName")),
                 "Create Lead does not have Company Name control");
 
-            Assert.IsFalse(configurationControls.Content.Controls.Any(ctrl => ctrl.Events.Count != 1),
-                "Create Lead controls are not subscribed to on Change events");
+            //@AlexAvrutin: Commented this since the textboxes here do not require requestConfig event. 
+            //Assert.IsFalse(configurationControls.Content.Controls.Any(ctrl => ctrl.Events.Count != 1),
+            //    "Create Lead controls are not subscribed to on Change events");
         }
 
         private ActionDTO SetLastName(ActionDTO curActionDto)

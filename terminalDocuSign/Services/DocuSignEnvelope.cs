@@ -179,30 +179,19 @@ namespace terminalDocuSign.Services
                 foreach (var signer in recipients["signers"])
                 {
                     var tabs = signer["tabs"];
-
                     if (tabs == null)
                     {
                         continue;
                     }
-
-                    if (tabs["textTabs"] != null)
-                {
-                        foreach (var textTab in tabs["textTabs"])
-                    {
-                        envelopeData.Add(CreateEnvelopeData(textTab, textTab["value"].ToString()));
-                    }
-                }
-
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "textTabs", "value");
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "numberTabs", "value");
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "formulaTabs", "value");
                     if (tabs["checkboxTabs"] == null)
-                {
-                    continue;
+                    {
+                        continue;
+                    }
+                    envelopeData = AddEnvelopeData(envelopeData, tabs, "checkboxTabs", "selected");
                 }
-
-                    foreach (var chekBoxTabs in tabs["checkboxTabs"])
-                {
-                    envelopeData.Add(CreateEnvelopeData(chekBoxTabs, chekBoxTabs["selected"].ToString()));
-                }
-            }
             }
 
             return envelopeData;
@@ -226,7 +215,7 @@ namespace terminalDocuSign.Services
             switch (name)
             {
                 case "Checkbox":
-                    return  ControlTypes.CheckBox;
+                    return ControlTypes.CheckBox;
                 case "Text":
                     return ControlTypes.TextBox;
                 default:
@@ -237,12 +226,23 @@ namespace terminalDocuSign.Services
         public void SendUsingTemplate(string templateId, string recipientAddress)
         {
             var curEnv = new Envelope();
-            var templateList = new List<string> {templateId};
+            var templateList = new List<string> { templateId };
             curEnv.AddTemplates(templateList);
             curEnv.Create();
 
         }
 
+        private List<EnvelopeDataDTO> AddEnvelopeData(List<EnvelopeDataDTO> envelopes, JToken tabs,  string tabName, string tabField)
+        {
+            if (tabs[tabName] != null)
+            {
+                foreach (var textTab in tabs[tabName])
+                {
+                    envelopes.Add(CreateEnvelopeData(textTab, textTab[tabField].ToString()));
+                }
+            }
+            return envelopes;
+        } 
 
     }
 }

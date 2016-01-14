@@ -18,10 +18,11 @@ using TerminalBase.Infrastructure;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using Utilities.Configuration.Azure;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Mail_Merge_Into_DocuSign_v1 : BaseTerminalAction
+    public class Mail_Merge_Into_DocuSign_v1 : BaseDocuSignAction
     {
         readonly DocuSignManager _docuSignManager;
         string _dataSourceValue;
@@ -58,7 +59,11 @@ namespace terminalDocuSign.Actions
             controlList.Add(new Button()
             {
                 Label = "Continue",
-                Name = "Continue"
+                Name = "Continue",
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onClick", "requestConfig")
+                }
             });
 
             return PackControlsCrate(controlList.ToArray());
@@ -86,7 +91,7 @@ namespace terminalDocuSign.Actions
                     }
                     else
                     {
-                        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+                        var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
                         //build a controls crate to render the pane
                         var configurationControlsCrate = await CreateConfigurationControlsCrate(curActionDO);
@@ -162,7 +167,7 @@ namespace terminalDocuSign.Actions
         protected override async Task<ActionDO> FollowupConfigurationResponse(
             ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             _docuSignManager.ExtractFieldsAndAddToCrate(_docuSignTemplateValue, docuSignAuthDTO, curActionDO);
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(curActionDO, null))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))

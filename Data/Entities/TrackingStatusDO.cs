@@ -4,7 +4,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class TrackingStatusDO : BaseDO, ICustomField
+    public class TrackingStatusDO : BaseObject, ICustomField
     {
         public int Id { get; set; }
         public string ForeignTableName { get; set; }

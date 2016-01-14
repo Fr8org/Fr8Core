@@ -16,6 +16,9 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using TerminalBase.Infrastructure;
 using terminalFr8Core.Actions;
+using Moq;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using System.Threading.Tasks;
 
 namespace terminalFr8CoreTests.Unit
 {
@@ -34,6 +37,10 @@ namespace terminalFr8CoreTests.Unit
 
             _coreServer = Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             select_Fr8_Object_v1 = new Select_Fr8_Object_v1();
+            Mock<IRestfulServiceClient> restClientMock = new Mock<IRestfulServiceClient>(MockBehavior.Default);
+            restClientMock.Setup(restClient => restClient.GetAsync<CrateDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
+                .Returns(Task.FromResult(FixtureData.TestEmptyCrateDTO()));
+            ObjectFactory.Container.Inject(typeof(IRestfulServiceClient), restClientMock.Object);
         }
 
         [TearDown]

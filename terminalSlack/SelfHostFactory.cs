@@ -12,9 +12,8 @@ namespace terminalSlack
         {
             public void Configuration(IAppBuilder app)
             {
-                var config = new HttpConfiguration();
-
-                WebApiConfig.Register(config);
+                var startup = new Startup();
+                startup.Configuration(app, selfHost: true);
             }
         }
 

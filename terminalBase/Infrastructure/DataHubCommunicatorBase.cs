@@ -10,6 +10,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
+using Data.Constants;
 
 namespace TerminalBase.Infrastructure
 {
@@ -136,6 +137,11 @@ namespace TerminalBase.Infrastructure
                 .ToList();
 
             return activityTemplates;
+        }
+
+        public Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields)
+        {
+            return Task.FromResult(new List<FieldValidationResult>());
         }
     }
 }

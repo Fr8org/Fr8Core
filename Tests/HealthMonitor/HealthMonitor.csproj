@@ -34,6 +34,33 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.AI.Agent.Intercept">
+      <HintPath>..\..\packages\Microsoft.ApplicationInsights.Agent.Intercept.1.2.0\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.DependencyCollector">
+      <HintPath>..\..\packages\Microsoft.ApplicationInsights.DependencyCollector.1.2.3\lib\net45\Microsoft.AI.DependencyCollector.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.PerfCounterCollector">
+      <HintPath>..\..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.1.2.3\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.ServerTelemetryChannel">
+      <HintPath>..\..\packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.1.2.3\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.WindowsServer">
+      <HintPath>..\..\packages\Microsoft.ApplicationInsights.WindowsServer.1.2.3\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=1.2.3.490, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.ApplicationInsights.1.2.3\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.HttpListener, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Owin.Host.HttpListener.3.0.1\lib\net45\Microsoft.Owin.Host.HttpListener.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nunit.core">
       <HintPath>..\..\packages\NUnitTestAdapter.WithFramework.2.0.0\lib\nunit.core.dll</HintPath>
       <Private>True</Private>
@@ -59,9 +86,22 @@
     <Reference Include="SendGridMail">
       <HintPath>..\..\packages\Sendgrid.5.0.0\lib\SendGridMail.dll</HintPath>
     </Reference>
+    <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap.Net4, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -70,6 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\HealthMonitorConfigurationSection.cs" />
+    <Compile Include="Configuration\SelfHostedTerminalsCollection.cs" />
     <Compile Include="Configuration\NotifiersConfigurationCollection.cs" />
     <Compile Include="Configuration\TestSuiteConfigurationCollection.cs" />
     <Compile Include="NUnitTestRunner.cs" />
@@ -77,6 +118,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NUnitTestPackageFactory.cs" />
     <Compile Include="HtmlReportBuilder.cs" />
+    <Compile Include="TerminalStartUpAwaiter.cs" />
+    <Compile Include="SelfHostInitializer.cs" />
     <Compile Include="TestReport.cs" />
     <Compile Include="TestReportItem.cs" />
     <Compile Include="TestReportNotifier.cs" />
@@ -85,40 +128,103 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\terminalAtlassian\terminalAtlassian.csproj">
+      <Project>{89d763ed-3ea6-4303-ab29-3239095a4b06}</Project>
+      <Name>terminalAtlassian</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalAzure\terminalAzure.csproj">
+      <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>
+      <Name>terminalAzure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalDocuSign\terminalDocuSign.csproj">
+      <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
+      <Name>terminalDocuSign</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\terminalDropboxTest\terminalDropboxTests.csproj">
       <Project>{42f21ce5-c8d1-4083-937b-951b92c2f93c}</Project>
       <Name>terminalDropboxTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalDropbox\terminalDropbox.csproj">
+      <Project>{cfba4468-222f-4255-8d94-809acbf7ac47}</Project>
+      <Name>terminalDropbox</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalExcel\terminalExcel.csproj">
+      <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
+      <Name>terminalExcel</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\terminalFr8CoreTests\terminalFr8CoreTests.csproj">
       <Project>{6c3090fc-50d2-4a7e-9b29-eab9d8802f42}</Project>
       <Name>terminalFr8CoreTests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\terminalFr8Core\terminalFr8Core.csproj">
+      <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
+      <Name>terminalFr8Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\terminalGoogleTests\terminalGoogleTests.csproj">
       <Project>{62219aa6-9276-4935-b934-f0f50ecef6fb}</Project>
       <Name>terminalGoogleTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalGoogle\terminalGoogle.csproj">
+      <Project>{cddccfab-28b8-446c-8585-72d2bb78f2dc}</Project>
+      <Name>terminalGoogle</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalIntegrationTests\terminalIntegrationTests.csproj">
+      <Project>{579ba25f-1df5-474a-8a3e-0447ff75711c}</Project>
+      <Name>terminalIntegrationTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalPapertrail\terminalPapertrail.csproj">
+      <Project>{74d9bdc7-7b46-456f-b3c5-a4cdb5d74d7b}</Project>
+      <Name>terminalPapertrail</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalQuickBooks\terminalQuickBooks.csproj">
+      <Project>{3d4116ce-63dd-406c-8235-0115a8fa90f1}</Project>
+      <Name>terminalQuickBooks</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\terminalSalesforceTests\terminalSalesforceTests.csproj">
       <Project>{fda06158-a81e-46b4-9f25-5ab76dfd400a}</Project>
       <Name>terminalSalesforceTests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\terminalSalesforce\terminalSalesforce.csproj">
+      <Project>{85cb0215-96df-4c38-a022-1be6c952813b}</Project>
+      <Name>terminalSalesforce</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\terminalSendGridTests\terminalSendGridTests.csproj">
       <Project>{ee3e1e99-175f-4507-96da-421fcd0f6d9e}</Project>
       <Name>terminalSendGridTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalSendGrid\terminalSendGrid.csproj">
+      <Project>{1e1ab01b-f6ab-4420-bf1d-5e6ef41d76bf}</Project>
+      <Name>terminalSendGrid</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\terminalSlackTests\terminalSlackTests.csproj">
       <Project>{1246a6d6-fb9d-4564-8e86-a9f14a7ad177}</Project>
       <Name>terminalSlackTests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\terminalSlack\terminalSlack.csproj">
+      <Project>{990db8cb-aad6-42fe-940d-3a731df56abe}</Project>
+      <Name>terminalSlack</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\terminalTwilioTests\terminalTwilioTests.csproj">
       <Project>{6b807ab1-f549-49cb-9f52-52bc33d23443}</Project>
       <Name>terminalTwilioTests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\terminalTwilio\terminalTwilio.csproj">
+      <Project>{14404298-4182-4d43-8098-5a199ed2fcaa}</Project>
+      <Name>terminalTwilio</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\terminalYammerTests\terminalYammerTests.csproj">
       <Project>{d2638cb3-33d6-443f-bc87-e20260d3c9ef}</Project>
       <Name>terminalYammerTests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalYammer\terminalYammer.csproj">
+      <Project>{e8bf04ac-1a7d-4cbe-80b9-e20f53699f2d}</Project>
+      <Name>terminalYammer</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalAzureTests\terminalAzureTests.csproj">
       <Project>{36ed6f21-1a8f-4f07-a08a-a55639891e9b}</Project>

@@ -11,6 +11,10 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Errors;
 using Utilities;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
+using System.Collections.Generic;
+using Data.Interfaces.DataTransferObjects;
+using System.Linq;
 
 namespace TerminalBase
 {
@@ -28,7 +32,14 @@ namespace TerminalBase
 
             //get the terminal error details
             var curTerminalError = actionExecutedContext.Exception;
-            var terminalName = GetTerminalName(actionExecutedContext.ActionContext.ControllerContext.Controller);
+            var curController = actionExecutedContext.ActionContext.ControllerContext.Controller;
+            var terminalName = GetTerminalName(curController);
+            bool integrationTestMode = false;
+
+            if (curController as BaseTerminalController != null)
+            {
+                integrationTestMode = ((BaseTerminalController)curController).IntegrationTestMode;
+            }
 
             HttpStatusCode statusCode = HttpStatusCode.InternalServerError;
 
@@ -43,12 +54,23 @@ namespace TerminalBase
                     if (innerEx is AuthorizationTokenExpiredException)
                     {
                         statusCode = (HttpStatusCode)419;
-                    }       
+                    }
                 }
             }
 
-            //POST event to fr8 about this terminal error
-            new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError);
+            //Post exception information to AppInsights
+            Dictionary<string, string> properties = new Dictionary<string, string>();
+            foreach (KeyValuePair<string, object>arg in actionExecutedContext.ActionContext.ActionArguments)
+            {
+                properties.Add(arg.Key, JsonConvert.SerializeObject(arg.Value));
+            }
+            new TelemetryClient().TrackException(curTerminalError, properties);
+
+            if (!integrationTestMode)
+            {
+                //POST event to fr8 about this terminal error
+                new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError);
+            }
 
             //prepare the response JSON based on the exception type
             actionExecutedContext.Response = new HttpResponseMessage(statusCode);
@@ -57,9 +79,9 @@ namespace TerminalBase
                 //if terminal error is terminal Coded Exception, place the error code description in message
                 var terminalEx = (TerminalCodedException)curTerminalError;
                 var terminalError =
-                    JsonConvert.SerializeObject(new {status = "terminal_error", message = terminalEx.ErrorCode.GetEnumDescription()});
+                    JsonConvert.SerializeObject(new { status = "terminal_error", message = terminalEx.ErrorCode.GetEnumDescription() });
                 actionExecutedContext.Response.Content = new StringContent(terminalError, Encoding.UTF8, "application/json");
-            }   
+            }
             else
             {
                 //if terminal error is general exception, place exception message
@@ -71,7 +93,7 @@ namespace TerminalBase
 
         private string GetTerminalName(IHttpController curController)
         {
-            string assemblyName = curController.GetType().Assembly.FullName.Split(new char[] {','})[0];
+            string assemblyName = curController.GetType().Assembly.FullName.Split(new char[] { ',' })[0];
             return assemblyName;
         }
     }

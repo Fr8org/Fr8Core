@@ -47,7 +47,7 @@ namespace HubWeb.Controllers
                 account = _security.GetCurrentAccount(uow);
             }
 
-            var error = await _authorization.AuthenticateInternal(
+            var response = await _authorization.AuthenticateInternal(
                 account,
                 terminalDO,
                 credentials.Domain,
@@ -55,7 +55,19 @@ namespace HubWeb.Controllers
                 credentials.Password
             );
 
-            return Ok(new { Error = error });
+            return Ok(new {
+                TerminalId =
+                    response.AuthorizationToken != null
+                        ? response.AuthorizationToken.TerminalID
+                        : (int?)null,
+
+                AuthTokenId =
+                    response.AuthorizationToken != null
+                        ? response.AuthorizationToken.Id.ToString()
+                        : null,
+
+                Error = response.Error
+            });
         }
 
         [HttpGet]

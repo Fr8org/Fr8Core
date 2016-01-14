@@ -10,29 +10,12 @@ namespace terminalSalesforce
 {
     public class SelfHostFactory
     {
-        public class SalesForceControllerTypeResolver : IHttpControllerTypeResolver
-        {
-            public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-            {
-                return new Type[] {
-                    typeof(Controllers.ActionController),
-                    typeof(Controllers.EventController),
-                    typeof(Controllers.TerminalController)
-                };
-            }
-        }
-
         public class SelfHostStartup
         {
             public void Configuration(IAppBuilder app)
             {
-                var config = new HttpConfiguration();
-                WebApiConfig.Register(config);
-                config.Services.Replace(
-                    typeof(IHttpControllerTypeResolver),
-                    new SalesForceControllerTypeResolver()
-                );
-                app.UseWebApi(config);
+                var startup = new Startup();
+                startup.Configuration(app, selfHost: true);
             }
         }
 
