@@ -15,10 +15,11 @@ using Newtonsoft.Json;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Extract_Data_From_Envelopes_v1 : BaseTerminalAction
+    public class Extract_Data_From_Envelopes_v1 : BaseDocuSignAction
     {
         private class ActionUi : StandardConfigurationControlsCM
         {
