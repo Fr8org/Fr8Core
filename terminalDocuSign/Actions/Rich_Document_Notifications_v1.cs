@@ -31,14 +31,14 @@ namespace terminalDocuSign.Actions
 
                 Controls.Add(new RadioButtonGroup()
                 {
-                    Label = "Receive notification when something happens involving",
+                    Label = "Track which Envelopes?",
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                     Radios = new List<RadioButtonOption>
                     {
                         new RadioButtonOption
                         {
                             Name = "SpecificRecipient",
-                            Value = "A specific Recipient",
+                            Value = "Envelopes sent to a specific recipient",
                             Selected = true,
                             Controls = new List<ControlDefinitionDTO>
                             {
@@ -52,7 +52,7 @@ namespace terminalDocuSign.Actions
                         new RadioButtonOption
                         {
                             Name = "SpecificTemplate",
-                            Value = "A specific Template",
+                            Value = "Envelopes based on a specific template",
                             Controls = new List<ControlDefinitionDTO>
                             {
                                 new DropDownList()
@@ -68,11 +68,11 @@ namespace terminalDocuSign.Actions
                         }
                     }
                 });
-
+                
                 Controls.Add(new DropDownList()
                 {
                     Name = "SpecificEvent",
-                    Label = "What event do you want to be notified about?",
+                    Label = "What event do you want to watch for?",
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                     Source = new FieldSourceDTO
                     {
@@ -80,7 +80,7 @@ namespace terminalDocuSign.Actions
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 });
-
+                
                 Controls.Add(new RadioButtonGroup()
                 {
                     Name = "WhenToBeNotified",
@@ -97,13 +97,28 @@ namespace terminalDocuSign.Actions
                         new RadioButtonOption
                         {
                             Name = "NotificationMode",
-                            Value = "If a recipient hasn't taken an action",
+                            Value = "If a recipient hasn't taken an action within this amount of time",
                             Controls = new ControlDefinitionDTO[]
                             {
                                 new Duration
                                 {
-                                    Name = "TimePeriod",
-                                    Label = "Within this amount of time"
+                                    Label = "After you send a Tracked Envelope, Fr8 will wait this long",
+                                    Name = "TimePeriod"
+                                },
+                                new DropDownList
+                                {
+                                    Label = "Then Fr8 will notify you if a recipient has not",
+                                    Name = "RecipientEvent",
+                                    Source = new FieldSourceDTO
+                                    {
+                                        Label = "AvailableRecipientEvents",
+                                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                                    }
+                                },
+                                new TextBlock
+                                {
+                                    Name = "EventInfo",
+                                    Label = "the Envelope"
                                 }
                             }
                         }
@@ -113,7 +128,7 @@ namespace terminalDocuSign.Actions
                 Controls.Add(new DropDownList()
                 {
                     Name = "NotificationHandler",
-                    Label = "How do you want to be notified?",
+                    Label = "How would you like to be notified?",
                     Source = new FieldSourceDTO
                     {
                         Label = "AvailableHandlers",
@@ -152,6 +167,7 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.Add(PackAvailableTemplates(authTokenDO));
                 updater.CrateStorage.Add(PackAvailableEvents());
                 updater.CrateStorage.Add(await PackAvailableHandlers(actionDO));
+                updater.CrateStorage.Add(await PackAvailableRecipientEvents(actionDO));
             }
 
             return actionDO;
@@ -220,6 +236,10 @@ namespace terminalDocuSign.Actions
                 //let's make a followup configuration to fill criteria fields
                 queryMTDatabaseAction = await ConfigureAction(queryMTDatabaseTemplate, queryMTDatabaseAction, null);
                 actionDO.ChildNodes.Add(queryMTDatabaseAction);
+
+                var filterUsingRuntimeTemplate = GetActivityTemplate(activityList, "FilterUsingRunTimeData");
+                var filterAction = await CreateFilterUsingRunTimeAction(filterUsingRuntimeTemplate, ++ordering);
+                actionDO.ChildNodes.Add(filterAction);
             }
 
 
@@ -309,6 +329,11 @@ namespace terminalDocuSign.Actions
         }
 
         #region Action_Creation
+
+        private async Task<ActionDO> CreateFilterUsingRunTimeAction(ActivityTemplateDTO template, int ordering)
+        {
+            return await CreateAction(template, "Filter Using Run Time", "Filter Using Run Time", ordering);
+        }
         private async Task<ActionDO> CreateQueryMTDatabaseAction(ActivityTemplateDTO template, int ordering)
         {
             return await CreateAction(template, "Query MT Database", "Query MT Database", ordering);
@@ -462,6 +487,18 @@ namespace terminalDocuSign.Actions
             );
 
             return crate;
+        }
+
+        private async Task<Crate> PackAvailableRecipientEvents(ActionDO actionDO)
+        {
+            var events = new []{"Created", "Sent", "Delivered", "Signed", "Declined", "FaxPending", "AutoResponded"};
+
+            var availableRecipientEventsCrate =
+                Crate.CreateDesignTimeFieldsCrate(
+                    "AvailableRecipientEvents", events.Select(x => new FieldDTO(x, x)).ToArray()
+                );
+
+            return availableRecipientEventsCrate;
         }
 
         private async Task<Crate> PackAvailableHandlers(ActionDO actionDO)

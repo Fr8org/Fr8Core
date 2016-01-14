@@ -216,7 +216,8 @@ namespace terminalFr8Core.Actions
                 {
                     Label = "Queryable Criteria",
                     ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                }
+                },
+                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
             };
 
             return PackControlsCrate(fieldFilterPane);
@@ -227,28 +228,39 @@ namespace terminalFr8Core.Actions
         /// </summary>
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
-            if (curActionDO.Id != Guid.Empty)
+            var curUpstreamFields =
+                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
+                .Fields
+                .ToArray();
+
+            //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
+            var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
+
+            //build a controls crate to render the pane
+            var configurationControlsCrate = CreateControlsCrate();
+
+            using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
             {
-                var curUpstreamFields =
-                    (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
-                    .Fields
-                    .ToArray();
-
-                //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-                var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
-
-                //build a controls crate to render the pane
-                var configurationControlsCrate = CreateControlsCrate();
-
-                using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
-                {
-                    updater.CrateStorage = AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
-                }
+                updater.CrateStorage = AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
             }
-            else
+
+            return curActionDO;
+        }
+
+        protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            var curUpstreamFields =
+                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
+                .Fields
+                .ToArray();
+
+            //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
+            var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
+
+            using (var updater = Crate.UpdateStorage(() => curActionDO.CrateStorage))
             {
-                throw new ArgumentException(
-                    "Configuration requires the submission of an Action that has a real ActionId");
+                updater.CrateStorage.RemoveByLabel("Queryable Criteria");
+                updater.CrateStorage.Add(queryFieldsCrate);
             }
 
             return curActionDO;
