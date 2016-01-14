@@ -77,6 +77,16 @@ namespace Data.Interfaces.Manifests
             return false;
         }
 
+
+        public string GetValueOrDefault(string key, bool skipNull = false)
+        {
+            string value;
+            
+            TryGetValue(key, skipNull, out value);
+
+            return value;
+        }
+
         public IEnumerable<string> GetValues(string key)
         {
             if (PayloadObjects == null)

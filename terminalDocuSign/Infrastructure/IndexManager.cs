@@ -59,7 +59,7 @@ namespace terminalDocuSign.Infrastructure
 
         public void QueryParse(DateTime startDate, DateTime endDate)
         {
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuth>(currentAuthToken.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(currentAuthToken.Token);
             int resultCount = 100;
 
             DocuSignEnvelope docusignEnvelope = new DocuSignEnvelope(

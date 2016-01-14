@@ -73,24 +73,24 @@ namespace terminalFr8Core.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                var confControls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+                var configurationControls = updater.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
-                if (confControls != null)
+                if (configurationControls != null)
                 {
-                    var ui = new ActionUi();
+                    var actionUi = new ActionUi();
 
                     // Clone properties of StandardConfigurationControlsCM to handy ActionUi
-                    ui.ClonePropertiesFrom(confControls);
+                    actionUi.ClonePropertiesFrom(configurationControls);
 
-                    if (!string.IsNullOrWhiteSpace(ui.Selected_Fr8_Object.Value))
+                    if (!string.IsNullOrWhiteSpace(actionUi.Selected_Fr8_Object.Value))
                     {
-                        var fr8ObjectCrateDTO = await GetDesignTimeFieldsCrateOfSelectedFr8Object(ui.Selected_Fr8_Object.Value);
+                        var fr8ObjectCrateDTO = await GetDesignTimeFieldsCrateOfSelectedFr8Object(actionUi.Selected_Fr8_Object.Value);
 
                         const string designTimeControlName = "Select Fr8 Object Properties";
-                        ui.Selected_Fr8_Object.Label = designTimeControlName;
+                        actionUi.Selected_Fr8_Object.Label = designTimeControlName;
 
                         // Sync changes from ActionUi to StandardConfigurationControlsCM
-                        confControls.ClonePropertiesFrom(ui);
+                        configurationControls.ClonePropertiesFrom(actionUi);
 
                         updater.CrateStorage.RemoveByLabel(designTimeControlName);
                         updater.CrateStorage.Add(fr8ObjectCrateDTO);
