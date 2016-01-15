@@ -13,6 +13,8 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using terminalDocuSignTests.Fixtures;
 using Data.States;
+using UtilitiesTesting.Fixtures;
+
 namespace terminalDocuSignTests.Integration
 {
     [Explicit]
@@ -54,6 +56,7 @@ namespace terminalDocuSignTests.Integration
                 Endpoint = GetTerminalUrl(),
                 AuthenticationType = AuthenticationType.Internal
             };
+            var terminalCoreDO = FixtureData.TestTerminal_Core_DTO();
 
             var docusignEventActionTemplate = new ActivityTemplateDTO()
             {
@@ -72,10 +75,25 @@ namespace terminalDocuSignTests.Integration
                 Name = "SetDelay",
                 Label = "Delay Action Processing",
                 Category = ActivityCategory.Processors,
-                Terminal = terminal,
+                Terminal = terminalCoreDO,
                 NeedsAuthentication = false,
                 MinPaneWidth = 330
             };
+
+            var filterUsingRuntimeDataTemplate = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "FilterUsingRunTimeData",
+                Label = "FilterUsingRunTimeData",
+                Category = ActivityCategory.Processors,
+                Terminal = terminalCoreDO,
+                NeedsAuthentication = false
+            };
+
+            AddActivityTemplate(
+               actionDTO,
+              filterUsingRuntimeDataTemplate
+            );
 
             AddActivityTemplate(
                actionDTO,
@@ -88,7 +106,7 @@ namespace terminalDocuSignTests.Integration
                 Name = "QueryMTDatabase",
                 Label = "Query MT Database",
                 Category = ActivityCategory.Processors,
-                Terminal = terminal,
+                Terminal = terminalCoreDO,
                 NeedsAuthentication = false,
                 MinPaneWidth = 330
             };
@@ -295,10 +313,12 @@ namespace terminalDocuSignTests.Integration
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
-            Assert.AreEqual(4, responseActionDTO.ChildrenActions.Length);
+            Assert.AreEqual(5, responseActionDTO.ChildrenActions.Length);
             Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Monitor DocuSign"));
             Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Query MT Database"));
             Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Set Delay"));
+            Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Filter Using Run Time"));
+            
         }
 
         [Test]

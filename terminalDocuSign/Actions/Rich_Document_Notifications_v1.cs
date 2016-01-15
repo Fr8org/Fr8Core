@@ -186,7 +186,7 @@ namespace terminalDocuSign.Actions
             //var specificEventDdl = (DropDownList)controls.Controls[1];
 
             var whenToBeNotifiedRadioGrp = (RadioButtonGroup)controls.FindByName("WhenToBeNotified");
-            var notifyWhenEventHappensRadio = whenToBeNotifiedRadioGrp.Radios[0];
+            //var notifyWhenEventHappensRadio = whenToBeNotifiedRadioGrp.Radios[0];
             var notifyWhenEventDoesntHappenRadio = whenToBeNotifiedRadioGrp.Radios[1];
             var howToBeNotifiedDdl = (DropDownList) controls.FindByName("NotificationHandler");
 
@@ -223,8 +223,6 @@ namespace terminalDocuSign.Actions
             monitorDocuSignAction = await ConfigureAction(monitorDocuSignTemplate, monitorDocuSignAction, authTokenDO);
             monitorDocuSignAction.AuthorizationToken = authTokenDO;
             monitorDocuSignAction.AuthorizationTokenId = authTokenDO.Id;
-
-            var test = Mapper.Map<ActionDTO>(monitorDocuSignAction);
             actionDO.ChildNodes.Add(monitorDocuSignAction);
 
             if (notifyWhenEventDoesntHappenRadio.Selected)
@@ -249,12 +247,12 @@ namespace terminalDocuSign.Actions
                 var filterAction = await CreateFilterUsingRunTimeAction(filterUsingRuntimeTemplate, ++ordering);
                 SetFilterUsingRunTimeActionFields(filterAction, recipientEventStatus.Value);
                 actionDO.ChildNodes.Add(filterAction);
-        }
+            }
 
 
             var notifierAction = await CreateNotifierAction(activityList, actionDO, howToBeNotifiedDdl, ++ordering);
             if (notifierAction != null)
-        {
+            {
                 actionDO.ChildNodes.Add(notifierAction);
             }
 
@@ -346,7 +344,12 @@ namespace terminalDocuSign.Actions
                 {
                     selectedObject = await GetMTObject(MT.DocuSignRecipient);
                 }
-                
+
+                if (selectedObject == null)
+                {
+                    return;
+                }
+
                 objectList.Value = selectedObject.Id.ToString(CultureInfo.InvariantCulture);
                 objectList.selectedKey = selectedObject.Name;
 
@@ -355,7 +358,7 @@ namespace terminalDocuSign.Actions
                 var conditions = new List<FilterConditionDTO>
                                 {
                                     new FilterConditionDTO{ Field = "EnvelopeId", Operator = "eq", Value = "FromPayload"}
-            };
+                                };
 
                 if (recipientEmail != null)
                 {
