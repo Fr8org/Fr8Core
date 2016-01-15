@@ -88,7 +88,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             }
             //let's calculate absolute url, since our hmac mechanism needs it
             requestUri = new Uri(new Uri(terminal.Endpoint.StartsWith("http") ? terminal.Endpoint : "http://" + terminal.Endpoint), requestUri);
-            var hmacHeader = await GetHMACHeader(requestUri, actionDTO.AuthToken.UserId, terminal.Id.ToString(CultureInfo.InvariantCulture), terminal.Secret, actionDTO);
+            var hmacHeader = await GetHMACHeader(requestUri, actionDTO.AuthToken.UserId, terminal.PublicIdentifier, terminal.Secret, actionDTO);
             return await PostAsync<ActionDTO, TResponse>(requestUri, actionDTO, correlationId, hmacHeader);
         }
     }

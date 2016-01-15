@@ -28,7 +28,8 @@ namespace Hub.Security
             //Formulate the keys used in plain format as a concatenated string.
             string authenticationKeyString = string.Format("{0}{1}{2}{3}{4}{5}", terminalId, url, timeStamp, nonce, contentBase64String, userId);
 
-            var secretKeyBase64ByteArray = Convert.FromBase64String(terminalSecret);
+
+            var secretKeyBase64ByteArray = Encoding.ASCII.GetBytes(terminalSecret);//Convert.FromBase64String(terminalSecret);
 
             using (var hmac = new HMACSHA512(secretKeyBase64ByteArray))
             {

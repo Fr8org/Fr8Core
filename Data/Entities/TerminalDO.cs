@@ -21,10 +21,8 @@ namespace Data.Entities
         [Key]
         public int Id { get; set; }
 
-        [Required]
         public string PublicIdentifier { get; set; }
 
-        [Required]
         public string Secret { get; set; }
         
         [Required]

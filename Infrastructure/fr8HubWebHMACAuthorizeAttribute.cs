@@ -34,7 +34,7 @@ namespace HubWeb.Infrastructure
 
         protected override async Task<string> GetTerminalSecret(string terminalId)
         {
-            var terminal = await _terminalService.GetTerminalById(int.Parse(terminalId));
+            var terminal = await _terminalService.GetTerminalByPublicIdentifier(terminalId);
             if (terminal == null)
             {
                 return null;
@@ -45,8 +45,7 @@ namespace HubWeb.Infrastructure
 
         protected override async Task<bool> CheckAuthentication(string terminalId, string userId)
         {
-            var intTerminalId = int.Parse(terminalId);
-            var terminal = await _terminalService.GetTerminalById(intTerminalId);
+            var terminal = await _terminalService.GetTerminalByPublicIdentifier(terminalId);
             if (terminal == null)
             {
                 return false;
@@ -64,12 +63,12 @@ namespace HubWeb.Infrastructure
             //TODO discuss and enable this
             /*
             //let's check if user allowed this terminal to modify it's data
-            if (!await _terminalService.IsUserSubscribedToTerminal(intTerminalId, userId))
+            if (!await _terminalService.IsUserSubscribedToTerminal(terminalId, userId))
             {
                 return false;
             }
              * */
-            
+
             return true;
         }
 

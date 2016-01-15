@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class AddedPublicIdentifierToTerminalDO : IMigrationMetadata
+    public sealed partial class AddedPublicIdentifierAndSecretoToTerminalDO : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddedPublicIdentifierToTerminalDO));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddedPublicIdentifierAndSecretoToTerminalDO));
         
         string IMigrationMetadata.Id
         {
-            get { return "201601141644454_AddedPublicIdentifierToTerminalDO"; }
+            get { return "201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO"; }
         }
         
         string IMigrationMetadata.Source

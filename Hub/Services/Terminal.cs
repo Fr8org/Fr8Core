@@ -94,19 +94,19 @@ namespace Hub.Services
             return Mapper.Map<IList<ActivityTemplateDO>>(standardFr8TerminalCM.Actions);
         }
 
-        public Task<TerminalDO> GetTerminalById(int Id)
+        public async Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return Task.FromResult(uow.TerminalRepository.GetByKey(Id));
+                return await uow.TerminalRepository.GetQuery().FirstOrDefaultAsync(t => t.PublicIdentifier == terminalId);
             }
         }
 
-        public async Task<bool> IsUserSubscribedToTerminal(int terminalId, string userId)
+        public async Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var subscription = await uow.TerminalSubscriptionRepository.GetQuery().FirstOrDefaultAsync(s => s.TerminalId == terminalId && s.UserDO.Id == userId);
+                var subscription = await uow.TerminalSubscriptionRepository.GetQuery().FirstOrDefaultAsync(s => s.Terminal.PublicIdentifier == terminalId && s.UserDO.Id == userId);
                 return subscription != null;
             }
             

@@ -21,7 +21,7 @@ namespace Hub.Interfaces
         Task<IList<string>> RegisterTerminals(string uri);
         Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri);
 
-        Task<TerminalDO> GetTerminalById(int Id);
-        Task<bool> IsUserSubscribedToTerminal(int terminalId, string userId);
+        Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId);
+        Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId);
     }
 }

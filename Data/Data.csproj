@@ -543,17 +543,13 @@
     <Compile Include="Migrations\201601031440042_Added_Tag_And_FileTags.Designer.cs">
       <DependentUpon>201601031440042_Added_Tag_And_FileTags.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201601111038337_AddedSecretFieldToTerminalDO.cs" />
-    <Compile Include="Migrations\201601111038337_AddedSecretFieldToTerminalDO.Designer.cs">
-      <DependentUpon>201601111038337_AddedSecretFieldToTerminalDO.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201601141644454_AddedPublicIdentifierToTerminalDO.cs" />
-    <Compile Include="Migrations\201601141644454_AddedPublicIdentifierToTerminalDO.Designer.cs">
-      <DependentUpon>201601141644454_AddedPublicIdentifierToTerminalDO.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201601150502349_RouteNodeDO_RootId.cs" />
     <Compile Include="Migrations\201601150502349_RouteNodeDO_RootId.Designer.cs">
       <DependentUpon>201601150502349_RouteNodeDO_RootId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.cs" />
+    <Compile Include="Migrations\201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.Designer.cs">
+      <DependentUpon>201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -922,14 +918,11 @@
     <EmbeddedResource Include="Migrations\201601031440042_Added_Tag_And_FileTags.resx">
       <DependentUpon>201601031440042_Added_Tag_And_FileTags.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201601111038337_AddedSecretFieldToTerminalDO.resx">
-      <DependentUpon>201601111038337_AddedSecretFieldToTerminalDO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201601141644454_AddedPublicIdentifierToTerminalDO.resx">
-      <DependentUpon>201601141644454_AddedPublicIdentifierToTerminalDO.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201601150502349_RouteNodeDO_RootId.resx">
       <DependentUpon>201601150502349_RouteNodeDO_RootId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.resx">
+      <DependentUpon>201601151838550_AddedPublicIdentifierAndSecretoToTerminalDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

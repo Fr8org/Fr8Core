@@ -60,11 +60,6 @@ namespace Hub.Infrastructure
 
         private async Task<bool> IsValidRequest(HttpRequestMessage request)
         {
-            /*
-            #if DEBUG || DEV
-                return true;
-            #endif
-            */
             if (request.Headers.Authorization == null || !request.Headers.Authorization.Scheme.Equals("hmac", StringComparison.OrdinalIgnoreCase)
             || string.IsNullOrEmpty(request.Headers.Authorization.Parameter))
             {
@@ -105,7 +100,7 @@ namespace Hub.Infrastructure
             //Check for ReplayRequests ends here
 
             var terminalSecret = await GetTerminalSecret(terminalId);
-            if (terminalSecret == null)
+            if (string.IsNullOrEmpty(terminalSecret))
             {
                 return false;
             }
