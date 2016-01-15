@@ -14,6 +14,7 @@ namespace TerminalBase.Infrastructure
         Task<PayloadDTO> GetPayload(ActionDO actionDO, Guid containerId);
 
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActionDO actionDO, CrateDirection direction);
+        Task<List<FieldDTO>> GetFieldsByDirection<TManifest>(ActionDO actionDO, CrateDirection direction);
 
         Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction);
 

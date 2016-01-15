@@ -379,7 +379,7 @@ namespace Hub.Services
 
         public async Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction)
         {
-            // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
+            // TODO: after DO-1214 this must target to "upstream" and "downstream" accordingly.
             var directionSuffix = (direction == CrateDirection.Upstream)
                 ? "upstream_actions/"
                 : "downstream_actions/";
@@ -400,5 +400,29 @@ namespace Hub.Services
 
             return curCrates;
         }
+
+        public async Task<List<FieldDTO>> GetFieldsByDirection(Guid activityId, CrateDirection direction)
+        {
+            // TODO: after DO-1214 this must target to "upstream" and "downstream" accordingly.
+            var directionSuffix = (direction == CrateDirection.Upstream)
+                ? "upstream_fields/"
+                : "downstream_fields/";
+
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
+                + directionSuffix
+                + "?id=" + activityId;
+
+            var curFields = await _restfulServiceClient.GetAsync<List<FieldDTO>>(new Uri(url, UriKind.Absolute));
+            var curCrates = new List<FieldDTO>();
+
+            foreach (var curAction in curFields)
+            {
+                curCrates.AddRange(storage);
+            }
+
+            return curFields;
+        }
+
     }
 }

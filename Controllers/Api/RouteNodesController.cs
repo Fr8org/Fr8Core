@@ -105,6 +105,25 @@ namespace HubWeb.Controllers
             }
         }
 
+        [ActionName("downstream_fields")]
+        [ResponseType(typeof(List<ActionDTO>))]
+        [AllowAnonymous]
+        public IHttpActionResult GetDownstreamFields(Guid id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                ActionDO actionDO = uow.ActionRepository.GetByKey(id);
+                var downstreamActions = _activity
+                    .GetDownstreamActivities(uow, actionDO)
+                    .OfType<ActionDO>()
+                    .Select(x => x.CrateStorage)
+                    .ToList();
+
+
+
+            }
+        }       
+
         [ActionName("available")]
         [ResponseType(typeof (IEnumerable<ActivityTemplateCategoryDTO>))]
         [AllowAnonymous]

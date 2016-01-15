@@ -91,6 +91,10 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(crates);
         }
 
+        public Task<List<FieldDTO>> GetFieldsByDirection(ActionDO actionDO, CrateDirection direction)
+        {
+            throw new NotImplementedException();
+        }
         public async Task CreateAlarm(AlarmDTO alarmDTO)
         {
             

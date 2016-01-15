@@ -48,6 +48,11 @@ namespace TerminalBase.Infrastructure
             return _routeNode.GetCratesByDirection(actionDO.Id, direction);
         }
 
+        public Task<List<FieldDTO>> GetFieldsByDirection(ActionDO actionDO, CrateDirection direction)
+        {
+            return _routeNode.GetFieldsByDirection(actionDO.Id, direction);
+        }
+
         public async Task CreateAlarm(AlarmDTO alarmDTO)
         {
             var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
