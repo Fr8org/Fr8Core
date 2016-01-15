@@ -69,7 +69,7 @@ namespace terminalDocuSign.Actions
                         }
                     }
                 });
-
+                /*
                 Controls.Add(new DropDownList()
                 {
                     Name = "SpecificEvent",
@@ -81,7 +81,7 @@ namespace terminalDocuSign.Actions
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 });
-
+                */
                 Controls.Add(new RadioButtonGroup()
                 {
                     Name = "WhenToBeNotified",
@@ -182,7 +182,7 @@ namespace terminalDocuSign.Actions
 
             var specificRecipientOption = ((RadioButtonGroup)controls.Controls[0]).Radios[0];
             var specificTemplateOption = ((RadioButtonGroup)controls.Controls[0]).Radios[1];
-            var specificEventDdl = (DropDownList)controls.Controls[1];
+            //var specificEventDdl = (DropDownList)controls.Controls[1];
             
             var whenToBeNotifiedRadioGrp = (RadioButtonGroup)controls.FindByName("WhenToBeNotified");
             var notifyWhenEventHappensRadio = whenToBeNotifiedRadioGrp.Radios[0];
@@ -205,16 +205,17 @@ namespace terminalDocuSign.Actions
             var monitorDocuSignTemplate = GetActivityTemplate(activityList, "Monitor_DocuSign_Envelope_Activity");
             var monitorDocuSignAction = await CreateMonitorDocuSignAction(monitorDocuSignTemplate, authTokenDO, ++ordering);
 
+            string recipientEmail = null;
             if (specificRecipientOption.Selected)
             {
-                SetMonitorDocuSignSpecificRecipient(monitorDocuSignAction, specificRecipientOption);
+                recipientEmail = SetMonitorDocuSignSpecificRecipient(monitorDocuSignAction, specificRecipientOption);
             }
             else if (specificTemplateOption.Selected)
             {
                 SetMonitorDocuSignSpecificTemplate(monitorDocuSignAction, specificTemplateOption);
             }
 
-            SetMonitorDocuSignSpecificEvent(monitorDocuSignAction, specificEventDdl);
+            SetMonitorDocuSignSpecificEvent(monitorDocuSignAction);
 
             //let's make followup configuration for monitorDocuSignEventAction
             //followup call places EventSubscription crate in storage
@@ -235,13 +236,17 @@ namespace terminalDocuSign.Actions
 
                 var queryMTDatabaseTemplate = GetActivityTemplate(activityList, "QueryMTDatabase");
                 var queryMTDatabaseAction = await CreateQueryMTDatabaseAction(queryMTDatabaseTemplate, ++ordering);
-                await SetQueryMTDatabaseActionFields(queryMTDatabaseAction);
+                await SetQueryMTDatabaseActionFields(queryMTDatabaseAction, recipientEmail);
                 //let's make a followup configuration to fill criteria fields
                 queryMTDatabaseAction = await ConfigureAction(queryMTDatabaseTemplate, queryMTDatabaseAction, null);
                 actionDO.ChildNodes.Add(queryMTDatabaseAction);
 
+                var recipientEventStatus = (DropDownList)notifyWhenEventDoesntHappenRadio.Controls.First(c => c.Name == "RecipientEvent");
+                
+
                 var filterUsingRuntimeTemplate = GetActivityTemplate(activityList, "FilterUsingRunTimeData");
                 var filterAction = await CreateFilterUsingRunTimeAction(filterUsingRuntimeTemplate, ++ordering);
+                SetFilterUsingRunTimeActionFields(filterAction, recipientEventStatus.Value);
                 actionDO.ChildNodes.Add(filterAction);
             }
 
@@ -292,7 +297,36 @@ namespace terminalDocuSign.Actions
             return template;
         }
 
-        private async Task SetQueryMTDatabaseActionFields(ActionDO queryMTDatabase)
+        private void SetFilterUsingRunTimeActionFields(ActionDO filterUsingRunTimeAction, string status)
+        {
+            using (var updater = Crate.UpdateStorage(filterUsingRunTimeAction))
+            {
+                var configControlCM = updater.CrateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
+                    .First();
+
+                var filterPane = (FilterPane)configControlCM.Controls.First(c => c.Name == "Selected_Filter");
+
+                var conditions = new List<FilterConditionDTO>
+                                {
+                                    new FilterConditionDTO{ Field = "Status", Operator = "neq", Value = status}
+                                };
+
+                filterPane.Value = JsonConvert.SerializeObject(new FilterDataDTO
+                {
+                    ExecutionType = FilterExecutionType.WithFilter,
+                    Conditions = conditions
+                });
+
+                var queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Queryable Criteria", new FieldDTO[] { new FieldDTO("Status", "Status") });
+                updater.CrateStorage.RemoveByLabel("Queryable Criteria");
+                updater.CrateStorage.Add(queryFieldsCrate);
+            }
+
+            
+        }
+
+        private async Task SetQueryMTDatabaseActionFields(ActionDO queryMTDatabase, string recipientEmail)
         {
             //update action's duration value
             using (var updater = Crate.UpdateStorage(queryMTDatabase))
@@ -302,16 +336,38 @@ namespace terminalDocuSign.Actions
                     .First();
 
                 var objectList = (DropDownList)configControlCM.Controls.First(c => c.Name == "AvailableObjects");
-                var docuSignEventObject = await GetDocuSignEventObject();
-                objectList.Value = docuSignEventObject.Id.ToString(CultureInfo.InvariantCulture);
-                objectList.selectedKey = docuSignEventObject.Name;
+                MT_Object selectedObject;
+                if (recipientEmail == null)
+                {
+                    selectedObject = await GetMTObject(MT.DocuSignEvent);
+                }
+                else
+                {
+                    selectedObject = await GetMTObject(MT.DocuSignRecipient);
+                }
+                
+                objectList.Value = selectedObject.Id.ToString(CultureInfo.InvariantCulture);
+                objectList.selectedKey = selectedObject.Name;
 
                 var filterPane = (FilterPane)configControlCM.Controls.First(c => c.Name == "Filter");
+
+                var conditions = new List<FilterConditionDTO>
+                                {
+                                    new FilterConditionDTO{ Field = "EnvelopeId", Operator = "eq", Value = "FromPayload"}
+                                };
+
+                if (recipientEmail != null)
+                {
+                    conditions.Add(new FilterConditionDTO { Field = "RecipientEmail", Operator = "eq", Value = recipientEmail });
+                }
+
                 filterPane.Value = JsonConvert.SerializeObject(new FilterDataDTO
                 {
                     ExecutionType = FilterExecutionType.WithFilter,
-                    Conditions = new List<FilterConditionDTO> { new FilterConditionDTO{ Field = null, Operator = "", Value = null} }
+                    Conditions = conditions
                 });
+
+                
             }
         }
 
@@ -355,7 +411,7 @@ namespace terminalDocuSign.Actions
         #endregion
 
         #region Monitor_DocuSign routines.
-        private void SetMonitorDocuSignSpecificRecipient(ActionDO monitorAction, RadioButtonOption source)
+        private string SetMonitorDocuSignSpecificRecipient(ActionDO monitorAction, RadioButtonOption source)
         {
             using (var updater = Crate.UpdateStorage(monitorAction))
             {
@@ -369,6 +425,7 @@ namespace terminalDocuSign.Actions
 
                 var templateOption = ((RadioButtonGroup)controls.Controls.Last()).Radios[1];
                 templateOption.Selected = false;
+                return ((TextBox)recipientOption.Controls[0]).Value;
             }
         }
 
@@ -390,6 +447,30 @@ namespace terminalDocuSign.Actions
             }
         }
 
+        private void SetMonitorDocuSignSpecificEvent(ActionDO monitorAction)
+        {
+            using (var updater = Crate.UpdateStorage(monitorAction))
+            {
+                var controls = updater.CrateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
+                    .First();
+
+                
+                var checkBoxes = controls.Controls
+                    .Where(x => x.Type == ControlTypes.CheckBox)
+                    .ToList();
+
+                checkBoxes.ForEach(x => { x.Selected = false; });
+
+                var selectedCheckBox = checkBoxes.FirstOrDefault(x => x.Name == "Event_Envelope_Sent");
+                if (selectedCheckBox != null)
+                {
+                    selectedCheckBox.Selected = true;
+                }
+                
+            }
+        }
+        /*
         private void SetMonitorDocuSignSpecificEvent(ActionDO monitorAction, DropDownList ddl)
         {
             using (var updater = Crate.UpdateStorage(monitorAction))
@@ -415,7 +496,7 @@ namespace terminalDocuSign.Actions
                     }
                 }
             }
-        }
+        }*/
 
         private async Task<ActionDO> CreateNotifierAction(IEnumerable<ActivityTemplateDTO> activityList, ActionDO solutionAction, DropDownList ddl, int ordering)
         {
@@ -459,14 +540,15 @@ namespace terminalDocuSign.Actions
             return null;
         }
 
-
-        private async Task<MT_Object> GetDocuSignEventObject()
+        private async Task<MT_Object> GetMTObject(MT manifestType)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return await uow.MTObjectRepository.GetQuery().FirstOrDefaultAsync(o => o.ManifestId == (int)MT.DocuSignEvent);
+                return await uow.MTObjectRepository.GetQuery().FirstOrDefaultAsync(o => o.ManifestId == (int)MT.DocuSignRecipient);
             }
         }
+
+        
 
         private Crate PackAvailableTemplates(AuthorizationTokenDO authTokenDO)
         {

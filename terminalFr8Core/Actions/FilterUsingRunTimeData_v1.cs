@@ -55,7 +55,14 @@ namespace terminalFr8Core.Actions
             // Prepare envelope data.
 
             // Evaluate criteria using Contents json body of found Crate.
-            var result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curValues);
+            bool result = false;
+            try
+            {
+                result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curValues);
+            }
+            catch (Exception e)
+            {
+            }
 
             if (!result)
             {

@@ -254,7 +254,6 @@
     <Compile Include="Infrastructure\Authentication.cs" />
     <Compile Include="Infrastructure\Contact.cs" />
     <Compile Include="Infrastructure\ContactDTO.cs" />
-    <Compile Include="Infrastructure\FilterDataDTO.cs" />
     <Compile Include="Infrastructure\IEvent.cs" />
     <Compile Include="Infrastructure\ISalesforceManager.cs" />
     <Compile Include="Infrastructure\Lead.cs" />

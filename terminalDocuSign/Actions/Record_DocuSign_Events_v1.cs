@@ -158,6 +158,7 @@ namespace terminalDocuSign.Actions
                     recipientCM = new DocuSignRecipientCM
                     {
                         RecipientId = events.RecepientId,
+                        RecipientEmail = docuSignFields.GetValueOrDefault("RecipientEmail"),
                         Status = events.Status,
                         Object = docuSignFields.GetValueOrDefault("Object"),
                         EnvelopeId = docuSignFields.GetValueOrDefault("EnvelopeId"),

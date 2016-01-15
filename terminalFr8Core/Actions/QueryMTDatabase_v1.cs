@@ -126,7 +126,7 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActionDO curActionDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payload = await GetPayload(curActionDO, containerId);
-
+            var payloadCrateStorage = Crate.GetStorage(payload);
             var ui = Crate.GetStorage(curActionDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
 
             if (ui == null)
@@ -145,6 +145,15 @@ namespace terminalFr8Core.Actions
             {
                 return Error(payload, "Invalid object selected");
             }
+
+            //STARTING NASTY CODE
+            //TODO discuss this with Alex (bahadir)
+            var envIdCondition = criteria.Conditions.FirstOrDefault(c => c.Field == "EnvelopeId");
+            if (envIdCondition != null && envIdCondition.Value == "FromPayload")
+            {
+                envIdCondition.Value = GetCurrentEnvelopeId(payloadCrateStorage);
+            }
+            //END OF NASTY CODE
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -179,6 +188,13 @@ namespace terminalFr8Core.Actions
             }
 
             return Success(payload);
+        }
+
+        private string GetCurrentEnvelopeId(CrateStorage storage)
+        {
+            var envelopePayloadCrate = storage.CrateContentsOfType<StandardPayloadDataCM>(c => c.Label == "DocuSign Envelope Payload Data").Single();
+            var envelopeId = envelopePayloadCrate.PayloadObjects.SelectMany(o => o.PayloadObject).Single(po => po.Key == "EnvelopeId").Value;
+            return envelopeId;
         }
 
         private Func<object, PayloadObjectDTO> CrateManifestToRowConverter(Type manifestType)
