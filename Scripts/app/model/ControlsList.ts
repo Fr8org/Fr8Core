@@ -66,7 +66,7 @@
         public sourceCrateManifest: {
             Id: string;
             Type: string;
-        }
+        };
     }
 
     export enum AvailabilityType {
@@ -110,7 +110,7 @@
 
     export class RoutingControlGroup extends ControlDefinitionDTO {
         sourceField: string;
-        routes: Array<Route>
+        routes: Array<Route>;
     }
 
     export class Route extends ControlDefinitionDTO {
