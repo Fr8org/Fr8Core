@@ -73,6 +73,7 @@ namespace UtilitiesTesting.Fixtures
                     Id = GetTestGuidById(i),
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curRouteDO,
+                    RootRouteNode = curRouteDO
                 };
                 curRouteDO.ChildNodes.Add(curSubrouteDO);
             }
@@ -119,6 +120,7 @@ namespace UtilitiesTesting.Fixtures
                 SubrouteDO subrouteDO = new SubrouteDO()
                 {
                     ParentRouteNode = routeDO,
+                    RootRouteNode = routeDO,
                     StartingSubroute = true
                 };
                 uow.SubrouteRepository.Add(subrouteDO);
@@ -198,6 +200,7 @@ namespace UtilitiesTesting.Fixtures
                 SubrouteDO subrouteDO = new SubrouteDO()
                 {
                     ParentRouteNode = routeDO,
+                    RootRouteNode = routeDO,
                     StartingSubroute = true
                 };
                 uow.SubrouteRepository.Add(subrouteDO);
@@ -256,6 +259,7 @@ namespace UtilitiesTesting.Fixtures
                     Id = GetTestGuidById(i),
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curRouteDO,
+                    RootRouteNode = curRouteDO,
                     ChildNodes = FixtureData.TestActionList1(),
                 };
                 curRouteDO.ChildNodes.Add(curSubrouteDO);
@@ -281,6 +285,7 @@ namespace UtilitiesTesting.Fixtures
                     Id = GetTestGuidById(i),
                     Name = string.Format("curSubrouteDO-{0}", i),
                     ParentRouteNode = curRouteDO,
+                    RootRouteNode = curRouteDO,
                     ChildNodes = FixtureData.TestActionListParentActivityID12()
                 };
                 curRouteDO.ChildNodes.Add(curSubrouteDO);
@@ -304,6 +309,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(1),
                 Name = string.Format("curSubrouteDO-{0}", 1),
                 ParentRouteNode = curRouteDO,
+                RootRouteNode = curRouteDO,
                 StartingSubroute = true
             };
             curRouteDO.ChildNodes.Add(curSubrouteDO);
@@ -329,6 +335,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(1),
                 Name = string.Format("curSubrouteDO-{0}", 1),
                 ParentRouteNode = curRouteDO,
+                RootRouteNode = curRouteDO,
                 StartingSubroute = true
             };
             curRouteDO.ChildNodes.Add(curSubrouteDO);
@@ -354,6 +361,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = string.Format("curSubrouteDO-{0}", 1),
                 ParentRouteNode = curRouteDO,
+                RootRouteNode = curRouteDO,
                 StartingSubroute = true
             };
             curRouteDO.ChildNodes.Add(curSubrouteDO);

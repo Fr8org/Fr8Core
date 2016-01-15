@@ -60,6 +60,7 @@ namespace Hub.Services
         {
             var subroute = new SubrouteDO();
             subroute.Id = Guid.NewGuid();
+            subroute.RootRouteNode = route;
 
             uow.SubrouteRepository.Add(subroute);
 
