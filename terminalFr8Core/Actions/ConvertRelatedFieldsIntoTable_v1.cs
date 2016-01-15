@@ -18,7 +18,6 @@ using Hub.Services;
 using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalFr8Core.Interfaces;
 
 namespace terminalFr8Core.Actions
 {
