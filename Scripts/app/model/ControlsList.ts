@@ -11,6 +11,7 @@
         type: string;
         fieldLabel: string;
         name: string;
+        errorMessage : string;
         events: Array<ControlEvent>;
         value: string;
     }

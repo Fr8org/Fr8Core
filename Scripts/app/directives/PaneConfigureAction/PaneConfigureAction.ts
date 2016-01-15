@@ -284,9 +284,7 @@ module dockyard.directives.paneConfigureAction {
                 function loadConfiguration() {
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;
-
-
-
+                    
                     if ($scope.configurationWatchUnregisterer) {
                         $scope.configurationWatchUnregisterer();
                     }
@@ -364,12 +362,6 @@ module dockyard.directives.paneConfigureAction {
 
                     $scope.currentAction.configurationControls =
                         crateHelper.createControlListFromCrateStorage($scope.currentAction.crateStorage);
-
-                    //check for some validation errors
-                    if (crateHelper.hasCrateOfManifestType($scope.currentAction.crateStorage, "Validation Error Overview")) {
-                        var toastMessage = crateHelper.getValidationErrorMessagesFromCrate($scope.currentAction.crateStorage, "Validation Error Overview");
-                        if (toastMessage !== '') ngToast.danger(toastMessage);
-                    }
 
                     $timeout(() => { // let the control list create, we don't want false change notification during creation process
                         $scope.configurationWatchUnregisterer = $scope.$watch<model.ControlsList>(

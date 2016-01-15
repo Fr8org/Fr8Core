@@ -235,7 +235,6 @@ namespace TerminalBase.BaseClasses
                 return Crate.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
             }
             
-
             return null;
         }
 

@@ -94,10 +94,7 @@ namespace Data.Constants
         DocuSignTemplate = 28,
 
         [Display(Name = "Chart Of Accounts")]
-        ChartOfAccounts = 29,
-
-        [Display(Name = "Validation Error Overview")]
-        ErrorMessage = 30
+        ChartOfAccounts = 29
     }
 }
 

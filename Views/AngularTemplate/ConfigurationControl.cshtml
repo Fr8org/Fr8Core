@@ -1,17 +1,15 @@
 ﻿<div class='form-group'>
     <!--
-    This fine contains a map of snippets which are rendered by Angular depending on field type 
+    This fine contains a map of snippets which are rendered by Angular depending on field type
     Type check occurs with help of the ng-if directive on the outermost <div> of the snippet.
     -->
-
-
     <!--
         Check box template
         -->
     <div class='col-sm-offset-1' ng-if='field.type == "CheckBox"'>
         <div class='checkbox checkbox-primary'>
-            <input type='checkbox' ng-model='field.selected' ng-click="onChange($event)" data-field-name='{{::field.name}}' 
-                   id='pca__chk__{{::field.name}}{{::currentAction.id}}' name='pca__chk__{{::field.name}}{{::currentAction.id}}' 
+            <input type='checkbox' ng-model='field.selected' ng-click="onChange($event)" data-field-name='{{::field.name}}'
+                   id='pca__chk__{{::field.name}}{{::currentAction.id}}' name='pca__chk__{{::field.name}}{{::currentAction.id}}'
                    stop-click-propagation>
             <label for='pca__chk__{{::field.name}}{{::currentAction.id}}' stop-click-propagation>{{::field.label}}</label>
         </div>
@@ -22,8 +20,8 @@
         -->
     <div ng-if='field.type == "TextBox"'>
         <label class='control-label'>{{::field.label}}</label>
-        <input type='text' ng-model='field.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }" 
-               ng-blur="onChange($event)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__txt__{{::field.name | validId}}' 
+        <input type='text' ng-model='field.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
+               ng-blur="onChange($event)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__txt__{{::field.name | validId}}'
                class='form-control form-control-focus' name='pca__txt__{{::field.name | validId}}' stop-click-propagation>
     </div>
 
@@ -33,31 +31,35 @@
     <div ng-if='field.type == "FilePicker"'>
         <label class='control-label'>{{::field.label}}</label>
         <file-picker field='field'></file-picker>
-    </div>  
-    
+    </div>
+
     <!--
         RadioButtonGroup template
         -->
     <div ng-if='field.type == "RadioButtonGroup"'>
         <label class='control-label'>{{::field.label}}</label>
         <radio-button-group field='field' current-action='currentAction' change='onChange'></radio-button-group>
-    </div>  
-    
+    </div>
+
     <!--
         DownDownList template
         -->
     <div ng-if='field.type == "DropDownList"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
         <drop-down-list-box field='field' change='onChange' data-field-name='{{::field.name}}'></drop-down-list-box>
-    </div>  
-    
+        <div data-ng-if="field.errorMessage !== null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span>
+            <div class="validation-message">{{field.errorMessage}}</div>
+        </div>
+    </div>
+
     <!--
         TextBlock template
         -->
     <div ng-if='field.type == "TextBlock"'>
         <label class='control-label'>{{::field.label}}</label>
         <text-block field='field'></text-block>
-    </div> 
+    </div>
 
     <!--
         FilterPane template
@@ -118,7 +120,7 @@
     <div ng-if='field.type == "TextArea"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
         <text-area field='field'></text-area>
-    </div> 
+    </div>
 
     <!--
         ManageRoute template

@@ -127,11 +127,6 @@ namespace Hub.Managers
             return Crate.FromContent(label, eventReport);
         }
 
-        public Crate CreateValidationErrorOverviewCrate(string label, string message, string action)
-        {
-            return Crate.FromContent(label, new ErrorMessageCM() {Message = message, CurrentAction = action});
-        }
-
         public Crate CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table)
         {
             return Crate.FromContent(label, new StandardTableDataCM() { Table = table.ToList(), FirstRowHeaders = firstRowHeaders });
@@ -141,8 +136,7 @@ namespace Hub.Managers
         {
             return Crate.FromContent(label, operationalStatus);
         }
-
-
+        
         public Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)
         {
             return Crate.FromContent(crateLabel, TransformStandardTableDataToStandardPayloadData(payloadDataObjectType, tableDataMS));

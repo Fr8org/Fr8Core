@@ -107,12 +107,7 @@ namespace terminalDocuSign.Actions
             }
 
             //validate if any DocuSignTemplates has been linked to the Account
-            var validationError = await ValidateDocuSignAtLeastOneTemplate(curActionDO);
-            if (validationError == null) return curActionDO;
-
-            var crateStorageTemp = Crate.GetStorage(curActionDO);
-            crateStorageTemp.Add(Crate.FromDto(validationError));
-            curActionDO.CrateStorage = Crate.CrateStorageAsStr(crateStorageTemp);
+            ValidateDocuSignAtLeastOneTemplate(curActionDO);
 
             return curActionDO;
         }
@@ -141,6 +136,7 @@ namespace terminalDocuSign.Actions
             return control;
         }
 
+
         /// <summary>
         /// All validation scenarios for Mail_Merge_Into_DocuSign action
         /// </summary>
@@ -148,46 +144,25 @@ namespace terminalDocuSign.Actions
         /// <returns></returns>
         protected override async Task<CrateStorage> ValidateAction(ActionDO curActionDO)
         {
-            var tempCrateStorage = new CrateStorage();
-            //first validate if any DocuSign Template has been linked to the account
-            var result = await ValidateDocuSignAtLeastOneTemplate(curActionDO);
-            if (result != null)
-            {
-                tempCrateStorage.Add(Crate.FromDto(result));
-                return await Task.FromResult(tempCrateStorage);
-            }
-             
-            //Validate if the current user selected any template to his account DocuSign account
-            var validateTemplatesResult = await ValidateDocuSignTemplateSelectValue(curActionDO);
-            if (validateTemplatesResult != null)
-            {
-                tempCrateStorage.Add(Crate.FromDto(validateTemplatesResult));
-                return await Task.FromResult(tempCrateStorage);
-            }
+            ValidateDocuSignAtLeastOneTemplate(curActionDO);
 
             return await Task.FromResult<CrateStorage>(null);
         }
 
-        private async Task<CrateDTO> ValidateDocuSignTemplateSelectValue(ActionDO curActionDO)
+        private void ValidateDocuSignAtLeastOneTemplate(ActionDO curActionDO)
         {
             //validate DocuSignTemplate for present selected template 
-            DropDownList docuSignTemplate = GetStdConfigurationControl<DropDownList>(Crate.GetStorage(curActionDO), "DocuSignTemplate");
-            if (docuSignTemplate.Value != null) return await Task.FromResult<CrateDTO>(null);
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                var docuSignTemplate = updater.CrateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").FirstOrDefault();
+                if (docuSignTemplate != null && docuSignTemplate.Fields != null && docuSignTemplate.Fields.Count != 0) return ;//await Task.FromResult<CrateDTO>(null);
 
-            var validationErrorCrate = Crate.CreateValidationErrorOverviewCrate("validation_error_summary", "Please select some DocuSign template from the dropdown list.", "Mail Merge Into DocuSign");
-            return await Task.FromResult(Crate.ToDto(validationErrorCrate));
-        }
-
-        private async Task<CrateDTO> ValidateDocuSignAtLeastOneTemplate(ActionDO curActionDO)
-        {
-            //validate DocuSignTemplate for present selected template 
-            var crateStorage = Crate.GetStorage(curActionDO);
-            var docuSignTemplate = crateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x=>x.Label == "Available Templates").FirstOrDefault();
-
-            if (docuSignTemplate != null && docuSignTemplate.Fields != null && docuSignTemplate.Fields.Count != 0) return  await Task.FromResult<CrateDTO>(null);
-
-            var validationErrorCrate = Crate.CreateValidationErrorOverviewCrate("validation_error_summary", "Please link some templates to your DocuSign account.", "Mail Merge Into DocuSign");
-            return await Task.FromResult(Crate.ToDto(validationErrorCrate));
+                var configControl = GetStdConfigurationControl<DropDownList>(updater.CrateStorage, "DocuSignTemplate");
+                if (configControl != null)
+                {
+                    configControl.ErrorMessage = "Please link some templates to your DocuSign account.";
+                }
+            }
         }
 
         /// <summary>
