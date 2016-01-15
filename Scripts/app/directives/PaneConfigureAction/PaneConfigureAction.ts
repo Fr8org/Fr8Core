@@ -129,8 +129,7 @@ module dockyard.directives.paneConfigureAction {
             private $timeout: ng.ITimeoutService,
             private $modal,
             private $window: ng.IWindowService,
-            private $http: ng.IHttpService,
-            private ngToast : any
+            private $http: ng.IHttpService
         ) {
             PaneConfigureAction.prototype.link = (
                 scope: IPaneConfigureActionScope,
@@ -423,8 +422,7 @@ module dockyard.directives.paneConfigureAction {
                     $timeout,
                     $modal,
                     $window,
-                    $http,
-                    ngToast
+                    $http
                 );
             };
 
@@ -437,8 +435,7 @@ module dockyard.directives.paneConfigureAction {
                 '$timeout',
                 '$modal',
                 '$window',
-                '$http',
-                "ngToast"
+                '$http'
             ];
             return directive;
         }
