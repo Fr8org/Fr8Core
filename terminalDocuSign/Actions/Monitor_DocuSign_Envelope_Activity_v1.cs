@@ -206,6 +206,11 @@ namespace terminalDocuSign.Actions
                         {
                             envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
                         }
+                        else
+                        {
+                            //this event isn't about us let's stop execution
+                            return TerminateHubExecution(payloadCrates);
+                        }
 
                         break;
                     case "recipient":
@@ -216,6 +221,11 @@ namespace terminalDocuSign.Actions
                         if (curRecipientEmail.Equals(curSelectedValue))
                         {
                             envelopeId = GetValueForKey(payloadCrates, "EnvelopeId");
+                        }
+                        else
+                        {
+                            //this event isn't about us let's stop execution
+                            return TerminateHubExecution(payloadCrates);
                         }
                         break;
                 }
@@ -494,8 +504,9 @@ namespace terminalDocuSign.Actions
                 new FieldDTO("DeliveredDate") {Tags = "Date" },
                 new FieldDTO("CompletedDate") {Tags = "Date" },
                 new FieldDTO("HolderEmail") {Tags = "EmailAddress" },
-                new FieldDTO("Subject")
-                };
+                new FieldDTO("Subject"),
+                new FieldDTO("EnvelopeId"),
+            };
         }
     }
 }
