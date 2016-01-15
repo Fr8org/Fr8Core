@@ -105,6 +105,18 @@ namespace Data.Entities
                 Fr8Account = this.Fr8Account
             };
         }
+
+        public override void BeforeCreate()
+        {
+            base.BeforeCreate();
+            RootRouteNode = this;
+        }
+
+        public override void BeforeSave()
+        {
+            base.BeforeSave();
+            RootRouteNode = this;
+        }
         
         private class SmartNavigationalPropertyCollectionProxy<TBase, TDerived> : ICollection<TDerived>
             where TDerived : TBase

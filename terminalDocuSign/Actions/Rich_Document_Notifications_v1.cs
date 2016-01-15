@@ -13,10 +13,11 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Rich_Document_Notifications_v1 : BaseTerminalAction
+    public class Rich_Document_Notifications_v1 : BaseDocuSignAction
     {
         private class ActionUi : StandardConfigurationControlsCM
         {

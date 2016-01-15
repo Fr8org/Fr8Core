@@ -18,10 +18,11 @@ using TerminalBase.Infrastructure;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using Utilities.Configuration.Azure;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Mail_Merge_Into_DocuSign_v1 : BaseTerminalAction
+    public class Mail_Merge_Into_DocuSign_v1 : BaseDocuSignAction
     {
         readonly DocuSignManager _docuSignManager;
         string _dataSourceValue;

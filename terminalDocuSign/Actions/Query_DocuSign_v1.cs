@@ -16,10 +16,11 @@ using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Query_DocuSign_v1  : BaseTerminalAction
+    public class Query_DocuSign_v1  : BaseDocuSignAction
     {
         public class ActionUi : StandardConfigurationControlsCM
         {
@@ -122,7 +123,7 @@ namespace terminalDocuSign.Actions
 
             return Success(payload);
         }
-        
+
         protected override Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             if (NeedsAuthentication(authTokenDO))
@@ -143,9 +144,9 @@ namespace terminalDocuSign.Actions
 
 
         private static DocusignQuery GetDocusignQuery(StandardConfigurationControlsCM configurationControls)
-        {
+                {
             var actionUi = new ActionUi();
-
+               
             actionUi.ClonePropertiesFrom(configurationControls);
 
             var settings = new DocusignQuery();
@@ -156,7 +157,7 @@ namespace terminalDocuSign.Actions
 
             return settings;
         }
-
+                
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
