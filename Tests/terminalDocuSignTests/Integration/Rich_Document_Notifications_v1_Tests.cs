@@ -37,9 +37,9 @@ namespace terminalDocuSignTests.Integration
 
         private void AssertControls(StandardConfigurationControlsCM controls)
         {
-            Assert.AreEqual(4, controls.Controls.Count());
+            Assert.AreEqual(3, controls.Controls.Count());
             Assert.AreEqual(2, controls.Controls.Count(x => x.Type == "RadioButtonGroup"));
-            Assert.AreEqual(1, controls.Controls.Count(x => x.Name == "SpecificEvent"));
+            //Assert.AreEqual(1, controls.Controls.Count(x => x.Name == "SpecificEvent"));
             Assert.AreEqual(1, controls.Controls.Count(x => x.Name == "NotificationHandler"));
         }
 
@@ -159,7 +159,7 @@ namespace terminalDocuSignTests.Integration
                     .CrateContentsOfType<StandardConfigurationControlsCM>()
                     .Single();
 
-                var templateDdl = (DropDownList)controls.Controls[1];
+                //var templateDdl = (DropDownList)controls.Controls[1];
 
                 var radioGroup = (RadioButtonGroup)controls.Controls[0];
                 radioGroup.Radios[0].Selected = true;
@@ -174,7 +174,7 @@ namespace terminalDocuSignTests.Integration
 
                 Assert.IsTrue(availableEventCM.Fields.Count > 0);
 
-                templateDdl.Value = availableEventCM.Fields[0].Value;
+                //templateDdl.Value = availableEventCM.Fields[0].Value;
                 var howToBeNotifiedDdl = (DropDownList)controls.FindByName("NotificationHandler");
                 howToBeNotifiedDdl.Value = availableHandlers.Fields[0].Value;
 
