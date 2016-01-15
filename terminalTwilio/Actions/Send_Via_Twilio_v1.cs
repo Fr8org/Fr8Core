@@ -208,6 +208,7 @@ namespace terminalTwilio.Actions
 
         private string GetSMSNumber(TextSource control, PayloadDTO payloadCrates)
         {
+            string smsNumber = "";
             if (control == null)
             {
                 throw new ApplicationException("TextSource control was expected but not found.");
@@ -215,13 +216,20 @@ namespace terminalTwilio.Actions
             switch (control.ValueSource)
             {
                 case "specific":
-                    return control.TextValue;
+                    smsNumber = control.TextValue;
+                    break;
                 case "upstream":
                     //get the payload data 'Key' based on the selected control.Value and get its 'Value' from payload data
-                    return Crate.GetFieldByKey<StandardPayloadDataCM>(payloadCrates.CrateStorage, control.Value);
+                    smsNumber = Crate.GetFieldByKey<StandardPayloadDataCM>(payloadCrates.CrateStorage, control.Value);
+                    break;
                 default:
                     throw new ApplicationException("Could not extract number, unknown mode.");
             }
+
+            if (smsNumber.Trim().Length == 10 && !smsNumber.Contains("+"))
+                smsNumber = "+1" + smsNumber;
+
+            return smsNumber;
         }
         private List<FieldDTO> CreateKeyValuePairList(Message curMessage)
         {

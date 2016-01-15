@@ -31,6 +31,7 @@ namespace Hub.Services
             var subroute = new SubrouteDO()
             {
                 Id = Guid.NewGuid(),
+                RootRouteNode = route,
                 ParentRouteNode = route
             };
 

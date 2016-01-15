@@ -44,9 +44,14 @@ namespace Data.Repositories
             _uow.SaveChanges();
         }
 
-        public void AddOrUpdate<T>(IUnitOfWork _uow, string curFr8AccountId, T curManifest, Expression<Func<T, object>> keyProperty)
+        public void AddOrUpdate<T>(IUnitOfWork _uow, string curFr8AccountId, T curManifest, Expression<Func<T, object>> keyProperty = null)
             where T : Manifest
         {
+            if (keyProperty == null)
+            {
+                keyProperty = BuildKeyPropertyExpression(curManifest);
+            }
+
             var curManifestType = typeof(T);
             var coorespondingMTFieldType = _mtFieldType.GetOrCreateMT_FieldType(_uow, curManifestType);
             _uow.SaveChanges();
@@ -76,8 +81,43 @@ namespace Data.Repositories
             Add(_uow, curManifest, curFr8AccountId);
         }
 
-        public void Update<T>(IUnitOfWork _uow, string curFr8AccountId, T curManifest, Expression<Func<T, object>> keyProperty) where T : Manifest
+        private Expression<Func<T, object>> BuildKeyPropertyExpression<T>(T curManifest)
+            where T : Manifest
         {
+            var pk = curManifest.GetPrimaryKey();
+
+            if (pk.Length == 0)
+            {
+                throw new InvalidOperationException(string.Format("Primary key for manifest {0}", curManifest.GetType()));
+            }
+
+            if (pk.Length > 1)
+            {
+                throw new NotSupportedException(string.Format("Composite primary key is not supported. Manifest type: {0}", curManifest.GetType()));
+            }
+
+            // Build expression expected by current MT repository implementation that will direct MT repository to use firt PK property as primary key for all operations
+            ParameterExpression param = Expression.Parameter(typeof(T), "x");
+            
+            var member = typeof (T).GetProperty(pk[0]);
+            
+            if (member == null)
+            {
+                throw new Exception(string.Format("Failed to find property '{0}' specified as part of primary key. Manifest {1}", pk[0], curManifest.GetType()));
+            }
+
+            var accessor = Expression.MakeMemberAccess(param, member);
+
+            return Expression.Lambda<Func<T, object>>(accessor, param);
+        }
+
+        public void Update<T>(IUnitOfWork _uow, string curFr8AccountId, T curManifest, Expression<Func<T, object>> keyProperty = null) where T : Manifest
+        {
+            if (keyProperty == null)
+            {
+                keyProperty = BuildKeyPropertyExpression(curManifest);
+            }
+
             var keyPropertyInfo = GetPropertyInfo(keyProperty);
             var curManifestType = typeof(T);
             var curDTOObjectFieldType = _mtFieldType.GetOrCreateMT_FieldType(_uow, curManifestType);

@@ -37,6 +37,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ActionDO, ActionDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
+                .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
                 //.ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => ad.CrateStorage == null ? null : JsonConvert.DeserializeObject(ad.CrateStorage)))
                 .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
@@ -49,6 +50,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
+                .ForMember(a => a.RootRouteNodeId, opts => opts.ResolveUsing(ad => ad.RootRouteNodeId))
                 .ForMember(a => a.ParentRouteNodeId, opts => opts.ResolveUsing(ad => ad.ParentRouteNodeId))
                 .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
@@ -94,9 +96,11 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<RouteEmptyDTO, RouteDO>();
             Mapper.CreateMap<RouteDO, RouteEmptyDTO>();
             Mapper.CreateMap<SubrouteDTO, SubrouteDO>()
-                .ForMember(x => x.ParentRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId));
+                .ForMember(x => x.ParentRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId))
+                .ForMember(x => x.RootRouteNodeId, opts => opts.ResolveUsing(x => x.RouteId));
             Mapper.CreateMap<SubrouteDO, SubrouteDTO>()
-                .ForMember(x => x.RouteId, opts => opts.ResolveUsing(x => x.ParentRouteNodeId));
+                .ForMember(x => x.RouteId, opts => opts.ResolveUsing(x => x.ParentRouteNodeId))
+                .ForMember(x => x.RouteId, opts => opts.ResolveUsing(x => x.RootRouteNodeId));
 
             Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
                 .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));

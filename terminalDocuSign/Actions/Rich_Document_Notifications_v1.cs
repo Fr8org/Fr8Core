@@ -18,11 +18,12 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalDocuSign.Infrastructure;
 using AutoMapper;
 
 namespace terminalDocuSign.Actions
 {
-    public class Rich_Document_Notifications_v1 : BaseTerminalAction
+    public class Rich_Document_Notifications_v1 : BaseDocuSignAction
     {
         private class ActionUi : StandardConfigurationControlsCM
         {
@@ -63,10 +64,10 @@ namespace terminalDocuSign.Actions
                                     {
                                         Label = "AvailableTemplates",
                                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                    }
                                 }
                             }
                         }
+                    }
                     }
                 });
                 /*
@@ -114,13 +115,13 @@ namespace terminalDocuSign.Actions
                                     {
                                         Label = "AvailableRecipientEvents",
                                         ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                                    }
+                        }
                                 },
                                 new TextBlock
                                 {
                                     Name = "EventInfo",
                                     Label = "the Envelope"
-                                }
+                    }
                             }
                         }
                     }
@@ -183,7 +184,7 @@ namespace terminalDocuSign.Actions
             var specificRecipientOption = ((RadioButtonGroup)controls.Controls[0]).Radios[0];
             var specificTemplateOption = ((RadioButtonGroup)controls.Controls[0]).Radios[1];
             //var specificEventDdl = (DropDownList)controls.Controls[1];
-            
+
             var whenToBeNotifiedRadioGrp = (RadioButtonGroup)controls.FindByName("WhenToBeNotified");
             var notifyWhenEventHappensRadio = whenToBeNotifiedRadioGrp.Radios[0];
             var notifyWhenEventDoesntHappenRadio = whenToBeNotifiedRadioGrp.Radios[1];
@@ -248,12 +249,12 @@ namespace terminalDocuSign.Actions
                 var filterAction = await CreateFilterUsingRunTimeAction(filterUsingRuntimeTemplate, ++ordering);
                 SetFilterUsingRunTimeActionFields(filterAction, recipientEventStatus.Value);
                 actionDO.ChildNodes.Add(filterAction);
-            }
+        }
 
 
             var notifierAction = await CreateNotifierAction(activityList, actionDO, howToBeNotifiedDdl, ++ordering);
             if (notifierAction != null)
-            {
+        {
                 actionDO.ChildNodes.Add(notifierAction);
             }
 
@@ -262,16 +263,16 @@ namespace terminalDocuSign.Actions
 
         //TODO next 3 functions could be widely used in project
         private async Task<ActionDO> ConfigureAction(ActivityTemplateDTO template, ActionDO action, AuthorizationTokenDO authToken)
-        {
+            {
             return await ExplicitConfigurationHelper.Configure(
                 action,
                 template,
                 authToken
             );
-        }
+            }
 
         private async Task<ActionDO> CreateAction(ActivityTemplateDTO template, string actionName, string actionLabel, int ordering, AuthorizationTokenDO authToken = null)
-        {
+            {
             var action = new ActionDO
             {
                 IsTempId = true,
@@ -354,7 +355,7 @@ namespace terminalDocuSign.Actions
                 var conditions = new List<FilterConditionDTO>
                                 {
                                     new FilterConditionDTO{ Field = "EnvelopeId", Operator = "eq", Value = "FromPayload"}
-                                };
+            };
 
                 if (recipientEmail != null)
                 {
@@ -466,8 +467,8 @@ namespace terminalDocuSign.Actions
                 if (selectedCheckBox != null)
                 {
                     selectedCheckBox.Selected = true;
-                }
-                
+        }
+
             }
         }
         /*
@@ -515,7 +516,7 @@ namespace terminalDocuSign.Actions
                     solutionAction.ChildNodes.Remove(notifierAction);
                 }
             }
-                
+
             // Add action if no notifier action exist.
             if (!string.IsNullOrEmpty(ddl.Value) && notifierAction == null)
             {
@@ -538,7 +539,7 @@ namespace terminalDocuSign.Actions
             }
 
             return null;
-        }
+                }
 
         private async Task<MT_Object> GetMTObject(MT manifestType)
         {

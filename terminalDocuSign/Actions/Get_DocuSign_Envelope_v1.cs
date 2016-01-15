@@ -13,10 +13,11 @@ using TerminalBase.Infrastructure;
 using Data.Entities;
 using Data.States;
 using Utilities;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Get_DocuSign_Envelope_v1 : BaseTerminalAction
+    public class Get_DocuSign_Envelope_v1 : BaseDocuSignAction
     {
         private readonly DocuSignManager _docuSignManager;
 

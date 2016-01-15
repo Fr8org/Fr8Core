@@ -36,15 +36,33 @@ namespace Hub.Services
         }
 
         //This builds a list of an activity and all of its descendants, over multiple levels
-        public List<RouteNodeDO> GetActivityTree(IUnitOfWork uow, RouteNodeDO curActivity)
+        // public List<RouteNodeDO> GetActivityTree(IUnitOfWork uow, RouteNodeDO curActivity)
+        // {
+        //     var curList = new List<RouteNodeDO>();
+        //     curList.Add(curActivity);
+        //     var childActivities = GetChildren(uow, curActivity);
+        //     foreach (var child in childActivities)
+        //     {
+        //         curList.AddRange(GetActivityTree(uow, child));
+        //     }
+        //     return curList;
+        // }
+
+        public List<RouteNodeDO> GetActivityTree(IEnumerable<RouteNodeDO> fullTree, RouteNodeDO curActivity)
         {
             var curList = new List<RouteNodeDO>();
             curList.Add(curActivity);
-            var childActivities = GetChildren(uow, curActivity);
+
+            // var childActivities = GetChildren(uow, curActivity);
+            var childActivities = fullTree
+                .Where(x => x.ParentRouteNodeId == curActivity.Id)
+                .OrderBy(z => z.Ordering);
+
             foreach (var child in childActivities)
             {
-                curList.AddRange(GetActivityTree(uow, child));
+                curList.AddRange(GetActivityTree(fullTree, child));
             }
+
             return curList;
         }
 
@@ -55,15 +73,40 @@ namespace Hub.Services
             if (curActivityDO.ParentRouteNodeId == null)
                 return new List<RouteNodeDO>();
 
-            List<RouteNodeDO> upstreamActivities = new List<RouteNodeDO>();
+            var fullTree = uow.RouteNodeRepository.GetAll()
+                .Where(x => x.RootRouteNodeId == curActivityDO.RootRouteNodeId)
+                .ToList();
+
+            return GetUpstreamActivities(fullTree, curActivityDO);
+        }
+
+        private List<RouteNodeDO> GetUpstreamActivities(
+            IEnumerable<RouteNodeDO> fullTree,
+            RouteNodeDO curActivityDO)
+        {
+            if (curActivityDO == null)
+            {
+                throw new ArgumentNullException("curActivityDO");
+            }
+
+            if (curActivityDO.ParentRouteNodeId == null)
+            {
+                return new List<RouteNodeDO>();
+            }
+
+            var upstreamActivities = new List<RouteNodeDO>();
 
             //start by getting the parent of the current action
-            var parentActivity = uow.RouteNodeRepository.GetByKey(curActivityDO.ParentRouteNodeId);
+            // var parentActivity = uow.RouteNodeRepository.GetByKey(curActivityDO.ParentRouteNodeId);
+            var parentActivity = fullTree.Single(x => x.Id == curActivityDO.ParentRouteNodeId);
 
 
             // find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
+            // var upstreamSiblings =
+            //     parentActivity.ChildNodes.Where(a => a.Ordering < curActivityDO.Ordering);
             var upstreamSiblings =
-                parentActivity.ChildNodes.Where(a => a.Ordering < curActivityDO.Ordering);
+                fullTree.Where(a => a.ParentRouteNodeId == curActivityDO.ParentRouteNodeId
+                    && a.Ordering < curActivityDO.Ordering);
 
             //for each such sibling action, we want to add it to the list
             //but some of those activities may be actionlists with childactivities of their own
@@ -71,7 +114,7 @@ namespace Hub.Services
             foreach (var upstreamSibling in upstreamSiblings)
             {
                 //1) first add the upstream siblings
-                upstreamActivities.AddRange(GetActivityTree(uow, upstreamSibling));
+                upstreamActivities.AddRange(GetActivityTree(fullTree, upstreamSibling));
             }
 
             //now we need to recurse up to the parent of the current activity, and repeat until we reach the root of the tree
@@ -80,27 +123,52 @@ namespace Hub.Services
                 //2) then add the parent activity...
                 upstreamActivities.Add(parentActivity);
                 //3) then add the parent's upstream activities
-                upstreamActivities.AddRange(GetUpstreamActivities(uow, parentActivity));
+                upstreamActivities.AddRange(GetUpstreamActivities(fullTree, parentActivity));
             }
             else return upstreamActivities;
 
             return upstreamActivities; //should never actually get here, but the compiler insists
         }
 
-        public List<RouteNodeDO> GetDownstreamActivities(IUnitOfWork uow, RouteNodeDO curActivity)
+        public List<RouteNodeDO> GetDownstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO)
         {
-            if (curActivity == null)
+            if (curActivityDO == null)
                 throw new ArgumentNullException("curActivity");
-            if (curActivity.ParentRouteNodeId == null)
+            if (curActivityDO.ParentRouteNodeId == null)
                 return new List<RouteNodeDO>();
 
-            List<RouteNodeDO> downstreamList = new List<RouteNodeDO>();
+            var fullTree = uow.RouteNodeRepository.GetAll()
+                .Where(x => x.RootRouteNodeId == curActivityDO.RootRouteNodeId)
+                .ToList();
+
+            return GetDownstreamActivities(fullTree, curActivityDO);
+        }
+
+        private List<RouteNodeDO> GetDownstreamActivities(
+            IEnumerable<RouteNodeDO> fullTree,
+            RouteNodeDO curActivityDO)
+        {
+            if (curActivityDO == null)
+            {
+                throw new ArgumentNullException("curActivityDO");
+            }
+
+            if (curActivityDO.ParentRouteNodeId == null)
+            {
+                return new List<RouteNodeDO>();
+            }
+
+            var downstreamList = new List<RouteNodeDO>();
 
             //start by getting the parent of the current action
-            var parentActivity = uow.RouteNodeRepository.GetByKey(curActivity.ParentRouteNodeId);
+            // var parentActivity = uow.RouteNodeRepository.GetByKey(curActivity.ParentRouteNodeId);
+            var parentActivity = fullTree.Single(x => x.Id == curActivityDO.ParentRouteNodeId);
 
             // find all sibling actions that have a higher Ordering. These are the ones that are "below" or downstream of this action in the list
-            var downstreamSiblings = parentActivity.ChildNodes.Where(a => a.Ordering > curActivity.Ordering);
+            // var downstreamSiblings = parentActivity.ChildNodes.Where(a => a.Ordering > curActivity.Ordering);
+            var downstreamSiblings =
+                fullTree.Where(a => a.ParentRouteNodeId == curActivityDO.ParentRouteNodeId
+                    && a.Ordering > curActivityDO.Ordering);
 
             //for each such sibling action, we want to add it to the list
             //but some of those activities may be actionlists with childactivities of their own
@@ -108,7 +176,7 @@ namespace Hub.Services
             foreach (var downstreamSibling in downstreamSiblings)
             {
                 //1) first add the downstream siblings and their descendants
-                downstreamList.AddRange(GetActivityTree(uow, downstreamSibling));
+                downstreamList.AddRange(GetActivityTree(fullTree, downstreamSibling));
             }
 
             //now we need to recurse up to the parent of the current activity, and repeat until we reach the root of the tree
@@ -116,7 +184,7 @@ namespace Hub.Services
             {
                 //find the downstream siblings of the parent activity and add them and their descendants
 
-                downstreamList.AddRange(GetDownstreamActivities(uow, parentActivity));
+                downstreamList.AddRange(GetDownstreamActivities(fullTree, parentActivity));
             }
 
             return downstreamList;

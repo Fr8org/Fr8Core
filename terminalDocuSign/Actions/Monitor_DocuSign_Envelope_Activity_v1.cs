@@ -23,7 +23,7 @@ using Data.States;
 
 namespace terminalDocuSign.Actions
 {
-    public class Monitor_DocuSign_Envelope_Activity_v1 : BaseTerminalAction
+    public class Monitor_DocuSign_Envelope_Activity_v1 : BaseDocuSignAction
     {
         readonly DocuSignManager _docuSignManager = new DocuSignManager();
 
@@ -101,14 +101,11 @@ namespace terminalDocuSign.Actions
         public override Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //create DocuSign account, publish URL and other user selected options
-            var docuSignAccount = new DocuSignAccount();
-            var publishUrl = GetDocusignPublishUrl();
-
             bool youSent, someoneReceived, recipientSigned;
             GetUserSelectedEnvelopeEvents(curActionDO, out youSent, out someoneReceived, out recipientSigned);
 
             //create or update the DocuSign connect profile configuration
-            CreateOrUpdateDocuSignConnectConfiguration(docuSignAccount, publishUrl, youSent, someoneReceived, recipientSigned);
+            CreateOrUpdateDocuSignConnectConfiguration(youSent, someoneReceived, recipientSigned);
 
             return Task.FromResult<ActionDO>(curActionDO);
         }
@@ -134,7 +131,7 @@ namespace terminalDocuSign.Actions
         /// <summary>
         /// Creates or Updates a Docusign connect configuration named "DocuSignConnectName" for current user
         /// </summary>
-        private void CreateOrUpdateDocuSignConnectConfiguration(DocuSignAccount account, string publishUrl, bool youSent,
+        private void CreateOrUpdateDocuSignConnectConfiguration(bool youSent,
                                                                 bool someoneReceived, bool recipientSigned)
         {
             //prepare envelope events based on the input parameters
@@ -161,40 +158,7 @@ namespace terminalDocuSign.Actions
             }
 
             //get existing connect configuration
-            var existingDocuSignConnectConfiguration = GetDocuSignConnectConfiguration(account);
-
-            if (existingDocuSignConnectConfiguration == null)
-            {
-                //if existing configuration is not present, create one
-                account.CreateDocuSignConnectProfile(new Configuration
-                {
-                    name = DocuSignConnectName,
-                    allUsers = "true",
-                    configurationType = "custom",
-                    allowEnvelopePublish = "true",
-                    envelopeEvents = envelopeEvents,
-                    urlToPublishTo = publishUrl,
-                    enableLog = "true",
-                    includeDocuments = "false",
-                    requiresAcknowledgement = "false",
-                    includeCertSoapHeader = "false",
-                    includeCertificateOfCompletion = "false",
-                    includeTimeZoneInformation = "false",
-                    includeDocumentFields = "false",
-                    includeEnvelopeVoidReason = "true",
-                    includeSenderAccountasCustomField = "false",
-                    recipientEvents = "",
-                    useSoapInterface = "false",
-                    signMessageWithX509Certificate = "false"
-                });
-            }
-            else
-            {
-                //update existing configuration with new envelope events and publish URL
-                existingDocuSignConnectConfiguration.envelopeEvents = envelopeEvents;
-                existingDocuSignConnectConfiguration.urlToPublishTo = publishUrl;
-                account.UpdateDocuSignConnectProfile(existingDocuSignConnectConfiguration);
-            }
+            DocuSignAccount.CreateOrUpdateDefaultDocuSignConnectConfiguration(envelopeEvents);
         }
 
         public override Task<ActionDO> Deactivate(ActionDO curActionDO)
