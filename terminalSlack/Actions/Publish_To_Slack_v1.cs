@@ -131,10 +131,12 @@ namespace terminalSlack.Actions
                 }
             };
 
+            var fieldSelect = new TextSource("Select Message Field", "Available Fields", "Select_Message_Field");
+            fieldSelect.Events.Add(new ControlEvent("onChange", "requestConfig"));
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectChannel,
-                new TextSource("Select Message Field", "Available Fields", "Select_Message_Field")
+                fieldSelect
             };
 
             return Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
