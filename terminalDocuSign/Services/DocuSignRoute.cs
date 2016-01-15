@@ -61,8 +61,9 @@ namespace terminalDocuSign.Services
                 //create a subroute
                 var subroute = new SubrouteDO(true)
                 {
-                    ParentRouteNode = route,
-                    Id = Guid.NewGuid()
+                    Id = Guid.NewGuid(),
+                    RootRouteNode = route,
+                    ParentRouteNode = route
                 };
 
                 //update Route and Subroute into database

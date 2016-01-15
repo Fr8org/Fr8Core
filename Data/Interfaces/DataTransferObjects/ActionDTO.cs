@@ -5,6 +5,8 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class ActionDTO : ActionDTOBase
     {
+        public Guid? RootRouteNodeId { get; set; }
+
         public Guid? ParentRouteNodeId { get; set; }
 
         public CrateStorageDTO CrateStorage { get; set; }

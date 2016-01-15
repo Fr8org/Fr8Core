@@ -76,6 +76,7 @@ namespace Hub.Services
 
                 var subroute = new SubrouteDO(true);
                 subroute.Id = Guid.NewGuid();
+                subroute.RootRouteNode = ptdo;
                 subroute.ParentRouteNode = ptdo;
                 ptdo.ChildNodes.Add(subroute);
 
