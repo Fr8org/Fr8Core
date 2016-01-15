@@ -342,6 +342,7 @@
     <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignTemplateCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
+    <Compile Include="Interfaces\Manifests\MtPrimaryKeyAttribute.cs" />
     <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8RoutesCM .cs" />
@@ -549,6 +550,10 @@
     <Compile Include="Migrations\201601141644454_AddedPublicIdentifierToTerminalDO.cs" />
     <Compile Include="Migrations\201601141644454_AddedPublicIdentifierToTerminalDO.Designer.cs">
       <DependentUpon>201601141644454_AddedPublicIdentifierToTerminalDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601150502349_RouteNodeDO_RootId.cs" />
+    <Compile Include="Migrations\201601150502349_RouteNodeDO_RootId.Designer.cs">
+      <DependentUpon>201601150502349_RouteNodeDO_RootId.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -922,6 +927,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201601141644454_AddedPublicIdentifierToTerminalDO.resx">
       <DependentUpon>201601141644454_AddedPublicIdentifierToTerminalDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601150502349_RouteNodeDO_RootId.resx">
+      <DependentUpon>201601150502349_RouteNodeDO_RootId.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

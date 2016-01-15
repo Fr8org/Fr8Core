@@ -20,9 +20,9 @@ namespace Data.Interfaces.DataTransferObjects
         public Guid? CurrentRouteNodeId { get; set; }
         public Guid? NextRouteNodeId { get; set; }
 
-        public string LastUpdated { get; set; }
+        public DateTimeOffset LastUpdated { get; set; }
 
-        public string CreateDate { get; set; }
+        public DateTimeOffset CreateDate { get; set; }
 
     }
 }

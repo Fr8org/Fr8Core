@@ -15,10 +15,11 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
-    public class Search_DocuSign_History_v1  : BaseTerminalAction
+    public class Search_DocuSign_History_v1  : BaseDocuSignAction
     {
         internal class ActionUi : StandardConfigurationControlsCM
         {

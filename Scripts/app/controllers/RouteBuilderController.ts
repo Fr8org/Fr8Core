@@ -446,7 +446,7 @@ module dockyard.controllers {
                 parentId = eventArgs.group.parentAction.id;
             }
             // Create new action object.
-            var action = new model.ActionDTO(parentId, id, true);
+            var action = new model.ActionDTO(this.$scope.routeId, parentId, id, true);
             action.name = activityTemplate.name;
             action.label = activityTemplate.label;
             // Add action to Workflow Designer.

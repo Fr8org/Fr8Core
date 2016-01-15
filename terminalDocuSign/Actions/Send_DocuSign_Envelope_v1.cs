@@ -24,7 +24,7 @@ using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {
-    public class Send_DocuSign_Envelope_v1 : BaseTerminalAction
+    public class Send_DocuSign_Envelope_v1 : BaseDocuSignAction
     {
         private DocuSignManager _docuSignManager = new DocuSignManager();
         public Send_DocuSign_Envelope_v1()
@@ -221,8 +221,6 @@ namespace terminalDocuSign.Actions
 
             return await Task.FromResult(curActionDO);
         }
-
-
 
         private Crate CreateDocusignTemplateConfigurationControls(ActionDO curActionDO)
         {

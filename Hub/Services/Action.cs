@@ -179,6 +179,8 @@ namespace Hub.Services
                 {
                     newAction.ParentRouteNodeId = null;
                     newAction.ParentRouteNode = null;
+                    newAction.RootRouteNodeId = submittedAction.RootRouteNodeId;
+
                     var newChild = SaveAndUpdateRecursive(uow, newAction, existingAction, pendingConfiguration);
                     existingAction.ChildNodes.Add(newChild);
                 }
@@ -210,6 +212,8 @@ namespace Hub.Services
                     {
                         newAction.ParentRouteNodeId = null;
                         newAction.ParentRouteNode = null;
+                        newAction.RootRouteNodeId = existingAction.RootRouteNodeId;
+
                         var newChild = SaveAndUpdateRecursive(uow, newAction, existingAction, pendingConfiguration);
                         existingAction.ChildNodes.Add(newChild);
                     }
@@ -257,7 +261,8 @@ namespace Hub.Services
                 Name = name,
                 Label = label,
                 CrateStorage = _crate.EmptyStorageAsStr(),
-                Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1
+                Ordering = parentNode.ChildNodes.Count > 0 ? parentNode.ChildNodes.Max(x => x.Ordering) + 1 : 1,
+                RootRouteNode = parentNode.RootRouteNode
             };
 
             uow.ActionRepository.Add(action);

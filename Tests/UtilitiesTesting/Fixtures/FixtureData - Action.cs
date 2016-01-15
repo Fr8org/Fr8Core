@@ -290,7 +290,9 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(1),
                 Name = "C",
                 ParentRouteNodeId = routeDo.Id,
-                ParentRouteNode = routeDo
+                ParentRouteNode = routeDo,
+                RootRouteNodeId = routeDo.Id,
+                RootRouteNode = routeDo
             };
 
 
@@ -371,7 +373,9 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(1),
                 Name = "C",
                 ParentRouteNodeId = routeDo.Id,
-                ParentRouteNode = routeDo
+                ParentRouteNode = routeDo,
+                RootRouteNodeId = routeDo.Id,
+                RootRouteNode = routeDo
             };
 
             using (var updater = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
@@ -435,6 +439,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 ParentRouteNode = curRouteDO,
                 ParentRouteNodeId = curRouteDO.Id,
+                RootRouteNodeId = curRouteDO.Id,
+                RootRouteNode = curRouteDO
             };
 
             ActionDO curActionDO = new ActionDO();
