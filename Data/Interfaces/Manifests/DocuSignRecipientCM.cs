@@ -12,6 +12,7 @@ namespace Data.Interfaces.Manifests
         public string Status { get; set; }
         public string DocuSignAccountId { get; set; }
         public string RecipientId { get; set; }
+        public string EnvelopeId { get; set; }
         public DocuSignRecipientCM()
             : base(Constants.MT.DocuSignRecipient)
         {

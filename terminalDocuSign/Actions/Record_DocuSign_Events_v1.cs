@@ -152,10 +152,28 @@ namespace terminalDocuSign.Actions
                     ExternalAccountId = docuSignFields.GetValueOrDefault("HolderEmail"),//First(field => field.Key.Equals("Email")).Value
                 };
 
+                DocuSignRecipientCM recipientCM = null;
+                if (events.RecepientId != null)
+                {
+                    recipientCM = new DocuSignRecipientCM
+                    {
+                        RecipientId = events.RecepientId,
+                        Status = events.Status,
+                        Object = docuSignFields.GetValueOrDefault("Object"),
+                        EnvelopeId = docuSignFields.GetValueOrDefault("EnvelopeId"),
+                        DocuSignAccountId = docuSignFields.GetValueOrDefault("HolderEmail")
+                    };
+                }
+                
+
                 using (var updater = Crate.UpdateStorage(curProcessPayload))
                 {
                     updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Manifest", envelope));
                     updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Event Manifest", events));
+                    if (recipientCM != null)
+                    {
+                        updater.CrateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Recipient Manifest", recipientCM));
+                    }
                 }
             }
 
