@@ -518,6 +518,7 @@
     <Content Include="Content\img\Cross.png" />
     <Content Include="Content\img\dockyard_logo.png" />
     <Content Include="Content\img\EmailLogo.png" />
+    <Content Include="Content\img\exclamation-small.png" />
     <Content Include="Content\img\favicon.ico" />
     <Content Include="Content\img\googleCalendar.png" />
     <Content Include="Content\img\icloud-logo.png" />

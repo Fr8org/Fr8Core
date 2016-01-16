@@ -61,7 +61,6 @@ namespace HubWeb.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Create(int actionTemplateId, string name, string label = null, Guid? parentNodeId = null, bool createRoute = false)
         {
-            // WebMonitor.Tracer.Monitor.StartMonitoring("Creating action " + name);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userId = User.Identity.GetUserId();

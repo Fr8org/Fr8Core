@@ -270,13 +270,6 @@ module dockyard.services {
             private crateHelper: CrateHelper
         ) { }
 
-        /* 
-            The function saves current entities if they are new or changed (dirty).
-            At this time not all entities whose state we maintain on RouteBuilder are saved here. 
-            I (@alexavrutin) will add them one-by-one during the course of refactoring. 
-            Dirty checking is missing at this moment, too, I will add it later. Now it saves entities no matter 
-            if they were or were not changed. 
-        */
         public saveCurrent(currentState: model.RouteBuilderState): ng.IPromise<model.RouteBuilderState> {
             var deferred = this.$q.defer<model.RouteBuilderState>(),
                 newState = new model.RouteBuilderState()

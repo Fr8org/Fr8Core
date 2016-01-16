@@ -227,6 +227,7 @@
     <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
     <Compile Include="Exceptions\AmbiguityException.cs" />
     <Compile Include="Exceptions\AuthenticationExeception.cs" />
+    <Compile Include="Exceptions\ErrorResponseException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Infrastructure\fr8HMACAuthorizeAttribute.cs" />
