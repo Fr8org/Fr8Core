@@ -22,11 +22,13 @@ namespace terminalSendGrid.Actions
         // moved the EmailPackager ObjectFactory here since the basepluginAction will be called by others and the dependency is defiend in pluginsendGrid
         private IConfigRepository _configRepository;
         private IEmailPackager _emailPackager;
+        private readonly  List<string> _excludedCrates;
 
         public SendEmailViaSendGrid_v1()
         {
             _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
+            _excludedCrates = new List<string>() { "AvailableActions", "Available Templates" };
         }
 
         public override async Task<ActionDO> Configure(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -50,13 +52,25 @@ namespace terminalSendGrid.Actions
 
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
+
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
                 updater.CrateStorage.Clear();
                 updater.CrateStorage.Add(CreateControlsCrate());
+                updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActionDO, _excludedCrates));
             }
 
             return await AddDesignTimeFieldsSource(curActionDO);
+        }
+
+        protected async override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActionDO, _excludedCrates));
+            }
+
+            return curActionDO;
         }
 
         private async Task<ActionDO> AddDesignTimeFieldsSource(ActionDO curActionDO)
@@ -91,7 +105,8 @@ namespace terminalSendGrid.Actions
         /// <returns></returns>
         private ControlDefinitionDTO CreateEmailAddressTextSourceControl()
         {
-            var control = new TextSource("Email Address", "Upstream Terminal-Provided Fields Address", "EmailAddress");
+            var control = CreateSpecificOrUpstreamValueChooser("Email Address", "EmailAddress", "Upstream Terminal-Provided Fields", "EmailAddress");
+                
             //CreateSpecificOrUpstreamValueChooser(
             //    "Email Address",
             //    "EmailAddress",
@@ -111,7 +126,7 @@ namespace terminalSendGrid.Actions
             var control = CreateSpecificOrUpstreamValueChooser(
                 "Email Subject",
                 "EmailSubject",
-                "Upstream Terminal-Provided Fields Subject"
+                "Upstream Terminal-Provided Fields"
             );
 
             return control;
@@ -126,7 +141,7 @@ namespace terminalSendGrid.Actions
             var control = CreateSpecificOrUpstreamValueChooser(
                 "Email Body",
                 "EmailBody",
-                "Upstream Terminal-Provided Fields Body"
+                "Upstream Terminal-Provided Fields"
             );
 
             return control;
@@ -142,21 +157,6 @@ namespace terminalSendGrid.Actions
             };
 
             return Crate.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel, controls.ToArray());
-        }
-
-        private async Task<Crate> GetAvailableDataFields(ActionDO curActionDO)
-        {
-            var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
-                    .Fields
-                    .ToArray();
-
-            var crateDTO = Crate.CreateDesignTimeFieldsCrate(
-                "Upstream Terminal-Provided Fields",
-                curUpstreamFields
-            );
-
-            return crateDTO;
         }
 
         private string CreateEmailHTMLText(string emailBody)

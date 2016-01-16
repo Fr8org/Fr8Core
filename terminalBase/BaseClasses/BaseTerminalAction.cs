@@ -234,7 +234,7 @@ namespace TerminalBase.BaseClasses
             {
                 return Crate.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
             }
-            
+
 
             return null;
         }
@@ -492,6 +492,36 @@ namespace TerminalBase.BaseClasses
 
         }*/
 
+        /// <summary>
+        /// Creates a crate with avalable design-time fields.
+        /// </summary>
+        /// <param name="actionDO">ActionDO.</param>
+        /// <param name="exclude">Labels of crates where fields should not be searched.</param>
+        /// <returns></returns>
+        protected async Task<Crate> CreateAvailableFieldsCrate(
+            ActionDO actionDO,
+            List<string> exclude = null,
+            string crateLabel = "Upstream Terminal-Provided Fields")
+        {
+            if (exclude == null)
+            {
+                exclude = new List<string>();
+            }
+
+            var curUpstreamFields =
+                (await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, CrateDirection.Upstream))
+                .Where(x => !exclude.Contains(x.Label))
+                .SelectMany(x => x.Content.Fields)
+                .ToArray();
+
+            var availableFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
+                    crateLabel,
+                    curUpstreamFields
+                );
+
+            return availableFieldsCrate;
+        }
+
         protected Crate PackCrate_ErrorTextBox(string fieldLabel, string errorMessage)
         {
             ControlDefinitionDTO[] controls =
@@ -510,7 +540,7 @@ namespace TerminalBase.BaseClasses
         /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
         /// </summary>
         protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
-            string label, string controlName, string upstreamSourceLabel, string filterByTag = "")
+            string label, string controlName, string upstreamSourceLabel, string filterByTag = "", bool addRequestConfigEvent = true)
         {
             var control = new TextSource(label, upstreamSourceLabel, controlName)
             {
@@ -521,6 +551,10 @@ namespace TerminalBase.BaseClasses
                     FilterByTag = filterByTag
                 }
             };
+            if (addRequestConfigEvent)
+            {
+                control.Events.Add(new ControlEvent("onChange", "requestConfig"));
+            }
 
             return control;
         }
@@ -529,7 +563,7 @@ namespace TerminalBase.BaseClasses
         /// <summary>
         /// Extract value from RadioButtonGroup or TextSource where specific value or upstream field was specified.
         /// </summary>
-        protected string ExtractSpecificOrUpstreamValue(ActionDO actionDO,PayloadDTO payloadCrates,string controlName)
+        protected string ExtractSpecificOrUpstreamValue(ActionDO actionDO, PayloadDTO payloadCrates, string controlName)
         {
             var designTimeCrateStorage = Crate.GetStorage(actionDO.CrateStorage);
             var runTimeCrateStorage = Crate.FromDto(payloadCrates.CrateStorage);
@@ -750,7 +784,7 @@ namespace TerminalBase.BaseClasses
             }
 
             return await Task.FromResult<FieldDTO[]>(null);
-        } 
+        }
 
         protected virtual Crate MergeUpstreamFields<TManifest>(ActionDO curActionDO, string label, FieldDTO[] upstreamFields)
         {
