@@ -19,6 +19,8 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using System.Collections.Generic;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using Moq;
+using System.Net.Http;
 
 namespace terminalBaseTests.BaseClasses
 {
@@ -40,7 +42,6 @@ namespace terminalBaseTests.BaseClasses
             _baseTerminalAction = new BaseTerminalAction();
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-            
         }
 
         [TearDown]

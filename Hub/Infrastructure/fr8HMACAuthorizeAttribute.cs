@@ -18,13 +18,12 @@ namespace Hub.Infrastructure
 {
     public abstract class fr8HMACAuthorizeAttribute : Attribute, IAuthenticationFilter
     {
-        private const int MaxAllowedLatency = 60;
-        private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private readonly IHMACService _hmacService;
+        
+        private readonly IHMACAuthenticator _hmacAuthenticator;
 
         protected fr8HMACAuthorizeAttribute()
         {
-            _hmacService = ObjectFactory.GetInstance<IHMACService>();
+            _hmacAuthenticator = ObjectFactory.GetInstance<IHMACAuthenticator>();
         }
 
         public bool AllowMultiple
@@ -35,6 +34,13 @@ namespace Hub.Infrastructure
             }
         }
 
+        /// <summary>
+        /// These 3 functions are abstract or virtual
+        /// because this class can be used by both terminals and hub
+        /// they can implement their custom versions for these
+        /// </summary>
+        /// <param name="terminalId"></param>
+        /// <returns></returns>
         protected abstract Task<string> GetTerminalSecret(string terminalId);
 
         protected abstract Task<bool> CheckAuthentication(string terminalId, string userId);
@@ -53,71 +59,27 @@ namespace Hub.Infrastructure
             }
         }
 
-        private static DateTime DateTimeFromUnixTimestampSeconds(long seconds)
-        {
-            return UnixEpoch.AddSeconds(seconds);
-        }
-
         private async Task<bool> IsValidRequest(HttpRequestMessage request)
         {
-            if (request.Headers.Authorization == null || !request.Headers.Authorization.Scheme.Equals("hmac", StringComparison.OrdinalIgnoreCase)
-            || string.IsNullOrEmpty(request.Headers.Authorization.Parameter))
-            {
-                return false;
-            }
-
-            string tokenString = request.Headers.Authorization.Parameter;
-            string[] authenticationParameters = tokenString.Split(new [] { ':' });
-            
-
-            if (authenticationParameters.Length != 5)
-            {
-                return false;
-            }
-            
-            var terminalId = authenticationParameters[0];
-            var authToken = authenticationParameters[1];
-            var nonce = authenticationParameters[2];
-            var requestTime = authenticationParameters[3];
-            var userId = authenticationParameters[4];
-
-            //Check for ReplayRequests starts here
-            //Check if the nonce is already used
-            if (MemoryCache.Default.Contains(nonce))
-            {
-                return false;
-            }
-
-            //Check if the maximum allowed request time gap is exceeded,
-            if ((DateTime.UtcNow - DateTimeFromUnixTimestampSeconds(long.Parse(requestTime))).Seconds > MaxAllowedLatency)
-            {
-                return false;
-            }
-
-            //Add the nonce to the cache
-            MemoryCache.Default.Add(nonce, requestTime, DateTimeOffset.UtcNow.AddSeconds(MaxAllowedLatency));
-
-            //Check for ReplayRequests ends here
-
+            string terminalId, userId;
+            _hmacAuthenticator.ExtractTokenParts(request, out terminalId, out userId);
             var terminalSecret = await GetTerminalSecret(terminalId);
-            if (string.IsNullOrEmpty(terminalSecret))
+            var isValid = await _hmacAuthenticator.IsValidRequest(request, terminalSecret);
+
+            if (!isValid)
             {
                 return false;
             }
 
-            var calculatedHash = await _hmacService.CalculateHMACHash(request.RequestUri, userId, terminalId, terminalSecret, requestTime, nonce, request.Content);
-            if (!authToken.Equals(calculatedHash, StringComparison.OrdinalIgnoreCase))
+            isValid = await CheckAuthentication(terminalId, userId);
+            if (!isValid)
             {
                 return false;
+                
             }
 
-            var status = await CheckAuthentication(terminalId, userId);
-            if (status)
-            {
-                Success(terminalId, userId);
-            }
-
-            return status;
+            Success(terminalId, userId);
+            return true;
         }
 
         public Task ChallengeAsync(HttpAuthenticationChallengeContext context, CancellationToken cancellationToken)

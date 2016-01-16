@@ -32,7 +32,7 @@ using StructureMap.Configuration.DSL;
 using System.Threading.Tasks;
 using Utilities;
 using Utilities.Interfaces;
-
+using System.Net.Http;
 
 namespace Hub.StructureMap
 {
@@ -128,6 +128,7 @@ namespace Hub.StructureMap
                 For<IAuthorization>().Use<Authorization>();
                 For<ITag>().Use<Tag>();
 
+                For<IHMACAuthenticator>().Use<HMACAuthenticator>();
                 For<IHMACService>().Use<Fr8HMACService>();
             }
         }
@@ -196,6 +197,11 @@ namespace Hub.StructureMap
 	            For<IPusherNotifier>().Use(pusherNotifierMock.Object).Singleton();
 
                 For<ITag>().Use<Tag>();
+
+                var fr8HMACAuthenticator = new Mock<IHMACAuthenticator>();
+                fr8HMACAuthenticator.Setup(x => x.IsValidRequest(It.IsAny<HttpRequestMessage>(), It.IsAny<string>())).ReturnsAsync(true);
+                For<IHMACAuthenticator>().Use(fr8HMACAuthenticator.Object);
+
                 var fr8HMACService = new Mock<IHMACService>();
                 For<IHMACService>().Use(fr8HMACService.Object);
             }

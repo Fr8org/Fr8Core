@@ -98,7 +98,7 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return await uow.TerminalRepository.GetQuery().FirstOrDefaultAsync(t => t.PublicIdentifier == terminalId);
+                return uow.TerminalRepository.GetQuery().FirstOrDefault(t => t.PublicIdentifier == terminalId);
             }
         }
 
