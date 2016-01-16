@@ -53,7 +53,7 @@ namespace terminalExcel.Actions
                     Controls.Add(new TextBlock
                     {
                         Label = "",
-                        Value = "Uploaded file: " + uploadedFileName,
+                        Value = "Uploaded file: " + Uri.UnescapeDataString(uploadedFileName),
                         CssClass = "well well-lg"
                     });
                 }
