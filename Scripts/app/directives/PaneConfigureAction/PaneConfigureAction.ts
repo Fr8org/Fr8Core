@@ -283,9 +283,7 @@ module dockyard.directives.paneConfigureAction {
                 function loadConfiguration() {
                     // Block pane and show pane-level 'loading' spinner
                     $scope.processing = true;
-
-
-
+                    
                     if ($scope.configurationWatchUnregisterer) {
                         $scope.configurationWatchUnregisterer();
                     }
@@ -410,7 +408,9 @@ module dockyard.directives.paneConfigureAction {
                 $timeout: ng.ITimeoutService,
                 $modal,
                 $window: ng.IWindowService,
-                $http: ng.IHttpService
+                $http: ng.IHttpService,
+                ngToast: any
+
             ) => {
 
                 return new PaneConfigureAction(
