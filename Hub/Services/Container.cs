@@ -53,6 +53,13 @@ namespace Hub.Services
             return operationalState.CurrentActionResponse;
         }
 
+        private string GetCurrentActionErrorMessage(ContainerDO curContainerDO)
+        {
+            var storage = _crate.GetStorage(curContainerDO.CrateStorage);
+            var operationalState = storage.CrateContentsOfType<OperationalStateCM>().Single();
+            return operationalState.CurrentActionErrorMessage;
+        }
+
         /// <summary>
         /// For actions who don't bother with returning a state. 
         /// We will assume those actions are completed without a problem
@@ -86,7 +93,7 @@ namespace Hub.Services
                     break;
                 case ActionResponse.Error:
                     //TODO retry action execution until 3 errors??
-                    throw new Exception("Error on action with id " + curContainerDo.CurrentRouteNode.Id);
+                    throw new ErrorResponseException(string.Format("Error on action. {0}", GetCurrentActionErrorMessage(curContainerDo)));
                 case ActionResponse.RequestTerminate:
                     throw new Exception("Termination request from action with id " + curContainerDo.CurrentRouteNode.Id);
                 default:

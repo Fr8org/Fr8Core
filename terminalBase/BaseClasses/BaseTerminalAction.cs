@@ -235,7 +235,6 @@ namespace TerminalBase.BaseClasses
                 return Crate.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
             }
             
-
             return null;
         }
 
@@ -249,7 +248,7 @@ namespace TerminalBase.BaseClasses
         //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
         protected virtual async Task<CrateStorage> ValidateAction(ActionDO curActionDO)
         {
-            return null;
+            return await Task.FromResult<CrateStorage>(null);
         }
 
         protected async Task<ActionDO> ProcessConfigurationRequest(ActionDO curActionDO, ConfigurationEvaluator configurationEvaluationResult, AuthorizationTokenDO authToken)
@@ -302,6 +301,12 @@ namespace TerminalBase.BaseClasses
         public virtual async Task<ActionDO> Activate(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             //Returns Task<ActivityDTO> using FromResult as the return type is known
+            var validationErrors = await ValidateAction(curActionDO);
+            if (validationErrors != null)
+            {
+                Crate.UpdateStorage(curActionDO).CrateStorage.AddRange(validationErrors);
+                return curActionDO;
+            }
             return await Task.FromResult<ActionDO>(curActionDO);
         }
 
