@@ -30,16 +30,7 @@
         }
 
         toActionVM(): interfaces.IActionVM {
-            return <interfaces.IActionVM> {
-                id: this.id,
-                isTempId: this.isTempId,
-                parentRouteNodeId: this.parentRouteNodeId,
-                name: this.name,
-                label: this.label,
-                crateStorage: this.crateStorage,
-                configurationControls: this.configurationControls,
-                ordering: this.ordering
-            };
+            return <interfaces.IActionVM>angular.extend({}, this);
         }
 
         clone(): ActionDTO {
