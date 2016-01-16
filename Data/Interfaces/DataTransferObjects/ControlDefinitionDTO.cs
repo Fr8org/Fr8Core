@@ -46,6 +46,9 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("help")]
         public HelpControlDTO Help { get; set; }
 
+        [JsonProperty("errorMessage")]
+        public string ErrorMessage { get; set; }
+
         public virtual void Reset(List<string> fieldNames)
         {
             //This is here to prevent development bugs

@@ -121,8 +121,7 @@ namespace Hub.Managers
         {
             return Crate.FromContent(label, new EventSubscriptionCM() { Subscriptions = subscriptions.ToList() });
         }
-
-
+        
         public Crate CreateStandardEventReportCrate(string label, EventReportCM eventReport)
         {
             return Crate.FromContent(label, eventReport);
@@ -137,8 +136,7 @@ namespace Hub.Managers
         {
             return Crate.FromContent(label, operationalStatus);
         }
-
-
+        
         public Crate CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)
         {
             return Crate.FromContent(crateLabel, TransformStandardTableDataToStandardPayloadData(payloadDataObjectType, tableDataMS));
