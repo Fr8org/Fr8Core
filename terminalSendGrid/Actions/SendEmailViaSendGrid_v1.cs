@@ -60,7 +60,7 @@ namespace terminalSendGrid.Actions
                 updater.CrateStorage.Add(await CreateAvailableFieldsCrate(curActionDO, _excludedCrates));
             }
 
-            return await AddDesignTimeFieldsSource(curActionDO);
+            return await Task.FromResult(curActionDO);
         }
 
         protected async override Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
@@ -70,9 +70,11 @@ namespace terminalSendGrid.Actions
                 updater.CrateStorage.ReplaceByLabel(await CreateAvailableFieldsCrate(curActionDO, _excludedCrates));
             }
 
-            return curActionDO;
+            return await Task.FromResult(curActionDO);
         }
 
+        // @alexavrutin here: Do we really need a separate crate for each field? 
+        // Refactored the action to use a single Upstream Terminal-Provided Fields crate.
         private async Task<ActionDO> AddDesignTimeFieldsSource(ActionDO curActionDO)
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
