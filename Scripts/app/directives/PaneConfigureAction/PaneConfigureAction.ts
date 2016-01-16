@@ -288,7 +288,10 @@ module dockyard.directives.paneConfigureAction {
                         $scope.configurationWatchUnregisterer();
                     }
 
-                    ConfigureTrackerService.configureCallStarted($scope.currentAction.id);
+                    ConfigureTrackerService.configureCallStarted(
+                        $scope.currentAction.id,
+                        $scope.currentAction.activityTemplate.needsAuthentication
+                    );
 
                     ActionService.configure($scope.currentAction).$promise
                         .then((res: interfaces.IActionVM) => {
