@@ -31,7 +31,7 @@ namespace terminalDocuSignTests.Integration
 
         private void AssertCrateTypes(CrateStorage crateStorage)
         {
-            Assert.AreEqual(2, crateStorage.Count);
+            Assert.AreEqual(3, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardDesignTimeFieldsCM>().Count(x => x.Label == "Available Templates"));
         }
