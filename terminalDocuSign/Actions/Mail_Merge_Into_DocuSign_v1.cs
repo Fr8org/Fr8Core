@@ -105,6 +105,10 @@ namespace terminalDocuSign.Actions
             {
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
             }
+
+            //validate if any DocuSignTemplates has been linked to the Account
+            ValidateDocuSignAtLeastOneTemplate(curActionDO);
+
             return curActionDO;
         }
 
@@ -130,6 +134,35 @@ namespace terminalDocuSign.Actions
 
             var control = (T)controls.FindByName(name);
             return control;
+        }
+
+
+        /// <summary>
+        /// All validation scenarios for Mail_Merge_Into_DocuSign action
+        /// </summary>
+        /// <param name="curActionDO"></param>
+        /// <returns></returns>
+        protected override async Task<CrateStorage> ValidateAction(ActionDO curActionDO)
+        {
+            ValidateDocuSignAtLeastOneTemplate(curActionDO);
+
+            return await Task.FromResult<CrateStorage>(null);
+        }
+
+        private void ValidateDocuSignAtLeastOneTemplate(ActionDO curActionDO)
+        {
+            //validate DocuSignTemplate for present selected template 
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                var docuSignTemplate = updater.CrateStorage.CrateContentsOfType<StandardDesignTimeFieldsCM>(x => x.Label == "Available Templates").FirstOrDefault();
+                if (docuSignTemplate != null && docuSignTemplate.Fields != null && docuSignTemplate.Fields.Count != 0) return ;//await Task.FromResult<CrateDTO>(null);
+
+                var configControl = GetStdConfigurationControl<DropDownList>(updater.CrateStorage, "DocuSignTemplate");
+                if (configControl != null)
+                {
+                    configControl.ErrorMessage = "Please link some templates to your DocuSign account.";
+                }
+            }
         }
 
         /// <summary>

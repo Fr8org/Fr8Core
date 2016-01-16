@@ -15,6 +15,11 @@ namespace Data.Entities
         [Key]
         public Guid Id { get; set; }
 
+        [ForeignKey("RootRouteNode")]
+        public Guid? RootRouteNodeId { get; set; }
+
+        public virtual RouteNodeDO RootRouteNode { get; set; }
+
         [ForeignKey("ParentRouteNode")]
         public Guid? ParentRouteNodeId { get; set; }
         

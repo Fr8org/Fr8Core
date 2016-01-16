@@ -1,7 +1,8 @@
 ﻿
 ﻿using System.Collections.Generic;
 using Data.Entities;
-using Data.States;
+﻿using Data.Interfaces.DataTransferObjects;
+﻿using Data.States;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -12,6 +13,8 @@ namespace UtilitiesTesting.Fixtures
         public static string TestTerminal_AzureSqlServer_EndPoint = "localhost:60003";
         public static string TestTerminal_ExtractData_EndPoint = "localhost:60004";
         public static string TestTerminal_FileServer_EndPoint = "localhost:60005";
+
+        public static string TestTerminal_Core_EndPoint2 = "localhost:50705";
 
         public static AuthorizationTokenDO AuthToken_TerminalIntegration()
         {
@@ -60,6 +63,18 @@ namespace UtilitiesTesting.Fixtures
                 Endpoint = TestTerminal_DocuSign_EndPoint,
                 Version = "1",
                 AuthenticationType = AuthenticationType.Internal
+            };
+        }
+
+        public static TerminalDTO TestTerminal_Core_DTO()
+        {
+            return new TerminalDTO
+            {
+                Name = "terminalDockyardCore",
+                Endpoint = TestTerminal_Core_EndPoint2,
+                TerminalStatus = TerminalStatus.Active,
+                Version = "1",
+                AuthenticationType = AuthenticationType.None
             };
         }
 

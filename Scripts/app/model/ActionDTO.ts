@@ -1,5 +1,6 @@
 ﻿module dockyard.model {
     export class ActionDTO implements interfaces.IActionDTO {
+        rootRouteNodeId: string;
         parentRouteNodeId: string;
         id: string;
         isTempId: boolean;
@@ -15,11 +16,13 @@
         ordering: number;
 
         constructor(
-            parentActivityId: string,
+            rootRouteNodeId: string,
+            parentRouteNodeId: string,
             id: string,
             isTempId: boolean
         ) {
-            this.parentRouteNodeId = parentActivityId;
+            this.rootRouteNodeId = rootRouteNodeId;
+            this.parentRouteNodeId = parentRouteNodeId;
             this.id = id;
             this.isTempId = isTempId;
             this.activityTemplateId = 0;
@@ -27,20 +30,16 @@
         }
 
         toActionVM(): interfaces.IActionVM {
-            return <interfaces.IActionVM> {
-                id: this.id,
-                isTempId: this.isTempId,
-                parentRouteNodeId: this.parentRouteNodeId,
-                name: this.name,
-                label: this.label,
-                crateStorage: this.crateStorage,
-                configurationControls: this.configurationControls,
-                ordering: this.ordering
-            };
+            return <interfaces.IActionVM>angular.extend({}, this);
         }
 
         clone(): ActionDTO {
-            var result = new ActionDTO(this.parentRouteNodeId, this.id, this.isTempId);
+            var result = new ActionDTO(
+                this.rootRouteNodeId,
+                this.parentRouteNodeId,
+                this.id,
+                this.isTempId
+            );
             result.name = this.name;
             result.name = this.label;
             result.ordering = this.ordering;
@@ -52,7 +51,7 @@
         }
 
         static create(dataObject: interfaces.IActionDTO): ActionDTO {
-            var result = new ActionDTO('', '', false);
+            var result = new ActionDTO('', '', '', false);
             result.activityTemplateId = dataObject.activityTemplateId;
             result.activityTemplate = dataObject.activityTemplate;
             result.crateStorage = dataObject.crateStorage;
