@@ -20,7 +20,7 @@
         }
 
         private intervalHandler() {
-            if (!this.ConfigureTrackerService.hasPendingConfigureCalls()) {
+            if (!this.ConfigureTrackerService.hasPendingConfigureAuthCalls()) {
                 var actionIds: Array<string> = [];
                 var key;
                 for (key in this._pendingActionIds) {
