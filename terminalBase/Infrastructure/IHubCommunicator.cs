@@ -16,6 +16,7 @@ namespace TerminalBase.Infrastructure
 
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActionDO actionDO, CrateDirection direction);
         Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability);
+        Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActionDO actionDO, CrateDirection direction, AvailabilityType availability);
 
         Task<List<Crate>> GetCratesByDirection(ActionDO actionDO, CrateDirection direction);
 

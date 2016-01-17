@@ -85,13 +85,13 @@ namespace terminalFr8Core.Actions
         {
             //Filter the upstream fields by Availability flag as this action takes the run time data (left DDLBs) to the fidles (right DDLBs)
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
                 .Fields.Where(field => field.Availability != AvailabilityType.Configuration)
                 .ToArray();
 
             //Get all the downstream fields to be mapped (right DDLBs)
             var curDownstreamFields =
-                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Downstream))
+                (await GetDesignTimeFields(curActionDO, CrateDirection.Downstream))
                 .Fields.Where(field => field.Availability != AvailabilityType.Configuration)
                 .ToArray();
 

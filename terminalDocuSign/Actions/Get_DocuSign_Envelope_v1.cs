@@ -76,7 +76,7 @@ namespace terminalDocuSign.Actions
                 updater.CrateStorage.ReplaceByLabel(upstreamFieldsCrate);
 
                 var control = FindControl(Crate.GetStorage(curActionDO), "EnvelopeIdSelector");
-                string envelopeId = GetEnvelopeID(control as TextSource, authTokenDO);
+                string envelopeId = GetEnvelopeId(control as TextSource, authTokenDO);
                 int fieldsCount = _docuSignManager.UpdateUserDefinedFields(curActionDO, authTokenDO, updater, envelopeId);
             }
             return await Task.FromResult(curActionDO);
@@ -93,7 +93,7 @@ namespace terminalDocuSign.Actions
 
             //Get envlopeId from configuration
             var control = (TextSource)FindControl(Crate.GetStorage(actionDO), "EnvelopeIdSelector");
-            string envelopeId = GetEnvelopeID(control, authTokenDO);
+            string envelopeId = GetEnvelopeId(control, authTokenDO);
             // if it's not valid, try to search upstream runtime values
             if (!envelopeId.IsGuid())
                 envelopeId = control.GetValue(payloadCrateStorage);
@@ -111,7 +111,7 @@ namespace terminalDocuSign.Actions
             return Success(payloadCrates);
         }
 
-        private string GetEnvelopeID(ControlDefinitionDTO control, AuthorizationTokenDO authTokenDo)
+        private string GetEnvelopeId(ControlDefinitionDTO control, AuthorizationTokenDO authTokenDo)
         {
             string envelopeId = null;
             var textSource = (TextSource)control;

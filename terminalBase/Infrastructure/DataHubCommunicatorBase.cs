@@ -91,14 +91,9 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(crates);
         }
 
-        public Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task CreateAlarm(AlarmDTO alarmDTO)
         {
-            
+
         }
 
         public Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActionDO actionDO)
@@ -149,7 +144,17 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(new List<FieldValidationResult>());
         }
 
-        public Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActionDO actionDO, CrateDirection direction, AvailabilityType availability)
+        {
+            //This code only supports integration testing scenarios
+
+            StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
+            var curCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, direction);
+            mergedFields.Fields.AddRange(Crate.MergeContentFields(curCrates).Fields);
+            return mergedFields;
+        }
+
+        public Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction, AvailabilityType availability)
         {
             throw new NotImplementedException();
         }

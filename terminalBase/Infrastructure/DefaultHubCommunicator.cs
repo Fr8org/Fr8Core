@@ -51,16 +51,13 @@ namespace TerminalBase.Infrastructure
 
         public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/designtime_fields_dir"
-                + "?id=" + activityId
-                + "&direction=" + (int)direction
-                + "&availability=" + (int)availability;
-
-            var curFields = await _restfulServiceClient.GetAsync<StandardDesignTimeFieldsCM> (new Uri(url, UriKind.Absolute));
-            return curFields;
+            return await _routeNode.GetDesignTimeFieldsByDirectionTerminal(activityId, direction, availability);
         }
 
+        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActionDO actionDO, CrateDirection direction, AvailabilityType availability)
+        {
+            return await _routeNode.GetDesignTimeFieldsByDirectionTerminal(actionDO.Id, direction, availability);
+        }
 
         public async Task CreateAlarm(AlarmDTO alarmDTO)
         {

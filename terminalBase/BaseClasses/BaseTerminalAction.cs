@@ -337,15 +337,15 @@ namespace TerminalBase.BaseClasses
             return await HubCommunicator.GetCratesByDirection(actionDO, direction);
         }
 
-        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(Guid actionId, CrateDirection direction, AvailabilityType availability)
+        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(Guid actionId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         { 
             var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionId, direction, availability);
             return mergedFields;
         }
 
-        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(Guid actionId, CrateDirection direction)
+        public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActionDO actionDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         { 
-            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionId, direction, AvailabilityType.NotSet);
+            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO, direction, availability);
             return mergedFields;
         }
 
@@ -490,7 +490,7 @@ namespace TerminalBase.BaseClasses
                 exclude = new List<string>();
             }
 
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO.Id, CrateDirection.Upstream, AvailabilityType.Configuration);
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO, CrateDirection.Upstream, AvailabilityType.Configuration);
 
             var availableFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
                     crateLabel,

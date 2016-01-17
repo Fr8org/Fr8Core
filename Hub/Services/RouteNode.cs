@@ -82,12 +82,12 @@ namespace Hub.Services
             return GetUpstreamActivities(fullTree, curActivityDO);
         }
 
-        public StandardDesignTimeFieldsCM GetDesignTimeFieldsByDirection(Guid id, CrateDirection direction, AvailabilityType availability)
+        public StandardDesignTimeFieldsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
             StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActionDO actionDO = uow.ActionRepository.GetByKey(id);
+                ActionDO actionDO = uow.ActionRepository.GetByKey(activityId);
                 var curCrates = GetActivitiesByDirection(uow, direction, actionDO)
                     .OfType<ActionDO>()
                     .SelectMany(x => _crate.GetStorage(x).CratesOfType<StandardDesignTimeFieldsCM>())
@@ -510,6 +510,18 @@ namespace Hub.Services
             }
 
             return curCrates;
+        }
+
+        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirectionTerminal(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/designtime_fields_dir"
+                + "?id=" + activityId
+                + "&direction=" + (int)direction
+                + "&availability=" + (int)availability;
+
+            var curFields = await _restfulServiceClient.GetAsync<StandardDesignTimeFieldsCM>(new Uri(url, UriKind.Absolute));
+            return curFields;
         }
     }
 }
