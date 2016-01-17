@@ -27,6 +27,12 @@
 
     export class Button extends ControlDefinitionDTO {
         checked: boolean;
+
+        constructor(label: string) {
+            super();
+            this.type = 'Button';
+            (<any>this).label = label;
+        }
     }
 
     export class TextBox extends ControlDefinitionDTO {
