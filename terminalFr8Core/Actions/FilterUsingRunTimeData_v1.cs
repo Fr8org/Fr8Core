@@ -236,7 +236,7 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActionDO> InitialConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
                 .Fields
                 .ToArray();
 
@@ -257,7 +257,7 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActionDO> FollowupConfigurationResponse(ActionDO curActionDO, AuthorizationTokenDO authTokenDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream))
+                (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream))
                 .Fields
                 .ToArray();
 

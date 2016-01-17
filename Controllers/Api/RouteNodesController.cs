@@ -12,6 +12,10 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Managers;
+using Data.Crates;
+using Data.Interfaces.Manifests;
+using Data.States;
+using Data.Constants;
 
 namespace HubWeb.Controllers
 {
@@ -21,11 +25,13 @@ namespace HubWeb.Controllers
     {
         private readonly IRouteNode _activity;
         private readonly ISecurityServices _security;
+        private readonly ICrateManager _crate;
 
         public RouteNodesController()
         {
             _activity = ObjectFactory.GetInstance<IRouteNode>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
+            _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         [HttpGet]
@@ -105,24 +111,17 @@ namespace HubWeb.Controllers
             }
         }
 
-        [ActionName("downstream_fields")]
-        [ResponseType(typeof(List<ActionDTO>))]
+        [ActionName("designtime_fields_dir")]
+        [ResponseType(typeof(StandardDesignTimeFieldsCM))]
         [AllowAnonymous]
-        public IHttpActionResult GetDownstreamFields(Guid id)
+        public IHttpActionResult GetDesignTimeFieldsByDirection(
+            Guid id, 
+            CrateDirection direction, 
+            AvailabilityType availability = AvailabilityType.NotSet)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                ActionDO actionDO = uow.ActionRepository.GetByKey(id);
-                var downstreamActions = _activity
-                    .GetDownstreamActivities(uow, actionDO)
-                    .OfType<ActionDO>()
-                    .Select(x => x.CrateStorage)
-                    .ToList();
-
-
-
-            }
-        }       
+            var downstreamActions = _activity.GetDesignTimeFieldsByDirection(id, direction, availability);
+            return Ok(downstreamActions);
+        }
 
         [ActionName("available")]
         [ResponseType(typeof (IEnumerable<ActivityTemplateCategoryDTO>))]

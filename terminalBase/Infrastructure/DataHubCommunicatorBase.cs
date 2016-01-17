@@ -91,10 +91,11 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(crates);
         }
 
-        public Task<List<FieldDTO>> GetFieldsByDirection(ActionDO actionDO, CrateDirection direction)
+        public Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction)
         {
             throw new NotImplementedException();
         }
+
         public async Task CreateAlarm(AlarmDTO alarmDTO)
         {
             
@@ -146,6 +147,11 @@ namespace TerminalBase.Infrastructure
         public Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields)
         {
             return Task.FromResult(new List<FieldValidationResult>());
+        }
+
+        public Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        {
+            throw new NotImplementedException();
         }
     }
 }

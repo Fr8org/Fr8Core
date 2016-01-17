@@ -71,7 +71,7 @@ namespace terminalDocuSign.Actions
         {
             using (var updater = Crate.UpdateStorage(curActionDO))
             {
-                var curUpstreamFields = (await GetDesignTimeFields(curActionDO, CrateDirection.Upstream)).Fields.ToArray();
+                var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, CrateDirection.Upstream)).Fields.ToArray();
                 var upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Design-Time Fields", curUpstreamFields);
                 updater.CrateStorage.ReplaceByLabel(upstreamFieldsCrate);
 

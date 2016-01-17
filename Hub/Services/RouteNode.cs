@@ -17,6 +17,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Utilities.Configuration.Azure;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using Data.Interfaces.Manifests;
 
 namespace Hub.Services
 {
@@ -26,6 +27,7 @@ namespace Hub.Services
 
         private readonly ICrateManager _crate;
         private readonly IRestfulServiceClient _restfulServiceClient;
+        private readonly IRouteNode _activity;
 
         #endregion
 
@@ -78,6 +80,47 @@ namespace Hub.Services
                 .ToList();
 
             return GetUpstreamActivities(fullTree, curActivityDO);
+        }
+
+        public StandardDesignTimeFieldsCM GetDesignTimeFieldsByDirection(Guid id, CrateDirection direction, AvailabilityType availability)
+        {
+            StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                ActionDO actionDO = uow.ActionRepository.GetByKey(id);
+                var curCrates = GetActivitiesByDirection(uow, direction, actionDO)
+                    .OfType<ActionDO>()
+                    .SelectMany(x => _crate.GetStorage(x).CratesOfType<StandardDesignTimeFieldsCM>())
+                    .ToList();
+
+                Func<FieldDTO, bool> predicate;
+                if (availability == AvailabilityType.NotSet)
+                {
+                    predicate = (FieldDTO f) => true;
+                }
+                else
+                {
+                    predicate = (FieldDTO f) => f.Availability == availability;
+                }
+
+                mergedFields.Fields.AddRange(_crate.MergeContentFields(curCrates).Fields.Where(predicate));
+
+                return mergedFields;
+            }
+        }
+
+        private List<RouteNodeDO> GetActivitiesByDirection(IUnitOfWork uow, CrateDirection direction, RouteNodeDO curActivityDO)
+        {
+            switch (direction)
+            {
+                case CrateDirection.Downstream:
+                    return GetDownstreamActivities(uow, curActivityDO);
+                case CrateDirection.Upstream:
+                    return GetUpstreamActivities(uow, curActivityDO);
+                case CrateDirection.Both:
+                default:
+                    return  GetDownstreamActivities(uow, curActivityDO).Concat(GetUpstreamActivities(uow, curActivityDO)).ToList();
+            }
         }
 
         private List<RouteNodeDO> GetUpstreamActivities(
@@ -276,7 +319,7 @@ namespace Hub.Services
 
             TraverseActivity(activity, activities.Add);
 
-	        activities.Reverse();
+            activities.Reverse();
 
             activities.ForEach(x =>
             {
@@ -363,7 +406,7 @@ namespace Hub.Services
         /// <summary>
         /// Returns ActivityTemplates while filtering them by the supplied predicate
         /// </summary>
-        public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, Func<ActivityTemplateDO, bool>predicate)
+        public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, Func<ActivityTemplateDO, bool> predicate)
         {
             return uow.ActivityTemplateRepository
                 .GetAll()
@@ -379,7 +422,7 @@ namespace Hub.Services
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
             curActivityTemplates = uow.ActivityTemplateRepository
                 .GetAll()
-                .Where(at => at.Category == Data.States.ActivityCategory.Solution 
+                .Where(at => at.Category == Data.States.ActivityCategory.Solution
                     && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                 .OrderBy(t => t.Category)
                 .Select(Mapper.Map<ActivityTemplateDTO>)
@@ -397,7 +440,7 @@ namespace Hub.Services
             return curActivityTemplates;
         }
 
-	    public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups()
+        public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups()
         {
             List<ActivityTemplateCategoryDTO> curActivityTemplates;
 
@@ -418,17 +461,17 @@ namespace Hub.Services
 
             return curActivityTemplates;
         }
-        
+
         public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(
             Guid activityId, CrateDirection direction)
-        { 
+        {
             // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
             var directionSuffix = (direction == CrateDirection.Upstream)
                 ? "upstream_actions/"
                 : "downstream_actions/";
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                +"api/"+ CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
                 + directionSuffix
                 + "?id=" + activityId;
 
@@ -468,29 +511,5 @@ namespace Hub.Services
 
             return curCrates;
         }
-
-        public async Task<List<FieldDTO>> GetFieldsByDirection(Guid activityId, CrateDirection direction)
-        {
-            // TODO: after DO-1214 this must target to "upstream" and "downstream" accordingly.
-            var directionSuffix = (direction == CrateDirection.Upstream)
-                ? "upstream_fields/"
-                : "downstream_fields/";
-
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/"
-                + directionSuffix
-                + "?id=" + activityId;
-
-            var curFields = await _restfulServiceClient.GetAsync<List<FieldDTO>>(new Uri(url, UriKind.Absolute));
-            var curCrates = new List<FieldDTO>();
-
-            foreach (var curAction in curFields)
-            {
-                curCrates.AddRange(storage);
-            }
-
-            return curFields;
-        }
-
     }
 }

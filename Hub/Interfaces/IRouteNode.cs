@@ -7,7 +7,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-
+using Data.Interfaces.Manifests;
 
 namespace Hub.Interfaces
 {
@@ -16,6 +16,8 @@ namespace Hub.Interfaces
 		List<RouteNodeDO> GetUpstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO);
 
         List<RouteNodeDO> GetDownstreamActivities(IUnitOfWork uow, RouteNodeDO curActivityDO);
+
+        StandardDesignTimeFieldsCM GetDesignTimeFieldsByDirection(Guid id, CrateDirection direction, AvailabilityType availability);
 
         Task Process(Guid curActivityId, ActionState curActionState, ContainerDO curContainerDO);
 
@@ -35,7 +37,6 @@ namespace Hub.Interfaces
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction);
 
         Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction);
-        Task<List<FieldDTO>> GetFieldsByDirection(Guid activityId, CrateDirection direction);
 	    
         IEnumerable<ActivityTemplateDTO> GetSolutions(IUnitOfWork uow, IFr8AccountDO curAccount);
     }

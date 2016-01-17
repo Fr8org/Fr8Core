@@ -11,6 +11,7 @@ using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities.Configuration.Azure;
 using Data.Constants;
+using Data.Interfaces.Manifests;
 
 namespace TerminalBase.Infrastructure
 {
@@ -48,10 +49,18 @@ namespace TerminalBase.Infrastructure
             return _routeNode.GetCratesByDirection(actionDO.Id, direction);
         }
 
-        public Task<List<FieldDTO>> GetFieldsByDirection(ActionDO actionDO, CrateDirection direction)
+        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
-            return _routeNode.GetFieldsByDirection(actionDO.Id, direction);
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/designtime_fields_dir"
+                + "?id=" + activityId
+                + "&direction=" + (int)direction
+                + "&availability=" + (int)availability;
+
+            var curFields = await _restfulServiceClient.GetAsync<StandardDesignTimeFieldsCM> (new Uri(url, UriKind.Absolute));
+            return curFields;
         }
+
 
         public async Task CreateAlarm(AlarmDTO alarmDTO)
         {

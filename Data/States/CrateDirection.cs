@@ -4,5 +4,6 @@
     {
         Upstream,
         Downstream,
+        Both
     }
 }
