@@ -110,6 +110,7 @@ namespace terminalDocuSign.Actions
             return Task.FromResult<ActionDO>(curActionDO);
         }
 
+      
         /// <summary>
         /// Tries to get existing Docusign connect configuration named "DocuSignConnectName" for current user
         /// </summary>
@@ -127,6 +128,42 @@ namespace terminalDocuSign.Actions
             //if nothing found, return NULL
             return null;
         }
+
+        /// <summary>
+        /// Validate that at least one checkbox has been selected for envelope events
+        /// Validate that at least one radiobutton has been selected for 
+        /// </summary>
+        /// <param name="curActionDO"></param>
+        private void ValidateEnvelopeSelectableEvents(ActionDO curActionDO)
+        {
+            using (var updater = Crate.UpdateStorage(curActionDO))
+            {
+                var configControls = GetConfigurationControls(updater.CrateStorage);
+                var eventCheckBoxes = configControls.Controls.Where(c => c.Type == ControlTypes.CheckBox).ToList();
+                var anySelectedControl = eventCheckBoxes.Any(c => c.Selected);
+
+                if (!anySelectedControl)
+                {
+                    //show the error under the third checkbox because checkboxes are rendered like separate controls
+                    var checkBoxControl = eventCheckBoxes.FirstOrDefault(x => x.Label == "Event_Recipient_Signed");
+                    if (checkBoxControl != null)
+                        checkBoxControl.ErrorMessage = "At least one notification checkbox must be checked.";
+
+                    string curSelectedOption, curSelectedValue;
+                    GetTemplateRecipientPickerValue(updater.CrateStorage, out curSelectedOption, out curSelectedValue);
+                    if (!string.IsNullOrEmpty(curSelectedValue) || !string.IsNullOrEmpty(curSelectedOption)) return;
+
+                    var groupControl = configControls.Controls.OfType<RadioButtonGroup>().FirstOrDefault();
+                    if (groupControl == null) return;
+
+                    if (!groupControl.Radios.Any(x => x.Selected))
+                    {
+                        groupControl.ErrorMessage = "One option from the radio buttons must be selected.";
+                    }
+                }
+            }
+        }
+
 
         /// <summary>
         /// Creates or Updates a Docusign connect configuration named "DocuSignConnectName" for current user
@@ -188,8 +225,7 @@ namespace terminalDocuSign.Actions
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue;
             GetTemplateRecipientPickerValue(curActionDO, out curSelectedOption, out curSelectedValue);
-
-
+            
             string envelopeId = string.Empty;
 
             //retrieve envelope ID based on the selected option and its value
@@ -418,7 +454,6 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-
             // remove by FR-1766
             //var fieldEventRecipientSent = new CheckBox()
             //{
@@ -490,8 +525,7 @@ namespace terminalDocuSign.Actions
 
             return templateRecipientPicker;
         }
-
-
+        
         private List<FieldDTO> CreateDocuSignEventFields()
         {
             return new List<FieldDTO>(){
