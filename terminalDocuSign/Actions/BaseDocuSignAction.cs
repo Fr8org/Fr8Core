@@ -9,6 +9,7 @@ using System.Web;
 using TerminalBase.BaseClasses;
 using terminalDocuSign.Infrastructure;
 using Hub.Managers;
+using Data.States;
 
 namespace terminalDocuSign.Actions
 {
@@ -17,17 +18,17 @@ namespace terminalDocuSign.Actions
         protected List<FieldDTO> CreateDocuSignEventFields()
         {
             return new List<FieldDTO>(){
-                new FieldDTO("RecipientEmail") {Tags = "EmailAddress" },
-                new FieldDTO("DocumentName"),
-                new FieldDTO("TemplateName"),
-                new FieldDTO("Status"),
+                new FieldDTO("RecipientEmail", AvailabilityType.RunTime) {Tags = "EmailAddress" },
+                new FieldDTO("DocumentName", AvailabilityType.RunTime),
+                new FieldDTO("TemplateName", AvailabilityType.RunTime),
+                new FieldDTO("Status", AvailabilityType.RunTime),
                 new FieldDTO("CreateDate") {Tags = "Date" },
-                new FieldDTO("SentDate") {Tags = "Date" },
-                new FieldDTO("DeliveredDate") {Tags = "Date" },
-                new FieldDTO("CompletedDate") {Tags = "Date" },
-                new FieldDTO("HolderEmail") {Tags = "EmailAddress" },
-                new FieldDTO("Subject"),
-                new FieldDTO("EnvelopeId"),
+                new FieldDTO("SentDate", AvailabilityType.RunTime) {Tags = "Date" },
+                new FieldDTO("DeliveredDate", AvailabilityType.RunTime) {Tags = "Date" },
+                new FieldDTO("CompletedDate", AvailabilityType.RunTime) {Tags = "Date" },
+                new FieldDTO("HolderEmail", AvailabilityType.RunTime) {Tags = "EmailAddress" },
+                new FieldDTO("Subject", AvailabilityType.RunTime),
+                new FieldDTO("EnvelopeId", AvailabilityType.RunTime),
             };
         }
 

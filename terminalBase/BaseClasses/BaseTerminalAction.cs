@@ -389,7 +389,7 @@ namespace TerminalBase.BaseClasses
 
         protected Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
-            return Crate<StandardConfigurationControlsCM>.FromContent(ConfigurationControlsLabel, new StandardConfigurationControlsCM(controlsList));
+            return Crate<StandardConfigurationControlsCM>.FromContent(ConfigurationControlsLabel, new StandardConfigurationControlsCM(controlsList), AvailabilityType.Configuration);
         }
 
         protected string ExtractControlFieldValue(ActionDO curActionDO, string fieldName)
@@ -475,26 +475,25 @@ namespace TerminalBase.BaseClasses
         }*/
 
         /// <summary>
-        /// Creates a crate with avalable design-time fields.
+        /// Creates a crate with available design-time fields.
         /// </summary>
         /// <param name="actionDO">ActionDO.</param>
-        /// <param name="exclude">Labels of crates where fields should not be searched.</param>
         /// <returns></returns>
         protected async Task<Crate> CreateAvailableFieldsCrate(
             ActionDO actionDO,
-            List<string> exclude = null,
             string crateLabel = "Upstream Terminal-Provided Fields")
         {
-            if (exclude == null)
-            {
-                exclude = new List<string>();
-            }
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO, CrateDirection.Upstream, AvailabilityType.RunTime);
 
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO, CrateDirection.Upstream, AvailabilityType.Configuration);
+            if (curUpstreamFields == null)
+            {
+                curUpstreamFields = new StandardDesignTimeFieldsCM();
+            }
 
             var availableFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
                     crateLabel,
-                    curUpstreamFields.Fields
+                    curUpstreamFields.Fields,
+                    AvailabilityType.Configuration
                 );
 
             return availableFieldsCrate;

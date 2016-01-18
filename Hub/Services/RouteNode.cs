@@ -85,26 +85,39 @@ namespace Hub.Services
         public StandardDesignTimeFieldsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
             StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
+
+            Func<FieldDTO, bool> fieldPredicate;
+            if (availability == AvailabilityType.NotSet)
+            {
+                fieldPredicate = (FieldDTO f) => true;
+            }
+            else
+            {
+                fieldPredicate = (FieldDTO f) => f.Availability == availability;
+            }
+
+            Func<Crate<StandardDesignTimeFieldsCM>, bool> cratePredicate;
+            if (availability == AvailabilityType.NotSet)
+            {
+                cratePredicate = (Crate<StandardDesignTimeFieldsCM> f) => true;
+            }
+            else
+            {
+                cratePredicate = (Crate<StandardDesignTimeFieldsCM> f) =>
+                {
+                    return f.Availability == availability;
+                };
+            }
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 ActionDO actionDO = uow.ActionRepository.GetByKey(activityId);
                 var curCrates = GetActivitiesByDirection(uow, direction, actionDO)
                     .OfType<ActionDO>()
-                    .SelectMany(x => _crate.GetStorage(x).CratesOfType<StandardDesignTimeFieldsCM>())
+                    .SelectMany(x => _crate.GetStorage(x).CratesOfType<StandardDesignTimeFieldsCM>().Where(cratePredicate))
                     .ToList();
 
-                Func<FieldDTO, bool> predicate;
-                if (availability == AvailabilityType.NotSet)
-                {
-                    predicate = (FieldDTO f) => true;
-                }
-                else
-                {
-                    predicate = (FieldDTO f) => f.Availability == availability;
-                }
-
-                mergedFields.Fields.AddRange(_crate.MergeContentFields(curCrates).Fields.Where(predicate));
-
+                mergedFields.Fields.AddRange(_crate.MergeContentFields(curCrates).Fields.Where(fieldPredicate));
                 return mergedFields;
             }
         }
