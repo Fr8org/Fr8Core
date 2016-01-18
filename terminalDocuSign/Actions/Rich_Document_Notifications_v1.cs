@@ -201,7 +201,7 @@ namespace terminalDocuSign.Actions
 
             int ordering = 0;
 
-            var activityList = await HubCommunicator.GetActivityTemplates(actionDO);
+            var activityList = await HubCommunicator.GetActivityTemplates(actionDO, CurrentFr8UserId);
 
             var monitorDocuSignTemplate = GetActivityTemplate(activityList, "Monitor_DocuSign_Envelope_Activity");
             var monitorDocuSignAction = await CreateMonitorDocuSignAction(monitorDocuSignTemplate, authTokenDO, ++ordering);
@@ -241,9 +241,9 @@ namespace terminalDocuSign.Actions
                 actionDO.ChildNodes.Add(queryMTDatabaseAction);
 
                 var recipientEventStatus = (DropDownList)notifyWhenEventDoesntHappenRadio.Controls.First(c => c.Name == "RecipientEvent");
-                
 
-                var filterUsingRuntimeTemplate = GetActivityTemplate(activityList, "FilterUsingRunTimeData");
+
+                var filterUsingRuntimeTemplate = GetActivityTemplate(activityList, "TestIncomingData");
                 var filterAction = await CreateFilterUsingRunTimeAction(filterUsingRuntimeTemplate, ++ordering);
                 SetFilterUsingRunTimeActionFields(filterAction, recipientEventStatus.Value);
                 actionDO.ChildNodes.Add(filterAction);
@@ -592,7 +592,7 @@ namespace terminalDocuSign.Actions
 
         private async Task<Crate> PackAvailableHandlers(ActionDO actionDO)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(actionDO);
+            var templates = await HubCommunicator.GetActivityTemplates(actionDO, CurrentFr8UserId);
             var taggedTemplates = templates.Where(x => x.Tags != null && x.Tags.Contains("Notifier"));
 
             var availableHandlersCrate =

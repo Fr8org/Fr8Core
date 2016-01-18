@@ -39,7 +39,14 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Send an Email",
-                Terminal = new TerminalDO { Name = "Send an Email", Version = "1", Endpoint = "", TerminalStatus = TerminalStatus.Active },
+                Terminal = new TerminalDO
+                {
+                    Name = "Send an Email",
+                    Version = "1",
+                    Endpoint = "",
+                    TerminalStatus = TerminalStatus.Active,
+                    Secret = Guid.NewGuid().ToString()
+                },
 
                 Version = "1"
             };
@@ -51,7 +58,14 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Send a Text (SMS) Message",
-                Terminal = new TerminalDO { Name = "Send a Text (SMS) Message", Version = "1", Endpoint = "", TerminalStatus = TerminalStatus.Active },
+                Terminal = new TerminalDO
+                {
+                    Name = "Send a Text (SMS) Message",
+                    Version = "1",
+                    Endpoint = "",
+                    TerminalStatus = TerminalStatus.Active,
+                    Secret = Guid.NewGuid().ToString()
+                },
                 Version = "1"
             };
         }
@@ -388,7 +402,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "AzureSqlServer",
                 TerminalStatus = 1,
                 Version = "1",
-                AuthenticationType = AuthenticationType.None
+                AuthenticationType = AuthenticationType.None,
+                Secret = Guid.NewGuid().ToString()
             };
 
             ActivityTemplateDO curActivityTemplateDO = new ActivityTemplateDO

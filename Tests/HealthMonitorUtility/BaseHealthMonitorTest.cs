@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Threading.Tasks;
+using Hub.Interfaces;
+using Hub.Security;
 using Newtonsoft.Json;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
@@ -18,14 +21,29 @@ namespace HealthMonitor.Utility
     {
         public ICrateManager Crate { get; set; }
         public IRestfulServiceClient RestfulServiceClient { get; set; }
+        public IHMACService HMACService { get; set; }
+        private string terminalSecret;
+        private string terminalId;
+        protected string TerminalSecret {
+            get 
+            {
+                return terminalSecret ?? (terminalSecret = ConfigurationManager.AppSettings[TerminalName + "TerminalSecret"]);
+            }
+        }
+        protected string TerminalId {
+            get
+            {
+                return terminalId ?? (terminalId = ConfigurationManager.AppSettings[TerminalName + "TerminalId"]);
+            }
+        }
 
         public BaseHealthMonitorTest()
         {
             ObjectFactory.Initialize();
             ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
-
             RestfulServiceClient = new RestfulServiceClient();
             Crate = new CrateManager();
+            HMACService = new Fr8HMACService();
         }
 
         public abstract string TerminalName { get; }
@@ -129,14 +147,21 @@ namespace HealthMonitor.Utility
             AddPayloadCrate(actionDTO, operationalState, "Operational Status");
         }
 
+        private async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)
+        {
+            return await HMACService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId, content);
+        }
+
         public async Task<TResponse> HttpPostAsync<TRequest, TResponse>(string url, TRequest request)
         {
-            return await RestfulServiceClient.PostAsync<TRequest, TResponse>(new Uri(url), request);
+            var uri = new Uri(url);
+            return await RestfulServiceClient.PostAsync<TRequest, TResponse>(uri, request, null, await GetHMACHeader(uri, "testUser", request));
         }
 
         public async Task<TResponse> HttpGetAsync<TResponse>(string url)
         {
-            return await RestfulServiceClient.GetAsync<TResponse>(new Uri(url));
+            var uri = new Uri(url);
+            return await RestfulServiceClient.GetAsync<TResponse>(uri);
         }
     }
 }

@@ -22,8 +22,8 @@ using TerminalBase.Infrastructure;
 namespace DockyardTest.Unit
 {
     [TestFixture]
-    [Category("FilterUsingRunTimeData_v1")]
-    public class FilterUsingRunTimeData_v1Tests : BaseTest
+    [Category("TestIncomingData_v1")]
+    public class TestIncomingData_v1Tests : BaseTest
     {
         [SetUp]
         public override void SetUp()
@@ -42,7 +42,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { null, FixtureData.TestContainer_Id_1(), curListFieldMappings };
 
             //Act
-            var result = Assert.Throws<ArgumentNullException>(() => ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Evaluate", parameters));
+            var result = Assert.Throws<ArgumentNullException>(() => ClassMethod.Invoke(typeof(TestIncomingData_v1), "Evaluate", parameters));
 
             //Assert
             Assert.AreEqual("criteria", result.ParamName);
@@ -57,7 +57,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { string.Empty, FixtureData.TestContainer_Id_1(), curListFieldMappings };
 
             //Act
-            var result = Assert.Throws<ArgumentException>(() => ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Evaluate", parameters));
+            var result = Assert.Throws<ArgumentException>(() => ClassMethod.Invoke(typeof(TestIncomingData_v1), "Evaluate", parameters));
 
             //Assert
             Assert.AreEqual("criteria", result.ParamName);
@@ -73,7 +73,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { "THIS_IS_NOT_CORRECT_JSON_DATA", FixtureData.TestContainer_Id_1(), curListFieldMappings };
 
             //Act
-            ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Evaluate", parameters);
+            ClassMethod.Invoke(typeof(TestIncomingData_v1), "Evaluate", parameters);
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria.ConditionsJSON, FixtureData.TestContainer_Id_1(), null };
 
             //Act
-            var ex = Assert.Throws<ArgumentNullException>(() => ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Evaluate", parameters));
+            var ex = Assert.Throws<ArgumentNullException>(() => ClassMethod.Invoke(typeof(TestIncomingData_v1), "Evaluate", parameters));
 
             //Assert
             Assert.AreEqual("envelopeData", ex.ParamName);
@@ -99,7 +99,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { null, FixtureData.TestContainer_Id_1(), envelopeDataList };
 
             //Act
-            var ex = Assert.Throws<ArgumentNullException>(() => ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters));
+            var ex = Assert.Throws<ArgumentNullException>(() => ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters));
 
             //Assert
             Assert.AreEqual("criteria", ex.ParamName);
@@ -113,7 +113,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { string.Empty, FixtureData.TestContainer_Id_1(), envelopeDataList };
 
             //Act
-            var ex = Assert.Throws<ArgumentException>(() => ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters));
+            var ex = Assert.Throws<ArgumentException>(() => ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters));
 
             //Assert
             Assert.AreEqual("criteria", ex.ParamName);
@@ -130,7 +130,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { "THIS_IS_NOT_CORRECT_JSON_DATA", FixtureData.TestContainer_Id_1(), curListFieldMappings };
 
             //Act
-            ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
         }
 
@@ -144,7 +144,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria.ConditionsJSON, FixtureData.TestContainer_Id_1(), null };
 
             //Act
-            var ex = Assert.Throws<ArgumentNullException>(() => ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters));
+            var ex = Assert.Throws<ArgumentNullException>(() => ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters));
 
             //Assert
             Assert.AreEqual("envelopeData", ex.ParamName);
@@ -162,7 +162,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
 
             //Assert
@@ -180,7 +180,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "Physician" && x.Value == "Test1");
@@ -196,7 +196,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && x.Value == "10");
@@ -212,7 +212,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && x.Value == "30");
@@ -229,7 +229,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) > 3000);
@@ -246,7 +246,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) > 30);
@@ -262,7 +262,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) > 30);
@@ -279,7 +279,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) > 0);
@@ -297,7 +297,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) >= 3000);
@@ -314,7 +314,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) >= 50);
@@ -330,7 +330,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) >= 40);
@@ -346,7 +346,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) >= 0);
@@ -364,7 +364,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) < 10);
@@ -380,7 +380,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) < 20);
@@ -396,7 +396,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) < 30);
@@ -412,7 +412,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) < 3000);
@@ -430,7 +430,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) <= 0);
@@ -446,7 +446,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) <= 10);
@@ -462,7 +462,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) <= 20);
@@ -478,7 +478,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) <= 3000);
@@ -500,7 +500,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             //Assert
             var expected = envelopData.ToList().Where(x => x.Key == "ID" && Convert.ToInt32(x.Value) == 2000 && Convert.ToInt32(x.Value) == 2500);
@@ -524,7 +524,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             var expected = envelopData.ToList().Where(x => Convert.ToInt32(x.Value) > 10 && Convert.ToInt32(x.Value) <= 40 && Convert.ToInt32(x.Value) == 400);
 
@@ -548,7 +548,7 @@ namespace DockyardTest.Unit
             object[] parameters = new object[] { criteria, FixtureData.TestContainer_Id_1(), envelopData };
 
             //Act
-            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(FilterUsingRunTimeData_v1), "Filter", parameters);
+            var filtred = (IQueryable<FieldDTO>)ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters);
 
             var expected = envelopData.ToList().Where(x => Convert.ToInt32(x.Value) > 10 && Convert.ToInt32(x.Value) <= 40 && Convert.ToInt32(x.Value) == 30);
 

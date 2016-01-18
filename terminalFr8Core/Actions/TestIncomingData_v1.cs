@@ -18,14 +18,13 @@ using Data.States;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using Hub.Managers;
 
 namespace terminalFr8Core.Actions
 {
-    public class FilterUsingRunTimeData_v1 : BaseTerminalAction
+    public class TestIncomingData_v1 : BaseTerminalAction
     {
 
-        public FilterUsingRunTimeData_v1()
+        public TestIncomingData_v1()
         {
         }
 

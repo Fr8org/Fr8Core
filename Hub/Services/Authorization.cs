@@ -328,22 +328,43 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var authToken = uow.AuthorizationTokenRepository.FindTokenByExternalState(authTokenDTO.ExternalStateToken);
+                var authTokenByExternalState = uow.AuthorizationTokenRepository
+                    .FindTokenByExternalState(authTokenDTO.ExternalStateToken);
 
-                if (authToken == null)
+                if (authTokenByExternalState == null)
                 {
                     throw new ApplicationException("No AuthToken found with specified ExternalStateToken.");
                 }
 
-                authToken.Token = authTokenDTO.Token;
-                authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
-                authToken.ExternalStateToken = null;
-                authToken.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
+                var authTokenByExternalAccountId = uow.AuthorizationTokenRepository
+                    .GetPublicDataQuery()
+                    .FirstOrDefault(x => x.TerminalID == terminal.Id
+                        && x.UserID == authTokenByExternalState.UserID
+                        && x.ExternalAccountId == authTokenDTO.ExternalAccountId
+                    );
+
+                if (authTokenByExternalAccountId != null)
+                {
+                    authTokenByExternalAccountId.Token = authTokenDTO.Token;
+                    authTokenByExternalState.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                    authTokenByExternalAccountId.ExternalStateToken = null;
+                    authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
+
+                    uow.AuthorizationTokenRepository.Remove(authTokenByExternalState);
+                }
+                else
+                {
+                    authTokenByExternalState.Token = authTokenDTO.Token;
+                    authTokenByExternalState.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                    authTokenByExternalState.ExternalStateToken = null;
+                    authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
+                }
+                
                 uow.SaveChanges();
 
                 return new AuthenticateResponse()
                 {
-                    AuthorizationToken = authToken,
+                    AuthorizationToken = authTokenByExternalAccountId ?? authTokenByExternalState,
                     Error = null
                 };
             }
