@@ -21,7 +21,6 @@ using Data.Constants;
 namespace HubWeb.Controllers
 {
     //[RoutePrefix("route_nodes")]
-    [Fr8ApiAuthorize]
     public class RouteNodesController : ApiController
     {
         private readonly IRouteNode _activity;
@@ -37,6 +36,7 @@ namespace HubWeb.Controllers
 
         [HttpGet]
         [ResponseType(typeof (ActivityTemplateDTO))]
+        [Fr8ApiAuthorize]
         public IHttpActionResult Get(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -52,6 +52,7 @@ namespace HubWeb.Controllers
 
         [ActionName("upstream")]
         [ResponseType(typeof (List<RouteNodeDO>))]
+        [Fr8ApiAuthorize]
         public IHttpActionResult GetUpstreamActivities(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -64,6 +65,7 @@ namespace HubWeb.Controllers
 
         [ActionName("downstream")]
         [ResponseType(typeof (List<RouteNodeDO>))]
+        [Fr8ApiAuthorize]
         public IHttpActionResult GetDownstreamActivities(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -114,7 +116,7 @@ namespace HubWeb.Controllers
 
         [ActionName("designtime_fields_dir")]
         [ResponseType(typeof(StandardDesignTimeFieldsCM))]
-        [AllowAnonymous]
+        [fr8HubWebHMACAuthorize]
         public IHttpActionResult GetDesignTimeFieldsByDirection(
             Guid id, 
             CrateDirection direction, 

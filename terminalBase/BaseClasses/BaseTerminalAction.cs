@@ -344,13 +344,13 @@ namespace TerminalBase.BaseClasses
 
         public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(Guid actionId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         {
-            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionId, direction, availability);
+            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionId, direction, availability, CurrentFr8UserId);
             return mergedFields;
         }
 
         public async virtual Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(ActionDO actionDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
-        { 
-            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO, direction, availability);
+        {
+            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO, direction, availability, CurrentFr8UserId);
             return mergedFields;
         }
 
@@ -479,11 +479,9 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <param name="actionDO">ActionDO.</param>
         /// <returns></returns>
-        protected async Task<Crate> CreateAvailableFieldsCrate(
-            ActionDO actionDO,
-            string crateLabel = "Upstream Terminal-Provided Fields")
+        protected async Task<Crate> CreateAvailableFieldsCrate(ActionDO actionDO,string crateLabel = "Upstream Terminal-Provided Fields")
         {
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO, CrateDirection.Upstream, AvailabilityType.RunTime);
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(actionDO, CrateDirection.Upstream, AvailabilityType.RunTime, CurrentFr8UserId);
 
             if (curUpstreamFields == null)
             {

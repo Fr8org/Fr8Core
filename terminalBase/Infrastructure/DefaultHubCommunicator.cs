@@ -137,17 +137,24 @@ namespace TerminalBase.Infrastructure
             return curCrates;
         }
 
-        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId)
         {
-            return await _routeNode.GetDesignTimeFieldsByDirectionTerminal(activityId, direction, availability);
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/routenodes/designtime_fields_dir"
+                + "?id=" + activityId
+                + "&direction=" + (int)direction
+                + "&availability=" + (int)availability;
+            var uri = new Uri(url, UriKind.Absolute);
+            var curFields = await _restfulServiceClient.GetAsync<StandardDesignTimeFieldsCM>(uri, null, await GetHMACHeader(uri, userId));
+            return curFields;
         }
 
-        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActionDO actionDO, CrateDirection direction, AvailabilityType availability)
+        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActionDO actionDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
-            return await _routeNode.GetDesignTimeFieldsByDirectionTerminal(actionDO.Id, direction, availability);
+            return await GetDesignTimeFieldsByDirection(actionDO.Id, direction, availability, userId);
         }
 
-        public async Task CreateAlarm(AlarmDTO alarmDTO)
+        public async Task CreateAlarm(AlarmDTO alarmDTO, string userId)
         {
             var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/alarms";

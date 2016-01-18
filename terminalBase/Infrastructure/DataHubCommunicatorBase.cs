@@ -141,17 +141,17 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(new List<FieldValidationResult>());
         }
 
-        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActionDO actionDO, CrateDirection direction, AvailabilityType availability)
+        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(ActionDO actionDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
             //This code only supports integration testing scenarios
 
             StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
-            var curCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, direction);
+            var curCrates = await GetCratesByDirection<StandardDesignTimeFieldsCM>(actionDO, direction, userId);
             mergedFields.Fields.AddRange(Crate.MergeContentFields(curCrates).Fields);
             return mergedFields;
         }
 
-        public Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction, AvailabilityType availability)
+        public Task<StandardDesignTimeFieldsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction, AvailabilityType availability, string userId)
         {
             throw new NotImplementedException();
         }

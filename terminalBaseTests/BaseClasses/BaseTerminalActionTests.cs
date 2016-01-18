@@ -118,8 +118,7 @@ namespace terminalBaseTests.BaseClasses
 
                 ActionDO curAction = FixtureData.TestAction57();
 
-                var result = await _baseTerminalAction.GetDesignTimeFields(
-                    curAction.Id, CrateDirection.Upstream);
+                var result = await _baseTerminalAction.GetDesignTimeFields(curAction.Id, CrateDirection.Upstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(48, result.Fields.Count);
             }
@@ -135,8 +134,7 @@ namespace terminalBaseTests.BaseClasses
 
                 ActionDO curAction = FixtureData.TestAction57();
 
-                var result = await _baseTerminalAction.GetDesignTimeFields(
-                    curAction.Id, CrateDirection.Downstream);
+                var result = await _baseTerminalAction.GetDesignTimeFields(curAction.Id, CrateDirection.Downstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(54, result.Fields.Count);
             }
