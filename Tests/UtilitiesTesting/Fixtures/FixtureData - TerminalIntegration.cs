@@ -159,11 +159,11 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActivityTemplateDO TestActivityTemplateDO_FilterUsingRunTimeData()
+        public static ActivityTemplateDO TestActivityTemplateDO_TestIncomingData()
         {
             return new ActivityTemplateDO()
             {
-                Name = "FilterUsingRunTimeData",
+                Name = "TestIncomingData",
                 Version = "1",
                 Terminal = TestTerminal_Core()
             };

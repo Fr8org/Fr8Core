@@ -241,9 +241,9 @@ namespace terminalDocuSign.Actions
                 actionDO.ChildNodes.Add(queryMTDatabaseAction);
 
                 var recipientEventStatus = (DropDownList)notifyWhenEventDoesntHappenRadio.Controls.First(c => c.Name == "RecipientEvent");
-                
 
-                var filterUsingRuntimeTemplate = GetActivityTemplate(activityList, "FilterUsingRunTimeData");
+
+                var filterUsingRuntimeTemplate = GetActivityTemplate(activityList, "TestIncomingData");
                 var filterAction = await CreateFilterUsingRunTimeAction(filterUsingRuntimeTemplate, ++ordering);
                 SetFilterUsingRunTimeActionFields(filterAction, recipientEventStatus.Value);
                 actionDO.ChildNodes.Add(filterAction);

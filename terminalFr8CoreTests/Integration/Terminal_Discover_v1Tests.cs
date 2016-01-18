@@ -14,7 +14,7 @@ namespace terminalFr8CoreTests.Integration
     {
         private const int Fr8CoreActionCount = 16;
 
-        private const string FilterUsingRunTimeDataName = "FilterUsingRunTimeData";
+        private const string TestIncomingDataName = "TestIncomingData";
         private const string MapFieldsName = "MapFields";
         private const string AddPayloadManuallyName = "AddPayloadManually";
         private const string StoreMTDataName = "StoreMTData";
@@ -45,7 +45,7 @@ namespace terminalFr8CoreTests.Integration
 
             Assert.NotNull(terminalDiscoverResponse);
             Assert.AreEqual(Fr8CoreActionCount, terminalDiscoverResponse.Actions.Count);
-            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == FilterUsingRunTimeDataName));
+            Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == TestIncomingDataName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == MapFieldsName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == AddPayloadManuallyName));
             Assert.AreEqual(true, terminalDiscoverResponse.Actions.Any(a => a.Name == StoreMTDataName));

@@ -52,7 +52,7 @@ namespace terminalIntegrationTests
         //private ActionListDO _actionList;
         private AuthorizationTokenDO _authToken;
         private ActivityTemplateDO _waitForDocuSignEventActivityTemplate;
-        private ActivityTemplateDO _filterUsingRunTimeDataActivityTemplate;
+        private ActivityTemplateDO _testIncomingDataActivityTemplate;
         private ActivityTemplateDO _writeToSqlServerActivityTemplate;
         private ActivityTemplateDO _sendDocuSignEnvelopeActivityTemplate;
 
@@ -87,8 +87,8 @@ namespace terminalIntegrationTests
             _waitForDocuSignEventActivityTemplate =
                 FixtureData.TestActivityTemplateDO_WaitForDocuSignEvent();
 
-            _filterUsingRunTimeDataActivityTemplate =
-                FixtureData.TestActivityTemplateDO_FilterUsingRunTimeData();
+            _testIncomingDataActivityTemplate =
+                FixtureData.TestActivityTemplateDO_TestIncomingData();
 
             _writeToSqlServerActivityTemplate =
                 FixtureData.TestActivityTemplateDO_WriteToSqlServer();
@@ -105,7 +105,7 @@ namespace terminalIntegrationTests
             {
                 //    uow.ActivityRepository.Add(_actionList);
                 uow.ActivityTemplateRepository.Add(_waitForDocuSignEventActivityTemplate);
-                uow.ActivityTemplateRepository.Add(_filterUsingRunTimeDataActivityTemplate);
+                uow.ActivityTemplateRepository.Add(_testIncomingDataActivityTemplate);
                 uow.ActivityTemplateRepository.Add(_writeToSqlServerActivityTemplate);
                 uow.ActivityTemplateRepository.Add(_sendDocuSignEnvelopeActivityTemplate);
                 uow.UserRepository.Add(_testUserAccount);
@@ -162,11 +162,11 @@ namespace terminalIntegrationTests
                     uow.UserRepository.Remove(curUser);
                 }
 
-                var filterUsingRunTimeDataActivityTemplate = uow.ActivityTemplateRepository
-                    .GetByKey(_filterUsingRunTimeDataActivityTemplate.Id);
-                if (filterUsingRunTimeDataActivityTemplate != null)
+                var testIncomingDataActivityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(_testIncomingDataActivityTemplate.Id);
+                if (testIncomingDataActivityTemplate != null)
                 {
-                    uow.ActivityTemplateRepository.Remove(filterUsingRunTimeDataActivityTemplate);
+                    uow.ActivityTemplateRepository.Remove(testIncomingDataActivityTemplate);
                 }
 
                 var waitForDocSignActivityTemplate = uow.ActivityTemplateRepository
@@ -337,10 +337,10 @@ namespace terminalIntegrationTests
             return storage;
         }
 
-        private async Task<CrateStorage> FilterUsingRunTimeData_ConfigureInitial(ActionDTO curActionDTO)
+        private async Task<CrateStorage> TestIncomingData_ConfigureInitial(ActionDTO curActionDTO)
         {
             // Fill values as it would be on front-end.
-            curActionDTO.ActivityTemplateId = _filterUsingRunTimeDataActivityTemplate.Id;
+            curActionDTO.ActivityTemplateId = _testIncomingDataActivityTemplate.Id;
             curActionDTO.CrateStorage = new CrateStorageDTO();
 
             // Send initial configure request.
@@ -446,10 +446,10 @@ namespace terminalIntegrationTests
         }
 
         /// <summary>
-        /// Test FilterUsingRunTimeData initial configuration.
+        /// Test TestIncomingData initial configuration.
         /// </summary>
         [Test, Ignore]
-        public async Task TerminalIntegration_FilterUsingRunTimeData_ConfigureInitial()
+        public async Task TerminalIntegration_TestIncomingData_ConfigureInitial()
         {
             // Create blank WaitForDocuSignEvent action.
             var waitForDocuSignEventAction = CreateEmptyAction(_waitForDocuSignEventActivityTemplate);
@@ -477,12 +477,12 @@ namespace terminalIntegrationTests
 
             FixActionNavProps(waitForDocuSignEventAction.Id);
 
-            // Create blank FilterUsingRunTimeData action.
-            var filterAction = CreateEmptyAction(_filterUsingRunTimeDataActivityTemplate);
+            // Create blank TestIncomingData action.
+            var filterAction = CreateEmptyAction(_testIncomingDataActivityTemplate);
 
 
-            // Call Configure Initial for FilterUsingRunTimeData action.
-            await FilterUsingRunTimeData_ConfigureInitial(filterAction);
+            // Call Configure Initial for TestIncomingData action.
+            await TestIncomingData_ConfigureInitial(filterAction);
 
             FixActionNavProps(filterAction.Id);
         }
